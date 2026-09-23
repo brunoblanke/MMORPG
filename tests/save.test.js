@@ -4,6 +4,9 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { buildGame, floorRect, wall } from './helpers/fixture.js';
 import { calculateStats } from '../js/utils/helpers.js';
+import { CONFIG } from '../js/config.js';
+
+const START = CONFIG.playerStartLevel;
 
 const GROUND = floorRect(0, 24, 0, 24, 0);
 
@@ -27,10 +30,10 @@ test('personagem volta com nível, XP, vida e lugar onde saiu', () => {
   game.removePlayer('player2');
   const back = game.addPlayer('player3', { name: 'Ana', gender: 'female', saved });
 
-  assert.deepEqual([back.lvl, back.xp, back.currentHp, back.maxHp], [11, 7, 40, calculateStats(11).hp]);
+  assert.deepEqual([back.lvl, back.xp, back.currentHp, back.maxHp], [START + 1, 7, 40, calculateStats(START + 1).hp]);
   assert.deepEqual([back.x, back.y, back.z], [15, 12, 0]);
   assert.deepEqual([back.spawnX, back.spawnY, back.spawnZ], [2, 2, 0]);
-  assert.equal(back.atk, calculateStats(11).atk);
+  assert.equal(back.atk, calculateStats(START + 1).atk);
 });
 
 test('lugar guardado ocupado: nasce no sqm livre mais perto', () => {
@@ -51,11 +54,11 @@ test('lugar guardado que não existe mais no mapa: volta pro spawn', () => {
 test('dados estragados não quebram: valores fora do lugar são corrigidos', () => {
   const game = buildGame({ objects: GROUND, player: { x: 2, y: 2, z: 0 } });
   const back = game.addPlayer('player2', { name: 'Caio', saved: { lvl: 'x', xp: 99999, currentHp: 0, x: 1.5, y: 3, z: 99 } });
-  assert.equal(back.lvl, 10);
+  assert.equal(back.lvl, START);
   assert.equal(back.xp, back.nextLevelXp - 1);
   assert.equal(back.currentHp, back.hp);
   assert.equal(back.z, 0);
 
   const fresh = game.addPlayer('player3', { name: 'Duda', saved: null });
-  assert.deepEqual([fresh.lvl, fresh.xp, fresh.currentHp], [10, 0, calculateStats(10).hp]);
+  assert.deepEqual([fresh.lvl, fresh.xp, fresh.currentHp], [START, 0, calculateStats(START).hp]);
 });

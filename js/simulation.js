@@ -62,7 +62,7 @@ export class Simulation {
   addPlayer(id, data = {}) {
     const { saved, ...info } = data;
     const spawn = getMapSpawn(this.mapData, { x: 132, y: 145, z: 0 });
-    const player = new Player({ id, x: spawn.x, y: spawn.y, z: spawn.z, lvl: 10, ...info });
+    const player = new Player({ id, x: spawn.x, y: spawn.y, z: spawn.z, lvl: CONFIG.playerStartLevel, ...info });
     const position = player.loadSave(saved);
     const savedSpot = position && this.findSpotNear(position.x, position.y, position.z);
     const spot = savedSpot || this.findFreeSpot(player.spawnX, player.spawnY, player.spawnZ);
