@@ -106,3 +106,28 @@ test('sem rota pro andar de cima quando não há pilha, escada nem buraco', () =
   const path = game.movementController.findPath({ x: 6, y: 13, z: 0, step: 0 }, { x: 5, y: 5, z: 1 });
   assert.deepEqual(path, []);
 });
+
+test('andares negativos: buraco do térreo desce pro -1 e escada do -1 sobe pro térreo', () => {
+  const game = buildGame({ objects: [...floorRect(0, 14, 0, 14, 0), ...floorRect(0, 14, 0, 14, -1), ...hole(5, 5, 0)], stairs: [[7, 10, -1]] });
+  assert.deepEqual(landing(game, 4, 5, 0, 0, 1, 0), { x: 6, y: 6, z: -1, step: 0 });
+  assert.deepEqual(landing(game, 7, 11, -1, 0, 0, -1), { x: 6, y: 8, z: 0, step: 0 });
+});
+
+test('andares negativos: pilha de 3 volumes no -2 sobe pro -1, e desce pelo espelho', () => {
+  const game = buildGame({ objects: [...floorRect(0, 14, 0, 14, -2), ...floorRect(3, 8, 3, 8, -1), ...pile(6, 10, 3, -2)] });
+  assert.deepEqual(landing(game, 6, 10, -2, 3, 0, -1), { x: 5, y: 8, z: -1, step: 0 });
+  assert.deepEqual(landing(game, 5, 8, -1, 0, 0, 1), { x: 6, y: 10, z: -2, step: 3 });
+});
+
+test('fora da faixa -5..5 não existe andar: buraco no -5 e escada no 5 não levam a lugar nenhum', () => {
+  const game = buildGame({ objects: [...floorRect(0, 14, 0, 14, -5), ...hole(5, 5, -5), ...floorRect(0, 14, 0, 14, 5)], stairs: [[7, 10, 5]] });
+  assert.deepEqual(landing(game, 4, 5, -5, 0, 1, 0), { x: 5, y: 5, z: -5, step: 0 });
+  assert.deepEqual(landing(game, 7, 11, 5, 0, 0, -1), { x: 7, y: 10, z: 5, step: 0 });
+});
+
+test('jogador que nasce num andar negativo renasce nele', () => {
+  const game = buildGame({ objects: floorRect(0, 14, 0, 14, -3), player: { x: 4, y: 4, z: -3 } });
+  game.player.currentHp = 0;
+  game.tick(1000);
+  assert.deepEqual([game.player.x, game.player.y, game.player.z], [4, 4, -3]);
+});

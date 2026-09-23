@@ -1,7 +1,8 @@
 // editor/js/model/map-io.js
 
 import { GRID } from '../config.js';
-import { state, makeEmptyLayer } from './state.js';
+import { state, makeAllLayers } from './state.js';
+import { getAllFloors, isValidFloor, GROUND_FLOOR } from '../../../shared/constants.js';
 import { serializeMapFromLayers, buildLayersFromMapData, loadMapDataFromURL } from '../../../shared/map-format.js';
 
 // Mesmo arquivo que o jogo carrega (js/config.js → mapDataUrl).
@@ -24,13 +25,14 @@ export async function loadMapIntoState() {
   const mapData = await loadMapDataFromURL(MAP_URL);
   const { layers, layerOrder } = buildLayersFromMapData(mapData, GRID);
 
-  state.layers = layers;
-  state.layerOrder = layerOrder.length ? layerOrder : [0];
-  if (!state.layers[0]) {
-    state.layers[0] = makeEmptyLayer();
-    state.layerOrder.unshift(0);
+  const outside = layerOrder.filter(z => !isValidFloor(Number(z)));
+  if (outside.length) {
+    console.warn(`⚠️ Andares fora da faixa ignorados (serão removidos ao salvar): ${outside.join(', ')}`);
   }
-  state.activeZ = state.layerOrder[0];
+
+  state.layers = makeAllLayers(layers);
+  state.layerOrder = getAllFloors();
+  state.activeZ = GROUND_FLOOR;
 
   lastSavedJson = JSON.stringify(buildMapData());
 }

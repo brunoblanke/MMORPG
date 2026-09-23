@@ -3,6 +3,7 @@
 import { calculateMoveDelay, distance, directionFromDelta, getAdjacentPositions, isPositionAdjacentTo } from '../utils/helpers.js';
 import { resolveStep, isSameLanding } from '../core/movement.js';
 import { findPath } from '../core/pathfinding.js';
+import { isValidFloor } from '../../shared/constants.js';
 
 export class MovementController {
 
@@ -275,7 +276,7 @@ export class MovementController {
       if (!transitionObj) continue;
 
       const targetFloor = transitionObj.targetZ;
-      if (targetFloor < 0) continue;
+      if (!isValidFloor(targetFloor)) continue;
 
       if (!this.world.hasFloorAt(transitionObj.targetX, transitionObj.targetY, targetFloor)) {
         console.log(`💀 ${transitionObj.id} está morta: não há piso em (${transitionObj.targetX},${transitionObj.targetY}) andar ${targetFloor}`);

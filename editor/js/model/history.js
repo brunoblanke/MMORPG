@@ -6,7 +6,7 @@
 // um passo — é chamado ao fim de cada ação (traço do mouse, clique em painel).
 
 import { GRID } from '../config.js';
-import { state, makeEmptyLayer } from './state.js';
+import { state, makeAllLayers } from './state.js';
 import { serializeMapFromLayers, buildLayersFromMapData } from '../../../shared/map-format.js';
 
 const MAX_STEPS = 10;
@@ -31,9 +31,8 @@ function takeSnapshot() {
 function restoreSnapshot(snapshot) {
   const { layerOrder, map } = JSON.parse(snapshot);
   const { layers } = buildLayersFromMapData(map, GRID);
-  // Andares vazios não aparecem no map.json; recria pra manter as abas.
-  layerOrder.forEach(z => { if (!layers[z]) layers[z] = makeEmptyLayer(); });
-  state.layers = layers;
+  // Andares vazios não aparecem no map.json; makeAllLayers recria todos.
+  state.layers = makeAllLayers(layers);
   state.layerOrder = layerOrder;
   if (!layerOrder.includes(state.activeZ)) state.activeZ = layerOrder[0];
 }

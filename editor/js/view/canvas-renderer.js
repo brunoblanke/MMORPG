@@ -228,7 +228,7 @@ function drawLayer(layer, alpha, z) {
 export function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  if (state.ghost && state.activeZ > 0 && state.layers[state.activeZ - 1]) {
+  if (state.ghost && state.layers[state.activeZ - 1]) {
     drawLayer(state.layers[state.activeZ - 1], 0.28, state.activeZ - 1);
   }
 

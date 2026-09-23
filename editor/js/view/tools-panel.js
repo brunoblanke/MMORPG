@@ -2,43 +2,70 @@
 
 import { IMG_BASE } from '../config.js';
 import { FLOOR1_FILES, FLOOR2_FILES, OBJECT_DEFS, ITEM_CATALOG } from '../model/catalog.js';
-import { state, TOOLS, makeEmptyLayer } from '../model/state.js';
+import { state, TOOLS } from '../model/state.js';
+import { FLOOR_MIN, FLOOR_MAX, GROUND_FLOOR } from '../../../shared/constants.js';
 import { scheduleRender } from './canvas-renderer.js';
 
 // ================================================================================================================================================================================================================================================
 // renderLayerTabs
 
+// Andares fixos, como num prédio: acima do térreo em cima (+5 … +1), o
+// térreo no meio e abaixo dele embaixo (-1 … -5).
+
 export function renderLayerTabs() {
   const wrap = document.getElementById('layerTabs');
   wrap.innerHTML = '';
-  state.layerOrder.forEach(z => {
-    const btn = document.createElement('div');
-    btn.className = 'layer-tab' + (z === state.activeZ ? ' active' : '');
-    btn.textContent = 'Andar ' + z;
-    btn.onclick = () => { state.activeZ = z; onLayerChange(); };
-    wrap.appendChild(btn);
-  });
-  const addBtn = document.createElement('div');
-  addBtn.className = 'layer-add';
-  addBtn.textContent = '+';
-  addBtn.title = 'Adicionar andar';
-  addBtn.onclick = () => {
-    if (state.layerOrder.length >= 6) return;
-    const nextZ = Math.max(...state.layerOrder) + 1;
-    state.layers[nextZ] = makeEmptyLayer();
-    state.layerOrder.push(nextZ);
-    state.activeZ = nextZ;
-    renderLayerTabs();
-    onLayerChange();
+
+  const row = (floors, className) => {
+    const line = document.createElement('div');
+    line.className = 'layer-row' + (className ? ' ' + className : '');
+    for (const z of floors) {
+      const btn = document.createElement('div');
+      const hasContent = layerHasContent(z);
+      btn.className = 'layer-tab' + (z === state.activeZ ? ' active' : '') + (hasContent ? ' has-content' : '');
+      btn.textContent = z === GROUND_FLOOR ? 'Térreo (0)' : floorLabel(z);
+      btn.title = `Andar ${floorLabel(z)}${hasContent ? '' : ' (vazio)'}`;
+      btn.onclick = () => { state.activeZ = z; onLayerChange(); };
+      line.appendChild(btn);
+    }
+    wrap.appendChild(line);
   };
-  wrap.appendChild(addBtn);
+
+  const above = [];
+  for (let z = FLOOR_MAX; z > GROUND_FLOOR; z--) above.push(z);
+  const below = [];
+  for (let z = GROUND_FLOOR - 1; z >= FLOOR_MIN; z--) below.push(z);
+
+  row(above);
+  row([GROUND_FLOOR], 'ground');
+  row(below);
+}
+
+// ================================================================================================================================================================================================================================================
+// floorLabel
+
+export function floorLabel(z) {
+  return z > 0 ? `+${z}` : String(z);
+}
+
+// ================================================================================================================================================================================================================================================
+// layerHasContent
+
+function layerHasContent(z) {
+  const layer = state.layers[z];
+  if (!layer) return false;
+  for (const key in layer) {
+    const cell = layer[key];
+    if (cell.floor || cell.floorTop || cell.hole || cell.objects.length || cell.enemy || cell.spawn) return true;
+  }
+  return false;
 }
 
 // ================================================================================================================================================================================================================================================
 // onLayerChange
 
 export function onLayerChange() {
-  document.getElementById('layerLabel').textContent = 'Andar ' + state.activeZ;
+  document.getElementById('layerLabel').textContent = 'Andar ' + floorLabel(state.activeZ);
   renderLayerTabs();
   updateStats();
   scheduleRender();

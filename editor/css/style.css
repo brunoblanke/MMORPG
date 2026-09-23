@@ -53,18 +53,17 @@ body{
   font-size:10px; text-transform:uppercase; letter-spacing:.12em; color:var(--muted); margin:0 0 8px 2px;
 }
 
-.layer-tabs{ display:flex; flex-wrap:wrap; gap:6px; }
+.layer-tabs{ display:flex; flex-direction:column; gap:6px; }
+.layer-row{ display:grid; grid-template-columns:repeat(5, 1fr); gap:6px; }
+.layer-row.ground{ grid-template-columns:1fr; }
+.layer-row .layer-tab{ text-align:center; padding:6px 0; }
+.layer-tab.has-content:not(.active){ color:var(--text); border-color:var(--accent-dim); }
 .layer-tab{
   padding:6px 10px; background:var(--panel-2); border:1px solid var(--line); border-radius:6px;
   font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--muted); cursor:pointer; user-select:none;
 }
 .layer-tab:hover{ border-color:var(--accent-dim); color:var(--text); }
 .layer-tab.active{ background:rgba(94,234,212,.1); border-color:var(--accent); color:var(--accent); }
-.layer-add{
-  padding:6px 9px; background:transparent; border:1px dashed var(--line); border-radius:6px;
-  color:var(--muted); cursor:pointer; font-size:14px; line-height:1;
-}
-.layer-add:hover{ color:var(--accent); border-color:var(--accent); }
 
 .tools{ display:flex; flex-direction:column; gap:6px; position:relative; }
 .tool-btn{

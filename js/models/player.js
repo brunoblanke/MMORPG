@@ -10,6 +10,7 @@ export class Player extends Entity {
     this.name = data.name || 'Player';
     this.spawnX = data.x;
     this.spawnY = data.y;
+    this.spawnZ = data.z || 0;
     this.xp = data.xp || 0;
     this.lvl = data.lvl || 1;
     this.nextLevelXp = this.calculateNextLevelXp();
@@ -47,9 +48,9 @@ export class Player extends Entity {
     this.y = spot.y;
     this.renderX = spot.x;
     this.renderY = spot.y;
-    this.z = 0;
+    this.z = this.spawnZ;
     this.step = 0;
-    this.renderZ = 0;
+    this.renderZ = this.spawnZ;
     this.currentHp = this.hp;
     this.isTarget = false;
   }

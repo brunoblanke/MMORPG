@@ -2,6 +2,7 @@
 
 import { CONFIG } from '../config.js';
 import { toUpperLevel, toLowerLevel } from '../../shared/stairs.js';
+import { FLOOR_MIN, isValidFloor } from '../../shared/constants.js';
 
 export const DIRECTIONS = [
   { dx: 0, dy: -1 }, { dx: 0, dy: 1 }, { dx: -1, dy: 0 }, { dx: 1, dy: 0 },
@@ -65,7 +66,7 @@ function stepAcrossFloors(world, from, dx, dy, enemiesPassable) {
     if (up) return { x: up.x, y: up.y, z: up.z, step: 0 };
   }
 
-  if (from.step === 0 && from.z > 0 && world.getStepHeight(toX, toY, from.z) === 0 && !world.hasFloorAt(toX, toY, from.z)) {
+  if (from.step === 0 && from.z > FLOOR_MIN && world.getStepHeight(toX, toY, from.z) === 0 && !world.hasFloorAt(toX, toY, from.z)) {
     const near = toLowerLevel(toX, toY, from.z);
     const candidates = [near, { x: near.x + Math.min(dx, 0), y: near.y + Math.min(dy, 0), z: near.z }];
     const down = candidates.find(c => world.getStepHeight(c.x, c.y, c.z) >= floorHeight - 1 && isFree(c));
@@ -82,7 +83,7 @@ function stepAcrossFloors(world, from, dx, dy, enemiesPassable) {
 
 export function getTransitionTarget(world, x, y, z) {
   const transition = world.getTransitionAt(x, y, z);
-  if (!transition || transition.targetZ < 0) return null;
+  if (!transition || !isValidFloor(transition.targetZ)) return null;
   if (!world.hasFloorAt(transition.targetX, transition.targetY, transition.targetZ)) return null;
   return { x: transition.targetX, y: transition.targetY, z: transition.targetZ, step: 0, transition };
 }

@@ -1,6 +1,7 @@
 // js/model/state.js
 
 import { GRID } from '../config.js';
+import { getAllFloors, GROUND_FLOOR } from '../../../shared/constants.js';
 
 // ================================================================================================================================================================================================================================================
 // makeEmptyLayer
@@ -15,10 +16,21 @@ export function makeEmptyLayer() {
   return cells;
 }
 
+// ================================================================================================================================================================================================================================================
+// makeAllLayers
+// Todos os andares (FLOOR_MIN..FLOOR_MAX em shared/constants.js) já existem;
+// o editor só escolhe em qual trabalhar.
+
+export function makeAllLayers(existing = {}) {
+  const layers = {};
+  for (const z of getAllFloors()) layers[z] = existing[z] || makeEmptyLayer();
+  return layers;
+}
+
 export const state = {
-  layers: { 0: makeEmptyLayer(), 1: makeEmptyLayer(), 2: makeEmptyLayer() },
-  layerOrder: [0, 1, 2],
-  activeZ: 0,
+  layers: makeAllLayers(),
+  layerOrder: getAllFloors(),
+  activeZ: GROUND_FLOOR,
   tool: 'floor',
   floorPaint: 'Floor',
   itemPaint: 'Parcel',

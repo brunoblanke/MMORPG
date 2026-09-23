@@ -69,8 +69,8 @@ export class LifeCycleController {
     const { world, control } = this.sim;
     this.clearPlayerCorpse(player);
     this.createCorpse(player, 'player_corpse', now);
-    const spot = this.sim.findFreeSpot(player.spawnX, player.spawnY, 0);
-    world.moveEntityTile(player, player.x, player.y, player.z || 0, spot.x, spot.y, 0);
+    const spot = this.sim.findFreeSpot(player.spawnX, player.spawnY, player.spawnZ);
+    world.moveEntityTile(player, player.x, player.y, player.z || 0, spot.x, spot.y, player.spawnZ);
     player.respawn(spot);
     player.step = spot.step;
     player.renderStep = spot.step;

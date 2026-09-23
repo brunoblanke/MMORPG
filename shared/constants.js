@@ -9,3 +9,27 @@ export const STACK_OFFSET = 7;
 
 // Duração (ms) de um ciclo completo de animação de objeto/parede com múltiplos frames.
 export const ANIMATION_CYCLE_MS = 1000;
+
+// Andares do mapa: 0 é o térreo, FLOOR_MAX andares pra cima e FLOOR_MIN pra
+// baixo. Pra cima ou pra baixo, as regras são as mesmas (pilha, escada,
+// buraco); fora dessa faixa não existe andar.
+export const FLOOR_MIN = -5;
+export const FLOOR_MAX = 5;
+export const GROUND_FLOOR = 0;
+
+// ================================================================================================================================================================================================================================================
+// isValidFloor
+
+export function isValidFloor(z) {
+  return Number.isInteger(z) && z >= FLOOR_MIN && z <= FLOOR_MAX;
+}
+
+// ================================================================================================================================================================================================================================================
+// getAllFloors
+// Todos os andares, do mais baixo pro mais alto.
+
+export function getAllFloors() {
+  const floors = [];
+  for (let z = FLOOR_MIN; z <= FLOOR_MAX; z++) floors.push(z);
+  return floors;
+}

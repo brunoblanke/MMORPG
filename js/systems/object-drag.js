@@ -3,6 +3,7 @@
 import { CONFIG } from '../config.js';
 import { distance, getAdjacentPositions, isPositionAdjacentTo } from '../utils/helpers.js';
 import { toUpperLevel } from '../../shared/stairs.js';
+import { isValidFloor } from '../../shared/constants.js';
 
 export class ObjectDragController {
 
@@ -188,7 +189,7 @@ export class ObjectDragController {
     const { world } = this.sim;
     for (let i = 0; i < 16; i++) {
       const hole = world.getTransitionAt(x, y, z);
-      if (!hole || hole.targetZ >= z || hole.targetZ < 0) break;
+      if (!hole || hole.targetZ >= z || !isValidFloor(hole.targetZ)) break;
       if (!world.hasFloorAt(hole.targetX, hole.targetY, hole.targetZ)) break;
       console.log(`🕳️ Objeto caiu pelo ${hole.id} em (${x},${y}) andar ${z} → (${hole.targetX},${hole.targetY}) andar ${hole.targetZ}`);
       x = hole.targetX;
