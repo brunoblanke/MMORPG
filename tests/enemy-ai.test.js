@@ -2,7 +2,7 @@
 
 import { test, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
-import { buildGame, floorRect, wall, placeAt } from './helpers/fixture.js';
+import { buildGame, floorRect, wall, placeAt, safeRect } from './helpers/fixture.js';
 import { EnemyAI } from '../js/systems/enemy-ai.js';
 import { isPositionAdjacentTo } from '../js/utils/helpers.js';
 
@@ -154,7 +154,7 @@ test('sozinho colado no player, de vez em quando muda de sqm em volta dele', () 
   });
 
   assert.ok(spots.size >= 2, `ficou sempre em ${[...spots]}`);
-  assert.ok(moves >= 3 && moves <= 12, `mudou ${moves} vezes em 60s`);
+  assert.ok(moves >= 8 && moves <= 24, `mudou ${moves} vezes em 60s`);
 });
 
 test('cercado sem sqm livre em volta do player, fica parado atacando', () => {
@@ -164,4 +164,18 @@ test('cercado sem sqm livre em volta do player, fica parado atacando', () => {
   const before = game.enemies.map(e => `${e.x},${e.y}`).join(' ');
   run(game, 30000);
   assert.equal(game.enemies.map(e => `${e.x},${e.y}`).join(' '), before);
+});
+
+test('inimigo não entra em zona segura, nem patrulhando nem cercando o player', () => {
+  const game = buildGame({ objects: GROUND, safe: safeRect(8, 11, 8, 16), enemies: [[14, 12, 0], [9, 5, 0], [10, 19, 0]], player: { x: 12, y: 12, z: 0 } });
+  let adjacent = 0;
+
+  run(game, 60000, () => {
+    for (const enemy of game.enemies) {
+      assert.ok(!game.world.isSafe(enemy.x, enemy.y, enemy.z || 0), `inimigo ${enemy.id} entrou na zona segura em ${enemy.x},${enemy.y}`);
+      if (isPositionAdjacentTo(enemy.x, enemy.y, 12, 12)) adjacent++;
+    }
+  });
+
+  assert.ok(adjacent > 0, 'nenhum inimigo chegou a cercar o player');
 });

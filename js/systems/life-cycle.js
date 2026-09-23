@@ -117,7 +117,7 @@ export class LifeCycleController {
   // estava patrulhando. Se alguém estiver em cima, no sqm livre mais perto.
 
   respawnEnemy(enemy) {
-    const spot = this.sim.findFreeSpot(enemy.spawnX, enemy.spawnY, enemy.spawnZ);
+    const spot = this.sim.findFreeSpot(enemy.spawnX, enemy.spawnY, enemy.spawnZ, { avoidSafe: true });
     const respawnedEnemy = new Enemy({
       id: enemy.id,
       color: enemy.color,

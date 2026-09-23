@@ -1,6 +1,6 @@
 // js/systems/enemy-ai.js
 
-import { calculateMoveDelay, distance, getAdjacentPositions, isPositionAdjacentTo, randFloat, roundUpToTick } from '../utils/helpers.js';
+import { calculateMoveDelay, distance, getAdjacentPositions, isPositionAdjacentTo, randFloat } from '../utils/helpers.js';
 import { getLevel } from '../core/geometry.js';
 import { AI_STATE } from '../models/enemy.js';
 import { CONFIG } from '../config.js';
@@ -177,7 +177,7 @@ export class EnemyAI {
   // Sqms livres colados no player, do melhor pro pior pra fechar o cerco: o
   // que o inimigo já tinha escolhido vem primeiro (não fica trocando); os
   // outros, perto do inimigo e longe dos outros atacantes (espalham em volta).
-  // Sqm ocupado ou já reservado por outro inimigo fica de fora.
+  // Sqm ocupado, já reservado por outro inimigo ou em zona segura fica de fora.
 
   getSurroundCandidates(enemy, playerX, playerY, enemies) {
     const floor = enemy.z || 0;
@@ -190,6 +190,7 @@ export class EnemyAI {
       if (!this.movement.isInsideMap(pos.x, pos.y)) continue;
       if (this.movement.isBlocked(pos.x, pos.y, floor, enemy)) continue;
       if (this.isReservedByOther(enemy, enemies, pos.x, pos.y)) continue;
+      if (this.movement.world.isSafe(pos.x, pos.y, floor)) continue;
       if (this.movement.getPassableStep(pos.x, pos.y, floor) === null) continue;
       if (this.movement.world.getTransitionAt(pos.x, pos.y, floor)) continue;
 
@@ -212,6 +213,7 @@ export class EnemyAI {
     if (!slot || (slot.x === enemy.x && slot.y === enemy.y)) return false;
     if (!isPositionAdjacentTo(slot.x, slot.y, playerX, playerY)) return false;
     return !this.movement.isBlocked(slot.x, slot.y, enemy.z || 0, enemy) &&
+      !this.movement.world.isSafe(slot.x, slot.y, enemy.z || 0) &&
       !this.isReservedByOther(enemy, enemies, slot.x, slot.y);
   }
 
@@ -296,7 +298,7 @@ export class EnemyAI {
   // ================================================================================================================================================================================================================================================
   // patrol
   // Passeio natural: parado um tempo → escolhe um sqm na área de patrulha →
-  // anda até lá num passo mais calmo que o da perseguição → para de novo.
+  // anda até lá no mesmo passo da perseguição → para de novo.
   // O lvl só entra na velocidade do passo (spd); pausas são iguais pra todos.
 
   patrol(enemy, enemies, timestamp) {
@@ -324,8 +326,8 @@ export class EnemyAI {
 
   // ================================================================================================================================================================================================================================================
   // pickPatrolPath
-  // Sorteia um destino dentro da área de patrulha (sem escada/buraco, livre,
-  // com chão) e põe o caminho até ele em enemy.route. false se nenhum sorteio servir.
+  // Sorteia um destino dentro da área de patrulha (sem escada/buraco, fora da
+  // zona segura, livre, com chão) e põe o caminho até ele em enemy.route. false se nenhum sorteio servir.
 
   pickPatrolPath(enemy, enemies) {
     const floor = enemy.z || 0;
@@ -341,7 +343,7 @@ export class EnemyAI {
       if (x === enemy.x && y === enemy.y) continue;
       if (!this.movement.isInsideMap(x, y) || !enemy.isInPatrolZone(x, y)) continue;
       if (this.movement.isBlocked(x, y, floor, enemy) || this.isOccupiedByOther(enemy, enemies, x, y)) continue;
-      if (this.movement.world.getTransitionAt(x, y, floor)) continue;
+      if (this.movement.world.getTransitionAt(x, y, floor) || this.movement.world.isSafe(x, y, floor)) continue;
       if (this.movement.getPassableStep(x, y, floor, enemy.step || 0) === null) continue;
 
       const path = this.movement.findPath(enemy, { x, y, z: floor }, { sameFloor: true, bounds });
@@ -357,12 +359,11 @@ export class EnemyAI {
   // walkPatrolPath
 
   walkPatrolPath(enemy, enemies, timestamp) {
-    const stepInterval = roundUpToTick(enemy.getMoveDuration() * CONFIG.patrolWalkStepFactor);
-    if (timestamp - enemy.lastMoveTime < stepInterval) return;
+    if (timestamp - enemy.lastMoveTime < calculateMoveDelay(enemy.spd)) return;
 
     const next = enemy.route.path[0];
     const blocked = this.isOccupiedByOther(enemy, enemies, next.x, next.y) ||
-      !this.movement.stepAlongPath(enemy, next, timestamp, stepInterval);
+      !this.movement.stepAlongPath(enemy, next, timestamp);
     if (blocked) {
       this.pausePatrol(enemy, timestamp);
       return;

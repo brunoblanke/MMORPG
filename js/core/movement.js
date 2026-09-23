@@ -97,9 +97,21 @@ export function getTransitionTarget(world, x, y, z) {
 //   - sameFloor: só passos no mesmo andar (inimigos não trocam de andar);
 //   - transitions: aplica escada/buraco do sqm de chegada — o resultado leva
 //     `via`, o sqm pisado antes do teleporte;
-//   - enemiesPassable: inimigos não bloqueiam (o player continua bloqueando).
+//   - enemiesPassable: inimigos não bloqueiam (o player continua bloqueando);
+//   - avoidSafe: não pisa em zona segura (inimigos).
 
 export function resolveStep(world, from, dx, dy, options = {}) {
+  const landing = resolveLanding(world, from, dx, dy, options);
+  if (!landing || !options.avoidSafe) return landing;
+  const entered = landing.via || landing;
+  if (world.isSafe(entered.x, entered.y, entered.z) || world.isSafe(landing.x, landing.y, landing.z)) return null;
+  return landing;
+}
+
+// ================================================================================================================================================================================================================================================
+// resolveLanding
+
+function resolveLanding(world, from, dx, dy, options) {
   const { sameFloor = false, transitions = false, enemiesPassable = false } = options;
   const origin = { x: from.x, y: from.y, z: from.z || 0, step: from.step || 0 };
   const toX = origin.x + dx;

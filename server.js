@@ -5,11 +5,13 @@ const fs = require('fs');
 const http = require('http');
 const os = require('os');
 const path = require('path');
+const { pathToFileURL } = require('url');
 const { WebSocketServer } = require('ws');
 const app = express();
 
-const MAP_DATA_PATH = path.join(__dirname, 'data', 'map.json');
-const CHARACTERS_PATH = path.join(__dirname, 'data', 'characters.json');
+const PASTA_JOGO = path.join(__dirname, 'MMORPG - PROD');
+const MAP_DATA_PATH = path.join(PASTA_JOGO, 'data', 'map.json');
+const CHARACTERS_PATH = path.join(PASTA_JOGO, 'data', 'characters.json');
 const SAVE_INTERVAL_MS = 10000;
 const PORT = process.env.PORT || 8000;
 
@@ -17,7 +19,7 @@ app.use(express.text({ type: 'text/plain', limit: '50mb' }));
 app.use(express.json({ limit: '50mb' }));
 app.use(liberarCors);
 app.post('/api/save-map', salvarMapa);
-app.use(express.static(__dirname));
+app.use(express.static(PASTA_JOGO));
 
 const servidor = http.createServer(app);
 iniciarJogo(servidor).then(() => iniciarServidor(servidor, PORT));
@@ -85,8 +87,8 @@ function enderecosRede(porta) {
 // data/characters.json: ao sair, a cada SAVE_INTERVAL_MS e ao fechar o servidor.
 
 async function iniciarJogo(servidorHttp) {
-  const { Simulation, TICK_MS } = await import('./js/simulation.js');
-  const { serializeState, validateName, normalizeGender } = await import('./js/net/protocol.js');
+  const { Simulation, TICK_MS } = await import(pathToFileURL(path.join(PASTA_JOGO, 'js', 'simulation.js')).href);
+  const { serializeState, validateName, normalizeGender } = await import(pathToFileURL(path.join(PASTA_JOGO, 'js', 'net', 'protocol.js')).href);
 
   const mapData = JSON.parse(fs.readFileSync(MAP_DATA_PATH, 'utf8'));
   const sim = new Simulation(mapData);

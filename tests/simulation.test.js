@@ -228,7 +228,7 @@ test('inimigo morto renasce no lugar original do mapa, mesmo tendo perseguido pr
 });
 
 test('se tiver alguém no lugar original, o inimigo renasce no sqm livre mais perto', () => {
-  const sim = buildGame({ objects: GROUND, enemies: [[18, 18, 0, 1]], safe: [[18, 18, 0], [17, 17, 0], [18, 17, 0], [19, 17, 0], [17, 18, 0], [19, 18, 0], [17, 19, 0], [18, 19, 0], [19, 19, 0]], player: { x: 2, y: 2, z: 0 } });
+  const sim = buildGame({ objects: GROUND, enemies: [[18, 18, 0, 1]], safe: [[18, 18, 0]], player: { x: 2, y: 2, z: 0 } });
   const enemy = sim.enemies[0];
   enemy.currentHp = 0;
   runFor(sim, TICK_MS);

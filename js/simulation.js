@@ -86,17 +86,17 @@ export class Simulation {
   // O sqm livre mais perto de (x, y, z) (findSpotNear). Sem nenhum até o
   // raio 10, devolve o próprio (x, y).
 
-  findFreeSpot(x, y, z) {
-    return this.findSpotNear(x, y, z) || { x, y, step: 0 };
+  findFreeSpot(x, y, z, options = {}) {
+    return this.findSpotNear(x, y, z, options) || { x, y, step: 0 };
   }
 
   // ================================================================================================================================================================================================================================================
   // findSpotNear
   // O sqm livre (pisável e sem ninguém) mais perto de (x, y, z), em anéis
   // cada vez maiores, com a altura em que se fica nele. null se não há
-  // nenhum até o raio 10.
+  // nenhum até o raio 10. avoidSafe: pula sqms de zona segura (inimigos).
 
-  findSpotNear(x, y, z) {
+  findSpotNear(x, y, z, { avoidSafe = false } = {}) {
     for (let radius = 0; radius <= 10; radius++) {
       for (let dy = -radius; dy <= radius; dy++) {
         for (let dx = -radius; dx <= radius; dx++) {
@@ -104,6 +104,7 @@ export class Simulation {
           const px = x + dx;
           const py = y + dy;
           if (!this.world.isInside(px, py) || this.world.isBlocked(px, py, z) || this.world.getTransitionAt(px, py, z)) continue;
+          if (avoidSafe && this.world.isSafe(px, py, z)) continue;
           const step = this.world.getPassableStep(px, py, z);
           if (step !== null) return { x: px, y: py, step };
         }
