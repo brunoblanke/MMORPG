@@ -1,4 +1,3 @@
-import { Pathfinding } from '../utils/pathfinding.js';
 import { calculateMoveDelay } from '../utils/helpers.js';
 import { CONFIG } from '../config.js';
 import { getEntityLevel, getRoofLevel } from '../views/draw-order.js';
@@ -262,7 +261,7 @@ updateHoverEnemy(enemies, world, offset, player, deadBodies) {
     this.targetTile = { x, y, z };
 
     const start = { x: player.x, y: player.y, z: player.z || 0, step: player.step || 0 };
-    this.pathToTarget = Pathfinding.findPathAcrossFloors(start, this.targetTile, movementController);
+    this.pathToTarget = movementController.findPath(start, this.targetTile);
 
     if (this.pathToTarget.length === 0) {
       console.log("❌ Nenhum caminho encontrado para este destino");

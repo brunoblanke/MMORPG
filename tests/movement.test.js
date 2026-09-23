@@ -3,7 +3,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { buildGame, floorRect, pile, hole, wall, placeAt } from './helpers/fixture.js';
-import { Pathfinding } from '../js/utils/pathfinding.js';
 
 const GROUND = floorRect(0, 14, 0, 14, 0);
 const ROOF = floorRect(3, 8, 3, 8, 1);
@@ -95,7 +94,7 @@ test('criatura bloqueia o passo; parede também', () => {
 
 test('caminho entre andares sobe por uma escadinha de volumes', () => {
   const game = building(pile(6, 12, 1), pile(6, 11, 2), pile(6, 10, 3));
-  const path = Pathfinding.findPathAcrossFloors({ x: 6, y: 13, z: 0, step: 0 }, { x: 5, y: 5, z: 1 }, game.movementController);
+  const path = game.movementController.findPath({ x: 6, y: 13, z: 0, step: 0 }, { x: 5, y: 5, z: 1 });
   assert.ok(path.length > 0);
   const last = path[path.length - 1];
   assert.deepEqual([last.x, last.y, last.z], [5, 5, 1]);
@@ -104,6 +103,6 @@ test('caminho entre andares sobe por uma escadinha de volumes', () => {
 
 test('sem rota pro andar de cima quando não há pilha, escada nem buraco', () => {
   const game = building();
-  const path = Pathfinding.findPathAcrossFloors({ x: 6, y: 13, z: 0, step: 0 }, { x: 5, y: 5, z: 1 }, game.movementController);
+  const path = game.movementController.findPath({ x: 6, y: 13, z: 0, step: 0 }, { x: 5, y: 5, z: 1 });
   assert.deepEqual(path, []);
 });

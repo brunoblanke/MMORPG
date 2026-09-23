@@ -1,7 +1,6 @@
 // js/controllers/enemy-ai.js
 
 import { calculateMoveDelay, distance, getAdjacentPositions, isPositionAdjacentTo, getLevel, randFloat } from '../utils/helpers.js';
-import { Pathfinding } from '../utils/pathfinding.js';
 import { CONFIG } from '../config.js';
 
 export class EnemyAI {
@@ -30,14 +29,6 @@ export class EnemyAI {
   }
 
   // ================================================================================================================================================================================================================================================
-  // stepInDirection
-
-  stepInDirection(entity, dx, dy, timestamp) {
-    this.movement.faceTowards(entity, dx, dy);
-    this.movement.applyStep(entity, entity.x + dx, entity.y + dy, entity.z || 0, null, timestamp);
-  }
-
-  // ================================================================================================================================================================================================================================================
   // distanceToOtherAttackers
   // Distância de (x, y) até o atacante mais próximo (outros inimigos
   // perseguindo, pelo sqm que escolheram). Sem outros atacantes: Infinity.
@@ -59,7 +50,6 @@ export class EnemyAI {
   // cerco. Se nenhum melhora, fica onde está.
 
   moveAroundPlayer(enemy, playerX, playerY, enemies, timestamp) {
-    const entityHeight = enemy.height || 1;
     const floor = enemy.z || 0;
     const freePositions = [];
     for (const pos of getAdjacentPositions(playerX, playerY)) {
@@ -70,9 +60,11 @@ export class EnemyAI {
       if (!isSingleStep) continue;
       const occupied = this.isOccupiedByOther(enemy, enemies, pos.x, pos.y) ||
         this.isReservedByOther(enemy, enemies, pos.x, pos.y);
-      if (!occupied && this.movement.canMove(enemy.x, enemy.y, floor, enemy.step || 0, pos.x, pos.y, entityHeight)) {
-        freePositions.push(pos);
-      }
+      if (occupied) continue;
+      const dx = pos.x - enemy.x;
+      const dy = pos.y - enemy.y;
+      const landing = this.movement.resolveStep(enemy, dx, dy, { sameFloor: true });
+      if (landing) freePositions.push({ ...landing, dx, dy });
     }
     let best = null;
     let bestSpread = this.distanceToOtherAttackers(enemy, enemies, enemy.x, enemy.y);
@@ -84,7 +76,7 @@ export class EnemyAI {
       }
     }
     if (best) {
-      this.stepInDirection(enemy, best.x - enemy.x, best.y - enemy.y, timestamp);
+      this.movement.stepAlongPath(enemy, best, timestamp);
       enemy.chaseTarget = { x: best.x, y: best.y };
     }
   }
@@ -143,9 +135,8 @@ export class EnemyAI {
     if (timestamp < (enemy.nextRerouteAt || 0)) return true;
 
     enemy.nextRerouteAt = timestamp + CONFIG.chaseRerouteDelay;
-    const step = this.movement.getPassableStep(target.x, target.y, enemy.z || 0, enemy.step || 0);
-    if (step === null) return true;
-    const detour = this.movement.findPathWithFallback(enemy, target, step, searchBounds);
+    if (this.movement.getPassableStep(target.x, target.y, enemy.z || 0, enemy.step || 0) === null) return true;
+    const detour = this.movement.findPathWithFallback(enemy, target, searchBounds);
     if (detour.length === 0) return true;
 
     // Troca pro desvio e espera este quadro: followChasePath ainda está com o
@@ -260,14 +251,9 @@ export class EnemyAI {
       if (this.movement.isBlocked(x, y, floor, enemy) || this.isOccupiedByOther(enemy, enemies, x, y)) continue;
       if (this.movement.world.getTransitionAt(x, y, floor)) continue;
 
-      const step = this.movement.getPassableStep(x, y, floor, enemy.step || 0);
-      if (step === null) continue;
+      if (this.movement.getPassableStep(x, y, floor, enemy.step || 0) === null) continue;
 
-      const path = Pathfinding.findPath(
-        enemy.x, enemy.y, x, y,
-        (nx, ny) => this.movement.isBlockedForPathing(nx, ny, floor),
-        enemy.step || 0, step, this.movement, bounds, floor
-      );
+      const path = this.movement.findPath(enemy, { x, y, z: floor }, { sameFloor: true, bounds });
       if (path.length > 0) return path;
     }
     return null;
@@ -281,16 +267,13 @@ export class EnemyAI {
     if (timestamp - enemy.lastMoveTime < stepInterval) return;
 
     const next = enemy.patrolPath[0];
-    const floor = enemy.z || 0;
     const blocked = this.isOccupiedByOther(enemy, enemies, next.x, next.y) ||
-      !this.movement.canMove(enemy.x, enemy.y, floor, enemy.step || 0, next.x, next.y, enemy.height || 1, next.step);
+      !this.movement.stepAlongPath(enemy, next, timestamp);
     if (blocked) {
       this.pausePatrol(enemy, timestamp);
       return;
     }
 
-    this.movement.faceTowards(enemy, next.x - enemy.x, next.y - enemy.y);
-    this.movement.applyStep(enemy, next.x, next.y, floor, next.step, timestamp);
     enemy.patrolPath.shift();
     if (enemy.patrolPath.length === 0) this.pausePatrol(enemy, timestamp);
   }

@@ -1,9 +1,8 @@
 // js/controllers/movement.js
 
 import { calculateMoveDelay, distance, directionFromDelta, getAdjacentPositions, isPositionAdjacentTo } from '../utils/helpers.js';
-import { Pathfinding } from '../utils/pathfinding.js';
-import { CONFIG } from '../config.js';
-import { toUpperLevel, toLowerLevel } from '../../shared/stairs.js';
+import { resolveStep, isSameLanding } from '../core/movement.js';
+import { findPath } from '../core/pathfinding.js';
 
 export class MovementController {
 
@@ -14,6 +13,7 @@ export class MovementController {
     this.world = world;
     this.autoFollow = true;
     this.onNoPath = null;
+    this.enemiesPassable = false;
   }
 
   // ================================================================================================================================================================================================================================================
@@ -57,70 +57,63 @@ export class MovementController {
   // isBlocked
 
   isBlocked(x, y, floor, ignoreEnemy = null) {
-    return this.world.isBlocked(x, y, floor, ignoreEnemy, !!this.enemiesPassable);
+    return this.world.isBlocked(x, y, floor, ignoreEnemy, this.enemiesPassable);
   }
 
   // ================================================================================================================================================================================================================================================
-  // isBlockedForPathing
+  // resolveStep
+  // A regra de passo (core/movement.js) sobre este mundo.
 
-  isBlockedForPathing(x, y, floor) {
-    return this.world.hasBlockerAt(x, y, floor);
+  resolveStep(from, dx, dy, options = {}) {
+    return resolveStep(this.world, from, dx, dy, { enemiesPassable: this.enemiesPassable, ...options });
   }
 
   // ================================================================================================================================================================================================================================================
-  // hasStepToClimb
+  // simulateMove
+  // Onde um passo (dx, dy) a partir de state = { x, y, z, step } termina,
+  // já aplicando escada/buraco. Devolve { x, y, z, step, via? } ou null.
 
-  hasStepToClimb(x, y, floor, targetStep, entityHeight = 1) {
-    for (const pos of getAdjacentPositions(x, y)) {
-      const adjacentStep = this.world.getPassableStep(pos.x, pos.y, floor, targetStep);
-      if (adjacentStep !== null && adjacentStep >= targetStep - 1) {
-        return true;
-      }
-    }
-    return false;
+  simulateMove(state, dx, dy) {
+    return this.resolveStep(state, dx, dy, { transitions: true });
   }
 
   // ================================================================================================================================================================================================================================================
-  // canMove
+  // findPath
+  // Caminho de start até end = { x, y, z } (core/pathfinding.js).
 
-  canMove(x, y, floor, fromStep, toX, toY, entityHeight = 1, targetStep = null) {
-    if (!this.isInsideMap(toX, toY)) {
-      return false;
-    }
-    if (this.isBlocked(toX, toY, floor)) {
-      return false;
-    }
+  findPath(start, end, options = {}) {
+    return findPath(this.world, start, end, { enemiesPassable: this.enemiesPassable, ...options });
+  }
 
-    const calculatedStep = targetStep !== null ? targetStep : this.world.getPassableStep(toX, toY, floor, fromStep);
-    if (calculatedStep === null) {
-      return false;
-    }
+  // ================================================================================================================================================================================================================================================
+  // findPathWithFallback
+  // Caminho no mesmo andar; tenta primeiro dentro de searchBounds e, se não
+  // achar, sem limite.
 
-    const stepDiff = Math.abs(calculatedStep - fromStep);
-    if (stepDiff === 0) return true;
-    if (stepDiff > 1) return false;
-    if (calculatedStep > fromStep && !this.hasStepToClimb(toX, toY, floor, calculatedStep, entityHeight)) {
-      return false;
+  findPathWithFallback(entity, targetPos, searchBounds) {
+    const end = { x: targetPos.x, y: targetPos.y, z: entity.z || 0 };
+    let path = this.findPath(entity, end, { sameFloor: true, bounds: searchBounds });
+    if (path.length === 0 && searchBounds) {
+      path = this.findPath(entity, end, { sameFloor: true });
     }
-    return true;
+    return path;
   }
 
   // ================================================================================================================================================================================================================================================
   // applyStep
-  // Efetiva um passo: atualiza o stack, a posição e o estado da animação de movimento.
-  // toStep === null → recalcula o step passável no destino a partir do step atual.
+  // Efetiva um passo: atualiza a pilha, a posição e o estado da animação de movimento.
 
-  applyStep(entity, toX, toY, toZ, toStep, timestamp) {
+  applyStep(entity, landing, timestamp) {
     const fromX = entity.x;
     const fromY = entity.y;
     const fromZ = entity.z || 0;
     const fromStep = entity.step || 0;
 
-    this.world.moveEntityTile(entity, fromX, fromY, fromZ, toX, toY, toZ);
-    entity.x = toX;
-    entity.y = toY;
-    entity.z = toZ;
-    entity.step = toStep !== null ? toStep : this.world.getPassableStep(toX, toY, toZ, fromStep);
+    this.world.moveEntityTile(entity, fromX, fromY, fromZ, landing.x, landing.y, landing.z);
+    entity.x = landing.x;
+    entity.y = landing.y;
+    entity.z = landing.z;
+    entity.step = landing.step;
     entity.lastMoveTime = timestamp;
 
     entity.isMoving = true;
@@ -142,150 +135,34 @@ export class MovementController {
   }
 
   // ================================================================================================================================================================================================================================================
-  // tryFloorCarry
-
-  // Passo entre andares por pilha de volumes. Em cima da pilha o player
-  // aparece 1 sqm acima e 1 à esquerda — no sqm correspondente do andar de
-  // cima (shared/stairs.js → toUpperLevel). Andando na direção (dx, dy):
-  //   - sobre floorHeight-1 ou mais volumes: sobe pro piso do andar de cima a
-  //     1 sqm, nessa direção, de onde ele aparece — ou a 2 sqm no eixo em que
-  //     anda pra leste/sul (o prédio de baixo se estende 1 sqm a mais nesses
-  //     lados; pra norte/oeste a pilha tem que estar encostada);
-  //   - do andar de cima, indo pra um sqm sem piso: desce pra pilha de
-  //     floorHeight-1+ volumes — o espelho da subida (os 2 sqm valem no eixo
-  //     em que anda pra oeste/norte).
-  // Devolve { x, y, z, step } ou null.
-
-  tryFloorCarry(entity, toX, toY, entityHeight = 1) {
-    return this.getFloorCarryTarget(entity.x, entity.y, entity.z || 0, entity.step || 0, toX, toY);
-  }
-
-  getFloorCarryTarget(fromX, fromY, floor, fromStep, toX, toY) {
-    const floorHeight = CONFIG.floorHeight || 4;
-    const dx = toX - fromX;
-    const dy = toY - fromY;
-
-    if (fromStep >= floorHeight - 1) {
-      const near = toUpperLevel(toX, toY, floor);
-      const candidates = [near, { x: near.x + Math.max(dx, 0), y: near.y + Math.max(dy, 0), z: near.z }];
-      const up = candidates.find(c => this.world.hasFloorAt(c.x, c.y, c.z) && !this.isBlocked(c.x, c.y, c.z));
-      if (up) return { x: up.x, y: up.y, z: up.z, step: 0 };
-    }
-
-    if (fromStep === 0 && floor > 0) {
-      const stepHeightSameFloor = this.world.getStepHeight(toX, toY, floor);
-      const hasFloorSameFloor = this.world.hasFloorAt(toX, toY, floor);
-      if (stepHeightSameFloor === 0 && !hasFloorSameFloor) {
-        const near = toLowerLevel(toX, toY, floor);
-        const candidates = [near, { x: near.x + Math.min(dx, 0), y: near.y + Math.min(dy, 0), z: near.z }];
-        const down = candidates.find(c =>
-          this.world.getStepHeight(c.x, c.y, c.z) >= floorHeight - 1 && !this.isBlocked(c.x, c.y, c.z));
-        if (down) return { x: down.x, y: down.y, z: down.z, step: this.world.getStepHeight(down.x, down.y, down.z) };
-      }
-    }
-
-    return null;
-  }
-
-  // ================================================================================================================================================================================================================================================
   // moveEntity
+  // Passo do player pelo teclado ou pelo caminho: mesmo andar ou troca pela
+  // pilha. Escada/buraco ficam pra checkFloorTransitions.
 
-  moveEntity(entity, dx, dy, timestamp, targetStep = null) {
+  moveEntity(entity, dx, dy, timestamp) {
     const moveDelay = calculateMoveDelay(entity.spd);
-    const timeSinceLastMove = timestamp - entity.lastMoveTime;
-
     this.faceTowards(entity, dx, dy);
+    if (timestamp - entity.lastMoveTime < moveDelay) return false;
 
-    if (timeSinceLastMove < moveDelay) return false;
+    const landing = this.resolveStep(entity, dx, dy);
+    if (!landing) return false;
 
-    const newX = entity.x + dx;
-    const newY = entity.y + dy;
-    const entityHeight = entity.height || 1;
-    const floor = entity.z || 0;
-    const fromStep = entity.step || 0;
-
-    let resultX = newX;
-    let resultY = newY;
-    let resultZ = null;
-    let resultStep = null;
-
-    if (targetStep !== null) {
-      if (!this.canMove(entity.x, entity.y, floor, fromStep, newX, newY, entityHeight, targetStep)) {
-        return false;
-      }
-      resultZ = floor;
-      resultStep = targetStep;
-    } else if (this.canMove(entity.x, entity.y, floor, fromStep, newX, newY, entityHeight)) {
-      resultZ = floor;
-      resultStep = this.world.getPassableStep(newX, newY, floor, fromStep);
-    } else {
-      // Troca de andar: o sqm de destino é o correspondente no andar vizinho.
-      const carry = this.tryFloorCarry(entity, newX, newY, entityHeight);
-      if (!carry) return false;
-      resultX = carry.x;
-      resultY = carry.y;
-      resultZ = carry.z;
-      resultStep = carry.step;
-    }
-
-    this.applyStep(entity, resultX, resultY, resultZ, resultStep, timestamp);
+    this.applyStep(entity, landing, timestamp);
     return true;
   }
 
   // ================================================================================================================================================================================================================================================
-  // simulateMove
-  // Onde um passo (dx, dy) a partir de state = { x, y, z, step } termina, pelas
-  // mesmas regras de moveEntity (mesmo andar primeiro, senão troca por pilha) e
-  // de checkFloorTransitions (escada/buraco). Devolve { x, y, z, step } ou null;
-  // depois de escada/buraco, `via` é o sqm pisado antes do teleporte.
+  // stepAlongPath
+  // Dá o passo nextStep de um caminho no mesmo andar, se ele ainda termina
+  // onde o caminho previa. Devolve false (sem andar) se o mapa mudou.
 
-  simulateMove(state, dx, dy) {
-    const toX = state.x + dx;
-    const toY = state.y + dy;
+  stepAlongPath(entity, nextStep, timestamp) {
+    const landing = this.resolveStep(entity, nextStep.dx, nextStep.dy, { sameFloor: true });
+    if (!isSameLanding(landing, nextStep)) return false;
 
-    let result;
-    if (this.canMove(state.x, state.y, state.z, state.step, toX, toY)) {
-      result = { x: toX, y: toY, z: state.z, step: this.world.getPassableStep(toX, toY, state.z, state.step) };
-    } else {
-      result = this.getFloorCarryTarget(state.x, state.y, state.z, state.step, toX, toY);
-      if (!result) return null;
-    }
-
-    const transition = this.world.getTransitionAt(result.x, result.y, result.z);
-    if (transition && transition.targetZ >= 0 &&
-        this.world.hasFloorAt(transition.targetX, transition.targetY, transition.targetZ)) {
-      return {
-        x: transition.targetX, y: transition.targetY, z: transition.targetZ, step: 0,
-        via: { x: result.x, y: result.y, z: result.z }
-      };
-    }
-    return result;
-  }
-
-  // ================================================================================================================================================================================================================================================
-  // findPathWithFallback
-  // Tenta primeiro dentro de searchBounds; se não achar, tenta de novo sem limite.
-
-  findPathWithFallback(entity, targetPos, targetStep, searchBounds) {
-    const floor = entity.z || 0;
-    const findPath = (bounds) => Pathfinding.findPath(
-      entity.x,
-      entity.y,
-      targetPos.x,
-      targetPos.y,
-      (nx, ny) => this.isBlockedForPathing(nx, ny, floor),
-      entity.step || 0,
-      targetStep,
-      this,
-      bounds,
-      floor
-    );
-
-    let path = findPath(searchBounds);
-    if (path.length === 0 && searchBounds) {
-      path = findPath(null);
-    }
-    return path;
+    this.faceTowards(entity, nextStep.dx, nextStep.dy);
+    this.applyStep(entity, landing, timestamp);
+    return true;
   }
 
   // ================================================================================================================================================================================================================================================
@@ -300,14 +177,12 @@ export class MovementController {
 
     if (!needsNewPath) return true;
 
-    const floor = entity.z || 0;
-    const targetStep = this.getPassableStep(targetPos.x, targetPos.y, floor, entity.step || 0);
-    if (targetStep === null) {
+    if (this.getPassableStep(targetPos.x, targetPos.y, entity.z || 0, entity.step || 0) === null) {
       entity.chasePath = null;
       return false;
     }
 
-    const newPath = this.findPathWithFallback(entity, targetPos, targetStep, searchBounds);
+    const newPath = this.findPathWithFallback(entity, targetPos, searchBounds);
     if (newPath.length === 0) {
       entity.chasePath = null;
       return false;
@@ -321,7 +196,9 @@ export class MovementController {
 
   // ================================================================================================================================================================================================================================================
   // followChasePath
-  // Dá o próximo passo de entity.chasePath. isNextBlocked(nextStep) permite ao chamador esperar sem descartar o caminho.
+  // Dá o próximo passo de entity.chasePath. isNextBlocked(nextStep) permite ao
+  // chamador esperar sem descartar o caminho; se o passo não termina mais onde
+  // o caminho previa, o caminho é descartado (recalculado no próximo quadro).
 
   followChasePath(entity, timestamp, isNextBlocked) {
     if (!entity.chasePath || entity.chasePath.length === 0) {
@@ -332,20 +209,14 @@ export class MovementController {
     if (timestamp - entity.lastMoveTime < moveDelay) return;
 
     const nextStep = entity.chasePath[0];
-    const floor = entity.z || 0;
-    const entityHeight = entity.height || 1;
-
     if (isNextBlocked(nextStep)) {
       return;
     }
 
-    if (!this.canMove(entity.x, entity.y, floor, entity.step || 0, nextStep.x, nextStep.y, entityHeight, nextStep.step)) {
+    if (!this.stepAlongPath(entity, nextStep, timestamp)) {
       entity.chasePath = null;
       return;
     }
-
-    this.faceTowards(entity, nextStep.x - entity.x, nextStep.y - entity.y);
-    this.applyStep(entity, nextStep.x, nextStep.y, floor, nextStep.step, timestamp);
 
     entity.chasePath.shift();
   }
