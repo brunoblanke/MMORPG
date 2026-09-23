@@ -108,7 +108,7 @@ export class EnemyAI {
       if (this.movement.isBlocked(pos.x, pos.y, floor, enemy)) continue;
       if (this.isReservedByOther(enemy, enemies, pos.x, pos.y)) continue;
       if (this.movement.getPassableStep(pos.x, pos.y, floor) === null) continue;
-      if (this.movement.stackManager.getTransitionAt(pos.x, pos.y, floor)) continue;
+      if (this.movement.world.getTransitionAt(pos.x, pos.y, floor)) continue;
 
       const isCurrent = enemy.chaseTarget && enemy.chaseTarget.x === pos.x && enemy.chaseTarget.y === pos.y;
       const nearestOther = others.length ? Math.min(...others.map(o => distance(pos.x, pos.y, o.x, o.y))) : 0;
@@ -258,7 +258,7 @@ export class EnemyAI {
       if (x === enemy.x && y === enemy.y) continue;
       if (!this.movement.isInsideMap(x, y) || !enemy.isInPatrolZone(x, y)) continue;
       if (this.movement.isBlocked(x, y, floor, enemy) || this.isOccupiedByOther(enemy, enemies, x, y)) continue;
-      if (this.movement.stackManager.getTransitionAt(x, y, floor)) continue;
+      if (this.movement.world.getTransitionAt(x, y, floor)) continue;
 
       const step = this.movement.getPassableStep(x, y, floor, enemy.step || 0);
       if (step === null) continue;

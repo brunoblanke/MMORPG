@@ -1,9 +1,9 @@
 // js/controllers/game.js
 
 import { CONFIG } from '../config.js';
+import { World } from '../core/world.js';
 import { Camera } from '../services/camera.js';
 import { EventManager } from '../services/event-manager.js';
-import { StackManager } from '../services/stack-manager.js';
 import { LevelLoader } from '../services/level-loader.js';
 import { SpriteLoader } from '../services/sprite-loader.js';
 import { Renderer } from '../views/renderer.js';
@@ -22,16 +22,14 @@ import { LifeCycleController } from './life-cycle.js';
 
 export class GameController {
   constructor() {
-    window.gameController = this;
-
     this.canvas = document.getElementById('gameCanvas');
     this.ctx = this.canvas.getContext('2d');
     this.camera = new Camera(this.canvas);
     this.eventManager = new EventManager();
-    this.stackManager = new StackManager();
+    this.world = new World();
     this.levelLoader = new LevelLoader();
     this.spriteLoader = new SpriteLoader();
-    this.renderer = new Renderer(this.canvas, this.camera, this.stackManager);
+    this.renderer = new Renderer(this.canvas, this.camera);
     this.ui = new UI();
     this.particleController = new ParticleController();
 
@@ -77,11 +75,15 @@ export class GameController {
     const spawn = this.levelLoader.getSpawn({ x: 132, y: 145, z: 0 });
     this.player = new Player({ x: spawn.x, y: spawn.y, z: spawn.z, lvl: 10 });
 
-    this.movementController = new MovementController(this.objects, this.stackManager);
-    this.movementController.setCreatures(() => [this.player, ...this.enemies]);
+    this.world.load(this.objects);
+    for (const enemy of this.enemies) this.world.addCreature(enemy);
+    this.world.addCreature(this.player);
+
+    this.movementController = new MovementController(this.world);
+    this.movementController.onNoPath = (timestamp) => this.showMessage("Não há caminho", timestamp);
     this.enemyAI = new EnemyAI(this.movementController);
     this.combatController = new CombatController();
-    this.inputController = new InputController(this.canvas, this.renderer, this.camera, this.eventManager);
+    this.inputController = new InputController(this.canvas, this.renderer, this.camera, this.eventManager, this);
     this.objectDrag = new ObjectDragController(this);
     this.lifeCycle = new LifeCycleController(this);
 
@@ -176,12 +178,12 @@ export class GameController {
   // sob o teto do player. Escada/buraco contam como piso. null se não há nada.
 
   getVisibleFloorAt(x, y) {
-    const roofLevel = getRoofLevel(this.player, this.objects);
+    const roofLevel = getRoofLevel(this.player, this.world);
     let best = null;
-    for (const obj of this.objects) {
-      if (obj.x !== x || obj.y !== y || obj.isBorder) continue;
+    for (const obj of this.world.getObjectsAt(x, y)) {
+      if (obj.isBorder) continue;
       const z = obj.z ?? 0;
-      const isGround = obj.floorType || this.stackManager.getTransitionAt(x, y, z) === obj;
+      const isGround = obj.floorType || this.world.getTransitionAt(x, y, z) === obj;
       if (isGround && z <= roofLevel && (best === null || z > best)) best = z;
     }
     return best;
@@ -291,7 +293,7 @@ export class GameController {
     const offset = this.camera.getOffset();
     this.inputController.updateHoverEnemy(
       this.enemies,
-      this.objects,
+      this.world,
       offset,
       this.player,
       this.deadBodies
@@ -329,6 +331,7 @@ export class GameController {
       player: this.player,
       enemies: this.enemies,
       objects: this.objects,
+      world: this.world,
       deadBodies: this.deadBodies,
       selectedEnemy: this.selectedEnemy,
       inputController: this.inputController,

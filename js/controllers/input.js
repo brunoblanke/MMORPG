@@ -4,7 +4,8 @@ import { CONFIG } from '../config.js';
 import { getEntityLevel, getRoofLevel } from '../views/draw-order.js';
 
 export class InputController {
-  constructor(canvas, renderer, camera, eventManager) {
+  constructor(canvas, renderer, camera, eventManager, game) {
+    this.game = game;
     this.canvas = canvas;
     this.renderer = renderer;
     this.camera = camera;
@@ -58,8 +59,8 @@ handleKeyDown(e) {
     e.preventDefault();
     this.keysPressed[key] = true;
     this.clearTarget();
-    if (window.gameController && window.gameController.movementController && window.gameController.selectedEnemy) {
-      window.gameController.movementController.autoFollow = false;
+    if (this.game.movementController && this.game.selectedEnemy) {
+      this.game.movementController.autoFollow = false;
       console.log('⌨️ Auto-follow desligado por TECLA:', key);
     }
   }
@@ -104,7 +105,7 @@ handleKeyDown(e) {
   // ================================================================================================================================================================================================================================================
 // updateHoverEnemy
 
-updateHoverEnemy(enemies, objects, offset, player, deadBodies) {
+updateHoverEnemy(enemies, world, offset, player, deadBodies) {
   if (!this.hoverTile) {
     this.hoverEnemy = null;
     this.hoverObject = null;
@@ -117,7 +118,7 @@ updateHoverEnemy(enemies, objects, offset, player, deadBodies) {
   this.hoverCorpse = null;
 
   // O que está acima do teto do player não aparece na tela, então não pode ser apontado.
-  const roofLevel = getRoofLevel(player, objects);
+  const roofLevel = getRoofLevel(player, world);
   const isVisible = (e) => getEntityLevel(e) <= roofLevel;
   const byTopmost = (a, b) => (getEntityLevel(b) - getEntityLevel(a)) || ((b.order || 0) - (a.order || 0));
 
@@ -145,8 +146,8 @@ updateHoverEnemy(enemies, objects, offset, player, deadBodies) {
     }
   }
 
-  const objectsOnTile = objects.filter(o =>
-    o.x === tileX && o.y === tileY && isVisible(o) && !o.isBorder &&
+  const objectsOnTile = world.getObjectsAt(tileX, tileY).filter(o =>
+    isVisible(o) && !o.isBorder &&
     (o.hasVolume || o.blocksMovement || o.movable === true || o.floorType)
   );
 
@@ -191,13 +192,7 @@ updateHoverEnemy(enemies, objects, offset, player, deadBodies) {
 
       if (gridPos.x >= 0 && gridPos.x < CONFIG.mapWidth &&
           gridPos.y >= 0 && gridPos.y < CONFIG.mapHeight) {
-        const gc = window.gameController;
-        if (!gc) {
-          this.draggingCandidate = null;
-          this.dragOccurred = false;
-          this.dragStartMouse = null;
-          return;
-        }
+        const gc = this.game;
         // Solta no andar do piso que aparece sob o mouse; sem piso visível, cancela.
         const targetZ = gc.getVisibleFloorAt(gridPos.x, gridPos.y);
         if (targetZ !== null) {
@@ -260,7 +255,7 @@ updateHoverEnemy(enemies, objects, offset, player, deadBodies) {
       return;
     }
 
-    if (window.gameController && window.gameController.selectedEnemy) {
+    if (this.game.selectedEnemy) {
       movementController.autoFollow = false;
     }
 

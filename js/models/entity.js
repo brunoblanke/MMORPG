@@ -45,13 +45,7 @@ export class Entity {
     this.moveStartStep = 0;
     this.moveStartTime = 0;
 
-    if (data.order !== undefined) {
-      this.order = data.order;
-    } else if (window.gameController && window.gameController.stackManager) {
-      window.gameController.stackManager.addToTile(this, this.x, this.y, this.z);
-    } else {
-      this.order = 0;
-    }
+    this.order = data.order !== undefined ? data.order : 0;
   }
 
   takeDamage(amount) {

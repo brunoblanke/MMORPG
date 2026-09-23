@@ -55,7 +55,7 @@ export class Pathfinding {
         if (isBlockedFn(nx, ny)) continue;
         // Escada/buraco teleporta: só entra no caminho se for o próprio destino.
         const isDestination = nx === endX && ny === endY;
-        if (!isDestination && movementController.stackManager.getTransitionAt(nx, ny, floor)) continue;
+        if (!isDestination && movementController.world.getTransitionAt(nx, ny, floor)) continue;
 
         const entityHeight = 1;
 

@@ -82,7 +82,7 @@ export class ObjectDragController {
   // andar (o piso visível sob o mouse). Precisa de apoio lá: piso ou pilha.
 
   moveObject(obj, targetX, targetY, targetZ = obj.z || 0) {
-    const { objects, movementController, stackManager } = this.game;
+    const { movementController, world } = this.game;
 
     if (!movementController.isInsideMap(targetX, targetY)) {
       return;
@@ -98,15 +98,11 @@ export class ObjectDragController {
     targetX = landing.x;
     targetY = landing.y;
     const floor = landing.z;
-    const blocked = objects.some(other =>
-      other !== obj && other.blocksMovement &&
-      other.x === targetX && other.y === targetY && other.z === floor
-    );
-    if (blocked) {
+    if (this.hasOtherBlocker(obj, targetX, targetY, floor)) {
       return;
     }
 
-    const hasSupport = stackManager.hasFloorAt(targetX, targetY, floor) ||
+    const hasSupport = world.hasFloorAt(targetX, targetY, floor) ||
       movementController.getStepHeight(targetX, targetY, floor) > 0;
     if (!hasSupport) {
       return;
@@ -116,10 +112,7 @@ export class ObjectDragController {
     const oldY = obj.y;
     const topStep = movementController.getStepHeight(targetX, targetY, floor);
 
-    stackManager.moveEntityTile(obj, oldX, oldY, fromFloor, targetX, targetY, floor);
-    obj.x = targetX;
-    obj.y = targetY;
-    obj.z = floor;
+    world.moveObject(obj, targetX, targetY, floor);
     obj.step = topStep;
 
     console.log(`📦 ${obj.isCorpse ? 'Cadáver' : 'Objeto ' + obj.id} movido para (${targetX}, ${targetY}) andar=${floor} step=${obj.step} order=${obj.order}`);
@@ -143,7 +136,7 @@ export class ObjectDragController {
   // passa por cima das paredes de baixo).
 
   isThrowPathClear(obj, toX, toY, toZ) {
-    const { player, objects } = this.game;
+    const { player } = this.game;
     const floorHeight = CONFIG.floorHeight || 4;
 
     let origin = { x: player.x, y: player.y, z: player.z || 0 };
@@ -152,13 +145,7 @@ export class ObjectDragController {
     const floors = [];
     for (let z = origin.z; z <= Math.max(origin.z, toZ); z++) floors.push(z);
 
-    const blocking = new Set();
-    for (const other of objects) {
-      if (other !== obj && other.blocksMovement && floors.includes(other.z || 0)) {
-        blocking.add(`${other.x},${other.y}`);
-      }
-    }
-    const isBlocked = (x, y) => blocking.has(`${x},${y}`);
+    const isBlocked = (x, y) => floors.some(z => this.hasOtherBlocker(obj, x, y, z));
 
     // Bresenham: sqm a sqm, da origem (fora) até o destino (dentro).
     let x = origin.x;
@@ -186,17 +173,26 @@ export class ObjectDragController {
   }
 
   // ================================================================================================================================================================================================================================================
+  // hasOtherBlocker
+  // Há algo intransponível no sqm (x, y, z) além do próprio objeto arrastado?
+
+  hasOtherBlocker(obj, x, y, z) {
+    const own = obj.blocksMovement && obj.x === x && obj.y === y && (obj.z || 0) === z ? 1 : 0;
+    return this.game.world.countBlockersAt(x, y, z) > own;
+  }
+
+  // ================================================================================================================================================================================================================================================
   // resolveFall
   // Objeto solto num buraco (ou topo de escada) cai pro mesmo sqm onde o player
   // cairia (shared/stairs.js); se lá houver outro buraco, continua caindo.
   // Buraco "morto" (sem piso embaixo) não derruba nada.
 
   resolveFall(x, y, z) {
-    const { stackManager } = this.game;
+    const { world } = this.game;
     for (let i = 0; i < 16; i++) {
-      const hole = stackManager.getTransitionAt(x, y, z);
+      const hole = world.getTransitionAt(x, y, z);
       if (!hole || hole.targetZ >= z || hole.targetZ < 0) break;
-      if (!stackManager.hasFloorAt(hole.targetX, hole.targetY, hole.targetZ)) break;
+      if (!world.hasFloorAt(hole.targetX, hole.targetY, hole.targetZ)) break;
       console.log(`🕳️ Objeto caiu pelo ${hole.id} em (${x},${y}) andar ${z} → (${hole.targetX},${hole.targetY}) andar ${hole.targetZ}`);
       x = hole.targetX;
       y = hole.targetY;

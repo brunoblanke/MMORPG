@@ -30,10 +30,9 @@ export class GameObject {
       this.order = data.order;
     } else if (this.id && (this.id.startsWith('Floor_') || this.id.startsWith('Floor2_') || this.id === 'Floor' || this.id === 'Floor2')) {
       this.order = -1;
-    } else if (window.gameController && window.gameController.stackManager) {
-      window.gameController.stackManager.addToTile(this, this.x, this.y, this.z);
     } else {
       this.order = 0;
+      this.inStack = true;
     }
   }
 }
@@ -65,8 +64,8 @@ export function generateObjects(mapData) {
 //     pintado ali é removido — o topo é sempre um vão;
 //   - buraco comum é um item sobre o chão do sqm (em geral ord 1) e desce
 //     na diagonal (x+1, y+1) pro andar de baixo.
-// Nenhum dos dois impede borda do piso vizinho. Todos ficam registrados no
-// stackManager (getTransitionAt) pra movimentação.
+// Nenhum dos dois impede borda do piso vizinho. Todos viram transição no
+// World (getTransitionAt) pra movimentação.
 
 function applyTransitions(objs) {
   const stairTops = [];
@@ -97,9 +96,6 @@ function applyTransitions(objs) {
       obj.targetY = target.y;
       obj.targetZ = target.z;
     }
-    if (obj.stairDirection && window.gameController && window.gameController.stackManager) {
-      window.gameController.stackManager.registerTransition(obj);
-    }
   }
 
   return result;
@@ -112,7 +108,7 @@ function applyTransitions(objs) {
 // de baixo, piso de cima e as bordas dos vizinhos (da mais antiga pra mais
 // nova). O order é a posição nessa pilha contada do topo: o de cima é 0, o
 // de baixo dele -1, e assim por diante. O que fica sobre o chão (itens,
-// criaturas) continua a mesma pilha a partir de 1 (stack-manager.js).
+// criaturas) continua a mesma pilha a partir de 1 (core/world.js).
 
 function assignGroundOrder(objs) {
   const groundByTile = new Map();
@@ -152,10 +148,6 @@ function applyFloorVariants(objs) {
 
     counters[obj.floorType] = (counters[obj.floorType] || 0) + 1;
     obj.id = `${obj.floorType}_${pickWeightedInteriorVariant(obj.x, obj.y, obj.z)}_${counters[obj.floorType]}`;
-
-    if (layerIndex === 0 && window.gameController && window.gameController.stackManager) {
-      window.gameController.stackManager.registerFloor(obj.x, obj.y, obj.z);
-    }
   }
 
   return visibleFloorsByZ;
@@ -169,7 +161,7 @@ function applyFloorVariants(objs) {
 // a borda de um piso só aparece sobre célula vazia ou sobre piso colocado
 // antes dele. Uma célula pode receber várias peças (ex.: canto interno = n + o).
 // São apenas decorativas: não bloqueiam movimento nem entram no
-// stackManager — só dá pra pisar numa borda se houver piso embaixo dela.
+// pilha do World — só dá pra pisar numa borda se houver piso embaixo dela.
 
 function generateFloorBorders(objs, visibleFloorsByZ) {
   // Andares diferentes são desenhados na mesma posição de tela, do z menor

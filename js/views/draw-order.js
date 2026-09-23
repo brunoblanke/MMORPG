@@ -52,16 +52,22 @@ function isInRoofMargin(player, obj) {
          dy >= -ROOF_MARGIN_NORTH_WEST && dy <= ROOF_MARGIN_SOUTH_EAST;
 }
 
-export function getRoofLevel(player, objects) {
+export function getRoofLevel(player, world) {
   const playerLevel = getEntityLevel(player);
   const reachLevel = levelOf(player.z, (player.step || 0) + 1, CONFIG.floorHeight || 4);
-  const underRoof = objects.some(obj => {
-    if (!obj.floorType || obj.isBorder) return false;
-    const z = obj.z ?? 0;
-    if (obj.x === player.x && obj.y === player.y) return z > playerLevel;
-    return z > reachLevel && isInRoofMargin(player, obj);
-  });
-  return underRoof ? playerLevel : Infinity;
+  for (let x = player.x - ROOF_MARGIN_SOUTH_EAST; x <= player.x + ROOF_MARGIN_NORTH_WEST; x++) {
+    for (let y = player.y - ROOF_MARGIN_SOUTH_EAST; y <= player.y + ROOF_MARGIN_NORTH_WEST; y++) {
+      const isPlayerTile = x === player.x && y === player.y;
+      const underRoof = world.getObjectsAt(x, y).some(obj => {
+        if (!obj.floorType || obj.isBorder) return false;
+        const z = obj.z ?? 0;
+        if (isPlayerTile) return z > playerLevel;
+        return z > reachLevel && isInRoofMargin(player, obj);
+      });
+      if (underRoof) return playerLevel;
+    }
+  }
+  return Infinity;
 }
 
 // ================================================================================================================================================================================================================================================
@@ -89,7 +95,7 @@ function compareDrawables(a, b) {
 export function prepareDrawables(gameState) {
   const drawables = [];
   const player = gameState.player;
-  const roofLevel = getRoofLevel(player, gameState.objects);
+  const roofLevel = getRoofLevel(player, gameState.world);
 
   const push = (drawable, source) => {
     drawable.level = getEntityLevel(source);

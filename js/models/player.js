@@ -38,14 +38,6 @@ export class Player extends Entity {
     const xpLoss = Math.floor(this.xp * 0.2);
     this.xp = Math.max(0, this.xp - xpLoss);
 
-    const oldX = this.x;
-    const oldY = this.y;
-    const oldZ = this.z || 0;
-
-    if (window.gameController && window.gameController.stackManager) {
-      window.gameController.stackManager.moveEntityTile(this, oldX, oldY, oldZ, this.spawnX, this.spawnY, 0);
-    }
-
     this.x = this.spawnX;
     this.y = this.spawnY;
     this.renderX = this.spawnX;

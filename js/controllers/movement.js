@@ -10,20 +10,10 @@ export class MovementController {
   // ================================================================================================================================================================================================================================================
   // constructor
 
-  constructor(gameObjects, stackManager) {
-    this.gameObjects = gameObjects;
-    this.stackManager = stackManager;
+  constructor(world) {
+    this.world = world;
     this.autoFollow = true;
-    this.getCreatures = () => [];
-  }
-
-  // ================================================================================================================================================================================================================================================
-  // setCreatures
-  // Player e inimigos vivem fora de gameObjects; getCreatures() os devolve
-  // pra que bloqueiem a passagem uns dos outros, como uma parede.
-
-  setCreatures(getCreatures) {
-    this.getCreatures = getCreatures;
+    this.onNoPath = null;
   }
 
   // ================================================================================================================================================================================================================================================
@@ -46,60 +36,35 @@ export class MovementController {
   // isInsideMap
 
   isInsideMap(x, y) {
-    return x >= 0 && x < CONFIG.mapWidth && y >= 0 && y < CONFIG.mapHeight;
+    return this.world.isInside(x, y);
   }
 
   // ================================================================================================================================================================================================================================================
   // getPassableStep
 
   getPassableStep(x, y, floor, currentStep = null) {
-    return this.stackManager.getPassableStep(x, y, floor, currentStep);
+    return this.world.getPassableStep(x, y, floor, currentStep);
   }
 
   // ================================================================================================================================================================================================================================================
   // getStepHeight
 
   getStepHeight(x, y, floor) {
-    return this.stackManager.getStepHeight(x, y, floor);
+    return this.world.getStepHeight(x, y, floor);
   }
 
   // ================================================================================================================================================================================================================================================
   // isBlocked
 
-  isBlocked(x, y, floor = null, ignoreEnemy = null) {
-    for (const creature of this.getCreatures()) {
-      if (creature === ignoreEnemy || creature.x !== x || creature.y !== y) continue;
-      if (creature.isAlive && !creature.isAlive()) continue;
-      if (this.enemiesPassable && creature.type === 'enemy') continue;
-      if (floor === null || (creature.z || 0) === floor) return true;
-    }
-    for (const obj of this.gameObjects) {
-      if (ignoreEnemy && obj === ignoreEnemy) continue;
-      if (obj.type === "enemy" && obj.x === x && obj.y === y) {
-        if (floor === null || obj.z === floor) {
-          return true;
-        }
-      }
-      if (obj.x === x && obj.y === y && obj.blocksMovement) {
-        if (floor === null || obj.z === floor) {
-          return true;
-        }
-      }
-    }
-    return false;
+  isBlocked(x, y, floor, ignoreEnemy = null) {
+    return this.world.isBlocked(x, y, floor, ignoreEnemy, !!this.enemiesPassable);
   }
 
   // ================================================================================================================================================================================================================================================
   // isBlockedForPathing
 
   isBlockedForPathing(x, y, floor) {
-    for (const obj of this.gameObjects) {
-      if (obj.type === "enemy" || obj.isPlayer) continue;
-      if (obj.x === x && obj.y === y && obj.blocksMovement && obj.z === floor) {
-        return true;
-      }
-    }
-    return false;
+    return this.world.hasBlockerAt(x, y, floor);
   }
 
   // ================================================================================================================================================================================================================================================
@@ -107,7 +72,7 @@ export class MovementController {
 
   hasStepToClimb(x, y, floor, targetStep, entityHeight = 1) {
     for (const pos of getAdjacentPositions(x, y)) {
-      const adjacentStep = this.stackManager.getPassableStep(pos.x, pos.y, floor, targetStep);
+      const adjacentStep = this.world.getPassableStep(pos.x, pos.y, floor, targetStep);
       if (adjacentStep !== null && adjacentStep >= targetStep - 1) {
         return true;
       }
@@ -126,7 +91,7 @@ export class MovementController {
       return false;
     }
 
-    const calculatedStep = targetStep !== null ? targetStep : this.stackManager.getPassableStep(toX, toY, floor, fromStep);
+    const calculatedStep = targetStep !== null ? targetStep : this.world.getPassableStep(toX, toY, floor, fromStep);
     if (calculatedStep === null) {
       return false;
     }
@@ -151,11 +116,11 @@ export class MovementController {
     const fromZ = entity.z || 0;
     const fromStep = entity.step || 0;
 
-    this.stackManager.moveEntityTile(entity, fromX, fromY, fromZ, toX, toY, toZ);
+    this.world.moveEntityTile(entity, fromX, fromY, fromZ, toX, toY, toZ);
     entity.x = toX;
     entity.y = toY;
     entity.z = toZ;
-    entity.step = toStep !== null ? toStep : this.stackManager.getPassableStep(toX, toY, toZ, fromStep);
+    entity.step = toStep !== null ? toStep : this.world.getPassableStep(toX, toY, toZ, fromStep);
     entity.lastMoveTime = timestamp;
 
     entity.isMoving = true;
@@ -203,19 +168,19 @@ export class MovementController {
     if (fromStep >= floorHeight - 1) {
       const near = toUpperLevel(toX, toY, floor);
       const candidates = [near, { x: near.x + Math.max(dx, 0), y: near.y + Math.max(dy, 0), z: near.z }];
-      const up = candidates.find(c => this.stackManager.hasFloorAt(c.x, c.y, c.z) && !this.isBlocked(c.x, c.y, c.z));
+      const up = candidates.find(c => this.world.hasFloorAt(c.x, c.y, c.z) && !this.isBlocked(c.x, c.y, c.z));
       if (up) return { x: up.x, y: up.y, z: up.z, step: 0 };
     }
 
     if (fromStep === 0 && floor > 0) {
-      const stepHeightSameFloor = this.stackManager.getStepHeight(toX, toY, floor);
-      const hasFloorSameFloor = this.stackManager.hasFloorAt(toX, toY, floor);
+      const stepHeightSameFloor = this.world.getStepHeight(toX, toY, floor);
+      const hasFloorSameFloor = this.world.hasFloorAt(toX, toY, floor);
       if (stepHeightSameFloor === 0 && !hasFloorSameFloor) {
         const near = toLowerLevel(toX, toY, floor);
         const candidates = [near, { x: near.x + Math.min(dx, 0), y: near.y + Math.min(dy, 0), z: near.z }];
         const down = candidates.find(c =>
-          this.stackManager.getStepHeight(c.x, c.y, c.z) >= floorHeight - 1 && !this.isBlocked(c.x, c.y, c.z));
-        if (down) return { x: down.x, y: down.y, z: down.z, step: this.stackManager.getStepHeight(down.x, down.y, down.z) };
+          this.world.getStepHeight(c.x, c.y, c.z) >= floorHeight - 1 && !this.isBlocked(c.x, c.y, c.z));
+        if (down) return { x: down.x, y: down.y, z: down.z, step: this.world.getStepHeight(down.x, down.y, down.z) };
       }
     }
 
@@ -252,7 +217,7 @@ export class MovementController {
       resultStep = targetStep;
     } else if (this.canMove(entity.x, entity.y, floor, fromStep, newX, newY, entityHeight)) {
       resultZ = floor;
-      resultStep = this.stackManager.getPassableStep(newX, newY, floor, fromStep);
+      resultStep = this.world.getPassableStep(newX, newY, floor, fromStep);
     } else {
       // Troca de andar: o sqm de destino é o correspondente no andar vizinho.
       const carry = this.tryFloorCarry(entity, newX, newY, entityHeight);
@@ -280,15 +245,15 @@ export class MovementController {
 
     let result;
     if (this.canMove(state.x, state.y, state.z, state.step, toX, toY)) {
-      result = { x: toX, y: toY, z: state.z, step: this.stackManager.getPassableStep(toX, toY, state.z, state.step) };
+      result = { x: toX, y: toY, z: state.z, step: this.world.getPassableStep(toX, toY, state.z, state.step) };
     } else {
       result = this.getFloorCarryTarget(state.x, state.y, state.z, state.step, toX, toY);
       if (!result) return null;
     }
 
-    const transition = this.stackManager.getTransitionAt(result.x, result.y, result.z);
+    const transition = this.world.getTransitionAt(result.x, result.y, result.z);
     if (transition && transition.targetZ >= 0 &&
-        this.stackManager.hasFloorAt(transition.targetX, transition.targetY, transition.targetZ)) {
+        this.world.hasFloorAt(transition.targetX, transition.targetY, transition.targetZ)) {
       return {
         x: transition.targetX, y: transition.targetY, z: transition.targetZ, step: 0,
         via: { x: result.x, y: result.y, z: result.z }
@@ -400,9 +365,7 @@ export class MovementController {
       : { x: targetX, y: targetY };
 
     if (!this.ensureChasePath(entity, targetPos, searchBounds)) {
-      if (window.gameController) {
-        window.gameController.showMessage("Não há caminho", timestamp);
-      }
+      if (this.onNoPath) this.onNoPath(timestamp);
       return;
     }
 
@@ -444,14 +407,14 @@ export class MovementController {
   checkFloorTransitions(entities) {
     for (const entity of entities) {
       const floor = entity.z || 0;
-      const transitionObj = this.stackManager.getTransitionAt(entity.x, entity.y, floor);
+      const transitionObj = this.world.getTransitionAt(entity.x, entity.y, floor);
 
       if (!transitionObj) continue;
 
       const targetFloor = transitionObj.targetZ;
       if (targetFloor < 0) continue;
 
-      if (!this.stackManager.hasFloorAt(transitionObj.targetX, transitionObj.targetY, targetFloor)) {
+      if (!this.world.hasFloorAt(transitionObj.targetX, transitionObj.targetY, targetFloor)) {
         console.log(`💀 ${transitionObj.id} está morta: não há piso em (${transitionObj.targetX},${transitionObj.targetY}) andar ${targetFloor}`);
         continue;
       }
@@ -459,7 +422,7 @@ export class MovementController {
       const fromX = entity.x;
       const fromY = entity.y;
 
-      this.stackManager.moveEntityTile(entity, fromX, fromY, floor, transitionObj.targetX, transitionObj.targetY, targetFloor);
+      this.world.moveEntityTile(entity, fromX, fromY, floor, transitionObj.targetX, transitionObj.targetY, targetFloor);
       entity.x = transitionObj.targetX;
       entity.y = transitionObj.targetY;
       entity.z = targetFloor;

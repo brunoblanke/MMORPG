@@ -7,11 +7,10 @@ import { drawTileTooltip } from './tile-tooltip.js';
 import { prepareDrawables, getEntityLevel } from './draw-order.js';
 
 export class Renderer {
-  constructor(canvas, camera, stackManager) {
+  constructor(canvas, camera) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
     this.camera = camera;
-    this.stackManager = stackManager;
     this.devMode = true;
 
     this.sprites = new SpriteRegistry();

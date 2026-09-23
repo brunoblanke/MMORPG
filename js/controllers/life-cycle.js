@@ -36,7 +36,7 @@ export class LifeCycleController {
       corpseCreature: entity.creature,
       corpseIsPlayer: type === 'player_corpse'
     };
-    this.game.stackManager.addToTile(corpse, corpse.x, corpse.y, corpse.z);
+    this.game.world.addToTile(corpse, corpse.x, corpse.y, corpse.z);
     return corpse;
   }
 
@@ -47,7 +47,7 @@ export class LifeCycleController {
     const game = this.game;
     const playerCorpses = game.deadBodies.filter(corpse => corpse.type === 'player_corpse');
     for (const corpse of playerCorpses) {
-      game.stackManager.removeFromTile(corpse, corpse.x, corpse.y, corpse.z || 0);
+      game.world.removeFromTile(corpse, corpse.x, corpse.y, corpse.z || 0);
     }
     game.deadBodies = game.deadBodies.filter(corpse => corpse.type !== 'player_corpse');
   }
@@ -60,6 +60,7 @@ export class LifeCycleController {
     this.clearPlayerCorpse();
     const corpse = this.createCorpse(game.player, 'player_corpse');
     game.deadBodies.push(corpse);
+    game.world.moveEntityTile(game.player, game.player.x, game.player.y, game.player.z || 0, game.player.spawnX, game.player.spawnY, 0);
     game.player.respawn();
     game.inputController.clearTarget();
     if (game.selectedEnemy) {
@@ -81,15 +82,11 @@ export class LifeCycleController {
 
     game.particleController.spawnXP(enemy.x, enemy.y, xpGain, game.renderer);
 
-    game.stackManager.removeFromTile(enemy, enemy.x, enemy.y, enemy.z || 0);
+    game.world.removeCreature(enemy);
 
     const index = game.enemies.indexOf(enemy);
     if (index > -1) {
       game.enemies.splice(index, 1);
-    }
-    const objIndex = game.objects.indexOf(enemy);
-    if (objIndex > -1) {
-      game.objects.splice(objIndex, 1);
     }
 
     if (game.selectedEnemy === enemy) {
@@ -117,7 +114,7 @@ export class LifeCycleController {
       height: 1
     });
     this.game.enemies.push(respawnedEnemy);
-    this.game.objects.push(respawnedEnemy);
+    this.game.world.addCreature(respawnedEnemy);
     console.log(`♻️ ${enemy.creature} LV${enemy.lvl} respawnou em (${enemy.patrolCenterX}, ${enemy.patrolCenterY}, ${enemy.spawnZ})`);
   }
 
@@ -144,7 +141,7 @@ export class LifeCycleController {
     const game = this.game;
     game.deadBodies = game.deadBodies.filter((corpse) => {
       if (timestamp >= corpse.decayTime) {
-        game.stackManager.removeFromTile(corpse, corpse.x, corpse.y, corpse.z || 0);
+        game.world.removeFromTile(corpse, corpse.x, corpse.y, corpse.z || 0);
         return false;
       }
       return true;
