@@ -12,10 +12,10 @@ export class LocalSession {
   // ================================================================================================================================================================================================================================================
   // constructor
 
-  constructor(mapData, name = 'Player') {
+  constructor(mapData, name = 'Player', gender) {
     this.sim = new Simulation(mapData);
     this.playerId = 'player1';
-    this.sim.addPlayer(this.playerId, { name });
+    this.sim.addPlayer(this.playerId, { name, gender });
     this.simTime = null;
     this.isOnline = false;
   }

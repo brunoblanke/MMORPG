@@ -54,3 +54,8 @@ export function getCreatureType(name) {
 }
 
 export const PLAYER_SPRITE = { file:'Player.png', frameSize:64 };
+
+// Sprite do player por gênero (mesma grade do Player.png: 64×64, 4 direções).
+export const PLAYER_SPRITES = { male:'Player.png', female:'Player-Female.png' };
+export const PLAYER_GENDERS = ['male', 'female'];
+export const DEFAULT_GENDER = 'male';

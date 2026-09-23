@@ -85,3 +85,39 @@ canvas {
   opacity: 0.6;
   cursor: default;
 }
+
+.gender-picker {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin: 0 0 16px;
+}
+
+.modal-box .gender-option {
+  width: 52px;
+  height: 52px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #3a3f4a;
+  border-radius: 8px;
+  background: #11131a;
+  color: #8a8f99;
+}
+
+.modal-box .gender-option:hover:not(:disabled) {
+  border-color: #ccff33;
+  color: #e8e8e8;
+}
+
+.modal-box .gender-option.selected {
+  border-color: #ccff33;
+  background: rgba(204, 255, 51, 0.12);
+  color: #ccff33;
+}
+
+.modal-box .gender-option svg {
+  width: 26px;
+  height: 26px;
+}

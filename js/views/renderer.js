@@ -284,7 +284,7 @@ export class Renderer {
 
   getEntityFrame(entity, isPlayer, isEnemy) {
     if (isPlayer || isEnemy) {
-      const sheet = isPlayer ? this.sprites.playerSprite : (entity ? this.sprites.getEnemySheet(entity.creature) : null);
+      const sheet = isPlayer ? this.sprites.getPlayerSheet(entity && entity.gender) : (entity ? this.sprites.getEnemySheet(entity.creature) : null);
       if (!sheet) return null;
 
       const isMoving = entity && entity.isMoving;

@@ -2,11 +2,12 @@
 
 import { Player } from '../models/player.js';
 import { Enemy } from '../models/enemy.js';
+import { PLAYER_GENDERS, DEFAULT_GENDER } from '../../shared/catalog.js';
 
 // Mensagens entre navegador e servidor (JSON pelo WebSocket, em /ws):
 //
 //   navegador → servidor
-//     { type: 'join', name }                       entrar com o nome do personagem
+//     { type: 'join', name, gender }               entrar com o nome e o gênero ('male' | 'female')
 //     { type: 'command', command }                 comando do jogador (player-control.js)
 //   servidor → navegador
 //     { type: 'joinError', error }                 nome recusado (pode tentar de novo)
@@ -16,7 +17,7 @@ import { Enemy } from '../models/enemy.js';
 // O estado leva só o que muda: jogadores, inimigos, cadáveres e itens
 // móveis. O mapa (pisos, paredes…) cada lado gera do mesmo data/map.json.
 
-export const PLAYER_FIELDS = ['name', 'x', 'y', 'z', 'step', 'direction', 'lvl', 'xp', 'nextLevelXp', 'hp', 'maxHp', 'currentHp', 'spd', 'atk', 'def', 'isTarget', 'spawnX', 'spawnY', 'spawnZ'];
+export const PLAYER_FIELDS = ['name', 'gender', 'x', 'y', 'z', 'step', 'direction', 'lvl', 'xp', 'nextLevelXp', 'hp', 'maxHp', 'currentHp', 'spd', 'atk', 'def', 'isTarget', 'spawnX', 'spawnY', 'spawnZ'];
 export const ENEMY_FIELDS = ['creature', 'color', 'lvl', 'x', 'y', 'z', 'step', 'direction', 'hp', 'maxHp', 'currentHp', 'spd', 'atk', 'def', 'patrolCenterX', 'patrolCenterY', 'patrolRadius', 'detectionRadius'];
 export const CORPSE_FIELDS = ['id', 'ownerId', 'name', 'x', 'y', 'z', 'step', 'color', 'type', 'lvl', 'creature', 'isPlayer', 'deathTime', 'decayTime', 'hasVolume', 'blocksMovement', 'movable', 'isCorpse', 'corpseCreature', 'corpseIsPlayer'];
 
@@ -35,6 +36,14 @@ export function validateName(raw) {
   if (name.length > NAME_MAX_LENGTH) return { error: `O nome pode ter no máximo ${NAME_MAX_LENGTH} letras.` };
   if (!/^[\p{L}\p{N} _-]+$/u.test(name)) return { error: 'Use só letras, números, espaço, _ ou -.' };
   return { name };
+}
+
+// ================================================================================================================================================================================================================================================
+// normalizeGender
+// Gênero do personagem; qualquer valor desconhecido vira o padrão.
+
+export function normalizeGender(gender) {
+  return PLAYER_GENDERS.includes(gender) ? gender : DEFAULT_GENDER;
 }
 
 // ================================================================================================================================================================================================================================================
@@ -180,7 +189,7 @@ export function applyState(mirror, message, playerId, renderNow) {
   const { world } = mirror;
 
   mirror.players = syncCreatures(world, mirror.players, state.players, PLAYER_FIELDS,
-    (data) => new Player({ id: data.id, x: data.x, y: data.y, z: data.z, step: data.step, lvl: data.lvl }), renderNow);
+    (data) => new Player({ id: data.id, x: data.x, y: data.y, z: data.z, step: data.step, lvl: data.lvl, gender: data.gender }), renderNow);
 
   mirror.enemies = syncCreatures(world, mirror.enemies, state.enemies, ENEMY_FIELDS,
     (data) => new Enemy({ id: data.id, type: 'enemy', x: data.x, y: data.y, z: data.z, step: data.step, lvl: data.lvl, creature: data.creature, color: data.color }), renderNow);

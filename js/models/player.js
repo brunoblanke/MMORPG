@@ -2,12 +2,14 @@
 
 import { Entity } from './entity.js';
 import { calculateStats } from '../utils/helpers.js';
+import { PLAYER_GENDERS, DEFAULT_GENDER } from '../../shared/catalog.js';
 
 export class Player extends Entity {
   constructor(data) {
     super(data);
     this.isPlayer = true;
     this.name = data.name || 'Player';
+    this.gender = PLAYER_GENDERS.includes(data.gender) ? data.gender : DEFAULT_GENDER;
     this.spawnX = data.x;
     this.spawnY = data.y;
     this.spawnZ = data.z || 0;

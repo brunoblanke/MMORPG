@@ -76,11 +76,11 @@ export class RemoteSession {
 
   // ================================================================================================================================================================================================================================================
   // join
-  // Entra no jogo com o nome do personagem. Resolve com a sessão ('welcome')
+  // Entra no jogo com o nome e o gênero do personagem. Resolve com a sessão ('welcome')
   // ou rejeita com JoinError se o servidor recusar o nome — o socket continua
   // aberto pra tentar outro. Outro erro: a conexão caiu.
 
-  static join(socket, mapData, name) {
+  static join(socket, mapData, name, gender) {
     return new Promise((resolve, reject) => {
       const cleanup = () => {
         socket.removeEventListener('message', onMessage);
@@ -103,7 +103,7 @@ export class RemoteSession {
 
       socket.addEventListener('message', onMessage);
       socket.addEventListener('close', onClose);
-      socket.send(JSON.stringify({ type: 'join', name }));
+      socket.send(JSON.stringify({ type: 'join', name, gender }));
     });
   }
 

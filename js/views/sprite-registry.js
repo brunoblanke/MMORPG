@@ -2,7 +2,7 @@
 
 import { CONFIG } from '../config.js';
 import { SpriteSheet } from '../../shared/sprite-sheet.js';
-import { FLOOR1_FILES, FLOOR2_FILES, OBJECT_DEFS, ITEM_CATALOG, CREATURE_TYPES, PLAYER_SPRITE as PLAYER_DEF } from '../../shared/catalog.js';
+import { FLOOR1_FILES, FLOOR2_FILES, OBJECT_DEFS, ITEM_CATALOG, CREATURE_TYPES, PLAYER_SPRITE as PLAYER_DEF, PLAYER_SPRITES, DEFAULT_GENDER } from '../../shared/catalog.js';
 import { ANIMATION_CYCLE_MS } from '../../shared/constants.js';
 
 const PLAYER_SPRITE = `img/${PLAYER_DEF.file}`;
@@ -16,6 +16,7 @@ const COLLISION_SPRITE = 'img/Parede-X.png';
 export function getSpritePaths() {
   return [
     PLAYER_SPRITE,
+    ...Object.values(PLAYER_SPRITES).map(file => `img/${file}`),
     PLAYER_CORPSE_SPRITE,
     FLOOR_SPRITE,
     COLLISION_SPRITE,
@@ -40,6 +41,17 @@ export class SpriteRegistry {
       walkFrames,
       directions
     );
+
+    this.playerSpritesByGender = {};
+    for (const [gender, file] of Object.entries(PLAYER_SPRITES)) {
+      this.playerSpritesByGender[gender] = new SpriteSheet(
+        `img/${file}`,
+        CONFIG.playerSpriteFrameWidth,
+        CONFIG.playerSpriteFrameHeight,
+        walkFrames,
+        directions
+      );
+    }
 
     // Sprites de criatura indexados pelo TIPO (nome); o lvl não influencia o visual.
     this.enemySpritesByType = {};
@@ -103,6 +115,16 @@ export class SpriteRegistry {
 
     if (this.objectSpriteSheets[baseId]) return this.objectSpriteSheets[baseId];
     return null;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // getPlayerSheet
+  // Sprite do gênero do player; se a imagem dele não carregou, o padrão.
+
+  getPlayerSheet(gender) {
+    const sheet = this.playerSpritesByGender[gender];
+    if (sheet && sheet.image.complete && sheet.image.naturalWidth > 0) return sheet;
+    return this.playerSpritesByGender[DEFAULT_GENDER] || this.playerSprite;
   }
 
   // ================================================================================================================================================================================================================================================
