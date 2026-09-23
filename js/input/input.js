@@ -1,3 +1,5 @@
+// js/input/input.js
+
 import { calculateMoveDelay } from '../utils/helpers.js';
 import { CONFIG } from '../config.js';
 import { getRoofLevel } from '../views/draw-order.js';

@@ -3,7 +3,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { buildGame, floorRect, pile, wall, hole, placeAt } from './helpers/fixture.js';
-import { ObjectDragController } from '../js/controllers/object-drag.js';
+import { ObjectDragController } from '../js/systems/object-drag.js';
 
 const GROUND = floorRect(0, 14, 0, 14, 0);
 

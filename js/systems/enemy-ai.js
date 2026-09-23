@@ -1,4 +1,4 @@
-// js/controllers/enemy-ai.js
+// js/systems/enemy-ai.js
 
 import { calculateMoveDelay, distance, getAdjacentPositions, isPositionAdjacentTo, randFloat } from '../utils/helpers.js';
 import { getLevel } from '../core/geometry.js';

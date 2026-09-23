@@ -1,4 +1,4 @@
-// js/controllers/life-cycle.js
+// js/systems/life-cycle.js
 
 import { CONFIG } from '../config.js';
 import { Enemy } from '../models/enemy.js';

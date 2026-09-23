@@ -1,4 +1,4 @@
-// js/controllers/particle-controller.js
+// js/systems/particle-controller.js
 
 import { ParticleSystem } from '../services/particle-system.js';
 

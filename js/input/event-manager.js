@@ -1,4 +1,4 @@
-// js/services/event-manager.js
+// js/input/event-manager.js
 
 export class EventManager {
   constructor() {

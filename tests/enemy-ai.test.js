@@ -3,7 +3,7 @@
 import { test, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
 import { buildGame, floorRect, wall, placeAt } from './helpers/fixture.js';
-import { EnemyAI } from '../js/controllers/enemy-ai.js';
+import { EnemyAI } from '../js/systems/enemy-ai.js';
 import { isPositionAdjacentTo } from '../js/utils/helpers.js';
 
 const GROUND = floorRect(0, 24, 0, 24, 0);

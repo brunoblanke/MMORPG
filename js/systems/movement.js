@@ -1,4 +1,4 @@
-// js/controllers/movement.js
+// js/systems/movement.js
 
 import { calculateMoveDelay, distance, directionFromDelta, getAdjacentPositions, isPositionAdjacentTo } from '../utils/helpers.js';
 import { resolveStep, isSameLanding } from '../core/movement.js';

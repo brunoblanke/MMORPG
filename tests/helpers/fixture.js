@@ -3,7 +3,7 @@
 import { World } from '../../js/core/world.js';
 import { generateObjects, generateEnemies } from '../../js/models/game-object.js';
 import { Player } from '../../js/models/player.js';
-import { MovementController } from '../../js/controllers/movement.js';
+import { MovementController } from '../../js/systems/movement.js';
 
 // ================================================================================================================================================================================================================================================
 // floorRect

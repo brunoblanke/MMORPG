@@ -1,24 +1,24 @@
-// js/controllers/game.js
+// js/game.js
 
-import { CONFIG } from '../config.js';
-import { World } from '../core/world.js';
-import { Camera } from '../services/camera.js';
-import { EventManager } from '../services/event-manager.js';
-import { LevelLoader } from '../services/level-loader.js';
-import { SpriteLoader } from '../services/sprite-loader.js';
-import { Renderer } from '../views/renderer.js';
-import { getSpritePaths } from '../views/sprite-registry.js';
-import { UI } from '../views/ui.js';
-import { getAdjacentPositions } from '../utils/helpers.js';
-import { getRoofLevel } from '../views/draw-order.js';
-import { Player } from '../models/player.js';
-import { MovementController } from './movement.js';
-import { EnemyAI } from './enemy-ai.js';
-import { CombatController } from './combat.js';
-import { ParticleController } from './particle-controller.js';
-import { InputController } from './input.js';
-import { ObjectDragController } from './object-drag.js';
-import { LifeCycleController } from './life-cycle.js';
+import { CONFIG } from './config.js';
+import { World } from './core/world.js';
+import { Camera } from './services/camera.js';
+import { EventManager } from './input/event-manager.js';
+import { LevelLoader } from './services/level-loader.js';
+import { SpriteLoader } from './services/sprite-loader.js';
+import { Renderer } from './views/renderer.js';
+import { getSpritePaths } from './views/sprite-registry.js';
+import { UI } from './views/ui.js';
+import { getAdjacentPositions } from './utils/helpers.js';
+import { getRoofLevel } from './views/draw-order.js';
+import { Player } from './models/player.js';
+import { MovementController } from './systems/movement.js';
+import { EnemyAI } from './systems/enemy-ai.js';
+import { CombatController } from './systems/combat.js';
+import { ParticleController } from './systems/particle-controller.js';
+import { InputController } from './input/input.js';
+import { ObjectDragController } from './systems/object-drag.js';
+import { LifeCycleController } from './systems/life-cycle.js';
 
 export class GameController {
   constructor() {

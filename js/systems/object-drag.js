@@ -1,4 +1,4 @@
-// js/controllers/object-drag.js
+// js/systems/object-drag.js
 
 import { CONFIG } from '../config.js';
 import { distance, getAdjacentPositions, isPositionAdjacentTo } from '../utils/helpers.js';
