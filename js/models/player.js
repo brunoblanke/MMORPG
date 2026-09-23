@@ -3,6 +3,7 @@
 import { Entity } from './entity.js';
 import { calculateStats } from '../utils/helpers.js';
 import { PLAYER_GENDERS, DEFAULT_GENDER } from '../../shared/catalog.js';
+import { isValidFloor } from '../../shared/constants.js';
 
 export class Player extends Entity {
   constructor(data) {
@@ -37,17 +38,58 @@ export class Player extends Entity {
       this.xp -= this.nextLevelXp;
       this.lvl++;
       levels++;
-
-      const stats = calculateStats(this.lvl);
-      this.hp = stats.hp;
-      this.maxHp = stats.hp;
-      this.currentHp = stats.hp;
-      this.atk = stats.atk;
-      this.def = stats.def;
-      this.spd = stats.spd;
-      this.nextLevelXp = this.calculateNextLevelXp();
+      this.applyLevelStats();
+      this.currentHp = this.hp;
     }
     return levels;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // applyLevelStats
+  // Vida máxima, ataque, defesa, velocidade e XP do próximo nível pelo lvl atual.
+
+  applyLevelStats() {
+    const stats = calculateStats(this.lvl);
+    this.hp = stats.hp;
+    this.maxHp = stats.hp;
+    this.atk = stats.atk;
+    this.def = stats.def;
+    this.spd = stats.spd;
+    this.nextLevelXp = this.calculateNextLevelXp();
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // toSave
+  // O que fica guardado do personagem entre uma sessão e outra.
+
+  toSave() {
+    return {
+      name: this.name,
+      gender: this.gender,
+      lvl: this.lvl,
+      xp: this.xp,
+      currentHp: this.currentHp,
+      x: this.x,
+      y: this.y,
+      z: this.z || 0
+    };
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // loadSave
+  // Volta nível, XP e vida guardados (valores fora do lugar são corrigidos).
+  // Devolve a posição guardada, ou null se ela não serve (o player fica no spawn).
+
+  loadSave(saved) {
+    if (!saved || typeof saved !== 'object') return null;
+
+    if (Number.isInteger(saved.lvl) && saved.lvl >= 1) this.lvl = saved.lvl;
+    this.applyLevelStats();
+    this.xp = Number.isInteger(saved.xp) ? Math.min(Math.max(saved.xp, 0), this.nextLevelXp - 1) : 0;
+    this.currentHp = Number.isInteger(saved.currentHp) && saved.currentHp > 0 ? Math.min(saved.currentHp, this.hp) : this.hp;
+
+    const hasPosition = Number.isInteger(saved.x) && Number.isInteger(saved.y) && isValidFloor(saved.z);
+    return hasPosition ? { x: saved.x, y: saved.y, z: saved.z } : null;
   }
 
   calculateNextLevelXp() {

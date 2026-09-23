@@ -55,18 +55,26 @@ export class Simulation {
 
   // ================================================================================================================================================================================================================================================
   // addPlayer
-  // Entra no spawn do mapa.
+  // Entra no spawn do mapa. Com data.saved (personagem guardado), volta com o
+  // nível, XP e vida dele, no lugar onde saiu — se esse lugar ainda existir e
+  // tiver um sqm livre por perto; senão, no spawn.
 
   addPlayer(id, data = {}) {
+    const { saved, ...info } = data;
     const spawn = getMapSpawn(this.mapData, { x: 132, y: 145, z: 0 });
-    const player = new Player({ id, x: spawn.x, y: spawn.y, z: spawn.z, lvl: 10, ...data });
-    const spot = this.findFreeSpot(player.x, player.y, player.z || 0);
+    const player = new Player({ id, x: spawn.x, y: spawn.y, z: spawn.z, lvl: 10, ...info });
+    const position = player.loadSave(saved);
+    const savedSpot = position && this.findSpotNear(position.x, position.y, position.z);
+    const spot = savedSpot || this.findFreeSpot(player.spawnX, player.spawnY, player.spawnZ);
+
     player.x = spot.x;
     player.y = spot.y;
+    player.z = savedSpot ? position.z : player.spawnZ;
     player.step = spot.step;
-    player.renderStep = spot.step;
     player.renderX = spot.x;
     player.renderY = spot.y;
+    player.renderZ = player.z;
+    player.renderStep = spot.step;
     this.players.push(player);
     this.world.addCreature(player);
     return player;
@@ -74,11 +82,20 @@ export class Simulation {
 
   // ================================================================================================================================================================================================================================================
   // findFreeSpot
-  // O sqm livre (pisável e sem ninguém) mais perto de (x, y, z), em anéis
-  // cada vez maiores, com a altura em que se fica nele. Sem nenhum até o raio
-  // 10, devolve o próprio (x, y).
+  // O sqm livre mais perto de (x, y, z) (findSpotNear). Sem nenhum até o
+  // raio 10, devolve o próprio (x, y).
 
   findFreeSpot(x, y, z) {
+    return this.findSpotNear(x, y, z) || { x, y, step: 0 };
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // findSpotNear
+  // O sqm livre (pisável e sem ninguém) mais perto de (x, y, z), em anéis
+  // cada vez maiores, com a altura em que se fica nele. null se não há
+  // nenhum até o raio 10.
+
+  findSpotNear(x, y, z) {
     for (let radius = 0; radius <= 10; radius++) {
       for (let dy = -radius; dy <= radius; dy++) {
         for (let dx = -radius; dx <= radius; dx++) {
@@ -91,7 +108,7 @@ export class Simulation {
         }
       }
     }
-    return { x, y, step: 0 };
+    return null;
   }
 
   // ================================================================================================================================================================================================================================================

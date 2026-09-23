@@ -9,6 +9,8 @@ const { WebSocketServer } = require('ws');
 const app = express();
 
 const MAP_DATA_PATH = path.join(__dirname, 'data', 'map.json');
+const CHARACTERS_PATH = path.join(__dirname, 'data', 'characters.json');
+const SAVE_INTERVAL_MS = 10000;
 const PORT = process.env.PORT || 8000;
 
 app.use(express.text({ type: 'text/plain', limit: '50mb' }));
@@ -79,7 +81,8 @@ function enderecosRede(porta) {
 // Roda a simulação (js/simulation.js) aqui no servidor, TICK_MS em TICK_MS, e
 // aceita jogadores por WebSocket em /ws: a conexão manda o nome e o gênero do
 // personagem ('join') e, aceito, vira um jogador que manda comandos e recebe, a cada
-// tick, o estado do jogo e os eventos.
+// tick, o estado do jogo e os eventos. Personagens ficam guardados pelo nome em
+// data/characters.json: ao sair, a cada SAVE_INTERVAL_MS e ao fechar o servidor.
 
 async function iniciarJogo(servidorHttp) {
   const { Simulation, TICK_MS } = await import('./js/simulation.js');
@@ -87,6 +90,7 @@ async function iniciarJogo(servidorHttp) {
 
   const mapData = JSON.parse(fs.readFileSync(MAP_DATA_PATH, 'utf8'));
   const sim = new Simulation(mapData);
+  const personagens = carregarPersonagens();
   const conexoes = new Map();
   let proximoJogador = 1;
 
@@ -107,9 +111,10 @@ async function iniciarJogo(servidorHttp) {
         }
         const playerId = `player${proximoJogador}`;
         proximoJogador++;
-        player = sim.addPlayer(playerId, { name: erro.name, gender: normalizeGender(mensagem.gender) });
+        const saved = personagens[erro.name.toLowerCase()];
+        player = sim.addPlayer(playerId, { name: erro.name, gender: normalizeGender(mensagem.gender), saved });
         conexoes.set(playerId, socket);
-        console.log(`🟢 ${player.name} entrou (${conexoes.size} online)`);
+        console.log(`🟢 ${player.name} entrou ${saved ? `(nível ${player.lvl}) ` : '(novo) '}(${conexoes.size} online)`);
         socket.send(JSON.stringify({ type: 'welcome', playerId }));
         return;
       }
@@ -121,6 +126,7 @@ async function iniciarJogo(servidorHttp) {
 
     socket.on('close', () => {
       if (!player) return;
+      guardarPersonagens(personagens, [player]);
       sim.removePlayer(player.id);
       conexoes.delete(player.id);
       console.log(`🔴 ${player.name} saiu (${conexoes.size} online)`);
@@ -137,6 +143,49 @@ async function iniciarJogo(servidorHttp) {
       enviarEstado(sim, conexoes, tempo, serializeState);
     }
   }, TICK_MS);
+
+  setInterval(() => guardarPersonagens(personagens, sim.players), SAVE_INTERVAL_MS);
+  for (const sinal of ['SIGINT', 'SIGTERM', 'SIGHUP']) {
+    process.on(sinal, () => {
+      guardarPersonagens(personagens, sim.players);
+      console.log('💾 Personagens salvos');
+      process.exit(0);
+    });
+  }
+}
+
+// ================================================================================================================================================================================================================================================
+// carregarPersonagens
+// Personagens guardados, pelo nome em minúsculas. Sem arquivo (ou com ele
+// estragado), começa vazio.
+
+function carregarPersonagens() {
+  try {
+    const personagens = JSON.parse(fs.readFileSync(CHARACTERS_PATH, 'utf8'));
+    return personagens && typeof personagens === 'object' ? personagens : {};
+  } catch (err) {
+    if (err.code !== 'ENOENT') console.error('❌ Erro ao ler personagens:', err.message);
+    return {};
+  }
+}
+
+// ================================================================================================================================================================================================================================================
+// guardarPersonagens
+// Atualiza os jogadores na lista e grava o arquivo (primeiro num temporário,
+// pra não estragar o arquivo se o servidor cair no meio).
+
+function guardarPersonagens(personagens, jogadores) {
+  if (jogadores.length === 0) return;
+  for (const jogador of jogadores) {
+    personagens[jogador.name.toLowerCase()] = jogador.toSave();
+  }
+  try {
+    const temporario = CHARACTERS_PATH + '.tmp';
+    fs.writeFileSync(temporario, JSON.stringify(personagens, null, 2), 'utf8');
+    fs.renameSync(temporario, CHARACTERS_PATH);
+  } catch (err) {
+    console.error('❌ Erro ao salvar personagens:', err.message);
+  }
 }
 
 // ================================================================================================================================================================================================================================================

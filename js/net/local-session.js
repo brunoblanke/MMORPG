@@ -3,9 +3,11 @@
 import { Simulation, TICK_MS } from '../simulation.js';
 
 const MAX_TICKS_PER_FRAME = 10;
+const SAVE_INTERVAL_MS = 5000;
 
 // Jogo sozinho: a simulação roda no próprio navegador (sem servidor de jogo,
-// ex.: hospedagem só de arquivos). Mesma interface da RemoteSession.
+// ex.: hospedagem só de arquivos). Mesma interface da RemoteSession. O
+// personagem fica guardado no localStorage deste navegador, pelo nome.
 
 export class LocalSession {
 
@@ -15,9 +17,36 @@ export class LocalSession {
   constructor(mapData, name = 'Player', gender) {
     this.sim = new Simulation(mapData);
     this.playerId = 'player1';
-    this.sim.addPlayer(this.playerId, { name, gender });
+    this.storageKey = `character:${name.toLowerCase()}`;
+    this.sim.addPlayer(this.playerId, { name, gender, saved: this.loadCharacter() });
     this.simTime = null;
+    this.lastSave = 0;
     this.isOnline = false;
+    window.addEventListener('beforeunload', () => this.saveCharacter());
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // loadCharacter
+
+  loadCharacter() {
+    try {
+      return JSON.parse(localStorage.getItem(this.storageKey));
+    } catch {
+      return null;
+    }
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // saveCharacter
+
+  saveCharacter() {
+    const player = this.player;
+    if (!player) return;
+    try {
+      localStorage.setItem(this.storageKey, JSON.stringify(player.toSave()));
+    } catch {
+      return;
+    }
   }
 
   get world() { return this.sim.world; }
@@ -50,6 +79,10 @@ export class LocalSession {
       ticks++;
     }
     if (ticks === MAX_TICKS_PER_FRAME) this.simTime = timestamp;
+    if (timestamp - this.lastSave >= SAVE_INTERVAL_MS) {
+      this.lastSave = timestamp;
+      this.saveCharacter();
+    }
     return this.sim.drainEvents();
   }
 }
