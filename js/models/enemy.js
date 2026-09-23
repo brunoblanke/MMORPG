@@ -5,13 +5,22 @@ import { distance } from '../utils/helpers.js';
 import { CONFIG } from '../config.js';
 import { CREATURE_TYPES, DEFAULT_CREATURE } from '../../shared/catalog.js';
 
+export const AI_STATE = { PATROL: 'patrol', CHASE: 'chase' };
+
 export class Enemy extends Entity {
   constructor(data) {
     super(data);
     this.patrolRadius = data.patrolRadius || CONFIG.patrolRadius || 3;
     this.detectionRadius = data.detectionRadius || CONFIG.detectionRadius || 6;
     this.xpValue = data.xpValue || 20;
-    this.isChasing = false;
+    this.ai = {
+      state: AI_STATE.PATROL,
+      slot: null,
+      resumeAt: null,
+      retryAt: 0,
+      rerouteAt: 0,
+      sidestepAt: null
+    };
     this.patrolCenterX = data.x;
     this.patrolCenterY = data.y;
     this.spawnZ = data.z || 0;

@@ -31,6 +31,8 @@ export class Entity {
     this.atk = stats.atk;
     this.def = stats.def;
     
+    this.route = { path: null, x: null, y: null };
+
     this.lastMoveTime = 0;
     this.lastAttackTime = 0;
     

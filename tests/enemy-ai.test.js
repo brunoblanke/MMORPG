@@ -75,7 +75,7 @@ test('cercando, dois inimigos nunca ocupam o mesmo sqm', () => {
     const spots = game.enemies.map(e => `${e.x},${e.y},${e.z}`);
     assert.equal(new Set(spots).size, spots.length);
     assert.ok(!game.enemies.some(e => e.x === 12 && e.y === 12));
-    const slots = game.enemies.filter(e => e.isChasing && e.chaseTarget).map(e => `${e.chaseTarget.x},${e.chaseTarget.y}`);
+    const slots = game.enemies.filter(e => e.ai.state === 'chase' && e.ai.slot).map(e => `${e.ai.slot.x},${e.ai.slot.y}`);
     assert.equal(new Set(slots).size, slots.length);
   });
 });
@@ -89,8 +89,8 @@ test('casa trancada: sem rota até o player, o inimigo volta a patrulhar', () =>
   const enemy = game.enemies[0];
 
   run(game, 200);
-  assert.equal(enemy.isChasing, false);
-  assert.ok(enemy.noRouteUntil > 0);
+  assert.equal(enemy.ai.state, 'patrol');
+  assert.ok(enemy.ai.retryAt > 0);
 
   run(game, 15000, () => {
     assert.ok(Math.abs(enemy.x - 12) > 1 || Math.abs(enemy.y - 12) > 1);
@@ -119,7 +119,7 @@ test('player em outro andar (sobre a pilha alta) não é perseguido', () => {
   placeAt(game, game.player, 12, 12, 0, 4);
 
   run(game, 3000);
-  assert.equal(game.enemies[0].isChasing, false);
+  assert.equal(game.enemies[0].ai.state, 'patrol');
 });
 
 test('patrulha fica dentro da área do inimigo', () => {

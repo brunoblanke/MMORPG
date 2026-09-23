@@ -166,59 +166,52 @@ export class MovementController {
   }
 
   // ================================================================================================================================================================================================================================================
-  // ensureChasePath
-  // Recalcula entity.chasePath se o alvo mudou. Retorna false se não há caminho possível.
+  // ensureRoute
+  // entity.route = { path, x, y }: caminho no mesmo andar até (x, y).
+  // Recalcula se o alvo mudou ou o caminho acabou. false se não há caminho possível.
 
-  ensureChasePath(entity, targetPos, searchBounds) {
-    const needsNewPath = !entity.chasePath ||
-      entity.chasePath.length === 0 ||
-      entity.chasePathTargetX !== targetPos.x ||
-      entity.chasePathTargetY !== targetPos.y;
-
+  ensureRoute(entity, targetPos, searchBounds) {
+    const route = entity.route;
+    const needsNewPath = !route.path || route.path.length === 0 || route.x !== targetPos.x || route.y !== targetPos.y;
     if (!needsNewPath) return true;
 
     if (this.getPassableStep(targetPos.x, targetPos.y, entity.z || 0, entity.step || 0) === null) {
-      entity.chasePath = null;
+      route.path = null;
       return false;
     }
 
     const newPath = this.findPathWithFallback(entity, targetPos, searchBounds);
     if (newPath.length === 0) {
-      entity.chasePath = null;
+      route.path = null;
       return false;
     }
 
-    entity.chasePath = newPath;
-    entity.chasePathTargetX = targetPos.x;
-    entity.chasePathTargetY = targetPos.y;
+    entity.route = { path: newPath, x: targetPos.x, y: targetPos.y };
     return true;
   }
 
   // ================================================================================================================================================================================================================================================
-  // followChasePath
-  // Dá o próximo passo de entity.chasePath. isNextBlocked(nextStep) permite ao
+  // followRoute
+  // Dá o próximo passo de entity.route. isNextBlocked(nextStep) permite ao
   // chamador esperar sem descartar o caminho; se o passo não termina mais onde
   // o caminho previa, o caminho é descartado (recalculado no próximo quadro).
 
-  followChasePath(entity, timestamp, isNextBlocked) {
-    if (!entity.chasePath || entity.chasePath.length === 0) {
-      return;
-    }
+  followRoute(entity, timestamp, isNextBlocked) {
+    const path = entity.route.path;
+    if (!path || path.length === 0) return;
 
     const moveDelay = calculateMoveDelay(entity.spd);
     if (timestamp - entity.lastMoveTime < moveDelay) return;
 
-    const nextStep = entity.chasePath[0];
-    if (isNextBlocked(nextStep)) {
-      return;
-    }
+    const nextStep = path[0];
+    if (isNextBlocked(nextStep)) return;
 
     if (!this.stepAlongPath(entity, nextStep, timestamp)) {
-      entity.chasePath = null;
+      entity.route.path = null;
       return;
     }
 
-    entity.chasePath.shift();
+    path.shift();
   }
 
   // ================================================================================================================================================================================================================================================
@@ -227,7 +220,7 @@ export class MovementController {
   moveTowardsPosition(entity, targetX, targetY, timestamp, targetEntity = null, searchBounds = null, enemies = []) {
     const isAdjacent = isPositionAdjacentTo(entity.x, entity.y, targetX, targetY);
     if (isAdjacent) {
-      entity.chasePath = null;
+      entity.route.path = null;
       return;
     }
 
@@ -235,13 +228,13 @@ export class MovementController {
       ? (this.findBestSurroundPosition(entity, targetX, targetY, enemies) || { x: targetX, y: targetY })
       : { x: targetX, y: targetY };
 
-    if (!this.ensureChasePath(entity, targetPos, searchBounds)) {
+    if (!this.ensureRoute(entity, targetPos, searchBounds)) {
       if (this.onNoPath) this.onNoPath(timestamp);
       return;
     }
 
     const floor = entity.z || 0;
-    this.followChasePath(entity, timestamp, (nextStep) => this.isBlocked(nextStep.x, nextStep.y, floor, targetEntity));
+    this.followRoute(entity, timestamp, (nextStep) => this.isBlocked(nextStep.x, nextStep.y, floor, targetEntity));
   }
 
   // ================================================================================================================================================================================================================================================
@@ -302,7 +295,7 @@ export class MovementController {
       entity.renderY = entity.y;
       entity.renderZ = entity.z;
       entity.isMoving = false;
-      entity.chasePath = null;
+      entity.route.path = null;
 
       const who = entity.isPlayer ? 'Player' : `Inimigo ${entity.id}`;
       const via = transitionObj.stairDirection === 'up' ? 'escada' : 'buraco';
