@@ -181,3 +181,19 @@ test('o mapa real roda sem navegador: 2 minutos de jogo', () => {
   assert.equal(sim.players.length, 1);
   assert.ok(elapsed < 20000, `demorou ${elapsed.toFixed(0)} ms`);
 });
+
+test('jogadores entram e renascem em sqms livres, nunca um em cima do outro', () => {
+  const sim = buildGame({ objects: GROUND, player: { x: 5, y: 5, z: 0 } });
+  const others = [sim.addPlayer('player2'), sim.addPlayer('player3')];
+  const spots = [sim.player, ...others].map(p => `${p.x},${p.y}`);
+  assert.equal(new Set(spots).size, 3);
+  assert.deepEqual([sim.player.x, sim.player.y], [5, 5]);
+
+  sim.enqueue('player1', { type: 'walkTo', x: 12, y: 5, z: 0 });
+  runFor(sim, 3000);
+  sim.player.currentHp = 0;
+  runFor(sim, TICK_MS);
+  const after = [sim.player, ...others].map(p => `${p.x},${p.y}`);
+  assert.equal(new Set(after).size, 3);
+  assert.ok(Math.abs(sim.player.x - 5) <= 1 && Math.abs(sim.player.y - 5) <= 1);
+});

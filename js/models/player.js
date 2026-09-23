@@ -7,6 +7,7 @@ export class Player extends Entity {
   constructor(data) {
     super(data);
     this.isPlayer = true;
+    this.name = data.name || 'Player';
     this.spawnX = data.x;
     this.spawnY = data.y;
     this.xp = data.xp || 0;
@@ -38,14 +39,14 @@ export class Player extends Entity {
     return 100 + this.lvl * 20;
   }
 
-  respawn() {
+  respawn(spot = { x: this.spawnX, y: this.spawnY }) {
     const xpLoss = Math.floor(this.xp * 0.2);
     this.xp = Math.max(0, this.xp - xpLoss);
 
-    this.x = this.spawnX;
-    this.y = this.spawnY;
-    this.renderX = this.spawnX;
-    this.renderY = this.spawnY;
+    this.x = spot.x;
+    this.y = spot.y;
+    this.renderX = spot.x;
+    this.renderY = spot.y;
     this.z = 0;
     this.step = 0;
     this.renderZ = 0;

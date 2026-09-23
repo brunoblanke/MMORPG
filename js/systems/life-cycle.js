@@ -21,6 +21,7 @@ export class LifeCycleController {
     const corpse = {
       id: `Corpse_${this.corpseCounter}`,
       ownerId: entity.id,
+      name: entity.name || entity.creature,
       x: entity.x,
       y: entity.y,
       z: entity.z || 0,
@@ -68,8 +69,11 @@ export class LifeCycleController {
     const { world, control } = this.sim;
     this.clearPlayerCorpse(player);
     this.createCorpse(player, 'player_corpse', now);
-    world.moveEntityTile(player, player.x, player.y, player.z || 0, player.spawnX, player.spawnY, 0);
-    player.respawn();
+    const spot = this.sim.findFreeSpot(player.spawnX, player.spawnY, 0);
+    world.moveEntityTile(player, player.x, player.y, player.z || 0, spot.x, spot.y, 0);
+    player.respawn(spot);
+    player.step = spot.step;
+    player.renderStep = spot.step;
     control.clearWalk(player);
     if (player.target) player.target = null;
     this.sim.emit({ type: 'death', playerId: player.id });

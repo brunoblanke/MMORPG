@@ -33,7 +33,7 @@ export class CombatController {
     const damage = this.calculateDamage(attacker, defender);
     const hpLeft = defender.takeDamage(damage, now);
     attacker.lastAttackTime = now;
-    this.sim.emit({ type: 'damage', x: defender.x, y: defender.y, amount: damage });
+    this.sim.emit({ type: 'damage', targetId: defender.id, x: defender.x, y: defender.y, amount: damage });
     return hpLeft;
   }
 

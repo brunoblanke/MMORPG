@@ -2,8 +2,10 @@
 
 const express = require('express');
 const fs = require('fs');
+const http = require('http');
 const os = require('os');
 const path = require('path');
+const { WebSocketServer } = require('ws');
 const app = express();
 
 const MAP_DATA_PATH = path.join(__dirname, 'data', 'map.json');
@@ -15,7 +17,8 @@ app.use(liberarCors);
 app.post('/api/save-map', salvarMapa);
 app.use(express.static(__dirname));
 
-iniciarServidor(app, PORT);
+const servidor = http.createServer(app);
+iniciarJogo(servidor).then(() => iniciarServidor(servidor, PORT));
 
 // ================================================================================================================================================================================================================================================
 // liberarCors
@@ -72,6 +75,79 @@ function enderecosRede(porta) {
 }
 
 // ================================================================================================================================================================================================================================================
+// iniciarJogo
+// Roda a simulação (js/simulation.js) aqui no servidor, TICK_MS em TICK_MS, e
+// aceita jogadores por WebSocket em /ws: cada conexão vira um jogador, manda
+// comandos e recebe, a cada tick, o estado do jogo e os eventos.
+
+async function iniciarJogo(servidorHttp) {
+  const { Simulation, TICK_MS } = await import('./js/simulation.js');
+  const { serializeState } = await import('./js/net/protocol.js');
+
+  const mapData = JSON.parse(fs.readFileSync(MAP_DATA_PATH, 'utf8'));
+  const sim = new Simulation(mapData);
+  const conexoes = new Map();
+  let proximoJogador = 1;
+
+  const wss = new WebSocketServer({ server: servidorHttp, path: '/ws' });
+  wss.on('connection', (socket) => {
+    const playerId = `player${proximoJogador}`;
+    const player = sim.addPlayer(playerId, { name: `Player ${proximoJogador}` });
+    proximoJogador++;
+    conexoes.set(playerId, socket);
+    console.log(`🟢 ${player.name} entrou (${conexoes.size} online)`);
+    socket.send(JSON.stringify({ type: 'welcome', playerId }));
+
+    socket.on('message', (dados) => receberComando(sim, playerId, dados));
+    socket.on('close', () => {
+      sim.removePlayer(playerId);
+      conexoes.delete(playerId);
+      console.log(`🔴 ${player.name} saiu (${conexoes.size} online)`);
+    });
+  });
+
+  const inicio = Date.now();
+  let tempo = 0;
+  setInterval(() => {
+    const agora = Date.now() - inicio;
+    while (tempo + TICK_MS <= agora) {
+      tempo += TICK_MS;
+      sim.tick(tempo);
+      enviarEstado(sim, conexoes, tempo, serializeState);
+    }
+  }, TICK_MS);
+}
+
+// ================================================================================================================================================================================================================================================
+// receberComando
+
+function receberComando(sim, playerId, dados) {
+  let mensagem;
+  try {
+    mensagem = JSON.parse(dados);
+  } catch {
+    return;
+  }
+  if (mensagem && mensagem.type === 'command' && mensagem.command && typeof mensagem.command.type === 'string') {
+    sim.enqueue(playerId, mensagem.command);
+  }
+}
+
+// ================================================================================================================================================================================================================================================
+// enviarEstado
+// Um estado por jogador (cada um recebe o próprio alvo/caminho), com os
+// eventos do tick.
+
+function enviarEstado(sim, conexoes, tempo, serializeState) {
+  const events = sim.drainEvents();
+  for (const [playerId, socket] of conexoes) {
+    if (socket.readyState !== socket.OPEN) continue;
+    const state = serializeState(sim, playerId);
+    socket.send(JSON.stringify({ type: 'state', time: tempo, state, events }));
+  }
+}
+
+// ================================================================================================================================================================================================================================================
 // iniciarServidor
 
 function iniciarServidor(servidor, porta) {
@@ -80,6 +156,7 @@ function iniciarServidor(servidor, porta) {
     for (const endereco of enderecosRede(porta)) {
       console.log(`🌐 Na rede: ${endereco}`);
     }
+    console.log(`🎮 Multiplayer: abra o endereço acima em mais de uma aba ou computador`);
     console.log(`📝 Editor em: http://localhost:${porta}/editor/\n`);
   });
 }

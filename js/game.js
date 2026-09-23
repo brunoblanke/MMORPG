@@ -1,7 +1,8 @@
 // js/game.js
 
 import { CONFIG } from './config.js';
-import { Simulation, TICK_MS } from './simulation.js';
+import { LocalSession } from './net/local-session.js';
+import { RemoteSession } from './net/remote-session.js';
 import { loadMapDataFromURL } from '../shared/map-format.js';
 import { Camera } from './services/camera.js';
 import { EventManager } from './input/event-manager.js';
@@ -13,11 +14,10 @@ import { getRoofLevel } from './views/draw-order.js';
 import { ParticleController } from './systems/particle-controller.js';
 import { InputController } from './input/input.js';
 
-const MAX_TICKS_PER_FRAME = 10;
-
-// Cliente: carrega o mapa, roda a simulação (simulation.js) no ritmo fixo de
-// TICK_MS, transforma teclado/mouse em comandos (send) e desenha. Não mexe no
-// estado do jogo: só lê o que a simulação expõe.
+// Cliente: carrega o mapa, conecta no servidor de jogo (RemoteSession) ou,
+// sem servidor, roda a simulação aqui mesmo (LocalSession). Transforma
+// teclado/mouse em comandos (send) e desenha. Não mexe no estado do jogo:
+// só lê o que a sessão expõe.
 
 export class GameController {
   constructor() {
@@ -30,10 +30,7 @@ export class GameController {
     this.ui = new UI();
     this.particleController = new ParticleController();
 
-    this.playerId = 'player1';
-    this.sim = null;
-    this.player = null;
-    this.simTime = null;
+    this.session = null;
 
     this.devMode = CONFIG.devMode !== undefined ? CONFIG.devMode : false;
     this.renderer.setDevMode(this.devMode);
@@ -52,11 +49,14 @@ export class GameController {
       return {};
     });
 
-    Promise.all([spritesReady, mapReady]).then(([, mapData]) => {
-      this.initializeGame(mapData);
-      this.setupEventListeners();
-      this.start();
-    });
+    Promise.all([spritesReady, mapReady])
+      .then(([, mapData]) => this.openSession(mapData))
+      .then((session) => {
+        this.session = session;
+        this.inputController = new InputController(this.canvas, this.renderer, this.camera, this.eventManager, this);
+        this.setupEventListeners();
+        this.start();
+      });
   }
 
   // ================================================================================================================================================================================================================================================
@@ -69,20 +69,35 @@ export class GameController {
   }
 
   // ================================================================================================================================================================================================================================================
-  // initializeGame
+  // openSession
+  // Tenta o servidor de jogo (multiplayer); sem ele, joga sozinho no navegador.
 
-  initializeGame(mapData) {
-    this.sim = new Simulation(mapData);
-    this.player = this.sim.addPlayer(this.playerId);
-    this.inputController = new InputController(this.canvas, this.renderer, this.camera, this.eventManager, this);
+  openSession(mapData) {
+    return RemoteSession.connect(mapData)
+      .then((session) => {
+        console.log(`🌐 Conectado ao servidor como ${session.playerId}`);
+        session.onDisconnect = () => this.showMessage('Conexão com o servidor perdida — recarregue a página', performance.now(), 600000);
+        return session;
+      })
+      .catch((error) => {
+        console.log(`🕹️ Jogando sozinho (${error.message})`);
+        return new LocalSession(mapData);
+      });
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // player
+
+  get player() {
+    return this.session ? this.session.player : null;
   }
 
   // ================================================================================================================================================================================================================================================
   // send
-  // Manda um comando do jogador pra simulação (no multiplayer, pro servidor).
+  // Manda um comando do jogador pra sessão (servidor ou simulação local).
 
   send(command) {
-    this.sim.enqueue(this.playerId, command);
+    this.session.send(command);
   }
 
   // ================================================================================================================================================================================================================================================
@@ -149,6 +164,7 @@ export class GameController {
   // Clique em inimigo escolhe/tira o alvo; no chão, anda até o piso que aparece ali.
 
   handleGameClick(gridPos) {
+    if (!this.player) return;
     if (this.trySelectEnemyAtMouse()) return;
 
     const floor = this.getVisibleFloorAt(gridPos.x, gridPos.y) ?? (this.player.z || 0);
@@ -162,7 +178,7 @@ export class GameController {
   // sob o teto do player. Escada/buraco contam como piso. null se não há nada.
 
   getVisibleFloorAt(x, y) {
-    const world = this.sim.world;
+    const world = this.session.world;
     const roofLevel = getRoofLevel(this.player, world);
     let best = null;
     for (const obj of world.getObjectsAt(x, y)) {
@@ -181,7 +197,7 @@ export class GameController {
   trySelectEnemyAtMouse() {
     const offset = this.camera.getOffset();
 
-    for (const enemy of this.sim.enemies) {
+    for (const enemy of this.session.enemies) {
       if (!enemy.isAlive()) continue;
       const hit = this.renderer.isPointInCube(
         this.inputController.mouseX,
@@ -206,49 +222,33 @@ export class GameController {
   // handleSimEvents
   // O que a simulação avisou no tick: números de dano/XP e mensagens.
 
-  handleSimEvents(timestamp) {
-    for (const event of this.sim.drainEvents()) {
+  handleSimEvents(events, timestamp) {
+    const playerId = this.session.playerId;
+    for (const event of events) {
       if (event.type === 'damage') {
         this.particleController.spawnDamage(event.x, event.y, event.amount, this.renderer);
-      } else if (event.type === 'xp' && event.playerId === this.playerId) {
+      } else if (event.type === 'xp' && event.playerId === playerId) {
         this.particleController.spawnXP(event.x, event.y, event.amount, this.renderer);
-      } else if (event.type === 'message' && event.playerId === this.playerId) {
+      } else if (event.type === 'message' && event.playerId === playerId) {
         this.showMessage(event.text, timestamp);
       }
     }
   }
 
   // ================================================================================================================================================================================================================================================
-  // runTicks
-  // Avança a simulação em passos fixos de TICK_MS até alcançar o relógio da
-  // tela. Se a aba ficou parada (muitos ticks atrasados), pula o atraso.
-
-  runTicks(timestamp) {
-    if (this.simTime === null) this.simTime = timestamp - TICK_MS;
-
-    let ticks = 0;
-    while (this.simTime + TICK_MS <= timestamp && ticks < MAX_TICKS_PER_FRAME) {
-      this.simTime += TICK_MS;
-      this.sim.tick(this.simTime);
-      ticks++;
-    }
-    if (ticks === MAX_TICKS_PER_FRAME) this.simTime = timestamp;
-  }
-
-  // ================================================================================================================================================================================================================================================
   // updateAnimations
 
   updateAnimations(timestamp) {
-    for (const player of this.sim.players) player.updateAnimation(timestamp);
-    for (const enemy of this.sim.enemies) enemy.updateAnimation(timestamp);
+    for (const player of this.session.players) player.updateAnimation(timestamp);
+    for (const enemy of this.session.enemies) enemy.updateAnimation(timestamp);
   }
 
   // ================================================================================================================================================================================================================================================
   // update
 
   update(timestamp) {
-    this.runTicks(timestamp);
-    this.handleSimEvents(timestamp);
+    this.handleSimEvents(this.session.update(timestamp), timestamp);
+    if (!this.player) return;
 
     this.updateAnimations(timestamp);
     this.particleController.update(timestamp);
@@ -258,11 +258,11 @@ export class GameController {
     }
 
     this.inputController.updateHoverEnemy(
-      this.sim.enemies,
-      this.sim.world,
+      this.session.enemies,
+      this.session.world,
       this.camera.getOffset(),
       this.player,
-      this.sim.deadBodies
+      this.session.deadBodies
     );
   }
 
@@ -270,13 +270,14 @@ export class GameController {
   // render
 
   render() {
+    if (!this.player) return;
     const gameState = {
       player: this.player,
-      players: this.sim.players,
-      enemies: this.sim.enemies,
-      objects: this.sim.objects,
-      world: this.sim.world,
-      deadBodies: this.sim.deadBodies,
+      players: this.session.players,
+      enemies: this.session.enemies,
+      objects: this.session.objects,
+      world: this.session.world,
+      deadBodies: this.session.deadBodies,
       inputController: this.inputController,
       statusMessage: this.statusMessage
     };

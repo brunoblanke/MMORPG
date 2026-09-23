@@ -4,9 +4,9 @@
 // getEntityName
 
 function getEntityName(entity, isPlayer, isEnemy, isCorpse) {
-  if (isPlayer) return 'Player 1';
+  if (isCorpse) return entity.name || entity.creature;
+  if (isPlayer) return entity.name || 'Player';
   if (isEnemy) return entity.creature;
-  if (isCorpse) return entity.isPlayer ? 'Player 1' : entity.creature;
   return '';
 }
 

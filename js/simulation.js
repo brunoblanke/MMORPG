@@ -59,9 +59,38 @@ export class Simulation {
   addPlayer(id, data = {}) {
     const spawn = getMapSpawn(this.mapData, { x: 132, y: 145, z: 0 });
     const player = new Player({ id, x: spawn.x, y: spawn.y, z: spawn.z, lvl: 10, ...data });
+    const spot = this.findFreeSpot(player.x, player.y, player.z || 0);
+    player.x = spot.x;
+    player.y = spot.y;
+    player.step = spot.step;
+    player.renderStep = spot.step;
+    player.renderX = spot.x;
+    player.renderY = spot.y;
     this.players.push(player);
     this.world.addCreature(player);
     return player;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // findFreeSpot
+  // O sqm livre (pisável e sem ninguém) mais perto de (x, y, z), em anéis
+  // cada vez maiores, com a altura em que se fica nele. Sem nenhum até o raio
+  // 10, devolve o próprio (x, y).
+
+  findFreeSpot(x, y, z) {
+    for (let radius = 0; radius <= 10; radius++) {
+      for (let dy = -radius; dy <= radius; dy++) {
+        for (let dx = -radius; dx <= radius; dx++) {
+          if (Math.max(Math.abs(dx), Math.abs(dy)) !== radius) continue;
+          const px = x + dx;
+          const py = y + dy;
+          if (!this.world.isInside(px, py) || this.world.isBlocked(px, py, z) || this.world.getTransitionAt(px, py, z)) continue;
+          const step = this.world.getPassableStep(px, py, z);
+          if (step !== null) return { x: px, y: py, step };
+        }
+      }
+    }
+    return { x, y, step: 0 };
   }
 
   // ================================================================================================================================================================================================================================================
