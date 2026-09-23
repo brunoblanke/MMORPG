@@ -39,9 +39,10 @@ export function applyTool(x, y, clientX, clientY) {
     return;
   }
   if (state.tool === 'spawn') {
-    const layer = state.layers[state.activeZ];
-    Object.values(layer).forEach(c => { c.spawn = false; });
-    layer[`${x},${y}`].spawn = true;
+    for (const other of Object.values(state.layers)) {
+      Object.values(other).forEach(c => { c.spawn = false; });
+    }
+    state.layers[state.activeZ][`${x},${y}`].spawn = true;
     scheduleRender();
     return;
   }

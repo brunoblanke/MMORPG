@@ -197,3 +197,13 @@ test('jogadores entram e renascem em sqms livres, nunca um em cima do outro', ()
   assert.equal(new Set(after).size, 3);
   assert.ok(Math.abs(sim.player.x - 5) <= 1 && Math.abs(sim.player.y - 5) <= 1);
 });
+
+test('spawn num andar acima do térreo: o jogador nasce e renasce nele', () => {
+  const sim = buildGame({ objects: [...GROUND, ...floorRect(3, 8, 3, 8, 2)], player: { x: 5, y: 5, z: 2 } });
+  assert.deepEqual([sim.player.x, sim.player.y, sim.player.z], [5, 5, 2]);
+  assert.deepEqual(sim.world.getTileEntities(5, 5, 2), [sim.player]);
+
+  sim.player.currentHp = 0;
+  runFor(sim, TICK_MS);
+  assert.deepEqual([sim.player.x, sim.player.y, sim.player.z], [5, 5, 2]);
+});
