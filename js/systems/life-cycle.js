@@ -113,22 +113,29 @@ export class LifeCycleController {
 
   // ================================================================================================================================================================================================================================================
   // respawnEnemy
+  // Renasce no lugar original do mapa (spawnX/Y/Z), não onde morreu nem onde
+  // estava patrulhando. Se alguém estiver em cima, no sqm livre mais perto.
 
   respawnEnemy(enemy) {
+    const spot = this.sim.findFreeSpot(enemy.spawnX, enemy.spawnY, enemy.spawnZ);
     const respawnedEnemy = new Enemy({
       id: enemy.id,
       color: enemy.color,
       lvl: enemy.lvl,
       creature: enemy.creature,
       type: "enemy",
-      x: enemy.patrolCenterX,
-      y: enemy.patrolCenterY,
+      x: spot.x,
+      y: spot.y,
       z: enemy.spawnZ,
+      step: spot.step,
+      spawnX: enemy.spawnX,
+      spawnY: enemy.spawnY,
+      spawnZ: enemy.spawnZ,
       height: 1
     });
     this.sim.enemies.push(respawnedEnemy);
     this.sim.world.addCreature(respawnedEnemy);
-    console.log(`♻️ ${enemy.creature} LV${enemy.lvl} respawnou em (${enemy.patrolCenterX}, ${enemy.patrolCenterY}, ${enemy.spawnZ})`);
+    console.log(`♻️ ${enemy.creature} LV${enemy.lvl} respawnou em (${spot.x}, ${spot.y}, ${enemy.spawnZ})`);
   }
 
   // ================================================================================================================================================================================================================================================

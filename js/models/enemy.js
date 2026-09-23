@@ -20,9 +20,11 @@ export class Enemy extends Entity {
       rerouteAt: 0,
       sidestepAt: null
     };
-    this.patrolCenterX = data.x;
-    this.patrolCenterY = data.y;
-    this.spawnZ = data.z || 0;
+    this.spawnX = data.spawnX ?? data.x;
+    this.spawnY = data.spawnY ?? data.y;
+    this.spawnZ = data.spawnZ ?? (data.z || 0);
+    this.patrolCenterX = this.spawnX;
+    this.patrolCenterY = this.spawnY;
     // Tipo da criatura (nome em CREATURE_TYPES): define nome, sprite e cadáver.
     this.creature = CREATURE_TYPES[data.creature] ? data.creature : DEFAULT_CREATURE;
   }

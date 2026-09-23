@@ -207,3 +207,34 @@ test('spawn num andar acima do térreo: o jogador nasce e renasce nele', () => {
   runFor(sim, TICK_MS);
   assert.deepEqual([sim.player.x, sim.player.y, sim.player.z], [5, 5, 2]);
 });
+
+test('inimigo morto renasce no lugar original do mapa, mesmo tendo perseguido pra longe', () => {
+  const sim = buildGame({ objects: GROUND, enemies: [[18, 18, 0, 1]], player: { x: 12, y: 18, z: 0 } });
+  const enemy = sim.enemies[0];
+  runFor(sim, 6000);
+  assert.ok(enemy.x !== 18 || enemy.y !== 18, 'o inimigo deveria ter saído do lugar perseguindo');
+
+  sim.enqueue('player1', { type: 'walkTo', x: 2, y: 2, z: 0 });
+  runFor(sim, 8000);
+  assert.equal(enemy.ai.state, 'patrol');
+  assert.ok(enemy.patrolCenterX !== 18 || enemy.patrolCenterY !== 18, 'a patrulha deveria ter mudado de centro');
+
+  enemy.currentHp = 0;
+  runFor(sim, CONFIG.enemyRespawnTime + 2 * TICK_MS);
+  const reborn = sim.enemies.find(e => e.id === enemy.id);
+  assert.ok(reborn && reborn !== enemy);
+  assert.deepEqual([reborn.x, reborn.y, reborn.z], [18, 18, 0]);
+  assert.deepEqual([reborn.patrolCenterX, reborn.patrolCenterY], [18, 18]);
+});
+
+test('se tiver alguém no lugar original, o inimigo renasce no sqm livre mais perto', () => {
+  const sim = buildGame({ objects: GROUND, enemies: [[18, 18, 0, 1]], safe: [[18, 18, 0], [17, 17, 0], [18, 17, 0], [19, 17, 0], [17, 18, 0], [19, 18, 0], [17, 19, 0], [18, 19, 0], [19, 19, 0]], player: { x: 2, y: 2, z: 0 } });
+  const enemy = sim.enemies[0];
+  enemy.currentHp = 0;
+  runFor(sim, TICK_MS);
+  sim.world.moveEntityTile(sim.player, sim.player.x, sim.player.y, 0, 18, 18, 0);
+  Object.assign(sim.player, { x: 18, y: 18 });
+  runFor(sim, CONFIG.enemyRespawnTime + TICK_MS);
+  const reborn = sim.enemies.find(e => e.id === enemy.id);
+  assert.ok(Math.max(Math.abs(reborn.x - 18), Math.abs(reborn.y - 18)) === 1, `em ${reborn.x},${reborn.y}`);
+});
