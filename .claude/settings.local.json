@@ -1,7 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "PowerShell(Get-ChildItem -Recurse -File -Path js,shared,editor,css,data | Where-Object { $_.FullName -notmatch 'node_modules' } | ForEach-Object { \"{0,6} {1}\" -f \\(Get-Content $_.FullName | Measure-Object -Line\\).Lines, $_.FullName.Substring\\(\\(Get-Location\\).Path.Length+1\\) }; Get-Content package.json; Get-Content index.html; Get-Content server.js)"
-    ]
-  }
-}
