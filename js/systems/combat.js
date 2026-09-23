@@ -1,6 +1,6 @@
 // js/systems/combat.js
 
-import { isPositionAdjacentTo } from '../utils/helpers.js';
+import { isPositionAdjacentTo, distance } from '../utils/helpers.js';
 import { getLevel } from '../core/geometry.js';
 import { CONFIG } from '../config.js';
 
@@ -39,24 +39,42 @@ export class CombatController {
 
   // ================================================================================================================================================================================================================================================
   // processPlayer
-  // O player ataca o alvo colado nele, no mesmo andar; senão, com o seguir
-  // ligado, vai até ele.
+  // Com alvo, o player está sempre num destes estados:
+  //   perdeu o alvo (outro andar ou longe demais) → larga o alvo e avisa;
+  //   colado no alvo → ataca;
+  //   seguir ligado → anda até ele;
+  //   seguir desligado (andou pelas teclas) → só espera: ataca se o alvo
+  //   encostar, e o clique no alvo liga o seguir de novo.
 
   processPlayer(player, now) {
     const target = player.target;
-    if (!target || !target.isAlive()) return;
+    if (!target) return;
+    if (!target.isAlive()) {
+      player.target = null;
+      return;
+    }
 
-    const isAdjacent = isPositionAdjacentTo(player.x, player.y, target.x, target.y);
-    const canReach = getLevel(player) === getLevel(target);
+    if (this.isTargetLost(player, target)) {
+      player.target = null;
+      this.sim.emit({ type: 'message', playerId: player.id, text: 'Alvo perdido' });
+      return;
+    }
 
-    if (isAdjacent && canReach) {
+    if (isPositionAdjacentTo(player.x, player.y, target.x, target.y)) {
       this.attackTarget(player, target, now);
     } else if (player.autoFollow) {
       const searchBounds = this.sim.searchBoundsAround(player);
       this.sim.movement.moveTowardsPosition(player, target.x, target.y, now, target, searchBounds, this.sim.enemies);
-    } else {
-      console.log(`⚠️ Nem atacando nem perseguindo: isAdjacent=${isAdjacent} canReach=${canReach} autoFollow=${player.autoFollow}`);
     }
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // isTargetLost
+  // Alvo em outro andar ou a mais de targetLoseRange sqms.
+
+  isTargetLost(player, target) {
+    if (getLevel(player) !== getLevel(target)) return true;
+    return distance(player.x, player.y, target.x, target.y) > CONFIG.targetLoseRange;
   }
 
   // ================================================================================================================================================================================================================================================

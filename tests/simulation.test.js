@@ -238,3 +238,44 @@ test('se tiver alguém no lugar original, o inimigo renasce no sqm livre mais pe
   const reborn = sim.enemies.find(e => e.id === enemy.id);
   assert.ok(Math.max(Math.abs(reborn.x - 18), Math.abs(reborn.y - 18)) === 1, `em ${reborn.x},${reborn.y}`);
 });
+
+// ================================================================================================================================================================================================================================================
+// targetStill
+// Player com alvo num inimigo que não sai do lugar (não vê o player nem patrulha).
+
+function targetStill(enemyAt, playerAt) {
+  const sim = buildGame({ objects: GROUND, enemies: [enemyAt], player: playerAt });
+  const enemy = sim.enemies[0];
+  enemy.detectionRadius = 0;
+  enemy.patrolRadius = 0;
+  sim.enqueue('player1', { type: 'attack', targetId: enemy.id });
+  sim.tick(sim.time + TICK_MS);
+  return { sim, enemy };
+}
+
+test('alvo com seguir desligado: o player espera sem andar nem atacar e continua com o alvo', () => {
+  const { sim, enemy } = targetStill([10, 5, 0], { x: 4, y: 5, z: 0 });
+  sim.enqueue('player1', { type: 'toggleFollow' });
+  const events = runFor(sim, 3000);
+  assert.deepEqual([sim.player.x, sim.player.y], [4, 5]);
+  assert.equal(sim.player.target, enemy);
+  assert.ok(!events.some(e => e.type === 'damage'));
+
+  sim.enqueue('player1', { type: 'attack', targetId: enemy.id });
+  assert.ok(runFor(sim, 8000).some(e => e.type === 'damage'), 'clicar no alvo de novo volta a seguir e atacar');
+});
+
+test('alvo longe demais é perdido, com aviso', () => {
+  const { sim } = targetStill([4 + CONFIG.targetLoseRange + 2, 5, 0], { x: 4, y: 5, z: 0 });
+  const events = runFor(sim, 200);
+  assert.equal(sim.player.target, null);
+  assert.ok(events.some(e => e.type === 'message' && e.text === 'Alvo perdido'));
+});
+
+test('alvo em outro andar é perdido', () => {
+  const sim = buildGame({ objects: [...GROUND, ...floorRect(0, 24, 0, 24, 1)], enemies: [[8, 5, 1]], player: { x: 4, y: 5, z: 0 } });
+  sim.enemies[0].detectionRadius = 0;
+  sim.player.target = sim.enemies[0];
+  runFor(sim, 200);
+  assert.equal(sim.player.target, null);
+});
