@@ -1,11 +1,13 @@
 // js/views/name-modal.js
 
-import { validateName, NAME_MAX_LENGTH } from '../net/protocol.js';
+import { validateName, normalizeGender, NAME_MAX_LENGTH } from '../net/protocol.js';
 
 const STORAGE_KEY = 'playerName';
+const GENDER_STORAGE_KEY = 'playerGender';
 
-// Janela que abre ao entrar no jogo pedindo o nome do personagem (markup em
-// index.html, #nameModal). Lembra o último nome usado neste navegador.
+// Janela que abre ao entrar no jogo pedindo o nome e o gênero do personagem
+// (markup em index.html, #nameModal). Lembra o último nome e gênero usados
+// neste navegador.
 
 export class NameModal {
 
@@ -17,10 +19,19 @@ export class NameModal {
     this.form = document.getElementById('nameForm');
     this.input = document.getElementById('nameInput');
     this.error = document.getElementById('nameError');
-    this.button = this.form.querySelector('button');
+    this.button = this.form.querySelector('button[type="submit"]');
+    this.genderButtons = [...this.form.querySelectorAll('.gender-option')];
     this.input.maxLength = NAME_MAX_LENGTH;
     this.input.value = this.loadName();
     this.pending = null;
+    this.selectGender(normalizeGender(this.load(GENDER_STORAGE_KEY)));
+
+    for (const button of this.genderButtons) {
+      button.addEventListener('click', () => {
+        this.selectGender(button.dataset.gender);
+        this.input.focus();
+      });
+    }
 
     this.form.addEventListener('submit', (e) => {
       e.preventDefault();
@@ -29,30 +40,49 @@ export class NameModal {
   }
 
   // ================================================================================================================================================================================================================================================
-  // loadName
+  // load
 
-  loadName() {
+  load(key) {
     try {
-      return localStorage.getItem(STORAGE_KEY) || '';
+      return localStorage.getItem(key) || '';
     } catch {
       return '';
     }
   }
 
   // ================================================================================================================================================================================================================================================
-  // saveName
+  // save
 
-  saveName(name) {
+  save(key, value) {
     try {
-      localStorage.setItem(STORAGE_KEY, name);
+      localStorage.setItem(key, value);
     } catch {
       return;
     }
   }
 
   // ================================================================================================================================================================================================================================================
+  // loadName
+
+  loadName() {
+    return this.load(STORAGE_KEY);
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // selectGender
+
+  selectGender(gender) {
+    this.gender = normalizeGender(gender);
+    for (const button of this.genderButtons) {
+      const selected = button.dataset.gender === this.gender;
+      button.classList.toggle('selected', selected);
+      button.setAttribute('aria-checked', String(selected));
+    }
+  }
+
+  // ================================================================================================================================================================================================================================================
   // ask
-  // Mostra a janela e resolve com o nome digitado (já validado) ao confirmar.
+  // Mostra a janela e resolve com { name, gender } (nome já validado) ao confirmar.
 
   ask() {
     this.root.hidden = false;
@@ -79,7 +109,7 @@ export class NameModal {
     this.setBusy(true);
     const resolve = this.pending;
     this.pending = null;
-    resolve(result.name);
+    resolve({ name: result.name, gender: this.gender });
   }
 
   // ================================================================================================================================================================================================================================================
@@ -87,6 +117,7 @@ export class NameModal {
 
   setBusy(busy) {
     this.input.disabled = busy;
+    for (const button of this.genderButtons) button.disabled = busy;
     this.button.disabled = busy;
     this.button.textContent = busy ? 'Entrando…' : 'Entrar';
   }
@@ -102,7 +133,8 @@ export class NameModal {
   // close
 
   close(name) {
-    this.saveName(name);
+    this.save(STORAGE_KEY, name);
+    this.save(GENDER_STORAGE_KEY, this.gender);
     this.root.hidden = true;
   }
 }

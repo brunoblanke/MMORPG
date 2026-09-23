@@ -78,19 +78,19 @@ export class GameController {
 
   // ================================================================================================================================================================================================================================================
   // openSession
-  // Pede o nome na janela e entra no servidor de jogo. Nome recusado (em uso,
+  // Pede o nome e o gênero na janela e entra no servidor de jogo. Nome recusado (em uso,
   // inválido): mostra o motivo e pede de novo. Sem servidor (ou se ele cair
   // antes de entrar): joga sozinho no navegador com esse nome.
 
   async openSession(modal, mapData, socket) {
     for (;;) {
-      const name = await modal.ask();
+      const { name, gender } = await modal.ask();
       if (!socket) {
         modal.close(name);
-        return new LocalSession(mapData, name);
+        return new LocalSession(mapData, name, gender);
       }
       try {
-        const session = await RemoteSession.join(socket, mapData, name);
+        const session = await RemoteSession.join(socket, mapData, name, gender);
         console.log(`🌐 Conectado ao servidor como ${name} (${session.playerId})`);
         session.onDisconnect = () => this.showMessage('Conexão com o servidor perdida — recarregue a página', performance.now(), 600000);
         modal.close(name);
@@ -103,7 +103,7 @@ export class GameController {
         console.log(`🕹️ ${error.message}: jogando sozinho`);
         socket = null;
         modal.close(name);
-        return new LocalSession(mapData, name);
+        return new LocalSession(mapData, name, gender);
       }
     }
   }

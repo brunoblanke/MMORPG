@@ -86,3 +86,16 @@ test('quem sai do servidor some do espelho', () => {
   assert.deepEqual(mirror.players.map(p => p.id), ['player1']);
   assert.deepEqual(mirror.world.getTileEntities(5, 5, 0), []);
 });
+
+test('o gênero do jogador vai pro espelho; valor desconhecido vira masculino', async () => {
+  const { normalizeGender } = await import('../js/net/protocol.js');
+  assert.equal(normalizeGender('female'), 'female');
+  assert.equal(normalizeGender('outro'), 'male');
+  assert.equal(normalizeGender(undefined), 'male');
+
+  const sim = buildGame({ objects: GROUND, player: { x: 2, y: 2, z: 0 } });
+  sim.addPlayer('player2', { name: 'Ana', gender: 'female' });
+  const mirror = makeMirror(buildMapData({ objects: GROUND }));
+  sync(sim, mirror, 'player1');
+  assert.deepEqual(mirror.players.map(p => [p.id, p.gender]), [['player1', 'male'], ['player2', 'female']]);
+});

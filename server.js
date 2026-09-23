@@ -77,13 +77,13 @@ function enderecosRede(porta) {
 // ================================================================================================================================================================================================================================================
 // iniciarJogo
 // Roda a simulação (js/simulation.js) aqui no servidor, TICK_MS em TICK_MS, e
-// aceita jogadores por WebSocket em /ws: a conexão manda o nome do personagem
-// ('join') e, aceito, vira um jogador que manda comandos e recebe, a cada
+// aceita jogadores por WebSocket em /ws: a conexão manda o nome e o gênero do
+// personagem ('join') e, aceito, vira um jogador que manda comandos e recebe, a cada
 // tick, o estado do jogo e os eventos.
 
 async function iniciarJogo(servidorHttp) {
   const { Simulation, TICK_MS } = await import('./js/simulation.js');
-  const { serializeState, validateName } = await import('./js/net/protocol.js');
+  const { serializeState, validateName, normalizeGender } = await import('./js/net/protocol.js');
 
   const mapData = JSON.parse(fs.readFileSync(MAP_DATA_PATH, 'utf8'));
   const sim = new Simulation(mapData);
@@ -107,7 +107,7 @@ async function iniciarJogo(servidorHttp) {
         }
         const playerId = `player${proximoJogador}`;
         proximoJogador++;
-        player = sim.addPlayer(playerId, { name: erro.name });
+        player = sim.addPlayer(playerId, { name: erro.name, gender: normalizeGender(mensagem.gender) });
         conexoes.set(playerId, socket);
         console.log(`🟢 ${player.name} entrou (${conexoes.size} online)`);
         socket.send(JSON.stringify({ type: 'welcome', playerId }));
