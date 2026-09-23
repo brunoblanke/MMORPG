@@ -7,6 +7,10 @@ export const GRID_HEIGHT = 250;
 // Deslocamento visual (px) por nível de "step" ao empilhar itens/objetos no mesmo tile.
 export const STACK_OFFSET = 7;
 
+// Duração (ms) de um tick da simulação: tudo no jogo (passos, ataques) acontece
+// de TICK_MS em TICK_MS.
+export const TICK_MS = 50;
+
 // Duração (ms) de um ciclo completo de animação de objeto/parede com múltiplos frames.
 export const ANIMATION_CYCLE_MS = 1000;
 

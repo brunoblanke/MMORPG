@@ -1,6 +1,6 @@
 // js/models/entity.js
 
-import { calculateStats, calculateMoveDelay, rand } from '../utils/helpers.js';
+import { calculateStats, calculateMoveDelay, roundUpToTick, rand } from '../utils/helpers.js';
 import { CONFIG } from '../config.js';
 
 export class Entity {
@@ -46,6 +46,8 @@ export class Entity {
     this.moveStartZ = 0;
     this.moveStartStep = 0;
     this.moveStartTime = 0;
+    this.stepDuration = 0;
+    this.renderTime = null;
 
     this.order = data.order !== undefined ? data.order : 0;
   }
@@ -68,13 +70,12 @@ export class Entity {
   }
 
   // ================================================================================================================================================================================================================================================
-  // getStepAnimationDuration
-  // Duração do deslize de um passo: nunca mais longa que o intervalo entre
-  // passos, senão o passo seguinte começa antes do anterior terminar e a
-  // criatura dá um tranco pra frente.
+  // getStepInterval
+  // Tempo real entre um passo e o seguinte andando sem parar: o intervalo do
+  // spd arredondado pro tick (o passo só acontece num tick).
 
-  getStepAnimationDuration() {
-    return Math.min(this.getMoveDuration(), calculateMoveDelay(this.spd));
+  getStepInterval() {
+    return roundUpToTick(calculateMoveDelay(this.spd));
   }
 
   // ================================================================================================================================================================================================================================================
@@ -86,18 +87,24 @@ export class Entity {
     return Math.max(50, base * speedFactor) / CONFIG.speedScale;
   }
 
+  // ================================================================================================================================================================================================================================================
+  // updateAnimation
+  // Desliza em velocidade constante do ponto de partida até o sqm, em
+  // stepDuration (o intervalo até o próximo passo): andando sem parar, um
+  // passo emenda no outro sem frear. renderTime: quando a posição desenhada
+  // foi calculada (um passo novo continua dali).
+
   updateAnimation(timestamp) {
+    this.renderTime = timestamp;
     if (this.isMoving) {
       const elapsed = timestamp - this.moveStartTime;
-      const duration = this.getStepAnimationDuration();
-      const progress = Math.min(elapsed / duration, 1);
+      const duration = this.stepDuration || this.getStepInterval();
+      const progress = Math.min(Math.max(elapsed / duration, 0), 1);
 
-      const eased = 1 - Math.pow(1 - progress, 3);
-
-      this.renderX = this.moveStartX + (this.x - this.moveStartX) * eased;
-      this.renderY = this.moveStartY + (this.y - this.moveStartY) * eased;
-      this.renderZ = this.moveStartZ + (this.z - this.moveStartZ) * eased;
-      this.renderStep = this.moveStartStep + ((this.step || 0) - this.moveStartStep) * eased;
+      this.renderX = this.moveStartX + (this.x - this.moveStartX) * progress;
+      this.renderY = this.moveStartY + (this.y - this.moveStartY) * progress;
+      this.renderZ = this.moveStartZ + (this.z - this.moveStartZ) * progress;
+      this.renderStep = this.moveStartStep + ((this.step || 0) - this.moveStartStep) * progress;
 
       if (progress >= 1) {
         this.renderX = this.x;

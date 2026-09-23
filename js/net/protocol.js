@@ -3,6 +3,7 @@
 import { Player } from '../models/player.js';
 import { Enemy } from '../models/enemy.js';
 import { PLAYER_GENDERS, DEFAULT_GENDER } from '../../shared/catalog.js';
+import { TICK_MS } from '../../shared/constants.js';
 
 // Mensagens entre navegador e servidor (JSON pelo WebSocket, em /ws):
 //
@@ -17,9 +18,18 @@ import { PLAYER_GENDERS, DEFAULT_GENDER } from '../../shared/catalog.js';
 // O estado leva só o que muda: jogadores, inimigos, cadáveres e itens
 // móveis. O mapa (pisos, paredes…) cada lado gera do mesmo data/map.json.
 
-export const PLAYER_FIELDS = ['name', 'gender', 'x', 'y', 'z', 'step', 'direction', 'lvl', 'xp', 'nextLevelXp', 'hp', 'maxHp', 'currentHp', 'spd', 'atk', 'def', 'isTarget', 'spawnX', 'spawnY', 'spawnZ'];
-export const ENEMY_FIELDS = ['creature', 'color', 'lvl', 'x', 'y', 'z', 'step', 'direction', 'hp', 'maxHp', 'currentHp', 'spd', 'atk', 'def', 'patrolCenterX', 'patrolCenterY', 'patrolRadius', 'detectionRadius'];
+export const PLAYER_FIELDS = ['name', 'gender', 'x', 'y', 'z', 'step', 'direction', 'lvl', 'xp', 'nextLevelXp', 'hp', 'maxHp', 'currentHp', 'spd', 'atk', 'def', 'isTarget', 'spawnX', 'spawnY', 'spawnZ', 'stepDuration'];
+export const ENEMY_FIELDS = ['creature', 'color', 'lvl', 'x', 'y', 'z', 'step', 'direction', 'hp', 'maxHp', 'currentHp', 'spd', 'atk', 'def', 'patrolCenterX', 'patrolCenterY', 'patrolRadius', 'detectionRadius', 'stepDuration'];
 export const CORPSE_FIELDS = ['id', 'ownerId', 'name', 'x', 'y', 'z', 'step', 'color', 'type', 'lvl', 'creature', 'isPlayer', 'deathTime', 'decayTime', 'hasVolume', 'blocksMovement', 'movable', 'isCorpse', 'corpseCreature', 'corpseIsPlayer'];
+
+// Campos que placeCreature cuida (posição e animação do passo).
+const MOTION_FIELDS = new Set(['x', 'y', 'z', 'step', 'stepDuration']);
+
+// Folga no deslize de cada passo recebido: o passo seguinte chega antes do
+// anterior terminar de animar, mesmo com a rede atrasando um pouco, e a
+// criatura não para entre um sqm e outro (a velocidade média não muda: ela só
+// anda uma fração de sqm atrás do servidor).
+const STEP_SLACK_MS = TICK_MS;
 
 export const NAME_MIN_LENGTH = 3;
 export const NAME_MAX_LENGTH = 20;
@@ -86,7 +96,8 @@ export function serializeState(sim, playerId) {
 // ================================================================================================================================================================================================================================================
 // placeCreature
 // Põe a criatura na posição recebida. Um passo de 1 sqm anima como no jogo
-// local; salto maior (escada, buraco, respawn) aparece direto.
+// local, partindo de onde ela está desenhada (um passo emenda no outro) e
+// durando data.stepDuration; salto maior (escada, buraco, respawn) aparece direto.
 
 function placeCreature(world, entity, data, renderNow) {
   const fromX = entity.x;
@@ -104,12 +115,14 @@ function placeCreature(world, entity, data, renderNow) {
 
   const isStep = Math.abs(data.x - fromX) <= 1 && Math.abs(data.y - fromY) <= 1 && Math.abs(data.z - fromZ) <= 1;
   if (isStep) {
+    const midStep = entity.isMoving && Math.abs(entity.renderX - fromX) <= 1 && Math.abs(entity.renderY - fromY) <= 1;
     entity.isMoving = true;
-    entity.moveStartX = fromX;
-    entity.moveStartY = fromY;
-    entity.moveStartZ = fromZ;
-    entity.moveStartStep = fromStep;
-    entity.moveStartTime = renderNow;
+    entity.moveStartX = midStep ? entity.renderX : fromX;
+    entity.moveStartY = midStep ? entity.renderY : fromY;
+    entity.moveStartZ = midStep ? entity.renderZ : fromZ;
+    entity.moveStartStep = midStep ? entity.renderStep : fromStep;
+    entity.moveStartTime = midStep && entity.renderTime !== null ? Math.min(entity.renderTime, renderNow) : renderNow;
+    entity.stepDuration = (data.stepDuration || entity.getStepInterval()) + STEP_SLACK_MS;
   } else {
     entity.isMoving = false;
     entity.renderX = entity.x;
@@ -138,7 +151,7 @@ function syncCreatures(world, list, incoming, fields, create, renderNow) {
       world.addCreature(entity);
     }
     for (const field of fields) {
-      if (field !== 'x' && field !== 'y' && field !== 'z' && field !== 'step') entity[field] = data[field];
+      if (!MOTION_FIELDS.has(field)) entity[field] = data[field];
     }
     next.push(entity);
   }

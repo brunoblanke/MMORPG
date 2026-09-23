@@ -1,6 +1,7 @@
 // js/simulation.js
 
 import { CONFIG } from './config.js';
+import { TICK_MS } from '../shared/constants.js';
 import { World } from './core/world.js';
 import { generateObjects, generateEnemies } from './models/game-object.js';
 import { Player } from './models/player.js';
@@ -13,7 +14,7 @@ import { ObjectDragController } from './systems/object-drag.js';
 import { LifeCycleController } from './systems/life-cycle.js';
 import { PlayerControl } from './systems/player-control.js';
 
-export const TICK_MS = 50;
+export { TICK_MS };
 
 // O jogo inteiro, sem navegador: mapa, jogadores, inimigos e cadáveres, num
 // relógio próprio que avança de TICK_MS em TICK_MS (tick). Jogadores só agem

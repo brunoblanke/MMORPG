@@ -32,7 +32,7 @@ export class RemoteSession {
     this.inbox = [];
     this.onDisconnect = null;
 
-    socket.addEventListener('message', (e) => this.inbox.push(JSON.parse(e.data)));
+    socket.addEventListener('message', (e) => this.inbox.push({ message: JSON.parse(e.data), receivedAt: performance.now() }));
     socket.addEventListener('close', () => {
       this.isOnline = false;
       if (this.onDisconnect) this.onDisconnect();
@@ -127,15 +127,17 @@ export class RemoteSession {
   // ================================================================================================================================================================================================================================================
   // update
   // Aplica os estados que chegaram desde o último quadro. Devolve os eventos.
+  // Cada estado vale a partir da hora em que chegou (não da hora do quadro):
+  // o passo já começa andando neste quadro, sem repetir a posição do anterior.
 
   update(timestamp) {
     const events = [];
-    const messages = this.inbox;
+    const received = this.inbox;
     this.inbox = [];
 
-    for (const message of messages) {
+    for (const { message, receivedAt } of received) {
       if (message.type !== 'state') continue;
-      applyState(this, message, this.playerId, timestamp);
+      applyState(this, message, this.playerId, Math.min(receivedAt, timestamp));
       for (const event of message.events) {
         events.push(event);
         if (event.type === 'damage') this.flash(event.targetId, timestamp);

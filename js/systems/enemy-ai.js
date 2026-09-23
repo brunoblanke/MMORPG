@@ -1,6 +1,6 @@
 // js/systems/enemy-ai.js
 
-import { calculateMoveDelay, distance, getAdjacentPositions, isPositionAdjacentTo, randFloat } from '../utils/helpers.js';
+import { calculateMoveDelay, distance, getAdjacentPositions, isPositionAdjacentTo, randFloat, roundUpToTick } from '../utils/helpers.js';
 import { getLevel } from '../core/geometry.js';
 import { AI_STATE } from '../models/enemy.js';
 import { CONFIG } from '../config.js';
@@ -357,12 +357,12 @@ export class EnemyAI {
   // walkPatrolPath
 
   walkPatrolPath(enemy, enemies, timestamp) {
-    const stepInterval = enemy.getMoveDuration() * CONFIG.patrolWalkStepFactor;
+    const stepInterval = roundUpToTick(enemy.getMoveDuration() * CONFIG.patrolWalkStepFactor);
     if (timestamp - enemy.lastMoveTime < stepInterval) return;
 
     const next = enemy.route.path[0];
     const blocked = this.isOccupiedByOther(enemy, enemies, next.x, next.y) ||
-      !this.movement.stepAlongPath(enemy, next, timestamp);
+      !this.movement.stepAlongPath(enemy, next, timestamp, stepInterval);
     if (blocked) {
       this.pausePatrol(enemy, timestamp);
       return;

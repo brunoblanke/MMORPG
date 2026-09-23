@@ -101,13 +101,16 @@ export class MovementController {
 
   // ================================================================================================================================================================================================================================================
   // applyStep
-  // Efetiva um passo: atualiza a pilha, a posição e o estado da animação de movimento.
+  // Efetiva um passo: atualiza a pilha, a posição e o estado da animação de
+  // movimento. A animação parte de onde a criatura está desenhada e dura
+  // `duration` (o tempo até o próximo passo), pra um passo emendar no outro.
 
-  applyStep(entity, landing, timestamp) {
+  applyStep(entity, landing, timestamp, duration = entity.getStepInterval()) {
     const fromX = entity.x;
     const fromY = entity.y;
     const fromZ = entity.z || 0;
     const fromStep = entity.step || 0;
+    const midStep = entity.isMoving && Math.abs(entity.renderX - fromX) <= 1 && Math.abs(entity.renderY - fromY) <= 1;
 
     this.world.moveEntityTile(entity, fromX, fromY, fromZ, landing.x, landing.y, landing.z);
     entity.x = landing.x;
@@ -117,11 +120,12 @@ export class MovementController {
     entity.lastMoveTime = timestamp;
 
     entity.isMoving = true;
-    entity.moveStartX = fromX;
-    entity.moveStartY = fromY;
-    entity.moveStartZ = fromZ;
-    entity.moveStartStep = fromStep;
-    entity.moveStartTime = timestamp;
+    entity.moveStartX = midStep ? entity.renderX : fromX;
+    entity.moveStartY = midStep ? entity.renderY : fromY;
+    entity.moveStartZ = midStep ? entity.renderZ : fromZ;
+    entity.moveStartStep = midStep ? entity.renderStep : fromStep;
+    entity.moveStartTime = midStep && entity.renderTime !== null ? Math.min(entity.renderTime, timestamp) : timestamp;
+    entity.stepDuration = duration;
   }
 
   // ================================================================================================================================================================================================================================================
@@ -156,12 +160,12 @@ export class MovementController {
   // Dá o passo nextStep de um caminho no mesmo andar, se ele ainda termina
   // onde o caminho previa. Devolve false (sem andar) se o mapa mudou.
 
-  stepAlongPath(entity, nextStep, timestamp) {
+  stepAlongPath(entity, nextStep, timestamp, duration) {
     const landing = this.resolveStep(entity, nextStep.dx, nextStep.dy, { sameFloor: true });
     if (!isSameLanding(landing, nextStep)) return false;
 
     this.faceTowards(entity, nextStep.dx, nextStep.dy);
-    this.applyStep(entity, landing, timestamp);
+    this.applyStep(entity, landing, timestamp, duration);
     return true;
   }
 
