@@ -1,4 +1,5 @@
-import { isPositionAdjacentTo, getLevel } from '../utils/helpers.js';
+import { isPositionAdjacentTo } from '../utils/helpers.js';
+import { getLevel } from '../core/geometry.js';
 import { CONFIG } from '../config.js';
 
 export class CombatController {

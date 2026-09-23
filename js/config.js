@@ -9,9 +9,6 @@ export const CONFIG = {
   mapDataUrl: 'data/map.json',
   patrolRadius: 4,
   detectionRadius: 7,
-  moveAnimationSpeed: 0.2,
-  fallAnimationSpeed: 0.5,
-  baseMoveDelay: 300,
   attackCooldown: 1500,
   // Escalas globais (player e inimigos, sem mexer nos atributos por lvl):
   // 0.4 = 60% mais fraco / 60% mais lento.
@@ -27,8 +24,6 @@ export const CONFIG = {
   // no piso do andar de cima; sobre floorHeight ou mais a criatura já conta
   // como andar de cima. Itens nunca mudam de andar por estarem empilhados.
   floorHeight: 4,
-  floorOffsetX: 32,
-  floorOffsetY: 32,
   playerSpriteFrameWidth: 64,
   playerSpriteFrameHeight: 64,
   playerSpriteWalkFrames: 8,
@@ -37,9 +32,6 @@ export const CONFIG = {
 
   objectSpriteFrameWidth: 32,
   objectSpriteFrameHeight: 32,
-  moveDuration: 200,
-
-  objectCycleMs: 1000,
 
   devMode: false,
 

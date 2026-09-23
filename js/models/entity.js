@@ -1,6 +1,6 @@
 // js/models/entity.js
 
-import { calculateStats, rand } from '../utils/helpers.js';
+import { calculateStats, calculateMoveDelay, rand } from '../utils/helpers.js';
 import { CONFIG } from '../config.js';
 
 export class Entity {
@@ -68,10 +68,29 @@ export class Entity {
     return Math.max(minDuration, base * speedFactor) / CONFIG.speedScale;
   }
 
+  // ================================================================================================================================================================================================================================================
+  // getStepAnimationDuration
+  // Duração do deslize de um passo: nunca mais longa que o intervalo entre
+  // passos, senão o passo seguinte começa antes do anterior terminar e a
+  // criatura dá um tranco pra frente.
+
+  getStepAnimationDuration() {
+    return Math.min(this.getMoveDuration(), calculateMoveDelay(this.spd));
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // getFrameDuration
+
+  getFrameDuration() {
+    const base = CONFIG.playerFrameDuration || 150;
+    const speedFactor = Math.max(0.3, 1 - (this.spd / 500));
+    return Math.max(50, base * speedFactor) / CONFIG.speedScale;
+  }
+
   updateAnimation(timestamp) {
     if (this.isMoving) {
       const elapsed = timestamp - this.moveStartTime;
-      const duration = this.getMoveDuration();
+      const duration = this.getStepAnimationDuration();
       const progress = Math.min(elapsed / duration, 1);
 
       const eased = 1 - Math.pow(1 - progress, 3);

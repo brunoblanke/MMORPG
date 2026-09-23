@@ -1,33 +1,6 @@
 // js/views/draw-order.js
 
-import { CONFIG } from '../config.js';
-
-// ================================================================================================================================================================================================================================================
-// getEntityLevel
-//
-// Nível (andar) em que uma coisa está de fato. Itens/objetos ficam sempre no
-// z em que foram colocados, por mais alta que seja a pilha. Player e
-// inimigos sobem 1 andar a cada CONFIG.floorHeight volumes sob eles — são
-// desenhados por cima do piso de cima, somem junto com ele sob um teto, etc.
-//
-// Usa a posição lógica (z/step), não a animada: no meio de um passo entre
-// andares (pilha ↔ piso de cima) a posição animada passaria pelo andar de
-// baixo e o player sumiria sob o piso por um instante. Durante o passo vale
-// o maior entre o nível de onde saiu e o de onde vai chegar.
-
-function levelOf(z, step, floorHeight) {
-  return Math.floor(z || 0) + Math.floor((step || 0) / floorHeight);
-}
-
-export function getEntityLevel(entity) {
-  const isCreature = entity.isPlayer === true || entity.type === 'enemy';
-  if (!isCreature) return Math.floor(entity.z ?? 0);
-
-  const floorHeight = CONFIG.floorHeight || 4;
-  const level = levelOf(entity.z, entity.step, floorHeight);
-  if (!entity.isMoving || entity.moveStartZ === undefined) return level;
-  return Math.max(level, levelOf(entity.moveStartZ, entity.moveStartStep, floorHeight));
-}
+import { levelOf, getEntityLevel } from '../core/geometry.js';
 
 // ================================================================================================================================================================================================================================================
 // getRoofLevel
@@ -54,7 +27,7 @@ function isInRoofMargin(player, obj) {
 
 export function getRoofLevel(player, world) {
   const playerLevel = getEntityLevel(player);
-  const reachLevel = levelOf(player.z, (player.step || 0) + 1, CONFIG.floorHeight || 4);
+  const reachLevel = levelOf(player.z, (player.step || 0) + 1);
   for (let x = player.x - ROOF_MARGIN_SOUTH_EAST; x <= player.x + ROOF_MARGIN_NORTH_WEST; x++) {
     for (let y = player.y - ROOF_MARGIN_SOUTH_EAST; y <= player.y + ROOF_MARGIN_NORTH_WEST; y++) {
       const isPlayerTile = x === player.x && y === player.y;

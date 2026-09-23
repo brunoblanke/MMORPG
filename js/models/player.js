@@ -2,7 +2,6 @@
 
 import { Entity } from './entity.js';
 import { calculateStats } from '../utils/helpers.js';
-import { CONFIG } from '../config.js';
 
 export class Player extends Entity {
   constructor(data) {
@@ -47,11 +46,5 @@ export class Player extends Entity {
     this.renderZ = 0;
     this.currentHp = this.hp;
     this.isTarget = false;
-  }
-
-  getFrameDuration() {
-    const base = CONFIG.playerFrameDuration || 150;
-    const speedFactor = Math.max(0.3, 1 - (this.spd / 500));
-    return Math.max(50, base * speedFactor) / CONFIG.speedScale;
   }
 }

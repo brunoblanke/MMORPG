@@ -1,6 +1,7 @@
 // js/core/world.js
 
 import { CONFIG } from '../config.js';
+import { isCreature } from './geometry.js';
 
 export class World {
 
@@ -156,13 +157,6 @@ export class World {
   }
 
   // ================================================================================================================================================================================================================================================
-  // isCreature
-
-  isCreature(entity) {
-    return !entity.isCorpse && (entity.isPlayer === true || entity.type === 'enemy');
-  }
-
-  // ================================================================================================================================================================================================================================================
   // addCreature
 
   addCreature(creature) {
@@ -182,7 +176,7 @@ export class World {
 
   getCreatureAt(x, y, z, ignore = null, enemiesPassable = false) {
     for (const entity of this.getTileEntities(x, y, z)) {
-      if (entity === ignore || !this.isCreature(entity)) continue;
+      if (entity === ignore || !isCreature(entity)) continue;
       if (entity.isAlive && !entity.isAlive()) continue;
       if (enemiesPassable && entity.type === 'enemy') continue;
       return entity;
@@ -308,19 +302,6 @@ export class World {
       this.floorTiles.set(key, floors);
     }
     floors.add(z);
-  }
-
-  // ================================================================================================================================================================================================================================================
-  // unregisterFloor
-
-  unregisterFloor(x, y, z) {
-    const key = this.getColumnKey(x, y);
-    const floors = this.floorTiles.get(key);
-    if (!floors) return;
-    floors.delete(z);
-    if (floors.size === 0) {
-      this.floorTiles.delete(key);
-    }
   }
 
   // ================================================================================================================================================================================================================================================

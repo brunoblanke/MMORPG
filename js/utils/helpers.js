@@ -3,17 +3,6 @@
 import { CONFIG } from '../config.js';
 
 // ================================================================================================================================================================================================================================================
-// getLevel
-//
-// Nível (andar) em que a entidade está de fato: z + 1 a cada CONFIG.floorHeight
-// volumes de altura. Usado pra decidir alcance de combate e perseguição.
-
-export function getLevel(entity) {
-  const floorHeight = CONFIG.floorHeight || 4;
-  return (entity.z || 0) + Math.floor((entity.step || 0) / floorHeight);
-}
-
-// ================================================================================================================================================================================================================================================
 // directionFromDelta
 
 export function directionFromDelta(dx, dy) {
@@ -121,11 +110,4 @@ export function shadeColor(color, percent) {
   const G = Math.max(0, Math.min(255, ((num >> 8) & 0x00FF) + amt));
   const B = Math.max(0, Math.min(255, (num & 0x0000FF) + amt));
   return `#${(0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1)}`;
-}
-
-// ================================================================================================================================================================================================================================================
-// lerp
-
-export function lerp(a, b, t) {
-  return a + (b - a) * t;
 }

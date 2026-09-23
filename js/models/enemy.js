@@ -40,14 +40,4 @@ export class Enemy extends Entity {
     this.patrolCenterX = this.x;
     this.patrolCenterY = this.y;
   }
-
-  getXpValue() {
-    return this.xpValue;
-  }
-
-  getFrameDuration() {
-    const base = CONFIG.playerFrameDuration || 150;
-    const speedFactor = Math.max(0.3, 1 - (this.spd / 500));
-    return Math.max(50, base * speedFactor) / CONFIG.speedScale;
-  }
 }

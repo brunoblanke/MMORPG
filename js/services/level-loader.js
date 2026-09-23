@@ -40,14 +40,4 @@ export class LevelLoader {
   getSpawn(fallback) {
     return getMapSpawn(this.mapData || {}, fallback);
   }
-
-  // ================================================================================================================================================================================================================================================
-  // getLevelData
-
-  getLevelData() {
-    return {
-      objects: this.objects,
-      enemies: this.enemies
-    };
-  }
 }

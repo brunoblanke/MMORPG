@@ -4,7 +4,8 @@ import { SpriteRegistry } from './sprite-registry.js';
 import { getCreatureType } from '../../shared/catalog.js';
 import { drawEntityOverlay } from './entity-overlay.js';
 import { drawTileTooltip } from './tile-tooltip.js';
-import { prepareDrawables, getEntityLevel } from './draw-order.js';
+import { prepareDrawables } from './draw-order.js';
+import { getEntityLevel } from '../core/geometry.js';
 
 export class Renderer {
   constructor(canvas, camera) {

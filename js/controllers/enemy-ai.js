@@ -1,6 +1,7 @@
 // js/controllers/enemy-ai.js
 
-import { calculateMoveDelay, distance, getAdjacentPositions, isPositionAdjacentTo, getLevel, randFloat } from '../utils/helpers.js';
+import { calculateMoveDelay, distance, getAdjacentPositions, isPositionAdjacentTo, randFloat } from '../utils/helpers.js';
+import { getLevel } from '../core/geometry.js';
 import { AI_STATE } from '../models/enemy.js';
 import { CONFIG } from '../config.js';
 

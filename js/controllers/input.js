@@ -1,6 +1,7 @@
 import { calculateMoveDelay } from '../utils/helpers.js';
 import { CONFIG } from '../config.js';
-import { getEntityLevel, getRoofLevel } from '../views/draw-order.js';
+import { getRoofLevel } from '../views/draw-order.js';
+import { getEntityLevel } from '../core/geometry.js';
 
 export class InputController {
   constructor(canvas, renderer, camera, eventManager, game) {
