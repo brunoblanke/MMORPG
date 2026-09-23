@@ -11,3 +11,77 @@ canvas {
   background: #444; 
   cursor: crosshair;
 }
+
+.modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(10, 12, 16, 0.78);
+  z-index: 10;
+}
+
+.modal[hidden] {
+  display: none;
+}
+
+.modal-box {
+  width: 100%;
+  max-width: 340px;
+  padding: 24px;
+  border: 1px solid #3a3f4a;
+  border-radius: 10px;
+  background: #1b1e24;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  color: #e8e8e8;
+  box-sizing: border-box;
+}
+
+.modal-box h1 {
+  margin: 0 0 16px;
+  font-size: 17px;
+  font-weight: bold;
+  color: #ccff33;
+}
+
+.modal-box input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #3a3f4a;
+  border-radius: 6px;
+  background: #11131a;
+  color: #fff;
+  font-size: 15px;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.modal-box input:focus {
+  border-color: #ccff33;
+}
+
+.modal-error {
+  min-height: 18px;
+  margin: 8px 0 12px;
+  font-size: 13px;
+  color: #ff6b6b;
+}
+
+.modal-box button {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  background: #ccff33;
+  color: #1b1e24;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.modal-box button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}

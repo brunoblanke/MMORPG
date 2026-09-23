@@ -77,12 +77,13 @@ function enderecosRede(porta) {
 // ================================================================================================================================================================================================================================================
 // iniciarJogo
 // Roda a simulação (js/simulation.js) aqui no servidor, TICK_MS em TICK_MS, e
-// aceita jogadores por WebSocket em /ws: cada conexão vira um jogador, manda
-// comandos e recebe, a cada tick, o estado do jogo e os eventos.
+// aceita jogadores por WebSocket em /ws: a conexão manda o nome do personagem
+// ('join') e, aceito, vira um jogador que manda comandos e recebe, a cada
+// tick, o estado do jogo e os eventos.
 
 async function iniciarJogo(servidorHttp) {
   const { Simulation, TICK_MS } = await import('./js/simulation.js');
-  const { serializeState } = await import('./js/net/protocol.js');
+  const { serializeState, validateName } = await import('./js/net/protocol.js');
 
   const mapData = JSON.parse(fs.readFileSync(MAP_DATA_PATH, 'utf8'));
   const sim = new Simulation(mapData);
@@ -91,17 +92,37 @@ async function iniciarJogo(servidorHttp) {
 
   const wss = new WebSocketServer({ server: servidorHttp, path: '/ws' });
   wss.on('connection', (socket) => {
-    const playerId = `player${proximoJogador}`;
-    const player = sim.addPlayer(playerId, { name: `Player ${proximoJogador}` });
-    proximoJogador++;
-    conexoes.set(playerId, socket);
-    console.log(`🟢 ${player.name} entrou (${conexoes.size} online)`);
-    socket.send(JSON.stringify({ type: 'welcome', playerId }));
+    let player = null;
 
-    socket.on('message', (dados) => receberComando(sim, playerId, dados));
+    socket.on('message', (dados) => {
+      const mensagem = lerMensagem(dados);
+      if (!mensagem) return;
+
+      if (!player) {
+        if (mensagem.type !== 'join') return;
+        const erro = validarEntrada(sim, mensagem.name, validateName);
+        if (erro.error) {
+          socket.send(JSON.stringify({ type: 'joinError', error: erro.error }));
+          return;
+        }
+        const playerId = `player${proximoJogador}`;
+        proximoJogador++;
+        player = sim.addPlayer(playerId, { name: erro.name });
+        conexoes.set(playerId, socket);
+        console.log(`🟢 ${player.name} entrou (${conexoes.size} online)`);
+        socket.send(JSON.stringify({ type: 'welcome', playerId }));
+        return;
+      }
+
+      if (mensagem.type === 'command' && mensagem.command && typeof mensagem.command.type === 'string') {
+        sim.enqueue(player.id, mensagem.command);
+      }
+    });
+
     socket.on('close', () => {
-      sim.removePlayer(playerId);
-      conexoes.delete(playerId);
+      if (!player) return;
+      sim.removePlayer(player.id);
+      conexoes.delete(player.id);
       console.log(`🔴 ${player.name} saiu (${conexoes.size} online)`);
     });
   });
@@ -119,18 +140,28 @@ async function iniciarJogo(servidorHttp) {
 }
 
 // ================================================================================================================================================================================================================================================
-// receberComando
+// lerMensagem
 
-function receberComando(sim, playerId, dados) {
-  let mensagem;
+function lerMensagem(dados) {
   try {
-    mensagem = JSON.parse(dados);
+    const mensagem = JSON.parse(dados);
+    return mensagem && typeof mensagem === 'object' ? mensagem : null;
   } catch {
-    return;
+    return null;
   }
-  if (mensagem && mensagem.type === 'command' && mensagem.command && typeof mensagem.command.type === 'string') {
-    sim.enqueue(playerId, mensagem.command);
-  }
+}
+
+// ================================================================================================================================================================================================================================================
+// validarEntrada
+// Nome válido (validateName) e que nenhum jogador online esteja usando.
+// Devolve { name } ou { error }.
+
+function validarEntrada(sim, nome, validateName) {
+  const resultado = validateName(nome);
+  if (resultado.error) return resultado;
+  const emUso = sim.players.some(p => p.name.toLowerCase() === resultado.name.toLowerCase());
+  if (emUso) return { error: 'Esse nome já está em uso. Escolha outro.' };
+  return resultado;
 }
 
 // ================================================================================================================================================================================================================================================

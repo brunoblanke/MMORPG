@@ -2,7 +2,7 @@
 
 import { CONFIG } from './config.js';
 import { LocalSession } from './net/local-session.js';
-import { RemoteSession } from './net/remote-session.js';
+import { RemoteSession, JoinError } from './net/remote-session.js';
 import { loadMapDataFromURL } from '../shared/map-format.js';
 import { Camera } from './services/camera.js';
 import { EventManager } from './input/event-manager.js';
@@ -13,9 +13,11 @@ import { UI } from './views/ui.js';
 import { getRoofLevel } from './views/draw-order.js';
 import { ParticleController } from './systems/particle-controller.js';
 import { InputController } from './input/input.js';
+import { NameModal } from './views/name-modal.js';
 
-// Cliente: carrega o mapa, conecta no servidor de jogo (RemoteSession) ou,
-// sem servidor, roda a simulação aqui mesmo (LocalSession). Transforma
+// Cliente: pede o nome do personagem, carrega o mapa, entra no servidor de
+// jogo (RemoteSession) ou, sem servidor, roda a simulação aqui mesmo
+// (LocalSession). Transforma
 // teclado/mouse em comandos (send) e desenha. Não mexe no estado do jogo:
 // só lê o que a sessão expõe.
 
@@ -24,6 +26,7 @@ export class GameController {
     this.canvas = document.getElementById('gameCanvas');
     this.ctx = this.canvas.getContext('2d');
     this.camera = new Camera(this.canvas);
+    this.camera.resize();
     this.eventManager = new EventManager();
     this.spriteLoader = new SpriteLoader();
     this.renderer = new Renderer(this.canvas, this.camera);
@@ -43,14 +46,19 @@ export class GameController {
   // boot
 
   boot() {
+    const modal = new NameModal();
     const spritesReady = this.loadSprites();
     const mapReady = loadMapDataFromURL(CONFIG.mapDataUrl).catch((error) => {
       console.error('❌ Erro ao carregar mapa:', error);
       return {};
     });
+    const socketReady = RemoteSession.openSocket().catch((error) => {
+      console.log(`🕹️ Sem servidor de jogo (${error.message}): jogando sozinho`);
+      return null;
+    });
 
-    Promise.all([spritesReady, mapReady])
-      .then(([, mapData]) => this.openSession(mapData))
+    Promise.all([spritesReady, mapReady, socketReady])
+      .then(([, mapData, socket]) => this.openSession(modal, mapData, socket))
       .then((session) => {
         this.session = session;
         this.inputController = new InputController(this.canvas, this.renderer, this.camera, this.eventManager, this);
@@ -70,19 +78,34 @@ export class GameController {
 
   // ================================================================================================================================================================================================================================================
   // openSession
-  // Tenta o servidor de jogo (multiplayer); sem ele, joga sozinho no navegador.
+  // Pede o nome na janela e entra no servidor de jogo. Nome recusado (em uso,
+  // inválido): mostra o motivo e pede de novo. Sem servidor (ou se ele cair
+  // antes de entrar): joga sozinho no navegador com esse nome.
 
-  openSession(mapData) {
-    return RemoteSession.connect(mapData)
-      .then((session) => {
-        console.log(`🌐 Conectado ao servidor como ${session.playerId}`);
+  async openSession(modal, mapData, socket) {
+    for (;;) {
+      const name = await modal.ask();
+      if (!socket) {
+        modal.close(name);
+        return new LocalSession(mapData, name);
+      }
+      try {
+        const session = await RemoteSession.join(socket, mapData, name);
+        console.log(`🌐 Conectado ao servidor como ${name} (${session.playerId})`);
         session.onDisconnect = () => this.showMessage('Conexão com o servidor perdida — recarregue a página', performance.now(), 600000);
+        modal.close(name);
         return session;
-      })
-      .catch((error) => {
-        console.log(`🕹️ Jogando sozinho (${error.message})`);
-        return new LocalSession(mapData);
-      });
+      } catch (error) {
+        if (error instanceof JoinError) {
+          modal.showError(error.message);
+          continue;
+        }
+        console.log(`🕹️ ${error.message}: jogando sozinho`);
+        socket = null;
+        modal.close(name);
+        return new LocalSession(mapData, name);
+      }
+    }
   }
 
   // ================================================================================================================================================================================================================================================

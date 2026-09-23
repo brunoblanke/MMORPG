@@ -5,11 +5,13 @@ import { Enemy } from '../models/enemy.js';
 
 // Mensagens entre navegador e servidor (JSON pelo WebSocket, em /ws):
 //
-//   servidor → navegador
-//     { type: 'welcome', playerId }                quem você é
-//     { type: 'state', time, state, events }       a cada tick: estado + eventos
 //   navegador → servidor
+//     { type: 'join', name }                       entrar com o nome do personagem
 //     { type: 'command', command }                 comando do jogador (player-control.js)
+//   servidor → navegador
+//     { type: 'joinError', error }                 nome recusado (pode tentar de novo)
+//     { type: 'welcome', playerId }                entrou: quem você é
+//     { type: 'state', time, state, events }       a cada tick: estado + eventos
 //
 // O estado leva só o que muda: jogadores, inimigos, cadáveres e itens
 // móveis. O mapa (pisos, paredes…) cada lado gera do mesmo data/map.json.
@@ -17,6 +19,23 @@ import { Enemy } from '../models/enemy.js';
 export const PLAYER_FIELDS = ['name', 'x', 'y', 'z', 'step', 'direction', 'lvl', 'xp', 'nextLevelXp', 'hp', 'maxHp', 'currentHp', 'spd', 'atk', 'def', 'isTarget', 'spawnX', 'spawnY'];
 export const ENEMY_FIELDS = ['creature', 'color', 'lvl', 'x', 'y', 'z', 'step', 'direction', 'hp', 'maxHp', 'currentHp', 'spd', 'atk', 'def', 'patrolCenterX', 'patrolCenterY', 'patrolRadius', 'detectionRadius'];
 export const CORPSE_FIELDS = ['id', 'ownerId', 'name', 'x', 'y', 'z', 'step', 'color', 'type', 'lvl', 'creature', 'isPlayer', 'deathTime', 'decayTime', 'hasVolume', 'blocksMovement', 'movable', 'isCorpse', 'corpseCreature', 'corpseIsPlayer'];
+
+export const NAME_MIN_LENGTH = 3;
+export const NAME_MAX_LENGTH = 20;
+
+// ================================================================================================================================================================================================================================================
+// validateName
+// Nome do personagem: espaços extras removidos, de NAME_MIN_LENGTH a
+// NAME_MAX_LENGTH caracteres, só letras, números, espaço, _ e -.
+// Devolve { name } ou { error }.
+
+export function validateName(raw) {
+  const name = String(raw ?? '').trim().replace(/\s+/g, ' ');
+  if (name.length < NAME_MIN_LENGTH) return { error: `O nome precisa ter pelo menos ${NAME_MIN_LENGTH} letras.` };
+  if (name.length > NAME_MAX_LENGTH) return { error: `O nome pode ter no máximo ${NAME_MAX_LENGTH} letras.` };
+  if (!/^[\p{L}\p{N} _-]+$/u.test(name)) return { error: 'Use só letras, números, espaço, _ ou -.' };
+  return { name };
+}
 
 // ================================================================================================================================================================================================================================================
 // pick

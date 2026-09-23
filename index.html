@@ -8,6 +8,15 @@
 </head>
 <body>
   <canvas id="gameCanvas"></canvas>
+
+  <div id="nameModal" class="modal">
+    <form id="nameForm" class="modal-box" autocomplete="off">
+      <h1>Escolha o nome do personagem</h1>
+      <input id="nameInput" type="text" placeholder="Nome do personagem" spellcheck="false" autofocus>
+      <p id="nameError" class="modal-error" role="alert"></p>
+      <button type="submit">Entrar</button>
+    </form>
+  </div>
   
   <script type="importmap">
   {
