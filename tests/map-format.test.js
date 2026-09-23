@@ -13,3 +13,13 @@ test('o editor abre e salva o spawn no andar em que ele está', () => {
     assert.deepEqual(saved.spawn, { x: 2, y: 3, z });
   }
 });
+
+test('o editor abre e salva a zona segura de cada andar', () => {
+  const safe = [[1, 1, 0], [2, 1, 0], [3, 4, -2], [0, 0, 3]];
+  const mapData = buildMapData({ objects: floorRect(0, 5, 0, 5, 0), safe });
+  const { layers, layerOrder, stats } = buildLayersFromMapData(mapData, 250);
+  assert.equal(stats.safe, 4);
+  const saved = serializeMapFromLayers(layerOrder, layers, 250);
+  const key = (list) => list.map(t => t.join(',')).sort();
+  assert.deepEqual(key(saved.safeZoneData), key(safe));
+});

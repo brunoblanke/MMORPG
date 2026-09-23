@@ -60,6 +60,9 @@ export function applyTool(x, y, clientX, clientY) {
     eraseTopmost(cell);
   } else if (state.tool === 'hole') {
     cell.hole = true;
+  } else if (state.tool === 'safe') {
+    if (state.strokeTouched.size === 1) state.safePaintValue = !cell.safe;
+    cell.safe = state.safePaintValue;
   } else if (state.tool === 'item') {
     cell.objects.push({ type: state.itemPaint, step: 0 });
     restackItems(cell.objects);

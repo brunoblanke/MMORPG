@@ -169,6 +169,8 @@ function drawLayer(layer, alpha, z) {
         }
       }
 
+      if (cell.safe) drawSafeTile(px, py);
+
       // Mantém os steps coerentes com a pilha atual (reordenar/remover no painel).
       restackItems(cell.objects);
       cell.objects.forEach(obj => {
@@ -220,6 +222,20 @@ function drawLayer(layer, alpha, z) {
   // Nomes por último, pra nenhuma parede/objeto de outra célula cobrir.
   labels.forEach(label => drawLabel(label.text, label.x, label.y));
   ctx.globalAlpha = 1;
+}
+
+// ================================================================================================================================================================================================================================================
+// drawSafeTile
+// Zona segura: verde translúcido com contorno, por baixo dos objetos.
+
+function drawSafeTile(px, py) {
+  ctx.save();
+  ctx.fillStyle = 'rgba(46, 204, 113, 0.28)';
+  ctx.fillRect(px, py, TILE, TILE);
+  ctx.strokeStyle = 'rgba(46, 204, 113, 0.85)';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(px + 1.5, py + 1.5, TILE - 3, TILE - 3);
+  ctx.restore();
 }
 
 // ================================================================================================================================================================================================================================================

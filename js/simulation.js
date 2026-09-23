@@ -35,6 +35,7 @@ export class Simulation {
     this.deadBodies = [];
 
     this.world.load(this.objects);
+    this.world.loadSafeZones(mapData.safeZoneData);
     for (const enemy of this.enemies) this.world.addCreature(enemy);
     this.objectsById = new Map(this.objects.map(obj => [obj.id, obj]));
 

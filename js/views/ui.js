@@ -47,9 +47,54 @@ export class UI {
   // ================================================================================================================================================================================================================================================
   // draw
 
-  draw(ctx, autoFollow, devMode) {
-    this.drawAutoFollowButton(ctx, autoFollow);
+  draw(ctx, player, devMode, inSafeZone) {
+    this.drawAutoFollowButton(ctx, player.autoFollow);
     this.drawDevModeButton(ctx, devMode);
+    this.drawPlayerStatus(ctx, player, inSafeZone);
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // drawPlayerStatus
+  // Canto inferior esquerdo: nível, barra de XP até o próximo nível e o
+  // aviso de zona segura.
+
+  drawPlayerStatus(ctx, player, inSafeZone) {
+    const x = 16;
+    const width = 200;
+    const barHeight = 8;
+    const y = ctx.canvas.height - 16 - barHeight;
+    const progress = player.nextLevelXp ? Math.min(1, (player.xp || 0) / player.nextLevelXp) : 0;
+
+    ctx.save();
+    ctx.font = 'bold 13px Arial';
+    ctx.textBaseline = 'bottom';
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = '#000';
+    const text = `Nível ${player.lvl}   XP ${Math.floor(player.xp || 0)} / ${player.nextLevelXp}`;
+    ctx.strokeText(text, x, y - 6);
+    ctx.fillStyle = '#fff';
+    ctx.fillText(text, x, y - 6);
+
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+    ctx.fillRect(x, y, width, barHeight);
+    ctx.fillStyle = this.iconColor;
+    ctx.fillRect(x, y, width * progress, barHeight);
+    ctx.strokeStyle = 'rgba(0, 0, 0, 0.8)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(x + 0.5, y + 0.5, width - 1, barHeight - 1);
+
+    if (inSafeZone) {
+      const label = '🛡 Zona segura';
+      ctx.font = 'bold 12px Arial';
+      const labelWidth = ctx.measureText(label).width + 16;
+      const labelY = y - 30;
+      ctx.fillStyle = 'rgba(46, 204, 113, 0.85)';
+      ctx.fillRect(x, labelY - 20, labelWidth, 20);
+      ctx.fillStyle = '#0b2e17';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(label, x + 8, labelY - 10);
+    }
+    ctx.restore();
   }
 
   // ================================================================================================================================================================================================================================================

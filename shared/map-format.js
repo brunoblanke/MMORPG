@@ -123,6 +123,7 @@ export function serializeMapFromLayers(layerOrder, layers, GRID) {
   const objetosData = [];
   const transicoesData = [];
   const enemyData = [];
+  const safeZoneData = [];
   let spawn = null;
 
   layerOrder.forEach((z) => {
@@ -166,11 +167,15 @@ export function serializeMapFromLayers(layerOrder, layers, GRID) {
         if (cell.spawn && !spawn) {
           spawn = { x, y, z };
         }
+
+        if (cell.safe) {
+          safeZoneData.push([x, y, z]);
+        }
       }
     }
   });
 
-  return { version: MAP_FORMAT_VERSION, objetosData, transicoesData, enemyData, spawn };
+  return { version: MAP_FORMAT_VERSION, objetosData, transicoesData, enemyData, safeZoneData, spawn };
 }
 
 // ================================================================================================================================================================================================================================================
@@ -180,7 +185,7 @@ function makeEmptyLayerCells(GRID) {
   const cells = {};
   for (let y = 0; y < GRID; y++) {
     for (let x = 0; x < GRID; x++) {
-      cells[`${x},${y}`] = { floor: null, floorTop: null, hole: false, objects: [], enemy: null, spawn: false };
+      cells[`${x},${y}`] = { floor: null, floorTop: null, hole: false, objects: [], enemy: null, spawn: false, safe: false };
     }
   }
   return cells;
@@ -192,7 +197,7 @@ function makeEmptyLayerCells(GRID) {
 export function buildLayersFromMapData(mapData, GRID) {
   const layers = {};
   const layerOrder = [];
-  const stats = { floor: 0, wall: 0, stairs: 0, item: 0, enemy: 0, outOfRange: 0, spawnFound: false };
+  const stats = { floor: 0, wall: 0, stairs: 0, item: 0, enemy: 0, safe: 0, outOfRange: 0, spawnFound: false };
 
   const ensureLayer = (z) => {
     if (!layers[z]) {
@@ -237,6 +242,13 @@ export function buildLayersFromMapData(mapData, GRID) {
     ensureLayer(z);
     layers[z][`${x},${y}`].enemy = { type: type || 'Cave Rat', lvl, spriteSize };
     stats.enemy++;
+  });
+
+  (mapData.safeZoneData || []).forEach(([x, y, z]) => {
+    if (!inRange(x, y)) { stats.outOfRange++; return; }
+    ensureLayer(z);
+    layers[z][`${x},${y}`].safe = true;
+    stats.safe++;
   });
 
   if (mapData.spawn && inRange(mapData.spawn.x, mapData.spawn.y)) {

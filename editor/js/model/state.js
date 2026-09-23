@@ -10,7 +10,7 @@ export function makeEmptyLayer() {
   const cells = {};
   for (let y = 0; y < GRID; y++) {
     for (let x = 0; x < GRID; x++) {
-      cells[`${x},${y}`] = { floor: null, floorTop: null, hole: false, objects: [], enemy: null, spawn: false };
+      cells[`${x},${y}`] = { floor: null, floorTop: null, hole: false, objects: [], enemy: null, spawn: false, safe: false };
     }
   }
   return cells;
@@ -53,5 +53,6 @@ export const TOOLS = [
   { id:'item', label:'Item', hasSub:true },
   { id:'enemy', label:'Criatura' },
   { id:'spawn', label:'Respawn do jogador' },
+  { id:'safe', label:'Zona segura (liga/desliga)' },
   { id:'eraser', label:'Borracha (tira o do topo)' }
 ];

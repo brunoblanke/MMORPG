@@ -61,10 +61,16 @@ export class CombatController {
 
   // ================================================================================================================================================================================================================================================
   // processEnemies
-  // Inimigo que vê o player e está colado nele, no mesmo andar, ataca.
+  // Inimigo que vê o player e está colado nele, no mesmo andar, ataca — a não
+  // ser que o player esteja na zona segura.
   // player.isTarget: algum inimigo o vê (marca vermelha no player).
 
   processEnemies(player, now) {
+    if (this.sim.world.isInSafeZone(player)) {
+      player.isTarget = false;
+      return;
+    }
+
     let anyEnemyInRange = false;
 
     for (const enemy of this.sim.enemies) {

@@ -43,13 +43,25 @@ export function hole(x, y, z) {
 // ================================================================================================================================================================================================================================================
 // buildMapData
 
-export function buildMapData({ objects = [], stairs = [], enemies = [], spawn = { x: 1, y: 1, z: 0 } }) {
+export function buildMapData({ objects = [], stairs = [], enemies = [], safe = [], spawn = { x: 1, y: 1, z: 0 } }) {
   return {
     objetosData: objects,
     transicoesData: stairs.map(([x, y, z]) => ['Stairs', x, y, z]),
     enemyData: enemies.map(([x, y, z, lvl = 5]) => [x, y, z, lvl, 32, 'Cave Rat']),
+    safeZoneData: safe,
     spawn
   };
+}
+
+// ================================================================================================================================================================================================================================================
+// safeRect
+
+export function safeRect(minX, maxX, minY, maxY, z = 0) {
+  const tiles = [];
+  for (let x = minX; x <= maxX; x++) {
+    for (let y = minY; y <= maxY; y++) tiles.push([x, y, z]);
+  }
+  return tiles;
 }
 
 // ================================================================================================================================================================================================================================================
@@ -57,8 +69,8 @@ export function buildMapData({ objects = [], stairs = [], enemies = [], spawn = 
 // Simulação com um jogador em `player`. `player` e `movementController`
 // ficam à mão no objeto devolvido.
 
-export function buildGame({ objects = [], stairs = [], enemies = [], player = { x: 1, y: 1, z: 0 } }) {
-  const sim = new Simulation(buildMapData({ objects, stairs, enemies, spawn: player }));
+export function buildGame({ objects = [], stairs = [], enemies = [], safe = [], player = { x: 1, y: 1, z: 0 } }) {
+  const sim = new Simulation(buildMapData({ objects, stairs, enemies, safe, spawn: player }));
   sim.player = sim.addPlayer('player1');
   sim.movementController = sim.movement;
   return sim;

@@ -67,10 +67,10 @@ export class Renderer {
 
   // ================================================================================================================================================================================
   // drawTileHighlights
-  // Marcações de dev (patrulha, detecção, caminho, alvo, hover, spawn). Desenhadas
+  // Marcações de dev (patrulha, detecção, zona segura, caminho, alvo, hover, spawn). Desenhadas
   // depois dos pisos e objetos, translúcidas, pra ficarem visíveis sobre eles.
 
-  drawTileHighlights(x, y, enemies, player, inputController) {
+  drawTileHighlights(x, y, enemies, player, inputController, world) {
     const walk = player.walk || { target: null, path: [] };
     const pos = this.gridToScreenWithOffset(x, y);
     const size = CONFIG.tileSize;
@@ -102,6 +102,14 @@ export class Renderer {
     } else if (inDetectionZone && this.devMode && this.showDetectionAreas) {
       this.ctx.fillStyle = "rgba(90, 210, 230, 0.14)";
       this.ctx.fillRect(pos.x, pos.y, size, size);
+    }
+
+    if (this.devMode && world && world.isSafe(x, y, player.z || 0)) {
+      this.ctx.fillStyle = "rgba(46, 204, 113, 0.22)";
+      this.ctx.fillRect(pos.x, pos.y, size, size);
+      this.ctx.strokeStyle = "rgba(46, 204, 113, 0.7)";
+      this.ctx.lineWidth = 1;
+      this.ctx.strokeRect(pos.x + 1.5, pos.y + 1.5, size - 3, size - 3);
     }
 
     if (isSpawn) {
@@ -476,7 +484,7 @@ export class Renderer {
       highlightsDrawn = true;
       for (let y = visible.startY; y < visible.endY; y++) {
         for (let x = visible.startX; x < visible.endX; x++) {
-          this.drawTileHighlights(x, y, gameState.enemies, gameState.player, gameState.inputController);
+          this.drawTileHighlights(x, y, gameState.enemies, gameState.player, gameState.inputController, gameState.world);
         }
       }
     };
@@ -503,7 +511,7 @@ export class Renderer {
       drawEntityOverlay(this.ctx, o.entity, o.base, o.stackOffsetX, o.stackOffsetY, o.size, this.devMode);
     }
 
-    ui.draw(this.ctx, gameState.player.autoFollow, this.devMode);
+    ui.draw(this.ctx, gameState.player, this.devMode, gameState.world.isInSafeZone(gameState.player));
 
     if (this.showTooltip) {
       drawTileTooltip(this.ctx, this.camera, gameState, gameState.inputController);

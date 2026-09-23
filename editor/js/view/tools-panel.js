@@ -56,7 +56,7 @@ function layerHasContent(z) {
   if (!layer) return false;
   for (const key in layer) {
     const cell = layer[key];
-    if (cell.floor || cell.floorTop || cell.hole || cell.objects.length || cell.enemy || cell.spawn) return true;
+    if (cell.floor || cell.floorTop || cell.hole || cell.objects.length || cell.enemy || cell.spawn || cell.safe) return true;
   }
   return false;
 }
@@ -98,6 +98,9 @@ export function renderTools() {
       swatch.style.alignItems = 'center';
       swatch.style.justifyContent = 'center';
       swatch.style.fontSize = '14px';
+    } else if (t.id === 'safe') {
+      swatch.style.background = 'rgba(46, 204, 113, 0.35)';
+      swatch.style.border = '1px solid rgba(46, 204, 113, 0.9)';
     } else if (t.id === 'eraser') {
       swatch.style.background = '#2a2f3a';
       swatch.style.border = '1px dashed #555';
@@ -226,9 +229,10 @@ borderToggle.onclick = () => {
 
 export function updateStats() {
   const layer = state.layers[state.activeZ];
-  let f = 0, w = 0, s = 0, h = 0, it = 0, cr = 0;
+  let f = 0, w = 0, s = 0, h = 0, it = 0, cr = 0, sf = 0;
   Object.values(layer).forEach(c => {
     if (c.floor) f++;
+    if (c.safe) sf++;
     if (c.hole) h++;
     if (c.enemy) cr++;
     c.objects.forEach(o => {
@@ -243,4 +247,5 @@ export function updateStats() {
   document.getElementById('statHole').textContent = h;
   document.getElementById('statItem').textContent = it;
   document.getElementById('statCreature').textContent = cr;
+  document.getElementById('statSafe').textContent = sf;
 }

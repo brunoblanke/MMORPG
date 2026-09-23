@@ -21,19 +21,31 @@ export class Player extends Entity {
     this.pendingDrag = null;
   }
 
+  // ================================================================================================================================================================================================================================================
+  // gainXp
+  // Soma o XP e sobe quantos níveis ele pagar; o que sobra continua contando.
+  // Cada nível novo recalcula vida, ataque, defesa e velocidade (vida cheia).
+  // Devolve quantos níveis subiu.
+
   gainXp(amount) {
     this.xp += amount;
+    let levels = 0;
 
     while (this.xp >= this.nextLevelXp) {
       this.xp -= this.nextLevelXp;
       this.lvl++;
+      levels++;
 
       const stats = calculateStats(this.lvl);
-      Object.assign(this, stats);
+      this.hp = stats.hp;
       this.maxHp = stats.hp;
       this.currentHp = stats.hp;
+      this.atk = stats.atk;
+      this.def = stats.def;
+      this.spd = stats.spd;
       this.nextLevelXp = this.calculateNextLevelXp();
     }
+    return levels;
   }
 
   calculateNextLevelXp() {

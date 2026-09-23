@@ -12,7 +12,6 @@ export class Enemy extends Entity {
     super(data);
     this.patrolRadius = data.patrolRadius || CONFIG.patrolRadius || 3;
     this.detectionRadius = data.detectionRadius || CONFIG.detectionRadius || 6;
-    this.xpValue = data.xpValue || 20;
     this.ai = {
       state: AI_STATE.PATROL,
       slot: null,

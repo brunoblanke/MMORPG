@@ -81,8 +81,9 @@ export class LifeCycleController {
 
   // ================================================================================================================================================================================================================================================
   // handleEnemyDeath
-  // XP pro player que tinha o inimigo como alvo (ou, sem ninguém, pro mais
-  // perto). Renasce no centro da patrulha depois de enemyRespawnTime.
+  // O XP do inimigo (enemy.xp, pelo lvl dele) vai inteiro pro player que o
+  // tinha como alvo (ou, sem ninguém, pro mais perto). Renasce no centro da
+  // patrulha depois de enemyRespawnTime.
 
   handleEnemyDeath(enemy, now) {
     const sim = this.sim;
@@ -90,9 +91,13 @@ export class LifeCycleController {
 
     const killer = sim.players.find(p => p.target === enemy) || sim.closestPlayer(enemy);
     if (killer) {
-      const xpGain = Math.floor(enemy.xp * 0.2);
-      killer.gainXp(xpGain);
+      const xpGain = enemy.xp;
+      const levels = killer.gainXp(xpGain);
       sim.emit({ type: 'xp', playerId: killer.id, x: enemy.x, y: enemy.y, amount: xpGain });
+      if (levels > 0) {
+        sim.emit({ type: 'levelUp', playerId: killer.id, lvl: killer.lvl });
+        console.log(`⭐ ${killer.name} subiu para o nível ${killer.lvl}`);
+      }
     }
 
     sim.world.removeCreature(enemy);
