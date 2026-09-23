@@ -133,8 +133,9 @@ export class EnemyAI {
   // ================================================================================================================================================================================================================================================
   // moveAroundPlayer
   // Colado no player, de tempos em tempos: passa pra um sqm vizinho (também
-  // colado no player) que fique mais longe dos outros atacantes — abre o
-  // cerco. Se nenhum melhora, fica onde está.
+  // colado no player e livre). Prefere o que fica mais longe dos outros
+  // atacantes (abre o cerco); se nenhum melhora, sorteia um dos livres. Sem
+  // sqm livre em volta, fica onde está.
 
   moveAroundPlayer(enemy, playerX, playerY, enemies, timestamp) {
     const floor = enemy.z || 0;
@@ -148,11 +149,13 @@ export class EnemyAI {
       const occupied = this.isOccupiedByOther(enemy, enemies, pos.x, pos.y) ||
         this.isReservedByOther(enemy, enemies, pos.x, pos.y);
       if (occupied) continue;
+      if (this.movement.world.getTransitionAt(pos.x, pos.y, floor)) continue;
       const dx = pos.x - enemy.x;
       const dy = pos.y - enemy.y;
       const landing = this.movement.resolveStep(enemy, dx, dy, { sameFloor: true });
       if (landing) freePositions.push({ ...landing, dx, dy });
     }
+    if (freePositions.length === 0) return;
 
     let best = null;
     let bestSpread = this.distanceToOtherAttackers(enemy, enemies, enemy.x, enemy.y);
@@ -163,10 +166,10 @@ export class EnemyAI {
         bestSpread = spread;
       }
     }
-    if (best) {
-      this.movement.stepAlongPath(enemy, best, timestamp);
-      enemy.ai.slot = { x: best.x, y: best.y };
-    }
+    if (!best) best = freePositions[Math.floor(Math.random() * freePositions.length)];
+
+    this.movement.stepAlongPath(enemy, best, timestamp);
+    enemy.ai.slot = { x: best.x, y: best.y };
   }
 
   // ================================================================================================================================================================================================================================================

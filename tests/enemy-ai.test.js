@@ -137,3 +137,31 @@ test('patrulha fica dentro da área do inimigo', () => {
   });
   assert.ok(visited.size > 3);
 });
+
+test('sozinho colado no player, de vez em quando muda de sqm em volta dele', () => {
+  const game = buildGame({ objects: GROUND, enemies: [[14, 12, 0]], player: { x: 12, y: 12, z: 0 } });
+  const enemy = game.enemies[0];
+  const spots = new Set();
+  let moves = 0;
+  let last = null;
+
+  run(game, 60000, () => {
+    if (!isPositionAdjacentTo(enemy.x, enemy.y, 12, 12)) return;
+    const spot = `${enemy.x},${enemy.y}`;
+    if (last && spot !== last) moves++;
+    last = spot;
+    spots.add(spot);
+  });
+
+  assert.ok(spots.size >= 2, `ficou sempre em ${[...spots]}`);
+  assert.ok(moves >= 3 && moves <= 12, `mudou ${moves} vezes em 60s`);
+});
+
+test('cercado sem sqm livre em volta do player, fica parado atacando', () => {
+  const enemies = [];
+  for (const [dx, dy] of [[-1, -1], [0, -1], [1, -1], [-1, 0], [1, 0], [-1, 1], [0, 1], [1, 1]]) enemies.push([12 + dx, 12 + dy, 0]);
+  const game = buildGame({ objects: GROUND, enemies, player: { x: 12, y: 12, z: 0 } });
+  const before = game.enemies.map(e => `${e.x},${e.y}`).join(' ');
+  run(game, 30000);
+  assert.equal(game.enemies.map(e => `${e.x},${e.y}`).join(' '), before);
+});
