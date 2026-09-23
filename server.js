@@ -9,7 +9,7 @@ const { pathToFileURL } = require('url');
 const { WebSocketServer } = require('ws');
 const app = express();
 
-const PASTA_JOGO = path.join(__dirname, 'MMORPG - PROD');
+const PASTA_JOGO = __dirname;
 const MAP_DATA_PATH = path.join(PASTA_JOGO, 'data', 'map.json');
 const CHARACTERS_PATH = path.join(PASTA_JOGO, 'data', 'characters.json');
 const SAVE_INTERVAL_MS = 10000;
