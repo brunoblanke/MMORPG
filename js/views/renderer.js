@@ -13,6 +13,7 @@ export class Renderer {
     this.ctx = canvas.getContext('2d');
     this.camera = camera;
     this.devMode = true;
+    this.selectedTarget = null;
 
     this.sprites = new SpriteRegistry();
 
@@ -70,6 +71,7 @@ export class Renderer {
   // depois dos pisos e objetos, translúcidas, pra ficarem visíveis sobre eles.
 
   drawTileHighlights(x, y, enemies, player, inputController) {
+    const walk = player.walk || { target: null, path: [] };
     const pos = this.gridToScreenWithOffset(x, y);
     const size = CONFIG.tileSize;
 
@@ -89,8 +91,8 @@ export class Renderer {
       }
     }
 
-    const isTarget = this.devMode && inputController.targetTile && inputController.targetTile.x === x && inputController.targetTile.y === y;
-    const isInPath = this.devMode && this.showPaths && inputController.pathToTarget && inputController.pathToTarget.some(p => p.x === x && p.y === y);
+    const isTarget = this.devMode && walk.target && walk.target.x === x && walk.target.y === y;
+    const isInPath = this.devMode && this.showPaths && walk.path.some(p => p.x === x && p.y === y);
     const isHover = this.devMode && inputController.hoverTile && inputController.hoverTile.x === x && inputController.hoverTile.y === y;
     const isSpawn = this.devMode && player && player.spawnX === x && player.spawnY === y;
 
@@ -355,7 +357,7 @@ export class Renderer {
     const stackOffsetX = stackOffset.x;
     const stackOffsetY = stackOffset.y;
 
-    if (entity && entity.isTarget) {
+    if (entity && (entity.isTarget || entity === this.selectedTarget)) {
       this.drawTargetMarker(entity, base, size, stackOffsetX, stackOffsetY);
     }
 
@@ -419,6 +421,7 @@ export class Renderer {
 
   render(gameState, ui) {
     this.frameTimestamp = performance.now();
+    this.selectedTarget = gameState.player.target || null;
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.camera.update(gameState.player);
     const offset = this.camera.getOffset();
@@ -500,7 +503,7 @@ export class Renderer {
       drawEntityOverlay(this.ctx, o.entity, o.base, o.stackOffsetX, o.stackOffsetY, o.size, this.devMode);
     }
 
-    ui.draw(this.ctx, gameState.movementController.autoFollow, this.devMode);
+    ui.draw(this.ctx, gameState.player.autoFollow, this.devMode);
 
     if (this.showTooltip) {
       drawTileTooltip(this.ctx, this.camera, gameState, gameState.inputController);

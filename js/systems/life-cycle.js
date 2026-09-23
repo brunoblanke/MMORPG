@@ -8,16 +8,19 @@ export class LifeCycleController {
   // ================================================================================================================================================================================================================================================
   // constructor
 
-  constructor(game) {
-    this.game = game;
+  constructor(sim) {
+    this.sim = sim;
+    this.corpseCounter = 0;
   }
 
   // ================================================================================================================================================================================================================================================
   // createCorpse
 
-  createCorpse(entity, type) {
-    const deathTime = performance.now();
+  createCorpse(entity, type, now) {
+    this.corpseCounter++;
     const corpse = {
+      id: `Corpse_${this.corpseCounter}`,
+      ownerId: entity.id,
       x: entity.x,
       y: entity.y,
       z: entity.z || 0,
@@ -27,8 +30,8 @@ export class LifeCycleController {
       lvl: entity.lvl,
       creature: entity.creature,
       isPlayer: type === 'player_corpse',
-      deathTime: deathTime,
-      decayTime: deathTime + CONFIG.corpseFrameDuration * CONFIG.corpseFrameCount,
+      deathTime: now,
+      decayTime: now + CONFIG.corpseFrameDuration * CONFIG.corpseFrameCount,
       hasVolume: false,
       blocksMovement: false,
       movable: true,
@@ -36,66 +39,67 @@ export class LifeCycleController {
       corpseCreature: entity.creature,
       corpseIsPlayer: type === 'player_corpse'
     };
-    this.game.world.addToTile(corpse, corpse.x, corpse.y, corpse.z);
+    this.sim.world.addToTile(corpse, corpse.x, corpse.y, corpse.z);
+    this.sim.deadBodies.push(corpse);
     return corpse;
   }
 
   // ================================================================================================================================================================================================================================================
-  // clearPlayerCorpse
+  // removeCorpse
 
-  clearPlayerCorpse() {
-    const game = this.game;
-    const playerCorpses = game.deadBodies.filter(corpse => corpse.type === 'player_corpse');
-    for (const corpse of playerCorpses) {
-      game.world.removeFromTile(corpse, corpse.x, corpse.y, corpse.z || 0);
-    }
-    game.deadBodies = game.deadBodies.filter(corpse => corpse.type !== 'player_corpse');
+  removeCorpse(corpse) {
+    this.sim.world.removeFromTile(corpse, corpse.x, corpse.y, corpse.z || 0);
+    this.sim.deadBodies = this.sim.deadBodies.filter(c => c !== corpse);
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // clearPlayerCorpse
+  // Cada jogador deixa só o último cadáver.
+
+  clearPlayerCorpse(player) {
+    const corpses = this.sim.deadBodies.filter(c => c.type === 'player_corpse' && c.ownerId === player.id);
+    for (const corpse of corpses) this.removeCorpse(corpse);
   }
 
   // ================================================================================================================================================================================================================================================
   // handlePlayerDeath
 
-  handlePlayerDeath() {
-    const game = this.game;
-    this.clearPlayerCorpse();
-    const corpse = this.createCorpse(game.player, 'player_corpse');
-    game.deadBodies.push(corpse);
-    game.world.moveEntityTile(game.player, game.player.x, game.player.y, game.player.z || 0, game.player.spawnX, game.player.spawnY, 0);
-    game.player.respawn();
-    game.inputController.clearTarget();
-    if (game.selectedEnemy) {
-      game.selectedEnemy.isTarget = false;
-      game.selectedEnemy = null;
-    }
+  handlePlayerDeath(player, now) {
+    const { world, control } = this.sim;
+    this.clearPlayerCorpse(player);
+    this.createCorpse(player, 'player_corpse', now);
+    world.moveEntityTile(player, player.x, player.y, player.z || 0, player.spawnX, player.spawnY, 0);
+    player.respawn();
+    control.clearWalk(player);
+    if (player.target) player.target = null;
+    this.sim.emit({ type: 'death', playerId: player.id });
   }
 
   // ================================================================================================================================================================================================================================================
   // handleEnemyDeath
+  // XP pro player que tinha o inimigo como alvo (ou, sem ninguém, pro mais
+  // perto). Renasce no centro da patrulha depois de enemyRespawnTime.
 
-  handleEnemyDeath(enemy) {
-    const game = this.game;
-    const corpse = this.createCorpse(enemy, 'enemy_corpse');
-    game.deadBodies.push(corpse);
+  handleEnemyDeath(enemy, now) {
+    const sim = this.sim;
+    this.createCorpse(enemy, 'enemy_corpse', now);
 
-    const xpGain = Math.floor(enemy.xp * 0.2);
-    game.player.gainXp(xpGain);
-
-    game.particleController.spawnXP(enemy.x, enemy.y, xpGain, game.renderer);
-
-    game.world.removeCreature(enemy);
-
-    const index = game.enemies.indexOf(enemy);
-    if (index > -1) {
-      game.enemies.splice(index, 1);
+    const killer = sim.players.find(p => p.target === enemy) || sim.closestPlayer(enemy);
+    if (killer) {
+      const xpGain = Math.floor(enemy.xp * 0.2);
+      killer.gainXp(xpGain);
+      sim.emit({ type: 'xp', playerId: killer.id, x: enemy.x, y: enemy.y, amount: xpGain });
     }
 
-    if (game.selectedEnemy === enemy) {
-      game.selectedEnemy = null;
+    sim.world.removeCreature(enemy);
+    const index = sim.enemies.indexOf(enemy);
+    if (index > -1) sim.enemies.splice(index, 1);
+
+    for (const player of sim.players) {
+      if (player.target === enemy) player.target = null;
     }
 
-    setTimeout(() => {
-      this.respawnEnemy(enemy);
-    }, CONFIG.enemyRespawnTime);
+    sim.schedule(now + CONFIG.enemyRespawnTime, () => this.respawnEnemy(enemy));
   }
 
   // ================================================================================================================================================================================================================================================
@@ -113,38 +117,31 @@ export class LifeCycleController {
       z: enemy.spawnZ,
       height: 1
     });
-    this.game.enemies.push(respawnedEnemy);
-    this.game.world.addCreature(respawnedEnemy);
+    this.sim.enemies.push(respawnedEnemy);
+    this.sim.world.addCreature(respawnedEnemy);
     console.log(`♻️ ${enemy.creature} LV${enemy.lvl} respawnou em (${enemy.patrolCenterX}, ${enemy.patrolCenterY}, ${enemy.spawnZ})`);
   }
 
   // ================================================================================================================================================================================================================================================
   // processDeaths
 
-  processDeaths() {
-    const game = this.game;
-
-    if (!game.player.isAlive()) {
-      this.handlePlayerDeath();
+  processDeaths(now) {
+    for (const player of this.sim.players) {
+      if (!player.isAlive()) this.handlePlayerDeath(player, now);
     }
 
-    const deadEnemies = game.enemies.filter(enemy => !enemy.isAlive());
+    const deadEnemies = this.sim.enemies.filter(enemy => !enemy.isAlive());
     for (const enemy of deadEnemies) {
-      this.handleEnemyDeath(enemy);
+      this.handleEnemyDeath(enemy, now);
     }
   }
 
   // ================================================================================================================================================================================================================================================
   // processCorpseDecay
 
-  processCorpseDecay(timestamp) {
-    const game = this.game;
-    game.deadBodies = game.deadBodies.filter((corpse) => {
-      if (timestamp >= corpse.decayTime) {
-        game.world.removeFromTile(corpse, corpse.x, corpse.y, corpse.z || 0);
-        return false;
-      }
-      return true;
-    });
+  processCorpseDecay(now) {
+    for (const corpse of this.sim.deadBodies.filter(c => now >= c.decayTime)) {
+      this.removeCorpse(corpse);
+    }
   }
 }

@@ -11,7 +11,6 @@ export class MovementController {
 
   constructor(world) {
     this.world = world;
-    this.autoFollow = true;
     this.onNoPath = null;
     this.enemiesPassable = false;
   }
@@ -229,7 +228,7 @@ export class MovementController {
       : { x: targetX, y: targetY };
 
     if (!this.ensureRoute(entity, targetPos, searchBounds)) {
-      if (this.onNoPath) this.onNoPath(timestamp);
+      if (this.onNoPath) this.onNoPath(entity, timestamp);
       return;
     }
 
@@ -301,13 +300,5 @@ export class MovementController {
       const via = transitionObj.stairDirection === 'up' ? 'escada' : 'buraco';
       console.log(`🪜 ${who} usou ${via} (${transitionObj.id}): (${fromX},${fromY}) andar ${floor} → (${entity.x},${entity.y}) andar ${targetFloor}`);
     }
-  }
-
-  // ================================================================================================================================================================================================================================================
-  // toggleAutoFollow
-
-  toggleAutoFollow() {
-    this.autoFollow = !this.autoFollow;
-    console.log("🏃 Auto-follow: " + (this.autoFollow ? 'ATIVADO' : 'DESATIVADO'));
   }
 }

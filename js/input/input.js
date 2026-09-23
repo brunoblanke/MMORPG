@@ -1,9 +1,13 @@
 // js/input/input.js
 
-import { calculateMoveDelay } from '../utils/helpers.js';
 import { CONFIG } from '../config.js';
 import { getRoofLevel } from '../views/draw-order.js';
 import { getEntityLevel } from '../core/geometry.js';
+
+const KEY_DIRECTIONS = {
+  w: [0, -1], s: [0, 1], a: [-1, 0], d: [1, 0],
+  q: [-1, -1], e: [1, -1], z: [-1, 1], c: [1, 1]
+};
 
 export class InputController {
   constructor(canvas, renderer, camera, eventManager, game) {
@@ -13,9 +17,7 @@ export class InputController {
     this.camera = camera;
     this.eventManager = eventManager;
     this.keysPressed = {};
-    this.targetTile = null;
-    this.pathToTarget = [];
-    this.isMovingToTarget = false;
+    this.walkDir = null;
     this.hoverTile = null;
     this.hoverEnemy = null;
     this.hoverObject = null;
@@ -37,6 +39,11 @@ export class InputController {
       self.handleKeyUp(e);
     });
 
+    window.addEventListener("blur", function() {
+      self.keysPressed = {};
+      self.sendWalkDir(false);
+    });
+
     this.eventManager.on('mousemove', function(data) {
       self.mouseX = data.mouseX;
       self.mouseY = data.mouseY;
@@ -44,38 +51,52 @@ export class InputController {
   }
 
   // ================================================================================================================================================================================================================================================
-  // clearTarget
+  // getKeyDirection
+  // Direção da primeira tecla apertada (w/a/s/d e diagonais q/e/z/c), ou null.
 
-  clearTarget() {
-    this.targetTile = null;
-    this.pathToTarget = [];
-    this.isMovingToTarget = false;
+  getKeyDirection() {
+    for (const key in this.keysPressed) {
+      if (this.keysPressed[key] && KEY_DIRECTIONS[key]) {
+        const [dx, dy] = KEY_DIRECTIONS[key];
+        return { dx, dy };
+      }
+    }
+    return null;
   }
 
   // ================================================================================================================================================================================================================================================
-// handleKeyDown
+  // sendWalkDir
+  // Manda a direção das teclas quando ela muda (ou quando uma tecla nova é apertada).
 
-handleKeyDown(e) {
-  const key = e.key.toLowerCase();
-  if ("wasdqezc".indexOf(key) !== -1) {
-    e.preventDefault();
-    this.keysPressed[key] = true;
-    this.clearTarget();
-    if (this.game.movementController && this.game.selectedEnemy) {
-      this.game.movementController.autoFollow = false;
-      console.log('⌨️ Auto-follow desligado por TECLA:', key);
-    }
+  sendWalkDir(force) {
+    const dir = this.getKeyDirection();
+    const same = (dir === null && this.walkDir === null) ||
+      (dir && this.walkDir && dir.dx === this.walkDir.dx && dir.dy === this.walkDir.dy);
+    if (same && !force) return;
+    this.walkDir = dir;
+    this.game.send({ type: 'walkDir', dx: dir ? dir.dx : 0, dy: dir ? dir.dy : 0 });
   }
-}
+
+  // ================================================================================================================================================================================================================================================
+  // handleKeyDown
+
+  handleKeyDown(e) {
+    const key = e.key.toLowerCase();
+    if (!KEY_DIRECTIONS[key]) return;
+    e.preventDefault();
+    if (this.keysPressed[key]) return;
+    this.keysPressed[key] = true;
+    this.sendWalkDir(true);
+  }
 
   // ================================================================================================================================================================================================================================================
   // handleKeyUp
 
   handleKeyUp(e) {
     const key = e.key.toLowerCase();
-    if ("wasdqezc".indexOf(key) !== -1) {
-      this.keysPressed[key] = false;
-    }
+    if (!KEY_DIRECTIONS[key]) return;
+    this.keysPressed[key] = false;
+    this.sendWalkDir(false);
   }
 
   // ================================================================================================================================================================================================================================================
@@ -105,7 +126,7 @@ handleKeyDown(e) {
   }
 
   // ================================================================================================================================================================================================================================================
-// updateHoverEnemy
+  // updateHoverEnemy
 
 updateHoverEnemy(enemies, world, offset, player, deadBodies) {
   if (!this.hoverTile) {
@@ -194,15 +215,10 @@ updateHoverEnemy(enemies, world, offset, player, deadBodies) {
 
       if (gridPos.x >= 0 && gridPos.x < CONFIG.mapWidth &&
           gridPos.y >= 0 && gridPos.y < CONFIG.mapHeight) {
-        const gc = this.game;
         // Solta no andar do piso que aparece sob o mouse; sem piso visível, cancela.
-        const targetZ = gc.getVisibleFloorAt(gridPos.x, gridPos.y);
+        const targetZ = this.game.getVisibleFloorAt(gridPos.x, gridPos.y);
         if (targetZ !== null) {
-          if (gc.objectDrag.isPlayerNear(this.draggingCandidate)) {
-            gc.moveObject(this.draggingCandidate, gridPos.x, gridPos.y, targetZ);
-          } else {
-            gc.startDragMoveToObject(this.draggingCandidate, gridPos.x, gridPos.y, targetZ);
-          }
+          this.game.send({ type: 'moveItem', itemId: this.draggingCandidate.id, x: gridPos.x, y: gridPos.y, z: targetZ });
         }
       }
 
@@ -241,96 +257,6 @@ updateHoverEnemy(enemies, world, offset, player, deadBodies) {
       this.hoverEnemy = null;
       this.hoverObject = null;
       this.hoverCorpse = null;
-    }
-  }
-
-  // ================================================================================================================================================================================================================================================
-  // setTarget
-  // Leva o player até o sqm (x, y) do andar z — o caminho pode trocar de andar
-  // por pilha, escada e buraco. Sem caminho, o player fica onde está.
-
-  setTarget(x, y, z, movementController, player) {
-    if (player.x === x && player.y === y && (player.z || 0) === z) return;
-
-    if (movementController.isBlocked(x, y, z)) {
-      console.log("❌ Tile bloqueado");
-      return;
-    }
-
-    if (this.game.selectedEnemy) {
-      movementController.autoFollow = false;
-    }
-
-    this.targetTile = { x, y, z };
-
-    const start = { x: player.x, y: player.y, z: player.z || 0, step: player.step || 0 };
-    this.pathToTarget = movementController.findPath(start, this.targetTile);
-
-    if (this.pathToTarget.length === 0) {
-      console.log("❌ Nenhum caminho encontrado para este destino");
-      this.clearTarget();
-      return;
-    }
-
-    this.isMovingToTarget = true;
-    console.log(`✅ Caminho criado com ${this.pathToTarget.length} passos até (${x},${y}) andar ${z}`);
-  }
-
-  // ================================================================================================================================================================================================================================================
-  // moveTowardsTarget
-
-  moveTowardsTarget(player, movementController, timestamp) {
-    if (!this.pathToTarget || this.pathToTarget.length === 0) {
-      this.isMovingToTarget = false;
-      return;
-    }
-
-    const moveDelay = calculateMoveDelay(player.spd);
-    const timeSinceLastMove = timestamp - player.lastMoveTime;
-
-    if (timeSinceLastMove < moveDelay) return;
-
-    // Se o mapa mudou (volume arrastado, inimigo no caminho…) e o passo não
-    // termina mais onde o caminho previa, recalcula até o mesmo destino.
-    const nextStep = this.pathToTarget[0];
-    const current = { x: player.x, y: player.y, z: player.z || 0, step: player.step || 0 };
-    const predicted = movementController.simulateMove(current, nextStep.dx, nextStep.dy);
-    if (!predicted || predicted.x !== nextStep.x || predicted.y !== nextStep.y || predicted.z !== nextStep.z) {
-      const { x, y, z } = this.targetTile;
-      this.setTarget(x, y, z, movementController, player);
-      return;
-    }
-
-    const success = movementController.moveEntity(player, nextStep.dx, nextStep.dy, timestamp);
-
-    if (success) {
-      this.pathToTarget.shift();
-      if (this.pathToTarget.length === 0) {
-        this.isMovingToTarget = false;
-      }
-    } else {
-      this.clearTarget();
-    }
-  }
-
-  // ================================================================================================================================================================================================================================================
-  // handlePlayerMovement
-
-  handlePlayerMovement(player, movementController, timestamp) {
-    if (this.isMovingToTarget) {
-      this.moveTowardsTarget(player, movementController, timestamp);
-    } else {
-      const moves = {
-        w: [0, -1], s: [0, 1], a: [-1, 0], d: [1, 0],
-        q: [-1, -1], e: [1, -1], z: [-1, 1], c: [1, 1]
-      };
-
-      for (const key in this.keysPressed) {
-        if (this.keysPressed[key] && moves[key]) {
-          movementController.moveEntity(player, moves[key][0], moves[key][1], timestamp);
-          break;
-        }
-      }
     }
   }
 }

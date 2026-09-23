@@ -30,7 +30,7 @@ export class EnemyAI {
   // Vendo o player (mesmo andar, no raio de detecção) persegue; senão patrulha.
 
   update(enemy, player, enemies, timestamp, searchBounds = null) {
-    const seesPlayer = getLevel(enemy) === getLevel(player) && enemy.isInDetectionRange(player.x, player.y);
+    const seesPlayer = !!player && getLevel(enemy) === getLevel(player) && enemy.isInDetectionRange(player.x, player.y);
 
     if (enemy.ai.state === AI_STATE.CHASE) {
       this.updateChase(enemy, player, enemies, timestamp, searchBounds, seesPlayer);

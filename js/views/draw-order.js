@@ -116,18 +116,20 @@ export function prepareDrawables(gameState) {
     }, corpse);
   }
 
-  push({
-    x: player.renderX,
-    y: player.renderY,
-    z: player.renderZ ?? player.z ?? 0,
-    step: player.renderStep ?? player.step ?? 0,
-    renderX: player.renderX,
-    renderY: player.renderY,
-    entity: player,
-    hasVolume: false,
-    order: player.order || 0,
-    isFloor: false
-  }, player);
+  for (const other of gameState.players || [player]) {
+    push({
+      x: other.renderX,
+      y: other.renderY,
+      z: other.renderZ ?? other.z ?? 0,
+      step: other.renderStep ?? other.step ?? 0,
+      renderX: other.renderX,
+      renderY: other.renderY,
+      entity: other,
+      hasVolume: false,
+      order: other.order || 0,
+      isFloor: false
+    }, other);
+  }
 
   for (const enemy of gameState.enemies) {
     push({

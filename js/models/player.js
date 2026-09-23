@@ -12,6 +12,11 @@ export class Player extends Entity {
     this.xp = data.xp || 0;
     this.lvl = data.lvl || 1;
     this.nextLevelXp = this.calculateNextLevelXp();
+    this.target = null;
+    this.autoFollow = true;
+    this.walk = { target: null, path: [] };
+    this.walkDir = null;
+    this.pendingDrag = null;
   }
 
   gainXp(amount) {

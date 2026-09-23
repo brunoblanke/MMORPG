@@ -38,7 +38,7 @@ export class Entity {
     
     this.isTarget = false;
     this.hitFlash = false;
-    this.flashDuration = 0;
+    this.flashUntil = 0;
     
     this.isMoving = false;
     this.moveStartX = 0;
@@ -50,10 +50,9 @@ export class Entity {
     this.order = data.order !== undefined ? data.order : 0;
   }
 
-  takeDamage(amount) {
+  takeDamage(amount, now) {
     this.currentHp = Math.max(0, this.currentHp - amount);
-    this.hitFlash = true;
-    this.flashDuration = performance.now() + 200;
+    this.flashUntil = now + 150;
     return this.currentHp;
   }
 
@@ -114,8 +113,6 @@ export class Entity {
       this.renderStep = this.step || 0;
     }
 
-    if (this.hitFlash && performance.now() > this.flashDuration) {
-      this.hitFlash = false;
-    }
+    this.hitFlash = timestamp < this.flashUntil;
   }
 }

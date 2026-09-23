@@ -63,7 +63,7 @@ export function drawTileTooltip(ctx, camera, gameState, inputController) {
 
   const objectsOnTile = gameState.world.getObjectsAt(tileX, tileY);
   const enemiesOnTile = gameState.enemies.filter(enemy => enemy.x === tileX && enemy.y === tileY);
-  const playerOnTile = (gameState.player.x === tileX && gameState.player.y === tileY) ? [gameState.player] : [];
+  const playerOnTile = (gameState.players || [gameState.player]).filter(p => p.x === tileX && p.y === tileY);
   const corpsesOnTile = gameState.deadBodies.filter(corpse => corpse.x === tileX && corpse.y === tileY);
 
   const allOnTile = [...objectsOnTile, ...enemiesOnTile, ...playerOnTile, ...corpsesOnTile];

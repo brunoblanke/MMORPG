@@ -1,9 +1,6 @@
 // tests/helpers/fixture.js
 
-import { World } from '../../js/core/world.js';
-import { generateObjects, generateEnemies } from '../../js/models/game-object.js';
-import { Player } from '../../js/models/player.js';
-import { MovementController } from '../../js/systems/movement.js';
+import { Simulation } from '../../js/simulation.js';
 
 // ================================================================================================================================================================================================================================================
 // floorRect
@@ -44,37 +41,27 @@ export function hole(x, y, z) {
 }
 
 // ================================================================================================================================================================================================================================================
-// buildGame
-// Monta o mundo como o GameController faz: objetos do mapa, inimigos e o
-// player, nessa ordem. Devolve o que os controladores esperam em `game`.
+// buildMapData
 
-export function buildGame({ objects = [], stairs = [], enemies = [], player = { x: 1, y: 1, z: 0 } }) {
-  const mapData = {
+export function buildMapData({ objects = [], stairs = [], enemies = [], spawn = { x: 1, y: 1, z: 0 } }) {
+  return {
     objetosData: objects,
     transicoesData: stairs.map(([x, y, z]) => ['Stairs', x, y, z]),
-    enemyData: enemies.map(([x, y, z, lvl = 5]) => [x, y, z, lvl, 32, 'Cave Rat'])
+    enemyData: enemies.map(([x, y, z, lvl = 5]) => [x, y, z, lvl, 32, 'Cave Rat']),
+    spawn
   };
+}
 
-  const world = new World();
-  const gameObjects = generateObjects(mapData);
-  const gameEnemies = generateEnemies(mapData);
-  const gamePlayer = new Player({ ...player, lvl: 10 });
+// ================================================================================================================================================================================================================================================
+// buildGame
+// Simulação com um jogador em `player`. `player` e `movementController`
+// ficam à mão no objeto devolvido.
 
-  world.load(gameObjects);
-  for (const enemy of gameEnemies) world.addCreature(enemy);
-  world.addCreature(gamePlayer);
-
-  const movementController = new MovementController(world);
-
-  return {
-    world,
-    objects: gameObjects,
-    enemies: gameEnemies,
-    player: gamePlayer,
-    deadBodies: [],
-    movementController,
-    inputController: { isMovingToTarget: false, setTarget() {} }
-  };
+export function buildGame({ objects = [], stairs = [], enemies = [], player = { x: 1, y: 1, z: 0 } }) {
+  const sim = new Simulation(buildMapData({ objects, stairs, enemies, spawn: player }));
+  sim.player = sim.addPlayer('player1');
+  sim.movementController = sim.movement;
+  return sim;
 }
 
 // ================================================================================================================================================================================================================================================

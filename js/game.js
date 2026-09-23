@@ -1,24 +1,23 @@
 // js/game.js
 
 import { CONFIG } from './config.js';
-import { World } from './core/world.js';
+import { Simulation, TICK_MS } from './simulation.js';
+import { loadMapDataFromURL } from '../shared/map-format.js';
 import { Camera } from './services/camera.js';
 import { EventManager } from './input/event-manager.js';
-import { LevelLoader } from './services/level-loader.js';
 import { SpriteLoader } from './services/sprite-loader.js';
 import { Renderer } from './views/renderer.js';
 import { getSpritePaths } from './views/sprite-registry.js';
 import { UI } from './views/ui.js';
-import { getAdjacentPositions } from './utils/helpers.js';
 import { getRoofLevel } from './views/draw-order.js';
-import { Player } from './models/player.js';
-import { MovementController } from './systems/movement.js';
-import { EnemyAI } from './systems/enemy-ai.js';
-import { CombatController } from './systems/combat.js';
 import { ParticleController } from './systems/particle-controller.js';
 import { InputController } from './input/input.js';
-import { ObjectDragController } from './systems/object-drag.js';
-import { LifeCycleController } from './systems/life-cycle.js';
+
+const MAX_TICKS_PER_FRAME = 10;
+
+// Cliente: carrega o mapa, roda a simulação (simulation.js) no ritmo fixo de
+// TICK_MS, transforma teclado/mouse em comandos (send) e desenha. Não mexe no
+// estado do jogo: só lê o que a simulação expõe.
 
 export class GameController {
   constructor() {
@@ -26,12 +25,15 @@ export class GameController {
     this.ctx = this.canvas.getContext('2d');
     this.camera = new Camera(this.canvas);
     this.eventManager = new EventManager();
-    this.world = new World();
-    this.levelLoader = new LevelLoader();
     this.spriteLoader = new SpriteLoader();
     this.renderer = new Renderer(this.canvas, this.camera);
     this.ui = new UI();
     this.particleController = new ParticleController();
+
+    this.playerId = 'player1';
+    this.sim = null;
+    this.player = null;
+    this.simTime = null;
 
     this.devMode = CONFIG.devMode !== undefined ? CONFIG.devMode : false;
     this.renderer.setDevMode(this.devMode);
@@ -45,12 +47,13 @@ export class GameController {
 
   boot() {
     const spritesReady = this.loadSprites();
-    const mapReady = this.levelLoader.loadFromURL(CONFIG.mapDataUrl).catch((error) => {
+    const mapReady = loadMapDataFromURL(CONFIG.mapDataUrl).catch((error) => {
       console.error('❌ Erro ao carregar mapa:', error);
+      return {};
     });
 
-    Promise.all([spritesReady, mapReady]).then(() => {
-      this.initializeGame();
+    Promise.all([spritesReady, mapReady]).then(([, mapData]) => {
+      this.initializeGame(mapData);
       this.setupEventListeners();
       this.start();
     });
@@ -68,27 +71,18 @@ export class GameController {
   // ================================================================================================================================================================================================================================================
   // initializeGame
 
-  initializeGame() {
-    this.objects = this.levelLoader.getObjects();
-    this.enemies = this.levelLoader.getEnemies();
-
-    const spawn = this.levelLoader.getSpawn({ x: 132, y: 145, z: 0 });
-    this.player = new Player({ x: spawn.x, y: spawn.y, z: spawn.z, lvl: 10 });
-
-    this.world.load(this.objects);
-    for (const enemy of this.enemies) this.world.addCreature(enemy);
-    this.world.addCreature(this.player);
-
-    this.movementController = new MovementController(this.world);
-    this.movementController.onNoPath = (timestamp) => this.showMessage("Não há caminho", timestamp);
-    this.enemyAI = new EnemyAI(this.movementController);
-    this.combatController = new CombatController();
+  initializeGame(mapData) {
+    this.sim = new Simulation(mapData);
+    this.player = this.sim.addPlayer(this.playerId);
     this.inputController = new InputController(this.canvas, this.renderer, this.camera, this.eventManager, this);
-    this.objectDrag = new ObjectDragController(this);
-    this.lifeCycle = new LifeCycleController(this);
+  }
 
-    this.selectedEnemy = null;
-    this.deadBodies = [];
+  // ================================================================================================================================================================================================================================================
+  // send
+  // Manda um comando do jogador pra simulação (no multiplayer, pro servidor).
+
+  send(command) {
+    this.sim.enqueue(this.playerId, command);
   }
 
   // ================================================================================================================================================================================================================================================
@@ -100,10 +94,7 @@ export class GameController {
     this.eventManager.setupCanvasEvents(this.canvas, this.camera);
 
     this.eventManager.on('click', function(data) {
-      const mouseX = data.mouseX;
-      const mouseY = data.mouseY;
-
-      if (self.ui.isDevButtonClicked(mouseX, mouseY)) {
+      if (self.ui.isDevButtonClicked(data.mouseX, data.mouseY)) {
         self.toggleDevMode();
         return;
       }
@@ -111,7 +102,7 @@ export class GameController {
       const clickData = self.inputController.handleClick(data.event);
 
       if (clickData.type === 'toggle_follow') {
-        self.movementController.toggleAutoFollow();
+        self.send({ type: 'toggleFollow' });
         return;
       }
 
@@ -155,20 +146,13 @@ export class GameController {
 
   // ================================================================================================================================================================================================================================================
   // handleGameClick
+  // Clique em inimigo escolhe/tira o alvo; no chão, anda até o piso que aparece ali.
 
   handleGameClick(gridPos) {
     if (this.trySelectEnemyAtMouse()) return;
-    if (!this.movementController.isInsideMap(gridPos.x, gridPos.y)) return;
 
-    const playerFloor = this.player.z || 0;
-    const floor = this.getVisibleFloorAt(gridPos.x, gridPos.y) ?? playerFloor;
-
-    if (gridPos.x === this.player.x && gridPos.y === this.player.y && floor === playerFloor) {
-      this.stepDownFromCurrentTile();
-      return;
-    }
-
-    this.inputController.setTarget(gridPos.x, gridPos.y, floor, this.movementController, this.player);
+    const floor = this.getVisibleFloorAt(gridPos.x, gridPos.y) ?? (this.player.z || 0);
+    this.send({ type: 'walkTo', x: gridPos.x, y: gridPos.y, z: floor });
   }
 
   // ================================================================================================================================================================================================================================================
@@ -178,12 +162,13 @@ export class GameController {
   // sob o teto do player. Escada/buraco contam como piso. null se não há nada.
 
   getVisibleFloorAt(x, y) {
-    const roofLevel = getRoofLevel(this.player, this.world);
+    const world = this.sim.world;
+    const roofLevel = getRoofLevel(this.player, world);
     let best = null;
-    for (const obj of this.world.getObjectsAt(x, y)) {
+    for (const obj of world.getObjectsAt(x, y)) {
       if (obj.isBorder) continue;
       const z = obj.z ?? 0;
-      const isGround = obj.floorType || this.world.getTransitionAt(x, y, z) === obj;
+      const isGround = obj.floorType || world.getTransitionAt(x, y, z) === obj;
       if (isGround && z <= roofLevel && (best === null || z > best)) best = z;
     }
     return best;
@@ -196,7 +181,7 @@ export class GameController {
   trySelectEnemyAtMouse() {
     const offset = this.camera.getOffset();
 
-    for (const enemy of this.enemies) {
+    for (const enemy of this.sim.enemies) {
       if (!enemy.isAlive()) continue;
       const hit = this.renderer.isPointInCube(
         this.inputController.mouseX,
@@ -209,19 +194,8 @@ export class GameController {
       );
       if (!hit) continue;
 
-      if (this.selectedEnemy === enemy) {
-        this.selectedEnemy = null;
-        enemy.isTarget = false;
-        console.log(`🎯 Alvo desmarcado: ${enemy.id}`);
-      } else {
-        if (this.selectedEnemy) {
-          this.selectedEnemy.isTarget = false;
-        }
-        this.selectedEnemy = enemy;
-        enemy.isTarget = true;
-        this.movementController.autoFollow = true;
-        console.log(`🎯 Alvo selecionado: ${enemy.id}`);
-      }
+      const isSelected = this.player.target === enemy;
+      this.send({ type: 'attack', targetId: isSelected ? null : enemy.id });
       return true;
     }
 
@@ -229,98 +203,67 @@ export class GameController {
   }
 
   // ================================================================================================================================================================================================================================================
-  // stepDownFromCurrentTile
-  // Clique no próprio tile com o player em cima de algo: desce pro vizinho mais baixo.
+  // handleSimEvents
+  // O que a simulação avisou no tick: números de dano/XP e mensagens.
 
-  stepDownFromCurrentTile() {
-    const playerStep = this.player.step || 0;
-    if (playerStep <= 0) return;
-
-    const floor = this.player.z || 0;
-    let bestAdjacentTile = null;
-    let bestStep = playerStep;
-
-    for (const pos of getAdjacentPositions(this.player.x, this.player.y)) {
-      if (!this.movementController.isInsideMap(pos.x, pos.y)) continue;
-      const adjStep = this.movementController.getPassableStep(pos.x, pos.y, floor, playerStep);
-      if (adjStep !== null && adjStep < bestStep) {
-        bestStep = adjStep;
-        bestAdjacentTile = { x: pos.x, y: pos.y, step: adjStep };
+  handleSimEvents(timestamp) {
+    for (const event of this.sim.drainEvents()) {
+      if (event.type === 'damage') {
+        this.particleController.spawnDamage(event.x, event.y, event.amount, this.renderer);
+      } else if (event.type === 'xp' && event.playerId === this.playerId) {
+        this.particleController.spawnXP(event.x, event.y, event.amount, this.renderer);
+      } else if (event.type === 'message' && event.playerId === this.playerId) {
+        this.showMessage(event.text, timestamp);
       }
     }
+  }
 
-    if (bestAdjacentTile) {
-      this.inputController.setTarget(bestAdjacentTile.x, bestAdjacentTile.y, floor, this.movementController, this.player);
+  // ================================================================================================================================================================================================================================================
+  // runTicks
+  // Avança a simulação em passos fixos de TICK_MS até alcançar o relógio da
+  // tela. Se a aba ficou parada (muitos ticks atrasados), pula o atraso.
+
+  runTicks(timestamp) {
+    if (this.simTime === null) this.simTime = timestamp - TICK_MS;
+
+    let ticks = 0;
+    while (this.simTime + TICK_MS <= timestamp && ticks < MAX_TICKS_PER_FRAME) {
+      this.simTime += TICK_MS;
+      this.sim.tick(this.simTime);
+      ticks++;
     }
-  }
-
-  // ================================================================================================================================================================================================================================================
-  // startDragMoveToObject
-
-  startDragMoveToObject(obj, targetX, targetY, targetZ) {
-    this.objectDrag.startDragMoveToObject(obj, targetX, targetY, targetZ);
-  }
-
-  // ================================================================================================================================================================================================================================================
-  // moveObject
-
-  moveObject(obj, targetX, targetY, targetZ) {
-    this.objectDrag.moveObject(obj, targetX, targetY, targetZ);
+    if (ticks === MAX_TICKS_PER_FRAME) this.simTime = timestamp;
   }
 
   // ================================================================================================================================================================================================================================================
   // updateAnimations
 
   updateAnimations(timestamp) {
-    this.player.updateAnimation(timestamp);
-    for (let i = 0; i < this.enemies.length; i++) {
-      this.enemies[i].updateAnimation(timestamp);
-    }
+    for (const player of this.sim.players) player.updateAnimation(timestamp);
+    for (const enemy of this.sim.enemies) enemy.updateAnimation(timestamp);
   }
 
   // ================================================================================================================================================================================================================================================
   // update
 
   update(timestamp) {
+    this.runTicks(timestamp);
+    this.handleSimEvents(timestamp);
+
     this.updateAnimations(timestamp);
     this.particleController.update(timestamp);
-    this.lifeCycle.processCorpseDecay(timestamp);
 
     if (this.statusMessage && timestamp >= this.statusMessage.expiresAt) {
       this.statusMessage = null;
     }
 
-    const offset = this.camera.getOffset();
     this.inputController.updateHoverEnemy(
-      this.enemies,
-      this.world,
-      offset,
+      this.sim.enemies,
+      this.sim.world,
+      this.camera.getOffset(),
       this.player,
-      this.deadBodies
+      this.sim.deadBodies
     );
-    this.inputController.handlePlayerMovement(this.player, this.movementController, timestamp);
-    this.objectDrag.checkPendingDrag();
-
-    const searchBounds = this.camera.getPathfindingBounds();
-    for (let i = 0; i < this.enemies.length; i++) {
-      this.enemyAI.update(this.enemies[i], this.player, this.enemies, timestamp, searchBounds);
-    }
-
-    this.combatController.processCombat(
-      this.player,
-      this.selectedEnemy,
-      this.enemies,
-      timestamp,
-      this.renderer,
-      this.movementController,
-      offset,
-      this.particleController,
-      this.camera
-    );
-
-    this.movementController.checkFloorTransitions([this.player, ...this.enemies]);
-
-    this.lifeCycle.processDeaths();
   }
 
   // ================================================================================================================================================================================================================================================
@@ -329,14 +272,12 @@ export class GameController {
   render() {
     const gameState = {
       player: this.player,
-      enemies: this.enemies,
-      objects: this.objects,
-      world: this.world,
-      deadBodies: this.deadBodies,
-      selectedEnemy: this.selectedEnemy,
+      players: this.sim.players,
+      enemies: this.sim.enemies,
+      objects: this.sim.objects,
+      world: this.sim.world,
+      deadBodies: this.sim.deadBodies,
       inputController: this.inputController,
-      combatController: this.combatController,
-      movementController: this.movementController,
       statusMessage: this.statusMessage
     };
     this.renderer.render(gameState, this.ui);

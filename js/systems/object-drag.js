@@ -9,16 +9,15 @@ export class ObjectDragController {
   // ================================================================================================================================================================================================================================================
   // constructor
 
-  constructor(game) {
-    this.game = game;
-    this.pendingDrag = null;
+  constructor(sim) {
+    this.sim = sim;
   }
 
   // ================================================================================================================================================================================================================================================
   // describeEntity
 
   describeEntity(entity) {
-    if (entity === this.game.player) return 'Player';
+    if (entity.isPlayer && !entity.isCorpse) return `Player ${entity.id}`;
     if (entity.isCorpse) return 'Cadáver';
     return `Inimigo ${entity.id}`;
   }
@@ -27,8 +26,8 @@ export class ObjectDragController {
   // getEntitiesAt
 
   getEntitiesAt(x, y, floor) {
-    const { player, enemies, deadBodies } = this.game;
-    return [player, ...enemies, ...deadBodies].filter(entity =>
+    const { players, enemies, deadBodies } = this.sim;
+    return [...players, ...enemies, ...deadBodies].filter(entity =>
       entity.x === x && entity.y === y && entity.z === floor
     );
   }
@@ -37,8 +36,7 @@ export class ObjectDragController {
   // isPlayerNear
   // O player alcança o objeto: no mesmo sqm ou vizinho, no mesmo andar.
 
-  isPlayerNear(obj) {
-    const { player } = this.game;
+  isPlayerNear(player, obj) {
     if ((player.z || 0) !== (obj.z || 0)) return false;
     return (player.x === obj.x && player.y === obj.y) || isPositionAdjacentTo(player.x, player.y, obj.x, obj.y);
   }
@@ -48,8 +46,8 @@ export class ObjectDragController {
   // Leva o player até um vizinho do objeto (no andar do objeto, trocando de
   // andar se preciso) e, ao chegar, move o objeto pra (targetX, targetY, targetZ).
 
-  startDragMoveToObject(obj, targetX, targetY, targetZ) {
-    const { player, movementController, inputController } = this.game;
+  startDragMoveToObject(player, obj, targetX, targetY, targetZ) {
+    const { movement: movementController, control } = this.sim;
     const floor = obj.z || 0;
     const adjacents = getAdjacentPositions(obj.x, obj.y);
 
@@ -72,8 +70,8 @@ export class ObjectDragController {
       return;
     }
 
-    this.pendingDrag = { entity: obj, targetX, targetY, targetZ };
-    inputController.setTarget(bestTile.x, bestTile.y, floor, movementController, player);
+    player.pendingDrag = { entity: obj, targetX, targetY, targetZ };
+    control.setWalkTarget(player, bestTile.x, bestTile.y, floor);
   }
 
   // ================================================================================================================================================================================================================================================
@@ -81,14 +79,14 @@ export class ObjectDragController {
   // Move o objeto pro sqm (targetX, targetY) do andar targetZ — pode ser outro
   // andar (o piso visível sob o mouse). Precisa de apoio lá: piso ou pilha.
 
-  moveObject(obj, targetX, targetY, targetZ = obj.z || 0) {
-    const { movementController, world } = this.game;
+  moveObject(player, obj, targetX, targetY, targetZ = obj.z || 0) {
+    const { movement: movementController, world } = this.sim;
 
     if (!movementController.isInsideMap(targetX, targetY)) {
       return;
     }
 
-    if (!this.isThrowPathClear(obj, targetX, targetY, targetZ)) {
+    if (!this.isThrowPathClear(player, obj, targetX, targetY, targetZ)) {
       console.log(`🧱 Arremesso travado: algo intransponível entre o player e (${targetX}, ${targetY}) andar ${targetZ}`);
       return;
     }
@@ -135,8 +133,7 @@ export class ObjectDragController {
   // destino (esbarra na parede do prédio); pra baixo, só o de origem (o objeto
   // passa por cima das paredes de baixo).
 
-  isThrowPathClear(obj, toX, toY, toZ) {
-    const { player } = this.game;
+  isThrowPathClear(player, obj, toX, toY, toZ) {
     const floorHeight = CONFIG.floorHeight || 4;
 
     let origin = { x: player.x, y: player.y, z: player.z || 0 };
@@ -178,7 +175,7 @@ export class ObjectDragController {
 
   hasOtherBlocker(obj, x, y, z) {
     const own = obj.blocksMovement && obj.x === x && obj.y === y && (obj.z || 0) === z ? 1 : 0;
-    return this.game.world.countBlockersAt(x, y, z) > own;
+    return this.sim.world.countBlockersAt(x, y, z) > own;
   }
 
   // ================================================================================================================================================================================================================================================
@@ -188,7 +185,7 @@ export class ObjectDragController {
   // Buraco "morto" (sem piso embaixo) não derruba nada.
 
   resolveFall(x, y, z) {
-    const { world } = this.game;
+    const { world } = this.sim;
     for (let i = 0; i < 16; i++) {
       const hole = world.getTransitionAt(x, y, z);
       if (!hole || hole.targetZ >= z || hole.targetZ < 0) break;
@@ -217,7 +214,7 @@ export class ObjectDragController {
   // dropUnsupportedEntities
 
   dropUnsupportedEntities(x, y, floor) {
-    const { movementController } = this.game;
+    const { movement: movementController } = this.sim;
 
     for (const entity of this.getEntitiesAt(x, y, floor)) {
       const newStep = movementController.getPassableStep(x, y, floor, entity.step || 0);
@@ -232,16 +229,15 @@ export class ObjectDragController {
   // ================================================================================================================================================================================================================================================
   // checkPendingDrag
 
-  checkPendingDrag() {
-    if (!this.pendingDrag) return;
-    const { inputController } = this.game;
-    const { entity, targetX, targetY, targetZ } = this.pendingDrag;
+  checkPendingDrag(player) {
+    if (!player.pendingDrag) return;
+    const { entity, targetX, targetY, targetZ } = player.pendingDrag;
 
-    if (this.isPlayerNear(entity)) {
-      this.moveObject(entity, targetX, targetY, targetZ);
-      this.pendingDrag = null;
-    } else if (!inputController.isMovingToTarget) {
-      this.pendingDrag = null;
+    if (this.isPlayerNear(player, entity)) {
+      this.moveObject(player, entity, targetX, targetY, targetZ);
+      player.pendingDrag = null;
+    } else if (!this.sim.control.isWalking(player)) {
+      player.pendingDrag = null;
     }
   }
 }
