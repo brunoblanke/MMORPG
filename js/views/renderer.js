@@ -431,42 +431,6 @@ export class Renderer {
   }
 
   // ================================================================================================================================================================================
-  // isSpritePixelAt
-  // O sprite do objeto (ancorado no canto de baixo à direita do sqm) tem
-  // pixel visível no ponto (mouseX, mouseY) da tela?
-
-  isSpritePixelAt(obj, mouseX, mouseY) {
-    const sheet = this.getObjectSpriteSheet(obj.id);
-    if (!sheet || !sheet.image.complete || !sheet.image.naturalWidth) return false;
-    const base = this.gridToScreenWithOffset(obj.x, obj.y);
-    const size = CONFIG.tileSize;
-    const frame = sheet.getFrameRect('idle', this.frameTimestamp, sheet._frameDuration || 100);
-    const px = Math.floor(mouseX - (base.x + size - frame.sw));
-    const py = Math.floor(mouseY - (base.y + size - frame.sh));
-    if (px < 0 || py < 0 || px >= frame.sw || py >= frame.sh) return false;
-    return this.getSpriteAlpha(sheet.image, frame.sx + px, frame.sy + py) > 0;
-  }
-
-  // ================================================================================================================================================================================
-  // getSpriteAlpha
-  // Transparência de um pixel da imagem (cópia em canvas guardada por imagem).
-
-  getSpriteAlpha(image, x, y) {
-    if (!this.alphaCanvases) this.alphaCanvases = new Map();
-    let pixels = this.alphaCanvases.get(image);
-    if (!pixels) {
-      const canvas = document.createElement('canvas');
-      canvas.width = image.naturalWidth;
-      canvas.height = image.naturalHeight;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(image, 0, 0);
-      pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      this.alphaCanvases.set(image, pixels);
-    }
-    return pixels.data[(y * pixels.width + x) * 4 + 3];
-  }
-
-  // ================================================================================================================================================================================
   // render
 
   render(gameState, ui) {
