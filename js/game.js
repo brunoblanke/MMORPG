@@ -185,14 +185,14 @@ export class GameController {
 
   // ================================================================================================================================================================================================================================================
   // handleGameClick
-  // Clique em inimigo escolhe/tira o alvo; no chão, anda até o piso que aparece ali.
+  // Clique em inimigo escolhe/tira o alvo; no chão, anda até o sqm no andar
+  // em que o player está.
 
   handleGameClick(gridPos) {
     if (!this.player) return;
     if (this.trySelectEnemyAtMouse()) return;
 
-    const floor = this.getVisibleFloorAt(gridPos.x, gridPos.y) ?? (this.player.z || 0);
-    this.send({ type: 'walkTo', x: gridPos.x, y: gridPos.y, z: floor });
+    this.send({ type: 'walkTo', x: gridPos.x, y: gridPos.y, z: this.player.z || 0 });
   }
 
   // ================================================================================================================================================================================================================================================

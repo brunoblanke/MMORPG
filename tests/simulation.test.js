@@ -3,7 +3,7 @@
 import { test, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { buildGame, floorRect, pile } from './helpers/fixture.js';
+import { buildGame, floorRect, pile, hole } from './helpers/fixture.js';
 import { Simulation, TICK_MS } from '../js/simulation.js';
 import { CONFIG } from '../js/config.js';
 
@@ -278,4 +278,20 @@ test('alvo em outro andar é perdido', () => {
   sim.player.target = sim.enemies[0];
   runFor(sim, 200);
   assert.equal(sim.player.target, null);
+});
+
+test('clique anda só no andar do player: contorna escada e buraco e não troca de andar', () => {
+  const objects = [...floorRect(0, 14, 0, 14, 0), ...floorRect(0, 14, 0, 14, 1), ...floorRect(0, 14, 0, 14, -1), ...hole(7, 5, 0)];
+  const sim = buildGame({ objects, stairs: [[7, 10, 0]], player: { x: 7, y: 12, z: 0 } });
+  const visited = [];
+  const track = () => visited.push(`${sim.player.x},${sim.player.y},${sim.player.z}`);
+
+  sim.enqueue('player1', { type: 'walkTo', x: 7, y: 2, z: 0 });
+  for (let i = 0; i < 200; i++) { runFor(sim, TICK_MS); track(); }
+  assert.deepEqual([sim.player.x, sim.player.y, sim.player.z], [7, 2, 0]);
+  assert.ok(!visited.includes('7,10,0') && !visited.includes('7,5,0'), 'pisou na escada ou no buraco');
+
+  sim.enqueue('player1', { type: 'walkTo', x: 6, y: 8, z: 1 });
+  runFor(sim, 5000);
+  assert.deepEqual([sim.player.x, sim.player.y, sim.player.z], [6, 8, 0]);
 });

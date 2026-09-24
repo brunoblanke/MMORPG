@@ -46,8 +46,8 @@ export const CONFIG = {
   patrolPauseMin: 1500,        // ms parado entre um passeio e outro
   patrolPauseMax: 5000,
   // Perseguição, colado no player: de vez em quando troca de lado.
-  combatSidestepIntervalMin: 2667,   // ms colado no player até mudar de sqm em volta dele (bem mais raro que a patrulha)
-  combatSidestepIntervalMax: 5333,
+  combatSidestepIntervalMin: 4445,   // ms colado no player até mudar de sqm em volta dele (bem mais raro que a patrulha)
+  combatSidestepIntervalMax: 8888,
   // Cerco: peso pra preferir sqms longe dos outros atacantes (espalhar em volta).
   chaseSpreadWeight: 2.5,
   // Sem rota até o player (parede, casa fechada — outros inimigos não contam):

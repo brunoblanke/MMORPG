@@ -68,21 +68,24 @@ export class PlayerControl {
 
   // ================================================================================================================================================================================================================================================
   // walkTo
-  // Clique no chão. No próprio sqm, com o player em cima de algo: desce pro vizinho mais baixo.
+  // Clique no chão: anda até o sqm (x, y) no andar em que o player está (o
+  // andar do clique é ignorado). No próprio sqm, com o player em cima de algo:
+  // desce pro vizinho mais baixo.
 
-  walkTo(player, x, y, z) {
+  walkTo(player, x, y) {
     if (!this.sim.movement.isInsideMap(x, y)) return;
-    if (x === player.x && y === player.y && z === (player.z || 0)) {
+    if (x === player.x && y === player.y) {
       this.stepDownFromCurrentTile(player);
       return;
     }
-    this.setWalkTarget(player, x, y, z);
+    this.setWalkTarget(player, x, y, player.z || 0);
   }
 
   // ================================================================================================================================================================================================================================================
   // setWalkTarget
-  // Leva o player até o sqm (x, y) do andar z — o caminho pode trocar de andar
-  // por pilha, escada e buraco. Sem caminho, o player fica onde está.
+  // Leva o player até o sqm (x, y) do andar z sem sair do andar: o caminho não
+  // sobe/desce pela pilha nem passa por escada ou buraco (só entra num se ele
+  // for o sqm clicado). Sem caminho, o player fica onde está.
 
   setWalkTarget(player, x, y, z) {
     const movement = this.sim.movement;
@@ -98,7 +101,7 @@ export class PlayerControl {
     }
 
     const start = { x: player.x, y: player.y, z: player.z || 0, step: player.step || 0 };
-    const path = movement.findPath(start, { x, y, z });
+    const path = movement.findPath(start, { x, y, z }, { sameFloor: true });
 
     if (path.length === 0) {
       console.log("❌ Nenhum caminho encontrado para este destino");
