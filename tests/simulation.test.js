@@ -295,3 +295,12 @@ test('clique anda só no andar do player: contorna escada e buraco e não troca 
   runFor(sim, 5000);
   assert.deepEqual([sim.player.x, sim.player.y, sim.player.z], [6, 8, 0]);
 });
+
+test('clique na escada: o player vai até ela e sobe', () => {
+  const objects = [...floorRect(0, 14, 0, 14, 0), ...floorRect(0, 14, 0, 14, 1)];
+  const sim = buildGame({ objects, stairs: [[7, 10, 0]], player: { x: 7, y: 13, z: 0 } });
+  sim.enqueue('player1', { type: 'walkTo', x: 7, y: 10, z: 0 });
+  runFor(sim, 3000);
+  assert.deepEqual([sim.player.x, sim.player.y, sim.player.z], [6, 8, 1]);
+  assert.equal(sim.player.walk.path.length, 0);
+});

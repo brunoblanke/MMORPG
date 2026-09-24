@@ -185,7 +185,8 @@ export class PlayerControl {
   // moveAlongWalk
   // Um passo do caminho do clique. Se o mapa mudou (volume arrastado, inimigo
   // no caminho…) e o passo não termina mais onde o caminho previa, recalcula
-  // até o mesmo destino.
+  // até o mesmo destino. Pisar na escada/buraco do destino leva pro outro
+  // andar: vale o sqm pisado (via), não onde o teleporte deixa.
 
   moveAlongWalk(player, now) {
     const movement = this.sim.movement;
@@ -194,7 +195,8 @@ export class PlayerControl {
     const nextStep = player.walk.path[0];
     const current = { x: player.x, y: player.y, z: player.z || 0, step: player.step || 0 };
     const predicted = movement.simulateMove(current, nextStep.dx, nextStep.dy);
-    if (!predicted || predicted.x !== nextStep.x || predicted.y !== nextStep.y || predicted.z !== nextStep.z) {
+    const entered = predicted && (predicted.via || predicted);
+    if (!entered || entered.x !== nextStep.x || entered.y !== nextStep.y || entered.z !== nextStep.z) {
       const { x, y, z } = player.walk.target;
       this.setWalkTarget(player, x, y, z);
       return;

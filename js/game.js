@@ -186,13 +186,31 @@ export class GameController {
   // ================================================================================================================================================================================================================================================
   // handleGameClick
   // Clique em inimigo escolhe/tira o alvo; no chão, anda até o sqm no andar
-  // em que o player está.
+  // em que o player está. Clique no desenho de uma escada (que cobre mais de
+  // um sqm) vai até a escada — e sobe.
 
   handleGameClick(gridPos) {
     if (!this.player) return;
     if (this.trySelectEnemyAtMouse()) return;
 
-    this.send({ type: 'walkTo', x: gridPos.x, y: gridPos.y, z: this.player.z || 0 });
+    const target = this.findClickedStairs(gridPos) || gridPos;
+    this.send({ type: 'walkTo', x: target.x, y: target.y, z: this.player.z || 0 });
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // findClickedStairs
+  // Escada do andar do player cujo desenho (64×64, crescendo pra cima e pra
+  // esquerda do sqm dela) tem pixel visível sob o mouse. null se não houver.
+
+  findClickedStairs(gridPos) {
+    const z = this.player.z || 0;
+    const { mouseX, mouseY } = this.inputController;
+    for (const [dx, dy] of [[0, 0], [1, 0], [0, 1], [1, 1]]) {
+      const stairs = this.session.world.getObjectsAt(gridPos.x + dx, gridPos.y + dy)
+        .find(obj => obj.stairDirection === 'up' && !obj.hidden && (obj.z ?? 0) === z);
+      if (stairs && this.renderer.isSpritePixelAt(stairs, mouseX, mouseY)) return stairs;
+    }
+    return null;
   }
 
   // ================================================================================================================================================================================================================================================
