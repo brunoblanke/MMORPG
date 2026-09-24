@@ -3,8 +3,10 @@
 import { ITEM_CATALOG } from './catalog.js';
 import { parseTibiaType, isTibiaGround, getTibiaItem } from './tibia-registry.js';
 import { getStairTarget } from './stairs.js';
+import { borderEntryType, parseBorderType } from './floor-borders.js';
 
-export const MAP_FORMAT_VERSION = 1;
+// Versão 2: as bordas dos pisos vêm gravadas (shared/floor-borders.js).
+export const MAP_FORMAT_VERSION = 2;
 
 // ================================================================================================================================================================================================================================================
 // addFloorToCell
@@ -69,6 +71,7 @@ export function collectObjectDescriptors(mapData) {
   (mapData.objetosData || []).forEach(([tipo, x, y, z, step, movable, hasVolume, blocksMovement, seq], index) => {
     descriptors.push({
       id: nextId(tipo),
+      type: tipo,
       x, y, z,
       step: step || 0,
       movable: !!movable,
@@ -147,6 +150,11 @@ export function serializeMapFromLayers(layerOrder, layers, GRID) {
           objetosData.push(['Hole', x, y, z, 0, false, false, false]);
         }
 
+        // Bordas: sobre os pisos, na ordem em que ficam empilhadas.
+        (cell.borders || []).forEach((piece) => {
+          objetosData.push([borderEntryType(piece), x, y, z, 0, false, false, false]);
+        });
+
         restackItems(cell.objects);
         cell.objects.forEach((obj) => {
           if (obj.type === 'Stairs') {
@@ -190,7 +198,7 @@ function makeEmptyLayerCells(GRID) {
   const cells = {};
   for (let y = 0; y < GRID; y++) {
     for (let x = 0; x < GRID; x++) {
-      cells[`${x},${y}`] = { floor: null, floorTop: null, hole: false, objects: [], enemy: null, spawn: false, safe: false };
+      cells[`${x},${y}`] = { floor: null, floorTop: null, hole: false, borders: [], objects: [], enemy: null, spawn: false, safe: false };
     }
   }
   return cells;
@@ -202,7 +210,7 @@ function makeEmptyLayerCells(GRID) {
 export function buildLayersFromMapData(mapData, GRID) {
   const layers = {};
   const layerOrder = [];
-  const stats = { floor: 0, wall: 0, stairs: 0, item: 0, enemy: 0, safe: 0, outOfRange: 0, spawnFound: false };
+  const stats = { floor: 0, border: 0, wall: 0, stairs: 0, item: 0, enemy: 0, safe: 0, outOfRange: 0, spawnFound: false };
 
   const ensureLayer = (z) => {
     if (!layers[z]) {
@@ -219,8 +227,12 @@ export function buildLayersFromMapData(mapData, GRID) {
     if (!inRange(x, y)) { stats.outOfRange++; return; }
     ensureLayer(z);
     const cell = layers[z][`${x},${y}`];
+    const border = parseBorderType(type);
 
-    if (type === 'Floor' || type === 'Floor2' || isTibiaGround(type)) {
+    if (border) {
+      cell.borders.push(border);
+      stats.border++;
+    } else if (type === 'Floor' || type === 'Floor2' || isTibiaGround(type)) {
       // Mesmo fallback do jogo (collectObjectDescriptors): sem seq, vale a ordem no arquivo.
       if (addFloorToCell(cell, type, Number.isFinite(seq) ? seq : index + 1)) stats.floor++;
     } else if (type === 'Hole') {

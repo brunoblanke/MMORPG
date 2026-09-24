@@ -10,7 +10,7 @@ export function makeEmptyLayer() {
   const cells = {};
   for (let y = 0; y < GRID; y++) {
     for (let x = 0; x < GRID; x++) {
-      cells[`${x},${y}`] = { floor: null, floorTop: null, hole: false, objects: [], enemy: null, spawn: false, safe: false };
+      cells[`${x},${y}`] = { floor: null, floorTop: null, hole: false, borders: [], objects: [], enemy: null, spawn: false, safe: false };
     }
   }
   return cells;
@@ -38,7 +38,9 @@ export const state = {
   enemyPaint: null,
   floorAccordionOpen: false,
   itemAccordionOpen: false,
-  showBorders: false,
+  borderAccordionOpen: false,
+  showBorders: true,
+  borderPaint: { type: 'Floor', variant: 'n' },
   painting: false,
   strokeTouched: new Set(),
   ghost: true
@@ -52,6 +54,8 @@ export const TOOLS = [
   { id:'wall-yx', label:'Parede YX (canto)', obj:'Wall-YX' },
   { id:'stairs', label:'Escada', obj:'Stairs' },
   { id:'hole', label:'Buraco / vão', obj:'Hole' },
+  { id:'border', label:'Borda', hasSub:true },
+  { id:'border-eraser', label:'Tirar bordas' },
   { id:'item', label:'Item', hasSub:true },
   { id:'enemy', label:'Criatura' },
   { id:'spawn', label:'Respawn do jogador' },

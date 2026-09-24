@@ -89,6 +89,14 @@ body{
 .floor-opt:hover{ border-color:var(--accent-dim); }
 .floor-opt.selected{ border-color:var(--accent); background:rgba(94,234,212,.08); }
 .floor-opt .thumb{ width:36px; height:36px; background-size:cover; border-radius:4px; border:1px solid rgba(255,255,255,.15); }
+.border-accordion{ gap:4px; }
+.border-accordion-title{ width:100%; font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin:2px 0 0 2px; }
+.border-opt{
+  width:32px; height:32px; background-color:#3c3826; background-size:cover; border-radius:4px;
+  border:1px solid rgba(255,255,255,.12); cursor:pointer; image-rendering:pixelated;
+}
+.border-opt:hover{ border-color:var(--accent-dim); }
+.border-opt.selected{ border-color:var(--accent); box-shadow:0 0 0 1px var(--accent); }
 .floor-opt span{ font-size:9px; color:var(--muted); text-align:center; line-height:1.2; }
 
 .origin-row{ display:flex; gap:8px; }

@@ -6,6 +6,7 @@ import { state, TOOLS } from '../model/state.js';
 import { FLOOR_MIN, FLOOR_MAX, GROUND_FLOOR } from '../../../shared/constants.js';
 import { scheduleRender } from './canvas-renderer.js';
 import { parseTibiaType, getTibiaItem } from '../../../shared/tibia-registry.js';
+import { BORDER_VARIANTS } from '../../../shared/floor-borders.js';
 
 // ================================================================================================================================================================================================================================================
 // renderLayerTabs
@@ -57,7 +58,7 @@ function layerHasContent(z) {
   if (!layer) return false;
   for (const key in layer) {
     const cell = layer[key];
-    if (cell.floor || cell.floorTop || cell.hole || cell.objects.length || cell.enemy || cell.spawn || cell.safe) return true;
+    if (cell.floor || cell.floorTop || cell.hole || cell.borders.length || cell.objects.length || cell.enemy || cell.spawn || cell.safe) return true;
   }
   return false;
 }
@@ -90,6 +91,14 @@ export function renderTools() {
     } else if (t.id === 'item') {
       swatch.style.backgroundImage = `url(${IMG_BASE}${ITEM_CATALOG[state.itemPaint].file})`;
       swatch.style.backgroundSize = 'cover';
+    } else if (t.id === 'border') {
+      swatch.style.backgroundImage = `url(${IMG_BASE}${borderFile(state.borderPaint)})`;
+      swatch.style.backgroundSize = 'cover';
+    } else if (t.id === 'border-eraser') {
+      swatch.style.backgroundImage = `url(${IMG_BASE}${borderFile({ type: 'Floor', variant: 'n' })})`;
+      swatch.style.backgroundSize = 'cover';
+      swatch.style.opacity = '0.45';
+      swatch.style.outline = '1px dashed #e2574c';
     } else if (t.id === 'enemy') {
       swatch.style.background = '#c0392b';
       swatch.style.borderRadius = '50%';
@@ -136,10 +145,18 @@ export function renderTools() {
       btn.appendChild(sub);
     }
 
+    if (t.id === 'border') {
+      const sub = document.createElement('span');
+      sub.className = 'tool-sub';
+      sub.textContent = `${state.borderPaint.type === 'Floor2' ? 'Piso 2' : 'Piso 1'} ${state.borderPaint.variant}`;
+      btn.appendChild(sub);
+    }
+
     btn.onclick = () => {
       if (t.id === 'floor') {
         state.floorAccordionOpen = !state.floorAccordionOpen;
         state.itemAccordionOpen = false;
+        state.borderAccordionOpen = false;
         state.tool = 'floor';
         renderTools();
         return;
@@ -147,13 +164,23 @@ export function renderTools() {
       if (t.id === 'item') {
         state.itemAccordionOpen = !state.itemAccordionOpen;
         state.floorAccordionOpen = false;
+        state.borderAccordionOpen = false;
         state.tool = 'item';
+        renderTools();
+        return;
+      }
+      if (t.id === 'border') {
+        state.borderAccordionOpen = !state.borderAccordionOpen;
+        state.floorAccordionOpen = false;
+        state.itemAccordionOpen = false;
+        state.tool = 'border';
         renderTools();
         return;
       }
       state.tool = t.id;
       state.floorAccordionOpen = false;
       state.itemAccordionOpen = false;
+      state.borderAccordionOpen = false;
       renderTools();
     };
     wrap.appendChild(btn);
@@ -163,6 +190,9 @@ export function renderTools() {
     }
     if (t.id === 'item' && state.itemAccordionOpen) {
       wrap.appendChild(buildItemAccordion());
+    }
+    if (t.id === 'border' && state.borderAccordionOpen) {
+      wrap.appendChild(buildBorderAccordion());
     }
   });
 }
@@ -220,6 +250,44 @@ function buildItemAccordion() {
   return acc;
 }
 
+// ================================================================================================================================================================================================================================================
+// borderFile
+
+function borderFile(piece) {
+  return (piece.type === 'Floor2' ? FLOOR2_FILES : FLOOR1_FILES)[piece.variant];
+}
+
+// ================================================================================================================================================================================================================================================
+// buildBorderAccordion
+// As 12 peças de borda de cada piso, pra pôr à mão (lados, cantos de fora e
+// cantos de dentro).
+
+function buildBorderAccordion() {
+  const acc = document.createElement('div');
+  acc.className = 'tool-accordion show border-accordion';
+  [['Floor', 'Piso 1'], ['Floor2', 'Piso 2']].forEach(([type, label]) => {
+    const title = document.createElement('div');
+    title.className = 'border-accordion-title';
+    title.textContent = label;
+    acc.appendChild(title);
+    for (const variant of BORDER_VARIANTS) {
+      const piece = { type, variant };
+      const opt = document.createElement('div');
+      const selected = state.borderPaint.type === type && state.borderPaint.variant === variant;
+      opt.className = 'border-opt' + (selected ? ' selected' : '');
+      opt.title = `${label} · ${variant}`;
+      opt.style.backgroundImage = `url(${IMG_BASE}${borderFile(piece)})`;
+      opt.onclick = () => {
+        state.borderPaint = piece;
+        state.tool = 'border';
+        renderTools();
+      };
+      acc.appendChild(opt);
+    }
+  });
+  return acc;
+}
+
 const borderToggle = document.getElementById('borderToggle');
 borderToggle.onclick = () => {
   state.showBorders = !state.showBorders;
@@ -232,9 +300,10 @@ borderToggle.onclick = () => {
 
 export function updateStats() {
   const layer = state.layers[state.activeZ];
-  let f = 0, w = 0, s = 0, h = 0, it = 0, cr = 0, sf = 0;
+  let f = 0, b = 0, w = 0, s = 0, h = 0, it = 0, cr = 0, sf = 0;
   Object.values(layer).forEach(c => {
     if (c.floor) f++;
+    b += c.borders.length;
     if (c.safe) sf++;
     if (c.hole) h++;
     if (c.enemy) cr++;
@@ -246,6 +315,7 @@ export function updateStats() {
     });
   });
   document.getElementById('statFloor').textContent = f;
+  document.getElementById('statBorder').textContent = b;
   document.getElementById('statWall').textContent = w;
   document.getElementById('statStairs').textContent = s;
   document.getElementById('statHole').textContent = h;

@@ -5,10 +5,10 @@ import { GRID, TILE } from '../config.js';
 import { STACK_OFFSET, ANIMATION_CYCLE_MS } from '../../../shared/constants.js';
 import { pickFrameRect } from '../../../shared/sprite-sheet.js';
 import { FLOOR1_FILES, FLOOR2_FILES, OBJECT_DEFS, ITEM_CATALOG, PLAYER_SPRITE } from '../model/catalog.js';
-import { computeBorderPieces, pickWeightedInteriorVariant } from '../../../shared/floor-variant.js';
+import { pickWeightedInteriorVariant } from '../../../shared/floor-variant.js';
+import { getStairTopKeys } from '../model/borders.js';
 import { state } from '../model/state.js';
 import { restackItems } from '../../../shared/map-format.js';
-import { getStairTop } from '../../../shared/stairs.js';
 import { loadImage, setImageUpdateCallback } from './image-cache.js';
 import { getCreatureType, hasCreatureType } from '../../../shared/catalog.js';
 import { getTibiaItem, parseTibiaType, tibiaFrameRect } from '../../../shared/tibia-registry.js';
@@ -109,20 +109,12 @@ function drawFloorTile(type, variant, px, py, x, y, z) {
 }
 
 // ================================================================================================================================================================================================================================================
-// getStairTopKeys
-// Sqms do andar z que são topo de alguma escada do andar z-1 (shared/stairs.js).
+// drawBorderPiece
 
-function getStairTopKeys(z) {
-  const keys = new Set();
-  const below = state.layers[z - 1];
-  if (!below) return keys;
-  for (const [key, cell] of Object.entries(below)) {
-    if (!cell.objects.some(o => o.type === 'Stairs')) continue;
-    const [x, y] = key.split(',').map(Number);
-    const top = getStairTop(x, y, z - 1);
-    keys.add(`${top.x},${top.y}`);
-  }
-  return keys;
+export function drawBorderPiece(piece, px, py, target = ctx) {
+  const files = piece.type === 'Floor2' ? FLOOR2_FILES : FLOOR1_FILES;
+  const entry = loadImage(files[piece.variant]);
+  if (entry.status === 'ok') target.drawImage(entry.img, px, py, TILE, TILE);
 }
 
 // ================================================================================================================================================================================================================================================
@@ -150,8 +142,7 @@ function drawLayer(layer, alpha, z) {
   ctx.globalAlpha = alpha;
   const labels = [];
   const stairTops = getStairTopKeys(z);
-  // Topo de escada nunca tem piso (o jogo remove); buraco é item por cima do
-  // chão: não impede piso, mas o sqm dele não recebe borda dos vizinhos.
+  // Topo de escada nunca tem piso (o jogo remove).
   const isVoid = (key) => stairTops.has(key);
 
   for (let y = 0; y < GRID; y++) {
@@ -161,25 +152,14 @@ function drawLayer(layer, alpha, z) {
       const px = x * TILE;
       const py = y * TILE;
 
-      // Pisos da célula (baixo e cima) e, por cima, as bordas dos vizinhos
-      // colocados depois do piso visível daqui (computeBorderPieces).
-      const cellFloor = isVoid(key) ? null : (cell.floorTop || cell.floor);
+      // Pisos da célula (baixo e cima) e, por cima, as bordas gravadas nela.
       if (!isVoid(key)) {
         for (const k of ['floor', 'floorTop']) {
           if (cell[k]) drawFloorTile(cell[k].type, pickWeightedInteriorVariant(x, y, z), px, py, x, y, z);
         }
       }
-      if (state.showBorders && !cell.hole) {
-        const pieces = computeBorderPieces(x, y, (nx, ny) => {
-          const nKey = `${nx},${ny}`;
-          const n = layer[nKey];
-          return n && !isVoid(nKey) ? (n.floorTop || n.floor) : null;
-        }, cellFloor);
-        for (const piece of pieces) {
-          const files = piece.type === 'Floor2' ? FLOOR2_FILES : FLOOR1_FILES;
-          const entry = loadImage(files[piece.variant]);
-          if (entry.status === 'ok') ctx.drawImage(entry.img, px, py, TILE, TILE);
-        }
+      if (state.showBorders) {
+        for (const piece of cell.borders) drawBorderPiece(piece, px, py);
       }
 
       if (stairTops.has(key)) drawStairTop(px, py);

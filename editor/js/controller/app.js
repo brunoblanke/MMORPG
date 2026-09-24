@@ -11,9 +11,16 @@ import './canvas-input.js';
 import { loadTibiaRegistry } from '../../../shared/tibia-registry.js';
 import { initTibiaPanel } from '../view/tibia-panel.js';
 import { refreshCreatureOptions } from '../view/forms.js';
+import { rebuildBorders } from '../model/borders.js';
 
 document.getElementById('clearLayerBtn').onclick = () => {
   state.layers[state.activeZ] = makeEmptyLayer();
+  updateStats();
+  scheduleRender();
+};
+
+document.getElementById('rebuildBordersBtn').onclick = () => {
+  rebuildBorders(state.activeZ);
   updateStats();
   scheduleRender();
 };

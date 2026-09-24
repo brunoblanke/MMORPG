@@ -165,6 +165,7 @@ async function pickItem(id) {
   state.tibiaPaint = tibiaItemType(id, category);
   state.floorAccordionOpen = false;
   state.itemAccordionOpen = false;
+  state.borderAccordionOpen = false;
   renderTools();
   setStatus(`Pintando ${category === 'ground' ? 'chão' : 'item'} ${id}. A borracha tira o que está por cima.`);
 }

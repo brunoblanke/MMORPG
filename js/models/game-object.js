@@ -6,6 +6,7 @@ import { computeBorderPieces, pickWeightedInteriorVariant } from '../../shared/f
 import { collectObjectDescriptors, collectEnemyDescriptors } from '../../shared/map-format.js';
 import { getStairTop, getStairTopTarget, getHoleTarget } from '../../shared/stairs.js';
 import { isTibiaGround } from '../../shared/tibia-registry.js';
+import { parseBorderType, hasSavedBorders } from '../../shared/floor-borders.js';
 
 export class GameObject {
   constructor(data) {
@@ -52,11 +53,19 @@ function getFloorType(id) {
 
 // ================================================================================================================================================================================================================================================
 // generateObjects
+// Bordas: as gravadas no mapa (versão 2 em diante, editáveis no editor) ou,
+// em mapa antigo, geradas aqui pelos pisos (generateFloorBorders).
 
 export function generateObjects(mapData) {
   let objs = [];
+  const savedBorders = [];
 
   collectObjectDescriptors(mapData).forEach((descriptor) => {
+    const piece = parseBorderType(descriptor.type);
+    if (piece) {
+      savedBorders.push(createBorder(piece, descriptor, savedBorders.length + 1));
+      return;
+    }
     const obj = new GameObject(descriptor);
     if (descriptor.color) obj.color = descriptor.color;
     obj.seq = descriptor.seq;
@@ -65,10 +74,31 @@ export function generateObjects(mapData) {
 
   objs = applyTransitions(objs);
   const visibleFloorsByZ = applyFloorVariants(objs);
-  objs.push(...generateFloorBorders(objs, visibleFloorsByZ));
+  objs.push(...(hasSavedBorders(mapData) ? savedBorders : generateFloorBorders(objs, visibleFloorsByZ)));
   assignGroundOrder(objs);
 
   return objs;
+}
+
+// ================================================================================================================================================================================================================================================
+// createBorder
+// Peça de borda (id no formato do sprite: '<piso>_<peça>_<n>'): só desenho,
+// não bloqueia nem vira chão pisável.
+
+function createBorder(piece, position, counter) {
+  const border = new GameObject({
+    id: `${piece.type}_${piece.variant}_${counter}`,
+    x: position.x,
+    y: position.y,
+    z: position.z,
+    step: 0,
+    order: 0,
+    movable: false,
+    hasVolume: false,
+    blocksMovement: false
+  });
+  border.isBorder = true;
+  return border;
 }
 
 // ================================================================================================================================================================================================================================================

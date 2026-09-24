@@ -6,21 +6,34 @@ import { updateStats } from '../view/tools-panel.js';
 import { openEnemyForm } from '../view/forms.js';
 import { addFloorToCell, restackItems } from '../../../shared/map-format.js';
 import { isTibiaGround } from '../../../shared/tibia-registry.js';
+import { refreshBordersAt } from '../model/borders.js';
 
 // ================================================================================================================================================================================================================================================
 // eraseTopmost
 //
 // A borracha tira só o que está mais em cima no sqm a cada passada (um traço
 // passa uma vez por célula): criatura, respawn, objetos do topo pra baixo,
-// buraco, piso de cima e, por último, o piso de baixo.
+// bordas (da mais nova pra mais antiga), buraco, piso de cima e, por último,
+// o piso de baixo. Devolve o que tirou.
 
 function eraseTopmost(cell) {
-  if (cell.enemy) { cell.enemy = null; return; }
-  if (cell.spawn) { cell.spawn = false; return; }
-  if (cell.objects.length > 0) { cell.objects.pop(); return; }
-  if (cell.hole) { cell.hole = false; return; }
-  if (cell.floorTop) { cell.floorTop = null; return; }
-  cell.floor = null;
+  if (cell.enemy) { cell.enemy = null; return 'enemy'; }
+  if (cell.spawn) { cell.spawn = false; return 'spawn'; }
+  if (cell.objects.length > 0) { return cell.objects.pop().type === 'Stairs' ? 'stairs' : 'object'; }
+  if (cell.borders.length > 0) { cell.borders.pop(); return 'border'; }
+  if (cell.hole) { cell.hole = false; return 'hole'; }
+  if (cell.floorTop) { cell.floorTop = null; return 'floor'; }
+  if (cell.floor) { cell.floor = null; return 'floor'; }
+  return null;
+}
+
+// ================================================================================================================================================================================================================================================
+// addBorderPiece
+// Borda posta à mão: entra por cima das outras, sem repetir a mesma peça.
+
+function addBorderPiece(cell, piece) {
+  if (cell.borders.some(b => b.type === piece.type && b.variant === piece.variant)) return;
+  cell.borders.push({ type: piece.type, variant: piece.variant });
 }
 
 // ================================================================================================================================================================================================================================================
@@ -30,7 +43,10 @@ export function applyTool(x, y, clientX, clientY) {
   if (state.tool === 'stairs') {
     // Destino é fixo pela posição (shared/stairs.js): não há nada pra escolher.
     const cell = state.layers[state.activeZ][`${x},${y}`];
-    if (!cell.objects.some(o => o.type === 'Stairs')) cell.objects.push({ type: 'Stairs' });
+    if (!cell.objects.some(o => o.type === 'Stairs')) {
+      cell.objects.push({ type: 'Stairs' });
+      refreshBordersAt(state.activeZ, x, y, true);
+    }
     updateStats();
     scheduleRender();
     return;
@@ -56,11 +72,19 @@ export function applyTool(x, y, clientX, clientY) {
   const cell = layer[strokeKey];
 
   if (state.tool === 'floor') {
-    addFloorToCell(cell, state.floorPaint);
+    if (addFloorToCell(cell, state.floorPaint)) refreshBordersAt(state.activeZ, x, y);
   } else if (state.tool === 'eraser') {
-    eraseTopmost(cell);
+    const erased = eraseTopmost(cell);
+    if (erased === 'floor' || erased === 'hole' || erased === 'stairs') refreshBordersAt(state.activeZ, x, y, erased === 'stairs');
   } else if (state.tool === 'hole') {
-    cell.hole = true;
+    if (!cell.hole) {
+      cell.hole = true;
+      refreshBordersAt(state.activeZ, x, y);
+    }
+  } else if (state.tool === 'border') {
+    addBorderPiece(cell, state.borderPaint);
+  } else if (state.tool === 'border-eraser') {
+    cell.borders = [];
   } else if (state.tool === 'safe') {
     if (state.strokeTouched.size === 1) state.safePaintValue = !cell.safe;
     cell.safe = state.safePaintValue;
@@ -69,7 +93,7 @@ export function applyTool(x, y, clientX, clientY) {
     restackItems(cell.objects);
   } else if (state.tool === 'tibia' && state.tibiaPaint) {
     if (isTibiaGround(state.tibiaPaint)) {
-      addFloorToCell(cell, state.tibiaPaint);
+      if (addFloorToCell(cell, state.tibiaPaint)) refreshBordersAt(state.activeZ, x, y);
     } else {
       cell.objects.push({ type: state.tibiaPaint, step: 0 });
       restackItems(cell.objects);

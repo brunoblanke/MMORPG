@@ -33,6 +33,7 @@
       Mostrar andar abaixo (fantasma)
     </label>
 
+    <button class="danger-btn" id="rebuildBordersBtn" title="Gera de novo todas as bordas do andar pelos pisos (desfaz o que foi mexido à mão)">Refazer bordas do andar</button>
     <button class="danger-btn" id="clearLayerBtn">Limpar andar atual</button>
     <button class="export-btn" id="saveBtn" title="Salva em data/map.json (Ctrl+S)">Salvar</button>
   </div>
@@ -42,6 +43,7 @@
       <h2>Editando <b id="layerLabel">Andar 0</b></h2>
       <div class="status-list">
         <div>Piso: <b id="statFloor">0</b></div>
+        <div>Borda: <b id="statBorder">0</b></div>
         <div>Parede: <b id="statWall">0</b></div>
         <div>Escada: <b id="statStairs">0</b></div>
         <div>Buraco: <b id="statHole">0</b></div>
@@ -49,7 +51,7 @@
         <div>Criatura: <b id="statCreature">0</b></div>
         <div>Zona segura: <b id="statSafe">0</b></div>
       </div>
-      <div class="border-toggle" id="borderToggle">
+      <div class="border-toggle on" id="borderToggle">
         <div class="led"></div>
         <span>Exibir bordas</span>
       </div>
