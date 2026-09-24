@@ -38,13 +38,18 @@ const formEl = document.getElementById('tibiaCreatureForm');
 
 // ================================================================================================================================================================================================================================================
 // initTibiaPanel
-// Busca o catálogo no servidor e monta o painel.
+// Busca o catálogo no servidor e monta o painel. Resposta que não é JSON vem
+// de um servidor sem essa rota (aberto antes da atualização).
 
 export async function initTibiaPanel() {
   renderTabs();
   setStatus('Lendo Tibia.spr e Tibia.dat…');
   try {
     const response = await fetch('/api/tibia/catalog');
+    if (!(response.headers.get('content-type') || '').includes('json')) {
+      setStatus('O servidor aberto é de antes desta versão: feche a janela do init-server.bat e abra de novo.', true);
+      return;
+    }
     const data = await response.json();
     if (!response.ok || !data.success) throw new Error(data.message || `HTTP ${response.status}`);
     panel.catalog = data;
