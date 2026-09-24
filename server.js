@@ -7,11 +7,15 @@ const os = require('os');
 const path = require('path');
 const { pathToFileURL } = require('url');
 const { WebSocketServer } = require('ws');
+const { TibiaAssets } = require('./server/tibia-assets.js');
 const app = express();
 
 const PASTA_JOGO = __dirname;
 const MAP_DATA_PATH = path.join(PASTA_JOGO, 'data', 'map.json');
 const CHARACTERS_PATH = path.join(PASTA_JOGO, 'data', 'characters.json');
+const TIBIA_CLIENT_PATH = path.join(PASTA_JOGO, 'img', '780');
+const TIBIA_REGISTRY_PATH = path.join(PASTA_JOGO, 'data', 'tibia.json');
+const IMG_PATH = path.join(PASTA_JOGO, 'img');
 const SAVE_INTERVAL_MS = 10000;
 const PORT = process.env.PORT || 8000;
 
@@ -19,7 +23,14 @@ app.use(express.text({ type: 'text/plain', limit: '50mb' }));
 app.use(express.json({ limit: '50mb' }));
 app.use(liberarCors);
 app.post('/api/save-map', salvarMapa);
+app.get('/api/tibia/catalog', catalogoTibia);
+app.get('/api/tibia/thumb/:tipo/:id', miniaturaTibia);
+app.post('/api/tibia/import', importarTibia);
 app.use(express.static(PASTA_JOGO));
+
+let tibia = null;
+let registroTibia = null;
+let modulosJogo = null;
 
 const servidor = http.createServer(app);
 iniciarJogo(servidor).then(() => iniciarServidor(servidor, PORT));
@@ -64,6 +75,120 @@ function salvarMapa(req, res) {
 }
 
 // ================================================================================================================================================================================================================================================
+// arquivosTibia
+// Tibia.spr/Tibia.dat de img/780, lidos na 1ª vez que o editor pede.
+
+function arquivosTibia() {
+  if (!tibia) tibia = new TibiaAssets(TIBIA_CLIENT_PATH);
+  return tibia;
+}
+
+// ================================================================================================================================================================================================================================================
+// lerRegistroTibia
+
+function lerRegistroTibia() {
+  try {
+    const registro = JSON.parse(fs.readFileSync(TIBIA_REGISTRY_PATH, 'utf8'));
+    return { version: 1, items: registro.items || {}, creatures: registro.creatures || {} };
+  } catch (err) {
+    if (err.code !== 'ENOENT') console.error('❌ Erro ao ler data/tibia.json:', err.message);
+    return { version: 1, items: {}, creatures: {} };
+  }
+}
+
+// ================================================================================================================================================================================================================================================
+// gravarRegistroTibia
+// Grava data/tibia.json e avisa a simulação (criaturas novas passam a valer).
+
+function gravarRegistroTibia() {
+  fs.writeFileSync(TIBIA_REGISTRY_PATH, JSON.stringify(registroTibia, null, 2), 'utf8');
+  if (modulosJogo) modulosJogo.setTibiaRegistry(registroTibia);
+}
+
+// ================================================================================================================================================================================================================================================
+// catalogoTibia
+
+function catalogoTibia(req, res) {
+  try {
+    res.json({ success: true, ...arquivosTibia().catalogo(), registry: registroTibia });
+  } catch (err) {
+    console.error('❌ Tibia:', err.message);
+    res.status(500).json({ success: false, message: `Não foi possível ler img/780: ${err.message}` });
+  }
+}
+
+// ================================================================================================================================================================================================================================================
+// miniaturaTibia
+
+function miniaturaTibia(req, res) {
+  const tipo = req.params.tipo === 'creature' ? 'creature' : 'item';
+  const id = parseInt(req.params.id, 10);
+  try {
+    const png = Number.isInteger(id) ? arquivosTibia().miniatura(tipo, id) : null;
+    if (!png) return res.sendStatus(404);
+    res.set('Cache-Control', 'public, max-age=86400');
+    res.type('png').send(png);
+  } catch (err) {
+    res.sendStatus(500);
+  }
+}
+
+// ================================================================================================================================================================================================================================================
+// importarTibia
+// Gera o PNG do que o editor escolheu e registra em data/tibia.json:
+//   { kind: 'item', id }                                  item ou chão
+//   { kind: 'creature', id, name, lvl, corpse }           criatura (corpse: id do item do cadáver, opcional)
+
+function importarTibia(req, res) {
+  const { kind, id, name, lvl, corpse } = req.body || {};
+  try {
+    if (kind === 'item') {
+      const entrada = arquivosTibia().exportarItem(parseInt(id, 10), IMG_PATH);
+      if (!entrada) return res.status(404).json({ success: false, message: `Item ${id} não existe ou não tem desenho.` });
+      registroTibia.items[id] = entrada;
+      gravarRegistroTibia();
+      console.log(`🧱 Tibia: item ${id} (${entrada.kind}) gerado em img/${entrada.file}`);
+      return res.json({ success: true, item: entrada });
+    }
+
+    if (kind === 'creature') {
+      const nome = String(name || '').trim().replace(/\s+/g, ' ');
+      if (!/^[\p{L}\p{N} '-]{2,30}$/u.test(nome)) {
+        return res.status(400).json({ success: false, message: 'Nome da criatura: de 2 a 30 letras ou números.' });
+      }
+      if (modulosJogo && modulosJogo.CREATURE_TYPES[nome]) {
+        return res.status(400).json({ success: false, message: `"${nome}" já é uma criatura do jogo. Escolha outro nome.` });
+      }
+      const sprite = arquivosTibia().exportarCriatura(parseInt(id, 10), IMG_PATH);
+      if (!sprite) return res.status(404).json({ success: false, message: `Criatura ${id} não existe ou não tem desenho.` });
+
+      const cadaver = corpse ? arquivosTibia().exportarItem(parseInt(corpse, 10), IMG_PATH) : null;
+      if (cadaver) registroTibia.items[corpse] = cadaver;
+      const entrada = {
+        outfit: parseInt(id, 10),
+        file: sprite.file,
+        spriteSize: sprite.spriteSize,
+        frames: sprite.frames,
+        color: '#8B6B4A',
+        defaultLvl: Math.max(1, parseInt(lvl, 10) || 5),
+        corpse: cadaver ? cadaver.file : null,
+        corpseSize: cadaver ? Math.max(cadaver.fw, cadaver.fh) : 32,
+        corpseFrames: 1
+      };
+      registroTibia.creatures[nome] = entrada;
+      gravarRegistroTibia();
+      console.log(`🐀 Tibia: criatura "${nome}" (roupa ${id}) gerada em img/${entrada.file}`);
+      return res.json({ success: true, name: nome, creature: entrada });
+    }
+
+    res.status(400).json({ success: false, message: 'Pedido inválido.' });
+  } catch (err) {
+    console.error('❌ Tibia:', err.message);
+    res.status(500).json({ success: false, message: err.message });
+  }
+}
+
+// ================================================================================================================================================================================================================================================
 // enderecosRede
 
 function enderecosRede(porta) {
@@ -89,6 +214,11 @@ function enderecosRede(porta) {
 async function iniciarJogo(servidorHttp) {
   const { Simulation, TICK_MS } = await import(pathToFileURL(path.join(PASTA_JOGO, 'js', 'simulation.js')).href);
   const { serializeState, validateName, normalizeGender } = await import(pathToFileURL(path.join(PASTA_JOGO, 'js', 'net', 'protocol.js')).href);
+  const { setTibiaRegistry } = await import(pathToFileURL(path.join(PASTA_JOGO, 'shared', 'tibia-registry.js')).href);
+  const { CREATURE_TYPES } = await import(pathToFileURL(path.join(PASTA_JOGO, 'shared', 'catalog.js')).href);
+  modulosJogo = { setTibiaRegistry, CREATURE_TYPES };
+  registroTibia = lerRegistroTibia();
+  setTibiaRegistry(registroTibia);
 
   const mapData = JSON.parse(fs.readFileSync(MAP_DATA_PATH, 'utf8'));
   const sim = new Simulation(mapData);

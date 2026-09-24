@@ -5,6 +5,7 @@ import { state, TOOLS } from '../model/state.js';
 import { updateStats } from '../view/tools-panel.js';
 import { openEnemyForm } from '../view/forms.js';
 import { addFloorToCell, restackItems } from '../../../shared/map-format.js';
+import { isTibiaGround } from '../../../shared/tibia-registry.js';
 
 // ================================================================================================================================================================================================================================================
 // eraseTopmost
@@ -66,6 +67,13 @@ export function applyTool(x, y, clientX, clientY) {
   } else if (state.tool === 'item') {
     cell.objects.push({ type: state.itemPaint, step: 0 });
     restackItems(cell.objects);
+  } else if (state.tool === 'tibia' && state.tibiaPaint) {
+    if (isTibiaGround(state.tibiaPaint)) {
+      addFloorToCell(cell, state.tibiaPaint);
+    } else {
+      cell.objects.push({ type: state.tibiaPaint, step: 0 });
+      restackItems(cell.objects);
+    }
   } else {
     const t = TOOLS.find(t => t.id === state.tool);
     if (t && t.obj) {

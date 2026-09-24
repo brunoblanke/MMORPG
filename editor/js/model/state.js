@@ -34,6 +34,8 @@ export const state = {
   tool: 'floor',
   floorPaint: 'Floor',
   itemPaint: 'Parcel',
+  tibiaPaint: null,
+  enemyPaint: null,
   floorAccordionOpen: false,
   itemAccordionOpen: false,
   showBorders: false,

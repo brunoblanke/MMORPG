@@ -3,7 +3,7 @@
 import { Entity } from './entity.js';
 import { distance } from '../utils/helpers.js';
 import { CONFIG } from '../config.js';
-import { CREATURE_TYPES, DEFAULT_CREATURE } from '../../shared/catalog.js';
+import { hasCreatureType, DEFAULT_CREATURE } from '../../shared/catalog.js';
 
 export const AI_STATE = { PATROL: 'patrol', CHASE: 'chase' };
 
@@ -26,8 +26,8 @@ export class Enemy extends Entity {
     this.spawnZ = data.spawnZ ?? (data.z || 0);
     this.patrolCenterX = this.spawnX;
     this.patrolCenterY = this.spawnY;
-    // Tipo da criatura (nome em CREATURE_TYPES): define nome, sprite e cadáver.
-    this.creature = CREATURE_TYPES[data.creature] ? data.creature : DEFAULT_CREATURE;
+    // Tipo da criatura (CREATURE_TYPES ou criatura do Tibia): define nome, sprite e cadáver.
+    this.creature = hasCreatureType(data.creature) ? data.creature : DEFAULT_CREATURE;
   }
 
   isInPatrolZone(x, y) {

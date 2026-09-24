@@ -200,3 +200,57 @@ textarea{
 }
 .float-panel button.primary{ background:var(--accent); color:#0b1512; border:none; font-weight:600; }
 
+
+.tibia-panel{
+  width:300px; flex-shrink:0; background:var(--panel); border-left:1px solid var(--line);
+  padding:18px 14px; display:flex; flex-direction:column; gap:10px; min-height:0; overflow:hidden;
+}
+.tibia-head{ display:flex; align-items:baseline; justify-content:space-between; }
+.tibia-head .section-label{ margin:0; }
+.tibia-count{ font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--muted); font-variant-numeric:tabular-nums; }
+.tibia-tabs{ display:grid; grid-template-columns:repeat(3, 1fr); gap:5px; }
+.tibia-tab{
+  padding:6px 4px; background:var(--panel-2); border:1px solid var(--line); border-radius:6px;
+  color:var(--muted); font-size:11.5px; cursor:pointer; font-family:inherit;
+}
+.tibia-tab:hover{ border-color:var(--accent-dim); color:var(--text); }
+.tibia-tab.active{ background:rgba(94,234,212,.1); border-color:var(--accent); color:var(--accent); }
+.tibia-filters{ display:flex; flex-direction:column; gap:8px; }
+.tibia-filters input[type=search]{
+  background:var(--panel-2); border:1px solid var(--line); border-radius:6px; color:var(--text);
+  padding:6px 8px; font-family:'IBM Plex Mono',monospace; font-size:12px; width:100%;
+}
+.tibia-filters input[type=search]:focus{ outline:none; border-color:var(--accent); }
+.tibia-status{
+  margin:0; font-size:11px; line-height:1.45; color:var(--muted); background:var(--panel-2);
+  border:1px solid var(--line); border-radius:6px; padding:7px 9px;
+}
+.tibia-status.error{ color:var(--danger); border-color:rgba(226,87,76,.5); }
+.tibia-grid{
+  flex:1; min-height:0; overflow-y:auto; display:grid; grid-template-columns:repeat(auto-fill, minmax(40px, 1fr));
+  gap:4px; align-content:start; padding-right:2px;
+}
+.tibia-cell{
+  position:relative; aspect-ratio:1; display:flex; align-items:center; justify-content:center; padding:2px;
+  background:var(--panel-2); border:1px solid var(--line); border-radius:5px; cursor:pointer;
+}
+.tibia-cell:hover{ border-color:var(--accent-dim); }
+.tibia-cell:focus-visible{ outline:2px solid var(--accent); outline-offset:1px; }
+.tibia-cell.selected{ border-color:var(--accent); background:rgba(94,234,212,.12); }
+.tibia-cell.ready::after{
+  content:''; position:absolute; top:3px; right:3px; width:5px; height:5px; border-radius:50%; background:var(--accent);
+}
+.tibia-cell img{ max-width:100%; max-height:100%; image-rendering:pixelated; }
+.tibia-creature-form{
+  display:flex; flex-direction:column; gap:8px; padding:10px; background:var(--panel-2);
+  border:1px solid var(--accent); border-radius:8px; font-size:12px;
+}
+.tibia-creature-form[hidden]{ display:none; }
+.tibia-creature-form .row{ display:flex; gap:8px; }
+.tibia-creature-form .field input{ background:var(--bg); }
+.tibia-creature-form .actions{ display:flex; gap:8px; }
+.tibia-creature-form button{
+  flex:1; padding:6px; border-radius:5px; border:1px solid var(--line); background:var(--bg); color:var(--text);
+  cursor:pointer; font-size:11.5px; font-family:inherit;
+}
+.tibia-creature-form button.primary{ background:var(--accent); color:#0b1512; border-color:var(--accent); font-weight:600; }

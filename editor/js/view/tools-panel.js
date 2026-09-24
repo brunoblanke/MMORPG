@@ -5,6 +5,7 @@ import { FLOOR1_FILES, FLOOR2_FILES, OBJECT_DEFS, ITEM_CATALOG } from '../model/
 import { state, TOOLS } from '../model/state.js';
 import { FLOOR_MIN, FLOOR_MAX, GROUND_FLOOR } from '../../../shared/constants.js';
 import { scheduleRender } from './canvas-renderer.js';
+import { parseTibiaType, getTibiaItem } from '../../../shared/tibia-registry.js';
 
 // ================================================================================================================================================================================================================================================
 // renderLayerTabs
@@ -73,8 +74,10 @@ export function onLayerChange() {
 
 // ================================================================================================================================================================================================================================================
 // renderTools
+// Avisa ('toolchange') quem mostra a ferramenta em outro lugar (painel Tibia).
 
 export function renderTools() {
+  window.dispatchEvent(new Event('toolchange'));
   const wrap = document.getElementById('tools');
   wrap.innerHTML = '';
   TOOLS.forEach(t => {
@@ -238,6 +241,7 @@ export function updateStats() {
     c.objects.forEach(o => {
       if (o.type === 'Stairs') s++;
       else if (ITEM_CATALOG[o.type]) it++;
+      else if (parseTibiaType(o.type)) (getTibiaItem(o.type) || {}).kind === 'wall' ? w++ : it++;
       else w++;
     });
   });

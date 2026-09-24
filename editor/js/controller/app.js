@@ -8,6 +8,9 @@ import { renderLayerTabs, renderTools, onLayerChange, updateStats } from '../vie
 import { loadMapIntoState, saveMap, hasUnsavedChanges } from '../model/map-io.js';
 import { resetHistory, commitHistory, undo, redo } from '../model/history.js';
 import './canvas-input.js';
+import { loadTibiaRegistry } from '../../../shared/tibia-registry.js';
+import { initTibiaPanel } from '../view/tibia-panel.js';
+import { refreshCreatureOptions } from '../view/forms.js';
 
 document.getElementById('clearLayerBtn').onclick = () => {
   state.layers[state.activeZ] = makeEmptyLayer();
@@ -73,6 +76,9 @@ window.addEventListener('beforeunload', (evt) => {
 
 preloadAll([FLOOR1_FILES, FLOOR2_FILES, OBJECT_DEFS, ITEM_CATALOG]);
 
+await loadTibiaRegistry('../data/tibia.json');
+refreshCreatureOptions();
+
 try {
   await loadMapIntoState();
 } catch (error) {
@@ -85,6 +91,7 @@ renderTools();
 onLayerChange();
 updateStats();
 scheduleRender();
+initTibiaPanel();
 
 // Cadência de repaint pra manter as animações fluindo; o frame exibido em cada
 // redesenho é sempre calculado em tempo real (shared/sprite-sheet.js), então

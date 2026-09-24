@@ -4,6 +4,7 @@ import { CONFIG } from '../config.js';
 import { SpriteSheet } from '../../shared/sprite-sheet.js';
 import { FLOOR1_FILES, FLOOR2_FILES, OBJECT_DEFS, ITEM_CATALOG, CREATURE_TYPES, PLAYER_SPRITE as PLAYER_DEF, PLAYER_SPRITES, DEFAULT_GENDER } from '../../shared/catalog.js';
 import { ANIMATION_CYCLE_MS } from '../../shared/constants.js';
+import { getTibiaItem, getTibiaCreature, getTibiaRegistry, tibiaFrameRect } from '../../shared/tibia-registry.js';
 
 const PLAYER_SPRITE = `img/${PLAYER_DEF.file}`;
 const PLAYER_CORPSE_SPRITE = 'img/Dead-Human.png';
@@ -24,8 +25,34 @@ export function getSpritePaths() {
     ...Object.values(FLOOR1_FILES).map(file => `img/${file}`),
     ...Object.values(FLOOR2_FILES).map(file => `img/${file}`),
     ...Object.values(OBJECT_DEFS).map(def => `img/${def.file}`),
-    ...Object.values(ITEM_CATALOG).map(def => `img/${def.file}`)
+    ...Object.values(ITEM_CATALOG).map(def => `img/${def.file}`),
+    ...Object.values(getTibiaRegistry().items).map(def => `img/${def.file}`),
+    ...Object.values(getTibiaRegistry().creatures).flatMap(def => [def.file, def.corpse].filter(Boolean).map(file => `img/${file}`))
   ];
+}
+
+// ================================================================================================================================================================================================================================================
+// TibiaItemSheet
+// Folha de um item do Tibia (server/tibia-assets.js): o quadro depende do
+// sqm (variação) e do tempo (animação) — getFrameRectAt.
+
+class TibiaItemSheet {
+  constructor(def) {
+    this.def = def;
+    this.image = new Image();
+    this.image.src = `img/${def.file}`;
+    this.frameWidth = def.fw;
+    this.frameHeight = def.fh;
+    this.totalFrames = def.frames;
+  }
+
+  getFrameRect(direction, timestamp) {
+    return tibiaFrameRect(this.def, 0, 0, 0, timestamp);
+  }
+
+  getFrameRectAt(x, y, z, timestamp) {
+    return tibiaFrameRect(this.def, x, y, z, timestamp);
+  }
 }
 
 export class SpriteRegistry {
@@ -114,7 +141,11 @@ export class SpriteRegistry {
     }
 
     if (this.objectSpriteSheets[baseId]) return this.objectSpriteSheets[baseId];
-    return null;
+
+    const tibiaDef = getTibiaItem(baseId);
+    if (!tibiaDef) return null;
+    this.objectSpriteSheets[baseId] = new TibiaItemSheet(tibiaDef);
+    return this.objectSpriteSheets[baseId];
   }
 
   // ================================================================================================================================================================================================================================================
@@ -131,7 +162,11 @@ export class SpriteRegistry {
   // getEnemySheet
 
   getEnemySheet(creature) {
-    return this.enemySpritesByType[creature] || null;
+    if (this.enemySpritesByType[creature]) return this.enemySpritesByType[creature];
+    const def = getTibiaCreature(creature);
+    if (!def) return null;
+    this.enemySpritesByType[creature] = new SpriteSheet(`img/${def.file}`, def.spriteSize, def.spriteSize, def.frames, CONFIG.playerSpriteDirections);
+    return this.enemySpritesByType[creature];
   }
 
   // ================================================================================================================================================================================================================================================
@@ -140,6 +175,10 @@ export class SpriteRegistry {
   getCorpseSheet(corpseData) {
     if (!corpseData) return null;
     if (corpseData.isPlayer) return this.playerCorpseSprite;
-    return this.corpseSpritesByType[corpseData.creature] || null;
+    if (this.corpseSpritesByType[corpseData.creature]) return this.corpseSpritesByType[corpseData.creature];
+    const def = getTibiaCreature(corpseData.creature);
+    if (!def || !def.corpse) return null;
+    this.corpseSpritesByType[corpseData.creature] = new SpriteSheet(`img/${def.corpse}`, def.corpseSize, def.corpseSize, def.corpseFrames || 1, ['idle']);
+    return this.corpseSpritesByType[corpseData.creature];
   }
 }

@@ -203,7 +203,10 @@ export class Renderer {
     }
 
     const sheet = this.getObjectSpriteSheet(entity ? entity.id : null);
-    if (sheet) {
+    if (sheet && sheet.getFrameRectAt) {
+      const frameRect = sheet.getFrameRectAt(entity.x, entity.y, entity.z || 0, this.frameTimestamp);
+      this.drawAnchoredSprite(sheet.image, frameRect, base, size, 0, 0);
+    } else if (sheet) {
       const duration = sheet._frameDuration || 1000 / sheet.totalFrames || 50;
       const frameRect = sheet.getFrameRect('idle', this.frameTimestamp, duration);
       this.ctx.drawImage(
@@ -298,6 +301,9 @@ export class Renderer {
 
     if (entity && entity.id) {
       const sheet = this.getObjectSpriteSheet(entity.id);
+      if (sheet && sheet.getFrameRectAt) {
+        return { image: sheet.image, frameRect: sheet.getFrameRectAt(entity.x, entity.y, entity.z || 0, this.frameTimestamp) };
+      }
       if (sheet) {
         const duration = sheet._frameDuration || 1000 / sheet.totalFrames || 50;
         return { image: sheet.image, frameRect: sheet.getFrameRect('idle', this.frameTimestamp, duration) };

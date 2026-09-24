@@ -1,5 +1,7 @@
 // shared/catalog.js
 
+import { getTibiaCreature, getTibiaRegistry } from './tibia-registry.js';
+
 export const FLOOR1_FILES = {
   'a':'floor/floor-1/Piso-1a.png','b':'floor/floor-1/Piso-1b.png','c':'floor/floor-1/Piso-1c.png','d':'floor/floor-1/Piso-1d.png',
   'e':'floor/floor-1/Piso-1e.png','f':'floor/floor-1/Piso-1f.png','g':'floor/floor-1/Piso-1g.png','h':'floor/floor-1/Piso-1h.png',
@@ -48,9 +50,24 @@ export const DEFAULT_CREATURE = 'Cave Rat';
 
 // ================================================================================================================================================================================================================================================
 // getCreatureType
+// Tipo próprio do jogo ou criatura gerada do Tibia (data/tibia.json).
 
 export function getCreatureType(name) {
-  return CREATURE_TYPES[name] || CREATURE_TYPES[DEFAULT_CREATURE];
+  return CREATURE_TYPES[name] || getTibiaCreature(name) || CREATURE_TYPES[DEFAULT_CREATURE];
+}
+
+// ================================================================================================================================================================================================================================================
+// hasCreatureType
+
+export function hasCreatureType(name) {
+  return !!(CREATURE_TYPES[name] || getTibiaCreature(name));
+}
+
+// ================================================================================================================================================================================================================================================
+// getCreatureNames
+
+export function getCreatureNames() {
+  return [...Object.keys(CREATURE_TYPES), ...Object.keys(getTibiaRegistry().creatures)];
 }
 
 export const PLAYER_SPRITE = { file:'Player.png', frameSize:64 };
