@@ -1,12 +1,14 @@
 // js/views/entity-overlay.js
 
+import { displayName } from '../../shared/assets.js';
+
 // ================================================================================================================================================================================================================================================
 // getEntityName
 
 function getEntityName(entity, isPlayer, isEnemy, isCorpse) {
-  if (isCorpse) return entity.name || entity.creature;
+  if (isCorpse) return entity.name || displayName(entity.creature);
   if (isPlayer) return entity.name || 'Player';
-  if (isEnemy) return entity.creature;
+  if (isEnemy) return displayName(entity.creature);
   return '';
 }
 
@@ -15,7 +17,7 @@ function getEntityName(entity, isPlayer, isEnemy, isCorpse) {
 
 export function drawEntityOverlay(ctx, entity, base, stackOffsetX, stackOffsetY, size, devMode) {
   if (!entity) return;
-  if (entity.id && entity.id.startsWith('Floor')) return;
+  if (entity.floorType) return;
 
   const isPlayer = entity && entity.isPlayer === true;
   const isEnemy = entity && entity.type === 'enemy';

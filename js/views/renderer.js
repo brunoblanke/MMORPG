@@ -1,7 +1,6 @@
 import { CONFIG } from '../config.js';
 import { shadeColor, isInRadius } from '../utils/helpers.js';
-import { SpriteRegistry } from './sprite-registry.js';
-import { getCreatureType } from '../../shared/catalog.js';
+import { SpriteRegistry, isSheetReady } from './sprite-registry.js';
 import { drawEntityOverlay } from './entity-overlay.js';
 import { drawTileTooltip } from './tile-tooltip.js';
 import { prepareDrawables } from './draw-order.js';
@@ -203,7 +202,7 @@ export class Renderer {
     }
 
     const sheet = this.getObjectSpriteSheet(entity ? entity.id : null);
-    if (sheet) {
+    if (isSheetReady(sheet)) {
       const duration = sheet._frameDuration || 1000 / sheet.totalFrames || 50;
       const frameRect = sheet.getFrameRect('idle', this.frameTimestamp, duration);
       this.ctx.drawImage(
@@ -223,19 +222,19 @@ export class Renderer {
 
   getOutlineSize(entity, isPlayer, isEnemy, isCorpse, corpseData, size) {
     if (isPlayer) {
-      return {
-        w: CONFIG.playerSpriteFrameWidth || 64,
-        h: CONFIG.playerSpriteFrameHeight || 64
-      };
+      const sheet = this.sprites.getPlayerSheet(entity && entity.gender);
+      const playerSize = sheet ? sheet.frameWidth : 32;
+      return { w: playerSize, h: playerSize };
     }
 
     if (isEnemy) {
-      const enemySpriteSize = getCreatureType(entity.creature).spriteSize;
+      const enemySpriteSize = this.sprites.getCreatureSize(entity.creature);
       return { w: enemySpriteSize, h: enemySpriteSize };
     }
 
     if (isCorpse) {
-      const corpseSize = corpseData && corpseData.isPlayer ? 32 : getCreatureType(corpseData && corpseData.creature).corpseSize;
+      const corpseSheet = this.sprites.getCorpseSheet(corpseData);
+      const corpseSize = corpseSheet ? corpseSheet.frameWidth : 32;
       return { w: corpseSize, h: corpseSize };
     }
 
@@ -285,7 +284,7 @@ export class Renderer {
   getEntityFrame(entity, isPlayer, isEnemy) {
     if (isPlayer || isEnemy) {
       const sheet = isPlayer ? this.sprites.getPlayerSheet(entity && entity.gender) : (entity ? this.sprites.getEnemySheet(entity.creature) : null);
-      if (!sheet) return null;
+      if (!isSheetReady(sheet)) return null;
 
       const isMoving = entity && entity.isMoving;
       const direction = (entity && entity.direction) || 'sul';
@@ -298,7 +297,7 @@ export class Renderer {
 
     if (entity && entity.id) {
       const sheet = this.getObjectSpriteSheet(entity.id);
-      if (sheet) {
+      if (isSheetReady(sheet)) {
         const duration = sheet._frameDuration || 1000 / sheet.totalFrames || 50;
         return { image: sheet.image, frameRect: sheet.getFrameRect('idle', this.frameTimestamp, duration) };
       }
@@ -375,7 +374,7 @@ export class Renderer {
 
     if (isCorpse) {
       const sheet = this.sprites.getCorpseSheet(corpseData);
-      if (sheet) {
+      if (isSheetReady(sheet)) {
         const elapsed = Math.max(0, this.frameTimestamp - (corpseData.deathTime || 0));
         const frameRect = sheet.getFrameRect('idle', elapsed, CONFIG.corpseFrameDuration);
         this.drawAnchoredSprite(sheet.image, frameRect, base, size, stackOffsetX, stackOffsetY);

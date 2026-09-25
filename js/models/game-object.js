@@ -2,7 +2,8 @@
 
 import { randEnemyColor } from '../utils/helpers.js';
 import { Enemy } from './enemy.js';
-import { computeBorderPieces, pickWeightedInteriorVariant } from '../../shared/floor-variant.js';
+import { computeBorderPieces } from '../../shared/floor-variant.js';
+import { isFloorType, isHoleType, objectIdType, splitType, pieceType, interiorVariant, getAsset } from '../../shared/assets.js';
 import { collectObjectDescriptors, collectEnemyDescriptors } from '../../shared/map-format.js';
 import { getStairTop, getStairTopTarget, getHoleTarget } from '../../shared/stairs.js';
 import { parseBorderType, hasSavedBorders } from '../../shared/floor-borders.js';
@@ -25,11 +26,13 @@ export class GameObject {
       this.targetZ = data.targetZ;
     }
 
-    this.floorType = data.id.startsWith('Floor2') ? 'Floor2' : (data.id.startsWith('Floor') ? 'Floor' : null);
+    // Piso e borda: floorType é a folha do piso ('estrutura/pisos/…').
+    const type = objectIdType(data.id);
+    this.floorType = isFloorType(type) ? splitType(type).asset : null;
 
     if (data.order !== undefined) {
       this.order = data.order;
-    } else if (this.id && (this.id.startsWith('Floor_') || this.id.startsWith('Floor2_') || this.id === 'Floor' || this.id === 'Floor2')) {
+    } else if (this.floorType) {
       this.order = -1;
     } else {
       this.order = 0;
@@ -69,12 +72,12 @@ export function generateObjects(mapData) {
 
 // ================================================================================================================================================================================================================================================
 // createBorder
-// Peça de borda (id no formato do sprite: '<piso>_<peça>_<n>'): só desenho,
+// Peça de borda (id no formato do sprite: '<piso>#<peça>_<n>'): só desenho,
 // não bloqueia nem vira chão pisável.
 
 function createBorder(piece, position, counter) {
   const border = new GameObject({
-    id: `${piece.type}_${piece.variant}_${counter}`,
+    id: `${pieceType(piece.type, piece.variant)}_${counter}`,
     x: position.x,
     y: position.y,
     z: position.z,
@@ -122,7 +125,7 @@ function applyTransitions(objs) {
   result.push(...stairTops);
 
   for (const obj of result) {
-    if (obj.id && obj.id.startsWith('Hole')) {
+    if (isHoleType(objectIdType(obj.id))) {
       const target = getHoleTarget(obj.x, obj.y, obj.z);
       obj.stairDirection = 'down';
       obj.targetX = target.x;
@@ -161,7 +164,8 @@ function assignGroundOrder(objs) {
 //
 // Até 2 pisos por célula, igual ao editor (cell.floor / cell.floorTop): a 1ª
 // entrada de piso numa célula é a de baixo, a 2ª é a de cima. Todo piso é
-// ladrilho cheio (a/b/c/d); as bordas ficam pra fora, em generateFloorBorders.
+// ladrilho cheio (uma das variações do meio da folha, sorteada pela posição);
+// as bordas ficam pra fora, em generateFloorBorders.
 // Devolve Map<z, Map<'x,y', { type, seq }>> com o piso VISÍVEL de cada célula.
 
 function applyFloorVariants(objs) {
@@ -180,7 +184,8 @@ function applyFloorVariants(objs) {
     visibleFloorsByZ.get(obj.z).set(key, { type: obj.floorType, seq: obj.seq });
 
     counters[obj.floorType] = (counters[obj.floorType] || 0) + 1;
-    obj.id = `${obj.floorType}_${pickWeightedInteriorVariant(obj.x, obj.y, obj.z)}_${counters[obj.floorType]}`;
+    const variations = (getAsset(obj.floorType) || {}).variacoes || 4;
+    obj.id = `${pieceType(obj.floorType, interiorVariant(obj.x, obj.y, obj.z, variations))}_${counters[obj.floorType]}`;
   }
 
   return visibleFloorsByZ;
@@ -205,7 +210,7 @@ function generateFloorBorders(objs, visibleFloorsByZ) {
   const borderObjs = [];
   let borderCounter = 0;
   const holeKeys = new Set(objs
-    .filter(obj => obj.id && obj.id.startsWith('Hole'))
+    .filter(obj => isHoleType(objectIdType(obj.id)))
     .map(obj => `${obj.x},${obj.y},${obj.z}`));
 
   for (const [z, visibleFloors] of visibleFloorsByZ) {
@@ -227,7 +232,7 @@ function generateFloorBorders(objs, visibleFloorsByZ) {
       for (const piece of computeBorderPieces(x, y, getFloor, getFloor(x, y))) {
         borderCounter++;
         const border = new GameObject({
-          id: `${piece.type}_${piece.variant}_${borderCounter}`,
+          id: `${pieceType(piece.type, piece.variant)}_${borderCounter}`,
           x: x,
           y: y,
           z: z,
@@ -244,43 +249,6 @@ function generateFloorBorders(objs, visibleFloorsByZ) {
   }
 
   return borderObjs;
-}
-
-// ================================================================================================================================================================================================================================================
-// fillRectangularFloor
-//
-// Utilitário disponível pra preencher piso retangular manualmente quando
-// precisar — não é mais chamado automaticamente por generateObjects.
-
-export function fillRectangularFloor(objs, counters, minX, maxX, minY, maxY, z = 0, excludeTiles = new Set()) {
-  const existingFloorPositions = new Set();
-  for (const obj of objs) {
-    if (obj.z === z && obj.id && obj.id.startsWith('Floor')) {
-      existingFloorPositions.add(`${obj.x},${obj.y}`);
-    }
-  }
-
-  for (let x = minX; x <= maxX; x++) {
-    for (let y = minY; y <= maxY; y++) {
-      const key = `${x},${y}`;
-      if (excludeTiles.has(key)) continue;
-      if (existingFloorPositions.has(key)) continue;
-
-      if (!counters['Floor']) counters['Floor'] = 0;
-      counters['Floor']++;
-
-      objs.push(new GameObject({
-        id: `Floor_${counters['Floor']}`,
-        x: x,
-        y: y,
-        z: z,
-        step: 0,
-        movable: false,
-        hasVolume: false,
-        blocksMovement: false
-      }));
-    }
-  }
 }
 
 // ================================================================================================================================================================================================================================================

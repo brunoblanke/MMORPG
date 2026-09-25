@@ -26,9 +26,6 @@ export const CONFIG = {
   // no piso do andar de cima; sobre floorHeight ou mais a criatura já conta
   // como andar de cima. Itens nunca mudam de andar por estarem empilhados.
   floorHeight: 4,
-  playerSpriteFrameWidth: 64,
-  playerSpriteFrameHeight: 64,
-  playerSpriteWalkFrames: 8,
   playerSpriteDirections: ['sul', 'norte', 'leste', 'oeste'],
   playerFrameDuration: 150,
 

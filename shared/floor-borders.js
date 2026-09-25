@@ -2,14 +2,15 @@
 
 import { computeBorderPieces } from './floor-variant.js';
 import { getStairTop } from './stairs.js';
+import { isFloorType, isStairsType } from './assets.js';
 
 // Bordas de piso como peças do mapa. O editor gera sozinho (ao pintar ou
 // apagar piso, buraco ou escada, recalcula os 3×3 em volta) e dá pra tirar
-// ou pôr uma a uma. No map.json cada borda é uma entrada 'Border:<piso>:<peça>'.
+// ou pôr uma a uma. No map.json cada borda é uma entrada 'Border:<piso>:<peça>'
+// (o piso é a folha, ex.: 'Border:estrutura/pisos/piso-grama-1:n').
 // Mapas até a versão 1 não tinham bordas gravadas: o jogo as gerava na hora.
 
 export const BORDER_PREFIX = 'Border:';
-export const AUTO_BORDER_TYPES = ['Floor', 'Floor2'];
 export const BORDER_VARIANTS = ['n', 's', 'l', 'o', 'nl', 'no', 'sl', 'so', 'int-nl', 'int-no', 'int-sl', 'int-so'];
 export const BORDERS_SAVED_SINCE_VERSION = 2;
 
@@ -22,12 +23,13 @@ export function borderEntryType(piece) {
 
 // ================================================================================================================================================================================================================================================
 // parseBorderType
-// 'Border:Floor2:nl' → { type: 'Floor2', variant: 'nl' }; outro tipo → null.
+// 'Border:estrutura/pisos/piso-grama-1:nl' → { type: 'estrutura/pisos/piso-grama-1',
+// variant: 'nl' }; outro tipo → null.
 
 export function parseBorderType(type) {
   if (typeof type !== 'string' || !type.startsWith(BORDER_PREFIX)) return null;
   const [floorType, variant] = type.slice(BORDER_PREFIX.length).split(':');
-  if (!AUTO_BORDER_TYPES.includes(floorType) || !BORDER_VARIANTS.includes(variant)) return null;
+  if (!isFloorType(floorType) || !BORDER_VARIANTS.includes(variant)) return null;
   return { type: floorType, variant };
 }
 
@@ -48,7 +50,7 @@ export function getStairTopKeys(below, zBelow) {
   const keys = new Set();
   if (!below) return keys;
   for (const [key, cell] of Object.entries(below)) {
-    if (!cell.objects.some(o => o.type === 'Stairs')) continue;
+    if (!cell.objects.some(o => isStairsType(o.type))) continue;
     const [x, y] = key.split(',').map(Number);
     const top = getStairTop(x, y, zBelow);
     keys.add(`${top.x},${top.y}`);
@@ -58,11 +60,10 @@ export function getStairTopKeys(below, zBelow) {
 
 // ================================================================================================================================================================================================================================================
 // visibleBorderFloor
-// Piso de cima da célula, se for um piso que tem borda automática.
+// Piso de cima da célula (todo piso tem borda automática).
 
 function visibleBorderFloor(cell) {
-  const floor = cell.floorTop || cell.floor;
-  return floor && AUTO_BORDER_TYPES.includes(floor.type) ? floor : null;
+  return cell.floorTop || cell.floor || null;
 }
 
 // ================================================================================================================================================================================================================================================

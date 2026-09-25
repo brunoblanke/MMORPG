@@ -1,11 +1,12 @@
 // js/controller/canvas-input.js
 
 import { canvas, cellFromEvent, scheduleRender } from '../view/canvas-renderer.js';
-import { state, TOOLS } from '../model/state.js';
+import { state } from '../model/state.js';
 import { updateStats } from '../view/tools-panel.js';
 import { openEnemyForm } from '../view/forms.js';
 import { addFloorToCell, restackItems } from '../../../shared/map-format.js';
 import { refreshBordersAt } from '../model/borders.js';
+import { isStairsType } from '../../../shared/assets.js';
 
 // ================================================================================================================================================================================================================================================
 // eraseTopmost
@@ -18,9 +19,9 @@ import { refreshBordersAt } from '../model/borders.js';
 function eraseTopmost(cell) {
   if (cell.enemy) { cell.enemy = null; return 'enemy'; }
   if (cell.spawn) { cell.spawn = false; return 'spawn'; }
-  if (cell.objects.length > 0) { return cell.objects.pop().type === 'Stairs' ? 'stairs' : 'object'; }
+  if (cell.objects.length > 0) { return isStairsType(cell.objects.pop().type) ? 'stairs' : 'object'; }
   if (cell.borders.length > 0) { cell.borders.pop(); return 'border'; }
-  if (cell.hole) { cell.hole = false; return 'hole'; }
+  if (cell.hole) { cell.hole = null; return 'hole'; }
   if (cell.floorTop) { cell.floorTop = null; return 'floor'; }
   if (cell.floor) { cell.floor = null; return 'floor'; }
   return null;
@@ -40,10 +41,10 @@ function addBorderPiece(cell, piece) {
 
 export function applyTool(x, y, clientX, clientY) {
   if (state.tool === 'stairs') {
-    // Destino é fixo pela posição (shared/stairs.js): não há nada pra escolher.
+    // Destino é fixo pela posição (shared/stairs.js): só escolhe o desenho.
     const cell = state.layers[state.activeZ][`${x},${y}`];
-    if (!cell.objects.some(o => o.type === 'Stairs')) {
-      cell.objects.push({ type: 'Stairs' });
+    if (state.stairsPaint && !cell.objects.some(o => isStairsType(o.type))) {
+      cell.objects.push({ type: state.stairsPaint });
       refreshBordersAt(state.activeZ, x, y, true);
     }
     updateStats();
@@ -71,31 +72,29 @@ export function applyTool(x, y, clientX, clientY) {
   const cell = layer[strokeKey];
 
   if (state.tool === 'floor') {
-    if (addFloorToCell(cell, state.floorPaint)) refreshBordersAt(state.activeZ, x, y);
+    if (state.floorPaint && addFloorToCell(cell, state.floorPaint)) refreshBordersAt(state.activeZ, x, y);
   } else if (state.tool === 'eraser') {
     const erased = eraseTopmost(cell);
     if (erased === 'floor' || erased === 'hole' || erased === 'stairs') refreshBordersAt(state.activeZ, x, y, erased === 'stairs');
   } else if (state.tool === 'hole') {
-    if (!cell.hole) {
-      cell.hole = true;
+    if (state.holePaint && cell.hole !== state.holePaint) {
+      cell.hole = state.holePaint;
       refreshBordersAt(state.activeZ, x, y);
     }
   } else if (state.tool === 'border') {
-    addBorderPiece(cell, state.borderPaint);
+    if (state.borderPaint) addBorderPiece(cell, state.borderPaint);
   } else if (state.tool === 'border-eraser') {
     cell.borders = [];
   } else if (state.tool === 'safe') {
     if (state.strokeTouched.size === 1) state.safePaintValue = !cell.safe;
     cell.safe = state.safePaintValue;
   } else if (state.tool === 'item') {
-    cell.objects.push({ type: state.itemPaint, step: 0 });
-    restackItems(cell.objects);
-
-  } else {
-    const t = TOOLS.find(t => t.id === state.tool);
-    if (t && t.obj) {
-      cell.objects.push({ type: t.obj });
+    if (state.itemPaint) {
+      cell.objects.push({ type: state.itemPaint, step: 0 });
+      restackItems(cell.objects);
     }
+  } else if (state.tool === 'wall') {
+    if (state.wallPaint) cell.objects.push({ type: state.wallPaint });
   }
 
   updateStats();

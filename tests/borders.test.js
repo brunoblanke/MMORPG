@@ -2,7 +2,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { buildMapData, floorRect } from './helpers/fixture.js';
+import { buildMapData, floorRect, FLOOR, FLOOR2, HOLE } from './helpers/fixture.js';
 import { generateObjects } from '../js/models/game-object.js';
 import { buildLayersFromMapData, serializeMapFromLayers, addFloorToCell } from '../shared/map-format.js';
 import { rebuildLayerBorders, refreshBordersAround, getStairTopKeys, computeCellBorders } from '../shared/floor-borders.js';
@@ -25,10 +25,10 @@ function floors(type, minX, maxX, minY, maxY, z, firstSeq) {
 function oldMap() {
   return buildMapData({
     objects: [
-      ...floors('Floor', 5, 14, 5, 14, 0, 1),
-      ...floors('Floor2', 10, 20, 10, 18, 0, 500),
-      ['Hole', 12, 7, 0, 0, false, false, false],
-      ...floors('Floor', 4, 16, 2, 12, 1, 1000)
+      ...floors(FLOOR, 5, 14, 5, 14, 0, 1),
+      ...floors(FLOOR2, 10, 20, 10, 18, 0, 500),
+      [HOLE, 12, 7, 0, 0, false, false, false],
+      ...floors(FLOOR, 4, 16, 2, 12, 1, 1000)
     ],
     stairs: [[8, 12, 0]]
   });
@@ -61,7 +61,7 @@ function bordersOf(objs) {
 test('mapa antigo convertido tem no jogo exatamente as mesmas bordas que o jogo gerava', () => {
   const before = bordersOf(generateObjects(oldMap()));
   const { map } = migrate(oldMap());
-  assert.equal(map.version, 2);
+  assert.equal(map.version, 3);
   const after = bordersOf(generateObjects(map));
 
   assert.ok(Object.keys(before).length > 30);
@@ -72,28 +72,28 @@ test('mapa antigo convertido tem no jogo exatamente as mesmas bordas que o jogo 
 test('borda tirada ou posta à mão fica assim no jogo', () => {
   const { layers, layerOrder } = migrate(oldMap());
   const edge = layers[0]['4,8'];
-  assert.deepEqual(edge.borders, [{ type: 'Floor', variant: 'o' }]);
+  assert.deepEqual(edge.borders, [{ type: FLOOR, variant: 'o' }]);
 
   edge.borders = [];
-  layers[0]['2,2'].borders.push({ type: 'Floor2', variant: 'int-nl' });
+  layers[0]['2,2'].borders.push({ type: FLOOR2, variant: 'int-nl' });
   const objs = generateObjects(serializeMapFromLayers(layerOrder, layers, GRID));
   const borders = bordersOf(objs);
 
   assert.equal(borders['4,8,0'], undefined);
-  assert.deepEqual(borders['2,2,0'], ['Floor2_int-nl']);
+  assert.deepEqual(borders['2,2,0'], [`${FLOOR2}#int-nl`]);
   assert.ok(objs.filter(o => o.isBorder).every(o => o.floorType && !o.blocksMovement));
 });
 
 test('pintar um piso refaz só as bordas em volta dele', () => {
   const { layers } = migrate(oldMap());
   const layer = layers[0];
-  layer['25,25'].borders = [{ type: 'Floor2', variant: 'n' }];
+  layer['25,25'].borders = [{ type: FLOOR2, variant: 'n' }];
 
-  addFloorToCell(layer['3,8'], 'Floor');
+  addFloorToCell(layer['3,8'], FLOOR);
   refreshBordersAround(layer, 3, 8);
 
   assert.deepEqual(layer['3,8'].borders, []);
-  assert.deepEqual(layer['2,8'].borders, [{ type: 'Floor', variant: 'o' }]);
-  assert.deepEqual(layer['25,25'].borders, [{ type: 'Floor2', variant: 'n' }]);
+  assert.deepEqual(layer['2,8'].borders, [{ type: FLOOR, variant: 'o' }]);
+  assert.deepEqual(layer['25,25'].borders, [{ type: FLOOR2, variant: 'n' }]);
   assert.deepEqual(computeCellBorders(layer, 12, 7), []);
 });

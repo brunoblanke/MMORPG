@@ -9,6 +9,7 @@ import { EventManager } from './input/event-manager.js';
 import { SpriteLoader } from './services/sprite-loader.js';
 import { Renderer } from './views/renderer.js';
 import { getSpritePaths } from './views/sprite-registry.js';
+import { loadAssets } from '../shared/assets.js';
 import { UI } from './views/ui.js';
 import { getRoofLevel } from './views/draw-order.js';
 import { ParticleController } from './systems/particle-controller.js';
@@ -69,11 +70,13 @@ export class GameController {
 
   // ================================================================================================================================================================================================================================================
   // loadSprites
+  // Primeiro a lista das folhas do gerador (/api/sprites), depois as imagens.
 
   loadSprites() {
-    return this.spriteLoader.loadAll(getSpritePaths()).catch((error) => {
-      console.error('❌ Erro ao carregar sprites:', error);
-    });
+    return loadAssets()
+      .catch((error) => console.error('❌ Erro ao listar os sprites:', error))
+      .then(() => this.spriteLoader.loadAll(getSpritePaths()))
+      .catch((error) => console.error('❌ Erro ao carregar sprites:', error));
   }
 
   // ================================================================================================================================================================================================================================================

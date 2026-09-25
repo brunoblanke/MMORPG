@@ -4,13 +4,12 @@
 import { GRID, TILE } from '../config.js';
 import { STACK_OFFSET, ANIMATION_CYCLE_MS } from '../../../shared/constants.js';
 import { pickFrameRect } from '../../../shared/sprite-sheet.js';
-import { FLOOR1_FILES, FLOOR2_FILES, OBJECT_DEFS, ITEM_CATALOG, PLAYER_SPRITE } from '../model/catalog.js';
-import { pickWeightedInteriorVariant } from '../../../shared/floor-variant.js';
+import { PLAYER_SPRITES, DEFAULT_GENDER } from '../../../shared/catalog.js';
+import { getAsset, spriteFrame, pieceType, interiorVariant, displayName, isItemType } from '../../../shared/assets.js';
 import { getStairTopKeys } from '../model/borders.js';
 import { state } from '../model/state.js';
 import { restackItems } from '../../../shared/map-format.js';
 import { loadImage, setImageUpdateCallback } from './image-cache.js';
-import { getCreatureType, hasCreatureType } from '../../../shared/catalog.js';
 
 export const canvas = document.getElementById('canvas');
 export const ctx = canvas.getContext('2d');
@@ -44,8 +43,8 @@ setImageUpdateCallback(scheduleRender);
 function drawCharacter(file, frameSize, fallbackColor, px, py) {
   const drawX = px + TILE - frameSize;
   const drawY = py + TILE - frameSize;
-  const entry = loadImage(file);
-  if (entry.status === 'ok') {
+  const entry = file ? loadImage(file) : null;
+  if (entry && entry.status === 'ok') {
     ctx.drawImage(entry.img, 0, 0, frameSize, frameSize, drawX, drawY, frameSize, frameSize);
   } else {
     ctx.fillStyle = fallbackColor;
@@ -71,26 +70,38 @@ function drawLabel(text, x, y) {
 }
 
 // ================================================================================================================================================================================================================================================
+// drawPiece
+// Peça de uma folha do gerador ancorada no canto de baixo à direita do sqm
+// (com a animação, se tiver quadros). Sem imagem, um bloco da cor dada.
+
+function drawPiece(type, px, py, fallback = null, target = ctx) {
+  const frame = spriteFrame(type);
+  const entry = frame && loadImage(frame.url);
+  const drawX = px + TILE - (frame ? frame.size : TILE);
+  const drawY = py + TILE - (frame ? frame.size : TILE);
+  if (entry && entry.status === 'ok') {
+    const duration = ANIMATION_CYCLE_MS / frame.frames;
+    const rect = pickFrameRect(['idle'], frame.size, frame.size, frame.frames, 'idle', performance.now(), duration);
+    target.drawImage(entry.img, frame.x + rect.sx, frame.y + rect.sy, frame.size, frame.size, drawX, drawY, frame.size, frame.size);
+  } else if (fallback) {
+    target.fillStyle = fallback;
+    target.fillRect(px + 4, py + 4, TILE - 8, TILE - 8);
+  }
+}
+
+// ================================================================================================================================================================================================================================================
 // drawFloorTile
 
-function drawFloorTile(type, variant, px, py) {
-  const files = type === 'Floor2' ? FLOOR2_FILES : FLOOR1_FILES;
-  const entry = loadImage(files[variant]);
-  if (entry.status === 'ok') {
-    ctx.drawImage(entry.img, px, py, TILE, TILE);
-  } else {
-    ctx.fillStyle = type === 'Floor2' ? '#2f4a44' : '#3c3826';
-    ctx.fillRect(px, py, TILE, TILE);
-  }
+function drawFloorTile(type, x, y, z, px, py) {
+  const variations = (getAsset(type) || {}).variacoes || 4;
+  drawPiece(pieceType(type, interiorVariant(x, y, z, variations)), px, py, '#3c3826');
 }
 
 // ================================================================================================================================================================================================================================================
 // drawBorderPiece
 
 export function drawBorderPiece(piece, px, py, target = ctx) {
-  const files = piece.type === 'Floor2' ? FLOOR2_FILES : FLOOR1_FILES;
-  const entry = loadImage(files[piece.variant]);
-  if (entry.status === 'ok') target.drawImage(entry.img, px, py, TILE, TILE);
+  drawPiece(pieceType(piece.type, piece.variant), px, py, null, target);
 }
 
 // ================================================================================================================================================================================================================================================
@@ -131,7 +142,7 @@ function drawLayer(layer, alpha, z) {
       // Pisos da célula (baixo e cima) e, por cima, as bordas gravadas nela.
       if (!isVoid(key)) {
         for (const k of ['floor', 'floorTop']) {
-          if (cell[k]) drawFloorTile(cell[k].type, pickWeightedInteriorVariant(x, y, z), px, py);
+          if (cell[k]) drawFloorTile(cell[k].type, x, y, z, px, py);
         }
       }
       if (state.showBorders) {
@@ -140,61 +151,26 @@ function drawLayer(layer, alpha, z) {
 
       if (stairTops.has(key)) drawStairTop(px, py);
 
-      if (cell.hole) {
-        const entry = loadImage(OBJECT_DEFS['Hole'].file);
-        if (entry.status === 'ok') {
-          ctx.drawImage(entry.img, px, py, TILE, TILE);
-        } else {
-          ctx.fillStyle = '#000';
-          ctx.fillRect(px + 3, py + 3, TILE - 6, TILE - 6);
-        }
-      }
+      if (cell.hole) drawPiece(cell.hole, px, py, '#000');
 
       if (cell.safe) drawSafeTile(px, py);
 
       // Mantém os steps coerentes com a pilha atual (reordenar/remover no painel).
       restackItems(cell.objects);
       cell.objects.forEach(obj => {
-        if (ITEM_CATALOG[obj.type]) {
-          const def = ITEM_CATALOG[obj.type];
-          const entry = loadImage(def.file);
-          const stepOffset = (obj.step || 0) * STACK_OFFSET;
-          const drawX = px - stepOffset;
-          const drawY = py - stepOffset;
-          if (entry.status === 'ok') {
-            const duration = def.frames > 1 ? ANIMATION_CYCLE_MS / def.frames : 100;
-            const frame = pickFrameRect(['idle'], TILE, TILE, def.frames, 'idle', performance.now(), duration);
-            ctx.drawImage(entry.img, frame.sx, frame.sy, frame.sw, frame.sh, drawX, drawY, TILE, TILE);
-          } else {
-            ctx.fillStyle = '#7a6a4a';
-            ctx.fillRect(drawX + 6, drawY + 6, TILE - 12, TILE - 12);
-          }
-          return;
-        }
-
-        const def = OBJECT_DEFS[obj.type];
-        const entry = loadImage(def.file);
-        const drawX = px + TILE - def.frameW;
-        const drawY = py + TILE - def.frameH;
-        if (entry.status === 'ok') {
-          const duration = def.frames > 1 ? ANIMATION_CYCLE_MS / def.frames : 100;
-          const frame = pickFrameRect(['idle'], def.frameW, def.frameH, def.frames, 'idle', performance.now(), duration);
-          ctx.drawImage(entry.img, frame.sx, frame.sy, frame.sw, frame.sh, drawX, drawY, def.frameW, def.frameH);
-        } else {
-          ctx.fillStyle = obj.type === 'Stairs' ? '#4CAF50' : '#8a5a3a';
-          ctx.fillRect(drawX + 4, drawY + 4, def.frameW - 8, def.frameH - 8);
-        }
+        const lift = isItemType(obj.type) ? (obj.step || 0) * STACK_OFFSET : 0;
+        drawPiece(obj.type, px - lift, py - lift, '#8a5a3a');
       });
 
       if (cell.enemy) {
-        const typeName = hasCreatureType(cell.enemy.type) ? cell.enemy.type : 'Cave Rat';
-        const typeDef = getCreatureType(typeName);
-        const at = drawCharacter(typeDef.file, typeDef.spriteSize, typeDef.color, px, py);
-        labels.push({ text: `${typeName} ${cell.enemy.lvl}`, ...at });
+        const asset = getAsset(cell.enemy.type);
+        const at = drawCharacter(asset ? asset.url : null, asset ? asset.quadro : TILE, '#c0392b', px, py);
+        labels.push({ text: `${displayName(cell.enemy.type)} ${cell.enemy.lvl}`, ...at });
       }
 
       if (cell.spawn) {
-        const at = drawCharacter(PLAYER_SPRITE.file, PLAYER_SPRITE.frameSize, '#f5c518', px, py);
+        const player = getAsset(PLAYER_SPRITES[DEFAULT_GENDER]);
+        const at = drawCharacter(player ? player.url : null, player ? player.quadro : TILE, '#f5c518', px, py);
         labels.push({ text: 'Player', ...at });
       }
     }

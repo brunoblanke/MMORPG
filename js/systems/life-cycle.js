@@ -2,6 +2,7 @@
 
 import { CONFIG } from '../config.js';
 import { Enemy } from '../models/enemy.js';
+import { displayName } from '../../shared/assets.js';
 
 export class LifeCycleController {
 
@@ -21,7 +22,7 @@ export class LifeCycleController {
     const corpse = {
       id: `Corpse_${this.corpseCounter}`,
       ownerId: entity.id,
-      name: entity.name || entity.creature,
+      name: entity.name || displayName(entity.creature),
       x: entity.x,
       y: entity.y,
       z: entity.z || 0,
@@ -135,7 +136,7 @@ export class LifeCycleController {
     });
     this.sim.enemies.push(respawnedEnemy);
     this.sim.world.addCreature(respawnedEnemy);
-    console.log(`♻️ ${enemy.creature} LV${enemy.lvl} respawnou em (${spot.x}, ${spot.y}, ${enemy.spawnZ})`);
+    console.log(`♻️ ${displayName(enemy.creature)} LV${enemy.lvl} respawnou em (${spot.x}, ${spot.y}, ${enemy.spawnZ})`);
   }
 
   // ================================================================================================================================================================================================================================================

@@ -12,6 +12,9 @@ const app = express();
 const PASTA_JOGO = __dirname;
 const MAP_DATA_PATH = path.join(PASTA_JOGO, 'data', 'map.json');
 const CHARACTERS_PATH = path.join(PASTA_JOGO, 'data', 'characters.json');
+const PASTA_PROJETOS = path.join(PASTA_JOGO, 'gerador', 'projetos');
+const PASTA_SAIDA = path.join(PASTA_JOGO, 'gerador', 'saida');
+const TAXONOMIA_PATH = path.join(PASTA_JOGO, 'gerador', 'taxonomia.json');
 const SAVE_INTERVAL_MS = 10000;
 const PORT = process.env.PORT || 8000;
 
@@ -19,6 +22,7 @@ app.use(express.text({ type: 'text/plain', limit: '50mb' }));
 app.use(express.json({ limit: '50mb' }));
 app.use(liberarCors);
 app.post('/api/save-map', salvarMapa);
+app.get('/api/sprites', listarSprites);
 app.use(express.static(PASTA_JOGO));
 
 const servidor = http.createServer(app);
@@ -61,6 +65,62 @@ function salvarMapa(req, res) {
     console.error('❌ Erro ao salvar:', err.message);
     res.status(500).json({ success: false, message: 'Erro ao salvar: ' + err.message });
   }
+}
+
+// ================================================================================================================================================================================================================================================
+// listarSprites
+// As folhas feitas no gerador (gerador/projetos/<grupo>/<pasta>/<nome>.json,
+// com o PNG em gerador/saida): o que o jogo e o editor desenham (shared/assets.js).
+
+function listarSprites(req, res) {
+  try {
+    const taxonomia = fs.existsSync(TAXONOMIA_PATH) ? JSON.parse(fs.readFileSync(TAXONOMIA_PATH, 'utf8')) : { grupos: [] };
+    const sprites = [];
+    for (const grupo of taxonomia.grupos) {
+      for (const secao of grupo.secoes) {
+        for (const pasta of secao.pastas) {
+          const relativa = `${grupo.id}/${pasta.id}`;
+          const dir = path.join(PASTA_PROJETOS, grupo.id, pasta.id);
+          if (!fs.existsSync(dir)) continue;
+          for (const arquivo of fs.readdirSync(dir).filter(nome => nome.endsWith('.json')).sort()) {
+            const nome = arquivo.slice(0, -5);
+            if (!fs.existsSync(path.join(PASTA_SAIDA, relativa, `${nome}.png`))) continue;
+            const receita = JSON.parse(fs.readFileSync(path.join(dir, arquivo), 'utf8'));
+            sprites.push(descreverSprite(`${relativa}/${nome}`, grupo, pasta, nome, receita));
+          }
+        }
+      }
+    }
+    res.set('Cache-Control', 'no-cache');
+    res.json({ success: true, sprites });
+  } catch (err) {
+    console.error('❌ Erro ao listar sprites:', err.message);
+    res.status(500).json({ success: false, message: err.message });
+  }
+}
+
+// ================================================================================================================================================================================================================================================
+// descreverSprite
+// O que o jogo precisa saber de uma folha pra desenhar e pra colocar no mapa.
+
+function descreverSprite(id, grupo, pasta, nome, receita) {
+  const formato = receita.formato || {};
+  return {
+    id,
+    ferramenta: pasta.ferramenta,
+    grupo: grupo.id,
+    pasta: pasta.id,
+    nome,
+    rotulo: `${grupo.nome} › ${pasta.nome}`,
+    url: `/gerador/saida/${id}.png`,
+    quadro: formato.quadro || 32,
+    quadros: formato.quadros || 1,
+    variacoes: receita.variacoesDoMeio || 0,
+    ordem: formato.pecas || null,
+    pecas: receita.pecas ? Object.keys(receita.pecas) : [],
+    propriedades: receita.propriedades || null,
+    cadaver: !!(receita.cadaver && Object.keys(receita.cadaver).length)
+  };
 }
 
 // ================================================================================================================================================================================================================================================

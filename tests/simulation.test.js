@@ -3,7 +3,7 @@
 import { test, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { buildGame, floorRect, pile, hole } from './helpers/fixture.js';
+import { buildGame, buildMapData, floorRect, pile, hole } from './helpers/fixture.js';
 import { Simulation, TICK_MS } from '../js/simulation.js';
 import { CONFIG } from '../js/config.js';
 
@@ -145,7 +145,11 @@ test('dois jogadores na mesma simulação se bloqueiam', () => {
 });
 
 test('mesmo mapa, mesmos comandos e mesmo sorteio: mesmo resultado', () => {
-  const mapData = JSON.parse(fs.readFileSync(new URL('../data/map.json', import.meta.url), 'utf8'));
+  const mapData = buildMapData({
+    objects: floorRect(0, 30, 0, 30),
+    enemies: [[12, 5, 0], [9, 8, 0, 8], [15, 10, 0]],
+    spawn: { x: 5, y: 5, z: 0 }
+  });
 
   const play = () => {
     seedRandom(7);

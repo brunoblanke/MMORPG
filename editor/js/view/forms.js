@@ -1,6 +1,6 @@
 // js/view/forms.js
 
-import { getCreatureType, getCreatureNames, hasCreatureType } from '../../../shared/catalog.js';
+import { getAsset, listAssets, displayName } from '../../../shared/assets.js';
 import { state } from '../model/state.js';
 import { scheduleRender } from './canvas-renderer.js';
 import { updateStats } from './tools-panel.js';
@@ -25,10 +25,17 @@ export function openEnemyForm(x, y, clientX, clientY) {
   pendingEnemy = { x, y };
   const layer = state.layers[state.activeZ];
   const existing = layer[`${x},${y}`].enemy;
-  const type = existing ? existing.type : (hasCreatureType(state.enemyPaint) ? state.enemyPaint : 'Cave Rat');
   refreshCreatureOptions();
-  document.getElementById('enemyType').value = type;
-  document.getElementById('enemyLvl').value = existing ? existing.lvl : getCreatureType(type).defaultLvl;
+  const select = document.getElementById('enemyType');
+  if (!select.options.length) {
+    window.alert('Nenhuma criatura gerada ainda. Gere no gerador de sprites (Criaturas).');
+    pendingEnemy = null;
+    state.painting = false;
+    return;
+  }
+  const type = existing && getAsset(existing.type) ? existing.type : (getAsset(state.enemyPaint) ? state.enemyPaint : select.options[0].value);
+  select.value = type;
+  if (existing) document.getElementById('enemyLvl').value = existing.lvl;
 
   positionFloatPanel(enemyForm, clientX, clientY);
   enemyForm.classList.add('show');
@@ -36,23 +43,27 @@ export function openEnemyForm(x, y, clientX, clientY) {
 
 // ================================================================================================================================================================================================================================================
 // refreshCreatureOptions
-// Lista do tipo de criatura (CREATURE_TYPES).
+// As criaturas geradas, agrupadas pela pasta (Criaturas › Demônios…).
 
 export function refreshCreatureOptions() {
   const select = document.getElementById('enemyType');
   const current = select.value;
   select.innerHTML = '';
-  for (const name of getCreatureNames()) {
-    const option = document.createElement('option');
-    option.value = name;
-    option.textContent = name;
-    select.appendChild(option);
+  const groups = new Map();
+  for (const asset of listAssets('criaturas')) {
+    const label = asset.rotulo.split(' › ').pop();
+    if (!groups.has(label)) {
+      const optgroup = document.createElement('optgroup');
+      optgroup.label = label;
+      groups.set(label, optgroup);
+      select.appendChild(optgroup);
+    }
+    groups.get(label).appendChild(new Option(displayName(asset.id), asset.id));
   }
-  if (hasCreatureType(current)) select.value = current;
+  if (getAsset(current)) select.value = current;
 }
 
 document.getElementById('enemyType').onchange = (evt) => {
-  document.getElementById('enemyLvl').value = getCreatureType(evt.target.value).defaultLvl;
   state.enemyPaint = evt.target.value;
 };
 
@@ -70,8 +81,8 @@ document.getElementById('enemyConfirm').onclick = () => {
   layer[key].enemy = {
     type,
     lvl: parseInt(document.getElementById('enemyLvl').value || '1', 10),
-    // O tamanho do sprite vem do tipo; não é escolha de quem edita.
-    spriteSize: getCreatureType(type).spriteSize
+    // O tamanho do sprite vem da folha; não é escolha de quem edita.
+    spriteSize: (getAsset(type) || {}).quadro || 32
   };
   enemyForm.classList.remove('show');
   pendingEnemy = null;

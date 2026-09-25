@@ -1,10 +1,10 @@
 // js/controller/app.js
 
-import { FLOOR1_FILES, FLOOR2_FILES, OBJECT_DEFS, ITEM_CATALOG } from '../model/catalog.js';
 import { state, makeEmptyLayer } from '../model/state.js';
 import { preloadAll } from '../view/image-cache.js';
 import { scheduleRender } from '../view/canvas-renderer.js';
-import { renderLayerTabs, renderTools, onLayerChange, updateStats } from '../view/tools-panel.js';
+import { renderLayerTabs, renderTools, onLayerChange, updateStats, choosePaintDefaults } from '../view/tools-panel.js';
+import { loadAssets } from '../../../shared/assets.js';
 import { loadMapIntoState, saveMap, hasUnsavedChanges } from '../model/map-io.js';
 import { resetHistory, commitHistory, undo, redo } from '../model/history.js';
 import './canvas-input.js';
@@ -79,7 +79,14 @@ window.addEventListener('beforeunload', (evt) => {
   }
 });
 
-preloadAll([FLOOR1_FILES, FLOOR2_FILES, OBJECT_DEFS, ITEM_CATALOG]);
+// As folhas do gerador (gerador/saida) são tudo o que dá pra pintar.
+try {
+  const sprites = await loadAssets();
+  preloadAll(sprites.map(sprite => sprite.url));
+} catch (error) {
+  alert(`Não deu pra ler os sprites do gerador.\n\n${error.message}\n\nO servidor (init-server.bat) está rodando?`);
+}
+choosePaintDefaults();
 
 refreshCreatureOptions();
 

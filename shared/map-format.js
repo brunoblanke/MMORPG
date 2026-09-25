@@ -1,11 +1,12 @@
 // shared/map-format.js
 
-import { ITEM_CATALOG } from './catalog.js';
+import { isFloorType, isHoleType, isStairsType, isItemType, objectProps } from './assets.js';
 import { getStairTarget } from './stairs.js';
 import { borderEntryType, parseBorderType } from './floor-borders.js';
 
 // Versão 2: as bordas dos pisos vêm gravadas (shared/floor-borders.js).
-export const MAP_FORMAT_VERSION = 2;
+// Versão 3: os tipos são as folhas do gerador (shared/assets.js).
+export const MAP_FORMAT_VERSION = 3;
 
 // ================================================================================================================================================================================================================================================
 // addFloorToCell
@@ -46,10 +47,9 @@ export function addFloorToCell(cell, type, seq = null) {
 export function restackItems(objects) {
   let height = 0;
   for (const obj of objects) {
-    const def = ITEM_CATALOG[obj.type];
-    if (!def) continue;
+    if (!isItemType(obj.type)) continue;
     obj.step = height;
-    if (def.hasVolume) height++;
+    if (objectProps(obj.type).hasVolume) height++;
   }
 }
 
@@ -107,8 +107,7 @@ export function collectObjectDescriptors(mapData) {
 
 export function collectEnemyDescriptors(mapData) {
   return (mapData.enemyData || []).map(([x, y, z, lvl, spriteSize, type]) => ({
-    x, y, z, lvl, spriteSize,
-    type: type || 'Cave Rat'
+    x, y, z, lvl, spriteSize, type
   }));
 }
 
@@ -145,7 +144,7 @@ export function serializeMapFromLayers(layerOrder, layers, GRID) {
         }
         // Buraco é um item sobre o chão: vem antes dos objetos (em geral ord 1).
         if (cell.hole) {
-          objetosData.push(['Hole', x, y, z, 0, false, false, false]);
+          objetosData.push([cell.hole, x, y, z, 0, false, false, false]);
         }
 
         // Bordas: sobre os pisos, na ordem em que ficam empilhadas.
@@ -155,21 +154,20 @@ export function serializeMapFromLayers(layerOrder, layers, GRID) {
 
         restackItems(cell.objects);
         cell.objects.forEach((obj) => {
-          if (obj.type === 'Stairs') {
+          if (isStairsType(obj.type)) {
             // Destino gravado só pra referência: o jogo sempre recalcula (shared/stairs.js).
             const target = getStairTarget(x, y, z);
-            transicoesData.push(['Stairs', x, y, z, 'up', target.x, target.y]);
-          } else if (ITEM_CATALOG[obj.type]) {
-            const def = ITEM_CATALOG[obj.type];
-            objetosData.push([obj.type, x, y, z, obj.step || 0, def.movable, def.hasVolume, def.blocksMovement]);
+            transicoesData.push([obj.type, x, y, z, 'up', target.x, target.y]);
           } else {
-            const isCorner = obj.type === 'Wall-XY' || obj.type === 'Wall-YX';
-            objetosData.push([obj.type, x, y, z, 0, false, !isCorner, true]);
+            // Paredes e objetos: o comportamento vai gravado (o servidor não lê as folhas).
+            const props = objectProps(obj.type);
+            const step = isItemType(obj.type) ? obj.step || 0 : 0;
+            objetosData.push([obj.type, x, y, z, step, props.movable, props.hasVolume, props.blocksMovement]);
           }
         });
 
         if (cell.enemy) {
-          enemyData.push([x, y, z, cell.enemy.lvl, cell.enemy.spriteSize, cell.enemy.type || 'Cave Rat']);
+          enemyData.push([x, y, z, cell.enemy.lvl, cell.enemy.spriteSize, cell.enemy.type]);
         }
 
         if (cell.spawn && !spawn) {
@@ -193,7 +191,7 @@ function makeEmptyLayerCells(GRID) {
   const cells = {};
   for (let y = 0; y < GRID; y++) {
     for (let x = 0; x < GRID; x++) {
-      cells[`${x},${y}`] = { floor: null, floorTop: null, hole: false, borders: [], objects: [], enemy: null, spawn: false, safe: false };
+      cells[`${x},${y}`] = { floor: null, floorTop: null, hole: null, borders: [], objects: [], enemy: null, spawn: false, safe: false };
     }
   }
   return cells;
@@ -227,12 +225,12 @@ export function buildLayersFromMapData(mapData, GRID) {
     if (border) {
       cell.borders.push(border);
       stats.border++;
-    } else if (type === 'Floor' || type === 'Floor2') {
+    } else if (isFloorType(type)) {
       // Mesmo fallback do jogo (collectObjectDescriptors): sem seq, vale a ordem no arquivo.
       if (addFloorToCell(cell, type, Number.isFinite(seq) ? seq : index + 1)) stats.floor++;
-    } else if (type === 'Hole') {
-      cell.hole = true;
-    } else if (ITEM_CATALOG[type]) {
+    } else if (isHoleType(type)) {
+      cell.hole = type;
+    } else if (isItemType(type)) {
       cell.objects.push({ type, step: step || 0 });
       stats.item++;
     } else {
@@ -242,17 +240,17 @@ export function buildLayersFromMapData(mapData, GRID) {
   });
 
   (mapData.transicoesData || []).forEach((entry) => {
-    const [, x, y, z] = entry;
+    const [type, x, y, z] = entry;
     if (!inRange(x, y)) { stats.outOfRange++; return; }
     ensureLayer(z);
-    layers[z][`${x},${y}`].objects.push({ type: 'Stairs' });
+    layers[z][`${x},${y}`].objects.push({ type });
     stats.stairs++;
   });
 
   (mapData.enemyData || []).forEach(([x, y, z, lvl, spriteSize, type]) => {
     if (!inRange(x, y)) { stats.outOfRange++; return; }
     ensureLayer(z);
-    layers[z][`${x},${y}`].enemy = { type: type || 'Cave Rat', lvl, spriteSize };
+    layers[z][`${x},${y}`].enemy = { type, lvl, spriteSize };
     stats.enemy++;
   });
 

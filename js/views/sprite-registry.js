@@ -2,144 +2,102 @@
 
 import { CONFIG } from '../config.js';
 import { SpriteSheet } from '../../shared/sprite-sheet.js';
-import { FLOOR1_FILES, FLOOR2_FILES, OBJECT_DEFS, ITEM_CATALOG, CREATURE_TYPES, PLAYER_SPRITE as PLAYER_DEF, PLAYER_SPRITES, DEFAULT_GENDER } from '../../shared/catalog.js';
+import { PLAYER_SPRITES, DEFAULT_GENDER } from '../../shared/catalog.js';
 import { ANIMATION_CYCLE_MS } from '../../shared/constants.js';
+import { getAsset, objectIdType, spriteFrame, listAssets } from '../../shared/assets.js';
 
-const PLAYER_SPRITE = `img/${PLAYER_DEF.file}`;
-const PLAYER_CORPSE_SPRITE = 'img/Dead-Human.png';
-const FLOOR_SPRITE = 'img/Piso.png';
-const COLLISION_SPRITE = 'img/Parede-X.png';
+// Sprites do jogo: as folhas do gerador (shared/assets.js), recortadas peça a
+// peça conforme aparecem. O player usa a folha de criatura do gênero dele
+// (PLAYER_SPRITES).
+
+const CORPSE_ROW = 4;
 
 // ================================================================================================================================================================================================================================================
 // getSpritePaths
+// Tudo que precisa estar carregado antes do jogo começar (chamar depois de loadAssets).
 
 export function getSpritePaths() {
-  return [
-    PLAYER_SPRITE,
-    ...Object.values(PLAYER_SPRITES).map(file => `img/${file}`),
-    PLAYER_CORPSE_SPRITE,
-    FLOOR_SPRITE,
-    COLLISION_SPRITE,
-    ...Object.values(CREATURE_TYPES).flatMap(type => [`img/${type.file}`, `img/${type.corpse}`]),
-    ...Object.values(FLOOR1_FILES).map(file => `img/${file}`),
-    ...Object.values(FLOOR2_FILES).map(file => `img/${file}`),
-    ...Object.values(OBJECT_DEFS).map(def => `img/${def.file}`),
-    ...Object.values(ITEM_CATALOG).map(def => `img/${def.file}`)
-  ];
+  return ['pisos', 'paredes', 'objetos', 'criaturas'].flatMap(tool => listAssets(tool).map(asset => asset.url));
+}
+
+// ================================================================================================================================================================================================================================================
+// isSheetReady
+// A imagem da folha carregou (imagem quebrada não pode ir pro canvas).
+
+export function isSheetReady(sheet) {
+  return !!sheet && sheet.image.complete && sheet.image.naturalWidth > 0;
 }
 
 export class SpriteRegistry {
   constructor() {
-    const walkFrames = CONFIG.playerSpriteWalkFrames + 1;
-    const directions = CONFIG.playerSpriteDirections;
-    const corpseFrames = CONFIG.corpseFrameCount || 3;
-
-    this.playerSprite = new SpriteSheet(
-      PLAYER_SPRITE,
-      CONFIG.playerSpriteFrameWidth,
-      CONFIG.playerSpriteFrameHeight,
-      walkFrames,
-      directions
-    );
-
-    this.playerSpritesByGender = {};
-    for (const [gender, file] of Object.entries(PLAYER_SPRITES)) {
-      this.playerSpritesByGender[gender] = new SpriteSheet(
-        `img/${file}`,
-        CONFIG.playerSpriteFrameWidth,
-        CONFIG.playerSpriteFrameHeight,
-        walkFrames,
-        directions
-      );
-    }
-
-    // Sprites de criatura indexados pelo TIPO (nome); o lvl não influencia o visual.
-    this.enemySpritesByType = {};
-    this.playerCorpseSprite = new SpriteSheet(PLAYER_CORPSE_SPRITE, 32, 32, corpseFrames, ['idle']);
-    this.corpseSpritesByType = {};
-    for (const [name, type] of Object.entries(CREATURE_TYPES)) {
-      this.enemySpritesByType[name] = new SpriteSheet(`img/${type.file}`, type.spriteSize, type.spriteSize, walkFrames, directions);
-      this.corpseSpritesByType[name] = new SpriteSheet(`img/${type.corpse}`, type.corpseSize, type.corpseSize, corpseFrames, ['idle']);
-    }
-
-    const objW = CONFIG.objectSpriteFrameWidth || 32;
-    const objH = CONFIG.objectSpriteFrameHeight || 32;
-    this.objectSpriteSheets = {};
-
-    this.objectSpriteSheets['Floor'] = new SpriteSheet(FLOOR_SPRITE, objW, objH, 1, ['idle']);
-
-    for (const [variant, filename] of Object.entries(FLOOR1_FILES)) {
-      this.objectSpriteSheets[`Floor_${variant}`] = new SpriteSheet(`img/${filename}`, objW, objH, 1, ['idle']);
-    }
-
-    for (const [variant, filename] of Object.entries(FLOOR2_FILES)) {
-      this.objectSpriteSheets[`Floor2_${variant}`] = new SpriteSheet(`img/${filename}`, objW, objH, 1, ['idle']);
-    }
-
-    this.objectSpriteSheets['collision'] = new SpriteSheet(COLLISION_SPRITE, 64, 64, 1, ['idle']);
-
-    for (const [id, def] of Object.entries(OBJECT_DEFS)) {
-      this.objectSpriteSheets[id] = this.createAnimatedSheet(`img/${def.file}`, def.frameW, def.frameH, def.frames);
-    }
-
-    for (const [id, def] of Object.entries(ITEM_CATALOG)) {
-      this.objectSpriteSheets[id] = this.createAnimatedSheet(`img/${def.file}`, objW, objH, def.frames);
-    }
-  }
-
-  // ================================================================================================================================================================================================================================================
-  // createAnimatedSheet
-
-  createAnimatedSheet(src, frameW, frameH, frames) {
-    const sheet = new SpriteSheet(src, frameW, frameH, frames, ['idle']);
-    if (frames > 1) sheet._frameDuration = ANIMATION_CYCLE_MS / frames;
-    return sheet;
+    this.objectSpriteSheets = new Map();
+    this.enemySpritesByType = new Map();
+    this.corpseSpritesByType = new Map();
   }
 
   // ================================================================================================================================================================================================================================================
   // getObjectSheet
+  // Peça de piso, borda, parede ou objeto pelo id do objeto ('<tipo>_<n>').
 
   getObjectSheet(objId) {
     if (!objId) return null;
+    const type = objectIdType(objId);
+    if (this.objectSpriteSheets.has(type)) return this.objectSpriteSheets.get(type);
 
-    if (this.objectSpriteSheets[objId]) return this.objectSpriteSheets[objId];
-
-    let baseId = objId;
-    const parts = baseId.split('_');
-    if (parts.length > 1) {
-      const lastPart = parts[parts.length - 1];
-      if (!isNaN(lastPart)) {
-        baseId = parts.slice(0, -1).join('_');
-      }
+    const frame = spriteFrame(type);
+    let sheet = null;
+    if (frame) {
+      sheet = new SpriteSheet(frame.url, frame.size, frame.size, frame.frames, ['idle'], { x: frame.x, y: frame.y });
+      if (frame.frames > 1) sheet._frameDuration = ANIMATION_CYCLE_MS / frame.frames;
     }
-
-    if (this.objectSpriteSheets[baseId]) return this.objectSpriteSheets[baseId];
-    return null;
+    this.objectSpriteSheets.set(type, sheet);
+    return sheet;
   }
 
   // ================================================================================================================================================================================================================================================
   // getPlayerSheet
-  // Sprite do gênero do player; se a imagem dele não carregou, o padrão.
+  // Folha do gênero do player; sem ela, a do gênero padrão (ou null).
 
   getPlayerSheet(gender) {
-    const sheet = this.playerSpritesByGender[gender];
-    if (sheet && sheet.image.complete && sheet.image.naturalWidth > 0) return sheet;
-    return this.playerSpritesByGender[DEFAULT_GENDER] || this.playerSprite;
+    const sheet = this.getEnemySheet(PLAYER_SPRITES[gender] || PLAYER_SPRITES[DEFAULT_GENDER]);
+    return isSheetReady(sheet) ? sheet : this.getEnemySheet(PLAYER_SPRITES[DEFAULT_GENDER]);
   }
 
   // ================================================================================================================================================================================================================================================
   // getEnemySheet
+  // Folha da criatura: uma linha por direção (sul, norte, leste, oeste).
 
   getEnemySheet(creature) {
-    return this.enemySpritesByType[creature] || null;
+    if (this.enemySpritesByType.has(creature)) return this.enemySpritesByType.get(creature);
+    const asset = getAsset(creature);
+    const sheet = asset ? new SpriteSheet(asset.url, asset.quadro, asset.quadro, asset.quadros, CONFIG.playerSpriteDirections) : null;
+    this.enemySpritesByType.set(creature, sheet);
+    return sheet;
   }
 
   // ================================================================================================================================================================================================================================================
   // getCorpseSheet
+  // Cadáver: a 5ª linha da folha da criatura (fresco, apodrecendo, ossos).
 
   getCorpseSheet(corpseData) {
     if (!corpseData) return null;
-    if (corpseData.isPlayer) return this.playerCorpseSprite;
-    return this.corpseSpritesByType[corpseData.creature] || null;
+    const creature = corpseData.isPlayer ? PLAYER_SPRITES[DEFAULT_GENDER] : corpseData.creature;
+    if (this.corpseSpritesByType.has(creature)) return this.corpseSpritesByType.get(creature);
+    const asset = getAsset(creature);
+    const frames = CONFIG.corpseFrameCount || 3;
+    const sheet = asset && asset.cadaver
+      ? new SpriteSheet(asset.url, asset.quadro, asset.quadro, frames, ['idle'], { x: 0, y: CORPSE_ROW * asset.quadro })
+      : null;
+    this.corpseSpritesByType.set(creature, sheet);
+    return sheet;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // getCreatureSize
+  // Tamanho do quadro da criatura (32 ou 64).
+
+  getCreatureSize(creature) {
+    const asset = getAsset(creature);
+    return asset ? asset.quadro : 32;
   }
 }

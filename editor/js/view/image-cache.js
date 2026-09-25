@@ -15,12 +15,14 @@ export function setImageUpdateCallback(cb) {
 
 // ================================================================================================================================================================================================================================================
 // loadImage
+// Caminho absoluto ('/gerador/saida/…') ou relativo a img/.
 
 export function loadImage(relPath) {
-  const cached = getCachedImage(IMG_BASE + relPath);
+  const url = relPath.startsWith('/') ? relPath : IMG_BASE + relPath;
+  const cached = getCachedImage(url);
   if (cached) return cached;
 
-  const entry = loadImageShared(IMG_BASE + relPath);
+  const entry = loadImageShared(url);
   entry.promise
     .then(() => onUpdate())
     .catch(() => {
@@ -34,13 +36,8 @@ export function loadImage(relPath) {
 // ================================================================================================================================================================================================================================================
 // preloadAll
 
-export function preloadAll(defsList) {
-  defsList.forEach(defs => {
-    Object.values(defs).forEach(entry => {
-      const file = typeof entry === 'string' ? entry : entry.file;
-      loadImage(file);
-    });
-  });
+export function preloadAll(paths) {
+  paths.forEach(path => loadImage(path));
 }
 
 // ================================================================================================================================================================================================================================================

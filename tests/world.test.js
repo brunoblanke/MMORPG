@@ -9,7 +9,7 @@ import { World } from '../js/core/world.js';
 
 function makeWorld() {
   const world = new World(20, 20);
-  const floor = { id: 'Floor_1', x: 5, y: 5, z: 0, floorType: 'Floor' };
+  const floor = { id: 'estrutura/pisos/teste#meio-1_1', x: 5, y: 5, z: 0, floorType: 'estrutura/pisos/teste' };
   const wall = { id: 'Parede-X_1', x: 6, y: 5, z: 0, blocksMovement: true, inStack: true };
   const box = { id: 'Parcel_1', x: 5, y: 5, z: 0, hasVolume: true, step: 0, inStack: true };
   world.load([floor, wall, box]);

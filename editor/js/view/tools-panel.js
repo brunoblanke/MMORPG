@@ -1,11 +1,11 @@
 // js/view/tools-panel.js
 
-import { IMG_BASE } from '../config.js';
-import { FLOOR1_FILES, FLOOR2_FILES, OBJECT_DEFS, ITEM_CATALOG } from '../model/catalog.js';
 import { state, TOOLS } from '../model/state.js';
 import { FLOOR_MIN, FLOOR_MAX, GROUND_FLOOR } from '../../../shared/constants.js';
 import { scheduleRender } from './canvas-renderer.js';
 import { BORDER_VARIANTS } from '../../../shared/floor-borders.js';
+import { listAssets, pieceType, splitType, displayName, isStairsType, isHoleType, isItemType, isWallType, WALL_PIECES, WALL_PIECE_NAMES } from '../../../shared/assets.js';
+import { setThumb } from './sprite-thumb.js';
 
 // ================================================================================================================================================================================================================================================
 // renderLayerTabs
@@ -73,6 +73,118 @@ export function onLayerChange() {
 }
 
 // ================================================================================================================================================================================================================================================
+// choosePaintDefaults
+// Cada ferramenta começa com a primeira folha que tiver (depois de loadAssets).
+
+export function choosePaintDefaults() {
+  const floors = listAssets('pisos');
+  const walls = listAssets('paredes');
+  const first = (list) => (list[0] ? list[0].id : null);
+  if (!state.floorPaint) state.floorPaint = first(floors);
+  if (!state.wallPaint && walls[0]) state.wallPaint = pieceType(walls[0].id, wallPieces(walls[0])[0]);
+  if (!state.stairsPaint) state.stairsPaint = first(listAssets('objetos', a => isStairsType(a.id)));
+  if (!state.holePaint) state.holePaint = first(listAssets('objetos', a => isHoleType(a.id)));
+  if (!state.itemPaint) state.itemPaint = first(listAssets('objetos', a => isItemType(a.id)));
+  if (!state.enemyPaint) state.enemyPaint = first(listAssets('criaturas'));
+  if (!state.borderPaint && floors[0]) state.borderPaint = { type: floors[0].id, variant: 'n' };
+}
+
+// ================================================================================================================================================================================================================================================
+// wallPieces
+// Peças que a folha de parede tem, na ordem da folha.
+
+function wallPieces(asset) {
+  return WALL_PIECES.filter(piece => asset.pecas.includes(piece));
+}
+
+// ================================================================================================================================================================================================================================================
+// paintThumbType
+// A peça que representa o que a ferramenta pinta agora (miniatura), ou null.
+
+function paintThumbType(tool) {
+  if (tool.id === 'floor') return state.floorPaint && pieceType(state.floorPaint, 'meio-1');
+  if (tool.id === 'border' || tool.id === 'border-eraser') return state.borderPaint && pieceType(state.borderPaint.type, state.borderPaint.variant);
+  return tool.paint ? state[tool.paint] : null;
+}
+
+// ================================================================================================================================================================================================================================================
+// paintLabel
+// Nome curto do que a ferramenta pinta (ao lado do botão).
+
+function paintLabel(tool) {
+  const value = state[tool.paint];
+  if (!value) return 'nenhum';
+  if (tool.id === 'border') return `${displayName(value.type)} ${value.variant}`;
+  if (tool.id === 'wall') return WALL_PIECE_NAMES[splitType(value).piece] || '';
+  return displayName(value);
+}
+
+// ================================================================================================================================================================================================================================================
+// accordionGroups
+// O que a lista da ferramenta mostra: [{ title, compact, options: [{ value,
+// thumb, label }] }] e o texto pra quando não há folha.
+
+function accordionGroups(tool) {
+  const byFolder = (assets, option) => {
+    const groups = new Map();
+    for (const asset of assets) {
+      if (!groups.has(asset.rotulo)) groups.set(asset.rotulo, []);
+      groups.get(asset.rotulo).push(option(asset));
+    }
+    return [...groups].map(([title, options]) => ({ title, compact: false, options }));
+  };
+  const simple = (asset) => ({ value: asset.id, thumb: asset.id, label: displayName(asset.id) });
+
+  if (tool.id === 'floor') {
+    return { empty: 'Nenhum piso gerado (Estrutura › Pisos).', groups: byFolder(listAssets('pisos'), asset => ({ value: asset.id, thumb: pieceType(asset.id, 'meio-1'), label: displayName(asset.id) })) };
+  }
+  if (tool.id === 'wall') {
+    return {
+      empty: 'Nenhuma parede gerada (Estrutura › Paredes ou Cercas).',
+      groups: listAssets('paredes').map(asset => ({
+        title: `${displayName(asset.id)} · ${asset.rotulo.split(' › ').pop()}`,
+        compact: true,
+        options: wallPieces(asset).map(piece => ({ value: pieceType(asset.id, piece), thumb: pieceType(asset.id, piece), label: WALL_PIECE_NAMES[piece] }))
+      }))
+    };
+  }
+  if (tool.id === 'border') {
+    return {
+      empty: 'Nenhum piso gerado (Estrutura › Pisos).',
+      groups: listAssets('pisos').map(asset => ({
+        title: displayName(asset.id),
+        compact: true,
+        options: BORDER_VARIANTS.map(variant => ({ value: pieceType(asset.id, variant), thumb: pieceType(asset.id, variant), label: variant }))
+      }))
+    };
+  }
+  if (tool.id === 'stairs') return { empty: 'Nenhuma escada gerada (Estrutura › Escadas).', groups: byFolder(listAssets('objetos', a => isStairsType(a.id)), simple) };
+  if (tool.id === 'hole') return { empty: 'Nenhuma entrada gerada (Estrutura › Entradas).', groups: byFolder(listAssets('objetos', a => isHoleType(a.id)), simple) };
+  if (tool.id === 'item') return { empty: 'Nenhum objeto gerado.', groups: byFolder(listAssets('objetos', a => isItemType(a.id)), simple) };
+  return { empty: '', groups: [] };
+}
+
+// ================================================================================================================================================================================================================================================
+// currentValue / setValue
+// O que está escolhido na ferramenta, no formato das opções ('<folha>' ou
+// '<folha>#<peça>').
+
+function currentValue(tool) {
+  const value = state[tool.paint];
+  if (tool.id === 'border') return value ? pieceType(value.type, value.variant) : null;
+  return value;
+}
+
+function setValue(tool, value) {
+  if (tool.id === 'border') {
+    const { asset, piece } = splitType(value);
+    state.borderPaint = { type: asset, variant: piece };
+  } else {
+    state[tool.paint] = value;
+  }
+}
+
+// ================================================================================================================================================================================================================================================
 // renderTools
 
 export function renderTools() {
@@ -83,19 +195,13 @@ export function renderTools() {
     btn.className = 'tool-btn' + (t.id === state.tool ? ' active' : '');
     const swatch = document.createElement('div');
     swatch.className = 'tool-swatch';
-    if (t.id === 'floor') {
-      swatch.style.backgroundImage = `url(${IMG_BASE}${(state.floorPaint === 'Floor2' ? FLOOR2_FILES : FLOOR1_FILES)['a']})`;
-    } else if (t.id === 'item') {
-      swatch.style.backgroundImage = `url(${IMG_BASE}${ITEM_CATALOG[state.itemPaint].file})`;
-      swatch.style.backgroundSize = 'cover';
-    } else if (t.id === 'border') {
-      swatch.style.backgroundImage = `url(${IMG_BASE}${borderFile(state.borderPaint)})`;
-      swatch.style.backgroundSize = 'cover';
-    } else if (t.id === 'border-eraser') {
-      swatch.style.backgroundImage = `url(${IMG_BASE}${borderFile({ type: 'Floor', variant: 'n' })})`;
-      swatch.style.backgroundSize = 'cover';
-      swatch.style.opacity = '0.45';
-      swatch.style.outline = '1px dashed #e2574c';
+    const thumbType = paintThumbType(t);
+    if (thumbType) {
+      setThumb(swatch, thumbType, 20);
+      if (t.id === 'border-eraser') {
+        swatch.style.opacity = '0.45';
+        swatch.style.outline = '1px dashed #e2574c';
+      }
     } else if (t.id === 'enemy') {
       swatch.style.background = '#c0392b';
       swatch.style.borderRadius = '50%';
@@ -110,178 +216,77 @@ export function renderTools() {
     } else if (t.id === 'safe') {
       swatch.style.background = 'rgba(46, 204, 113, 0.35)';
       swatch.style.border = '1px solid rgba(46, 204, 113, 0.9)';
-    } else if (t.id === 'eraser') {
+    } else {
       swatch.style.background = '#2a2f3a';
       swatch.style.border = '1px dashed #555';
-    } else if (t.obj) {
-      const def = OBJECT_DEFS[t.obj];
-      swatch.style.backgroundImage = `url(${IMG_BASE}${def.file})`;
-      if (def.frames > 1) {
-        swatch.style.backgroundSize = `${def.frames * 100}% 100%`;
-        swatch.style.backgroundPosition = '0 0';
-      } else {
-        swatch.style.backgroundSize = 'cover';
-      }
     }
     const label = document.createElement('span');
     label.textContent = t.label;
     btn.appendChild(swatch);
     btn.appendChild(label);
 
-    if (t.id === 'floor') {
+    if (t.paint) {
       const sub = document.createElement('span');
       sub.className = 'tool-sub';
-      sub.textContent = state.floorPaint === 'Floor2' ? 'Piso 2' : 'Piso 1';
-      btn.appendChild(sub);
-    }
-
-    if (t.id === 'item') {
-      const sub = document.createElement('span');
-      sub.className = 'tool-sub';
-      sub.textContent = ITEM_CATALOG[state.itemPaint].label;
-      btn.appendChild(sub);
-    }
-
-    if (t.id === 'border') {
-      const sub = document.createElement('span');
-      sub.className = 'tool-sub';
-      sub.textContent = `${state.borderPaint.type === 'Floor2' ? 'Piso 2' : 'Piso 1'} ${state.borderPaint.variant}`;
+      sub.textContent = paintLabel(t);
       btn.appendChild(sub);
     }
 
     btn.onclick = () => {
-      if (t.id === 'floor') {
-        state.floorAccordionOpen = !state.floorAccordionOpen;
-        state.itemAccordionOpen = false;
-        state.borderAccordionOpen = false;
-        state.tool = 'floor';
-        renderTools();
-        return;
-      }
-      if (t.id === 'item') {
-        state.itemAccordionOpen = !state.itemAccordionOpen;
-        state.floorAccordionOpen = false;
-        state.borderAccordionOpen = false;
-        state.tool = 'item';
-        renderTools();
-        return;
-      }
-      if (t.id === 'border') {
-        state.borderAccordionOpen = !state.borderAccordionOpen;
-        state.floorAccordionOpen = false;
-        state.itemAccordionOpen = false;
-        state.tool = 'border';
-        renderTools();
-        return;
-      }
+      state.openAccordion = t.paint && state.openAccordion !== t.id ? t.id : null;
       state.tool = t.id;
-      state.floorAccordionOpen = false;
-      state.itemAccordionOpen = false;
-      state.borderAccordionOpen = false;
       renderTools();
     };
     wrap.appendChild(btn);
 
-    if (t.id === 'floor' && state.floorAccordionOpen) {
-      wrap.appendChild(buildFloorAccordion());
-    }
-    if (t.id === 'item' && state.itemAccordionOpen) {
-      wrap.appendChild(buildItemAccordion());
-    }
-    if (t.id === 'border' && state.borderAccordionOpen) {
-      wrap.appendChild(buildBorderAccordion());
-    }
+    if (t.paint && state.openAccordion === t.id) wrap.appendChild(buildAccordion(t));
   });
 }
 
 // ================================================================================================================================================================================================================================================
-// buildFloorAccordion
+// buildAccordion
+// A lista da ferramenta: folhas (ou peças) agrupadas por pasta/folha.
 
-function buildFloorAccordion() {
+function buildAccordion(tool) {
   const acc = document.createElement('div');
   acc.className = 'tool-accordion show';
-  [['Floor', 'Piso 1'], ['Floor2', 'Piso 2']].forEach(([type, label]) => {
-    const opt = document.createElement('div');
-    opt.className = 'floor-opt' + (state.floorPaint === type ? ' selected' : '');
-    const thumb = document.createElement('div');
-    thumb.className = 'thumb';
-    thumb.style.backgroundImage = `url(${IMG_BASE}${(type === 'Floor2' ? FLOOR2_FILES : FLOOR1_FILES)['a']})`;
-    const span = document.createElement('span');
-    span.textContent = label;
-    opt.appendChild(thumb);
-    opt.appendChild(span);
-    opt.onclick = () => {
-      state.floorPaint = type;
-      state.tool = 'floor';
-      renderTools();
-    };
-    acc.appendChild(opt);
-  });
-  return acc;
-}
-
-// ================================================================================================================================================================================================================================================
-// buildItemAccordion
-
-function buildItemAccordion() {
-  const acc = document.createElement('div');
-  acc.className = 'tool-accordion show';
-  Object.entries(ITEM_CATALOG).forEach(([type, def]) => {
-    const opt = document.createElement('div');
-    opt.className = 'floor-opt' + (type === state.itemPaint ? ' selected' : '');
-    const thumb = document.createElement('div');
-    thumb.className = 'thumb';
-    thumb.style.backgroundImage = `url(${IMG_BASE}${def.file})`;
-    thumb.style.backgroundSize = 'cover';
-    const span = document.createElement('span');
-    span.textContent = def.label;
-    opt.appendChild(thumb);
-    opt.appendChild(span);
-    opt.onclick = () => {
-      state.itemPaint = type;
-      state.tool = 'item';
-      renderTools();
-    };
-    acc.appendChild(opt);
-  });
-  return acc;
-}
-
-// ================================================================================================================================================================================================================================================
-// borderFile
-
-function borderFile(piece) {
-  return (piece.type === 'Floor2' ? FLOOR2_FILES : FLOOR1_FILES)[piece.variant];
-}
-
-// ================================================================================================================================================================================================================================================
-// buildBorderAccordion
-// As 12 peças de borda de cada piso, pra pôr à mão (lados, cantos de fora e
-// cantos de dentro).
-
-function buildBorderAccordion() {
-  const acc = document.createElement('div');
-  acc.className = 'tool-accordion show border-accordion';
-  [['Floor', 'Piso 1'], ['Floor2', 'Piso 2']].forEach(([type, label]) => {
+  const { empty, groups } = accordionGroups(tool);
+  if (!groups.length) {
+    const note = document.createElement('div');
+    note.className = 'accordion-empty';
+    note.textContent = `${empty} Gere no gerador de sprites.`;
+    acc.appendChild(note);
+    return acc;
+  }
+  const selected = currentValue(tool);
+  for (const group of groups) {
     const title = document.createElement('div');
     title.className = 'border-accordion-title';
-    title.textContent = label;
+    title.textContent = group.title;
     acc.appendChild(title);
-    for (const variant of BORDER_VARIANTS) {
-      const piece = { type, variant };
+    for (const option of group.options) {
       const opt = document.createElement('div');
-      const selected = state.borderPaint.type === type && state.borderPaint.variant === variant;
-      opt.className = 'border-opt' + (selected ? ' selected' : '');
-      opt.title = `${label} · ${variant}`;
-      opt.style.backgroundImage = `url(${IMG_BASE}${borderFile(piece)})`;
+      opt.title = option.label;
       opt.onclick = () => {
-        state.borderPaint = piece;
-        state.tool = 'border';
+        setValue(tool, option.value);
+        state.tool = tool.id;
         renderTools();
       };
+      if (group.compact) {
+        opt.className = 'border-opt' + (option.value === selected ? ' selected' : '');
+        setThumb(opt, option.thumb, 32);
+      } else {
+        opt.className = 'floor-opt' + (option.value === selected ? ' selected' : '');
+        const thumb = document.createElement('div');
+        thumb.className = 'thumb';
+        setThumb(thumb, option.thumb, 36);
+        const span = document.createElement('span');
+        span.textContent = option.label;
+        opt.append(thumb, span);
+      }
       acc.appendChild(opt);
     }
-  });
+  }
   return acc;
 }
 
@@ -305,9 +310,9 @@ export function updateStats() {
     if (c.hole) h++;
     if (c.enemy) cr++;
     c.objects.forEach(o => {
-      if (o.type === 'Stairs') s++;
-      else if (ITEM_CATALOG[o.type]) it++;
-      else w++;
+      if (isStairsType(o.type)) s++;
+      else if (isWallType(o.type)) w++;
+      else it++;
     });
   });
   document.getElementById('statFloor').textContent = f;

@@ -1,6 +1,7 @@
 // js/views/tile-tooltip.js
 
 import { getEntityLevel } from '../core/geometry.js';
+import { displayName } from '../../shared/assets.js';
 
 // ================================================================================================================================================================================================================================================
 // getTooltipLine
@@ -14,7 +15,7 @@ function getTooltipLine(obj) {
     if (obj.isPlayer) {
       label = 'PLAYER_CORPSE';
     } else {
-      label = `${obj.creature} (Morto)`;
+      label = `${displayName(obj.creature)} (Morto)`;
     }
   }
 

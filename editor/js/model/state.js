@@ -10,7 +10,7 @@ export function makeEmptyLayer() {
   const cells = {};
   for (let y = 0; y < GRID; y++) {
     for (let x = 0; x < GRID; x++) {
-      cells[`${x},${y}`] = { floor: null, floorTop: null, hole: false, borders: [], objects: [], enemy: null, spawn: false, safe: false };
+      cells[`${x},${y}`] = { floor: null, floorTop: null, hole: null, borders: [], objects: [], enemy: null, spawn: false, safe: false };
     }
   }
   return cells;
@@ -27,35 +27,39 @@ export function makeAllLayers(existing = {}) {
   return layers;
 }
 
+// O que cada ferramenta pinta é uma folha do gerador (shared/assets.js):
+// floorPaint/stairsPaint/holePaint/itemPaint são o id da folha, wallPaint é
+// '<folha>#<peça>' e borderPaint { type: folha do piso, variant }. Ficam null
+// até a lista das folhas chegar (choosePaintDefaults).
+
 export const state = {
   layers: makeAllLayers(),
   layerOrder: getAllFloors(),
   activeZ: GROUND_FLOOR,
   tool: 'floor',
-  floorPaint: 'Floor',
-  itemPaint: 'Parcel',
+  floorPaint: null,
+  wallPaint: null,
+  stairsPaint: null,
+  holePaint: null,
+  itemPaint: null,
   enemyPaint: null,
-  floorAccordionOpen: false,
-  itemAccordionOpen: false,
-  borderAccordionOpen: false,
+  borderPaint: null,
+  openAccordion: null,
   showBorders: true,
-  borderPaint: { type: 'Floor', variant: 'n' },
   painting: false,
   strokeTouched: new Set(),
   ghost: true
 };
 
+// paint: campo do state com o que a ferramenta pinta (as que têm lista).
 export const TOOLS = [
-  { id:'floor', label:'Piso', hasSub:true },
-  { id:'wall-x', label:'Parede X', obj:'Wall-X' },
-  { id:'wall-y', label:'Parede Y', obj:'Wall-Y' },
-  { id:'wall-xy', label:'Parede XY (canto)', obj:'Wall-XY' },
-  { id:'wall-yx', label:'Parede YX (canto)', obj:'Wall-YX' },
-  { id:'stairs', label:'Escada', obj:'Stairs' },
-  { id:'hole', label:'Buraco / vão', obj:'Hole' },
-  { id:'border', label:'Borda', hasSub:true },
+  { id:'floor', label:'Piso', paint:'floorPaint' },
+  { id:'wall', label:'Parede', paint:'wallPaint' },
+  { id:'stairs', label:'Escada', paint:'stairsPaint' },
+  { id:'hole', label:'Buraco / entrada', paint:'holePaint' },
+  { id:'border', label:'Borda', paint:'borderPaint' },
   { id:'border-eraser', label:'Tirar bordas' },
-  { id:'item', label:'Item', hasSub:true },
+  { id:'item', label:'Objeto', paint:'itemPaint' },
   { id:'enemy', label:'Criatura' },
   { id:'spawn', label:'Respawn do jogador' },
   { id:'safe', label:'Zona segura (liga/desliga)' },
