@@ -22,6 +22,7 @@ const app = express();
 app.use(express.json({ limit: '20mb' }));
 app.get('/api/catalogo', catalogo);
 app.get('/api/sprite/:id/:variacao', spriteDoItem);
+app.get('/api/bordas-sugeridas', bordasSugeridas);
 app.get('/api/projetos', listarProjetos);
 app.get('/api/projetos/:categoria/:nome', abrirProjeto);
 app.post('/api/salvar', salvar);
@@ -69,6 +70,19 @@ function spriteDoItem(req, res) {
     res.type('png').send(png);
   } catch (err) {
     res.sendStatus(500);
+  }
+}
+
+// ================================================================================================================================================================================================================================================
+// bordasSugeridas
+// ?chao=4526,4527 → { sugestao: { pecas, conjunto } } ou sugestao null.
+
+function bordasSugeridas(req, res) {
+  const ids = String(req.query.chao || '').split(',').map(n => parseInt(n, 10)).filter(Number.isInteger);
+  try {
+    res.json({ success: true, sugestao: ids.length ? arquivosTibia().sugerirBordas(ids) : null });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
   }
 }
 

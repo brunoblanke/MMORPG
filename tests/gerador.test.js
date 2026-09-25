@@ -47,3 +47,22 @@ test('gerador monta a folha da criatura: 4 direções × quadros', () => {
     fs.rmSync(dir, { recursive: true, force: true });
   }
 });
+
+test('gerador reconhece cada peça de borda pelo desenho, em qualquer ordem de conjunto', () => {
+  const assets = new TibiaAssets(CLIENT);
+  const byId = new Map(assets.conjuntosDeBorda().flat().map(peca => [peca.id, peca.chave]));
+  const pieces = (first) => Array.from({ length: 12 }, (_, i) => byId.get(first + i));
+  assert.deepEqual(pieces(4531), ['s', 'o', 'n', 'l', 'sl', 'so', 'nl', 'no', 'int-sl', 'int-so', 'int-nl', 'int-no']);
+  assert.deepEqual(pieces(1054), ['no', 'nl', 'so', 'sl', 'o', 'l', 'n', 's', 'int-no', 'int-nl', 'int-so', 'int-sl']);
+});
+
+test('gerador sugere as bordas que combinam com o chão, ou nenhuma', () => {
+  const assets = new TibiaAssets(CLIENT);
+  const grass = assets.sugerirBordas([4526, 4527, 4528, 4529]);
+  assert.deepEqual(grass.conjunto, [4531, 4542]);
+  assert.equal(grass.pecas.s, 4531);
+  assert.equal(grass.pecas['int-no'], 4542);
+  assert.deepEqual(assets.sugerirBordas([231]).conjunto, [4749, 4760]);
+  assert.equal(assets.sugerirBordas([4608]), null);
+  assert.equal(assets.sugerirBordas([99999]), null);
+});

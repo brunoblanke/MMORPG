@@ -8,6 +8,7 @@ const zlib = require('zlib');
 // pro gerador de sprites:
 //   - catálogo dos itens e criaturas, por categoria;
 //   - PNG de uma variação de um item (o gerador monta as folhas com eles);
+//   - sugestão do conjunto de borda que combina com um chão;
 //   - folha de criatura: uma linha por direção (sul, norte, leste, oeste) e
 //     os quadros (1º parado, depois andando).
 
@@ -27,6 +28,14 @@ const FLAG_DATA_BYTES = { 0: 2, 9: 2, 10: 2, 22: 4, 25: 4, 26: 2, 29: 2, 30: 2 }
 
 // Direções do jogo (linhas do sprite) → coluna de direção do Tibia (0 norte, 1 leste, 2 sul, 3 oeste).
 const DIRECTION_PATTERNS = [2, 0, 1, 3];
+
+// Borda: faixa de cada lado do sqm usada pra reconhecer a peça, quanto dela
+// precisa estar desenhada pro lado contar como "cheio", e a maior diferença
+// de cor (média RGB) pra um conjunto ainda combinar com o chão.
+const EDGE_BAND = 3;
+const EDGE_FULL = 0.75;
+const OUTER_CORNER_MAX_PIXELS = 600;
+const MAX_BORDER_COLOR_DISTANCE = 35;
 
 // Cores padrão da roupa (cabeça, corpo, pernas, pés) na paleta do Tibia.
 const DEFAULT_OUTFIT_COLORS = [78, 69, 58, 76];
@@ -91,6 +100,55 @@ class TibiaAssets {
     const png = gerarPng(quadro.pixels, quadro.largura, quadro.altura);
     this.thumbCache.set(chave, png);
     return png;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // sugerirBordas
+  // O conjunto de borda que combina com o chão (ids do meio): o de cor mais
+  // parecida, desempatando pelo número mais perto do chão (no Tibia o
+  // conjunto costuma vir logo depois dele). Devolve { pecas: { s: id, … },
+  // conjunto: [primeiro, último] } ou null se nenhum combinar.
+
+  sugerirBordas(chaoIds) {
+    const cores = chaoIds.map(id => this.things.item.get(id)).filter(Boolean).map(thing => corMedia(this.quadro(thing, {})));
+    if (!cores.length) return null;
+    const cor = [0, 1, 2].map(c => cores.reduce((soma, atual) => soma + atual[c], 0) / cores.length);
+
+    let melhor = null;
+    for (const conjunto of this.conjuntosDeBorda()) {
+      const diferenca = conjunto.reduce((soma, peca) => soma + distanciaDeCor(peca.cor, cor), 0) / conjunto.length;
+      const pontos = diferenca + Math.min(Math.abs(conjunto[0].id - chaoIds[0]), 2000) / 200;
+      if (diferenca <= MAX_BORDER_COLOR_DISTANCE && (!melhor || pontos < melhor.pontos)) melhor = { conjunto, pontos };
+    }
+    if (!melhor) return null;
+
+    const pecas = {};
+    for (const peca of melhor.conjunto) pecas[peca.chave] = peca.id;
+    return { pecas, conjunto: [melhor.conjunto[0].id, melhor.conjunto[melhor.conjunto.length - 1].id] };
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // conjuntosDeBorda
+  // Bordas em sequência de números, cada uma reconhecida pelo desenho (qual
+  // peça é); uma peça repetida começa outro conjunto. Só conjuntos com 8 ou
+  // mais peças diferentes contam. Calculado uma vez.
+
+  conjuntosDeBorda() {
+    if (this.cacheConjuntos) return this.cacheConjuntos;
+    const conjuntos = [];
+    for (const [id, thing] of this.things.item) {
+      if (categoriaDoItem(thing) !== 'border' || !this.temDesenho(thing)) continue;
+      const quadro = this.quadro(thing, {});
+      const chave = pecaDeBorda(quadro);
+      if (!chave) continue;
+      const peca = { id, chave, cor: corMedia(quadro) };
+      const atual = conjuntos[conjuntos.length - 1];
+      const continua = atual && id === atual[atual.length - 1].id + 1 && !atual.some(p => p.chave === chave);
+      if (continua) atual.push(peca);
+      else conjuntos.push([peca]);
+    }
+    this.cacheConjuntos = conjuntos.filter(conjunto => conjunto.length >= 8);
+    return this.cacheConjuntos;
   }
 
   // ================================================================================================================================================================================================================================================
@@ -262,6 +320,79 @@ function categoriaDoItem(thing) {
   if (temFlag(thing, FLAG.ON_BOTTOM)) return 'wall';
   if (temFlag(thing, FLAG.PICKUPABLE)) return 'item';
   return 'object';
+}
+
+// ================================================================================================================================================================================================================================================
+// sqmDoQuadro
+// Pixels do sqm principal do quadro (32 × 32 do canto de baixo à direita).
+
+function sqmDoQuadro(quadro, callback) {
+  for (let y = 0; y < SPRITE_SIZE; y++) {
+    for (let x = 0; x < SPRITE_SIZE; x++) {
+      const i = ((quadro.altura - SPRITE_SIZE + y) * quadro.largura + quadro.largura - SPRITE_SIZE + x) * 4;
+      if (quadro.pixels[i + 3]) callback(x, y, i);
+    }
+  }
+}
+
+// ================================================================================================================================================================================================================================================
+// corMedia
+// Cor média [r, g, b] dos pixels desenhados do sqm.
+
+function corMedia(quadro) {
+  const soma = [0, 0, 0];
+  let total = 0;
+  sqmDoQuadro(quadro, (x, y, i) => {
+    for (let c = 0; c < 3; c++) soma[c] += quadro.pixels[i + c];
+    total++;
+  });
+  return total ? soma.map(v => v / total) : [0, 0, 0];
+}
+
+// ================================================================================================================================================================================================================================================
+// distanciaDeCor
+
+function distanciaDeCor(a, b) {
+  return Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
+}
+
+// ================================================================================================================================================================================================================================================
+// pecaDeBorda
+// Qual peça de borda o desenho é, pelos lados do sqm que ele cobre:
+//   um lado cheio            → lado (faixa em cima = 's', à direita = 'o'…)
+//   dois lados vizinhos      → canto de dentro ('int-sl' = em cima e à esquerda…)
+//   nenhum lado, desenho pequeno num canto → canto de fora ('sl' = em cima à esquerda…)
+// Os nomes dizem onde a peça fica em relação ao piso. null se não der pra saber.
+
+function pecaDeBorda(quadro) {
+  const lados = { top: 0, bottom: 0, left: 0, right: 0 };
+  let total = 0;
+  let somaX = 0;
+  let somaY = 0;
+  sqmDoQuadro(quadro, (x, y) => {
+    total++;
+    somaX += x;
+    somaY += y;
+    if (y < EDGE_BAND) lados.top++;
+    if (y >= SPRITE_SIZE - EDGE_BAND) lados.bottom++;
+    if (x < EDGE_BAND) lados.left++;
+    if (x >= SPRITE_SIZE - EDGE_BAND) lados.right++;
+  });
+  if (!total) return null;
+
+  const cheio = (lado) => lados[lado] / (EDGE_BAND * SPRITE_SIZE) > EDGE_FULL;
+  const [T, B, L, R] = ['top', 'bottom', 'left', 'right'].map(cheio);
+  const assinatura = `${+T}${+B}${+L}${+R}`;
+  const porLados = {
+    '1010': 'int-sl', '1001': 'int-so', '0110': 'int-nl', '0101': 'int-no',
+    '1000': 's', '0001': 'o', '0100': 'n', '0010': 'l'
+  };
+  if (porLados[assinatura]) return porLados[assinatura];
+  if (assinatura !== '0000' || total > OUTER_CORNER_MAX_PIXELS) return null;
+
+  const emCima = somaY / total < SPRITE_SIZE / 2;
+  const aEsquerda = somaX / total < SPRITE_SIZE / 2;
+  return emCima ? (aEsquerda ? 'sl' : 'so') : (aEsquerda ? 'nl' : 'no');
 }
 
 // ================================================================================================================================================================================================================================================

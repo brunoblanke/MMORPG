@@ -28,6 +28,14 @@ export function spriteUrl(id, variation = 0) {
 }
 
 // ================================================================================================================================================================================================================================================
+// fetchBorderSuggestion
+// Conjunto de borda que combina com os chões do meio: { pecas, conjunto } ou null.
+
+export async function fetchBorderSuggestion(groundIds) {
+  return (await requestJson(`/api/bordas-sugeridas?chao=${groundIds.join(',')}`)).sugestao;
+}
+
+// ================================================================================================================================================================================================================================================
 // fetchProjects
 
 export async function fetchProjects() {

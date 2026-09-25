@@ -1,7 +1,7 @@
 // gerador/app/js/floors.js
 
-import { spriteUrl, fetchProjects, fetchProject, saveProject } from './api.js';
-import { itemCategory, setPickerTab } from './picker.js';
+import { spriteUrl, fetchProjects, fetchProject, saveProject, fetchBorderSuggestion } from './api.js';
+import { itemCategory } from './picker.js';
 
 // Folha de piso (128 × 128, 4 × 4 quadros de 32 px):
 //   linha 1  meio: as variações do piso cheio, lado a lado (até 4)
@@ -100,6 +100,10 @@ export function initFloors() {
     save();
   });
   document.getElementById('clearSlot').onclick = () => setSlot(floors.selected, null);
+  document.getElementById('suggestBorders').onclick = () => {
+    if (BORDER_KEYS.some(key => floors.slots[key]) && !window.confirm('Trocar as bordas atuais pela sugestão?')) return;
+    suggestBorders();
+  };
   document.getElementById('uploadPng').addEventListener('change', uploadPng);
   document.getElementById('newProject').onclick = () => {
     if (floors.dirty && !window.confirm('Descartar o que não foi salvo?')) return;
@@ -183,12 +187,11 @@ function diagram(floorCells) {
 
 // ================================================================================================================================================================================================================================================
 // selectSlot
-// Escolhe o espaço que o próximo sprite vai preencher; a lista da direita
-// abre na categoria que combina (chão pro meio, bordas pro resto).
+// Escolhe o espaço que o próximo sprite vai preencher (a lista da direita
+// fica na aba em que está).
 
 function selectSlot(key) {
   floors.selected = key;
-  setPickerTab(key.startsWith('meio') ? 'ground' : 'border');
   render();
 }
 
@@ -213,6 +216,7 @@ export function pickSprite(id, variation) {
   }
   floors.selected = group[Math.min(start + filled, group.length - 1)];
   render();
+  if (group === MIDDLE_KEYS && !BORDER_KEYS.some(key => floors.slots[key])) suggestBorders();
 }
 
 // ================================================================================================================================================================================================================================================
@@ -222,9 +226,38 @@ export function pickSprite(id, variation) {
 export function useAllVariations(id, total) {
   MIDDLE_KEYS.forEach((key, i) => setSlot(key, i < total ? { tibia: { id, variacao: i } } : null, false));
   floors.selected = BORDER_KEYS[0];
-  setPickerTab('border');
   render();
   if (total > MAX_VARIANTS) setStatus(`O item ${id} tem ${total} variações; a folha guarda as ${MAX_VARIANTS} primeiras.`);
+  if (!BORDER_KEYS.some(key => floors.slots[key])) suggestBorders();
+}
+
+// ================================================================================================================================================================================================================================================
+// suggestBorders
+// Preenche as 12 bordas com o conjunto do Tibia que combina com o meio (cor
+// parecida). Só usa os espaços do meio que vieram do Tibia.
+
+export async function suggestBorders() {
+  const groundIds = MIDDLE_KEYS.map(key => floors.slots[key]).filter(source => source && source.tibia).map(source => source.tibia.id);
+  if (!groundIds.length) {
+    setStatus('Pra sugerir bordas, preencha o meio com um chão do Tibia.', 'error');
+    return;
+  }
+  try {
+    const suggestion = await fetchBorderSuggestion(groundIds);
+    if (!suggestion) {
+      setStatus('Nenhum conjunto de borda do Tibia combina com esse chão. Escolha as bordas à mão ou envie PNGs.');
+      return;
+    }
+    for (const key of BORDER_KEYS) {
+      const id = suggestion.pecas[key];
+      setSlot(key, id ? { tibia: { id, variacao: 0 } } : null, false);
+    }
+    render();
+    const missing = BORDER_KEYS.filter(key => !suggestion.pecas[key]).length;
+    setStatus(`Bordas sugeridas: conjunto ${suggestion.conjunto[0]}–${suggestion.conjunto[1]}${missing ? ` (faltaram ${missing} peças)` : ''}. Troque o que quiser.`, 'ok');
+  } catch (error) {
+    setStatus(`Não deu pra sugerir bordas: ${error.message}`, 'error');
+  }
 }
 
 // ================================================================================================================================================================================================================================================
@@ -469,7 +502,6 @@ function openRecipe(recipe) {
   nameEl.value = floors.name;
   floors.selected = 'meio-1';
   floors.dirty = false;
-  setPickerTab('ground');
   setStatus(recipe.nome ? `Aberto: ${recipe.nome}` : '');
   render();
   refreshProjects();
