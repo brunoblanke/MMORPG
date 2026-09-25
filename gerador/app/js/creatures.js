@@ -267,11 +267,27 @@ function corpseImage(key) {
 }
 
 // ================================================================================================================================================================================================================================================
+// outfitSize
+// Tamanho do quadro da criatura: o da folha que veio do servidor (que já
+// cabe o deslocamento do Tibia) ou, enquanto carrega, o do catálogo.
+
+function outfitSize() {
+  if (!creatures.outfit) return 32;
+  const img = creatures.sheetImage;
+  return isReady(img) ? img.naturalHeight / 4 : creatures.outfit.size;
+}
+
+// ================================================================================================================================================================================================================================================
 // frameSize
-// Toda criatura (e cadáver) fica num quadro de 64 × 64.
+// Tamanho do quadro na folha: o maior entre a criatura e os cadáveres.
 
 function frameSize() {
-  return 64;
+  let size = outfitSize();
+  for (const stage of CORPSE_STAGES) {
+    const img = corpseImage(stage.key);
+    if (img) size = Math.max(size, img.naturalWidth > 32 || img.naturalHeight > 32 ? 64 : 32);
+  }
+  return size;
 }
 
 // ================================================================================================================================================================================================================================================
@@ -281,7 +297,7 @@ function frameSize() {
 function drawCreatureFrame(ctx, direction, frame, x, y, size) {
   const img = creatures.sheetImage;
   if (!isReady(img) || !creatures.outfit) return;
-  const own = creatures.outfit.size;
+  const own = outfitSize();
   ctx.drawImage(img, frame * own, direction * own, own, own, x + size - own, y + size - own, own, own);
 }
 
@@ -301,7 +317,7 @@ function render() {
 
   const outfit = creatures.outfit;
   infoEl.innerHTML = outfit
-    ? `<b>Criatura ${outfit.id}</b><br>${outfit.size} px · ${outfit.frames} quadros por direção${outfit.colors ? ' · roupa com cores' : ''}${outfit.addons ? ` · ${outfit.addons} addons` : ''}`
+    ? `<b>Criatura ${outfit.id}</b><br>${outfitSize()} px · ${outfit.frames} quadros por direção${outfit.colors ? ' · roupa com cores' : ''}${outfit.addons ? ` · ${outfit.addons} addons` : ''}`
     : 'Nenhuma criatura escolhida. Abra a aba Criaturas à direita.';
   const thumb = thumbCanvas.getContext('2d');
   thumb.clearRect(0, 0, 64, 64);

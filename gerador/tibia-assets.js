@@ -15,7 +15,6 @@ const zlib = require('zlib');
 //     os quadros (1º parado, depois andando).
 
 const SPRITE_SIZE = 32;
-const CREATURE_FRAME = 64;
 const ITEM_FIRST_ID = 100;
 
 // Propriedades do .dat 7.80–8.54: número → nome (e quantos bytes de dado seguem).
@@ -258,7 +257,7 @@ class TibiaAssets {
   // ================================================================================================================================================================================================================================================
   // folhaDeCriatura
   // PNG da criatura: uma linha por direção (sul, norte, leste, oeste) e os
-  // quadros lado a lado, cada um em 64 × 64 (toda criatura). Roupa de humano leva as
+  // quadros lado a lado, cada um em tamanho × tamanho. Roupa de humano leva as
   // cores (cabeça, corpo, pernas, pés) e os addons pedidos. O deslocamento do
   // Tibia (em geral 8 px pra cima e pra esquerda) já vem aplicado, pra
   // criatura ficar no lugar certo desenhada no canto de baixo à direita do sqm.
@@ -268,20 +267,28 @@ class TibiaAssets {
     const thing = this.things.outfit.get(id);
     if (!thing || !this.temDesenho(thing)) return null;
 
-    const tamanho = CREATURE_FRAME;
     const [dx, dy] = Array.isArray(thing.flags[FLAG.OFFSET]) ? thing.flags[FLAG.OFFSET] : [0, 0];
     const camadas = [0, ...addons.filter(addon => addon >= 1 && addon < thing.py)];
-    const folha = new Uint8Array(tamanho * thing.anim * tamanho * 4 * 4);
-
+    const quadros = [];
     DIRECTION_PATTERNS.forEach((pattern, linha) => {
       for (let anim = 0; anim < thing.anim; anim++) {
         for (const addon of camadas) {
-          const quadro = this.quadroCriatura(thing, Math.min(pattern, thing.px - 1), anim, cores, addon);
-          colar(folha, tamanho * thing.anim, quadro,
-            anim * tamanho + tamanho - quadro.largura - dx, linha * tamanho + tamanho - quadro.altura - dy);
+          quadros.push({ linha, anim, quadro: this.quadroCriatura(thing, Math.min(pattern, thing.px - 1), anim, cores, addon) });
         }
       }
     });
+
+    let alcance = Math.max(thing.w, thing.h) * SPRITE_SIZE;
+    for (const { quadro } of quadros) {
+      const [esquerda, topo] = cantoDoDesenho(quadro);
+      alcance = Math.max(alcance, quadro.largura + dx - esquerda, quadro.altura + dy - topo);
+    }
+    const tamanho = Math.ceil(alcance / SPRITE_SIZE) * SPRITE_SIZE;
+    const folha = new Uint8Array(tamanho * thing.anim * tamanho * 4 * 4);
+    for (const { linha, anim, quadro } of quadros) {
+      colar(folha, tamanho * thing.anim, quadro,
+        anim * tamanho + tamanho - quadro.largura - dx, linha * tamanho + tamanho - quadro.altura - dy);
+    }
 
     return { png: gerarPng(folha, tamanho * thing.anim, tamanho * 4), tamanho, quadros: thing.anim };
   }
@@ -574,6 +581,23 @@ function colar(folha, larguraFolha, quadro, x, y) {
       folha.set(quadro.pixels.subarray(origem, origem + 4), (fy * larguraFolha + fx) * 4);
     }
   }
+}
+
+// ================================================================================================================================================================================================================================================
+// cantoDoDesenho
+// [coluna, linha] do primeiro pixel visível à esquerda e no topo do quadro.
+
+function cantoDoDesenho(quadro) {
+  let esquerda = quadro.largura;
+  let topo = quadro.altura;
+  for (let linha = 0; linha < quadro.altura; linha++) {
+    for (let coluna = 0; coluna < quadro.largura; coluna++) {
+      if (!quadro.pixels[(linha * quadro.largura + coluna) * 4 + 3]) continue;
+      esquerda = Math.min(esquerda, coluna);
+      topo = Math.min(topo, linha);
+    }
+  }
+  return [esquerda, topo];
 }
 
 // ================================================================================================================================================================================================================================================
