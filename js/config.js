@@ -11,7 +11,7 @@ export const CONFIG = {
   patrolRadius: 4,
   detectionRadius: 7,
   attackCooldown: 1500,
-  targetLoseRange: 12,         // alvo mais longe que isso (ou em outro andar) é perdido
+  targetLoseRange: 25,         // alvo mais longe que isso (ou em outro andar) é perdido
   // Escalas globais (player e inimigos, sem mexer nos atributos por lvl):
   // 0.4 = 60% mais fraco / 60% mais lento.
   damageScale: 0.4,   // multiplica o dano de cada golpe
