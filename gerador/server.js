@@ -6,7 +6,7 @@ const path = require('path');
 const { TibiaAssets, paletaDeRoupa } = require('./tibia-assets.js');
 
 // Gerador de sprites: programa à parte do jogo e do editor. Mostra os sprites
-// do Tibia (tibia/780), monta folhas (pisos, criaturas) na tela e grava:
+// do Tibia (tibia/780), monta folhas (pisos, criaturas, paredes) na tela e grava:
 //   saida/<categoria>/<nome>.png      a folha pronta, no formato do jogo
 //   projetos/<categoria>/<nome>.json  a receita (de onde veio cada parte)
 
@@ -15,7 +15,7 @@ const PASTA_APP = path.join(__dirname, 'app');
 const PASTA_TIBIA = path.join(__dirname, 'tibia', '780');
 const PASTA_SAIDA = path.join(__dirname, 'saida');
 const PASTA_PROJETOS = path.join(__dirname, 'projetos');
-const CATEGORIAS = ['pisos', 'criaturas'];
+const CATEGORIAS = ['pisos', 'criaturas', 'paredes'];
 const NOME_VALIDO = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
 const app = express();
@@ -23,6 +23,7 @@ app.use(express.json({ limit: '20mb' }));
 app.get('/api/catalogo', catalogo);
 app.get('/api/sprite/:id/:variacao', spriteDoItem);
 app.get('/api/bordas-sugeridas', bordasSugeridas);
+app.get('/api/paredes-sugeridas', paredesSugeridas);
 app.get('/api/criatura/:id/miniatura', miniaturaCriatura);
 app.get('/api/criatura/:id/folha', folhaDeCriatura);
 app.get('/api/paleta', (req, res) => res.json({ success: true, cores: paletaDeRoupa() }));
@@ -66,8 +67,9 @@ function catalogo(req, res) {
 function spriteDoItem(req, res) {
   const id = parseInt(req.params.id, 10);
   const variacao = parseInt(req.params.variacao, 10);
+  const quadro = parseInt(req.query.quadro || '0', 10);
   try {
-    const png = arquivosTibia().spriteDoItem(id, variacao);
+    const png = arquivosTibia().spriteDoItem(id, variacao, quadro);
     if (!png) return res.sendStatus(404);
     res.set('Cache-Control', 'public, max-age=86400');
     res.type('png').send(png);
@@ -119,6 +121,18 @@ function bordasSugeridas(req, res) {
   const ids = String(req.query.chao || '').split(',').map(n => parseInt(n, 10)).filter(Number.isInteger);
   try {
     res.json({ success: true, sugestao: ids.length ? arquivosTibia().sugerirBordas(ids) : null });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+}
+
+// ================================================================================================================================================================================================================================================
+// paredesSugeridas
+// ?id=1271 → { sugestao: { pecas: { x, y, xy, yx } } } ou sugestao null.
+
+function paredesSugeridas(req, res) {
+  try {
+    res.json({ success: true, sugestao: arquivosTibia().sugerirParedes(parseInt(req.query.id, 10)) });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }

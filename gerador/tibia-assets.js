@@ -9,6 +9,7 @@ const zlib = require('zlib');
 //   - catálogo dos itens e criaturas, por categoria;
 //   - PNG de uma variação de um item (o gerador monta as folhas com eles);
 //   - sugestão do conjunto de borda que combina com um chão;
+//   - sugestão das 4 peças de parede (X, Y, canto, pilar) de um material;
 //   - folha de criatura: uma linha por direção (sul, norte, leste, oeste) e
 //     os quadros (1º parado, depois andando).
 
@@ -36,6 +37,13 @@ const EDGE_BAND = 3;
 const EDGE_FULL = 0.75;
 const OUTER_CORNER_MAX_PIXELS = 600;
 const MAX_BORDER_COLOR_DISTANCE = 35;
+
+// Parede: as 4 peças, cada uma com um item do Tibia de molde (o formato é o
+// mesmo em todo material): x horizontal, y vertical, xy canto, yx pilar. Uma
+// parede é daquela peça se o desenho coincide com o molde pelo menos tanto.
+const WALL_TEMPLATES = { x: 1271, y: 1270, xy: 1619, yx: 2242 };
+const WALL_MATCH = 0.75;
+const WALL_SIZE = 64;
 
 // Cores padrão da roupa (cabeça, corpo, pernas, pés) na paleta do Tibia.
 const DEFAULT_OUTFIT_COLORS = [78, 69, 58, 76];
@@ -82,21 +90,23 @@ class TibiaAssets {
 
   // ================================================================================================================================================================================================================================================
   // spriteDoItem
-  // PNG do 1º quadro de uma variação do item. As variações vêm na ordem do
-  // Tibia: x muda primeiro, depois y, depois z (no chão, a posição no mapa).
+  // PNG de um quadro da animação de uma variação do item. As variações vêm
+  // na ordem do Tibia: x muda primeiro, depois y, depois z (no chão, a
+  // posição no mapa).
 
-  spriteDoItem(id, variacao = 0) {
+  spriteDoItem(id, variacao = 0, anim = 0) {
     const thing = this.things.item.get(id);
     if (!thing) return null;
     const total = thing.px * thing.py * thing.pz;
     if (!Number.isInteger(variacao) || variacao < 0 || variacao >= total) return null;
+    if (!Number.isInteger(anim) || anim < 0 || anim >= thing.anim) return null;
 
-    const chave = `item:${id}:${variacao}`;
+    const chave = `item:${id}:${variacao}:${anim}`;
     if (this.thumbCache.has(chave)) return this.thumbCache.get(chave);
     const x = variacao % thing.px;
     const y = Math.floor(variacao / thing.px) % thing.py;
     const z = Math.floor(variacao / (thing.px * thing.py));
-    const quadro = this.quadro(thing, { x, y, z, anim: 0 });
+    const quadro = this.quadro(thing, { x, y, z, anim });
     const png = gerarPng(quadro.pixels, quadro.largura, quadro.altura);
     this.thumbCache.set(chave, png);
     return png;
@@ -149,6 +159,61 @@ class TibiaAssets {
     }
     this.cacheConjuntos = conjuntos.filter(conjunto => conjunto.length >= 8);
     return this.cacheConjuntos;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // pecaDeParede
+  // Qual das 4 peças de parede o item é (pelo desenho), ou null.
+
+  pecaDeParede(id) {
+    if (!this.cachePecas) this.cachePecas = new Map();
+    if (this.cachePecas.has(id)) return this.cachePecas.get(id);
+    if (!this.moldesDeParede) {
+      this.moldesDeParede = Object.entries(WALL_TEMPLATES).map(([peca, molde]) => [peca, mascaraDeParede(this.quadro(this.things.item.get(molde), {}))]);
+    }
+
+    const thing = this.things.item.get(id);
+    let peca = null;
+    if (thing && categoriaDoItem(thing) === 'wall') {
+      const mascara = mascaraDeParede(this.quadro(thing, {}));
+      let melhor = WALL_MATCH;
+      for (const [nome, molde] of this.moldesDeParede) {
+        const parecido = coincidencia(mascara, molde);
+        if (parecido >= melhor) {
+          melhor = parecido;
+          peca = nome;
+        }
+      }
+    }
+    this.cachePecas.set(id, peca);
+    return peca;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // sugerirParedes
+  // As 4 peças do material da parede escolhida: pra cada peça, a parede de
+  // cor mais parecida, desempatando pelo número mais perto (no Tibia as peças
+  // de um material vêm juntas). A escolhida fica no lugar dela. Devolve
+  // { pecas: { x: id, y: id, xy: id, yx: id } } (a que não achar fica de fora)
+  // ou null se o item não for uma peça de parede.
+
+  sugerirParedes(id) {
+    const pecaEscolhida = this.pecaDeParede(id);
+    if (!pecaEscolhida) return null;
+    const cor = corMedia(this.quadro(this.things.item.get(id), {}));
+
+    const pecas = { [pecaEscolhida]: id };
+    const melhores = {};
+    for (let outro = id - 60; outro <= id + 60; outro++) {
+      const peca = this.pecaDeParede(outro);
+      if (!peca || peca === pecaEscolhida) continue;
+      const diferenca = distanciaDeCor(corMedia(this.quadro(this.things.item.get(outro), {})), cor);
+      if (diferenca > MAX_BORDER_COLOR_DISTANCE) continue;
+      const pontos = diferenca + Math.abs(outro - id);
+      if (!melhores[peca] || pontos < melhores[peca].pontos) melhores[peca] = { id: outro, pontos };
+    }
+    for (const [peca, melhor] of Object.entries(melhores)) pecas[peca] = melhor.id;
+    return { pecas };
   }
 
   // ================================================================================================================================================================================================================================================
@@ -356,6 +421,36 @@ function corMedia(quadro) {
     total++;
   });
   return total ? soma.map(v => v / total) : [0, 0, 0];
+}
+
+// ================================================================================================================================================================================================================================================
+// mascaraDeParede
+// Onde o desenho tem pixel, num quadro de 64 × 64 ancorado embaixo à direita.
+
+function mascaraDeParede(quadro) {
+  const mascara = new Uint8Array(WALL_SIZE * WALL_SIZE);
+  for (let y = 0; y < quadro.altura; y++) {
+    for (let x = 0; x < quadro.largura; x++) {
+      const mx = WALL_SIZE - quadro.largura + x;
+      const my = WALL_SIZE - quadro.altura + y;
+      if (mx >= 0 && my >= 0 && quadro.pixels[(y * quadro.largura + x) * 4 + 3]) mascara[my * WALL_SIZE + mx] = 1;
+    }
+  }
+  return mascara;
+}
+
+// ================================================================================================================================================================================================================================================
+// coincidencia
+// Quanto duas máscaras se sobrepõem (0 a 1: pixels em comum ÷ pixels no total).
+
+function coincidencia(a, b) {
+  let comum = 0;
+  let total = 0;
+  for (let i = 0; i < a.length; i++) {
+    comum += a[i] & b[i];
+    total += a[i] | b[i];
+  }
+  return total ? comum / total : 0;
 }
 
 // ================================================================================================================================================================================================================================================

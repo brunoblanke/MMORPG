@@ -21,10 +21,18 @@ export function fetchCatalog() {
 
 // ================================================================================================================================================================================================================================================
 // spriteUrl
-// PNG de uma variação de um item do Tibia.
+// PNG de uma variação (e de um quadro da animação) de um item do Tibia.
 
-export function spriteUrl(id, variation = 0) {
-  return `/api/sprite/${id}/${variation}`;
+export function spriteUrl(id, variation = 0, frame = 0) {
+  return `/api/sprite/${id}/${variation}${frame ? `?quadro=${frame}` : ''}`;
+}
+
+// ================================================================================================================================================================================================================================================
+// fetchWallSuggestion
+// As 4 peças de parede do material do item: { pecas: { x, y, xy, yx } } ou null.
+
+export async function fetchWallSuggestion(id) {
+  return (await requestJson(`/api/paredes-sugeridas?id=${id}`)).sugestao;
 }
 
 // ================================================================================================================================================================================================================================================

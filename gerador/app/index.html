@@ -18,7 +18,7 @@
   <nav class="categories" aria-label="Categoria">
     <button type="button" class="category active" data-category="pisos">Pisos</button>
     <button type="button" class="category" data-category="criaturas">Criaturas</button>
-    <button type="button" class="category" disabled title="Em breve">Paredes</button>
+    <button type="button" class="category" data-category="paredes">Paredes</button>
     <button type="button" class="category" disabled title="Em breve">Objetos</button>
   </nav>
 </header>
@@ -126,6 +126,44 @@
       <div class="preview-box">
         <div class="section-label">Folha que vai ser salva <span class="dim" id="creatureSheetSize"></span></div>
         <canvas id="creatureSheet" width="96" height="160"></canvas>
+      </div>
+    </section>
+  </main>
+
+  <main class="workspace" id="wallsView" hidden>
+    <form class="save-bar" id="wallSaveForm" autocomplete="off">
+      <div class="field">
+        <label for="wallName">Nome da parede</label>
+        <input type="text" id="wallName" placeholder="ex.: madeira" maxlength="40" required />
+      </div>
+      <button type="submit" class="primary-btn" id="wallSaveBtn">Salvar PNG</button>
+      <p class="status" id="wallStatus" role="status"></p>
+    </form>
+
+    <section class="sheet" aria-label="Peças da parede">
+      <div class="sheet-head">
+        <div class="section-label">Peças · clique numa peça e escolha a parede à direita; as outras vêm do mesmo material</div>
+        <div class="slot-actions">
+          <label class="ghost-btn file-btn">
+            Enviar PNG
+            <input type="file" id="wallUpload" accept="image/png" hidden />
+          </label>
+          <button type="button" class="ghost-btn" id="wallClear">Limpar peça</button>
+          <button type="button" class="ghost-btn" id="wallSuggest" title="Escolhe as 4 peças pelo material da peça escolhida">Sugerir peças</button>
+        </div>
+      </div>
+      <div class="slots wall-slots" id="wallSlots"></div>
+    </section>
+
+    <section class="previews">
+      <div class="preview-box">
+        <div class="section-label">Prévia · uma sala com as 4 peças</div>
+        <canvas id="wallPreview" width="256" height="224"></canvas>
+        <p class="hint">Canto em cima à esquerda, horizontais em cima e embaixo, verticais nos lados e o pilar no canto de baixo à direita.</p>
+      </div>
+      <div class="preview-box">
+        <div class="section-label">Folha que vai ser salva <span class="dim">(256 × 256 · uma linha por peça, 4 quadros)</span></div>
+        <canvas id="wallSheet" width="256" height="256"></canvas>
       </div>
     </section>
   </main>

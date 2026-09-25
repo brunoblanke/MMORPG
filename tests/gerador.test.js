@@ -68,3 +68,20 @@ test('gerador sugere as bordas que combinam com o chão, ou nenhuma', () => {
   assert.equal(assets.sugerirBordas([4608]), null);
   assert.equal(assets.sugerirBordas([99999]), null);
 });
+
+test('gerador reconhece as 4 peças de parede pelo desenho e sugere as do mesmo material', () => {
+  const assets = new TibiaAssets(CLIENT);
+  assert.deepEqual([1271, 1270, 1274, 1272].map(id => assets.pecaDeParede(id)), ['x', 'y', 'xy', 'yx']);
+  assert.equal(assets.pecaDeParede(4526), null);
+
+  assert.deepEqual(assets.sugerirParedes(1271).pecas, { x: 1271, y: 1270, xy: 1274, yx: 1272 });
+  assert.deepEqual(assets.sugerirParedes(1112).pecas, { x: 1113, y: 1112, xy: 1116, yx: 1114 });
+  assert.equal(assets.sugerirParedes(4526), null);
+});
+
+test('gerador devolve cada quadro da animação de um item', () => {
+  const assets = new TibiaAssets(CLIENT);
+  assert.deepEqual(pngSize(assets.spriteDoItem(1442, 0, 2)), [64, 64]);
+  assert.notDeepEqual(assets.spriteDoItem(1442, 0, 0), assets.spriteDoItem(1442, 0, 1));
+  assert.equal(assets.spriteDoItem(1442, 0, 3), null);
+});

@@ -4,7 +4,8 @@ import { spriteUrl } from './api.js';
 
 // Painel da direita: os sprites do Tibia, com busca pelo número. As abas
 // mudam com a categoria aberta (pisos: chão, bordas, todos os itens;
-// criaturas: as criaturas e os itens, pro cadáver) e cada categoria lembra a
+// criaturas: as criaturas e os itens, pro cadáver; paredes: paredes e todos
+// os itens) e cada categoria lembra a
 // última aba usada. Item com várias variações (chão que muda pelo sqm) abre a
 // lista delas.
 
@@ -17,6 +18,10 @@ const MODES = {
   creatures: [
     { id: 'creature', label: 'Criaturas' },
     { id: 'all', label: 'Itens' }
+  ],
+  walls: [
+    { id: 'wall', label: 'Paredes' },
+    { id: 'all', label: 'Todos' }
   ]
 };
 
@@ -26,7 +31,7 @@ const picker = {
   itemsById: new Map(),
   creaturesById: new Map(),
   mode: 'floors',
-  tabByMode: { floors: 'ground', creatures: 'creature' },
+  tabByMode: { floors: 'ground', creatures: 'creature', walls: 'wall' },
   search: '',
   selectedId: null,
   onPick: () => {},
@@ -78,6 +83,15 @@ export function itemCategory(id) {
 }
 
 // ================================================================================================================================================================================================================================================
+// itemFrames
+// Quantos quadros de animação o item tem (1 se não existe).
+
+export function itemFrames(id) {
+  const item = picker.itemsById.get(id);
+  return item ? item[4] : 1;
+}
+
+// ================================================================================================================================================================================================================================================
 // creatureInfo
 // { id, size, frames, colors, addons } da criatura, ou null.
 
@@ -90,7 +104,7 @@ export function creatureInfo(id) {
 
 // ================================================================================================================================================================================================================================================
 // setPickerMode
-// 'floors' ou 'creatures': troca as abas, voltando pra última usada nesse
+// 'floors', 'creatures' ou 'walls': troca as abas, voltando pra última usada nesse
 // modo, e limpa a busca.
 
 export function setPickerMode(mode) {

@@ -5,12 +5,13 @@ import { initPicker, setPickerMode } from './picker.js';
 import { showProjects } from './projects.js';
 import { floorsView } from './floors.js';
 import { creaturesView } from './creatures.js';
+import { wallsView } from './walls.js';
 
-// Gerador de sprites: uma área de trabalho por categoria (pisos, criaturas),
+// Gerador de sprites: uma área de trabalho por categoria (pisos, criaturas, paredes),
 // a lista do que foi salvo à esquerda e os sprites do Tibia à direita.
 
-const VIEWS = { pisos: floorsView, criaturas: creaturesView };
-const SECTIONS = { pisos: 'floorsView', criaturas: 'creaturesView' };
+const VIEWS = { pisos: floorsView, criaturas: creaturesView, paredes: wallsView };
+const SECTIONS = { pisos: 'floorsView', criaturas: 'creaturesView', paredes: 'wallsView' };
 
 let active = 'pisos';
 
