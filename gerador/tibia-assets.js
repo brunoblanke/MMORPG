@@ -46,6 +46,13 @@ const WALL_TEMPLATES = { x: 1271, y: 1270, xy: 1619, yx: 2242 };
 const WALL_MATCH = 0.75;
 const WALL_SIZE = 64;
 
+// Porta: no .dat toda porta tem a ajuda da lente 1104 (porta comum) ou 1105
+// (porta especial). A fechada bloqueia a passagem; a aberta vem logo depois
+// dela (às vezes com uma trancada no meio).
+const DOOR_LENS = [1104, 1105];
+const DOOR_GAP = 3;
+const DOOR_SEARCH = 30;
+
 // Cores padrão da roupa (cabeça, corpo, pernas, pés) na paleta do Tibia.
 const DEFAULT_OUTFIT_COLORS = [78, 69, 58, 76];
 
@@ -240,6 +247,71 @@ class TibiaAssets {
   }
 
   // ================================================================================================================================================================================================================================================
+  // portas
+  // Todas as portas do Tibia em pares, na ordem dos ids:
+  // [{ fechada, aberta, ultima, orientacao: 'x' | 'y', lente }]. A orientação
+  // sai do desenho da fechada (parece a parede x ou a y); a trancada que vem
+  // logo depois entra no mesmo par.
+
+  portas() {
+    if (this.cachePortas) return this.cachePortas;
+    this.pecaDeParede(WALL_TEMPLATES.x);
+    const moldes = Object.fromEntries(this.moldesDeParede);
+    const pares = [];
+    let atual = null;
+    for (const [id, thing] of this.things.item) {
+      if (categoriaDoItem(thing) !== 'door' || !this.temDesenho(thing)) continue;
+      const lente = thing.flags[FLAG.LENS_HELP];
+      const perto = atual && atual.lente === lente && id - atual.ultima <= DOOR_GAP;
+      if (temFlag(thing, FLAG.UNPASSABLE)) {
+        if (perto && !atual.aberta) {
+          atual.ultima = id;
+          continue;
+        }
+        const mascara = mascaraDeParede(this.quadro(thing, {}));
+        const orientacao = coincidencia(mascara, moldes.x) >= coincidencia(mascara, moldes.y) ? 'x' : 'y';
+        atual = { fechada: id, aberta: null, ultima: id, orientacao, lente };
+        pares.push(atual);
+      } else if (perto && !atual.aberta) {
+        atual.aberta = id;
+        atual.ultima = id;
+      }
+    }
+    this.cachePortas = pares.filter(par => par.aberta);
+    return this.cachePortas;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // sugerirPortas
+  // As 4 portas a partir de uma porta escolhida (fechada, trancada ou
+  // aberta): a outra da mesma orientação vem do par dela, e o par da outra
+  // orientação é o mais perto com a mesma lente. Devolve
+  // { pecas: { 'porta-x', 'porta-x-aberta', 'porta-y', 'porta-y-aberta' } }
+  // (o que não achar fica de fora) ou null se o item não for porta.
+
+  sugerirPortas(id) {
+    const pares = this.portas();
+    const par = pares.find(p => id >= p.fechada && id <= p.ultima);
+    if (!par) return null;
+    const escolhidaAberta = id === par.aberta;
+    const pecas = {
+      [`porta-${par.orientacao}`]: escolhidaAberta ? par.fechada : id,
+      [`porta-${par.orientacao}-aberta`]: par.aberta
+    };
+    let outro = null;
+    for (const p of pares) {
+      if (p.orientacao === par.orientacao || p.lente !== par.lente) continue;
+      const distancia = Math.abs(p.fechada - par.fechada);
+      if (distancia <= DOOR_SEARCH && (!outro || distancia < Math.abs(outro.fechada - par.fechada))) outro = p;
+    }
+    if (outro) {
+      pecas[`porta-${outro.orientacao}`] = outro.fechada;
+      pecas[`porta-${outro.orientacao}-aberta`] = outro.aberta;
+    }
+    return { pecas };
+  }
+
+  // ================================================================================================================================================================================================================================================
   // miniaturaCriatura
   // PNG da criatura parada, virada pro sul.
 
@@ -408,12 +480,14 @@ function temFlag(thing, ...flags) {
 // ================================================================================================================================================================================================================================================
 // categoriaDoItem
 // ground: chão; border: borda de chão; wall: parede/construção (fica embaixo
-// dos outros itens); item: dá pra pegar; object: o resto (móveis, natureza…).
+// dos outros itens); door: porta; item: dá pra pegar; object: o resto
+// (móveis, natureza…).
 
 function categoriaDoItem(thing) {
   if (temFlag(thing, FLAG.GROUND)) return 'ground';
   if (temFlag(thing, FLAG.GROUND_BORDER)) return 'border';
   if (temFlag(thing, FLAG.ON_BOTTOM)) return 'wall';
+  if (DOOR_LENS.includes(thing.flags[FLAG.LENS_HELP])) return 'door';
   if (temFlag(thing, FLAG.PICKUPABLE)) return 'item';
   return 'object';
 }

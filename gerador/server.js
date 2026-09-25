@@ -24,6 +24,7 @@ app.get('/api/catalogo', catalogo);
 app.get('/api/sprite/:id/:variacao', spriteDoItem);
 app.get('/api/bordas-sugeridas', bordasSugeridas);
 app.get('/api/paredes-sugeridas', paredesSugeridas);
+app.get('/api/portas-sugeridas', portasSugeridas);
 app.get('/api/item/:id', infoDoItem);
 app.get('/api/criatura/:id/miniatura', miniaturaCriatura);
 app.get('/api/criatura/:id/folha', folhaDeCriatura);
@@ -147,6 +148,18 @@ function infoDoItem(req, res) {
 function paredesSugeridas(req, res) {
   try {
     res.json({ success: true, sugestao: arquivosTibia().sugerirParedes(parseInt(req.query.id, 10)) });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+}
+
+// ================================================================================================================================================================================================================================================
+// portasSugeridas
+// ?id=1682 → { sugestao: { pecas: { 'porta-x', 'porta-x-aberta', 'porta-y', 'porta-y-aberta' } } } ou sugestao null.
+
+function portasSugeridas(req, res) {
+  try {
+    res.json({ success: true, sugestao: arquivosTibia().sugerirPortas(parseInt(req.query.id, 10)) });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }

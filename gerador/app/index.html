@@ -142,14 +142,14 @@
 
     <section class="sheet" aria-label="Peças da parede">
       <div class="sheet-head">
-        <div class="section-label">Peças · clique numa peça e escolha a parede à direita; as outras vêm do mesmo material</div>
+        <div class="section-label">Peças · clique numa peça e escolha à direita (abas Paredes e Portas); as outras do grupo vêm sugeridas</div>
         <div class="slot-actions">
           <label class="ghost-btn file-btn">
             Enviar PNG
             <input type="file" id="wallUpload" accept="image/png" hidden />
           </label>
           <button type="button" class="ghost-btn" id="wallClear">Limpar peça</button>
-          <button type="button" class="ghost-btn" id="wallSuggest" title="Escolhe as 4 peças pelo material da peça escolhida">Sugerir peças</button>
+          <button type="button" class="ghost-btn" id="wallSuggest" title="Escolhe as paredes pelo material da parede escolhida e as portas pela porta escolhida">Sugerir peças</button>
         </div>
       </div>
       <div class="slots wall-slots" id="wallSlots"></div>
@@ -157,13 +157,13 @@
 
     <section class="previews">
       <div class="preview-box">
-        <div class="section-label">Prévia · uma sala com as 4 peças</div>
+        <div class="section-label">Prévia · uma sala com as paredes e as portas</div>
         <canvas id="wallPreview" width="256" height="224"></canvas>
-        <p class="hint">Canto em cima à esquerda, horizontais em cima e embaixo, verticais nos lados e o pilar no canto de baixo à direita.</p>
+        <p class="hint">Portas fechadas em cima e à esquerda, abertas embaixo e à direita. Canto em cima à esquerda e pilar no canto de baixo à direita.</p>
       </div>
       <div class="preview-box">
-        <div class="section-label">Folha que vai ser salva <span class="dim">(256 × 256 · uma linha por peça, 4 quadros)</span></div>
-        <canvas id="wallSheet" width="256" height="256"></canvas>
+        <div class="section-label">Folha que vai ser salva <span class="dim">(256 × 128 · linha 1: X, Y, XY, YX · linha 2: portas X fechada/aberta, Y fechada/aberta)</span></div>
+        <canvas id="wallSheet" width="256" height="128"></canvas>
       </div>
     </section>
   </main>

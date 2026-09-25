@@ -4,8 +4,8 @@ import { spriteUrl } from './api.js';
 
 // Painel da direita: os sprites do Tibia, com busca pelo número. As abas
 // mudam com a categoria aberta (pisos: chão, bordas, todos os itens;
-// criaturas: as criaturas e os itens, pro cadáver; paredes: paredes e todos
-// os itens; objetos: objetos, itens e todos) e cada categoria lembra a
+// criaturas: as criaturas e os itens, pro cadáver; paredes: paredes, portas
+// e todos os itens; objetos: objetos, itens e todos) e cada categoria lembra a
 // última aba usada. Item com várias variações (chão que muda pelo sqm) abre a
 // lista delas.
 
@@ -21,6 +21,7 @@ const MODES = {
   ],
   walls: [
     { id: 'wall', label: 'Paredes' },
+    { id: 'door', label: 'Portas' },
     { id: 'all', label: 'Todos' }
   ],
   objects: [
@@ -80,7 +81,7 @@ export function initPicker(catalog, { onPick, onUseAll }) {
 
 // ================================================================================================================================================================================================================================================
 // itemCategory
-// Categoria do item (ground, border, wall, object, item) ou null se não existe.
+// Categoria do item (ground, border, wall, door, object, item) ou null se não existe.
 
 export function itemCategory(id) {
   const item = picker.itemsById.get(id);

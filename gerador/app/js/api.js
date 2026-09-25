@@ -36,6 +36,14 @@ export async function fetchWallSuggestion(id) {
 }
 
 // ================================================================================================================================================================================================================================================
+// fetchDoorSuggestion
+// As 4 portas a partir de uma porta: { pecas: { 'porta-x', 'porta-x-aberta', 'porta-y', 'porta-y-aberta' } } ou null.
+
+export async function fetchDoorSuggestion(id) {
+  return (await requestJson(`/api/portas-sugeridas?id=${id}`)).sugestao;
+}
+
+// ================================================================================================================================================================================================================================================
 // fetchBorderSuggestion
 // Conjunto de borda que combina com os chões do meio: { pecas, conjunto } ou null.
 

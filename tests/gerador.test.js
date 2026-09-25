@@ -106,3 +106,15 @@ test('gerador guarda a criatura no tamanho do desenho do Tibia, sem o deslocamen
   }
   assert.equal(assets.folhaDeCriatura(229).tamanho, 64);
 });
+
+test('gerador acha as portas do Tibia e sugere as 4 (X e Y, fechada e aberta)', () => {
+  const assets = new TibiaAssets(CLIENT);
+  assert.equal(assets.infoDoItem(1682).categoria, 'door');
+  assert.equal(assets.infoDoItem(1271).categoria, 'wall');
+  const doors = { 'porta-x': 1682, 'porta-x-aberta': 1684, 'porta-y': 1691, 'porta-y-aberta': 1693 };
+  assert.deepEqual(assets.sugerirPortas(1682).pecas, doors);
+  assert.deepEqual(assets.sugerirPortas(1693).pecas, doors);
+  assert.equal(assets.sugerirPortas(1683).pecas['porta-x'], 1683);
+  assert.deepEqual(assets.sugerirPortas(1628).pecas, { 'porta-y': 1628, 'porta-y-aberta': 1630, 'porta-x': 1631, 'porta-x-aberta': 1633 });
+  assert.equal(assets.sugerirPortas(1271), null);
+});
