@@ -5,7 +5,7 @@ import { spriteUrl } from './api.js';
 // Painel da direita: os sprites do Tibia, com busca pelo número. As abas
 // mudam com a categoria aberta (pisos: chão, bordas, todos os itens;
 // criaturas: as criaturas e os itens, pro cadáver; paredes: paredes e todos
-// os itens) e cada categoria lembra a
+// os itens; objetos: objetos, itens e todos) e cada categoria lembra a
 // última aba usada. Item com várias variações (chão que muda pelo sqm) abre a
 // lista delas.
 
@@ -22,6 +22,11 @@ const MODES = {
   walls: [
     { id: 'wall', label: 'Paredes' },
     { id: 'all', label: 'Todos' }
+  ],
+  objects: [
+    { id: 'object', label: 'Objetos' },
+    { id: 'item', label: 'Itens' },
+    { id: 'all', label: 'Todos' }
   ]
 };
 
@@ -31,7 +36,7 @@ const picker = {
   itemsById: new Map(),
   creaturesById: new Map(),
   mode: 'floors',
-  tabByMode: { floors: 'ground', creatures: 'creature', walls: 'wall' },
+  tabByMode: { floors: 'ground', creatures: 'creature', walls: 'wall', objects: 'object' },
   search: '',
   selectedId: null,
   onPick: () => {},
@@ -104,7 +109,7 @@ export function creatureInfo(id) {
 
 // ================================================================================================================================================================================================================================================
 // setPickerMode
-// 'floors', 'creatures' ou 'walls': troca as abas, voltando pra última usada nesse
+// 'floors', 'creatures', 'walls' ou 'objects': troca as abas, voltando pra última usada nesse
 // modo, e limpa a busca.
 
 export function setPickerMode(mode) {

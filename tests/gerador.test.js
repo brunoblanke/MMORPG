@@ -85,3 +85,14 @@ test('gerador devolve cada quadro da animação de um item', () => {
   assert.notDeepEqual(assets.spriteDoItem(1442, 0, 0), assets.spriteDoItem(1442, 0, 1));
   assert.equal(assets.spriteDoItem(1442, 0, 3), null);
 });
+
+test('gerador lê as propriedades do item no Tibia.dat', () => {
+  const assets = new TibiaAssets(CLIENT);
+  const box = assets.infoDoItem(2469);
+  assert.deepEqual([box.bloqueia, box.move, box.altura, box.pegavel], [false, true, true, true]);
+  const coins = assets.infoDoItem(3031);
+  assert.deepEqual([coins.variacoes, coins.empilhavel], [8, true]);
+  assert.equal(assets.infoDoItem(1616).bloqueia, true);
+  assert.equal(assets.infoDoItem(1068).quadros, 2);
+  assert.equal(assets.infoDoItem(99999), null);
+});

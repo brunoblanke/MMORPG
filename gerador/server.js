@@ -6,7 +6,7 @@ const path = require('path');
 const { TibiaAssets, paletaDeRoupa } = require('./tibia-assets.js');
 
 // Gerador de sprites: programa à parte do jogo e do editor. Mostra os sprites
-// do Tibia (tibia/780), monta folhas (pisos, criaturas, paredes) na tela e grava:
+// do Tibia (tibia/780), monta folhas (pisos, criaturas, paredes, objetos) na tela e grava:
 //   saida/<categoria>/<nome>.png      a folha pronta, no formato do jogo
 //   projetos/<categoria>/<nome>.json  a receita (de onde veio cada parte)
 
@@ -15,7 +15,7 @@ const PASTA_APP = path.join(__dirname, 'app');
 const PASTA_TIBIA = path.join(__dirname, 'tibia', '780');
 const PASTA_SAIDA = path.join(__dirname, 'saida');
 const PASTA_PROJETOS = path.join(__dirname, 'projetos');
-const CATEGORIAS = ['pisos', 'criaturas', 'paredes'];
+const CATEGORIAS = ['pisos', 'criaturas', 'paredes', 'objetos'];
 const NOME_VALIDO = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
 const app = express();
@@ -24,6 +24,7 @@ app.get('/api/catalogo', catalogo);
 app.get('/api/sprite/:id/:variacao', spriteDoItem);
 app.get('/api/bordas-sugeridas', bordasSugeridas);
 app.get('/api/paredes-sugeridas', paredesSugeridas);
+app.get('/api/item/:id', infoDoItem);
 app.get('/api/criatura/:id/miniatura', miniaturaCriatura);
 app.get('/api/criatura/:id/folha', folhaDeCriatura);
 app.get('/api/paleta', (req, res) => res.json({ success: true, cores: paletaDeRoupa() }));
@@ -121,6 +122,19 @@ function bordasSugeridas(req, res) {
   const ids = String(req.query.chao || '').split(',').map(n => parseInt(n, 10)).filter(Number.isInteger);
   try {
     res.json({ success: true, sugestao: ids.length ? arquivosTibia().sugerirBordas(ids) : null });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+}
+
+// ================================================================================================================================================================================================================================================
+// infoDoItem
+
+function infoDoItem(req, res) {
+  try {
+    const info = arquivosTibia().infoDoItem(parseInt(req.params.id, 10));
+    if (!info) return res.status(404).json({ success: false, message: 'Item não existe.' });
+    res.json({ success: true, item: info });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }

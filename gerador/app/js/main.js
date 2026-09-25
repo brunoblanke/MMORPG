@@ -6,12 +6,13 @@ import { showProjects } from './projects.js';
 import { floorsView } from './floors.js';
 import { creaturesView } from './creatures.js';
 import { wallsView } from './walls.js';
+import { objectsView } from './objects.js';
 
-// Gerador de sprites: uma área de trabalho por categoria (pisos, criaturas, paredes),
+// Gerador de sprites: uma área de trabalho por categoria (pisos, criaturas, paredes, objetos),
 // a lista do que foi salvo à esquerda e os sprites do Tibia à direita.
 
-const VIEWS = { pisos: floorsView, criaturas: creaturesView, paredes: wallsView };
-const SECTIONS = { pisos: 'floorsView', criaturas: 'creaturesView', paredes: 'wallsView' };
+const VIEWS = { pisos: floorsView, criaturas: creaturesView, paredes: wallsView, objetos: objectsView };
+const SECTIONS = { pisos: 'floorsView', criaturas: 'creaturesView', paredes: 'wallsView', objetos: 'objectsView' };
 
 let active = 'pisos';
 

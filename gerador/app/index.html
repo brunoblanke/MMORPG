@@ -19,7 +19,7 @@
     <button type="button" class="category active" data-category="pisos">Pisos</button>
     <button type="button" class="category" data-category="criaturas">Criaturas</button>
     <button type="button" class="category" data-category="paredes">Paredes</button>
-    <button type="button" class="category" disabled title="Em breve">Objetos</button>
+    <button type="button" class="category" data-category="objetos">Objetos</button>
   </nav>
 </header>
 
@@ -164,6 +164,47 @@
       <div class="preview-box">
         <div class="section-label">Folha que vai ser salva <span class="dim">(256 × 256 · uma linha por peça, 4 quadros)</span></div>
         <canvas id="wallSheet" width="256" height="256"></canvas>
+      </div>
+    </section>
+  </main>
+
+  <main class="workspace" id="objectsView" hidden>
+    <form class="save-bar" id="objectSaveForm" autocomplete="off">
+      <div class="field">
+        <label for="objectName">Nome do objeto</label>
+        <input type="text" id="objectName" placeholder="ex.: bau" maxlength="40" required />
+      </div>
+      <button type="submit" class="primary-btn" id="objectSaveBtn">Salvar PNG</button>
+      <p class="status" id="objectStatus" role="status"></p>
+    </form>
+
+    <section class="creature-setup" aria-label="Objeto">
+      <div class="sheet-head">
+        <div class="section-label">Objeto · escolha à direita; item com variações mostra a lista delas</div>
+        <div class="slot-actions">
+          <label class="ghost-btn file-btn">
+            Enviar PNG
+            <input type="file" id="objectUpload" accept="image/png" hidden />
+          </label>
+          <button type="button" class="ghost-btn" id="objectClear">Limpar</button>
+        </div>
+      </div>
+      <div class="creature-info" id="objectInfo"></div>
+      <div class="outfit-options">
+        <div class="section-label">Propriedades no jogo</div>
+        <div class="property-list" id="objectProperties"></div>
+      </div>
+    </section>
+
+    <section class="previews">
+      <div class="preview-box">
+        <div class="section-label">Prévia · no chão e empilhado (se tiver altura)</div>
+        <canvas id="objectPreview" width="256" height="128"></canvas>
+        <p class="hint">Contorno vermelho: bloqueia a passagem.</p>
+      </div>
+      <div class="preview-box">
+        <div class="section-label">Folha que vai ser salva <span class="dim" id="objectSheetSize"></span></div>
+        <canvas id="objectSheet" width="32" height="32"></canvas>
       </div>
     </section>
   </main>

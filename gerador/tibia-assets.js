@@ -10,6 +10,7 @@ const zlib = require('zlib');
 //   - PNG de uma variação de um item (o gerador monta as folhas com eles);
 //   - sugestão do conjunto de borda que combina com um chão;
 //   - sugestão das 4 peças de parede (X, Y, canto, pilar) de um material;
+//   - propriedades de um item (bloqueia, move, altura…), pros objetos;
 //   - folha de criatura: uma linha por direção (sul, norte, leste, oeste) e
 //     os quadros (1º parado, depois andando).
 
@@ -110,6 +111,28 @@ class TibiaAssets {
     const png = gerarPng(quadro.pixels, quadro.largura, quadro.altura);
     this.thumbCache.set(chave, png);
     return png;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // infoDoItem
+  // Tamanho, quadros, variações e as propriedades do .dat que importam pro
+  // jogo, ou null se o item não existe.
+
+  infoDoItem(id) {
+    const thing = this.things.item.get(id);
+    if (!thing) return null;
+    return {
+      id,
+      categoria: categoriaDoItem(thing),
+      tamanho: Math.max(thing.w, thing.h) * SPRITE_SIZE,
+      quadros: thing.anim,
+      variacoes: thing.px * thing.py * thing.pz,
+      bloqueia: temFlag(thing, FLAG.UNPASSABLE),
+      move: !temFlag(thing, FLAG.UNMOVEABLE),
+      altura: temFlag(thing, FLAG.ELEVATION),
+      pegavel: temFlag(thing, FLAG.PICKUPABLE),
+      empilhavel: temFlag(thing, FLAG.STACKABLE)
+    };
   }
 
   // ================================================================================================================================================================================================================================================
