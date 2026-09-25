@@ -1,0 +1,96 @@
+<!-- gerador/app/index.html -->
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Gerador de Sprites</title>
+<link rel="stylesheet" href="css/gerador.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="dot"></div>
+    <h1>Gerador de sprites</h1>
+  </div>
+  <nav class="categories" aria-label="Categoria">
+    <button type="button" class="category active">Pisos</button>
+    <button type="button" class="category" disabled title="Em breve">Criaturas</button>
+    <button type="button" class="category" disabled title="Em breve">Paredes</button>
+    <button type="button" class="category" disabled title="Em breve">Objetos</button>
+  </nav>
+</header>
+
+<div class="layout">
+
+  <aside class="panel projects">
+    <div class="section-label">Pisos salvos</div>
+    <button type="button" class="ghost-btn" id="newProject">+ Novo piso</button>
+    <ul class="project-list" id="projectList"></ul>
+  </aside>
+
+  <main class="workspace">
+    <form class="save-bar" id="saveForm" autocomplete="off">
+      <div class="field">
+        <label for="projectName">Nome do piso</label>
+        <input type="text" id="projectName" placeholder="ex.: grama" maxlength="40" required />
+      </div>
+      <button type="submit" class="primary-btn" id="saveBtn">Salvar PNG</button>
+      <p class="status" id="status" role="status"></p>
+    </form>
+
+    <section class="sheet" aria-label="Folha do piso">
+      <div class="sheet-head">
+        <div class="section-label">Folha · clique num espaço e escolha o sprite à direita</div>
+        <div class="slot-actions">
+          <label class="checkline" title="Ao escolher um item, os espaços seguintes recebem os números seguintes (id+1, id+2…)">
+            <input type="checkbox" id="fillSequence" />
+            Preencher em sequência
+          </label>
+          <label class="ghost-btn file-btn">
+            Enviar PNG
+            <input type="file" id="uploadPng" accept="image/png" hidden />
+          </label>
+          <button type="button" class="ghost-btn" id="clearSlot">Limpar espaço</button>
+        </div>
+      </div>
+      <div class="sheet-rows" id="sheetRows"></div>
+    </section>
+
+    <section class="previews">
+      <div class="preview-box">
+        <div class="section-label">Prévia no chão</div>
+        <canvas id="groundPreview" width="384" height="288"></canvas>
+        <p class="hint">O 1º do meio aparece em 70% dos sqms; os outros dividem o resto, como no jogo.</p>
+      </div>
+      <div class="preview-box">
+        <div class="section-label">Folha que vai ser salva <span class="dim">(256 × 128)</span></div>
+        <canvas id="sheetPreview" width="256" height="128"></canvas>
+      </div>
+    </section>
+  </main>
+
+  <aside class="panel picker">
+    <div class="picker-head">
+      <div class="section-label">Sprites do Tibia 7.8</div>
+      <span class="count" id="pickerCount"></span>
+    </div>
+    <div class="picker-tabs" id="pickerTabs"></div>
+    <input type="search" id="pickerSearch" placeholder="Buscar pelo número" inputmode="numeric" autocomplete="off" />
+    <div class="variations" id="variations" hidden>
+      <div class="variations-head">
+        <span id="variationsTitle"></span>
+        <button type="button" class="ghost-btn" id="useAllVariations">Usar todas no meio</button>
+      </div>
+      <div class="variations-grid" id="variationsGrid"></div>
+    </div>
+    <div class="picker-grid" id="pickerGrid"></div>
+  </aside>
+
+</div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

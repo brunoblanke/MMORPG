@@ -11,7 +11,6 @@ import { state } from '../model/state.js';
 import { restackItems } from '../../../shared/map-format.js';
 import { loadImage, setImageUpdateCallback } from './image-cache.js';
 import { getCreatureType, hasCreatureType } from '../../../shared/catalog.js';
-import { getTibiaItem, parseTibiaType, tibiaFrameRect } from '../../../shared/tibia-registry.js';
 
 export const canvas = document.getElementById('canvas');
 export const ctx = canvas.getContext('2d');
@@ -72,32 +71,9 @@ function drawLabel(text, x, y) {
 }
 
 // ================================================================================================================================================================================================================================================
-// drawTibiaItem
-// Item/chão do Tibia na variação do sqm (x, y, z), ancorado no canto de baixo
-// à direita do sqm como no jogo, erguido pela altura da pilha (step).
-
-function drawTibiaItem(type, x, y, z, px, py, step = 0) {
-  const def = getTibiaItem(type);
-  const entry = def ? loadImage(def.file) : null;
-  const lift = step * STACK_OFFSET;
-  if (!entry || entry.status !== 'ok') {
-    ctx.fillStyle = '#6b5a8a';
-    ctx.fillRect(px + 6 - lift, py + 6 - lift, TILE - 12, TILE - 12);
-    return;
-  }
-  const frame = tibiaFrameRect(def, x, y, z, performance.now());
-  ctx.drawImage(entry.img, frame.sx, frame.sy, frame.sw, frame.sh,
-    px + TILE - frame.sw - lift, py + TILE - frame.sh - lift, frame.sw, frame.sh);
-}
-
-// ================================================================================================================================================================================================================================================
 // drawFloorTile
 
-function drawFloorTile(type, variant, px, py, x, y, z) {
-  if (parseTibiaType(type)) {
-    drawTibiaItem(type, x, y, z, px, py);
-    return;
-  }
+function drawFloorTile(type, variant, px, py) {
   const files = type === 'Floor2' ? FLOOR2_FILES : FLOOR1_FILES;
   const entry = loadImage(files[variant]);
   if (entry.status === 'ok') {
@@ -155,7 +131,7 @@ function drawLayer(layer, alpha, z) {
       // Pisos da célula (baixo e cima) e, por cima, as bordas gravadas nela.
       if (!isVoid(key)) {
         for (const k of ['floor', 'floorTop']) {
-          if (cell[k]) drawFloorTile(cell[k].type, pickWeightedInteriorVariant(x, y, z), px, py, x, y, z);
+          if (cell[k]) drawFloorTile(cell[k].type, pickWeightedInteriorVariant(x, y, z), px, py);
         }
       }
       if (state.showBorders) {
@@ -179,10 +155,6 @@ function drawLayer(layer, alpha, z) {
       // Mantém os steps coerentes com a pilha atual (reordenar/remover no painel).
       restackItems(cell.objects);
       cell.objects.forEach(obj => {
-        if (parseTibiaType(obj.type)) {
-          drawTibiaItem(obj.type, x, y, z, px, py, obj.step || 0);
-          return;
-        }
         if (ITEM_CATALOG[obj.type]) {
           const def = ITEM_CATALOG[obj.type];
           const entry = loadImage(def.file);

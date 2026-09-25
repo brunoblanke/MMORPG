@@ -5,7 +5,6 @@ import { Enemy } from './enemy.js';
 import { computeBorderPieces, pickWeightedInteriorVariant } from '../../shared/floor-variant.js';
 import { collectObjectDescriptors, collectEnemyDescriptors } from '../../shared/map-format.js';
 import { getStairTop, getStairTopTarget, getHoleTarget } from '../../shared/stairs.js';
-import { isTibiaGround } from '../../shared/tibia-registry.js';
 import { parseBorderType, hasSavedBorders } from '../../shared/floor-borders.js';
 
 export class GameObject {
@@ -26,29 +25,17 @@ export class GameObject {
       this.targetZ = data.targetZ;
     }
 
-    this.floorType = getFloorType(data.id);
+    this.floorType = data.id.startsWith('Floor2') ? 'Floor2' : (data.id.startsWith('Floor') ? 'Floor' : null);
 
     if (data.order !== undefined) {
       this.order = data.order;
-    } else if (this.floorType) {
+    } else if (this.id && (this.id.startsWith('Floor_') || this.id.startsWith('Floor2_') || this.id === 'Floor' || this.id === 'Floor2')) {
       this.order = -1;
     } else {
       this.order = 0;
       this.inStack = true;
     }
   }
-}
-
-// ================================================================================================================================================================================================================================================
-// getFloorType
-// Piso próprio (Floor, Floor2, com bordas automáticas) ou chão do Tibia
-// (TibiaGround, desenhado como está, sem borda automática).
-
-function getFloorType(id) {
-  if (isTibiaGround(id)) return 'TibiaGround';
-  if (id.startsWith('Floor2')) return 'Floor2';
-  if (id.startsWith('Floor')) return 'Floor';
-  return null;
 }
 
 // ================================================================================================================================================================================================================================================
@@ -175,8 +162,6 @@ function assignGroundOrder(objs) {
 // Até 2 pisos por célula, igual ao editor (cell.floor / cell.floorTop): a 1ª
 // entrada de piso numa célula é a de baixo, a 2ª é a de cima. Todo piso é
 // ladrilho cheio (a/b/c/d); as bordas ficam pra fora, em generateFloorBorders.
-// Chão do Tibia fica como está (a variação dele vem da posição, no desenho) e
-// não gera borda.
 // Devolve Map<z, Map<'x,y', { type, seq }>> com o piso VISÍVEL de cada célula.
 
 function applyFloorVariants(objs) {
@@ -192,10 +177,6 @@ function applyFloorVariants(objs) {
     const layerIndex = layerCountByKey.get(`${key},${obj.z}`) || 0;
     if (layerIndex > 1) continue;
     layerCountByKey.set(`${key},${obj.z}`, layerIndex + 1);
-    if (obj.floorType === 'TibiaGround') {
-      visibleFloorsByZ.get(obj.z).delete(key);
-      continue;
-    }
     visibleFloorsByZ.get(obj.z).set(key, { type: obj.floorType, seq: obj.seq });
 
     counters[obj.floorType] = (counters[obj.floorType] || 0) + 1;

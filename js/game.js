@@ -14,7 +14,6 @@ import { getRoofLevel } from './views/draw-order.js';
 import { ParticleController } from './systems/particle-controller.js';
 import { InputController } from './input/input.js';
 import { NameModal } from './views/name-modal.js';
-import { loadTibiaRegistry } from '../shared/tibia-registry.js';
 
 // Cliente: pede o nome do personagem, carrega o mapa, entra no servidor de
 // jogo (RemoteSession) ou, sem servidor, roda a simulação aqui mesmo
@@ -48,7 +47,7 @@ export class GameController {
 
   boot() {
     const modal = new NameModal();
-    const spritesReady = loadTibiaRegistry().then(() => this.loadSprites());
+    const spritesReady = this.loadSprites();
     const mapReady = loadMapDataFromURL(CONFIG.mapDataUrl).catch((error) => {
       console.error('❌ Erro ao carregar mapa:', error);
       return {};

@@ -36,7 +36,7 @@ export function openEnemyForm(x, y, clientX, clientY) {
 
 // ================================================================================================================================================================================================================================================
 // refreshCreatureOptions
-// Lista do tipo de criatura: as do jogo e as geradas do Tibia.
+// Lista do tipo de criatura (CREATURE_TYPES).
 
 export function refreshCreatureOptions() {
   const select = document.getElementById('enemyType');

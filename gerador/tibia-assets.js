@@ -1,16 +1,15 @@
-// server/tibia-assets.js
+// gerador/tibia-assets.js
 
 const fs = require('fs');
 const path = require('path');
 const zlib = require('zlib');
 
 // Lê os arquivos do cliente do Tibia (Tibia.spr e Tibia.dat, versão 7.80–8.54)
-// e transforma o que o editor escolher em PNG no formato do jogo:
-//   - item: quadros da animação lado a lado; uma linha por variação de
-//     posição (pattern), escolhida no jogo pelo sqm;
-//   - criatura: uma linha por direção (sul, norte, leste, oeste) e os quadros
-//     (1º parado, depois andando), como os sprites de criatura do jogo.
-// O que foi gerado fica registrado em data/tibia.json (shared/tibia-registry.js).
+// pro gerador de sprites:
+//   - catálogo dos itens e criaturas, por categoria;
+//   - PNG de uma variação de um item (o gerador monta as folhas com eles);
+//   - folha de criatura: uma linha por direção (sul, norte, leste, oeste) e
+//     os quadros (1º parado, depois andando).
 
 const SPRITE_SIZE = 32;
 const ITEM_FIRST_ID = 100;
@@ -47,14 +46,15 @@ class TibiaAssets {
 
   // ================================================================================================================================================================================================================================================
   // catalogo
-  // Lista compacta pro editor: itens [id, categoria, largura, altura, quadros]
-  // e criaturas [id, largura, altura, quadros]. Itens sem desenho ficam de fora.
+  // Lista compacta pro gerador: itens [id, categoria, largura, altura, quadros,
+  // variações] e criaturas [id, largura, altura, quadros]. Itens sem desenho
+  // ficam de fora.
 
   catalogo() {
     const items = [];
     for (const [id, thing] of this.things.item) {
       if (!this.temDesenho(thing)) continue;
-      items.push([id, categoriaDoItem(thing), thing.w, thing.h, thing.anim]);
+      items.push([id, categoriaDoItem(thing), thing.w, thing.h, thing.anim, thing.px * thing.py * thing.pz]);
     }
     const creatures = [];
     for (const [id, thing] of this.things.outfit) {
@@ -72,60 +72,40 @@ class TibiaAssets {
   }
 
   // ================================================================================================================================================================================================================================================
-  // miniatura
-  // PNG do 1º quadro (item) ou da criatura parada virada pro sul.
+  // spriteDoItem
+  // PNG do 1º quadro de uma variação do item. As variações vêm na ordem do
+  // Tibia: x muda primeiro, depois y, depois z (no chão, a posição no mapa).
 
-  miniatura(tipo, id) {
-    const chave = `${tipo}:${id}`;
-    if (this.thumbCache.has(chave)) return this.thumbCache.get(chave);
-    const thing = this.things[tipo === 'creature' ? 'outfit' : 'item'].get(id);
+  spriteDoItem(id, variacao = 0) {
+    const thing = this.things.item.get(id);
     if (!thing) return null;
-    const quadro = tipo === 'creature'
-      ? this.quadroCriatura(thing, Math.min(DIRECTION_PATTERNS[0], thing.px - 1), 0, DEFAULT_OUTFIT_COLORS)
-      : this.quadro(thing, { anim: 0 });
+    const total = thing.px * thing.py * thing.pz;
+    if (!Number.isInteger(variacao) || variacao < 0 || variacao >= total) return null;
+
+    const chave = `item:${id}:${variacao}`;
+    if (this.thumbCache.has(chave)) return this.thumbCache.get(chave);
+    const x = variacao % thing.px;
+    const y = Math.floor(variacao / thing.px) % thing.py;
+    const z = Math.floor(variacao / (thing.px * thing.py));
+    const quadro = this.quadro(thing, { x, y, z, anim: 0 });
     const png = gerarPng(quadro.pixels, quadro.largura, quadro.altura);
     this.thumbCache.set(chave, png);
     return png;
   }
 
   // ================================================================================================================================================================================================================================================
-  // exportarItem
-  // Grava o PNG do item e devolve a entrada do registro (propriedades pro jogo).
+  // miniaturaCriatura
+  // PNG da criatura parada, virada pro sul.
 
-  exportarItem(id, pastaImg) {
-    const thing = this.things.item.get(id);
-    if (!thing || !this.temDesenho(thing)) return null;
-
-    const usaPosicao = !temFlag(thing, FLAG.STACKABLE, FLAG.FLUID_CONTAINER, FLAG.FLUID, FLAG.HANGABLE);
-    const patterns = usaPosicao ? [thing.px, thing.py, thing.pz] : [1, 1, 1];
-    const linhas = patterns[0] * patterns[1] * patterns[2];
-    const largura = thing.w * SPRITE_SIZE;
-    const altura = thing.h * SPRITE_SIZE;
-    const folha = new Uint8Array(largura * thing.anim * altura * linhas * 4);
-
-    for (let linha = 0; linha < linhas; linha++) {
-      const x = linha % patterns[0];
-      const y = Math.floor(linha / patterns[0]) % patterns[1];
-      const z = Math.floor(linha / (patterns[0] * patterns[1]));
-      for (let anim = 0; anim < thing.anim; anim++) {
-        const quadro = this.quadro(thing, { x, y, z, anim });
-        colar(folha, largura * thing.anim, quadro, anim * largura, linha * altura);
-      }
-    }
-
-    const arquivo = `tibia/items/${id}.png`;
-    gravarPng(path.join(pastaImg, arquivo), folha, largura * thing.anim, altura * linhas);
-    return {
-      file: arquivo,
-      kind: categoriaDoItem(thing),
-      fw: largura,
-      fh: altura,
-      frames: thing.anim,
-      patterns,
-      blocks: temFlag(thing, FLAG.UNPASSABLE),
-      movable: !temFlag(thing, FLAG.UNMOVEABLE),
-      hasVolume: temFlag(thing, FLAG.ELEVATION)
-    };
+  miniaturaCriatura(id) {
+    const chave = `creature:${id}`;
+    if (this.thumbCache.has(chave)) return this.thumbCache.get(chave);
+    const thing = this.things.outfit.get(id);
+    if (!thing) return null;
+    const quadro = this.quadroCriatura(thing, Math.min(DIRECTION_PATTERNS[0], thing.px - 1), 0, DEFAULT_OUTFIT_COLORS);
+    const png = gerarPng(quadro.pixels, quadro.largura, quadro.altura);
+    this.thumbCache.set(chave, png);
+    return png;
   }
 
   // ================================================================================================================================================================================================================================================

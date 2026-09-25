@@ -26,7 +26,7 @@ export class Enemy extends Entity {
     this.spawnZ = data.spawnZ ?? (data.z || 0);
     this.patrolCenterX = this.spawnX;
     this.patrolCenterY = this.spawnY;
-    // Tipo da criatura (CREATURE_TYPES ou criatura do Tibia): define nome, sprite e cadáver.
+    // Tipo da criatura (nome em CREATURE_TYPES): define nome, sprite e cadáver.
     this.creature = hasCreatureType(data.creature) ? data.creature : DEFAULT_CREATURE;
   }
 

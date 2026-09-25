@@ -1,7 +1,6 @@
 // shared/map-format.js
 
 import { ITEM_CATALOG } from './catalog.js';
-import { parseTibiaType, isTibiaGround, getTibiaItem } from './tibia-registry.js';
 import { getStairTarget } from './stairs.js';
 import { borderEntryType, parseBorderType } from './floor-borders.js';
 
@@ -43,12 +42,11 @@ export function addFloorToCell(cell, type, seq = null) {
 // Recalcula o step de cada item da célula pela ordem da pilha: o item fica
 // sobre a altura dos itens COM volume que estão abaixo dele. Item sem volume
 // não aumenta a altura — outro item colocado depois fica no mesmo step.
-// Item do Tibia tem volume quando tem altura (elevação) no Tibia.dat.
 
 export function restackItems(objects) {
   let height = 0;
   for (const obj of objects) {
-    const def = ITEM_CATALOG[obj.type] || getTibiaItem(obj.type);
+    const def = ITEM_CATALOG[obj.type];
     if (!def) continue;
     obj.step = height;
     if (def.hasVolume) height++;
@@ -164,9 +162,6 @@ export function serializeMapFromLayers(layerOrder, layers, GRID) {
           } else if (ITEM_CATALOG[obj.type]) {
             const def = ITEM_CATALOG[obj.type];
             objetosData.push([obj.type, x, y, z, obj.step || 0, def.movable, def.hasVolume, def.blocksMovement]);
-          } else if (parseTibiaType(obj.type)) {
-            const def = getTibiaItem(obj.type) || {};
-            objetosData.push([obj.type, x, y, z, obj.step || 0, !!def.movable, !!def.hasVolume, !!def.blocks]);
           } else {
             const isCorner = obj.type === 'Wall-XY' || obj.type === 'Wall-YX';
             objetosData.push([obj.type, x, y, z, 0, false, !isCorner, true]);
@@ -232,12 +227,12 @@ export function buildLayersFromMapData(mapData, GRID) {
     if (border) {
       cell.borders.push(border);
       stats.border++;
-    } else if (type === 'Floor' || type === 'Floor2' || isTibiaGround(type)) {
+    } else if (type === 'Floor' || type === 'Floor2') {
       // Mesmo fallback do jogo (collectObjectDescriptors): sem seq, vale a ordem no arquivo.
       if (addFloorToCell(cell, type, Number.isFinite(seq) ? seq : index + 1)) stats.floor++;
     } else if (type === 'Hole') {
       cell.hole = true;
-    } else if (ITEM_CATALOG[type] || parseTibiaType(type)) {
+    } else if (ITEM_CATALOG[type]) {
       cell.objects.push({ type, step: step || 0 });
       stats.item++;
     } else {
