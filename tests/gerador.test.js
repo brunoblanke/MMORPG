@@ -97,11 +97,12 @@ test('gerador lê as propriedades do item no Tibia.dat', () => {
   assert.equal(assets.infoDoItem(99999), null);
 });
 
-test('gerador aumenta o quadro da criatura pra caber o desenho deslocado (minotauro, esqueleto, hero)', () => {
+test('gerador guarda a criatura no tamanho do desenho do Tibia, sem o deslocamento', () => {
   const assets = new TibiaAssets(CLIENT);
   for (const id of [25, 33, 73]) {
     const sheet = assets.folhaDeCriatura(id);
-    assert.equal(sheet.tamanho, 64);
-    assert.deepEqual(pngSize(sheet.png), [64 * sheet.quadros, 64 * 4]);
+    assert.equal(sheet.tamanho, 32);
+    assert.deepEqual(pngSize(sheet.png), [32 * sheet.quadros, 32 * 4]);
   }
+  assert.equal(assets.folhaDeCriatura(229).tamanho, 64);
 });
