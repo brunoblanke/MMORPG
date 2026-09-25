@@ -267,20 +267,28 @@ class TibiaAssets {
     const thing = this.things.outfit.get(id);
     if (!thing || !this.temDesenho(thing)) return null;
 
-    const tamanho = Math.max(thing.w, thing.h) * SPRITE_SIZE;
     const [dx, dy] = Array.isArray(thing.flags[FLAG.OFFSET]) ? thing.flags[FLAG.OFFSET] : [0, 0];
     const camadas = [0, ...addons.filter(addon => addon >= 1 && addon < thing.py)];
-    const folha = new Uint8Array(tamanho * thing.anim * tamanho * 4 * 4);
-
+    const quadros = [];
     DIRECTION_PATTERNS.forEach((pattern, linha) => {
       for (let anim = 0; anim < thing.anim; anim++) {
         for (const addon of camadas) {
-          const quadro = this.quadroCriatura(thing, Math.min(pattern, thing.px - 1), anim, cores, addon);
-          colar(folha, tamanho * thing.anim, quadro,
-            anim * tamanho + tamanho - quadro.largura - dx, linha * tamanho + tamanho - quadro.altura - dy);
+          quadros.push({ linha, anim, quadro: this.quadroCriatura(thing, Math.min(pattern, thing.px - 1), anim, cores, addon) });
         }
       }
     });
+
+    let alcance = Math.max(thing.w, thing.h) * SPRITE_SIZE;
+    for (const { quadro } of quadros) {
+      const [esquerda, topo] = cantoDoDesenho(quadro);
+      alcance = Math.max(alcance, quadro.largura + dx - esquerda, quadro.altura + dy - topo);
+    }
+    const tamanho = Math.ceil(alcance / SPRITE_SIZE) * SPRITE_SIZE;
+    const folha = new Uint8Array(tamanho * thing.anim * tamanho * 4 * 4);
+    for (const { linha, anim, quadro } of quadros) {
+      colar(folha, tamanho * thing.anim, quadro,
+        anim * tamanho + tamanho - quadro.largura - dx, linha * tamanho + tamanho - quadro.altura - dy);
+    }
 
     return { png: gerarPng(folha, tamanho * thing.anim, tamanho * 4), tamanho, quadros: thing.anim };
   }
@@ -573,6 +581,23 @@ function colar(folha, larguraFolha, quadro, x, y) {
       folha.set(quadro.pixels.subarray(origem, origem + 4), (fy * larguraFolha + fx) * 4);
     }
   }
+}
+
+// ================================================================================================================================================================================================================================================
+// cantoDoDesenho
+// [coluna, linha] do primeiro pixel visível à esquerda e no topo do quadro.
+
+function cantoDoDesenho(quadro) {
+  let esquerda = quadro.largura;
+  let topo = quadro.altura;
+  for (let linha = 0; linha < quadro.altura; linha++) {
+    for (let coluna = 0; coluna < quadro.largura; coluna++) {
+      if (!quadro.pixels[(linha * quadro.largura + coluna) * 4 + 3]) continue;
+      esquerda = Math.min(esquerda, coluna);
+      topo = Math.min(topo, linha);
+    }
+  }
+  return [esquerda, topo];
 }
 
 // ================================================================================================================================================================================================================================================
