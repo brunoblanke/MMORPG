@@ -80,7 +80,7 @@ button:focus-visible, input:focus-visible, .slot:focus-visible{ outline:2px soli
 .project-list li:hover .delete-btn, .project-list .delete-btn:focus-visible{ opacity:1; }
 .project-list .delete-btn:hover{ color:var(--danger); border-color:var(--danger); }
 .project-list button.active{ border-color:var(--accent); background:rgba(94,234,212,.08); }
-.project-list img{ width:32px; height:32px; object-fit:none; object-position:0 0; image-rendering:pixelated; flex-shrink:0; }
+.project-list .project-thumb{ width:32px; height:32px; flex-shrink:0; }
 .project-list .empty{ color:var(--muted); font-size:12px; }
 .project-list .folder-head{ color:var(--muted); font-size:10px; text-transform:uppercase; letter-spacing:.08em; margin-top:8px; }
 .project-list .folder-head:first-child{ margin-top:0; }
@@ -183,7 +183,7 @@ button:focus-visible, input:focus-visible, .slot:focus-visible{ outline:2px soli
 .wall-slots .slot{ width:104px; }
 .wall-slots .slot canvas{ width:64px; height:64px; }
 #wallPreview{ width:640px; height:640px; }
-#wallSheet{ width:512px; height:384px; background-image:linear-gradient(45deg, #1b1f27 25%, transparent 25%, transparent 75%, #1b1f27 75%), linear-gradient(45deg, #1b1f27 25%, transparent 25%, transparent 75%, #1b1f27 75%); background-size:16px 16px; background-position:0 0, 8px 8px; }
+#wallSheet{ width:512px; height:512px; background-image:linear-gradient(45deg, #1b1f27 25%, transparent 25%, transparent 75%, #1b1f27 75%), linear-gradient(45deg, #1b1f27 25%, transparent 25%, transparent 75%, #1b1f27 75%); background-size:16px 16px; background-position:0 0, 8px 8px; }
 
 .property-list{ display:flex; flex-direction:column; gap:8px; }
 .property-list .checkline{ color:var(--text); font-size:12.5px; }

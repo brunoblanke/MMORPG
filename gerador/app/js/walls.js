@@ -6,10 +6,12 @@ import { sourceLabel, loadImage, isReady, drawAnchored, readPngFile, normalizeNa
 import { refreshProjects } from './projects.js';
 import { fillFolderSelect, folderOf, setFolder, recipePath } from './folders.js';
 
-// Folha de parede (256 × 192, 4 × 3 quadros de 64 px, sem animação):
+// Folha de parede (256 × 256, 4 × 4 quadros de 64 px, sem animação):
 //   linha 1  x (horizontal) · y (vertical) · xy (canto) · yx (pilar)
 //   linha 2  porta x fechada · porta x aberta · porta y fechada · porta y aberta
-//   linha 3  arco x · arco y · janela x · janela y
+//   linha 3  arco x oeste · arco x leste · arco y norte · arco y sul
+//   linha 4  janela x · janela y
+// O arco ocupa 2 sqm: o x tem a metade oeste e a leste; o y, a norte e a sul.
 // x corre ao longo de x (paredes de cima e de baixo da sala); y ao longo de
 // y (paredes dos lados); xy é o canto que fecha a sala embaixo à direita e yx
 // o pilar que fecha em cima à esquerda. Porta, arco e janela x ficam numa
@@ -33,8 +35,10 @@ const DOOR_PIECES = [
   { key: 'porta-y-aberta', name: 'Porta Y · aberta' }
 ];
 const OPENING_PIECES = [
-  { key: 'arco-x', name: 'Arco X' },
-  { key: 'arco-y', name: 'Arco Y' },
+  { key: 'arco-x-oeste', name: 'Arco X · oeste' },
+  { key: 'arco-x-leste', name: 'Arco X · leste' },
+  { key: 'arco-y-norte', name: 'Arco Y · norte' },
+  { key: 'arco-y-sul', name: 'Arco Y · sul' },
   { key: 'janela-x', name: 'Janela X' },
   { key: 'janela-y', name: 'Janela Y' }
 ];
@@ -43,16 +47,16 @@ const PIECES = [...WALL_PIECES, ...DOOR_PIECES, ...OPENING_PIECES];
 // Sala da prévia (como no Tibia): pilar em cima à esquerda, a parede x de
 // cima indo até o fim à direita, a y da esquerda até o fim embaixo, e o canto
 // xy fechando embaixo à direita. Porta fechada em cima e à esquerda, aberta
-// embaixo e à direita; arco e janela em cima e à esquerda. Sem a peça
-// escolhida, fica a parede.
+// embaixo e à direita; arco (as duas metades) e janela em cima e à
+// esquerda. Sem a peça escolhida, fica a parede.
 const ROOM = [
   '..........',
-  '.pxdxaxwx.',
+  '.pxdxabwx.',
   '.v......v.',
   '.e......E.',
   '.v......v.',
   '.A......v.',
-  '.v......v.',
+  '.B......v.',
   '.W......v.',
   '.vxxDxxxc.',
   '..........'
@@ -60,7 +64,8 @@ const ROOM = [
 const ROOM_PIECES = {
   c: ['xy'], x: ['x'], v: ['y'], p: ['yx'],
   d: ['porta-x', 'x'], D: ['porta-x-aberta', 'x'], e: ['porta-y', 'y'], E: ['porta-y-aberta', 'y'],
-  a: ['arco-x', 'x'], A: ['arco-y', 'y'], w: ['janela-x', 'x'], W: ['janela-y', 'y']
+  a: ['arco-x-oeste', 'x'], b: ['arco-x-leste', 'x'], A: ['arco-y-norte', 'y'], B: ['arco-y-sul', 'y'],
+  w: ['janela-x', 'x'], W: ['janela-y', 'y']
 };
 
 const walls = {

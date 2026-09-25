@@ -4,7 +4,8 @@ import { fetchProjects } from './api.js';
 import { folderLabel } from './folders.js';
 
 // Lista da esquerda: o que já foi salvo com a ferramenta aberta, agrupado
-// pela pasta, com a miniatura (canto de cima à esquerda da folha). Clicar
+// pela pasta, com a miniatura (o primeiro quadro da folha, reduzido pra
+// caber em 32 × 32). Clicar
 // abre a receita; o × exclui. As antigas, de antes das pastas, ficam em
 // "Sem pasta".
 
@@ -58,10 +59,7 @@ export async function refreshProjects() {
       const button = document.createElement('button');
       button.type = 'button';
       button.className = project.caminho === activePath() ? 'active' : '';
-      const img = document.createElement('img');
-      img.src = `/saida/${project.caminho}.png?v=${Math.round(project.atualizado)}`;
-      img.alt = '';
-      button.append(img, project.nome);
+      button.append(thumbnail(project), project.nome);
       button.onclick = () => onOpen(project.caminho);
       const remove = document.createElement('button');
       remove.type = 'button';
@@ -73,4 +71,24 @@ export async function refreshProjects() {
       listEl.appendChild(item);
     }
   }
+}
+
+// ================================================================================================================================================================================================================================================
+// thumbnail
+// O primeiro quadro da folha (quadro × quadro, no canto de cima à esquerda)
+// reduzido pra 32 × 32.
+
+function thumbnail(project) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 32;
+  canvas.height = 32;
+  canvas.className = 'project-thumb';
+  const img = new Image();
+  img.onload = () => {
+    const ctx = canvas.getContext('2d');
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(img, 0, 0, project.quadro, project.quadro, 0, 0, 32, 32);
+  };
+  img.src = `/saida/${project.caminho}.png?v=${Math.round(project.atualizado)}`;
+  return canvas;
 }

@@ -205,8 +205,9 @@ function lerCaminho(caminho) {
 
 // ================================================================================================================================================================================================================================================
 // listarProjetos
-// Todas as receitas salvas: [{ caminho, ferramenta, grupo, pasta, nome, atualizado }],
-// mais novas primeiro. caminho é 'grupo/pasta/nome' ('ferramenta/nome' nas antigas).
+// Todas as receitas salvas: [{ caminho, ferramenta, grupo, pasta, nome, quadro, atualizado }],
+// mais novas primeiro. caminho é 'grupo/pasta/nome' ('ferramenta/nome' nas
+// antigas); quadro é o tamanho do quadro da folha (32 ou 64).
 
 function listarProjetos(req, res) {
   const projetos = [];
@@ -218,7 +219,9 @@ function listarProjetos(req, res) {
       const info = lerCaminho(`${relativa}/${arquivo.slice(0, -5)}`);
       if (!info) continue;
       const atualizado = fs.statSync(path.join(pasta, arquivo)).mtimeMs;
-      projetos.push({ caminho: `${relativa}/${info.nome}`, ...info, atualizado });
+      const receita = JSON.parse(fs.readFileSync(path.join(pasta, arquivo), 'utf8'));
+      const quadro = (receita.formato && receita.formato.quadro) || 32;
+      projetos.push({ caminho: `${relativa}/${info.nome}`, ...info, quadro, atualizado });
     }
   };
   for (const ferramenta of FERRAMENTAS) lerPasta(ferramenta);
