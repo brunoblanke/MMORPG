@@ -1,0 +1,21 @@
+{
+  "formato": {
+    "quadro": 32,
+    "quadros": 1
+  },
+  "objeto": {
+    "tibia": {
+      "id": 3320,
+      "variacao": 0
+    }
+  },
+  "propriedades": {
+    "bloqueia": false,
+    "move": true,
+    "altura": false
+  },
+  "ferramenta": "objetos",
+  "grupo": "itens",
+  "pasta": "machados",
+  "nome": "fire-axe"
+}

@@ -1,0 +1,114 @@
+{
+  "formato": {
+    "quadro": 32,
+    "linhas": [
+      "meio: 4 variações",
+      "s o n l",
+      "sl so nl no",
+      "int-sl int-so int-nl int-no"
+    ]
+  },
+  "variacoesDoMeio": 4,
+  "slots": {
+    "meio-1": {
+      "tibia": {
+        "id": 5572,
+        "variacao": 0
+      }
+    },
+    "sl": {
+      "tibia": {
+        "id": 5576,
+        "variacao": 0
+      }
+    },
+    "so": {
+      "tibia": {
+        "id": 5574,
+        "variacao": 0
+      }
+    },
+    "nl": {
+      "tibia": {
+        "id": 5570,
+        "variacao": 0
+      }
+    },
+    "no": {
+      "tibia": {
+        "id": 5568,
+        "variacao": 0
+      }
+    },
+    "int-sl": {
+      "tibia": {
+        "id": 5568,
+        "variacao": 0
+      }
+    },
+    "int-so": {
+      "tibia": {
+        "id": 5570,
+        "variacao": 0
+      }
+    },
+    "int-nl": {
+      "tibia": {
+        "id": 5574,
+        "variacao": 0
+      }
+    },
+    "int-no": {
+      "tibia": {
+        "id": 5576,
+        "variacao": 0
+      }
+    },
+    "meio-2": {
+      "tibia": {
+        "id": 5572,
+        "variacao": 0
+      }
+    },
+    "meio-3": {
+      "tibia": {
+        "id": 5572,
+        "variacao": 0
+      }
+    },
+    "meio-4": {
+      "tibia": {
+        "id": 5572,
+        "variacao": 0
+      }
+    },
+    "s": {
+      "tibia": {
+        "id": 5575,
+        "variacao": 0
+      }
+    },
+    "o": {
+      "tibia": {
+        "id": 5571,
+        "variacao": 0
+      }
+    },
+    "n": {
+      "tibia": {
+        "id": 5569,
+        "variacao": 0
+      }
+    },
+    "l": {
+      "tibia": {
+        "id": 5573,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "pisos",
+  "grupo": "estrutura",
+  "pasta": "pisos",
+  "nome": "piso-tapete-azul"
+}

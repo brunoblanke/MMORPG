@@ -1,0 +1,21 @@
+{
+  "formato": {
+    "quadro": 32,
+    "quadros": 2
+  },
+  "objeto": {
+    "tibia": {
+      "id": 3280,
+      "variacao": 0
+    }
+  },
+  "propriedades": {
+    "bloqueia": false,
+    "move": true,
+    "altura": false
+  },
+  "ferramenta": "objetos",
+  "grupo": "itens",
+  "pasta": "espadas",
+  "nome": "fire-sword"
+}

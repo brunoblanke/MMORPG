@@ -1,0 +1,112 @@
+{
+  "formato": {
+    "quadro": 64,
+    "colunas": 4,
+    "pecas": [
+      "x",
+      "y",
+      "xy",
+      "yx",
+      "porta-x",
+      "porta-x-aberta",
+      "porta-y",
+      "porta-y-aberta",
+      "arco-x-oeste",
+      "arco-x-leste",
+      "arco-y-norte",
+      "arco-y-sul",
+      "janela-x",
+      "janela-y"
+    ]
+  },
+  "pecas": {
+    "x": {
+      "tibia": {
+        "id": 1271,
+        "variacao": 0
+      }
+    },
+    "y": {
+      "tibia": {
+        "id": 1270,
+        "variacao": 0
+      }
+    },
+    "xy": {
+      "tibia": {
+        "id": 1274,
+        "variacao": 0
+      }
+    },
+    "yx": {
+      "tibia": {
+        "id": 1272,
+        "variacao": 0
+      }
+    },
+    "porta-x": {
+      "tibia": {
+        "id": 5097,
+        "variacao": 0
+      }
+    },
+    "porta-x-aberta": {
+      "tibia": {
+        "id": 5099,
+        "variacao": 0
+      }
+    },
+    "porta-y": {
+      "tibia": {
+        "id": 5106,
+        "variacao": 0
+      }
+    },
+    "porta-y-aberta": {
+      "tibia": {
+        "id": 5108,
+        "variacao": 0
+      }
+    },
+    "janela-x": {
+      "tibia": {
+        "id": 1736,
+        "variacao": 0
+      }
+    },
+    "janela-y": {
+      "tibia": {
+        "id": 1737,
+        "variacao": 0
+      }
+    },
+    "arco-x-oeste": {
+      "tibia": {
+        "id": 1626,
+        "variacao": 0
+      }
+    },
+    "arco-x-leste": {
+      "tibia": {
+        "id": 1627,
+        "variacao": 0
+      }
+    },
+    "arco-y-norte": {
+      "tibia": {
+        "id": 1624,
+        "variacao": 0
+      }
+    },
+    "arco-y-sul": {
+      "tibia": {
+        "id": 1625,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "paredes",
+  "grupo": "estrutura",
+  "pasta": "paredes",
+  "nome": "parede-tijolos-1"
+}

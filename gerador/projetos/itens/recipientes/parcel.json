@@ -1,0 +1,21 @@
+{
+  "formato": {
+    "quadro": 32,
+    "quadros": 1
+  },
+  "objeto": {
+    "tibia": {
+      "id": 6114,
+      "variacao": 0
+    }
+  },
+  "propriedades": {
+    "bloqueia": false,
+    "move": true,
+    "altura": true
+  },
+  "ferramenta": "objetos",
+  "grupo": "itens",
+  "pasta": "recipientes",
+  "nome": "parcel"
+}
