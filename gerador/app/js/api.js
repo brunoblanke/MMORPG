@@ -75,6 +75,14 @@ export async function fetchProject(path) {
 }
 
 // ================================================================================================================================================================================================================================================
+// deleteProject
+// Apaga a folha e a receita salvas em caminho ('grupo/pasta/nome').
+
+export function deleteProject(path) {
+  return requestJson(`/api/projeto?caminho=${encodeURIComponent(path)}`, { method: 'DELETE' });
+}
+
+// ================================================================================================================================================================================================================================================
 // fetchTaxonomy
 // Os grupos, seções e pastas onde as folhas são salvas (gerador/taxonomia.json).
 

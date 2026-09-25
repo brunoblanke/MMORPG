@@ -35,6 +35,7 @@ app.get('/api/paleta', (req, res) => res.json({ success: true, cores: paletaDeRo
 app.get('/api/projetos', listarProjetos);
 app.get('/api/taxonomia', (req, res) => res.json({ success: true, taxonomia: TAXONOMIA }));
 app.get('/api/projeto', abrirProjeto);
+app.delete('/api/projeto', excluirProjeto);
 app.post('/api/salvar', salvar);
 app.use('/saida', express.static(PASTA_SAIDA));
 app.use(express.static(PASTA_APP));
@@ -236,6 +237,28 @@ function abrirProjeto(req, res) {
   const arquivo = path.join(PASTA_PROJETOS, `${req.query.caminho}.json`);
   if (!fs.existsSync(arquivo)) return res.sendStatus(404);
   res.json({ success: true, receita: { ...JSON.parse(fs.readFileSync(arquivo, 'utf8')), grupo: info.grupo, pasta: info.pasta, nome: info.nome } });
+}
+
+// ================================================================================================================================================================================================================================================
+// excluirProjeto
+// ?caminho=grupo/pasta/nome → apaga a folha (saida) e a receita (projetos).
+
+function excluirProjeto(req, res) {
+  const info = lerCaminho(req.query.caminho);
+  if (!info) return res.sendStatus(404);
+  const arquivos = [
+    path.join(PASTA_SAIDA, `${req.query.caminho}.png`),
+    path.join(PASTA_PROJETOS, `${req.query.caminho}.json`)
+  ].filter(arquivo => fs.existsSync(arquivo));
+  if (!arquivos.length) return res.sendStatus(404);
+  try {
+    for (const arquivo of arquivos) fs.unlinkSync(arquivo);
+    console.log(`🗑️  ${req.query.caminho} excluído`);
+    res.json({ success: true });
+  } catch (err) {
+    console.error('❌ Erro ao excluir:', err.message);
+    res.status(500).json({ success: false, message: err.message });
+  }
 }
 
 // ================================================================================================================================================================================================================================================

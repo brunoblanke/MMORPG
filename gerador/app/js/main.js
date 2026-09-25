@@ -1,9 +1,9 @@
 // gerador/app/js/main.js
 
-import { fetchCatalog, fetchProject, fetchTaxonomy } from './api.js';
+import { fetchCatalog, fetchProject, fetchTaxonomy, deleteProject } from './api.js';
 import { setTaxonomy } from './folders.js';
 import { initPicker, setPickerMode } from './picker.js';
-import { showProjects } from './projects.js';
+import { showProjects, refreshProjects } from './projects.js';
 import { floorsView } from './floors.js';
 import { creaturesView } from './creatures.js';
 import { wallsView } from './walls.js';
@@ -51,8 +51,27 @@ function activate(category) {
     onOpen: async (path) => {
       if (!confirmDiscard()) return;
       view.open(await fetchProject(path));
-    }
+    },
+    onDelete: removeProject
   });
+}
+
+// ================================================================================================================================================================================================================================================
+// removeProject
+// Exclui a folha e a receita (depois de confirmar); se estava aberta, a área
+// de trabalho volta a ficar vazia.
+
+async function removeProject(project) {
+  if (!window.confirm(`Excluir ${project.nome}? A folha (PNG) e a receita são apagadas.`)) return;
+  const view = activeView();
+  try {
+    await deleteProject(project.caminho);
+  } catch (error) {
+    window.alert(`Não deu pra excluir: ${error.message}`);
+    return;
+  }
+  if (view.path() === project.caminho) view.reset();
+  else refreshProjects();
 }
 
 // ================================================================================================================================================================================================================================================

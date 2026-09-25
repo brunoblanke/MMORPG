@@ -5,15 +5,17 @@ import { folderLabel } from './folders.js';
 
 // Lista da esquerda: o que já foi salvo com a ferramenta aberta, agrupado
 // pela pasta, com a miniatura (canto de cima à esquerda da folha). Clicar
-// abre a receita. As antigas, de antes das pastas, ficam em "Sem pasta".
+// abre a receita; o × exclui. As antigas, de antes das pastas, ficam em
+// "Sem pasta".
 
 const listEl = document.getElementById('projectList');
 
-let current = { tool: null, emptyText: '', activePath: () => '', onOpen: () => {} };
+let current = { tool: null, emptyText: '', activePath: () => '', onOpen: () => {}, onDelete: () => {} };
 
 // ================================================================================================================================================================================================================================================
 // showProjects
-// options: { emptyText, activePath(): caminho aberto agora, onOpen(caminho) }.
+// options: { emptyText, activePath(): caminho aberto agora, onOpen(caminho),
+// onDelete(projeto) }.
 
 export function showProjects(tool, options) {
   current = { tool, ...options };
@@ -25,7 +27,7 @@ export function showProjects(tool, options) {
 // refreshProjects
 
 export async function refreshProjects() {
-  const { tool, emptyText, activePath, onOpen } = current;
+  const { tool, emptyText, activePath, onOpen, onDelete } = current;
   let projects = [];
   try {
     projects = (await fetchProjects()).filter(p => p.ferramenta === tool);
@@ -61,7 +63,13 @@ export async function refreshProjects() {
       img.alt = '';
       button.append(img, project.nome);
       button.onclick = () => onOpen(project.caminho);
-      item.appendChild(button);
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'delete-btn';
+      remove.title = `Excluir ${project.nome}`;
+      remove.textContent = '×';
+      remove.onclick = () => onDelete(project);
+      item.append(button, remove);
       listEl.appendChild(item);
     }
   }

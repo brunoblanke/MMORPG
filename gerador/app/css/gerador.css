@@ -74,6 +74,11 @@ button:focus-visible, input:focus-visible, .slot:focus-visible{ outline:2px soli
   background:var(--panel-2); border:1px solid var(--line); border-radius:6px; color:var(--text); font:inherit; cursor:pointer;
 }
 .project-list button:hover{ border-color:var(--accent-dim); }
+.project-list li{ display:flex; gap:4px; }
+.project-list li > button:first-child{ flex:1; min-width:0; }
+.project-list .delete-btn{ flex:0 0 28px; justify-content:center; padding:0; color:var(--muted); font-size:16px; opacity:0; }
+.project-list li:hover .delete-btn, .project-list .delete-btn:focus-visible{ opacity:1; }
+.project-list .delete-btn:hover{ color:var(--danger); border-color:var(--danger); }
 .project-list button.active{ border-color:var(--accent); background:rgba(94,234,212,.08); }
 .project-list img{ width:32px; height:32px; object-fit:none; object-position:0 0; image-rendering:pixelated; flex-shrink:0; }
 .project-list .empty{ color:var(--muted); font-size:12px; }
