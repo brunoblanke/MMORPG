@@ -16,8 +16,8 @@
     <h1>Gerador de sprites</h1>
   </div>
   <nav class="categories" aria-label="Categoria">
-    <button type="button" class="category active">Pisos</button>
-    <button type="button" class="category" disabled title="Em breve">Criaturas</button>
+    <button type="button" class="category active" data-category="pisos">Pisos</button>
+    <button type="button" class="category" data-category="criaturas">Criaturas</button>
     <button type="button" class="category" disabled title="Em breve">Paredes</button>
     <button type="button" class="category" disabled title="Em breve">Objetos</button>
   </nav>
@@ -26,12 +26,12 @@
 <div class="layout">
 
   <aside class="panel projects">
-    <div class="section-label">Pisos salvos</div>
+    <div class="section-label" id="projectsTitle">Pisos salvos</div>
     <button type="button" class="ghost-btn" id="newProject">+ Novo piso</button>
     <ul class="project-list" id="projectList"></ul>
   </aside>
 
-  <main class="workspace">
+  <main class="workspace" id="floorsView">
     <form class="save-bar" id="saveForm" autocomplete="off">
       <div class="field">
         <label for="projectName">Nome do piso</label>
@@ -69,6 +69,63 @@
       <div class="preview-box">
         <div class="section-label">Folha que vai ser salva <span class="dim">(128 × 128)</span></div>
         <canvas id="sheetPreview" width="128" height="128"></canvas>
+      </div>
+    </section>
+  </main>
+
+  <main class="workspace" id="creaturesView" hidden>
+    <form class="save-bar" id="creatureSaveForm" autocomplete="off">
+      <div class="field">
+        <label for="creatureName">Nome da criatura</label>
+        <input type="text" id="creatureName" placeholder="ex.: rato" maxlength="40" required />
+      </div>
+      <button type="submit" class="primary-btn" id="creatureSaveBtn">Salvar PNG</button>
+      <p class="status" id="creatureStatus" role="status"></p>
+    </form>
+
+    <section class="creature-setup" aria-label="Criatura">
+      <div class="section-label">Criatura · escolha à direita, na aba Criaturas</div>
+      <div class="creature-card">
+        <canvas id="creatureThumb" width="64" height="64"></canvas>
+        <div class="creature-info" id="creatureInfo">Nenhuma criatura escolhida.</div>
+      </div>
+      <div class="outfit-options" id="outfitColors" hidden>
+        <div class="section-label">Cores da roupa · clique numa parte e escolha a cor</div>
+        <div class="color-parts" id="colorParts"></div>
+        <div class="palette" id="palette"></div>
+      </div>
+      <div class="outfit-options" id="outfitAddons" hidden>
+        <div class="section-label">Addons</div>
+        <div class="addon-list" id="addonList"></div>
+      </div>
+    </section>
+
+    <section class="corpse" aria-label="Cadáver">
+      <div class="sheet-head">
+        <div class="section-label">Cadáver · clique num estágio e escolha o item à direita, na aba Itens</div>
+        <div class="slot-actions">
+          <label class="checkline" title="Ao escolher um item, os estágios seguintes recebem os números seguintes (id+1, id+2)">
+            <input type="checkbox" id="corpseSequence" checked />
+            Preencher em sequência
+          </label>
+          <label class="ghost-btn file-btn">
+            Enviar PNG
+            <input type="file" id="corpseUpload" accept="image/png" hidden />
+          </label>
+          <button type="button" class="ghost-btn" id="corpseClear">Limpar estágio</button>
+        </div>
+      </div>
+      <div class="slots" id="corpseSlots"></div>
+    </section>
+
+    <section class="previews">
+      <div class="preview-box">
+        <div class="section-label">Prévia · andando e o cadáver</div>
+        <canvas id="walkPreview" width="448" height="192"></canvas>
+      </div>
+      <div class="preview-box">
+        <div class="section-label">Folha que vai ser salva <span class="dim" id="creatureSheetSize"></span></div>
+        <canvas id="creatureSheet" width="96" height="160"></canvas>
       </div>
     </section>
   </main>

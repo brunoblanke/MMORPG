@@ -2,9 +2,6 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import fs from 'node:fs';
-import os from 'node:os';
-import path from 'node:path';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
@@ -38,14 +35,19 @@ test('gerador devolve o PNG de cada variação de um item', () => {
   assert.equal(assets.spriteDoItem(99999, 0), null);
 });
 
-test('gerador monta a folha da criatura: 4 direções × quadros', () => {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'gerador-'));
-  try {
-    const sheet = new TibiaAssets(CLIENT).exportarCriatura(21, dir);
-    assert.deepEqual(pngSize(fs.readFileSync(path.join(dir, sheet.file))), [32 * sheet.frames, 32 * 4]);
-  } finally {
-    fs.rmSync(dir, { recursive: true, force: true });
-  }
+test('gerador monta a folha da criatura: 4 direções × quadros, com cores e addons', () => {
+  const assets = new TibiaAssets(CLIENT);
+  const rat = assets.folhaDeCriatura(21);
+  assert.deepEqual([rat.tamanho, rat.quadros], [32, 3]);
+  assert.deepEqual(pngSize(rat.png), [32 * 3, 32 * 4]);
+
+  const plain = assets.folhaDeCriatura(128, { cores: [78, 69, 58, 76] });
+  const red = assets.folhaDeCriatura(128, { cores: [78, 94, 58, 76] });
+  const dressed = assets.folhaDeCriatura(128, { cores: [78, 69, 58, 76], addons: [1, 2] });
+  assert.deepEqual(pngSize(plain.png), [64 * 3, 64 * 4]);
+  assert.notDeepEqual(plain.png, red.png);
+  assert.notDeepEqual(plain.png, dressed.png);
+  assert.equal(assets.folhaDeCriatura(99999), null);
 });
 
 test('gerador reconhece cada peça de borda pelo desenho, em qualquer ordem de conjunto', () => {

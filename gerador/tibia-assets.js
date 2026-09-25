@@ -56,8 +56,8 @@ class TibiaAssets {
   // ================================================================================================================================================================================================================================================
   // catalogo
   // Lista compacta pro gerador: itens [id, categoria, largura, altura, quadros,
-  // variações] e criaturas [id, largura, altura, quadros]. Itens sem desenho
-  // ficam de fora.
+  // variações] e criaturas [id, largura, altura, quadros, tem cores, addons].
+  // O que não tem desenho fica de fora.
 
   catalogo() {
     const items = [];
@@ -68,7 +68,7 @@ class TibiaAssets {
     const creatures = [];
     for (const [id, thing] of this.things.outfit) {
       if (!this.temDesenho(thing)) continue;
-      creatures.push([id, thing.w, thing.h, thing.anim]);
+      creatures.push([id, thing.w, thing.h, thing.anim, thing.layers > 1, thing.py - 1]);
     }
     return { items, creatures };
   }
@@ -167,25 +167,34 @@ class TibiaAssets {
   }
 
   // ================================================================================================================================================================================================================================================
-  // exportarCriatura
-  // Grava o PNG da criatura (direções × quadros) com as cores de roupa dadas.
+  // folhaDeCriatura
+  // PNG da criatura: uma linha por direção (sul, norte, leste, oeste) e os
+  // quadros lado a lado, cada um em tamanho × tamanho. Roupa de humano leva as
+  // cores (cabeça, corpo, pernas, pés) e os addons pedidos. O deslocamento do
+  // Tibia (em geral 8 px pra cima e pra esquerda) já vem aplicado, pra
+  // criatura ficar no lugar certo desenhada no canto de baixo à direita do sqm.
+  // Devolve { png, tamanho, quadros } ou null.
 
-  exportarCriatura(id, pastaImg, cores = DEFAULT_OUTFIT_COLORS) {
+  folhaDeCriatura(id, { cores = DEFAULT_OUTFIT_COLORS, addons = [] } = {}) {
     const thing = this.things.outfit.get(id);
     if (!thing || !this.temDesenho(thing)) return null;
 
     const tamanho = Math.max(thing.w, thing.h) * SPRITE_SIZE;
+    const [dx, dy] = Array.isArray(thing.flags[FLAG.OFFSET]) ? thing.flags[FLAG.OFFSET] : [0, 0];
+    const camadas = [0, ...addons.filter(addon => addon >= 1 && addon < thing.py)];
     const folha = new Uint8Array(tamanho * thing.anim * tamanho * 4 * 4);
+
     DIRECTION_PATTERNS.forEach((pattern, linha) => {
       for (let anim = 0; anim < thing.anim; anim++) {
-        const quadro = this.quadroCriatura(thing, Math.min(pattern, thing.px - 1), anim, cores);
-        colar(folha, tamanho * thing.anim, quadro, anim * tamanho + tamanho - quadro.largura, linha * tamanho + tamanho - quadro.altura);
+        for (const addon of camadas) {
+          const quadro = this.quadroCriatura(thing, Math.min(pattern, thing.px - 1), anim, cores, addon);
+          colar(folha, tamanho * thing.anim, quadro,
+            anim * tamanho + tamanho - quadro.largura - dx, linha * tamanho + tamanho - quadro.altura - dy);
+        }
       }
     });
 
-    const arquivo = `tibia/creatures/${id}.png`;
-    gravarPng(path.join(pastaImg, arquivo), folha, tamanho * thing.anim, tamanho * 4);
-    return { file: arquivo, spriteSize: tamanho, frames: thing.anim };
+    return { png: gerarPng(folha, tamanho * thing.anim, tamanho * 4), tamanho, quadros: thing.anim };
   }
 
   // ================================================================================================================================================================================================================================================
@@ -193,10 +202,10 @@ class TibiaAssets {
   // Quadro da criatura; com 2 camadas (roupa de humano), a 2ª é a máscara das
   // cores: amarelo = cabeça, vermelho = corpo, verde = pernas, azul = pés.
 
-  quadroCriatura(thing, direcao, anim, cores) {
-    const base = this.quadro(thing, { x: direcao, anim, layer: 0 });
+  quadroCriatura(thing, direcao, anim, cores, addon = 0) {
+    const base = this.quadro(thing, { x: direcao, y: addon, anim, layer: 0 });
     if (thing.layers < 2) return base;
-    const mascara = this.quadro(thing, { x: direcao, anim, layer: 1 });
+    const mascara = this.quadro(thing, { x: direcao, y: addon, anim, layer: 1 });
     const rgb = cores.map(corDaPaleta);
     for (let i = 0; i < base.pixels.length; i += 4) {
       if (!mascara.pixels[i + 3]) continue;
@@ -282,7 +291,7 @@ function lerDat(dat) {
         const flag = dat[p++];
         if (flag === 0xFF) break;
         const bytes = FLAG_DATA_BYTES[flag] || 0;
-        flags[flag] = bytes === 2 ? dat.readUInt16LE(p) : true;
+        flags[flag] = bytes === 2 ? dat.readUInt16LE(p) : bytes === 4 ? [dat.readUInt16LE(p), dat.readUInt16LE(p + 2)] : true;
         p += bytes;
       }
       const w = dat[p];
@@ -431,25 +440,29 @@ function corDaPaleta(indice) {
 
 // ================================================================================================================================================================================================================================================
 // colar
-// Copia o quadro (pixels opacos) pra dentro da folha na posição (x, y).
+// Copia o quadro (pixels opacos) pra dentro da folha na posição (x, y); o que
+// cair fora da folha fica de fora.
 
 function colar(folha, larguraFolha, quadro, x, y) {
+  const alturaFolha = folha.length / 4 / larguraFolha;
   for (let linha = 0; linha < quadro.altura; linha++) {
     for (let coluna = 0; coluna < quadro.largura; coluna++) {
       const origem = (linha * quadro.largura + coluna) * 4;
       if (!quadro.pixels[origem + 3]) continue;
-      const destino = ((y + linha) * larguraFolha + x + coluna) * 4;
-      folha.set(quadro.pixels.subarray(origem, origem + 4), destino);
+      const fx = x + coluna;
+      const fy = y + linha;
+      if (fx < 0 || fy < 0 || fx >= larguraFolha || fy >= alturaFolha) continue;
+      folha.set(quadro.pixels.subarray(origem, origem + 4), (fy * larguraFolha + fx) * 4);
     }
   }
 }
 
 // ================================================================================================================================================================================================================================================
-// gravarPng
+// paletaDeRoupa
+// As 133 cores da roupa ('#rrggbb'), na ordem do Tibia (19 tons × 7 níveis).
 
-function gravarPng(arquivo, pixels, largura, altura) {
-  fs.mkdirSync(path.dirname(arquivo), { recursive: true });
-  fs.writeFileSync(arquivo, gerarPng(pixels, largura, altura));
+function paletaDeRoupa() {
+  return Array.from({ length: 133 }, (_, i) => '#' + corDaPaleta(i).map(v => v.toString(16).padStart(2, '0')).join(''));
 }
 
 // ================================================================================================================================================================================================================================================
@@ -501,4 +514,4 @@ function crc32(buffer) {
   return (c ^ 0xFFFFFFFF) >>> 0;
 }
 
-module.exports = { TibiaAssets, DEFAULT_OUTFIT_COLORS };
+module.exports = { TibiaAssets, DEFAULT_OUTFIT_COLORS, paletaDeRoupa };

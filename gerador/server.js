@@ -3,10 +3,10 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-const { TibiaAssets } = require('./tibia-assets.js');
+const { TibiaAssets, paletaDeRoupa } = require('./tibia-assets.js');
 
 // Gerador de sprites: programa à parte do jogo e do editor. Mostra os sprites
-// do Tibia (tibia/780), monta folhas (piso, …) na tela e grava:
+// do Tibia (tibia/780), monta folhas (pisos, criaturas) na tela e grava:
 //   saida/<categoria>/<nome>.png      a folha pronta, no formato do jogo
 //   projetos/<categoria>/<nome>.json  a receita (de onde veio cada parte)
 
@@ -15,7 +15,7 @@ const PASTA_APP = path.join(__dirname, 'app');
 const PASTA_TIBIA = path.join(__dirname, 'tibia', '780');
 const PASTA_SAIDA = path.join(__dirname, 'saida');
 const PASTA_PROJETOS = path.join(__dirname, 'projetos');
-const CATEGORIAS = ['pisos'];
+const CATEGORIAS = ['pisos', 'criaturas'];
 const NOME_VALIDO = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
 const app = express();
@@ -23,6 +23,9 @@ app.use(express.json({ limit: '20mb' }));
 app.get('/api/catalogo', catalogo);
 app.get('/api/sprite/:id/:variacao', spriteDoItem);
 app.get('/api/bordas-sugeridas', bordasSugeridas);
+app.get('/api/criatura/:id/miniatura', miniaturaCriatura);
+app.get('/api/criatura/:id/folha', folhaDeCriatura);
+app.get('/api/paleta', (req, res) => res.json({ success: true, cores: paletaDeRoupa() }));
 app.get('/api/projetos', listarProjetos);
 app.get('/api/projetos/:categoria/:nome', abrirProjeto);
 app.post('/api/salvar', salvar);
@@ -68,6 +71,41 @@ function spriteDoItem(req, res) {
     if (!png) return res.sendStatus(404);
     res.set('Cache-Control', 'public, max-age=86400');
     res.type('png').send(png);
+  } catch (err) {
+    res.sendStatus(500);
+  }
+}
+
+// ================================================================================================================================================================================================================================================
+// miniaturaCriatura
+
+function miniaturaCriatura(req, res) {
+  try {
+    const png = arquivosTibia().miniaturaCriatura(parseInt(req.params.id, 10));
+    if (!png) return res.sendStatus(404);
+    res.set('Cache-Control', 'public, max-age=86400');
+    res.type('png').send(png);
+  } catch (err) {
+    res.sendStatus(500);
+  }
+}
+
+// ================================================================================================================================================================================================================================================
+// folhaDeCriatura
+// ?cores=78,69,58,76&addons=1,2 → PNG (4 direções × quadros); tamanho e
+// quadros vão nos cabeçalhos X-Tamanho e X-Quadros.
+
+function folhaDeCriatura(req, res) {
+  const lista = (texto) => String(texto || '').split(',').filter(Boolean).map(n => parseInt(n, 10)).filter(Number.isInteger);
+  const cores = lista(req.query.cores);
+  try {
+    const folha = arquivosTibia().folhaDeCriatura(parseInt(req.params.id, 10), {
+      cores: cores.length === 4 ? cores : undefined,
+      addons: lista(req.query.addons)
+    });
+    if (!folha) return res.sendStatus(404);
+    res.set({ 'Cache-Control': 'public, max-age=86400', 'X-Tamanho': folha.tamanho, 'X-Quadros': folha.quadros });
+    res.type('png').send(folha.png);
   } catch (err) {
     res.sendStatus(500);
   }

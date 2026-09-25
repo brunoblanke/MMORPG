@@ -1,7 +1,9 @@
 // gerador/app/js/floors.js
 
-import { spriteUrl, fetchProjects, fetchProject, saveProject, fetchBorderSuggestion } from './api.js';
+import { spriteUrl, saveProject, fetchBorderSuggestion } from './api.js';
 import { itemCategory } from './picker.js';
+import { normalizeName } from './common.js';
+import { refreshProjects } from './projects.js';
 
 // Folha de piso (128 × 128, 4 × 4 quadros de 32 px):
 //   linha 1  meio: as variações do piso cheio, lado a lado (até 4)
@@ -105,17 +107,7 @@ export function initFloors() {
     suggestBorders();
   };
   document.getElementById('uploadPng').addEventListener('change', uploadPng);
-  document.getElementById('newProject').onclick = () => {
-    if (floors.dirty && !window.confirm('Descartar o que não foi salvo?')) return;
-    openRecipe({ nome: '', slots: {} });
-  };
   nameEl.addEventListener('input', () => { floors.dirty = true; });
-  window.addEventListener('beforeunload', (evt) => {
-    if (!floors.dirty) return;
-    evt.preventDefault();
-    evt.returnValue = '';
-  });
-  refreshProjects();
   render();
 }
 
@@ -424,15 +416,6 @@ function drawGroundPreview() {
 }
 
 // ================================================================================================================================================================================================================================================
-// normalizeName
-// "Grama Escura" → "grama-escura" (o nome do arquivo).
-
-function normalizeName(text) {
-  return text.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim()
-    .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-}
-
-// ================================================================================================================================================================================================================================================
 // save
 
 async function save() {
@@ -508,41 +491,20 @@ function openRecipe(recipe) {
 }
 
 // ================================================================================================================================================================================================================================================
-// refreshProjects
-// Lista da esquerda, com a 1ª variação do meio de cada piso salvo.
+// floorsView
+// A categoria Pisos pro main.js (lista da esquerda, lista de sprites, novo/abrir).
 
-async function refreshProjects() {
-  const list = document.getElementById('projectList');
-  let projects = [];
-  try {
-    projects = (await fetchProjects()).filter(p => p.categoria === CATEGORY);
-  } catch (error) {
-    list.innerHTML = `<li class="empty">Sem conexão com o gerador: ${error.message}</li>`;
-    return;
-  }
-  list.innerHTML = '';
-  if (!projects.length) {
-    list.innerHTML = '<li class="empty">Nenhum piso salvo ainda.</li>';
-    return;
-  }
-  for (const project of projects) {
-    const item = document.createElement('li');
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.className = project.nome === floors.name ? 'active' : '';
-    const img = document.createElement('img');
-    img.src = `/saida/${CATEGORY}/${project.nome}.png?v=${Math.round(project.atualizado)}`;
-    img.alt = '';
-    button.append(img, project.nome);
-    button.onclick = async () => {
-      if (floors.dirty && !window.confirm('Descartar o que não foi salvo?')) return;
-      try {
-        openRecipe(await fetchProject(CATEGORY, project.nome));
-      } catch (error) {
-        setStatus(`Não deu pra abrir: ${error.message}`, 'error');
-      }
-    };
-    item.appendChild(button);
-    list.appendChild(item);
-  }
-}
+export const floorsView = {
+  category: CATEGORY,
+  title: 'Pisos salvos',
+  newLabel: '+ Novo piso',
+  emptyText: 'Nenhum piso salvo ainda.',
+  pickerMode: 'floors',
+  init: initFloors,
+  open: openRecipe,
+  reset: () => openRecipe({ nome: '', slots: {} }),
+  isDirty: () => floors.dirty,
+  name: () => floors.name,
+  pick: (kind, id, variation) => { if (kind === 'item') pickSprite(id, variation); },
+  useAll: useAllVariations
+};
