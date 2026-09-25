@@ -10,9 +10,10 @@ import { fillFolderSelect, folderOf, setFolder, recipePath } from './folders.js'
 //   linha 1  x (horizontal) · y (vertical) · xy (canto) · yx (pilar)
 //   linha 2  porta x fechada · porta x aberta · porta y fechada · porta y aberta
 //   linha 3  arco x · arco y · janela x · janela y
-// x corre ao longo de x, no lado de cima do sqm; y ao longo de y, no lado
-// esquerdo; xy é o canto em cima à esquerda e yx a ponta que fecha o canto de
-// baixo à direita. Porta, arco e janela x ficam numa parede x; os y, numa y.
+// x corre ao longo de x (paredes de cima e de baixo da sala); y ao longo de
+// y (paredes dos lados); xy é o canto que fecha a sala embaixo à direita e yx
+// o pilar que fecha em cima à esquerda. Porta, arco e janela x ficam numa
+// parede x; os y, numa y.
 // Serve também pras cercas e parapeitos (a porta vira o portão).
 // Cada peça vem de um item do Tibia ou de um PNG.
 
@@ -22,8 +23,8 @@ const COLUMNS = 4;
 const WALL_PIECES = [
   { key: 'x', name: 'X · horizontal' },
   { key: 'y', name: 'Y · vertical' },
-  { key: 'xy', name: 'XY · canto' },
-  { key: 'yx', name: 'YX · pilar' }
+  { key: 'xy', name: 'XY · canto (baixo-dir.)' },
+  { key: 'yx', name: 'YX · pilar (cima-esq.)' }
 ];
 const DOOR_PIECES = [
   { key: 'porta-x', name: 'Porta X · fechada' },
@@ -39,21 +40,21 @@ const OPENING_PIECES = [
 ];
 const PIECES = [...WALL_PIECES, ...DOOR_PIECES, ...OPENING_PIECES];
 
-// Sala da prévia (como no Tibia): canto em cima à esquerda, paredes
-// horizontais em cima e embaixo, verticais nos lados e o pilar fechando o
-// canto de baixo à direita. Porta fechada em cima e à esquerda, aberta
+// Sala da prévia (como no Tibia): pilar em cima à esquerda, a parede x de
+// cima indo até o fim à direita, a y da esquerda até o fim embaixo, e o canto
+// xy fechando embaixo à direita. Porta fechada em cima e à esquerda, aberta
 // embaixo e à direita; arco e janela em cima e à esquerda. Sem a peça
 // escolhida, fica a parede.
 const ROOM = [
   '..........',
-  '.cxdxaxwv.',
+  '.pxdxaxwx.',
   '.v......v.',
   '.e......E.',
   '.v......v.',
   '.A......v.',
   '.v......v.',
   '.W......v.',
-  '.xxDxxxxp.',
+  '.vxxDxxxc.',
   '..........'
 ];
 const ROOM_PIECES = {
