@@ -3,6 +3,7 @@
 import { spriteUrl, saveProject, fetchItemInfo } from './api.js';
 import { loadImage, isReady, drawAnchored, readPngFile, normalizeName, setStatus } from './common.js';
 import { refreshProjects } from './projects.js';
+import { fillFolderSelect, folderOf, setFolder, recipePath } from './folders.js';
 
 // Folha de objeto: uma linha com os quadros da animação, cada um com o
 // tamanho do objeto (32 ou 64 px), como os itens do jogo. As propriedades
@@ -28,12 +29,14 @@ const objects = {
   properties: { bloqueia: false, move: true, altura: false },
   frame: 0,
   name: '',
+  path: '',
   dirty: false,
   saving: false
 };
 
 const statusEl = document.getElementById('objectStatus');
 const nameEl = document.getElementById('objectName');
+const folderEl = document.getElementById('objectFolder');
 const infoEl = document.getElementById('objectInfo');
 const previewCanvas = document.getElementById('objectPreview');
 const sheetCanvas = document.getElementById('objectSheet');
@@ -54,6 +57,8 @@ function initObjects() {
     if (file) setSource({ png: await readPngFile(file) }, null);
   });
   nameEl.addEventListener('input', () => { objects.dirty = true; });
+  fillFolderSelect(folderEl, CATEGORY);
+  folderEl.addEventListener('change', () => { objects.dirty = true; });
   setInterval(() => {
     objects.frame++;
     drawPreview();
@@ -255,6 +260,12 @@ async function save() {
     return;
   }
 
+  const folder = folderOf(folderEl);
+  if (!folder) {
+    status('Escolha a pasta onde salvar.', 'error');
+    return;
+  }
+
   nameEl.value = name;
   objects.saving = true;
   document.getElementById('objectSaveBtn').disabled = true;
@@ -267,8 +278,9 @@ async function save() {
   };
 
   try {
-    const result = await saveProject(CATEGORY, name, recipe, canvas.toDataURL('image/png'));
+    const result = await saveProject(CATEGORY, folder, name, recipe, canvas.toDataURL('image/png'));
     objects.name = name;
+    objects.path = result.caminho;
     objects.dirty = false;
     status(`Salvo em gerador/${result.arquivo}`, 'ok');
     refreshProjects();
@@ -286,6 +298,8 @@ async function save() {
 async function openRecipe(recipe) {
   objects.name = recipe.nome || '';
   nameEl.value = objects.name;
+  objects.path = recipePath(recipe, CATEGORY);
+  setFolder(folderEl, recipe);
   objects.properties = { bloqueia: false, move: true, altura: false, ...(recipe.propriedades || {}) };
   renderProperties();
   const source = recipe.objeto || null;
@@ -318,7 +332,7 @@ export const objectsView = {
   open: openRecipe,
   reset: () => openRecipe({ nome: '' }),
   isDirty: () => objects.dirty,
-  name: () => objects.name,
+  path: () => objects.path,
   pick,
   useAll: () => {}
 };

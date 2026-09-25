@@ -68,19 +68,29 @@ export async function fetchProjects() {
 
 // ================================================================================================================================================================================================================================================
 // fetchProject
+// A receita salva em caminho ('grupo/pasta/nome'), com grupo, pasta e nome.
 
-export async function fetchProject(category, name) {
-  return (await requestJson(`/api/projetos/${category}/${name}`)).receita;
+export async function fetchProject(path) {
+  return (await requestJson(`/api/projeto?caminho=${encodeURIComponent(path)}`)).receita;
+}
+
+// ================================================================================================================================================================================================================================================
+// fetchTaxonomy
+// Os grupos, seções e pastas onde as folhas são salvas (gerador/taxonomia.json).
+
+export async function fetchTaxonomy() {
+  return (await requestJson('/api/taxonomia')).taxonomia;
 }
 
 // ================================================================================================================================================================================================================================================
 // saveProject
-// pngDataUrl: a folha montada no canvas ('data:image/png;base64,…').
+// folder: { grupo, pasta }; pngDataUrl: a folha montada no canvas
+// ('data:image/png;base64,…'). Devolve { caminho, arquivo }.
 
-export function saveProject(category, name, recipe, pngDataUrl) {
+export function saveProject(tool, folder, name, recipe, pngDataUrl) {
   return requestJson('/api/salvar', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ categoria: category, nome: name, receita: recipe, png: pngDataUrl.split(',')[1] })
+    body: JSON.stringify({ ferramenta: tool, grupo: folder.grupo, pasta: folder.pasta, nome: name, receita: recipe, png: pngDataUrl.split(',')[1] })
   });
 }

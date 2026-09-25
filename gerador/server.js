@@ -6,16 +6,19 @@ const path = require('path');
 const { TibiaAssets, paletaDeRoupa } = require('./tibia-assets.js');
 
 // Gerador de sprites: programa à parte do jogo e do editor. Mostra os sprites
-// do Tibia (tibia/780), monta folhas (pisos, criaturas, paredes, objetos) na tela e grava:
-//   saida/<categoria>/<nome>.png      a folha pronta, no formato do jogo
-//   projetos/<categoria>/<nome>.json  a receita (de onde veio cada parte)
+// do Tibia (tibia/780), monta folhas com as ferramentas (pisos, criaturas,
+// paredes, objetos) na tela e grava na pasta escolhida (taxonomia.json):
+//   saida/<grupo>/<pasta>/<nome>.png      a folha pronta, no formato do jogo
+//   projetos/<grupo>/<pasta>/<nome>.json  a receita (de onde veio cada parte)
+// Receitas antigas, de antes das pastas, ficam em projetos/<ferramenta>/<nome>.json.
 
 const PORTA = process.env.PORT || 8100;
 const PASTA_APP = path.join(__dirname, 'app');
 const PASTA_TIBIA = path.join(__dirname, 'tibia', '780');
 const PASTA_SAIDA = path.join(__dirname, 'saida');
 const PASTA_PROJETOS = path.join(__dirname, 'projetos');
-const CATEGORIAS = ['pisos', 'criaturas', 'paredes', 'objetos'];
+const FERRAMENTAS = ['pisos', 'criaturas', 'paredes', 'objetos'];
+const TAXONOMIA = JSON.parse(fs.readFileSync(path.join(__dirname, 'taxonomia.json'), 'utf8'));
 const NOME_VALIDO = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
 const app = express();
@@ -30,7 +33,8 @@ app.get('/api/criatura/:id/miniatura', miniaturaCriatura);
 app.get('/api/criatura/:id/folha', folhaDeCriatura);
 app.get('/api/paleta', (req, res) => res.json({ success: true, cores: paletaDeRoupa() }));
 app.get('/api/projetos', listarProjetos);
-app.get('/api/projetos/:categoria/:nome', abrirProjeto);
+app.get('/api/taxonomia', (req, res) => res.json({ success: true, taxonomia: TAXONOMIA }));
+app.get('/api/projeto', abrirProjeto);
 app.post('/api/salvar', salvar);
 app.use('/saida', express.static(PASTA_SAIDA));
 app.use(express.static(PASTA_APP));
@@ -166,18 +170,56 @@ function portasSugeridas(req, res) {
 }
 
 // ================================================================================================================================================================================================================================================
+// pastaDaTaxonomia
+// A pasta { id, nome, ferramenta } do grupo, ou null.
+
+function pastaDaTaxonomia(grupo, pasta) {
+  const g = TAXONOMIA.grupos.find(item => item.id === grupo);
+  if (!g) return null;
+  for (const secao of g.secoes) {
+    const encontrada = secao.pastas.find(item => item.id === pasta);
+    if (encontrada) return encontrada;
+  }
+  return null;
+}
+
+// ================================================================================================================================================================================================================================================
+// lerCaminho
+// 'grupo/pasta/nome' (ou o antigo 'ferramenta/nome') → { grupo, pasta, nome, ferramenta }, ou null.
+
+function lerCaminho(caminho) {
+  const partes = String(caminho || '').split('/');
+  if (!partes.every(parte => NOME_VALIDO.test(parte))) return null;
+  if (partes.length === 2 && FERRAMENTAS.includes(partes[0])) {
+    return { grupo: null, pasta: null, nome: partes[1], ferramenta: partes[0] };
+  }
+  if (partes.length !== 3) return null;
+  const pasta = pastaDaTaxonomia(partes[0], partes[1]);
+  return pasta ? { grupo: partes[0], pasta: partes[1], nome: partes[2], ferramenta: pasta.ferramenta } : null;
+}
+
+// ================================================================================================================================================================================================================================================
 // listarProjetos
-// Todas as receitas salvas: [{ categoria, nome, atualizado }], mais novas primeiro.
+// Todas as receitas salvas: [{ caminho, ferramenta, grupo, pasta, nome, atualizado }],
+// mais novas primeiro. caminho é 'grupo/pasta/nome' ('ferramenta/nome' nas antigas).
 
 function listarProjetos(req, res) {
   const projetos = [];
-  for (const categoria of CATEGORIAS) {
-    const pasta = path.join(PASTA_PROJETOS, categoria);
-    if (!fs.existsSync(pasta)) continue;
+  const lerPasta = (relativa) => {
+    const pasta = path.join(PASTA_PROJETOS, relativa);
+    if (!fs.existsSync(pasta)) return;
     for (const arquivo of fs.readdirSync(pasta)) {
       if (!arquivo.endsWith('.json')) continue;
+      const info = lerCaminho(`${relativa}/${arquivo.slice(0, -5)}`);
+      if (!info) continue;
       const atualizado = fs.statSync(path.join(pasta, arquivo)).mtimeMs;
-      projetos.push({ categoria, nome: arquivo.slice(0, -5), atualizado });
+      projetos.push({ caminho: `${relativa}/${info.nome}`, ...info, atualizado });
+    }
+  };
+  for (const ferramenta of FERRAMENTAS) lerPasta(ferramenta);
+  for (const grupo of TAXONOMIA.grupos) {
+    for (const secao of grupo.secoes) {
+      for (const pasta of secao.pastas) lerPasta(`${grupo.id}/${pasta.id}`);
     }
   }
   projetos.sort((a, b) => b.atualizado - a.atualizado);
@@ -186,37 +228,42 @@ function listarProjetos(req, res) {
 
 // ================================================================================================================================================================================================================================================
 // abrirProjeto
+// ?caminho=grupo/pasta/nome → { receita }.
 
 function abrirProjeto(req, res) {
-  const { categoria, nome } = req.params;
-  if (!CATEGORIAS.includes(categoria) || !NOME_VALIDO.test(nome)) return res.sendStatus(404);
-  const arquivo = path.join(PASTA_PROJETOS, categoria, `${nome}.json`);
+  const info = lerCaminho(req.query.caminho);
+  if (!info) return res.sendStatus(404);
+  const arquivo = path.join(PASTA_PROJETOS, `${req.query.caminho}.json`);
   if (!fs.existsSync(arquivo)) return res.sendStatus(404);
-  res.json({ success: true, receita: JSON.parse(fs.readFileSync(arquivo, 'utf8')) });
+  res.json({ success: true, receita: { ...JSON.parse(fs.readFileSync(arquivo, 'utf8')), grupo: info.grupo, pasta: info.pasta, nome: info.nome } });
 }
 
 // ================================================================================================================================================================================================================================================
 // salvar
-// { categoria, nome, receita, png } — png em base64 (a folha montada na tela).
+// { ferramenta, grupo, pasta, nome, receita, png } — png em base64 (a folha
+// montada na tela); a pasta tem que ser da ferramenta.
 
 function salvar(req, res) {
-  const { categoria, nome, receita, png } = req.body || {};
-  if (!CATEGORIAS.includes(categoria)) return res.status(400).json({ success: false, message: 'Categoria inválida.' });
+  const { ferramenta, grupo, pasta, nome, receita, png } = req.body || {};
+  const destino = pastaDaTaxonomia(grupo, pasta);
+  if (!destino) return res.status(400).json({ success: false, message: 'Escolha a pasta.' });
+  if (destino.ferramenta !== ferramenta) return res.status(400).json({ success: false, message: `A pasta ${destino.nome} não é dessa ferramenta.` });
   if (!NOME_VALIDO.test(nome || '') || nome.length > 40) {
     return res.status(400).json({ success: false, message: 'Nome: letras minúsculas, números e hífen (ex.: grama-escura).' });
   }
   const imagem = Buffer.from(String(png || ''), 'base64');
   if (imagem.subarray(1, 4).toString() !== 'PNG') return res.status(400).json({ success: false, message: 'Imagem inválida.' });
 
+  const caminho = `${grupo}/${pasta}/${nome}`;
   try {
-    const arquivoPng = path.join(PASTA_SAIDA, categoria, `${nome}.png`);
-    const arquivoReceita = path.join(PASTA_PROJETOS, categoria, `${nome}.json`);
+    const arquivoPng = path.join(PASTA_SAIDA, `${caminho}.png`);
+    const arquivoReceita = path.join(PASTA_PROJETOS, `${caminho}.json`);
     fs.mkdirSync(path.dirname(arquivoPng), { recursive: true });
     fs.mkdirSync(path.dirname(arquivoReceita), { recursive: true });
     fs.writeFileSync(arquivoPng, imagem);
-    fs.writeFileSync(arquivoReceita, JSON.stringify({ ...receita, categoria, nome }, null, 2), 'utf8');
-    console.log(`✅ ${categoria}/${nome}.png salvo`);
-    res.json({ success: true, arquivo: `saida/${categoria}/${nome}.png` });
+    fs.writeFileSync(arquivoReceita, JSON.stringify({ ...receita, ferramenta, grupo, pasta, nome }, null, 2), 'utf8');
+    console.log(`✅ ${caminho}.png salvo`);
+    res.json({ success: true, caminho, arquivo: `saida/${caminho}.png` });
   } catch (err) {
     console.error('❌ Erro ao salvar:', err.message);
     res.status(500).json({ success: false, message: err.message });

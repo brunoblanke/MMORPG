@@ -1,0 +1,158 @@
+{
+  "grupos": [
+    {
+      "id": "estrutura",
+      "nome": "Estrutura",
+      "secoes": [
+        {
+          "nome": null,
+          "pastas": [
+            { "id": "pisos", "nome": "Pisos", "ferramenta": "pisos" },
+            { "id": "paredes", "nome": "Paredes", "ferramenta": "paredes" },
+            { "id": "cercas", "nome": "Cercas e parapeitos", "ferramenta": "paredes" },
+            { "id": "escadas", "nome": "Escadas", "ferramenta": "objetos" },
+            { "id": "entradas", "nome": "Entradas", "ferramenta": "objetos" },
+            { "id": "natureza", "nome": "Natureza (bloqueia)", "ferramenta": "objetos" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "decoracao",
+      "nome": "Decoração",
+      "secoes": [
+        {
+          "nome": null,
+          "pastas": [
+            { "id": "estatuas", "nome": "Estátuas", "ferramenta": "objetos" },
+            { "id": "moveis", "nome": "Móveis", "ferramenta": "objetos" },
+            { "id": "adornos", "nome": "Adornos", "ferramenta": "objetos" },
+            { "id": "natureza", "nome": "Natureza (não bloqueia)", "ferramenta": "objetos" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "itens",
+      "nome": "Itens",
+      "secoes": [
+        {
+          "nome": "Equipamentos de corpo",
+          "pastas": [
+            { "id": "capacetes", "nome": "Capacetes", "ferramenta": "objetos" },
+            { "id": "armaduras", "nome": "Armaduras", "ferramenta": "objetos" },
+            { "id": "escudos", "nome": "Escudos", "ferramenta": "objetos" },
+            { "id": "calcas", "nome": "Calças", "ferramenta": "objetos" },
+            { "id": "spellbooks", "nome": "Spellbooks", "ferramenta": "objetos" },
+            { "id": "botas", "nome": "Botas", "ferramenta": "objetos" },
+            { "id": "aljavas", "nome": "Aljavas", "ferramenta": "objetos" },
+            { "id": "extra-slot", "nome": "Extra slot", "ferramenta": "objetos" }
+          ]
+        },
+        {
+          "nome": "Armas",
+          "pastas": [
+            { "id": "machados", "nome": "Machados", "ferramenta": "objetos" },
+            { "id": "clavas", "nome": "Clavas", "ferramenta": "objetos" },
+            { "id": "espadas", "nome": "Espadas", "ferramenta": "objetos" },
+            { "id": "rods", "nome": "Rods", "ferramenta": "objetos" },
+            { "id": "wands", "nome": "Wands", "ferramenta": "objetos" },
+            { "id": "wands-e-rods-antigas", "nome": "Antigas wands e rods", "ferramenta": "objetos" },
+            { "id": "distancia", "nome": "Distância", "ferramenta": "objetos" },
+            { "id": "municao", "nome": "Munição", "ferramenta": "objetos" },
+            { "id": "replicas-de-armas", "nome": "Réplicas de armas", "ferramenta": "objetos" },
+            { "id": "punhos", "nome": "Punhos", "ferramenta": "objetos" }
+          ]
+        },
+        {
+          "nome": "Itens de decoração",
+          "pastas": [
+            { "id": "livros", "nome": "Livros", "ferramenta": "objetos" },
+            { "id": "premios-de-eventos", "nome": "Prêmios de eventos", "ferramenta": "objetos" },
+            { "id": "runas-de-decoracao", "nome": "Runas de decoração", "ferramenta": "objetos" },
+            { "id": "documentos-e-papeis", "nome": "Documentos e papéis", "ferramenta": "objetos" },
+            { "id": "dolls-e-bears", "nome": "Dolls e bears", "ferramenta": "objetos" },
+            { "id": "decoracoes", "nome": "Decorações", "ferramenta": "objetos" },
+            { "id": "instrumentos-musicais", "nome": "Instrumentos musicais", "ferramenta": "objetos" },
+            { "id": "trofeus", "nome": "Troféus", "ferramenta": "objetos" },
+            { "id": "itens-de-fansites", "nome": "Itens de fansites", "ferramenta": "objetos" },
+            { "id": "recipientes", "nome": "Recipientes", "ferramenta": "objetos" }
+          ]
+        },
+        {
+          "nome": "Plantas, produtos de animais, comidas e bebidas",
+          "pastas": [
+            { "id": "comidas", "nome": "Comidas", "ferramenta": "objetos" },
+            { "id": "liquidos", "nome": "Líquidos", "ferramenta": "objetos" },
+            { "id": "plantas-e-ervas", "nome": "Plantas e ervas", "ferramenta": "objetos" },
+            { "id": "produtos-de-criaturas", "nome": "Produtos de criaturas", "ferramenta": "objetos" }
+          ]
+        },
+        {
+          "nome": "Ferramentas e outros equipamentos",
+          "pastas": [
+            { "id": "amuletos-e-colares", "nome": "Amuletos e colares", "ferramenta": "objetos" },
+            { "id": "aneis", "nome": "Anéis", "ferramenta": "objetos" },
+            { "id": "chaves", "nome": "Chaves", "ferramenta": "objetos" },
+            { "id": "ferramentas", "nome": "Ferramentas", "ferramenta": "objetos" },
+            { "id": "ferramentas-de-cozinha", "nome": "Ferramentas de cozinha", "ferramenta": "objetos" },
+            { "id": "fontes-de-luz", "nome": "Fontes de luz", "ferramenta": "objetos" },
+            { "id": "itens-de-domar", "nome": "Itens de domar", "ferramenta": "objetos" }
+          ]
+        },
+        {
+          "nome": "Outros itens",
+          "pastas": [
+            { "id": "itens-de-addons", "nome": "Itens de addons", "ferramenta": "objetos" },
+            { "id": "itens-de-imbuements", "nome": "Itens de imbuements", "ferramenta": "objetos" },
+            { "id": "itens-encantados", "nome": "Itens encantados", "ferramenta": "objetos" },
+            { "id": "jogos-e-diversao", "nome": "Jogos e diversão", "ferramenta": "objetos" },
+            { "id": "itens-de-quest", "nome": "Itens de quest", "ferramenta": "objetos" },
+            { "id": "cristais", "nome": "Cristais", "ferramenta": "objetos" },
+            { "id": "itens-de-festa", "nome": "Itens de festa", "ferramenta": "objetos" },
+            { "id": "valiosos", "nome": "Valiosos", "ferramenta": "objetos" },
+            { "id": "delivery-tasks", "nome": "Delivery tasks", "ferramenta": "objetos" },
+            { "id": "runas", "nome": "Runas", "ferramenta": "objetos" },
+            { "id": "lixos", "nome": "Lixos", "ferramenta": "objetos" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "criaturas",
+      "nome": "Criaturas",
+      "secoes": [
+        {
+          "nome": null,
+          "pastas": [
+            { "id": "anfibios", "nome": "Anfíbios", "ferramenta": "criaturas" },
+            { "id": "aquaticos", "nome": "Aquáticos", "ferramenta": "criaturas" },
+            { "id": "aves", "nome": "Aves", "ferramenta": "criaturas" },
+            { "id": "bosses", "nome": "Bosses", "ferramenta": "criaturas" },
+            { "id": "constructos", "nome": "Constructos", "ferramenta": "criaturas" },
+            { "id": "criaturas-magicas", "nome": "Criaturas mágicas", "ferramenta": "criaturas" },
+            { "id": "demonios", "nome": "Demônios", "ferramenta": "criaturas" },
+            { "id": "dragoes", "nome": "Dragões", "ferramenta": "criaturas" },
+            { "id": "elementais", "nome": "Elementais", "ferramenta": "criaturas" },
+            { "id": "extra-dimensionais", "nome": "Extra dimensionais", "ferramenta": "criaturas" },
+            { "id": "fadas", "nome": "Fadas", "ferramenta": "criaturas" },
+            { "id": "gigantes", "nome": "Gigantes", "ferramenta": "criaturas" },
+            { "id": "humanos", "nome": "Humanos", "ferramenta": "criaturas" },
+            { "id": "humanoides", "nome": "Humanóides", "ferramenta": "criaturas" },
+            { "id": "imortais", "nome": "Imortais", "ferramenta": "criaturas" },
+            { "id": "inkborn", "nome": "Inkborn", "ferramenta": "criaturas" },
+            { "id": "licantropos", "nome": "Licantropos", "ferramenta": "criaturas" },
+            { "id": "mamiferos", "nome": "Mamíferos", "ferramenta": "criaturas" },
+            { "id": "mortos-vivos", "nome": "Mortos-vivos", "ferramenta": "criaturas" },
+            { "id": "plantas", "nome": "Plantas", "ferramenta": "criaturas" },
+            { "id": "repteis", "nome": "Répteis", "ferramenta": "criaturas" },
+            { "id": "slimes", "nome": "Slimes", "ferramenta": "criaturas" },
+            { "id": "the-ruthless-seven", "nome": "The Ruthless Seven", "ferramenta": "criaturas" },
+            { "id": "triangle-of-terror", "nome": "Triangle of Terror", "ferramenta": "criaturas" },
+            { "id": "vermes", "nome": "Vermes", "ferramenta": "criaturas" }
+          ]
+        }
+      ]
+    }
+  ]
+}

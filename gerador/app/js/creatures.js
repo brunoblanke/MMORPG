@@ -4,6 +4,7 @@ import { saveProject } from './api.js';
 import { creatureInfo, itemCategory } from './picker.js';
 import { sourceUrl, sourceLabel, loadImage, isReady, drawAnchored, readPngFile, normalizeName, setStatus } from './common.js';
 import { refreshProjects } from './projects.js';
+import { fillFolderSelect, folderOf, setFolder, recipePath } from './folders.js';
 
 // Folha de criatura (quadros de 32 ou 64 px, o maior entre criatura e cadáver):
 //   linhas 1–4  sul, norte, leste, oeste — 1º quadro parado, depois andando
@@ -36,12 +37,14 @@ const creatures = {
   palette: [],
   frame: 0,
   name: '',
+  path: '',
   dirty: false,
   saving: false
 };
 
 const statusEl = document.getElementById('creatureStatus');
 const nameEl = document.getElementById('creatureName');
+const folderEl = document.getElementById('creatureFolder');
 const infoEl = document.getElementById('creatureInfo');
 const thumbCanvas = document.getElementById('creatureThumb');
 const walkCanvas = document.getElementById('walkPreview');
@@ -64,6 +67,8 @@ function initCreatures() {
     if (file) setCorpse(creatures.selectedStage, { png: await readPngFile(file) });
   });
   nameEl.addEventListener('input', () => { creatures.dirty = true; });
+  fillFolderSelect(folderEl, CATEGORY);
+  folderEl.addEventListener('change', () => { creatures.dirty = true; });
   fetch('/api/paleta').then(r => r.json()).then(data => {
     creatures.palette = data.cores || [];
     renderColors();
@@ -398,6 +403,12 @@ async function save() {
     return;
   }
 
+  const folder = folderOf(folderEl);
+  if (!folder) {
+    status('Escolha a pasta onde salvar.', 'error');
+    return;
+  }
+
   nameEl.value = name;
   creatures.saving = true;
   document.getElementById('creatureSaveBtn').disabled = true;
@@ -414,8 +425,9 @@ async function save() {
   };
 
   try {
-    const result = await saveProject(CATEGORY, name, recipe, canvas.toDataURL('image/png'));
+    const result = await saveProject(CATEGORY, folder, name, recipe, canvas.toDataURL('image/png'));
     creatures.name = name;
+    creatures.path = result.caminho;
     creatures.dirty = false;
     status(`Salvo em gerador/${result.arquivo}`, 'ok');
     refreshProjects();
@@ -444,6 +456,8 @@ function openRecipe(recipe) {
   creatures.selectedStage = 'fresco';
   creatures.name = recipe.nome || '';
   nameEl.value = creatures.name;
+  creatures.path = recipePath(recipe, CATEGORY);
+  setFolder(folderEl, recipe);
   creatures.dirty = false;
   status(recipe.nome ? `Aberto: ${recipe.nome}` : '');
   reloadSheet();
@@ -467,7 +481,7 @@ export const creaturesView = {
   open: openRecipe,
   reset: () => openRecipe({ nome: '' }),
   isDirty: () => creatures.dirty,
-  name: () => creatures.name,
+  path: () => creatures.path,
   pick,
   useAll: () => {}
 };

@@ -1,6 +1,7 @@
 // gerador/app/js/main.js
 
-import { fetchCatalog, fetchProject } from './api.js';
+import { fetchCatalog, fetchProject, fetchTaxonomy } from './api.js';
+import { setTaxonomy } from './folders.js';
 import { initPicker, setPickerMode } from './picker.js';
 import { showProjects } from './projects.js';
 import { floorsView } from './floors.js';
@@ -8,8 +9,8 @@ import { creaturesView } from './creatures.js';
 import { wallsView } from './walls.js';
 import { objectsView } from './objects.js';
 
-// Gerador de sprites: uma área de trabalho por categoria (pisos, criaturas, paredes, objetos),
-// a lista do que foi salvo à esquerda e os sprites do Tibia à direita.
+// Gerador de sprites: uma área de trabalho por ferramenta (pisos, criaturas, paredes, objetos),
+// a lista do que foi salvo à esquerda (pelas pastas) e os sprites do Tibia à direita.
 
 const VIEWS = { pisos: floorsView, criaturas: creaturesView, paredes: wallsView, objetos: objectsView };
 const SECTIONS = { pisos: 'floorsView', criaturas: 'creaturesView', paredes: 'wallsView', objetos: 'objectsView' };
@@ -46,10 +47,10 @@ function activate(category) {
   setPickerMode(view.pickerMode);
   showProjects(view.category, {
     emptyText: view.emptyText,
-    activeName: () => view.name(),
-    onOpen: async (name) => {
+    activePath: () => view.path(),
+    onOpen: async (path) => {
       if (!confirmDiscard()) return;
-      view.open(await fetchProject(view.category, name));
+      view.open(await fetchProject(path));
     }
   });
 }
@@ -58,6 +59,11 @@ function activate(category) {
 // boot
 
 async function boot() {
+  try {
+    setTaxonomy(await fetchTaxonomy());
+  } catch (error) {
+    document.getElementById('projectList').innerHTML = `<li class="empty">Não deu pra ler as pastas: ${error.message}</li>`;
+  }
   for (const view of Object.values(VIEWS)) view.init();
   for (const button of document.querySelectorAll('.category[data-category]')) {
     button.onclick = () => activate(button.dataset.category);

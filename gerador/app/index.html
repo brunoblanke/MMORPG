@@ -37,6 +37,10 @@
         <label for="projectName">Nome do piso</label>
         <input type="text" id="projectName" placeholder="ex.: grama" maxlength="40" required />
       </div>
+      <div class="field">
+        <label for="floorFolder">Pasta</label>
+        <select id="floorFolder"></select>
+      </div>
       <button type="submit" class="primary-btn" id="saveBtn">Salvar PNG</button>
       <p class="status" id="status" role="status"></p>
     </form>
@@ -78,6 +82,10 @@
       <div class="field">
         <label for="creatureName">Nome da criatura</label>
         <input type="text" id="creatureName" placeholder="ex.: rato" maxlength="40" required />
+      </div>
+      <div class="field">
+        <label for="creatureFolder">Pasta</label>
+        <select id="creatureFolder"></select>
       </div>
       <button type="submit" class="primary-btn" id="creatureSaveBtn">Salvar PNG</button>
       <p class="status" id="creatureStatus" role="status"></p>
@@ -136,13 +144,17 @@
         <label for="wallName">Nome da parede</label>
         <input type="text" id="wallName" placeholder="ex.: madeira" maxlength="40" required />
       </div>
+      <div class="field">
+        <label for="wallFolder">Pasta</label>
+        <select id="wallFolder"></select>
+      </div>
       <button type="submit" class="primary-btn" id="wallSaveBtn">Salvar PNG</button>
       <p class="status" id="wallStatus" role="status"></p>
     </form>
 
     <section class="sheet" aria-label="Peças da parede">
       <div class="sheet-head">
-        <div class="section-label">Peças · clique numa peça e escolha à direita (abas Paredes e Portas); as outras do grupo vêm sugeridas</div>
+        <div class="section-label">Peças · clique numa peça e escolha à direita (abas Paredes e Portas); paredes e portas completam sozinhas, arcos e janelas são à mão</div>
         <div class="slot-actions">
           <label class="ghost-btn file-btn">
             Enviar PNG
@@ -158,12 +170,12 @@
     <section class="previews">
       <div class="preview-box">
         <div class="section-label">Prévia · uma sala com as paredes e as portas</div>
-        <canvas id="wallPreview" width="256" height="224"></canvas>
-        <p class="hint">Portas fechadas em cima e à esquerda, abertas embaixo e à direita. Canto em cima à esquerda e pilar no canto de baixo à direita.</p>
+        <canvas id="wallPreview" width="320" height="320"></canvas>
+        <p class="hint">Portas fechadas em cima e à esquerda, abertas embaixo e à direita; arco e janela em cima e à esquerda. Canto em cima à esquerda e pilar no canto de baixo à direita.</p>
       </div>
       <div class="preview-box">
-        <div class="section-label">Folha que vai ser salva <span class="dim">(256 × 128 · linha 1: X, Y, XY, YX · linha 2: portas X fechada/aberta, Y fechada/aberta)</span></div>
-        <canvas id="wallSheet" width="256" height="128"></canvas>
+        <div class="section-label">Folha que vai ser salva <span class="dim">(256 × 192 · linha 1: X, Y, XY, YX · linha 2: portas X fechada/aberta, Y fechada/aberta · linha 3: arco X, arco Y, janela X, janela Y)</span></div>
+        <canvas id="wallSheet" width="256" height="192"></canvas>
       </div>
     </section>
   </main>
@@ -173,6 +185,10 @@
       <div class="field">
         <label for="objectName">Nome do objeto</label>
         <input type="text" id="objectName" placeholder="ex.: bau" maxlength="40" required />
+      </div>
+      <div class="field">
+        <label for="objectFolder">Pasta</label>
+        <select id="objectFolder"></select>
       </div>
       <button type="submit" class="primary-btn" id="objectSaveBtn">Salvar PNG</button>
       <p class="status" id="objectStatus" role="status"></p>

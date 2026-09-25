@@ -4,6 +4,7 @@ import { spriteUrl, saveProject, fetchBorderSuggestion } from './api.js';
 import { itemCategory } from './picker.js';
 import { normalizeName } from './common.js';
 import { refreshProjects } from './projects.js';
+import { fillFolderSelect, folderOf, setFolder, recipePath } from './folders.js';
 
 // Folha de piso (128 × 128, 4 × 4 quadros de 32 px):
 //   linha 1  meio: as variações do piso cheio, lado a lado (até 4)
@@ -82,6 +83,7 @@ const floors = {
   images: new Map(),
   selected: 'meio-1',
   name: '',
+  path: '',
   dirty: false,
   saving: false
 };
@@ -89,6 +91,7 @@ const floors = {
 const rowsEl = document.getElementById('sheetRows');
 const statusEl = document.getElementById('status');
 const nameEl = document.getElementById('projectName');
+const folderEl = document.getElementById('floorFolder');
 const groundCanvas = document.getElementById('groundPreview');
 const sheetCanvas = document.getElementById('sheetPreview');
 
@@ -108,6 +111,8 @@ export function initFloors() {
   };
   document.getElementById('uploadPng').addEventListener('change', uploadPng);
   nameEl.addEventListener('input', () => { floors.dirty = true; });
+  fillFolderSelect(folderEl, CATEGORY);
+  folderEl.addEventListener('change', () => { floors.dirty = true; });
   render();
 }
 
@@ -435,6 +440,12 @@ async function save() {
     return;
   }
 
+  const folder = folderOf(folderEl);
+  if (!folder) {
+    setStatus('Escolha a pasta onde salvar.', 'error');
+    return;
+  }
+
   nameEl.value = name;
   floors.saving = true;
   document.getElementById('saveBtn').disabled = true;
@@ -457,8 +468,9 @@ async function save() {
   };
 
   try {
-    const result = await saveProject(CATEGORY, name, recipe, canvas.toDataURL('image/png'));
+    const result = await saveProject(CATEGORY, folder, name, recipe, canvas.toDataURL('image/png'));
     floors.name = name;
+    floors.path = result.caminho;
     floors.dirty = false;
     setStatus(`Salvo em gerador/${result.arquivo}`, 'ok');
     refreshProjects();
@@ -483,6 +495,8 @@ function openRecipe(recipe) {
   }
   floors.name = recipe.nome || '';
   nameEl.value = floors.name;
+  floors.path = recipePath(recipe, CATEGORY);
+  setFolder(folderEl, recipe);
   floors.selected = 'meio-1';
   floors.dirty = false;
   setStatus(recipe.nome ? `Aberto: ${recipe.nome}` : '');
@@ -504,7 +518,7 @@ export const floorsView = {
   open: openRecipe,
   reset: () => openRecipe({ nome: '', slots: {} }),
   isDirty: () => floors.dirty,
-  name: () => floors.name,
+  path: () => floors.path,
   pick: (kind, id, variation) => { if (kind === 'item') pickSprite(id, variation); },
   useAll: useAllVariations
 };

@@ -4,13 +4,16 @@ import { spriteUrl, saveProject, fetchWallSuggestion, fetchDoorSuggestion } from
 import { itemCategory } from './picker.js';
 import { sourceLabel, loadImage, isReady, drawAnchored, readPngFile, normalizeName, setStatus } from './common.js';
 import { refreshProjects } from './projects.js';
+import { fillFolderSelect, folderOf, setFolder, recipePath } from './folders.js';
 
-// Folha de parede (256 × 128, 4 × 2 quadros de 64 px, sem animação):
+// Folha de parede (256 × 192, 4 × 3 quadros de 64 px, sem animação):
 //   linha 1  x (horizontal) · y (vertical) · xy (canto) · yx (pilar)
 //   linha 2  porta x fechada · porta x aberta · porta y fechada · porta y aberta
+//   linha 3  arco x · arco y · janela x · janela y
 // x corre ao longo de x, no lado de cima do sqm; y ao longo de y, no lado
 // esquerdo; xy é o canto em cima à esquerda e yx a ponta que fecha o canto de
-// baixo à direita. A porta x fica numa parede x, a porta y numa parede y.
+// baixo à direita. Porta, arco e janela x ficam numa parede x; os y, numa y.
+// Serve também pras cercas e parapeitos (a porta vira o portão).
 // Cada peça vem de um item do Tibia ou de um PNG.
 
 const CATEGORY = 'paredes';
@@ -28,24 +31,35 @@ const DOOR_PIECES = [
   { key: 'porta-y', name: 'Porta Y · fechada' },
   { key: 'porta-y-aberta', name: 'Porta Y · aberta' }
 ];
-const PIECES = [...WALL_PIECES, ...DOOR_PIECES];
+const OPENING_PIECES = [
+  { key: 'arco-x', name: 'Arco X' },
+  { key: 'arco-y', name: 'Arco Y' },
+  { key: 'janela-x', name: 'Janela X' },
+  { key: 'janela-y', name: 'Janela Y' }
+];
+const PIECES = [...WALL_PIECES, ...DOOR_PIECES, ...OPENING_PIECES];
 
 // Sala da prévia (como no Tibia): canto em cima à esquerda, paredes
 // horizontais em cima e embaixo, verticais nos lados e o pilar fechando o
 // canto de baixo à direita. Porta fechada em cima e à esquerda, aberta
-// embaixo e à direita; sem porta escolhida, fica a parede.
+// embaixo e à direita; arco e janela em cima e à esquerda. Sem a peça
+// escolhida, fica a parede.
 const ROOM = [
-  '........',
-  '.cxdxxv.',
-  '.v....v.',
-  '.e....E.',
-  '.v....v.',
-  '.xxDxxp.',
-  '........'
+  '..........',
+  '.cxdxaxwv.',
+  '.v......v.',
+  '.e......E.',
+  '.v......v.',
+  '.A......v.',
+  '.v......v.',
+  '.W......v.',
+  '.xxDxxxxp.',
+  '..........'
 ];
 const ROOM_PIECES = {
   c: ['xy'], x: ['x'], v: ['y'], p: ['yx'],
-  d: ['porta-x', 'x'], D: ['porta-x-aberta', 'x'], e: ['porta-y', 'y'], E: ['porta-y-aberta', 'y']
+  d: ['porta-x', 'x'], D: ['porta-x-aberta', 'x'], e: ['porta-y', 'y'], E: ['porta-y-aberta', 'y'],
+  a: ['arco-x', 'x'], A: ['arco-y', 'y'], w: ['janela-x', 'x'], W: ['janela-y', 'y']
 };
 
 const walls = {
@@ -53,12 +67,14 @@ const walls = {
   images: new Map(),
   selected: 'x',
   name: '',
+  path: '',
   dirty: false,
   saving: false
 };
 
 const statusEl = document.getElementById('wallStatus');
 const nameEl = document.getElementById('wallName');
+const folderEl = document.getElementById('wallFolder');
 const slotsEl = document.getElementById('wallSlots');
 const roomCanvas = document.getElementById('wallPreview');
 const sheetCanvas = document.getElementById('wallSheet');
@@ -80,6 +96,8 @@ function initWalls() {
     if (file) setPiece(walls.selected, { png: await readPngFile(file) });
   });
   nameEl.addEventListener('input', () => { walls.dirty = true; });
+  fillFolderSelect(folderEl, CATEGORY);
+  folderEl.addEventListener('change', () => { walls.dirty = true; });
   render();
 }
 
@@ -91,10 +109,14 @@ function status(text, kind) {
 }
 
 // ================================================================================================================================================================================================================================================
-// isDoorKey
+// groupOf
+// Grupo da peça: paredes (sugere pelo material), portas (sugere pelo par) ou
+// aberturas (arco e janela, escolhidos à mão).
 
-function isDoorKey(key) {
-  return DOOR_PIECES.some(piece => piece.key === key);
+function groupOf(key) {
+  if (DOOR_PIECES.some(piece => piece.key === key)) return 'door';
+  if (OPENING_PIECES.some(piece => piece.key === key)) return 'opening';
+  return 'wall';
 }
 
 // ================================================================================================================================================================================================================================================
@@ -113,20 +135,19 @@ function firstTibia(pieces) {
 
 function pick(kind, id, variation) {
   if (kind !== 'item') return;
-  const door = isDoorKey(walls.selected);
-  const group = door ? DOOR_PIECES : WALL_PIECES;
-  const expected = door ? 'door' : 'wall';
+  const group = groupOf(walls.selected);
+  const pieces = group === 'door' ? DOOR_PIECES : WALL_PIECES;
   const category = itemCategory(id);
-  if (category !== expected) status(`O item ${id} não é ${door ? 'porta' : 'parede'}; ficou na peça assim mesmo.`);
-  const othersEmpty = group.every(piece => piece.key === walls.selected || !walls.slots[piece.key]);
+  if (group === 'door' && category !== 'door') status(`O item ${id} não é porta; ficou na peça assim mesmo.`);
+  if (group === 'wall' && category !== 'wall') status(`O item ${id} não é parede; ficou na peça assim mesmo.`);
+  const othersEmpty = pieces.every(piece => piece.key === walls.selected || !walls.slots[piece.key]);
   setPiece(walls.selected, { tibia: { id, variacao: variation } });
   const next = PIECES[PIECES.findIndex(piece => piece.key === walls.selected) + 1];
   if (next) walls.selected = next.key;
   render();
-  if (othersEmpty && category === expected) {
-    if (door) suggestDoors(id);
-    else suggestPieces(id);
-  }
+  if (!othersEmpty || category !== group) return;
+  if (group === 'door') suggestDoors(id);
+  else suggestPieces(id);
 }
 
 // ================================================================================================================================================================================================================================================
@@ -327,6 +348,12 @@ async function save() {
     return;
   }
 
+  const folder = folderOf(folderEl);
+  if (!folder) {
+    status('Escolha a pasta onde salvar.', 'error');
+    return;
+  }
+
   nameEl.value = name;
   walls.saving = true;
   document.getElementById('wallSaveBtn').disabled = true;
@@ -340,8 +367,9 @@ async function save() {
   };
 
   try {
-    const result = await saveProject(CATEGORY, name, recipe, canvas.toDataURL('image/png'));
+    const result = await saveProject(CATEGORY, folder, name, recipe, canvas.toDataURL('image/png'));
     walls.name = name;
+    walls.path = result.caminho;
     walls.dirty = false;
     status(`Salvo em gerador/${result.arquivo}`, 'ok');
     refreshProjects();
@@ -366,6 +394,8 @@ function openRecipe(recipe) {
   walls.selected = 'x';
   walls.name = recipe.nome || '';
   nameEl.value = walls.name;
+  walls.path = recipePath(recipe, CATEGORY);
+  setFolder(folderEl, recipe);
   walls.dirty = false;
   status(recipe.nome ? `Aberto: ${recipe.nome}` : '');
   render();
@@ -386,7 +416,7 @@ export const wallsView = {
   open: openRecipe,
   reset: () => openRecipe({ nome: '' }),
   isDirty: () => walls.dirty,
-  name: () => walls.name,
+  path: () => walls.path,
   pick,
   useAll: () => {}
 };
