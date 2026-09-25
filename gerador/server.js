@@ -72,7 +72,7 @@ function spriteDoItem(req, res) {
   try {
     const png = arquivosTibia().spriteDoItem(id, variacao, quadro);
     if (!png) return res.sendStatus(404);
-    res.set('Cache-Control', 'public, max-age=86400');
+    res.set('Cache-Control', 'no-cache');
     res.type('png').send(png);
   } catch (err) {
     res.sendStatus(500);
@@ -86,7 +86,7 @@ function miniaturaCriatura(req, res) {
   try {
     const png = arquivosTibia().miniaturaCriatura(parseInt(req.params.id, 10));
     if (!png) return res.sendStatus(404);
-    res.set('Cache-Control', 'public, max-age=86400');
+    res.set('Cache-Control', 'no-cache');
     res.type('png').send(png);
   } catch (err) {
     res.sendStatus(500);
@@ -107,7 +107,7 @@ function folhaDeCriatura(req, res) {
       addons: lista(req.query.addons)
     });
     if (!folha) return res.sendStatus(404);
-    res.set({ 'Cache-Control': 'public, max-age=86400', 'X-Tamanho': folha.tamanho, 'X-Quadros': folha.quadros });
+    res.set({ 'Cache-Control': 'no-cache', 'X-Tamanho': folha.tamanho, 'X-Quadros': folha.quadros });
     res.type('png').send(folha.png);
   } catch (err) {
     res.sendStatus(500);
