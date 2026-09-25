@@ -3,8 +3,8 @@
 import { spriteUrl, fetchProjects, fetchProject, saveProject } from './api.js';
 import { itemCategory, setPickerTab } from './picker.js';
 
-// Folha de piso (256 × 128, quadros de 32 px):
-//   linha 1  meio: as variações do piso cheio, lado a lado (até 8)
+// Folha de piso (128 × 128, 4 × 4 quadros de 32 px):
+//   linha 1  meio: as variações do piso cheio, lado a lado (até 4)
 //   linha 2  lados: s, o, n, l          (borda fora do piso, encostada no lado)
 //   linha 3  cantos de fora: sl, so, nl, no (ponta do piso, na diagonal)
 //   linha 4  cantos de dentro: int-sl, int-so, int-nl, int-no (dois lados juntos)
@@ -16,7 +16,7 @@ import { itemCategory, setPickerTab } from './picker.js';
 
 const TILE = 32;
 const CATEGORY = 'pisos';
-const MAX_VARIANTS = 8;
+const MAX_VARIANTS = 4;
 
 // Diagramas: onde fica o piso (x, y de -1 a 1) em volta da peça (no centro).
 const TOP = [[-1, -1], [0, -1], [1, -1]];
@@ -26,7 +26,7 @@ const RIGHT = [[1, -1], [1, 0], [1, 1]];
 
 export const FLOOR_ROWS = [
   {
-    title: 'Meio', note: 'Variações do piso cheio. O 1º é o mais comum.',
+    title: 'Meio', note: 'Variações do piso cheio, sorteadas por igual.',
     slots: Array.from({ length: MAX_VARIANTS }, (_, i) => ({ key: `meio-${i + 1}`, name: `${i + 1}`, floor: [[0, 0]] }))
   },
   {
@@ -217,7 +217,7 @@ export function pickSprite(id, variation) {
 
 // ================================================================================================================================================================================================================================================
 // useAllVariations
-// Enche o meio com as variações do chão escolhido (até 8), na ordem do Tibia.
+// Enche o meio com as variações do chão escolhido (até 4), na ordem do Tibia.
 
 export function useAllVariations(id, total) {
   MIDDLE_KEYS.forEach((key, i) => setSlot(key, i < total ? { tibia: { id, variacao: i } } : null, false));
@@ -378,8 +378,7 @@ function drawGroundPreview() {
     for (let x = 0; x < PREVIEW_SHAPE[y].length; x++) {
       if (isFloor(x, y)) {
         if (!middle.length) continue;
-        const roll = hashTile(x, y) % 100;
-        const img = roll < 70 || middle.length === 1 ? middle[0] : middle[1 + hashTile(x + 7, y + 3) % (middle.length - 1)];
+        const img = middle[hashTile(x, y) % middle.length];
         drawPiece(ctx, img, x * TILE, y * TILE);
         continue;
       }
