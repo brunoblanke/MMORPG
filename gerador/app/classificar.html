@@ -1,0 +1,59 @@
+<!-- gerador/app/classificar.html -->
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Classificar Sprites</title>
+<link rel="stylesheet" href="css/gerador.css">
+</head>
+<body class="classify-page">
+
+<header class="topbar">
+  <div class="brand">
+    <div class="dot"></div>
+    <h1>Classificar sprites</h1>
+  </div>
+  <nav class="categories" aria-label="Tipo">
+    <button type="button" class="category active" data-type="itens">Itens</button>
+    <button type="button" class="category" data-type="criaturas">Criaturas</button>
+  </nav>
+  <a class="ghost-btn top-link" href="index.html">← Gerador</a>
+</header>
+
+<div class="classify-bar">
+  <div class="field">
+    <label for="showFilter">Mostrar</label>
+    <select id="showFilter"></select>
+  </div>
+  <div class="field" id="tibiaFilterField">
+    <label for="tibiaFilter">Tipo no Tibia</label>
+    <select id="tibiaFilter">
+      <option value="">Todos</option>
+      <option value="ground">Chão</option>
+      <option value="border">Bordas</option>
+      <option value="wall">Paredes</option>
+      <option value="door">Portas</option>
+      <option value="object">Objetos</option>
+      <option value="item">Itens (dá pra pegar)</option>
+    </select>
+  </div>
+  <div class="field">
+    <label for="targetFolder">Pôr na pasta</label>
+    <select id="targetFolder"></select>
+  </div>
+  <button type="button" class="primary-btn" id="applyBtn">Aplicar</button>
+  <button type="button" class="ghost-btn" id="unclassifyBtn">Tirar da pasta</button>
+  <button type="button" class="ghost-btn" id="clearSelectionBtn">Limpar seleção</button>
+  <span class="classify-count" id="classifyCount"></span>
+  <p class="status" id="classifyStatus" role="status"></p>
+</div>
+
+<main class="classify-grid" id="classifyGrid" aria-label="Sprites"></main>
+
+<p class="classify-help">Clique marca · Shift+clique marca o intervalo · Ctrl+A marca tudo que está na tela · Esc limpa</p>
+
+<script type="module" src="js/classify.js"></script>
+</body>
+</html>

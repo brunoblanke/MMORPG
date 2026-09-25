@@ -83,6 +83,27 @@ export function deleteProject(path) {
 }
 
 // ================================================================================================================================================================================================================================================
+// fetchClassification
+// { itens: { id: 'grupo/pasta' }, criaturas: { id: 'grupo/pasta' } }.
+
+export async function fetchClassification() {
+  return (await requestJson('/api/classificacao')).classificacao;
+}
+
+// ================================================================================================================================================================================================================================================
+// classify
+// Põe os sprites (tipo 'itens' ou 'criaturas') na pasta 'grupo/pasta' (null
+// tira da pasta). Devolve a classificação toda, já atualizada.
+
+export async function classify(type, ids, folder) {
+  return (await requestJson('/api/classificacao', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ tipo: type, ids, pasta: folder })
+  })).classificacao;
+}
+
+// ================================================================================================================================================================================================================================================
 // fetchTaxonomy
 // Os grupos, seções e pastas onde as folhas são salvas (gerador/taxonomia.json).
 

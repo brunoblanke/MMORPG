@@ -189,3 +189,31 @@ button:focus-visible, input:focus-visible, .slot:focus-visible{ outline:2px soli
 .property-list .checkline{ color:var(--text); font-size:12.5px; }
 #objectPreview{ width:512px; height:256px; }
 #objectSheet{ background-image:linear-gradient(45deg, #1b1f27 25%, transparent 25%, transparent 75%, #1b1f27 75%), linear-gradient(45deg, #1b1f27 25%, transparent 25%, transparent 75%, #1b1f27 75%); background-size:16px 16px; background-position:0 0, 8px 8px; }
+
+.top-link{ margin-left:auto; text-decoration:none; }
+
+.classify-bar{ display:flex; align-items:flex-end; gap:12px; flex-wrap:wrap; padding:12px 20px; background:var(--panel); border-bottom:1px solid var(--line); }
+.classify-bar .field[hidden]{ display:none; }
+.classify-count{ color:var(--muted); font-size:12px; align-self:center; }
+.classify-grid{
+  flex:1; min-height:0; overflow-y:auto; padding:12px 20px;
+  display:grid; grid-template-columns:repeat(auto-fill, 56px); grid-auto-rows:56px; gap:4px; align-content:start;
+}
+.sprite-tile{
+  position:relative; width:56px; height:56px; padding:3px; background:var(--panel-2);
+  border:1px solid var(--line); border-radius:6px; cursor:pointer; user-select:none;
+}
+.sprite-tile img{ width:48px; height:48px; object-fit:contain; image-rendering:pixelated; display:block; pointer-events:none; }
+.sprite-tile:hover{ border-color:var(--accent-dim); }
+.sprite-tile.selected{ border:2px solid var(--accent); background:rgba(94,234,212,.14); padding:2px; }
+.sprite-tile.selected::after{
+  content:'✓'; position:absolute; top:2px; left:2px; width:14px; height:14px; border-radius:50%;
+  background:var(--accent); color:#0b1512; font-size:10px; font-weight:700; line-height:14px; text-align:center;
+}
+.tile-tag{
+  position:absolute; left:2px; right:2px; bottom:2px; padding:0 2px; border-radius:3px;
+  color:#0b1512; font-size:8.5px; font-weight:600; line-height:11px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; pointer-events:none;
+}
+.tile-tag[hidden]{ display:none; }
+.classify-help{ margin:0; padding:6px 20px; color:var(--muted); font-size:11px; background:var(--panel); border-top:1px solid var(--line); }

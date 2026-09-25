@@ -11,6 +11,7 @@ const { TibiaAssets, paletaDeRoupa } = require('./tibia-assets.js');
 //   saida/<grupo>/<pasta>/<nome>.png      a folha pronta, no formato do jogo
 //   projetos/<grupo>/<pasta>/<nome>.json  a receita (de onde veio cada parte)
 // Receitas antigas, de antes das pastas, ficam em projetos/<ferramenta>/<nome>.json.
+// A página Classificar põe cada sprite do Tibia numa pasta (classificacao.json).
 
 const PORTA = process.env.PORT || 8100;
 const PASTA_APP = path.join(__dirname, 'app');
@@ -18,6 +19,7 @@ const PASTA_TIBIA = path.join(__dirname, 'tibia', '780');
 const PASTA_SAIDA = path.join(__dirname, 'saida');
 const PASTA_PROJETOS = path.join(__dirname, 'projetos');
 const FERRAMENTAS = ['pisos', 'criaturas', 'paredes', 'objetos'];
+const ARQUIVO_CLASSIFICACAO = path.join(__dirname, 'classificacao.json');
 const TAXONOMIA = JSON.parse(fs.readFileSync(path.join(__dirname, 'taxonomia.json'), 'utf8'));
 const NOME_VALIDO = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
@@ -36,6 +38,8 @@ app.get('/api/projetos', listarProjetos);
 app.get('/api/taxonomia', (req, res) => res.json({ success: true, taxonomia: TAXONOMIA }));
 app.get('/api/projeto', abrirProjeto);
 app.delete('/api/projeto', excluirProjeto);
+app.get('/api/classificacao', (req, res) => res.json({ success: true, classificacao: lerClassificacao() }));
+app.post('/api/classificacao', classificar);
 app.post('/api/salvar', salvar);
 app.use('/saida', express.static(PASTA_SAIDA));
 app.use(express.static(PASTA_APP));
@@ -257,6 +261,49 @@ function excluirProjeto(req, res) {
     res.json({ success: true });
   } catch (err) {
     console.error('❌ Erro ao excluir:', err.message);
+    res.status(500).json({ success: false, message: err.message });
+  }
+}
+
+// ================================================================================================================================================================================================================================================
+// lerClassificacao
+// { itens: { id: 'grupo/pasta' }, criaturas: { id: 'grupo/pasta' } }.
+
+function lerClassificacao() {
+  if (!fs.existsSync(ARQUIVO_CLASSIFICACAO)) return { itens: {}, criaturas: {} };
+  const dados = JSON.parse(fs.readFileSync(ARQUIVO_CLASSIFICACAO, 'utf8'));
+  return { itens: dados.itens || {}, criaturas: dados.criaturas || {} };
+}
+
+// ================================================================================================================================================================================================================================================
+// classificar
+// { tipo: 'itens' | 'criaturas', ids: [números], pasta: 'grupo/pasta' ou null }
+// — põe os sprites na pasta (null tira da pasta). Criatura só vai pra pasta
+// de criatura; item, pras outras.
+
+function classificar(req, res) {
+  const { tipo, ids, pasta } = req.body || {};
+  if (tipo !== 'itens' && tipo !== 'criaturas') return res.status(400).json({ success: false, message: 'Tipo inválido.' });
+  if (!Array.isArray(ids) || !ids.every(Number.isInteger)) return res.status(400).json({ success: false, message: 'Sprites inválidos.' });
+  if (pasta !== null) {
+    const [grupo, id] = String(pasta).split('/');
+    const destino = pastaDaTaxonomia(grupo, id);
+    if (!destino) return res.status(400).json({ success: false, message: 'Pasta inválida.' });
+    if ((destino.ferramenta === 'criaturas') !== (tipo === 'criaturas')) {
+      return res.status(400).json({ success: false, message: `A pasta ${destino.nome} não é de ${tipo}.` });
+    }
+  }
+
+  try {
+    const classificacao = lerClassificacao();
+    for (const id of ids) {
+      if (pasta) classificacao[tipo][id] = pasta;
+      else delete classificacao[tipo][id];
+    }
+    fs.writeFileSync(ARQUIVO_CLASSIFICACAO, JSON.stringify(classificacao, null, 1), 'utf8');
+    res.json({ success: true, classificacao });
+  } catch (err) {
+    console.error('❌ Erro ao classificar:', err.message);
     res.status(500).json({ success: false, message: err.message });
   }
 }
