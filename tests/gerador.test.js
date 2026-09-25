@@ -38,8 +38,8 @@ test('gerador devolve o PNG de cada variação de um item', () => {
 test('gerador monta a folha da criatura: 4 direções × quadros, com cores e addons', () => {
   const assets = new TibiaAssets(CLIENT);
   const rat = assets.folhaDeCriatura(21);
-  assert.deepEqual([rat.tamanho, rat.quadros], [32, 3]);
-  assert.deepEqual(pngSize(rat.png), [32 * 3, 32 * 4]);
+  assert.deepEqual([rat.tamanho, rat.quadros], [64, 3]);
+  assert.deepEqual(pngSize(rat.png), [64 * 3, 64 * 4]);
 
   const plain = assets.folhaDeCriatura(128, { cores: [78, 69, 58, 76] });
   const red = assets.folhaDeCriatura(128, { cores: [78, 94, 58, 76] });
@@ -97,7 +97,7 @@ test('gerador lê as propriedades do item no Tibia.dat', () => {
   assert.equal(assets.infoDoItem(99999), null);
 });
 
-test('gerador aumenta o quadro da criatura pra caber o desenho deslocado (minotauro, esqueleto, hero)', () => {
+test('gerador põe toda criatura em quadro de 64 × 64, sem cortar o desenho deslocado', () => {
   const assets = new TibiaAssets(CLIENT);
   for (const id of [25, 33, 73]) {
     const sheet = assets.folhaDeCriatura(id);

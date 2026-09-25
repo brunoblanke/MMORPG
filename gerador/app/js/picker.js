@@ -103,8 +103,8 @@ export function itemFrames(id) {
 export function creatureInfo(id) {
   const creature = picker.creaturesById.get(id);
   if (!creature) return null;
-  const [, w, h, frames, colors, addons] = creature;
-  return { id, size: Math.max(w, h) * 32, frames, colors, addons };
+  const [, , , frames, colors, addons] = creature;
+  return { id, size: 64, frames, colors, addons };
 }
 
 // ================================================================================================================================================================================================================================================
