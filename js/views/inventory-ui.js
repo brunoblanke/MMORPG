@@ -328,14 +328,12 @@ export class InventoryUI {
       (closable ? '<button class="inv-btn close" data-act="close" type="button" aria-label="Fechar">×</button>' : '');
     if (win.kind === 'inventory') {
       const { equip, cap } = this.view;
-      const cells = EQUIP_LAYOUT.map(([key]) => key ? this.slotHtml(equip[key], { t: 'e', key }, key) : '<div class="inv-gap"></div>').join('');
-      const pct = Math.min(100, cap.used / cap.max * 100);
+      const free = Math.max(0, cap.max - cap.used);
+      const capBox = `<div class="inv-gap"><div class="inv-capbox${free < cap.max * 0.15 ? ' heavy' : ''}" title="Cap livre: ${Math.round(free * 10) / 10} oz">${Math.floor(free)}</div></div>`;
+      const cells = EQUIP_LAYOUT.map(([key], i) => key ? this.slotHtml(equip[key], { t: 'e', key }, key) : (i === EQUIP_LAYOUT.length - 1 ? capBox : '<div class="inv-gap"></div>')).join('');
       return `<section class="inv-win${win.min ? ' min' : ''}" data-win="${win.id}">
         <header class="inv-head"><span class="inv-title">Inventário</span>${buttons(false)}</header>
-        <div class="inv-body"><div class="inv-doll">${cells}</div>
-          <div class="inv-foot"><div class="row"><span>Cap livre</span><b>${Math.round((cap.max - cap.used) * 10) / 10} oz</b></div>
-            <div class="inv-capbar${pct > 85 ? ' heavy' : ''}"><i style="width:${pct}%"></i></div>
-            <div class="row"><span>Peso</span><span>${Math.round(cap.used)} / ${cap.max} oz</span></div></div></div>
+        <div class="inv-body"><div class="inv-doll">${cells}</div></div>
       </section>`;
     }
     const box = this.findContainer(win.uid);
