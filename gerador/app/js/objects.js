@@ -15,10 +15,18 @@ import { fillFolderSelect, folderOf, setFolder, recipePath } from './folders.js'
 const CATEGORY = 'objetos';
 const FRAME_MS = 500;
 const STACK_OFFSET = 7;
+// Números da receita pro jogo: peso de uma unidade e espaços (container).
+const NUMBERS = [
+  { key: 'peso', label: 'Peso (oz)', min: 0, step: 0.1 },
+  { key: 'espacos', label: 'Espaços (0 = não é container)', min: 0, step: 1 }
+];
+const DEFAULT_PROPERTIES = { bloqueia: false, move: true, altura: false, empilhavel: false, peso: 10, espacos: 0 };
+const CONTAINER_SIZE = 8;
 const PROPERTIES = [
   { key: 'bloqueia', label: 'Bloqueia a passagem' },
   { key: 'move', label: 'Pode ser movido (arrastar)' },
-  { key: 'altura', label: 'Tem altura (empilha e dá pra subir)' }
+  { key: 'altura', label: 'Tem altura (empilha e dá pra subir)' },
+  { key: 'empilhavel', label: 'Empilhável (pilha até 100)' }
 ];
 
 const objects = {
@@ -26,7 +34,7 @@ const objects = {
   info: null,
   frames: [],
   frameSize: 32,
-  properties: { bloqueia: false, move: true, altura: false },
+  properties: { ...DEFAULT_PROPERTIES },
   frame: 0,
   name: '',
   path: '',
@@ -81,7 +89,7 @@ async function pick(kind, id, variation) {
   if (kind !== 'item') return;
   try {
     const info = await fetchItemInfo(id);
-    objects.properties = { bloqueia: info.bloqueia, move: info.move, altura: info.altura };
+    objects.properties = { ...objects.properties, bloqueia: info.bloqueia, move: info.move, altura: info.altura, empilhavel: !!info.empilhavel, espacos: info.container ? CONTAINER_SIZE : 0 };
     setSource({ tibia: { id, variacao: variation } }, info);
     renderProperties();
     status(`Propriedades do item ${id} vieram do Tibia; mude se quiser.`);
@@ -165,6 +173,22 @@ function renderProperties() {
       drawPreview();
     };
     label.append(input, property.label);
+    list.appendChild(label);
+  }
+  for (const number of NUMBERS) {
+    const label = document.createElement('label');
+    label.className = 'numberline';
+    const input = document.createElement('input');
+    input.type = 'number';
+    input.id = `objectProp-${number.key}`;
+    input.min = number.min;
+    input.step = number.step;
+    input.value = objects.properties[number.key] ?? DEFAULT_PROPERTIES[number.key];
+    input.onchange = () => {
+      objects.properties[number.key] = Math.max(number.min, Number(input.value) || 0);
+      objects.dirty = true;
+    };
+    label.append(number.label, input);
     list.appendChild(label);
   }
 }
@@ -300,7 +324,7 @@ async function openRecipe(recipe) {
   nameEl.value = objects.name;
   objects.path = recipePath(recipe, CATEGORY);
   setFolder(folderEl, recipe);
-  objects.properties = { bloqueia: false, move: true, altura: false, ...(recipe.propriedades || {}) };
+  objects.properties = { ...DEFAULT_PROPERTIES, ...(recipe.propriedades || {}) };
   renderProperties();
   const source = recipe.objeto || null;
   let info = null;

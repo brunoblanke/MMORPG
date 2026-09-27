@@ -15,6 +15,7 @@ import { getRoofLevel } from './views/draw-order.js';
 import { ParticleController } from './systems/particle-controller.js';
 import { InputController } from './input/input.js';
 import { NameModal } from './views/name-modal.js';
+import { InventoryUI } from './views/inventory-ui.js';
 
 // Cliente: pede o nome do personagem, carrega o mapa, entra no servidor de
 // jogo (RemoteSession) ou, sem servidor, roda a simulação aqui mesmo
@@ -64,6 +65,7 @@ export class GameController {
       .then((session) => {
         this.session = session;
         this.inputController = new InputController(this.canvas, this.renderer, this.camera, this.eventManager, this);
+        this.inventoryUI = new InventoryUI(this);
         this.setupEventListeners();
         this.start();
       });
@@ -282,6 +284,7 @@ export class GameController {
 
     this.updateAnimations(timestamp);
     this.particleController.update(timestamp);
+    this.inventoryUI.update();
 
     if (this.statusMessage && timestamp >= this.statusMessage.expiresAt) {
       this.statusMessage = null;

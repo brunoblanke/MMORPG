@@ -1,0 +1,21 @@
+{
+  "criaturas/mamiferos/rat": [
+    { "tipo": "itens/machados/fire-axe", "chance": 0.3 },
+    { "tipo": "itens/recipientes/parcel", "chance": 0.2 }
+  ],
+  "criaturas/vermes/spider": [
+    { "tipo": "itens/espadas/fire-sword", "chance": 0.2 }
+  ],
+  "criaturas/vermes/giant-spider": [
+    { "tipo": "itens/espadas/fire-sword", "chance": 0.5 },
+    { "tipo": "itens/machados/fire-axe", "chance": 0.5 }
+  ],
+  "criaturas/mortos-vivos/skeleton": [
+    { "tipo": "itens/espadas/fire-sword", "chance": 0.3 }
+  ],
+  "criaturas/demonios/demon": [
+    { "tipo": "itens/espadas/fire-sword", "chance": 1 },
+    { "tipo": "itens/machados/fire-axe", "chance": 0.5 },
+    { "tipo": "itens/recipientes/parcel", "chance": 0.5 }
+  ]
+}

@@ -138,7 +138,8 @@ class TibiaAssets {
       move: !temFlag(thing, FLAG.UNMOVEABLE),
       altura: temFlag(thing, FLAG.ELEVATION),
       pegavel: temFlag(thing, FLAG.PICKUPABLE),
-      empilhavel: temFlag(thing, FLAG.STACKABLE)
+      empilhavel: temFlag(thing, FLAG.STACKABLE),
+      container: temFlag(thing, FLAG.CONTAINER)
     };
   }
 

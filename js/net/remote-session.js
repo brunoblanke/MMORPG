@@ -29,6 +29,7 @@ export class RemoteSession {
     this.players = [];
     this.enemies = [];
     this.deadBodies = [];
+    this.inventoryView = null;
     this.inbox = [];
     this.onDisconnect = null;
 

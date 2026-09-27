@@ -96,8 +96,10 @@ export class Camera {
   // ================================================================================================================================================================================================================================================
   // resize
 
+  // A tela do jogo fica entre as colunas de janelas (css/inventory.css).
+
   resize() {
-    this.canvas.width = window.innerWidth;
-    this.canvas.height = window.innerHeight;
+    this.canvas.width = this.canvas.clientWidth || window.innerWidth;
+    this.canvas.height = this.canvas.clientHeight || window.innerHeight;
   }
 }
