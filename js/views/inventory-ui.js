@@ -344,11 +344,22 @@ export class InventoryUI {
     const slots = box.items.map((item, i) => this.slotHtml(item, { t: 'c', uid: box.uid, i })).join('');
     return `<section class="inv-win${win.min ? ' min' : ''}" data-win="${win.id}">
       <header class="inv-head"><span class="inv-icon">${this.spriteHtml(box.type)}</span>
-        <span class="inv-title">${itemInfo(box.type).name}${win.ground ? ' <em>(chão)</em>' : ''}</span>
+        <span class="inv-title">${this.windowTitle(win, box)}</span>
         <span class="inv-cap${used === box.items.length ? ' full' : ''}">${used}/${box.items.length}</span>${buttons(true)}</header>
       <div class="inv-body"><div class="inv-scroller" style="height:${Math.min(win.rows, Math.ceil(box.items.length / 4)) * PITCH + 8}px"><div class="inv-grid">${slots}</div></div></div>
       <div class="inv-resize" title="Arraste pra mostrar mais ou menos linhas"></div>
     </section>`;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // windowTitle
+  // Nome do container; do chão, com (chão); cadáver, com (morto).
+
+  windowTitle(win, box) {
+    const name = itemInfo(box.type).name;
+    if (!win.ground) return name;
+    const opened = this.view.opened.find(o => o.id === win.ground);
+    return `${name} <em>${opened && opened.corpse ? '(morto)' : '(chão)'}</em>`;
   }
 
   // ================================================================================================================================================================================================================================================
@@ -636,10 +647,17 @@ export class InventoryUI {
       if (openFromSlot(evt)) evt.preventDefault();
     });
 
-    // Caixa no chão: duplo clique ou botão direito pede pro servidor abrir
-    // (o player anda até ela, se preciso).
-    const openGround = (evt) => {
-      const obj = this.game.inputController && this.game.inputController.hoverObject;
+    // Caixa ou cadáver no chão: duplo clique ou botão direito pede pro
+    // servidor abrir (o player vai até o sqm e abre ao chegar; o clique
+    // simples só anda até lá).
+    const openGround = () => {
+      const input = this.game.inputController;
+      const corpse = input && input.hoverCorpse;
+      if (corpse && !corpse.isPlayer) {
+        this.game.send({ type: 'openContainer', itemId: corpse.id });
+        return true;
+      }
+      const obj = input && input.hoverObject;
       if (!obj || obj.movable !== true || !itemInfo(objectIdType(obj.id)).size) return false;
       this.game.send({ type: 'openContainer', itemId: obj.id });
       return true;

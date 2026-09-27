@@ -88,8 +88,8 @@ export class LifeCycleController {
 
   handleEnemyDeath(enemy, now) {
     const sim = this.sim;
-    this.createCorpse(enemy, 'enemy_corpse', now);
-    sim.inventory.dropLoot(enemy);
+    const corpse = this.createCorpse(enemy, 'enemy_corpse', now);
+    sim.inventory.fillCorpse(corpse, enemy);
 
     const killer = sim.players.find(p => p.target === enemy) || sim.closestPlayer(enemy);
     if (killer) {

@@ -18,7 +18,10 @@ import {
 // soltar em cima de uma caixa põe dentro dela; pilhas iguais se juntam até
 // o máximo; pegar do chão só colado (o player anda até o item); o peso do
 // que o player carrega não passa da cap. Item no chão guarda o conteúdo em
-// obj.itemData (uid, count, items).
+// obj.itemData (uid, count, items). Cadáver de criatura é container com o
+// loot dela (não dá pra pegar, só abrir e tirar ou pôr coisas).
+
+const CORPSE_SIZE = 8;
 
 const DYNAMIC_ID_START = 1000000;
 
@@ -127,11 +130,21 @@ export class InventoryController {
   }
 
   // ================================================================================================================================================================================================================================================
+  // isOpenable
+  // Dá pra abrir: caixa do chão ou cadáver com loot (ainda no mapa).
+
+  isOpenable(obj) {
+    if (!obj) return false;
+    if (obj.isCorpse) return !!obj.itemData && this.sim.deadBodies.includes(obj);
+    return this.isPickable(obj) && !!this.groundItem(obj).items;
+  }
+
+  // ================================================================================================================================================================================================================================================
   // openGroundObjects
   // Caixas do chão que o player abriu e ainda alcança.
 
   openGroundObjects(player) {
-    return [...player.openGround].map(id => this.sim.getItem(id)).filter(obj => obj && this.isPickable(obj) && this.isNear(player, obj));
+    return [...player.openGround].map(id => this.sim.getItem(id)).filter(obj => this.isOpenable(obj) && this.isNear(player, obj));
   }
 
   // ================================================================================================================================================================================================================================================
@@ -392,16 +405,25 @@ export class InventoryController {
 
   // ================================================================================================================================================================================================================================================
   // open
-  // Comando openContainer: abre a caixa do chão (anda até ela, se preciso).
+  // Comando openContainer (duplo clique na caixa ou no cadáver): o player vai
+  // até o sqm dela (ou, se não dá pra pisar lá, até um colado) e abre ao
+  // chegar. Se ela sumir no caminho, ele só termina de andar.
 
   open(player, itemId) {
     const obj = this.sim.getItem(itemId);
-    if (!this.isPickable(obj) || !this.groundItem(obj).items) return;
-    if (!this.isNear(player, obj)) {
-      this.walkNextTo(player, obj, { type: 'openContainer', itemId });
+    if (!this.isOpenable(obj)) return;
+    if (this.isNear(player, obj)) {
+      player.openGround.add(obj.id);
       return;
     }
-    player.openGround.add(obj.id);
+    const { movement, control } = this.sim;
+    const floor = obj.z || 0;
+    if (!movement.isBlocked(obj.x, obj.y, floor) && movement.getPassableStep(obj.x, obj.y, floor) !== null) {
+      player.pendingInv = { command: { type: 'openContainer', itemId }, objId: obj.id };
+      control.setWalkTarget(player, obj.x, obj.y, floor);
+      return;
+    }
+    this.walkNextTo(player, obj, { type: 'openContainer', itemId });
   }
 
   // ================================================================================================================================================================================================================================================
@@ -431,7 +453,7 @@ export class InventoryController {
     const pending = player.pendingInv;
     if (pending) {
       const obj = this.sim.getItem(pending.objId);
-      if (!obj || !this.isPickable(obj)) {
+      if (!obj || !(this.isPickable(obj) || this.isOpenable(obj))) {
         player.pendingInv = null;
       } else if (this.isNear(player, obj)) {
         player.pendingInv = null;
@@ -442,40 +464,27 @@ export class InventoryController {
     }
     for (const id of [...player.openGround]) {
       const obj = this.sim.getItem(id);
-      if (!obj || !this.isPickable(obj) || !this.isNear(player, obj)) player.openGround.delete(id);
+      if (!this.isOpenable(obj) || !this.isNear(player, obj)) player.openGround.delete(id);
     }
   }
 
   // ================================================================================================================================================================================================================================================
-  // dropLoot
-  // Criatura morta: o que ela tem (lootTable) cai em sqms aleatórios em volta
-  // de onde morreu (pisáveis). Não vira container.
+  // fillCorpse
+  // O cadáver da criatura vira container com o loot dela (lootTable), sorteado
+  // na hora da morte.
 
-  dropLoot(enemy) {
-    const entries = this.lootTable[enemy.creature] || [];
-    const { movement } = this.sim;
-    const z = enemy.z || 0;
-    const spots = [];
-    for (let dy = -1; dy <= 1; dy++) {
-      for (let dx = -1; dx <= 1; dx++) {
-        const x = enemy.x + dx;
-        const y = enemy.y + dy;
-        if (!movement.isInsideMap(x, y) || this.sim.world.hasBlockerAt(x, y, z)) continue;
-        if (movement.getPassableStep(x, y, z) === null) continue;
-        spots.push({ x, y });
-      }
-    }
-    if (!spots.length) return [];
-    const dropped = [];
-    for (const entry of entries) {
+  fillCorpse(corpse, enemy) {
+    const box = { uid: this.nextUid(), type: enemy.creature, items: new Array(CORPSE_SIZE).fill(null) };
+    let slot = 0;
+    for (const entry of this.lootTable[enemy.creature] || []) {
+      if (slot >= CORPSE_SIZE) break;
       if (!entry || !getAsset(splitType(entry.tipo).asset) || Math.random() >= (entry.chance ?? 1)) continue;
       const min = Math.max(1, entry.min || 1);
       const max = Math.max(min, entry.max || min);
-      const count = min + Math.floor(Math.random() * (max - min + 1));
-      const spot = spots[Math.floor(Math.random() * spots.length)];
-      dropped.push(this.spawnGroundItem(newItem(this.nextUid(), entry.tipo, count), spot.x, spot.y, z));
+      box.items[slot++] = newItem(this.nextUid(), entry.tipo, min + Math.floor(Math.random() * (max - min + 1)));
     }
-    return dropped;
+    corpse.itemData = box;
+    return box;
   }
 
   // ================================================================================================================================================================================================================================================
@@ -486,7 +495,7 @@ export class InventoryController {
     return {
       equip: player.equip,
       cap: { used: this.capUsed(player), max: this.capMax(player) },
-      opened: this.openGroundObjects(player).map(obj => ({ id: obj.id, item: this.groundItem(obj) })),
+      opened: this.openGroundObjects(player).map(obj => ({ id: obj.id, item: this.groundItem(obj), corpse: !!obj.isCorpse })),
       layout: player.uiLayout
     };
   }

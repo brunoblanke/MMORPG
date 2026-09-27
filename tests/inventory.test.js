@@ -171,15 +171,51 @@ test('caixa no chão abre só colado e fecha quando o player se afasta', () => {
   assert.equal(sim.inventory.viewFor(sim.player).opened.length, 0);
 });
 
-test('criatura morta espalha o loot em volta; personagem volta com os itens e o layout', () => {
+test('cadáver é container com o loot; duplo clique leva o player até ele e abre', () => {
   const mapData = buildMapData({ objects: floorRect(0, 29, 0, 29), enemies: [[12, 12, 0]], spawn: { x: 5, y: 5, z: 0 } });
   const sim = new Simulation(mapData, { lootTable: { 'criaturas/mamiferos/teste': [{ tipo: COIN, chance: 1, min: 5, max: 5 }, { tipo: SWORD, chance: 1 }] } });
+  sim.time = 1000;
+  const player = sim.addPlayer('player1', { name: 'Ana' });
   const enemy = sim.enemies[0];
-  const dropped = sim.inventory.dropLoot(enemy);
-  assert.equal(dropped.length, 2);
-  assert.ok(dropped.every(o => Math.abs(o.x - 12) <= 1 && Math.abs(o.y - 12) <= 1));
-  assert.equal(dropped[0].itemData.count, 5);
+  enemy.currentHp = 0;
+  sim.tick(sim.time + TICK_MS);
+  const corpse = sim.deadBodies.find(c => c.type === 'enemy_corpse');
+  assert.deepEqual(corpse.itemData.items.slice(0, 2).map(i => i && [i.type, i.count || 1]), [[COIN, 5], [SWORD, 1]]);
 
+  sim.enqueue('player1', { type: 'openContainer', itemId: corpse.id });
+  run(sim, 5000);
+  assert.equal(Math.max(Math.abs(player.x - 12), Math.abs(player.y - 12)) <= 1, true);
+  const opened = sim.inventory.viewFor(player).opened;
+  assert.equal(opened.length, 1);
+  assert.equal(opened[0].corpse, true);
+
+  const bag = player.equip.mochila;
+  sim.enqueue('player1', { type: 'moveInv', from: { t: 'c', uid: corpse.itemData.uid, i: 1 }, to: { t: 'c', uid: bag.uid, i: 0 } });
+  sim.tick(sim.time + TICK_MS);
+  assert.equal(bag.items[0].type, SWORD);
+  assert.equal(corpse.itemData.items[1], null);
+});
+
+test('corpo que some no caminho: o player termina de andar e não abre nada', () => {
+  const mapData = buildMapData({ objects: floorRect(0, 29, 0, 29), enemies: [[15, 5, 0]], spawn: { x: 5, y: 5, z: 0 } });
+  const sim = new Simulation(mapData, { lootTable: {} });
+  sim.time = 1000;
+  const player = sim.addPlayer('player1', { name: 'Bia' });
+  sim.enemies[0].currentHp = 0;
+  sim.tick(sim.time + TICK_MS);
+  const corpse = sim.deadBodies.find(c => c.type === 'enemy_corpse');
+
+  sim.enqueue('player1', { type: 'openContainer', itemId: corpse.id });
+  sim.tick(sim.time + TICK_MS);
+  sim.lifeCycle.removeCorpse(corpse);
+  run(sim, 6000);
+  assert.deepEqual([player.x, player.y], [15, 5]);
+  assert.equal(sim.inventory.viewFor(player).opened.length, 0);
+});
+
+test('personagem volta com os itens e o layout', () => {
+  const mapData = buildMapData({ objects: floorRect(0, 29, 0, 29), spawn: { x: 5, y: 5, z: 0 } });
+  const sim = new Simulation(mapData);
   const player = sim.addPlayer('p1', { name: 'Ana' });
   player.equip.mochila.items[0] = { uid: 'z', type: COIN, count: 42 };
   sim.inventory.saveLayout(player, { left: [], right: [{ ref: 'inventory' }] });
