@@ -11,6 +11,11 @@ import { calculateMoveDelay, getAdjacentPositions } from '../utils/helpers.js';
 //   { type: 'attack', targetId }         escolher inimigo como alvo (null tira)
 //   { type: 'toggleFollow' }             liga/desliga seguir o alvo
 //   { type: 'moveItem', itemId, x, y, z } arrastar item/cadáver pro sqm
+//   { type: 'moveInv', from, to, amount } mover item do inventário, de um
+//                                        container ou do chão (systems/inventory.js)
+//   { type: 'openContainer', itemId }    abrir caixa do chão (anda até ela)
+//   { type: 'closeContainer', itemId }   fechar caixa do chão
+//   { type: 'saveLayout', layout }       guardar o layout das janelas
 
 export class PlayerControl {
 
@@ -31,6 +36,10 @@ export class PlayerControl {
       case 'attack': return this.setAttackTarget(player, command.targetId);
       case 'toggleFollow': return this.toggleFollow(player);
       case 'moveItem': return this.moveItem(player, command.itemId, command.x, command.y, command.z);
+      case 'moveInv': return this.sim.inventory.move(player, command.from, command.to, command.amount);
+      case 'openContainer': return this.sim.inventory.open(player, command.itemId);
+      case 'closeContainer': return this.sim.inventory.close(player, command.itemId);
+      case 'saveLayout': return this.sim.inventory.saveLayout(player, command.layout);
       default: console.warn('Comando desconhecido:', command);
     }
   }

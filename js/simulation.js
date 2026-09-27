@@ -13,6 +13,7 @@ import { CombatController } from './systems/combat.js';
 import { ObjectDragController } from './systems/object-drag.js';
 import { LifeCycleController } from './systems/life-cycle.js';
 import { PlayerControl } from './systems/player-control.js';
+import { InventoryController } from './systems/inventory.js';
 
 export { TICK_MS };
 
@@ -27,7 +28,9 @@ export class Simulation {
   // ================================================================================================================================================================================================================================================
   // constructor
 
-  constructor(mapData) {
+  // options.lootTable: o que cada criatura deixa cair (systems/inventory.js).
+
+  constructor(mapData, options = {}) {
     this.mapData = mapData;
     this.world = new World();
     this.objects = generateObjects(mapData);
@@ -52,6 +55,7 @@ export class Simulation {
     this.objectDrag = new ObjectDragController(this);
     this.lifeCycle = new LifeCycleController(this);
     this.control = new PlayerControl(this);
+    this.inventory = new InventoryController(this, options.lootTable || {});
   }
 
   // ================================================================================================================================================================================================================================================
@@ -65,6 +69,7 @@ export class Simulation {
     const spawn = getMapSpawn(this.mapData, { x: 132, y: 145, z: 0 });
     const player = new Player({ id, x: spawn.x, y: spawn.y, z: spawn.z, lvl: CONFIG.playerStartLevel, ...info });
     const position = player.loadSave(saved);
+    this.inventory.setupPlayer(player, saved);
     const savedSpot = position && this.findSpotNear(position.x, position.y, position.z);
     const spot = savedSpot || this.findFreeSpot(player.spawnX, player.spawnY, player.spawnZ);
 
@@ -233,6 +238,7 @@ export class Simulation {
 
     for (const player of this.players) {
       this.control.update(player, now);
+      this.inventory.update(player);
     }
 
     for (const enemy of this.enemies) {

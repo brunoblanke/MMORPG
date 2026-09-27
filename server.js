@@ -15,6 +15,7 @@ const CHARACTERS_PATH = path.join(PASTA_JOGO, 'data', 'characters.json');
 const PASTA_PROJETOS = path.join(PASTA_JOGO, 'gerador', 'projetos');
 const PASTA_SAIDA = path.join(PASTA_JOGO, 'gerador', 'saida');
 const TAXONOMIA_PATH = path.join(PASTA_JOGO, 'gerador', 'taxonomia.json');
+const LOOT_PATH = path.join(PASTA_JOGO, 'data', 'loot.json');
 const SAVE_INTERVAL_MS = 10000;
 const PORT = process.env.PORT || 8000;
 
@@ -74,28 +75,49 @@ function salvarMapa(req, res) {
 
 function listarSprites(req, res) {
   try {
-    const taxonomia = fs.existsSync(TAXONOMIA_PATH) ? JSON.parse(fs.readFileSync(TAXONOMIA_PATH, 'utf8')) : { grupos: [] };
-    const sprites = [];
-    for (const grupo of taxonomia.grupos) {
-      for (const secao of grupo.secoes) {
-        for (const pasta of secao.pastas) {
-          const relativa = `${grupo.id}/${pasta.id}`;
-          const dir = path.join(PASTA_PROJETOS, grupo.id, pasta.id);
-          if (!fs.existsSync(dir)) continue;
-          for (const arquivo of fs.readdirSync(dir).filter(nome => nome.endsWith('.json')).sort()) {
-            const nome = arquivo.slice(0, -5);
-            if (!fs.existsSync(path.join(PASTA_SAIDA, relativa, `${nome}.png`))) continue;
-            const receita = JSON.parse(fs.readFileSync(path.join(dir, arquivo), 'utf8'));
-            sprites.push(descreverSprite(`${relativa}/${nome}`, grupo, pasta, nome, receita));
-          }
-        }
-      }
-    }
     res.set('Cache-Control', 'no-cache');
-    res.json({ success: true, sprites });
+    res.json({ success: true, sprites: lerSprites() });
   } catch (err) {
     console.error('❌ Erro ao listar sprites:', err.message);
     res.status(500).json({ success: false, message: err.message });
+  }
+}
+
+// ================================================================================================================================================================================================================================================
+// lerSprites
+// Lista das folhas (o que /api/sprites devolve).
+
+function lerSprites() {
+  const taxonomia = fs.existsSync(TAXONOMIA_PATH) ? JSON.parse(fs.readFileSync(TAXONOMIA_PATH, 'utf8')) : { grupos: [] };
+  const sprites = [];
+  for (const grupo of taxonomia.grupos) {
+    for (const secao of grupo.secoes) {
+      for (const pasta of secao.pastas) {
+        const relativa = `${grupo.id}/${pasta.id}`;
+        const dir = path.join(PASTA_PROJETOS, grupo.id, pasta.id);
+        if (!fs.existsSync(dir)) continue;
+        for (const arquivo of fs.readdirSync(dir).filter(nome => nome.endsWith('.json')).sort()) {
+          const nome = arquivo.slice(0, -5);
+          if (!fs.existsSync(path.join(PASTA_SAIDA, relativa, `${nome}.png`))) continue;
+          const receita = JSON.parse(fs.readFileSync(path.join(dir, arquivo), 'utf8'));
+          sprites.push(descreverSprite(`${relativa}/${nome}`, grupo, pasta, nome, receita));
+        }
+      }
+    }
+  }
+  return sprites;
+}
+
+// ================================================================================================================================================================================================================================================
+// lerLoot
+// data/loot.json: { '<criatura>': [{ tipo, chance, min, max }] } (vazio se não existir).
+
+function lerLoot() {
+  try {
+    return fs.existsSync(LOOT_PATH) ? JSON.parse(fs.readFileSync(LOOT_PATH, 'utf8')) : {};
+  } catch (err) {
+    console.error('❌ data/loot.json inválido:', err.message);
+    return {};
   }
 }
 
@@ -150,8 +172,11 @@ async function iniciarJogo(servidorHttp) {
   const { Simulation, TICK_MS } = await import(pathToFileURL(path.join(PASTA_JOGO, 'js', 'simulation.js')).href);
   const { serializeState, validateName, normalizeGender } = await import(pathToFileURL(path.join(PASTA_JOGO, 'js', 'net', 'protocol.js')).href);
 
+  const { setAssets } = await import(pathToFileURL(path.join(PASTA_JOGO, 'shared', 'assets.js')).href);
+  setAssets(lerSprites());
+
   const mapData = JSON.parse(fs.readFileSync(MAP_DATA_PATH, 'utf8'));
-  const sim = new Simulation(mapData);
+  const sim = new Simulation(mapData, { lootTable: lerLoot() });
   const personagens = carregarPersonagens();
   const conexoes = new Map();
   let proximoJogador = 1;

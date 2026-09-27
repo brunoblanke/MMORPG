@@ -2,6 +2,7 @@
 
 import { Player } from '../models/player.js';
 import { Enemy } from '../models/enemy.js';
+import { GameObject } from '../models/game-object.js';
 import { PLAYER_GENDERS, DEFAULT_GENDER } from '../../shared/catalog.js';
 import { TICK_MS } from '../../shared/constants.js';
 
@@ -16,7 +17,9 @@ import { TICK_MS } from '../../shared/constants.js';
 //     { type: 'state', time, state, events }       a cada tick: estado + eventos
 //
 // O estado leva só o que muda: jogadores, inimigos, cadáveres e itens
-// móveis. O mapa (pisos, paredes…) cada lado gera do mesmo data/map.json.
+// móveis (que aparecem e somem: jogados, pegos, loot). O mapa (pisos,
+// paredes…) cada lado gera do mesmo data/map.json. Cada jogador recebe o
+// próprio inventário (you.inventory: systems/inventory.js → viewFor).
 
 export const PLAYER_FIELDS = ['name', 'gender', 'x', 'y', 'z', 'step', 'direction', 'lvl', 'xp', 'nextLevelXp', 'hp', 'maxHp', 'currentHp', 'spd', 'atk', 'def', 'isTarget', 'spawnX', 'spawnY', 'spawnZ', 'stepDuration'];
 export const ENEMY_FIELDS = ['creature', 'color', 'lvl', 'x', 'y', 'z', 'step', 'direction', 'hp', 'maxHp', 'currentHp', 'spd', 'atk', 'def', 'patrolCenterX', 'patrolCenterY', 'patrolRadius', 'detectionRadius', 'stepDuration'];
@@ -84,11 +87,15 @@ export function serializeState(sim, playerId) {
     players: sim.players.map(p => ({ id: p.id, ...pick(p, PLAYER_FIELDS) })),
     enemies: sim.enemies.map(e => ({ id: e.id, ...pick(e, ENEMY_FIELDS), state: e.ai.state })),
     corpses: sim.deadBodies.map(c => pick(c, CORPSE_FIELDS)),
-    items: sim.objects.filter(isSyncedItem).map(o => ({ id: o.id, x: o.x, y: o.y, z: o.z, step: o.step })),
+    items: sim.objects.filter(isSyncedItem).map(o => ({
+      id: o.id, x: o.x, y: o.y, z: o.z, step: o.step, hasVolume: o.hasVolume, blocksMovement: o.blocksMovement,
+      count: o.itemData && o.itemData.count ? o.itemData.count : undefined
+    })),
     you: me ? {
       target: me.target ? me.target.id : null,
       autoFollow: me.autoFollow,
-      walk: { target: me.walk.target, path: me.walk.path.map(s => ({ x: s.x, y: s.y, z: s.z })) }
+      walk: { target: me.walk.target, path: me.walk.path.map(s => ({ x: s.x, y: s.y, z: s.z })) },
+      inventory: sim.inventory.viewFor(me)
     } : null
   };
 }
@@ -212,17 +219,43 @@ export function applyState(mirror, message, playerId, renderNow) {
 
   mirror.deadBodies = syncCorpses(world, mirror.deadBodies, state.corpses, time, renderNow);
 
-  for (const data of state.items) {
-    const obj = mirror.objectsById.get(data.id);
-    if (!obj) continue;
-    if (obj.x !== data.x || obj.y !== data.y || obj.z !== data.z) world.moveObject(obj, data.x, data.y, data.z);
-    obj.step = data.step;
-  }
+  syncItems(mirror, state.items);
 
   const me = mirror.players.find(p => p.id === playerId);
   if (me && state.you) {
     me.target = state.you.target ? mirror.enemies.find(e => e.id === state.you.target) || null : null;
     me.autoFollow = state.you.autoFollow;
     me.walk = state.you.walk;
+    mirror.inventoryView = state.you.inventory;
+  }
+}
+
+// ================================================================================================================================================================================================================================================
+// syncItems
+// Itens móveis do chão: move os que mudaram de lugar, cria os que apareceram
+// (jogados, loot) e tira os que sumiram (pegos).
+
+function syncItems(mirror, incoming) {
+  const { world } = mirror;
+  const seen = new Set();
+  for (const data of incoming) {
+    seen.add(data.id);
+    let obj = mirror.objectsById.get(data.id);
+    if (!obj) {
+      obj = new GameObject({ id: data.id, x: data.x, y: data.y, z: data.z, step: data.step, movable: true, hasVolume: data.hasVolume, blocksMovement: data.blocksMovement });
+      mirror.objects.push(obj);
+      mirror.objectsById.set(obj.id, obj);
+      world.addObject(obj);
+    } else if (obj.x !== data.x || obj.y !== data.y || obj.z !== data.z) {
+      world.moveObject(obj, data.x, data.y, data.z);
+    }
+    obj.step = data.step;
+    obj.count = data.count;
+  }
+  for (const obj of [...mirror.objects]) {
+    if (!isSyncedItem(obj) || seen.has(obj.id)) continue;
+    world.removeObject(obj);
+    mirror.objectsById.delete(obj.id);
+    mirror.objects.splice(mirror.objects.indexOf(obj), 1);
   }
 }

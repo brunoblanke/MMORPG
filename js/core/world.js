@@ -96,6 +96,18 @@ export class World {
   }
 
   // ================================================================================================================================================================================================================================================
+  // removeObject
+  // Tira o objeto do mapa (item pego do chão): o contrário de addObject.
+
+  removeObject(obj) {
+    if (!this.objects.has(obj)) return;
+    this.objects.delete(obj);
+    this.removeFromColumn(obj);
+    if (obj.blocksMovement) this.changeBlockers(obj.x, obj.y, obj.z || 0, -1);
+    if (obj.inStack) this.removeFromTile(obj, obj.x, obj.y, obj.z || 0);
+  }
+
+  // ================================================================================================================================================================================================================================================
   // moveObject
   // Leva um objeto do mapa ou um cadáver pro sqm (x, y, z) — sempre pro topo da pilha.
 

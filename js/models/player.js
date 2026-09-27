@@ -4,6 +4,7 @@ import { Entity } from './entity.js';
 import { calculateStats } from '../utils/helpers.js';
 import { PLAYER_GENDERS, DEFAULT_GENDER } from '../../shared/catalog.js';
 import { isValidFloor } from '../../shared/constants.js';
+import { EQUIP_SLOTS, toPlain } from '../../shared/items.js';
 
 export class Player extends Entity {
   constructor(data) {
@@ -71,7 +72,9 @@ export class Player extends Entity {
       currentHp: this.currentHp,
       x: this.x,
       y: this.y,
-      z: this.z || 0
+      z: this.z || 0,
+      equip: this.equip ? Object.fromEntries(EQUIP_SLOTS.map(key => [key, toPlain(this.equip[key])])) : null,
+      layout: this.uiLayout || null
     };
   }
 

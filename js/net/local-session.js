@@ -14,8 +14,8 @@ export class LocalSession {
   // ================================================================================================================================================================================================================================================
   // constructor
 
-  constructor(mapData, name = 'Player', gender) {
-    this.sim = new Simulation(mapData);
+  constructor(mapData, name = 'Player', gender, lootTable = {}) {
+    this.sim = new Simulation(mapData, { lootTable });
     this.playerId = 'player1';
     this.storageKey = `character:${name.toLowerCase()}`;
     this.sim.addPlayer(this.playerId, { name, gender, saved: this.loadCharacter() });
@@ -55,6 +55,7 @@ export class LocalSession {
   get enemies() { return this.sim.enemies; }
   get deadBodies() { return this.sim.deadBodies; }
   get player() { return this.sim.getPlayer(this.playerId); }
+  get inventoryView() { return this.player ? this.sim.inventory.viewFor(this.player) : null; }
 
   // ================================================================================================================================================================================================================================================
   // send
