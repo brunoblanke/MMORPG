@@ -61,8 +61,8 @@
 .inv-resize:hover::after{ background:var(--inv-accent-dim); }
 
 .inv-grid{ display:grid; grid-template-columns:repeat(4, 36px); gap:4px; justify-content:center; }
-.inv-doll{ display:grid; grid-template-columns:repeat(3, 36px); gap:4px; justify-content:center; padding:8px 6px 6px; }
-.inv-gap{ width:36px; height:36px; }
+.inv-doll{ display:flex; gap:4px; justify-content:center; padding:8px 6px 6px; }
+.inv-dollcol{ display:flex; flex-direction:column; justify-content:flex-end; gap:4px; }
 .inv-slot{
   width:36px; height:36px; position:relative; display:grid; place-items:center; box-sizing:border-box;
   background:var(--inv-slot); border:1px solid var(--inv-line-soft); border-radius:4px; touch-action:none; user-select:none;
@@ -80,7 +80,6 @@
 .inv-icon .inv-spr{ transform:scale(.5); transform-origin:0 0; }
 .inv-spr.missing{ background:repeating-linear-gradient(45deg, #2a2f3a 0 4px, transparent 4px 8px); border-radius:3px; }
 
-.inv-gap{ display:flex; align-items:flex-end; }
 .inv-capbox{
   width:36px; height:18px; box-sizing:border-box; display:grid; place-items:center; border-radius:4px;
   background:var(--inv-slot); border:1px solid var(--inv-line-soft); color:var(--inv-text);

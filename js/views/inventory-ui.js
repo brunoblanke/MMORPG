@@ -329,9 +329,11 @@ export class InventoryUI {
     if (win.kind === 'inventory') {
       const { equip, cap } = this.view;
       const free = Math.max(0, cap.max - cap.used);
-      const capBox = `<div class="inv-gap"><div class="inv-capbox${free < cap.max * 0.15 ? ' heavy' : ''}" title="Cap livre: ${Math.round(free * 10) / 10} oz">${Math.floor(free)}</div></div>`;
-      const spare = '<div class="inv-gap"><div class="inv-capbox"></div></div>';
-      const cells = EQUIP_LAYOUT.map(([key], i) => key ? this.slotHtml(equip[key], { t: 'e', key }, key) : (i === EQUIP_LAYOUT.length - 1 ? capBox : (i === EQUIP_LAYOUT.length - 3 ? spare : '<div class="inv-gap"></div>'))).join('');
+      const capBox = `<div class="inv-capbox${free < cap.max * 0.15 ? ' heavy' : ''}" title="Cap livre: ${Math.round(free * 10) / 10} oz">${Math.floor(free)}</div>`;
+      const spare = '<div class="inv-capbox"></div>';
+      const last = EQUIP_LAYOUT.length - 1;
+      const cell = ([key], i) => key ? this.slotHtml(equip[key], { t: 'e', key }, key) : (i === last ? capBox : (i === last - 2 ? spare : ''));
+      const cells = [0, 1, 2].map(col => `<div class="inv-dollcol">${EQUIP_LAYOUT.map((entry, i) => i % 3 === col ? cell(entry, i) : '').join('')}</div>`).join('');
       return `<section class="inv-win${win.min ? ' min' : ''}" data-win="${win.id}">
         <header class="inv-head"><span class="inv-title">Inventário</span>${buttons(false)}</header>
         <div class="inv-body"><div class="inv-doll">${cells}</div></div>
