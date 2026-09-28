@@ -10,7 +10,7 @@ import { getAsset, objectIdType, spriteFrame, listAssets } from '../../shared/as
 // peça conforme aparecem. O player usa a folha de criatura do gênero dele
 // (PLAYER_SPRITES).
 
-const CORPSE_ROW = 4;
+export const CORPSE_ROW = 4;
 
 // ================================================================================================================================================================================================================================================
 // getSpritePaths

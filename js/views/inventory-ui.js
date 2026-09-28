@@ -3,6 +3,8 @@
 import { getAsset, spriteFrame, splitType, objectIdType } from '../../shared/assets.js';
 import { itemInfo, weightOf } from '../../shared/items.js';
 import { SKILL_KEYS } from '../../shared/skills.js';
+import { PLAYER_SPRITES, DEFAULT_GENDER } from '../../shared/catalog.js';
+import { CORPSE_ROW } from './sprite-registry.js';
 
 // Janelas do inventário e dos containers, nas duas colunas ao lado da tela do
 // jogo. Só desenha e manda comandos (moveInv, openContainer, closeContainer,
@@ -84,7 +86,7 @@ export class InventoryUI {
   updateGroundGhost() {
     const input = this.game.inputController;
     const obj = input && input.dragOccurred ? input.draggingCandidate : null;
-    if (!obj || obj.isCorpse) {
+    if (!obj) {
       if (this.groundGhost) this.groundGhost.remove();
       this.groundGhost = null;
       return;
@@ -92,7 +94,7 @@ export class InventoryUI {
     if (!this.groundGhost) {
       this.groundGhost = document.createElement('div');
       this.groundGhost.className = 'inv-ghost';
-      this.groundGhost.innerHTML = this.spriteHtml(objectIdType(obj.id)) + (obj.count > 1 ? `<span class="inv-count">${obj.count}</span>` : '');
+      this.groundGhost.innerHTML = obj.isCorpse ? this.corpseSpriteHtml(obj) : this.spriteHtml(objectIdType(obj.id)) + (obj.count > 1 ? `<span class="inv-count">${obj.count}</span>` : '');
       document.body.appendChild(this.groundGhost);
     }
     this.groundGhost.style.left = `${this.mouse.x + 6}px`;
@@ -379,6 +381,20 @@ export class InventoryUI {
     const width = Math.max(1, asset.quadros || 1) * asset.quadro * scale;
     const height = asset.quadro * scale;
     return `<i class="inv-spr" style="background-image:url(${frame.url});background-size:${width}px ${height}px;background-position:${-frame.x * scale}px ${-frame.y * scale}px"></i>`;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // corpseSpriteHtml
+  // O 1º quadro do cadáver (5ª linha da folha da criatura) em 32 px.
+
+  corpseSpriteHtml(corpse) {
+    const creature = corpse.isPlayer ? PLAYER_SPRITES[DEFAULT_GENDER] : corpse.creature;
+    const asset = getAsset(creature);
+    if (!asset || !asset.cadaver) return '<i class="inv-spr missing"></i>';
+    const scale = 32 / asset.quadro;
+    const width = Math.max(1, asset.quadros || 1) * asset.quadro * scale;
+    const height = (CORPSE_ROW + 1) * asset.quadro * scale;
+    return `<i class="inv-spr" style="background-image:url(${asset.url});background-size:${width}px ${height}px;background-position:0 ${-CORPSE_ROW * asset.quadro * scale}px"></i>`;
   }
 
   // ================================================================================================================================================================================================================================================
