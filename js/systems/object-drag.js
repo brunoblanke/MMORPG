@@ -222,15 +222,17 @@ export class ObjectDragController {
   // resolveFall
   // Objeto solto num buraco (ou topo de escada) cai pro mesmo sqm onde o player
   // cairia (shared/stairs.js); se lá houver outro buraco, continua caindo.
+  // Solto no pé de escada com volume, sobe pra onde o player subiria.
   // Buraco "morto" (sem piso embaixo) não derruba nada.
 
   resolveFall(x, y, z) {
     const { world } = this.sim;
     for (let i = 0; i < 16; i++) {
       const hole = world.getTransitionAt(x, y, z);
-      if (!hole || hole.targetZ >= z || !isValidFloor(hole.targetZ)) break;
+      if (!hole || hole.targetZ === z || !isValidFloor(hole.targetZ)) break;
+      if (hole.targetZ > z && hole.manualStairs) break;
       if (!world.hasFloorAt(hole.targetX, hole.targetY, hole.targetZ)) break;
-      console.log(`🕳️ Objeto caiu pelo ${hole.id} em (${x},${y}) andar ${z} → (${hole.targetX},${hole.targetY}) andar ${hole.targetZ}`);
+      console.log(`🕳️ Objeto ${hole.targetZ > z ? 'subiu' : 'caiu'} pelo ${hole.id} em (${x},${y}) andar ${z} → (${hole.targetX},${hole.targetY}) andar ${hole.targetZ}`);
       x = hole.targetX;
       y = hole.targetY;
       z = hole.targetZ;
