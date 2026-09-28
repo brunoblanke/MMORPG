@@ -37758,6 +37758,56 @@
       false
     ],
     [
+      "Border:estrutura/pisos/piso-madeira-1:no",
+      156,
+      179,
+      1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-madeira-1:n",
+      157,
+      179,
+      1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-madeira-1:n",
+      158,
+      179,
+      1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-madeira-1:n",
+      159,
+      179,
+      1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-madeira-1:nl",
+      160,
+      179,
+      1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "Border:estrutura/pisos/piso-madeira-3:o",
       175,
       179,
@@ -37815,6 +37865,59 @@
       "Border:estrutura/pisos/piso-madeira-3:l",
       180,
       179,
+      1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-madeira-1:o",
+      156,
+      180,
+      1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-madeira-1",
+      157,
+      180,
+      1,
+      0,
+      false,
+      false,
+      false,
+      3008
+    ],
+    [
+      "estrutura/pisos/piso-madeira-1",
+      158,
+      180,
+      1,
+      0,
+      false,
+      false,
+      false,
+      2996
+    ],
+    [
+      "estrutura/pisos/piso-madeira-1",
+      159,
+      180,
+      1,
+      0,
+      false,
+      false,
+      false,
+      3005
+    ],
+    [
+      "Border:estrutura/pisos/piso-madeira-1:l",
+      160,
+      180,
       1,
       0,
       false,
@@ -37886,6 +37989,58 @@
       false
     ],
     [
+      "Border:estrutura/pisos/piso-madeira-1:o",
+      156,
+      181,
+      1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-madeira-1",
+      157,
+      181,
+      1,
+      0,
+      false,
+      false,
+      false,
+      3009
+    ],
+    [
+      "estrutura/entradas/entrada-madeira-1",
+      158,
+      181,
+      1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-madeira-1",
+      159,
+      181,
+      1,
+      0,
+      false,
+      false,
+      false,
+      3006
+    ],
+    [
+      "Border:estrutura/pisos/piso-madeira-1:l",
+      160,
+      181,
+      1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "Border:estrutura/pisos/piso-madeira-3:o",
       175,
       181,
@@ -37950,6 +38105,59 @@
       false
     ],
     [
+      "Border:estrutura/pisos/piso-madeira-1:o",
+      156,
+      182,
+      1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-madeira-1",
+      157,
+      182,
+      1,
+      0,
+      false,
+      false,
+      false,
+      3010
+    ],
+    [
+      "estrutura/pisos/piso-madeira-1",
+      158,
+      182,
+      1,
+      0,
+      false,
+      false,
+      false,
+      2998
+    ],
+    [
+      "estrutura/pisos/piso-madeira-1",
+      159,
+      182,
+      1,
+      0,
+      false,
+      false,
+      false,
+      2999
+    ],
+    [
+      "Border:estrutura/pisos/piso-madeira-1:l",
+      160,
+      182,
+      1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "Border:estrutura/pisos/piso-madeira-3:o",
       175,
       182,
@@ -38007,6 +38215,56 @@
       "Border:estrutura/pisos/piso-madeira-3:l",
       180,
       182,
+      1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-madeira-1:so",
+      156,
+      183,
+      1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-madeira-1:s",
+      157,
+      183,
+      1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-madeira-1:s",
+      158,
+      183,
+      1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-madeira-1:s",
+      159,
+      183,
+      1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-madeira-1:sl",
+      160,
+      183,
       1,
       0,
       false,
@@ -38625,6 +38883,15 @@
       "up",
       157,
       173
+    ],
+    [
+      "estrutura/escadas/escada-madeira-reta-1",
+      159,
+      182,
+      0,
+      "up",
+      158,
+      182
     ]
   ],
   "enemyData": [
