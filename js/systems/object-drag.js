@@ -136,9 +136,9 @@ export class ObjectDragController {
   // intransponível (parede etc.) — num passo diagonal, também trava se os dois
   // sqm laterais estão bloqueados (não passa pela quina entre paredes).
   // Em cima de pilha alta o player aparece no andar de cima (toUpperLevel).
-  // Andares checados: arremesso pra cima passa por todos entre a origem e o
-  // destino (esbarra na parede do prédio); pra baixo, só o de origem (o objeto
-  // passa por cima das paredes de baixo).
+  // Andar checado: o mais alto entre a origem e o destino. Pra cima, o objeto
+  // voa por cima das paredes de baixo e só o que está no andar de destino o
+  // barra; pra baixo, só o de origem (também passa por cima das de baixo).
 
   isThrowPathClear(player, obj, toX, toY, toZ) {
     const floorHeight = CONFIG.floorHeight || 4;
@@ -146,10 +146,8 @@ export class ObjectDragController {
     let origin = { x: player.x, y: player.y, z: player.z || 0 };
     if ((player.step || 0) >= floorHeight - 1) origin = toUpperLevel(origin.x, origin.y, origin.z);
 
-    const floors = [];
-    for (let z = origin.z; z <= Math.max(origin.z, toZ); z++) floors.push(z);
-
-    const isBlocked = (x, y) => floors.some(z => this.hasOtherBlocker(obj, x, y, z));
+    const floor = Math.max(origin.z, toZ);
+    const isBlocked = (x, y) => this.hasOtherBlocker(obj, x, y, floor);
 
     // Bresenham: sqm a sqm, da origem (fora) até o destino (dentro).
     let x = origin.x;

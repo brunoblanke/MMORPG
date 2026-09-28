@@ -80,3 +80,18 @@ test('objeto solto num buraco cai pro andar de baixo', () => {
   game.objectDrag.moveObject(game.player, parcel, 5, 5, 1);
   assert.deepEqual([parcel.x, parcel.y, parcel.z], [6, 6, 0]);
 });
+
+test('arremesso pro andar de cima passa por cima das paredes de baixo; parede no andar de cima barra', () => {
+  const game = setup(pile(3, 5, 1), wall(6, 5), wall(6, 6), floorRect(6, 9, 3, 7, 1));
+  placeAt(game, game.player, 4, 5, 0);
+  const parcel = box(game, 3, 5);
+
+  game.objectDrag.moveObject(game.player, parcel, 8, 5, 1);
+  assert.deepEqual([parcel.x, parcel.y, parcel.z], [8, 5, 1]);
+
+  const blocked = setup(pile(3, 5, 1), floorRect(6, 9, 3, 7, 1), wall(7, 5, 1));
+  placeAt(blocked, blocked.player, 4, 5, 0);
+  const other = box(blocked, 3, 5);
+  blocked.objectDrag.moveObject(blocked.player, other, 9, 5, 1);
+  assert.deepEqual([other.x, other.y, other.z], [3, 5, 0]);
+});

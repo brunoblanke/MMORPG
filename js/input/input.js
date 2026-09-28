@@ -112,13 +112,7 @@ export class InputController {
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
 
-    const btnSize = 40;
-    const btnPadding = 20;
-    const btnX = this.canvas.width - btnSize - btnPadding;
-    const btnY = btnPadding;
-
-    if (mouseX >= btnX && mouseX <= btnX + btnSize &&
-        mouseY >= btnY && mouseY <= btnY + btnSize) {
+    if (this.game.ui.isButtonClicked(mouseX, mouseY, this.canvas.width)) {
       return { type: 'toggle_follow' };
     }
 

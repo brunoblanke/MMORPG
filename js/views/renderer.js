@@ -6,20 +6,6 @@ import { drawTileTooltip } from './tile-tooltip.js';
 import { prepareDrawables } from './draw-order.js';
 import { getEntityLevel } from '../core/geometry.js';
 
-// ================================================================================================================================================================================================================================================
-// isGroundLayer
-// Solto no chão: cadáver, borda ou item que dá pra mover e não tem volume nem
-// bloqueia. Vai por baixo de criaturas do mesmo andar. Escada, parede e
-// decoração fixa ficam na ordem normal (vale quem está mais ao sul e a leste).
-
-function isGroundLayer(obj) {
-  if (obj.isCorpse) return true;
-  const entity = obj.entity;
-  if (!entity || entity.isPlayer === true || entity.type === 'enemy') return false;
-  if (entity.isBorder) return true;
-  return entity.movable === true && !obj.hasVolume && !obj.blocksMovement;
-}
-
 const TINT_HIT = { color: '#ff2a2a', alpha: 0.55 };
 const TINT_ENEMY_HOVER = { color: '#ff2a2a', alpha: 0.35 };
 const TINT_TARGET = { color: '#ff2a2a', alpha: 0.2 };
@@ -513,12 +499,9 @@ export class Renderer {
 
     // Andar por andar (drawables já vêm ordenados por nível): primeiro o chão
     // do andar, depois o que o modo inspecionar desenha (áreas/caminho/alvo no
-    // andar do player, contornos amarelos), o que está solto no chão (itens,
-    // cadáveres e bordas, na ordem da pilha de cada sqm — dá pra empilhar
-    // item em cima de corpo e corpo em cima de item) e por fim paredes,
-    // volumes, inimigos e players na ordem normal. Assim quem está vivo fica
-    // sempre por cima do que está no chão, mesmo do corpo de 64 px do sqm do
-    // lado, e o que tem altura ainda cobre quem está atrás.
+    // andar do player, contornos amarelos) e por fim objetos, cadáveres,
+    // inimigos e players na ordem normal: sqm a sqm (mais ao sul e a leste por
+    // cima) e, dentro do sqm, na ordem da pilha.
     const playerLevel = getEntityLevel(gameState.player);
     let highlightsDrawn = false;
     const drawHighlights = () => {
@@ -543,8 +526,7 @@ export class Renderer {
       if (this.showYellowOutline) {
         for (const obj of group) this.drawDrawableOutline(obj);
       }
-      for (const obj of group) if (!obj.isFloor && isGroundLayer(obj)) drawDrawable(obj);
-      for (const obj of group) if (!obj.isFloor && !isGroundLayer(obj)) drawDrawable(obj);
+      for (const obj of group) if (!obj.isFloor) drawDrawable(obj);
 
       start = end;
     }
