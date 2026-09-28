@@ -95,7 +95,8 @@ function paintCell(x, y) {
   } else if (state.tool === 'border') {
     if (state.borderPaint) addBorderPiece(cell, state.borderPaint);
   } else if (state.tool === 'border-eraser') {
-    cell.borders = [];
+    // Por camadas, como a borracha: cada passada tira só a borda de cima.
+    cell.borders.pop();
   } else if (state.tool === 'safe') {
     if (state.strokeTouched.size === 1) state.safePaintValue = !cell.safe;
     cell.safe = state.safePaintValue;
