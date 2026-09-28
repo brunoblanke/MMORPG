@@ -26,6 +26,12 @@ const NUMBERS = [
 ];
 const DEFAULT_PROPERTIES = { bloqueia: false, move: true, altura: false, empilhavel: false, peso: 10, espacos: 0, atk: 0, def: 0, ml: 0 };
 const CONTAINER_SIZE = 8;
+// Escada (Estrutura › Escadas): normal sai no sqm de trás do topo; reta,
+// no sqm da frente dele.
+const STAIR_KINDS = [
+  { key: 'normal', label: 'Normal (sai atrás do topo)' },
+  { key: 'reta', label: 'Reta (sai na frente do topo)' }
+];
 const PROPERTIES = [
   { key: 'bloqueia', label: 'Bloqueia a passagem' },
   { key: 'move', label: 'Pode ser movido (arrastar)' },
@@ -70,7 +76,10 @@ function initObjects() {
   });
   nameEl.addEventListener('input', () => { objects.dirty = true; });
   fillFolderSelect(folderEl, CATEGORY);
-  folderEl.addEventListener('change', () => { objects.dirty = true; });
+  folderEl.addEventListener('change', () => {
+    objects.dirty = true;
+    renderProperties();
+  });
   setInterval(() => {
     objects.frame++;
     drawPreview();
@@ -195,6 +204,20 @@ function renderProperties() {
     label.append(number.label, input);
     list.appendChild(label);
   }
+  const folder = folderOf(folderEl);
+  if (!folder || folder.pasta !== 'escadas') return;
+  const label = document.createElement('label');
+  label.className = 'numberline';
+  const select = document.createElement('select');
+  select.id = 'objectProp-escada';
+  for (const kind of STAIR_KINDS) select.add(new Option(kind.label, kind.key));
+  select.value = objects.properties.escada === 'reta' ? 'reta' : 'normal';
+  select.onchange = () => {
+    objects.properties.escada = select.value;
+    objects.dirty = true;
+  };
+  label.append('Tipo de escada', select);
+  list.appendChild(label);
 }
 
 // ================================================================================================================================================================================================================================================

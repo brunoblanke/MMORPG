@@ -1,11 +1,12 @@
 // shared/stairs.js
 //
-// Geometria fixa da escada (por enquanto só virada pro norte). Numa escada
-// em (x, y, z):
-//   - pisar nela leva pra (x-1, y-2, z+1), o piso logo depois do topo;
-//   - o sqm (x-1, y-1, z+1) é o TOPO da escada: vira um buraco (sem piso,
-//     coberto pelo próprio sprite da escada) que leva de volta pra baixo,
-//     em (x, y+1, z), logo à frente do pé da escada.
+// Geometria da escada (virada pro norte), pelo tipo da folha (gerador →
+// Objetos → Tipo de escada). Numa escada em (x, y, z):
+//   - o sqm (x-1, y-1, z+1), logo acima do pé, é o TOPO da escada: vira um
+//     buraco (sem piso, coberto pelo próprio sprite) que leva de volta pra
+//     baixo, em (x, y+1, z), logo à frente do pé;
+//   - pisar nela leva pro andar de cima: a normal sai atrás do topo,
+//     (x-1, y-2, z+1); a reta sai na frente dele, (x-1, y, z+1).
 // Buraco comum em (x, y, z) leva pra (x+1, y+1, z-1).
 //
 // Nenhum dos dois impede borda: o piso vizinho solta borda normalmente no
@@ -30,8 +31,8 @@ export function toLowerLevel(x, y, z) {
 // ================================================================================================================================================================================================================================================
 // getStairTarget
 
-export function getStairTarget(x, y, z) {
-  return { x: x - 1, y: y - 2, z: z + 1 };
+export function getStairTarget(x, y, z, kind = 'normal') {
+  return kind === 'reta' ? { x: x - 1, y, z: z + 1 } : { x: x - 1, y: y - 2, z: z + 1 };
 }
 
 // ================================================================================================================================================================================================================================================

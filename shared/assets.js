@@ -131,6 +131,16 @@ export function floorHasPiece(type, piece) {
 }
 
 // ================================================================================================================================================================================================================================================
+// stairKind
+// Tipo da escada (gerador → Objetos → Tipo de escada): 'normal' sai atrás do
+// topo, 'reta' na frente dele.
+
+export function stairKind(type) {
+  const asset = getAsset(splitType(type).asset);
+  return asset && asset.propriedades && asset.propriedades.escada === 'reta' ? 'reta' : 'normal';
+}
+
+// ================================================================================================================================================================================================================================================
 // isFloorType / isStairsType / isHoleType
 // Pela pasta da folha (não precisa da lista: vale no servidor também).
 

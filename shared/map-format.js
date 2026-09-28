@@ -1,6 +1,6 @@
 // shared/map-format.js
 
-import { isFloorType, isHoleType, isStairsType, isItemType, objectProps } from './assets.js';
+import { isFloorType, isHoleType, isStairsType, isItemType, objectProps, stairKind } from './assets.js';
 import { getStairTarget } from './stairs.js';
 import { borderEntryType, parseBorderType, mergeSavedInnerCorners } from './floor-borders.js';
 
@@ -83,7 +83,7 @@ export function collectObjectDescriptors(mapData) {
   // Escada: o destino é sempre fixo pela posição (shared/stairs.js); direção
   // e destino gravados no arquivo são ignorados.
   (mapData.transicoesData || []).forEach(([tipo, x, y, z]) => {
-    const target = getStairTarget(x, y, z);
+    const target = getStairTarget(x, y, z, stairKind(tipo));
     descriptors.push({
       id: nextId(tipo),
       x, y, z,
@@ -156,7 +156,7 @@ export function serializeMapFromLayers(layerOrder, layers, GRID) {
         cell.objects.forEach((obj) => {
           if (isStairsType(obj.type)) {
             // Destino gravado só pra referência: o jogo sempre recalcula (shared/stairs.js).
-            const target = getStairTarget(x, y, z);
+            const target = getStairTarget(x, y, z, stairKind(obj.type));
             transicoesData.push([obj.type, x, y, z, 'up', target.x, target.y]);
           } else {
             // Paredes e objetos: o comportamento vai gravado (o servidor não lê as folhas).
