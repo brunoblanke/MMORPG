@@ -107,7 +107,9 @@ function createBorder(piece, position, counter) {
 //     sprite da escada já cobre esse sqm) que desce até o pé da escada. Piso
 //     pintado ali é removido — o topo é sempre um vão;
 //   - buraco comum é um item sobre o chão do sqm (em geral ord 1) e desce
-//     na diagonal (x+1, y+1) pro andar de baixo.
+//     pro mesmo sqm do andar de baixo;
+//   - topo de escada com uma entrada desenhada por cima (alçapão) mantém o
+//     piso: o alçapão fica sobre ele e a descida continua sendo a da escada.
 // Nenhum dos dois impede borda do piso vizinho. Todos viram transição no
 // World (getTransitionAt) pra movimentação.
 
@@ -129,7 +131,8 @@ function applyTransitions(objs) {
     stairTops.push(stairTop);
   }
 
-  const topKeys = new Set(stairTops.map(t => `${t.x},${t.y},${t.z}`));
+  const holeKeys = new Set(objs.filter(obj => isHoleType(objectIdType(obj.id))).map(obj => `${obj.x},${obj.y},${obj.z}`));
+  const topKeys = new Set(stairTops.map(t => `${t.x},${t.y},${t.z}`).filter(key => !holeKeys.has(key)));
   const result = objs.filter(obj => !(obj.floorType && topKeys.has(`${obj.x},${obj.y},${obj.z}`)));
   result.push(...stairTops);
 

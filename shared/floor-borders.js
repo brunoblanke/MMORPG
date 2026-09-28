@@ -69,7 +69,8 @@ function visibleBorderFloor(cell) {
 // ================================================================================================================================================================================================================================================
 // computeCellBorders
 // Bordas automáticas da célula (x, y) de uma camada do editor. voidKeys:
-// sqms sem piso por serem topo de escada. Célula com buraco não recebe borda
+// sqms sem piso por serem topo de escada (menos os que têm uma entrada
+// desenhada, que mantêm o piso). Célula com buraco não recebe borda
 // (dá pra ver o andar de baixo por dentro dele).
 
 export function computeCellBorders(layer, x, y, voidKeys = new Set()) {
@@ -77,12 +78,13 @@ export function computeCellBorders(layer, x, y, voidKeys = new Set()) {
   const cell = layer[key];
   if (!cell || cell.hole) return [];
 
+  const isVoidCell = (cellKey, target) => voidKeys.has(cellKey) && !target.hole;
   const getFloor = (nx, ny) => {
     const neighborKey = `${nx},${ny}`;
     const neighbor = layer[neighborKey];
-    return neighbor && !voidKeys.has(neighborKey) ? visibleBorderFloor(neighbor) : null;
+    return neighbor && !isVoidCell(neighborKey, neighbor) ? visibleBorderFloor(neighbor) : null;
   };
-  const cellFloor = voidKeys.has(key) ? null : visibleBorderFloor(cell);
+  const cellFloor = isVoidCell(key, cell) ? null : visibleBorderFloor(cell);
   return computeBorderPieces(x, y, getFloor, cellFloor, floorHasPiece).map(({ type, variant }) => ({ type, variant }));
 }
 

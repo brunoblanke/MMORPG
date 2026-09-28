@@ -131,7 +131,7 @@ function drawLayer(layer, alpha, z) {
   const labels = [];
   const stairTops = getStairTopKeys(z);
   // Topo de escada nunca tem piso (o jogo remove).
-  const isVoid = (key) => stairTops.has(key);
+  const isVoid = (key) => stairTops.has(key) && !(layer[key] && layer[key].hole);
 
   for (let y = 0; y < GRID; y++) {
     for (let x = 0; x < GRID; x++) {

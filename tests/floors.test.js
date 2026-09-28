@@ -132,3 +132,15 @@ test('buraco leva pro mesmo sqm no andar de baixo', () => {
   run(sim, 2000);
   assert.deepEqual([player.x, player.y, player.z], [5, 5, 0]);
 });
+
+test('entrada desenhada no topo da escada mantém o piso; descer por ali leva ao pé da escada', () => {
+  const objects = [...floorRect(0, 14, 0, 14, 0), ...floorRect(0, 14, 0, 14, 1), ['estrutura/entradas/alcapao', 6, 6, 1, 0, 0, 0, 0]];
+  const mapData = { version: 3, objetosData: objects, transicoesData: [[STAIRS_STRAIGHT, 7, 7, 0]], enemyData: [], safeZoneData: [], spawn: { x: 6, y: 8, z: 1 } };
+  const sim = new Simulation(mapData);
+  sim.time = 1000;
+  const player = sim.addPlayer('p1', { name: 'Ana' });
+  assert.equal(sim.world.hasFloorAt(6, 6, 1), true);
+  sim.enqueue('p1', { type: 'walkTo', x: 6, y: 6, z: 1 });
+  run(sim, 2000);
+  assert.deepEqual([player.x, player.y, player.z], [7, 7, 0]);
+});
