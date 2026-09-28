@@ -112,10 +112,6 @@ export class InputController {
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
 
-    if (this.game.ui.isButtonClicked(mouseX, mouseY, this.canvas.width)) {
-      return { type: 'toggle_follow' };
-    }
-
     const gridPos = this.camera.screenToGrid(mouseX, mouseY);
     return { type: 'click', gridPos: gridPos, mouseX: mouseX, mouseY: mouseY };
   }

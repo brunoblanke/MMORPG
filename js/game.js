@@ -149,11 +149,6 @@ export class GameController {
 
       const clickData = self.inputController.handleClick(data.event);
 
-      if (clickData.type === 'toggle_follow') {
-        self.send({ type: 'toggleFollow' });
-        return;
-      }
-
       if (clickData.type === 'click') {
         self.handleGameClick(clickData.gridPos);
       }

@@ -22,7 +22,7 @@
 .inv-column{
   position:fixed; top:0; bottom:0; width:var(--inv-side); box-sizing:border-box; padding:8px;
   display:flex; flex-direction:column; gap:8px; overflow-y:auto; scrollbar-width:none;
-  background:transparent; pointer-events:none;
+  background:transparent; pointer-events:none; z-index:1;
   font-family:'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif; font-size:12px; color:var(--inv-text);
 }
 .inv-column > *{ pointer-events:auto; }
@@ -91,7 +91,8 @@
   font:500 10px 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric:tabular-nums;
 }
 .inv-capbox.heavy{ color:var(--inv-warn); }
-.inv-btn.wide{ width:auto; padding:0 6px; font:500 10px 'IBM Plex Mono', ui-monospace, monospace; }
+.inv-btn.wide{ width:auto; padding:0 3px; font:500 9px 'IBM Plex Mono', ui-monospace, monospace; }
+.inv-head.tight{ gap:4px; }
 .inv-btn.on{ color:var(--inv-accent); border-color:var(--inv-accent-dim); }
 .inv-skills{ padding:7px 10px 9px; font:500 9px 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric:tabular-nums; }
 .inv-skrow{ display:flex; justify-content:space-between; gap:8px; line-height:16px; color:var(--inv-muted); }
@@ -123,3 +124,19 @@
 .inv-qty button.primary{ background:var(--inv-accent); color:#0b1512; border:none; font-weight:600; }
 
 @media (prefers-reduced-motion: reduce){ .inv-win.flash{ animation:none; } }
+.inv-modes{ display:flex; gap:4px; justify-content:space-between; }
+.inv-btn.inv-mode{ width:16px; height:16px; border-radius:3px; background:var(--inv-slot); border-color:var(--inv-line-soft); }
+.inv-btn.inv-mode svg{ width:11px; height:11px; }
+.inv-btn.inv-mode.on{ color:#ccff33; }
+.inv-btn.inv-mode.attack{ color:#ef4444; border-color:#7f1d1d; }
+.inv-btn.inv-mode.defense{ color:#4ade80; border-color:#14532d; }
+.inv-battle{ padding:5px 6px 6px; display:flex; flex-direction:column; gap:3px; }
+.inv-battle-row{ padding:3px 6px 4px; border:1px solid transparent; border-radius:4px; cursor:default; }
+.inv-battle-row:hover{ border-color:var(--inv-accent-dim); }
+.inv-battle-row.target{ border-color:#ef4444; background:rgba(239, 68, 68, .1); }
+.inv-battle-name{ display:block; font-size:11px; line-height:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.inv-battle-hp{ height:3px; margin-top:2px; border-radius:2px; background:var(--inv-slot); overflow:hidden; }
+.inv-battle-hp i{ display:block; height:100%; background:#22c55e; }
+.inv-battle-hp.mid i{ background:#eab308; }
+.inv-battle-hp.low i{ background:#ef4444; }
+.inv-battle-empty{ padding:4px 2px; color:var(--inv-muted); font-size:11px; }
