@@ -17,6 +17,9 @@ import { InputController } from './input/input.js';
 import { NameModal } from './views/name-modal.js';
 import { InventoryUI } from './views/inventory-ui.js';
 
+// Tempo pra saber se o clique em caixa/cadáver é o começo de um duplo clique.
+const DOUBLE_CLICK_MS = 250;
+
 // Cliente: pede o nome do personagem, carrega o mapa, entra no servidor de
 // jogo (RemoteSession) ou, sem servidor, roda a simulação aqui mesmo
 // (LocalSession). Transforma
@@ -192,13 +195,33 @@ export class GameController {
   // ================================================================================================================================================================================================================================================
   // handleGameClick
   // Clique em inimigo escolhe/tira o alvo; no chão, anda até o sqm no andar
-  // em que o player está.
+  // em que o player está. Em cima de caixa ou cadáver, espera um instante: se
+  // for duplo clique (abrir), o player não sai do lugar.
 
   handleGameClick(gridPos) {
     if (!this.player) return;
     if (this.trySelectEnemyAtMouse()) return;
 
-    this.send({ type: 'walkTo', x: gridPos.x, y: gridPos.y, z: this.player.z || 0 });
+    const command = { type: 'walkTo', x: gridPos.x, y: gridPos.y, z: this.player.z || 0 };
+    this.cancelPendingWalk();
+    if (!this.inventoryUI || !this.inventoryUI.openableUnderMouse()) {
+      this.send(command);
+      return;
+    }
+    this.pendingWalk = setTimeout(() => {
+      this.pendingWalk = null;
+      this.send(command);
+    }, DOUBLE_CLICK_MS);
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // cancelPendingWalk
+  // Desiste do andar que o clique em caixa/cadáver deixou esperando.
+
+  cancelPendingWalk() {
+    if (!this.pendingWalk) return;
+    clearTimeout(this.pendingWalk);
+    this.pendingWalk = null;
   }
 
   // ================================================================================================================================================================================================================================================
