@@ -107,6 +107,10 @@
       }
     }
   },
+  "propriedades": {
+    "comportamento": "dano",
+    "dano": 10
+  },
   "ferramenta": "pisos",
   "grupo": "estrutura",
   "pasta": "pisos",

@@ -107,6 +107,9 @@
       }
     }
   },
+  "propriedades": {
+    "comportamento": "bloqueia"
+  },
   "ferramenta": "pisos",
   "grupo": "estrutura",
   "pasta": "pisos",

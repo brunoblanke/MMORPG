@@ -9941,6 +9941,16 @@
       306
     ],
     [
+      "itens/recipientes/backpack-marrom",
+      178,
+      175,
+      0,
+      0,
+      true,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-grama-1",
       179,
       175,
@@ -10459,6 +10469,16 @@
       false,
       false,
       true
+    ],
+    [
+      "itens/espadas/fire-sword",
+      165,
+      176,
+      0,
+      0,
+      true,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-grama-1",
@@ -20702,16 +20722,6 @@
       1499
     ],
     [
-      "Border:estrutura/pisos/piso-madeira-1:int-no",
-      153,
-      171,
-      1,
-      0,
-      false,
-      false,
-      false
-    ],
-    [
       "estrutura/pisos/piso-madeira-1",
       154,
       171,
@@ -20818,6 +20828,16 @@
       false,
       false,
       1514
+    ],
+    [
+      "itens/recipientes/bag-verde",
+      156,
+      172,
+      1,
+      0,
+      true,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-madeira-1",
@@ -20994,7 +21014,7 @@
       0,
       "up",
       153,
-      170
+      172
     ],
     [
       "estrutura/escadas/escada-madeira-1",

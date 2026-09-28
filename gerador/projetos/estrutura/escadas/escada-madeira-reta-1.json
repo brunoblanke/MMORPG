@@ -15,7 +15,11 @@
     "altura": false,
     "empilhavel": false,
     "peso": 9999,
-    "espacos": 0
+    "espacos": 0,
+    "atk": 0,
+    "def": 0,
+    "ml": 0,
+    "escada": "reta"
   },
   "ferramenta": "objetos",
   "grupo": "estrutura",

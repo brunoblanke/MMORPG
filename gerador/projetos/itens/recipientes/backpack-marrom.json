@@ -15,7 +15,10 @@
     "altura": false,
     "empilhavel": true,
     "peso": 20,
-    "espacos": 8
+    "espacos": 16,
+    "atk": 0,
+    "def": 0,
+    "ml": 0
   },
   "ferramenta": "objetos",
   "grupo": "itens",
