@@ -41,7 +41,6 @@ const SKILL_NAMES = {
   distance: 'Distance', shielding: 'Shielding', fishing: 'Fishing'
 };
 const PITCH = 40;
-const LAYOUT_VERSION = 2;
 const SAVE_DELAY_MS = 600;
 
 export class InventoryUI {
@@ -130,9 +129,7 @@ export class InventoryUI {
 
   // ================================================================================================================================================================================================================================================
   // initialLayout
-  // O layout guardado no personagem ou, sem ele, o inventário e a mochila à
-  // direita e a battle à esquerda. Layout guardado antes da battle existir
-  // (sem v) ganha a battle uma vez; depois, fechada, fica fechada.
+  // O layout guardado no personagem ou, sem ele, o inventário e a mochila à direita.
 
   initialLayout(view) {
     const layout = { left: [], right: [] };
@@ -148,15 +145,11 @@ export class InventoryUI {
           if (item && item.items) layout[col].push(this.makeWindow('container', item.uid, entry));
         }
       }
-      if ([...layout.left, ...layout.right].some(w => w.kind === 'inventory')) {
-        if (saved.v !== LAYOUT_VERSION && !layout.left.some(w => w.kind === 'battle')) layout.left.unshift(this.makeWindow('battle', null));
-        return this.withVitals(layout);
-      }
+      if ([...layout.left, ...layout.right].some(w => w.kind === 'inventory')) return this.withVitals(layout);
     }
     layout.right.push(this.makeWindow('inventory', null));
     const bag = view.equip.mochila;
     if (bag && bag.items) layout.right.push(this.makeWindow('container', bag.uid, { rows: 3 }));
-    layout.left.push(this.makeWindow('battle', null));
     return this.withVitals(layout);
   }
 
@@ -413,7 +406,6 @@ export class InventoryUI {
         return path ? { path, rows: w.rows, min: w.min } : null;
       };
       const layout = {
-        v: LAYOUT_VERSION,
         left: this.layout.left.map(entry).filter(Boolean),
         right: this.layout.right.map(entry).filter(Boolean)
       };
@@ -565,8 +557,9 @@ export class InventoryUI {
 
   // ================================================================================================================================================================================================================================================
   // followHtml
-  // Seguir o alvo (boneco correndo, colorido) ou ficar parado (boneco em pé,
-  // na cor dos outros ícones), no canto do inventário: mesma caixa da cap.
+  // Seguir o alvo (boneco correndo, aceso como Skills e Battle abertas) ou
+  // ficar parado (boneco em pé, apagado), no canto do inventário, do tamanho
+  // da caixa da cap.
 
   followHtml() {
     const player = this.game.player;
@@ -609,15 +602,13 @@ export class InventoryUI {
 
   // ================================================================================================================================================================================================================================================
   // toggleWindow
-  // Abre a janela (skills embaixo do inventário, battle no topo da coluna da
-  // esquerda) ou fecha se já está aberta.
+  // Skills e battle: abre a janela logo embaixo da vida e mana (ou do
+  // inventário), ou fecha se já está aberta.
 
   toggleWindow(kind) {
     const found = this.findWindow(kind);
     if (found) {
       this.layout[found.col].splice(found.i, 1);
-    } else if (kind === 'battle') {
-      this.layout.left.unshift(this.makeWindow('battle', null));
     } else {
       const above = this.findWindow('vitals') || this.findWindow('inventory');
       const col = above ? above.col : 'right';

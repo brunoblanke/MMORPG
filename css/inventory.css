@@ -126,11 +126,11 @@
 @media (prefers-reduced-motion: reduce){ .inv-win.flash{ animation:none; } }
 .inv-follow{
   width:36px; height:16px; box-sizing:border-box; display:grid; place-items:center; padding:0; border-radius:4px;
-  background:var(--inv-slot); border:1px solid var(--inv-line-soft); color:#343a47;
+  background:transparent; border:1px solid var(--inv-line); color:var(--inv-muted);
 }
 .inv-follow svg{ width:13px; height:13px; }
-.inv-follow:hover{ border-color:var(--inv-accent-dim); }
-.inv-follow.on{ color:#ccff33; }
+.inv-follow:hover{ color:var(--inv-text); border-color:var(--inv-accent-dim); }
+.inv-follow.on{ color:var(--inv-accent); border-color:var(--inv-accent-dim); }
 .inv-battle{ padding:5px 6px 6px; display:flex; flex-direction:column; gap:3px; }
 .inv-battle-row{ padding:3px 6px 4px; border:1px solid transparent; border-radius:4px; cursor:default; }
 .inv-battle-row:hover{ border-color:var(--inv-accent-dim); }
