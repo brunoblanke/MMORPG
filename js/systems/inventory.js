@@ -415,14 +415,18 @@ export class InventoryController {
 
   // ================================================================================================================================================================================================================================================
   // open
-  // Comando openContainer (duplo clique na caixa ou no cadáver): só abre com
-  // o player colado nela ou em cima; longe, ele tem que andar até lá antes.
+  // Comando openContainer (duplo clique na caixa ou no cadáver): colado ou em
+  // cima, abre; longe, o player anda até um sqm colado e abre ao chegar. Se
+  // ela sumir no caminho, ele só termina de andar.
 
   open(player, itemId) {
     const obj = this.sim.getItem(itemId);
     if (!this.isOpenable(obj)) return;
-    if (!this.isNear(player, obj)) return this.message(player, 'Chegue perto pra abrir.');
-    player.openGround.add(obj.id);
+    if (this.isNear(player, obj)) {
+      player.openGround.add(obj.id);
+      return;
+    }
+    this.walkNextTo(player, obj, { type: 'openContainer', itemId });
   }
 
   // ================================================================================================================================================================================================================================================
