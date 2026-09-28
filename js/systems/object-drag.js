@@ -115,7 +115,7 @@ export class ObjectDragController {
 
     const oldX = obj.x;
     const oldY = obj.y;
-    const topStep = movementController.getStepHeight(targetX, targetY, floor);
+    const topStep = this.stepHeightWithout(obj, targetX, targetY, floor);
 
     world.moveObject(obj, targetX, targetY, floor);
     obj.step = topStep;
@@ -191,6 +191,19 @@ export class ObjectDragController {
   hasOtherBlocker(obj, x, y, z) {
     const own = obj.blocksMovement && obj.x === x && obj.y === y && (obj.z || 0) === z ? 1 : 0;
     return this.sim.world.countBlockersAt(x, y, z) > own;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // stepHeightWithout
+  // Altura da pilha do sqm sem contar o próprio objeto: item jogado do
+  // inventário nasce aos pés do player e não pode apoiar a si mesmo.
+
+  stepHeightWithout(obj, x, y, z) {
+    let top = 0;
+    for (const entity of this.sim.world.getTileEntities(x, y, z)) {
+      if (entity !== obj && entity.hasVolume) top = Math.max(top, (entity.step || 0) + 1);
+    }
+    return top;
   }
 
   // ================================================================================================================================================================================================================================================

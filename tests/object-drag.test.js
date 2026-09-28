@@ -105,3 +105,17 @@ test('árvore e objetos que bloqueiam o player não barram o arremesso; parede b
   assert.deepEqual([parcel.x, parcel.y], [8, 5]);
   assert.equal(game.world.isBlocked(6, 5, 0), true);
 });
+
+test('volume jogado do inventário no próprio sqm vai pra baixo e o player sobe', () => {
+  const game = setup();
+  placeAt(game, game.player, 4, 5, 0);
+  const dropped = [];
+  for (let i = 0; i < 3; i++) {
+    const obj = game.inventory.spawnGroundItem({ type: 'Parcel' }, 4, 5, 0);
+    obj.hasVolume = true;
+    game.objectDrag.moveObject(game.player, obj, 4, 5, 0);
+    dropped.push(obj.step);
+  }
+  assert.deepEqual(dropped, [0, 1, 2]);
+  assert.equal(game.player.step, 3);
+});
