@@ -99,3 +99,21 @@ test('o gênero do jogador vai pro espelho; valor desconhecido vira masculino', 
   sync(sim, mirror, 'player1');
   assert.deepEqual(mirror.players.map(p => [p.id, p.gender]), [['player1', 'male'], ['player2', 'female']]);
 });
+
+test('volume tirado de baixo do player: no espelho ele desce na hora, sem animar', () => {
+  const objects = [...GROUND, ...pile(5, 5, 1)];
+  const sim = buildGame({ objects, player: { x: 4, y: 5, z: 0 } });
+  const mirror = makeMirror(buildMapData({ objects }));
+  sim.enqueue('player1', { type: 'walkTo', x: 5, y: 5, z: 0 });
+  for (let i = 0; i < 40; i++) sync(sim, mirror, 'player1');
+  const onPile = mirror.players.find(p => p.id === 'player1');
+  assert.equal(onPile.step, 1);
+
+  const parcel = sim.getItem('Parcel_1');
+  sim.objectDrag.moveObject(sim.player, parcel, 6, 5, 0);
+  sync(sim, mirror, 'player1');
+  const fallen = mirror.players.find(p => p.id === 'player1');
+  assert.equal(fallen.step, 0);
+  assert.equal(fallen.isMoving, false);
+  assert.equal(fallen.renderStep, 0);
+});

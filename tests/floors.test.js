@@ -105,3 +105,26 @@ test('escada sem altura: pisar só posiciona; usada (duplo clique), sobe e sai n
   const top = sim.world.getTransitionAt(6, 6, 1);
   assert.deepEqual([top.targetX, top.targetY, top.targetZ], [7, 7, 0]);
 });
+
+test('no andar de cima, clique no sqm do pé da escada desce por ela (vai até o topo)', () => {
+  const objects = [...floorRect(0, 14, 0, 14, 0), ...floorRect(0, 14, 0, 8, 1)];
+  const mapData = { version: 3, objetosData: objects, transicoesData: [['estrutura/escadas/normal', 7, 10, 0]], enemyData: [], safeZoneData: [], spawn: { x: 6, y: 5, z: 1 } };
+  const sim = new Simulation(mapData);
+  sim.time = 1000;
+  const player = sim.addPlayer('p1', { name: 'Ana' });
+  assert.equal(player.z, 1);
+  sim.enqueue('p1', { type: 'walkTo', x: 7, y: 10, z: 1 });
+  run(sim, 3000);
+  assert.deepEqual([player.x, player.y, player.z], [7, 11, 0]);
+});
+
+test('buraco leva pro mesmo sqm no andar de baixo', () => {
+  const objects = [...floorRect(0, 14, 0, 14, 0), ...floorRect(0, 14, 0, 14, 1), ['estrutura/entradas/buraco', 5, 5, 1, 0, 0, 0, 0]];
+  const mapData = { version: 3, objetosData: objects, transicoesData: [], enemyData: [], safeZoneData: [], spawn: { x: 3, y: 5, z: 1 } };
+  const sim = new Simulation(mapData);
+  sim.time = 1000;
+  const player = sim.addPlayer('p1', { name: 'Ana' });
+  sim.enqueue('p1', { type: 'walkTo', x: 5, y: 5, z: 1 });
+  run(sim, 2000);
+  assert.deepEqual([player.x, player.y, player.z], [5, 5, 0]);
+});

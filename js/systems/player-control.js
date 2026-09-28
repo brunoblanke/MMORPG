@@ -1,6 +1,7 @@
 // js/systems/player-control.js
 
 import { calculateMoveDelay, getAdjacentPositions } from '../utils/helpers.js';
+import { getStairTop } from '../../shared/stairs.js';
 
 // Comandos que um jogador manda pra simulação (hoje pelo teclado/mouse; no
 // multiplayer, pela rede). Todos têm `type`:
@@ -90,7 +91,29 @@ export class PlayerControl {
       this.stepDownFromCurrentTile(player);
       return;
     }
-    this.setWalkTarget(player, x, y, player.z || 0);
+    const z = player.z || 0;
+    const top = this.stairTopBelow(x, y, z);
+    if (top) {
+      this.setWalkTarget(player, top.x, top.y, z);
+      return;
+    }
+    this.setWalkTarget(player, x, y, z);
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // stairTopBelow
+  // Clique, no andar de cima, no sqm (sem piso) onde está o pé de uma escada
+  // do andar de baixo: é pra descer por ela. Devolve o topo dela (o buraco
+  // que desce), ou null.
+
+  stairTopBelow(x, y, z) {
+    const world = this.sim.world;
+    if (world.hasFloorAt(x, y, z)) return null;
+    const stairs = world.getTransitionAt(x, y, z - 1);
+    if (!stairs || stairs.stairDirection !== 'up') return null;
+    const top = getStairTop(x, y, z - 1);
+    const hole = world.getTransitionAt(top.x, top.y, top.z);
+    return hole && hole.stairDirection === 'down' ? top : null;
   }
 
   // ================================================================================================================================================================================================================================================
