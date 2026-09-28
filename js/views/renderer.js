@@ -74,8 +74,10 @@ export class Renderer {
   // drawTileHighlights
   // Marcações de dev (patrulha, detecção, zona segura, caminho, alvo, hover, spawn). Desenhadas
   // depois dos pisos e objetos, translúcidas, pra ficarem visíveis sobre eles.
+  // Cada andar desenha só as suas: zonas dos inimigos daquele andar, zona
+  // segura daquele andar e, no andar do player, caminho, alvo, hover e spawn.
 
-  drawTileHighlights(x, y, enemies, player, inputController, world) {
+  drawTileHighlights(x, y, enemies, player, inputController, world, level, isPlayerLevel) {
     const walk = player.walk || { target: null, path: [] };
     const pos = this.gridToScreenWithOffset(x, y);
     const size = CONFIG.tileSize;
@@ -96,10 +98,10 @@ export class Renderer {
       }
     }
 
-    const isTarget = this.devMode && walk.target && walk.target.x === x && walk.target.y === y;
-    const isInPath = this.devMode && this.showPaths && walk.path.some(p => p.x === x && p.y === y);
-    const isHover = this.devMode && inputController.hoverTile && inputController.hoverTile.x === x && inputController.hoverTile.y === y;
-    const isSpawn = this.devMode && player && player.spawnX === x && player.spawnY === y;
+    const isTarget = this.devMode && isPlayerLevel && walk.target && walk.target.x === x && walk.target.y === y;
+    const isInPath = this.devMode && isPlayerLevel && this.showPaths && walk.path.some(p => p.x === x && p.y === y);
+    const isHover = this.devMode && isPlayerLevel && inputController.hoverTile && inputController.hoverTile.x === x && inputController.hoverTile.y === y;
+    const isSpawn = this.devMode && isPlayerLevel && player && player.spawnX === x && player.spawnY === y;
 
     if (inPatrolZone && this.devMode && this.showPatrolAreas) {
       this.ctx.fillStyle = "rgba(255, 220, 90, 0.14)";
@@ -109,7 +111,7 @@ export class Renderer {
       this.ctx.fillRect(pos.x, pos.y, size, size);
     }
 
-    if (this.devMode && world && world.isSafe(x, y, player.z || 0)) {
+    if (this.devMode && world && world.isSafe(x, y, level)) {
       this.ctx.fillStyle = "rgba(46, 204, 113, 0.22)";
       this.ctx.fillRect(pos.x, pos.y, size, size);
       this.ctx.strokeStyle = "rgba(46, 204, 113, 0.7)";
@@ -449,6 +451,16 @@ export class Renderer {
   }
 
   // ================================================================================================================================================================================================================================================
+  // flushOverlays
+
+  flushOverlays() {
+    for (const o of this.pendingOverlays) {
+      drawEntityOverlay(this.ctx, o.entity, o.base, o.stackOffsetX, o.stackOffsetY, o.size, this.devMode);
+    }
+    this.pendingOverlays = [];
+  }
+
+  // ================================================================================================================================================================================================================================================
   // darkenBelow
 
   darkenBelow(floors) {
@@ -511,22 +523,24 @@ export class Renderer {
     };
 
     // Andar por andar (drawables já vêm ordenados por nível): primeiro o chão
-    // do andar, depois o que o modo inspecionar desenha (áreas/caminho/alvo no
-    // andar do player, contornos amarelos) e por fim objetos, cadáveres,
+    // do andar, depois o que o modo inspecionar desenha naquele andar
+    // (áreas, zona segura, caminho/alvo no andar do player, contornos amarelos) e por fim objetos, cadáveres,
     // inimigos e players na ordem normal: sqm a sqm (mais ao sul e a leste por
-    // cima) e, dentro do sqm, na ordem da pilha.
+    // cima) e, dentro do sqm, na ordem da pilha. Nome, barra de vida e o que
+    // o modo dev desenha sobre a criatura saem junto do andar dela: o piso do
+    // andar de cima os cobre.
     // Cada andar abaixo do do player fica 20% mais escuro por andar de
     // distância (o escurecimento acumula a cada andar desenhado por cima).
     const playerLevel = getEntityLevel(gameState.player);
     const playerFloor = Math.floor(gameState.player.z || 0);
     let lastLevel = null;
-    let highlightsDrawn = false;
-    const drawHighlights = () => {
-      if (highlightsDrawn || !this.devMode) return;
-      highlightsDrawn = true;
+    const drawHighlights = (level) => {
+      if (!this.devMode) return;
+      const enemiesHere = gameState.enemies.filter(enemy => getEntityLevel(enemy) === level);
+      const isPlayerLevel = level === playerLevel;
       for (let y = visible.startY; y < visible.endY; y++) {
         for (let x = visible.startX; x < visible.endX; x++) {
-          this.drawTileHighlights(x, y, gameState.enemies, gameState.player, gameState.inputController, gameState.world);
+          this.drawTileHighlights(x, y, enemiesHere, gameState.player, gameState.inputController, gameState.world, level, isPlayerLevel);
         }
       }
     };
@@ -541,18 +555,14 @@ export class Renderer {
       if (lastLevel !== null && level <= playerFloor) this.darkenBelow(level - lastLevel);
       lastLevel = level;
       for (const obj of group) if (obj.isFloor) drawDrawable(obj);
-      if (level >= playerLevel) drawHighlights();
+      drawHighlights(level);
       if (this.showYellowOutline) {
         for (const obj of group) this.drawDrawableOutline(obj);
       }
       for (const obj of group) if (!obj.isFloor) drawDrawable(obj);
+      this.flushOverlays();
 
       start = end;
-    }
-    drawHighlights();
-
-    for (const o of this.pendingOverlays) {
-      drawEntityOverlay(this.ctx, o.entity, o.base, o.stackOffsetX, o.stackOffsetY, o.size, this.devMode);
     }
 
     ui.draw(this.ctx, gameState.player, this.devMode, gameState.world.isInSafeZone(gameState.player));
