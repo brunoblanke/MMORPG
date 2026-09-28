@@ -168,6 +168,52 @@ export class InventoryUI {
   }
 
   // ================================================================================================================================================================================================================================================
+  // parentOf
+  // O container onde está o container uid (null se ele está no inventário ou
+  // é a própria caixa do chão).
+
+  parentOf(uid) {
+    const search = (item) => {
+      if (!item || !item.items) return null;
+      for (const child of item.items) {
+        if (!child) continue;
+        if (child.uid === uid) return item;
+        const found = search(child);
+        if (found) return found;
+      }
+      return null;
+    };
+    for (const root of [...Object.values(this.view.equip), ...this.view.opened.map(o => o.item)]) {
+      const found = search(root);
+      if (found) return found;
+    }
+    return null;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // showInWindow
+  // Troca o container mostrado na janela (abrir um de dentro, ou voltar pro de
+  // fora). Se ele já está aberto em outra janela, esta fecha e aquela pisca.
+
+  showInWindow(found, uid) {
+    const other = [...this.layout.left, ...this.layout.right].find(w => w.uid === uid);
+    if (other && other !== found.win) {
+      this.layout[found.col].splice(found.i, 1);
+      other.min = false;
+      this.scheduleSave();
+      this.render();
+      this.flash(other.id);
+      return;
+    }
+    found.win.uid = uid;
+    found.win.id = `c-${uid}`;
+    found.win.min = false;
+    this.scheduleSave();
+    this.render();
+    this.flash(found.win.id);
+  }
+
+  // ================================================================================================================================================================================================================================================
   // isOpen
 
   isOpen(uid) {
@@ -343,10 +389,11 @@ export class InventoryUI {
     if (!box) return '';
     const used = box.items.filter(Boolean).length;
     const slots = box.items.map((item, i) => this.slotHtml(item, { t: 'c', uid: box.uid, i })).join('');
+    const up = this.parentOf(win.uid) ? '<button class="inv-btn" data-act="up" type="button" aria-label="Voltar pro container de fora" title="Voltar pro container de fora">↑</button>' : '';
     return `<section class="inv-win${win.min ? ' min' : ''}" data-win="${win.id}">
       <header class="inv-head"><span class="inv-icon">${this.spriteHtml(box.type)}</span>
         <span class="inv-title">${this.windowTitle(win, box)}</span>
-        <span class="inv-cap${used === box.items.length ? ' full' : ''}">${used}/${box.items.length}</span>${buttons(true)}</header>
+        <span class="inv-cap${used === box.items.length ? ' full' : ''}">${used}/${box.items.length}</span>${up}${buttons(true)}</header>
       <div class="inv-body"><div class="inv-scroller" style="height:${Math.min(win.rows, Math.ceil(box.items.length / 4)) * PITCH + 8}px"><div class="inv-grid">${slots}</div></div></div>
       <div class="inv-resize" title="Arraste pra mostrar mais ou menos linhas"></div>
     </section>`;
@@ -478,7 +525,8 @@ export class InventoryUI {
     document.querySelectorAll('.inv-slot').forEach(el => {
       if (el === sourceEl) return;
       const place = this.placeOf(el);
-      if (place.t === 'c' || place.key === slot) el.classList.add('can-drop');
+      const bag = this.view.equip.mochila;
+      if (place.t === 'c' || place.key === slot || (place.key === 'mochila' && bag && bag.uid !== item.uid)) el.classList.add('can-drop');
     });
     this.drag = { kind: 'item', from, item, ghost, sourceEl };
     this.moveGhost(evt);
@@ -626,6 +674,11 @@ export class InventoryUI {
       if (!btn || !inPanels(btn)) return;
       const found = this.findWindow(btn.closest('.inv-win').dataset.win);
       if (!found) return;
+      if (btn.dataset.act === 'up') {
+        const parent = this.parentOf(found.win.uid);
+        if (parent) this.showInWindow(found, parent.uid);
+        return;
+      }
       if (btn.dataset.act === 'min') found.win.min = !found.win.min;
       if (btn.dataset.act === 'close') {
         this.layout[found.col].splice(found.i, 1);
@@ -640,7 +693,9 @@ export class InventoryUI {
       if (!slot || !inPanels(slot)) return false;
       const item = this.itemAt(this.placeOf(slot));
       if (!item || !item.items) return false;
-      this.openWindow(item.uid, slot.closest('.inv-win').dataset.win);
+      const origin = this.findWindow(slot.closest('.inv-win').dataset.win);
+      if (origin && origin.win.kind === 'container' && !evt.shiftKey) this.showInWindow(origin, item.uid);
+      else this.openWindow(item.uid, origin ? origin.win.id : null);
       return true;
     };
     document.addEventListener('dblclick', openFromSlot);

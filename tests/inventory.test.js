@@ -91,6 +91,25 @@ test('container não troca: vai pro primeiro espaço vazio; cheio, Sem espaço; 
   assert.deepEqual(send(sim, { type: 'moveInv', from: { t: 'c', uid: bag.uid, i: 1 }, to: { t: 'c', uid: inner.uid, i: 1 } }), ['Não dá pra pôr uma caixa dentro dela mesma.']);
 });
 
+test('solto no espaço da mochila, o item entra nela; em cima de caixa que não é minha, vai pro primeiro espaço vazio', () => {
+  const sim = game([[CHEST, 6, 5]]);
+  const bag = sim.player.equip.mochila;
+  sim.player.equip.arma = { uid: 'w', type: AXE };
+  send(sim, { type: 'moveInv', from: { t: 'e', key: 'arma' }, to: { t: 'e', key: 'mochila' } });
+  assert.equal(sim.player.equip.arma, null);
+  assert.equal(bag.items[0].type, AXE);
+  assert.equal(sim.player.equip.mochila, bag);
+
+  const chest = groundAt(sim, 6, 5)[0];
+  send(sim, { type: 'openContainer', itemId: chest.id });
+  const box = sim.inventory.groundItem(chest);
+  const inner = { uid: 'b9', type: BAG, items: [null, null, null, null] };
+  box.items[0] = inner;
+  send(sim, { type: 'moveInv', from: { t: 'c', uid: bag.uid, i: 0 }, to: { t: 'c', uid: box.uid, i: 0 } });
+  assert.equal(inner.items[0], null);
+  assert.equal(box.items[1].type, AXE);
+});
+
 test('pilhas: Shift move só uma parte e pilhas iguais se juntam até 100', () => {
   const sim = game();
   const bag = sim.player.equip.mochila;

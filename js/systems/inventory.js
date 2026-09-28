@@ -201,6 +201,13 @@ export class InventoryController {
     if (to.t === 'e') {
       if (!EQUIP_SLOTS.includes(to.key)) return { error: 'Destino inválido.' };
       if (from.t === 'e' && from.key === to.key) return { error: null };
+      const bag = to.key === 'mochila' ? player.equip.mochila : null;
+      if (bag && bag.items && bag.uid !== item.uid) {
+        if (contains(item, bag)) return { error: 'Não dá pra pôr uma caixa dentro dela mesma.' };
+        const free = bag.items.indexOf(null);
+        if (free < 0) return { error: `Sem espaço em ${itemInfo(bag.type).name}.` };
+        return { kind: 'slot', container: bag, index: free, carried: true };
+      }
       if (itemInfo(item.type).slot !== to.key) return { error: 'Esse item não vai nesse espaço.' };
       return { kind: 'equip', key: to.key, carried: true };
     }
@@ -212,7 +219,7 @@ export class InventoryController {
       if (item.uid === box.uid || contains(item, box)) return { error: 'Não dá pra pôr uma caixa dentro dela mesma.' };
       const there = box.items[to.i];
       if (!there) return { kind: 'slot', container: box, index: to.i, carried: found.carried };
-      if (there.items && there.uid !== item.uid) {
+      if (there.items && there.uid !== item.uid && found.carried) {
         if (contains(item, there)) return { error: 'Não dá pra pôr uma caixa dentro dela mesma.' };
         const free = there.items.indexOf(null);
         if (free < 0) return { error: `Sem espaço em ${itemInfo(there.type).name}.` };
