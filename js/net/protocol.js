@@ -104,8 +104,9 @@ export function serializeState(sim, playerId) {
 // placeCreature
 // Põe a criatura na posição recebida. Um passo de 1 sqm anima como no jogo
 // local, partindo de onde ela está desenhada (um passo emenda no outro) e
-// durando data.stepDuration; salto maior (escada, buraco, respawn) e mudança
-// só de altura no mesmo sqm (volume tirado de baixo dela) aparecem direto.
+// durando data.stepDuration; troca de andar (escada, buraco, entrada), salto
+// maior (respawn) e mudança só de altura no mesmo sqm (volume tirado de baixo
+// dela) aparecem direto, sem deslizar.
 
 function placeCreature(world, entity, data, renderNow) {
   const fromX = entity.x;
@@ -122,7 +123,7 @@ function placeCreature(world, entity, data, renderNow) {
   entity.step = data.step;
 
   const sameTile = data.x === fromX && data.y === fromY && data.z === fromZ;
-  const isStep = !sameTile && Math.abs(data.x - fromX) <= 1 && Math.abs(data.y - fromY) <= 1 && Math.abs(data.z - fromZ) <= 1;
+  const isStep = !sameTile && data.z === fromZ && Math.abs(data.x - fromX) <= 1 && Math.abs(data.y - fromY) <= 1;
   if (isStep) {
     const midStep = entity.isMoving && Math.abs(entity.renderX - fromX) <= 1 && Math.abs(entity.renderY - fromY) <= 1;
     entity.isMoving = true;

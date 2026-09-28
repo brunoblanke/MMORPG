@@ -2,6 +2,7 @@
 
 import { calculateMoveDelay, getAdjacentPositions } from '../utils/helpers.js';
 import { getStairTop } from '../../shared/stairs.js';
+import { isHoleType, objectIdType } from '../../shared/assets.js';
 
 // Comandos que um jogador manda pra simulação (hoje pelo teclado/mouse; no
 // multiplayer, pela rede). Todos têm `type`:
@@ -82,7 +83,9 @@ export class PlayerControl {
   // walkTo
   // Clique no chão: anda até o sqm (x, y) no andar em que o player está (o
   // andar do clique é ignorado). No próprio sqm, com o player em cima de algo:
-  // desce pro vizinho mais baixo.
+  // desce pro vizinho mais baixo. Topo de escada (o buraco invisível no andar
+  // de cima) não é clicável: pra descer, clica-se na base dela (stairTopBelow)
+  // — a não ser que tenha uma entrada desenhada ali (alçapão da escada reta).
 
   walkTo(player, x, y) {
     player.pendingStairs = null;
@@ -92,12 +95,24 @@ export class PlayerControl {
       return;
     }
     const z = player.z || 0;
+    if (this.isBareStairTop(x, y, z)) return;
     const top = this.stairTopBelow(x, y, z);
     if (top) {
       this.setWalkTarget(player, top.x, top.y, z);
       return;
     }
     this.setWalkTarget(player, x, y, z);
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // isBareStairTop
+  // Topo de escada sem entrada desenhada por cima (só o buraco invisível).
+
+  isBareStairTop(x, y, z) {
+    const world = this.sim.world;
+    const transition = world.getTransitionAt(x, y, z);
+    if (!transition || !transition.isStairTop) return false;
+    return !world.getObjectsAt(x, y).some(o => (o.z || 0) === z && isHoleType(objectIdType(o.id)));
   }
 
   // ================================================================================================================================================================================================================================================

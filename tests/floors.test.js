@@ -94,8 +94,12 @@ test('escada sem altura: pisar só posiciona; usada (duplo clique), sobe e sai n
   assert.deepEqual([player.x, player.y, player.z], [6, 7, 1]);
 
   sim.enqueue('p1', { type: 'walkTo', x: 6, y: 6, z: 1 });
-  run(sim, 2000);
+  run(sim, 1000);
+  assert.deepEqual([player.x, player.y, player.z], [6, 7, 1]);
+  sim.enqueue('p1', { type: 'walkDir', dx: 0, dy: -1 });
+  for (let i = 0; i < 40 && player.z === 1; i++) run(sim, TICK_MS);
   assert.deepEqual([player.x, player.y, player.z], [7, 7, 0]);
+  sim.enqueue('p1', { type: 'walkDir', dx: 0, dy: 0 });
   sim.enqueue('p1', { type: 'walkTo', x: 7, y: 9, z: 0 });
   run(sim, 2000);
   sim.enqueue('p1', { type: 'useStairs', x: 7, y: 7, z: 0 });

@@ -125,6 +125,7 @@ function applyTransitions(objs) {
       stairDirection: 'down', targetX: target.x, targetY: target.y, targetZ: target.z
     });
     stairTop.hidden = true;
+    stairTop.isStairTop = true;
     stairTops.push(stairTop);
   }
 

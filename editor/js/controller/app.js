@@ -41,7 +41,7 @@ async function handleSave() {
     saveBtn.textContent = 'Salvo ✓';
   } catch (error) {
     saveBtn.textContent = 'Erro ao salvar';
-    alert(`Não foi possível salvar o mapa.\n\n${error.message}\n\nO servidor (gerador/iniciar-gerador.bat) está rodando?`);
+    alert(`Não foi possível salvar o mapa.\n\n${error.message}\n\nO servidor (start-server.bat) está rodando?`);
   }
   saving = false;
   saveBtn.disabled = false;
@@ -84,7 +84,7 @@ try {
   const sprites = await loadAssets();
   preloadAll(sprites.map(sprite => sprite.url));
 } catch (error) {
-  alert(`Não deu pra ler os sprites do gerador.\n\n${error.message}\n\nO servidor (gerador/iniciar-gerador.bat) está rodando?`);
+  alert(`Não deu pra ler os sprites do gerador.\n\n${error.message}\n\nO servidor (start-server.bat) está rodando?`);
 }
 choosePaintDefaults();
 

@@ -117,3 +117,19 @@ test('volume tirado de baixo do player: no espelho ele desce na hora, sem animar
   assert.equal(fallen.isMoving, false);
   assert.equal(fallen.renderStep, 0);
 });
+
+test('troca de andar (buraco) aparece direto no espelho, sem deslizar', () => {
+  const objects = [...GROUND, ...floorRect(0, 24, 0, 24, 1), ['estrutura/entradas/teste', 6, 5, 1, 0, 0, 0, 0]];
+  const sim = buildGame({ objects, player: { x: 4, y: 5, z: 1 } });
+  const mirror = makeMirror(buildMapData({ objects }));
+  sim.enqueue('player1', { type: 'walkTo', x: 6, y: 5, z: 1 });
+  let seen = null;
+  for (let i = 0; i < 60 && !seen; i++) {
+    sync(sim, mirror, 'player1');
+    const me = mirror.players.find(p => p.id === 'player1');
+    if (me && me.z === 0) seen = me;
+  }
+  assert.deepEqual([seen.x, seen.y, seen.z], [6, 5, 0]);
+  assert.equal(seen.isMoving, false);
+  assert.deepEqual([seen.renderX, seen.renderY, seen.renderZ], [6, 5, 0]);
+});
