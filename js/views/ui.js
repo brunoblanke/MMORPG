@@ -4,6 +4,9 @@ export class UI {
     this.btnPadding = 20;
     this.devBtnSize = 36;
     this.devBtnPadding = 12;
+    // Largura das colunas de janelas (css/inventory.css, --inv-side): elas
+    // ficam por cima da tela, então os botões e avisos vão pra dentro delas.
+    this.sideInset = 204;
     this.iconColor = '#ccff33';
     this.iconCache = {};
 
@@ -60,7 +63,7 @@ export class UI {
 
   drawPlayerStatus(ctx, player, inSafeZone) {
     if (!inSafeZone) return;
-    const x = 16;
+    const x = this.sideInset + 16;
     const y = ctx.canvas.height - 16;
     const label = '🛡 Zona segura';
     ctx.save();
@@ -78,7 +81,7 @@ export class UI {
   // drawAutoFollowButton
 
   drawAutoFollowButton(ctx, autoFollow) {
-    const btnX = ctx.canvas.width - this.btnSize - this.btnPadding;
+    const btnX = ctx.canvas.width - this.sideInset - this.btnSize - this.btnPadding;
     const btnY = this.btnPadding;
     const icon = this.iconCache[autoFollow ? 'footprints' : 'user'];
 
@@ -89,7 +92,7 @@ export class UI {
   // drawDevModeButton
 
   drawDevModeButton(ctx, devMode) {
-    const btnX = this.devBtnPadding;
+    const btnX = this.sideInset + this.devBtnPadding;
     const btnY = this.devBtnPadding;
     const size = this.devBtnSize;
     const icon = this.iconCache[devMode ? 'eye' : 'eye-closed'];
@@ -101,7 +104,7 @@ export class UI {
   // isButtonClicked
 
   isButtonClicked(mouseX, mouseY, canvasWidth) {
-    const btnX = canvasWidth - this.btnSize - this.btnPadding;
+    const btnX = canvasWidth - this.sideInset - this.btnSize - this.btnPadding;
     const btnY = this.btnPadding;
     return mouseX >= btnX && mouseX <= btnX + this.btnSize && 
            mouseY >= btnY && mouseY <= btnY + this.btnSize;
@@ -111,7 +114,7 @@ export class UI {
   // isDevButtonClicked
 
   isDevButtonClicked(mouseX, mouseY) {
-    const btnX = this.devBtnPadding;
+    const btnX = this.sideInset + this.devBtnPadding;
     const btnY = this.devBtnPadding;
     const size = this.devBtnSize;
     return mouseX >= btnX && mouseX <= btnX + size && 
