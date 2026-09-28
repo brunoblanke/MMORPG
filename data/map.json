@@ -4526,40 +4526,10 @@
       false,
       false,
       false,
-      415
+      1599
     ],
     [
-      "Border:estrutura/pisos/piso-grama-1:int-no",
-      171,
-      167,
-      0,
-      0,
-      false,
-      false,
-      false
-    ],
-    [
-      "Border:estrutura/pisos/piso-grama-1:int-nl",
-      171,
-      167,
-      0,
-      0,
-      false,
-      false,
-      false
-    ],
-    [
-      "Border:estrutura/pisos/piso-grama-1:int-so",
-      171,
-      167,
-      0,
-      0,
-      false,
-      false,
-      false
-    ],
-    [
-      "Border:estrutura/pisos/piso-grama-1:int-sl",
+      "estrutura/entradas/entrada-terra-1",
       171,
       167,
       0,
@@ -5791,7 +5761,7 @@
       426
     ],
     [
-      "estrutura/entradas/entrada-terra-1",
+      "Border:estrutura/pisos/piso-acido-1:nl",
       171,
       169,
       0,
@@ -5831,6 +5801,16 @@
       false,
       false,
       false
+    ],
+    [
+      "estrutura/natureza/pinheiro-1",
+      173,
+      169,
+      0,
+      0,
+      false,
+      false,
+      true
     ],
     [
       "estrutura/pisos/piso-grama-1",
@@ -6477,16 +6457,6 @@
       false,
       false,
       449
-    ],
-    [
-      "estrutura/natureza/arvore-1",
-      172,
-      170,
-      0,
-      0,
-      false,
-      false,
-      true
     ],
     [
       "estrutura/pisos/piso-grama-1",
