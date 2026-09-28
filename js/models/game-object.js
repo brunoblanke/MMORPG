@@ -24,6 +24,7 @@ export class GameObject {
       this.targetX = data.targetX;
       this.targetY = data.targetY;
       this.targetZ = data.targetZ;
+      this.manualStairs = !!data.manualStairs;
     }
 
     // Piso e borda: floorType é a folha do piso ('estrutura/pisos/…').

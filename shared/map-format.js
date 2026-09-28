@@ -83,7 +83,8 @@ export function collectObjectDescriptors(mapData) {
   // Escada: o destino é sempre fixo pela posição (shared/stairs.js); direção
   // e destino gravados no arquivo são ignorados.
   (mapData.transicoesData || []).forEach(([tipo, x, y, z]) => {
-    const target = getStairTarget(x, y, z, stairKind(tipo));
+    const kind = stairKind(tipo);
+    const target = getStairTarget(x, y, z, kind);
     descriptors.push({
       id: nextId(tipo),
       x, y, z,
@@ -92,6 +93,7 @@ export function collectObjectDescriptors(mapData) {
       hasVolume: false,
       blocksMovement: false,
       stairDirection: 'up',
+      manualStairs: kind === 'reta',
       targetX: target.x,
       targetY: target.y,
       targetZ: target.z,

@@ -189,7 +189,6 @@ button:focus-visible, input:focus-visible, .slot:focus-visible{ outline:2px soli
 .property-list{ display:flex; flex-direction:column; gap:8px; }
 .property-list .checkline{ color:var(--text); font-size:12.5px; }
 .property-list .numberline{ display:flex; align-items:center; justify-content:space-between; gap:8px; color:var(--text); font-size:12.5px; }
-.property-list .numberline select{ background:var(--panel-2); border:1px solid var(--line); border-radius:6px; color:var(--text); padding:5px 7px; font-size:12px; }
 .property-list .numberline input{ width:72px; background:var(--panel-2); border:1px solid var(--line); border-radius:6px; color:var(--text); padding:5px 7px; font-family:'IBM Plex Mono', monospace; font-size:12px; }
 #objectPreview{ width:512px; height:256px; }
 #objectSheet{ background-image:linear-gradient(45deg, #1b1f27 25%, transparent 25%, transparent 75%, #1b1f27 75%), linear-gradient(45deg, #1b1f27 25%, transparent 25%, transparent 75%, #1b1f27 75%); background-size:16px 16px; background-position:0 0, 8px 8px; }

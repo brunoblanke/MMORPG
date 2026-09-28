@@ -171,6 +171,10 @@ export class GameController {
       self.inputController.handleMouseUp(data.event);
     });
 
+    this.canvas.addEventListener('dblclick', function() {
+      self.useStairsAtMouse();
+    });
+
     window.addEventListener('resize', function() {
       self.camera.resize();
     });
@@ -212,6 +216,20 @@ export class GameController {
       this.pendingWalk = null;
       this.send(command);
     }, DOUBLE_CLICK_MS);
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // useStairsAtMouse
+  // Duplo clique no sqm de uma escada sem altura (no andar do player): sobe
+  // por ela (o servidor leva o player até lá, se precisar).
+
+  useStairsAtMouse() {
+    const tile = this.inputController && this.inputController.hoverTile;
+    if (!this.player || !tile) return;
+    const z = this.player.z || 0;
+    const stairs = this.session.world.getTransitionAt(tile.x, tile.y, z);
+    if (!stairs || !stairs.manualStairs) return;
+    this.send({ type: 'useStairs', x: tile.x, y: tile.y, z });
   }
 
   // ================================================================================================================================================================================================================================================
