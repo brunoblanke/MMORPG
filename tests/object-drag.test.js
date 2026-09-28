@@ -119,3 +119,12 @@ test('volume jogado do inventário no próprio sqm vai pra baixo e o player sobe
   assert.deepEqual(dropped, [0, 1, 2]);
   assert.equal(game.player.step, 3);
 });
+
+test('objeto jogado no pé da escada com volume sobe pro andar de cima', () => {
+  const game = buildGame({ objects: [...GROUND, ...floorRect(3, 8, 3, 8, 1), ...pile(8, 11, 1)], stairs: [[7, 10, 0]] });
+  placeAt(game, game.player, 8, 10, 0);
+  const parcel = box(game, 8, 11);
+
+  game.objectDrag.moveObject(game.player, parcel, 7, 10, 0);
+  assert.deepEqual([parcel.x, parcel.y, parcel.z], [6, 8, 1]);
+});

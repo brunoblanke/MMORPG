@@ -80,6 +80,16 @@ test('veneno tira vida ao pisar e a cada segundo parado nele', () => {
   assert.ok(sim.player.currentHp <= afterStep - 14);
 });
 
+test('objeto jogado na escada sem altura fica no pé dela', () => {
+  const objects = [...floorRect(0, 14, 0, 14, 0), ...floorRect(0, 14, 0, 14, 1)];
+  const mapData = { version: 3, objetosData: objects, transicoesData: [[STAIRS_STRAIGHT, 7, 7, 0]], enemyData: [], safeZoneData: [], spawn: { x: 7, y: 8, z: 0 } };
+  const sim = new Simulation(mapData);
+  const player = sim.addPlayer('p1', { name: 'Ana' });
+  const obj = sim.inventory.spawnGroundItem({ type: 'itens/recipientes/bag' }, player.x, player.y, 0);
+  sim.objectDrag.moveObject(player, obj, 7, 7, 0);
+  assert.deepEqual([obj.x, obj.y, obj.z], [7, 7, 0]);
+});
+
 test('escada sem altura: pisar só posiciona; usada (duplo clique), sobe e sai na frente do topo; descer cai no pé dela', () => {
   const objects = [...floorRect(0, 14, 0, 14, 0), ...floorRect(0, 14, 0, 14, 1)];
   const mapData = { version: 3, objetosData: objects, transicoesData: [[STAIRS_STRAIGHT, 7, 7, 0]], enemyData: [], safeZoneData: [], spawn: { x: 7, y: 11, z: 0 } };
