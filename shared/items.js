@@ -13,6 +13,10 @@ export const THROW_RANGE = 25;
 export const DEFAULT_WEIGHT = 10;
 export const DEFAULT_CONTAINER_SIZE = 8;
 
+// Morte do player: a mochila vai sempre pro corpo; cada outro item do
+// inventário, com esta chance (provisório).
+export const DEATH_DROP_CHANCE = 0.3;
+
 // Cap: 300 oz no nível 8 e mais um tanto por nível (provisório).
 export const CAP_BASE_LEVEL = 8;
 export const CAP_AT_BASE = 300;

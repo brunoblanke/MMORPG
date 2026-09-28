@@ -245,3 +245,47 @@ test('personagem volta com os itens e o layout', () => {
   assert.equal(again.equip.mochila.items[0].count, 42);
   assert.deepEqual(again.uiLayout, { left: [], right: [{ ref: 'inventory' }] });
 });
+
+test('player morto: o corpo fica com a mochila e, por sorteio, outros itens; ele volta sem eles', () => {
+  const sim = game();
+  const player = sim.player;
+  const bag = player.equip.mochila;
+  player.equip.arma = { uid: 'w1', type: SWORD };
+  player.equip.escudo = null;
+  player.equip.pes = { uid: 'w2', type: AXE };
+  const rolls = [0.1, 0.9];
+  const random = Math.random;
+  Math.random = () => rolls.length ? rolls.shift() : 0.99;
+  try {
+    player.currentHp = 0;
+    sim.tick(sim.time + TICK_MS);
+  } finally {
+    Math.random = random;
+  }
+  const corpse = sim.deadBodies.find(c => c.type === 'player_corpse');
+  assert.deepEqual(corpse.itemData.items.filter(Boolean).map(i => i.uid), [bag.uid, 'w1']);
+  assert.equal(player.equip.mochila, null);
+  assert.equal(player.equip.arma, null);
+  assert.equal(player.equip.pes.uid, 'w2');
+
+  sim.enqueue('player1', { type: 'openContainer', itemId: corpse.id });
+  run(sim, 4000);
+  const opened = sim.inventory.viewFor(player).opened;
+  assert.equal(opened.length, 1);
+  assert.equal(opened[0].name, player.name);
+});
+
+test('skills começam no padrão do 7.6 e voltam com o personagem', () => {
+  const mapData = buildMapData({ objects: floorRect(0, 29, 0, 29), spawn: { x: 5, y: 5, z: 0 } });
+  const player = new Simulation(mapData).addPlayer('p1', { name: 'Ana' });
+  assert.deepEqual(player.skills.sword, { lvl: 10, pct: 0 });
+  assert.deepEqual(player.skills.magic, { lvl: 0, pct: 0 });
+  assert.equal(player.soul, 100);
+  player.skills.sword = { lvl: 42, pct: 37 };
+  player.soul = 80;
+  const saved = JSON.parse(JSON.stringify(player.toSave()));
+  const again = new Simulation(mapData).addPlayer('p2', { name: 'Ana', saved });
+  assert.deepEqual(again.skills.sword, { lvl: 42, pct: 37 });
+  assert.equal(again.soul, 80);
+  assert.equal(again.skills.fishing.lvl, 10);
+});

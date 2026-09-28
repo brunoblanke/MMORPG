@@ -2,6 +2,7 @@
 
 import { getAsset, spriteFrame, splitType, objectIdType } from '../../shared/assets.js';
 import { itemInfo, weightOf } from '../../shared/items.js';
+import { SKILL_KEYS } from '../../shared/skills.js';
 
 // Janelas do inventário e dos containers, nas duas colunas ao lado da tela do
 // jogo. Só desenha e manda comandos (moveInv, openContainer, closeContainer,
@@ -27,6 +28,10 @@ const ICONS = {
   pernas: '<path d="M7 4h10l-1 16h-3l-1-10-1 10H8z"/>',
   municao: '<path d="M4 20L18 6M14 5l5 0 0 5M4 16l4 4"/>',
   pes: '<path d="M6 5h5v9l7 2v4H6z"/>'
+};
+const SKILL_NAMES = {
+  fist: 'Fist Fighting', club: 'Club Fighting', sword: 'Sword Fighting', axe: 'Axe Fighting',
+  distance: 'Distance Fighting', shielding: 'Shielding', fishing: 'Fishing'
 };
 const PITCH = 40;
 const SAVE_DELAY_MS = 600;
@@ -62,7 +67,7 @@ export class InventoryUI {
     if (!this.layout) this.layout = this.initialLayout(view);
     this.syncGroundWindows(view);
     this.dropMissingWindows();
-    const key = JSON.stringify([view.equip, view.cap, view.opened, this.layout]);
+    const key = JSON.stringify([view.equip, view.cap, view.opened, view.stats, this.layout]);
     if (key === this.lastKey || this.drag) return;
     this.lastKey = key;
     this.render();
@@ -78,8 +83,8 @@ export class InventoryUI {
     if (saved && Array.isArray(saved.left) && Array.isArray(saved.right)) {
       for (const col of ['left', 'right']) {
         for (const entry of saved[col]) {
-          if (entry && entry.ref === 'inventory') {
-            layout[col].push(this.makeWindow('inventory', null, entry));
+          if (entry && (entry.ref === 'inventory' || entry.ref === 'skills')) {
+            layout[col].push(this.makeWindow(entry.ref, null, entry));
             continue;
           }
           const item = entry && typeof entry.path === 'string' ? this.itemAtPath(view, entry.path) : null;
@@ -99,7 +104,7 @@ export class InventoryUI {
 
   makeWindow(kind, uid, saved = {}) {
     return {
-      id: kind === 'inventory' ? 'inventory' : `c-${uid}`,
+      id: kind === 'container' ? `c-${uid}` : kind,
       kind,
       uid,
       ground: saved.ground || null,
@@ -323,7 +328,7 @@ export class InventoryUI {
     this.saveTimer = setTimeout(() => {
       if (!this.view || !this.layout) return;
       const entry = (w) => {
-        if (w.kind === 'inventory') return { ref: 'inventory', rows: w.rows, min: w.min };
+        if (w.kind !== 'container') return { ref: w.kind, rows: w.rows, min: w.min };
         if (w.ground) return null;
         const path = this.pathOf(this.view, w.uid);
         return path ? { path, rows: w.rows, min: w.min } : null;
@@ -381,10 +386,12 @@ export class InventoryUI {
       const cell = ([key], i) => key ? this.slotHtml(equip[key], { t: 'e', key }, key) : (i === last ? capBox : (i === last - 2 ? spare : ''));
       const cells = [0, 1, 2].map(col => `<div class="inv-dollcol">${EQUIP_LAYOUT.map((entry, i) => i % 3 === col ? cell(entry, i) : '').join('')}</div>`).join('');
       return `<section class="inv-win${win.min ? ' min' : ''}" data-win="${win.id}">
-        <header class="inv-head"><span class="inv-title">Inventário</span>${buttons(false)}</header>
+        <header class="inv-head"><span class="inv-title">Inventário</span>
+          <button class="inv-btn wide${this.findWindow('skills') ? ' on' : ''}" data-act="skills" type="button" aria-label="Abrir skills">Skills</button>${buttons(false)}</header>
         <div class="inv-body"><div class="inv-doll">${cells}</div></div>
       </section>`;
     }
+    if (win.kind === 'skills') return this.skillsHtml(win, buttons(true));
     const box = this.findContainer(win.uid);
     if (!box) return '';
     const used = box.items.filter(Boolean).length;
@@ -404,10 +411,62 @@ export class InventoryUI {
   // Nome do container; do chão, com (chão); cadáver, com (morto).
 
   windowTitle(win, box) {
-    const name = itemInfo(box.type).name;
-    if (!win.ground) return name;
+    if (!win.ground) return itemInfo(box.type).name;
     const opened = this.view.opened.find(o => o.id === win.ground);
-    return `${name} <em>${opened && opened.corpse ? '(morto)' : '(chão)'}</em>`;
+    const corpse = opened && opened.corpse;
+    const name = corpse && opened.name && opened.item.uid === box.uid ? opened.name : itemInfo(box.type).name;
+    return `${name} <em>${corpse ? '(morto)' : '(chão)'}</em>`;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // skillsHtml
+  // Janela de skills no formato do Tibia 7.6; a capacity é a cap livre.
+
+  skillsHtml(win, buttons) {
+    const stats = this.view.stats;
+    if (!stats) return '';
+    const cap = this.view.cap;
+    const fmt = (n) => Number(n).toLocaleString('pt-BR');
+    const line = (label, value, pct) => `<div class="inv-skrow"><span>${label}</span><b>${value}</b></div>` +
+      (pct === undefined ? '' : `<div class="inv-skbar" title="${pct}% até o próximo"><i style="width:${pct}%"></i></div>`);
+    const body = [
+      line('Experience', fmt(stats.experience)),
+      line('Level', stats.level, stats.levelPct),
+      '<div class="inv-sksep"></div>',
+      line('Hit Points', fmt(stats.hp)),
+      line('Mana', fmt(stats.mana)),
+      line('Soul Points', stats.soul),
+      line('Capacity', Math.floor(Math.max(0, cap.max - cap.used))),
+      '<div class="inv-sksep"></div>',
+      line('Magic Level', stats.skills.magic.lvl, stats.skills.magic.pct),
+      '<div class="inv-sksep"></div>',
+      ...SKILL_KEYS.map(key => line(SKILL_NAMES[key], stats.skills[key].lvl, stats.skills[key].pct))
+    ].join('');
+    return `<section class="inv-win${win.min ? ' min' : ''}" data-win="${win.id}">
+      <header class="inv-head"><span class="inv-title">Skills</span>${buttons}</header>
+      <div class="inv-body"><div class="inv-skills">${body}</div></div>
+    </section>`;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // toggleSkills
+  // Abre a janela de skills embaixo do inventário, ou fecha se já está aberta.
+
+  toggleSkills() {
+    const found = this.findWindow('skills');
+    if (found) {
+      this.layout[found.col].splice(found.i, 1);
+    } else {
+      const inv = this.findWindow('inventory');
+      const col = inv ? inv.col : 'right';
+      this.layout[col].splice(inv ? inv.i + 1 : 0, 0, this.makeWindow('skills', null));
+    }
+    this.scheduleSave();
+    this.lastKey = '';
+    if (!found) {
+      this.render();
+      this.flash('skills');
+    }
   }
 
   // ================================================================================================================================================================================================================================================
@@ -674,6 +733,10 @@ export class InventoryUI {
       if (!btn || !inPanels(btn)) return;
       const found = this.findWindow(btn.closest('.inv-win').dataset.win);
       if (!found) return;
+      if (btn.dataset.act === 'skills') {
+        this.toggleSkills();
+        return;
+      }
       if (btn.dataset.act === 'up') {
         const parent = this.parentOf(found.win.uid);
         if (parent) this.showInWindow(found, parent.uid);
@@ -709,7 +772,7 @@ export class InventoryUI {
     const openGround = () => {
       const input = this.game.inputController;
       const corpse = input && input.hoverCorpse;
-      if (corpse && !corpse.isPlayer) {
+      if (corpse) {
         this.game.send({ type: 'openContainer', itemId: corpse.id });
         return true;
       }

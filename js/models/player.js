@@ -5,6 +5,7 @@ import { calculateStats } from '../utils/helpers.js';
 import { PLAYER_GENDERS, DEFAULT_GENDER } from '../../shared/catalog.js';
 import { isValidFloor } from '../../shared/constants.js';
 import { EQUIP_SLOTS, toPlain } from '../../shared/items.js';
+import { newSkills, loadSkills, SOUL_START } from '../../shared/skills.js';
 
 export class Player extends Entity {
   constructor(data) {
@@ -18,6 +19,9 @@ export class Player extends Entity {
     this.xp = data.xp || 0;
     this.lvl = data.lvl || 1;
     this.nextLevelXp = this.calculateNextLevelXp();
+    this.skills = newSkills();
+    this.soul = SOUL_START;
+    this.mana = 0;
     this.target = null;
     this.autoFollow = true;
     this.walk = { target: null, path: [] };
@@ -73,6 +77,8 @@ export class Player extends Entity {
       x: this.x,
       y: this.y,
       z: this.z || 0,
+      skills: this.skills,
+      soul: this.soul,
       equip: this.equip ? Object.fromEntries(EQUIP_SLOTS.map(key => [key, toPlain(this.equip[key])])) : null,
       layout: this.uiLayout || null
     };
@@ -90,6 +96,8 @@ export class Player extends Entity {
     this.applyLevelStats();
     this.xp = Number.isInteger(saved.xp) ? Math.min(Math.max(saved.xp, 0), this.nextLevelXp - 1) : 0;
     this.currentHp = Number.isInteger(saved.currentHp) && saved.currentHp > 0 ? Math.min(saved.currentHp, this.hp) : this.hp;
+    this.skills = loadSkills(saved.skills);
+    this.soul = Number.isInteger(saved.soul) && saved.soul >= 0 ? saved.soul : SOUL_START;
 
     const hasPosition = Number.isInteger(saved.x) && Number.isInteger(saved.y) && isValidFloor(saved.z);
     return hasPosition ? { x: saved.x, y: saved.y, z: saved.z } : null;

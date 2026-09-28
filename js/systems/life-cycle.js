@@ -55,21 +55,14 @@ export class LifeCycleController {
   }
 
   // ================================================================================================================================================================================================================================================
-  // clearPlayerCorpse
-  // Cada jogador deixa só o último cadáver.
-
-  clearPlayerCorpse(player) {
-    const corpses = this.sim.deadBodies.filter(c => c.type === 'player_corpse' && c.ownerId === player.id);
-    for (const corpse of corpses) this.removeCorpse(corpse);
-  }
-
-  // ================================================================================================================================================================================================================================================
   // handlePlayerDeath
+  // O corpo fica com a mochila e, por sorteio, outros itens do inventário
+  // (inventory.fillPlayerCorpse); o player volta no spawn sem eles.
 
   handlePlayerDeath(player, now) {
     const { world, control } = this.sim;
-    this.clearPlayerCorpse(player);
-    this.createCorpse(player, 'player_corpse', now);
+    const corpse = this.createCorpse(player, 'player_corpse', now);
+    this.sim.inventory.fillPlayerCorpse(corpse, player);
     const spot = this.sim.findFreeSpot(player.spawnX, player.spawnY, player.spawnZ);
     world.moveEntityTile(player, player.x, player.y, player.z || 0, spot.x, spot.y, player.spawnZ);
     player.respawn(spot);

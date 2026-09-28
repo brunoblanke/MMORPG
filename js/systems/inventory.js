@@ -4,8 +4,10 @@ import { GameObject } from '../models/game-object.js';
 import { getAdjacentPositions, isPositionAdjacentTo } from '../utils/helpers.js';
 import { objectIdType, objectProps, getAsset, splitType, listAssets } from '../../shared/assets.js';
 import {
-  EQUIP_SLOTS, THROW_RANGE, itemInfo, capacityFor, newItem, weightOf, contains, findInTree, fromPlain
+  EQUIP_SLOTS, THROW_RANGE, DEATH_DROP_CHANCE, itemInfo, capacityFor, newItem, weightOf, contains, findInTree, fromPlain
 } from '../../shared/items.js';
+import { PLAYER_SPRITES, DEFAULT_GENDER } from '../../shared/catalog.js';
+import { SKILL_KEYS } from '../../shared/skills.js';
 
 // Inventário e containers dos jogadores. Lugares (from/to nos comandos):
 //   { t: 'e', key }        espaço do inventário (EQUIP_SLOTS)
@@ -18,8 +20,9 @@ import {
 // soltar em cima de uma caixa põe dentro dela; pilhas iguais se juntam até
 // o máximo; pegar do chão só colado (o player anda até o item); o peso do
 // que o player carrega não passa da cap. Item no chão guarda o conteúdo em
-// obj.itemData (uid, count, items). Cadáver de criatura é container com o
-// loot dela (não dá pra pegar, só abrir e tirar ou pôr coisas).
+// obj.itemData (uid, count, items). Cadáver é container (não dá pra pegar,
+// só abrir e tirar ou pôr coisas): o da criatura com o loot dela, o do player
+// com a mochila e o que mais caiu na morte. Some com tudo dentro.
 
 const CORPSE_SIZE = 8;
 
@@ -488,6 +491,45 @@ export class InventoryController {
   }
 
   // ================================================================================================================================================================================================================================================
+  // fillPlayerCorpse
+  // Morte do player: a mochila vai sempre pro corpo; cada outro item do
+  // inventário, com DEATH_DROP_CHANCE. O que cai sai do inventário.
+
+  fillPlayerCorpse(corpse, player) {
+    const box = { uid: this.nextUid(), type: PLAYER_SPRITES[player.gender] || PLAYER_SPRITES[DEFAULT_GENDER], items: new Array(EQUIP_SLOTS.length).fill(null) };
+    let slot = 0;
+    for (const key of EQUIP_SLOTS) {
+      const item = player.equip[key];
+      if (!item) continue;
+      if (key !== 'mochila' && Math.random() >= DEATH_DROP_CHANCE) continue;
+      box.items[slot++] = item;
+      player.equip[key] = null;
+    }
+    player.openGround.clear();
+    player.pendingInv = null;
+    corpse.itemData = box;
+    return box;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // statsFor
+  // O que a janela de skills mostra (formato do Tibia 7.6).
+
+  statsFor(player) {
+    const skills = {};
+    for (const key of ['magic', ...SKILL_KEYS]) skills[key] = { ...player.skills[key] };
+    return {
+      experience: player.xp,
+      level: player.lvl,
+      levelPct: Math.min(99, Math.floor(player.xp / player.nextLevelXp * 100)),
+      hp: player.currentHp,
+      mana: player.mana,
+      soul: player.soul,
+      skills
+    };
+  }
+
+  // ================================================================================================================================================================================================================================================
   // viewFor
   // O que a tela do jogador precisa: inventário, cap e caixas do chão abertas.
 
@@ -495,7 +537,8 @@ export class InventoryController {
     return {
       equip: player.equip,
       cap: { used: this.capUsed(player), max: this.capMax(player) },
-      opened: this.openGroundObjects(player).map(obj => ({ id: obj.id, item: this.groundItem(obj), corpse: !!obj.isCorpse })),
+      opened: this.openGroundObjects(player).map(obj => ({ id: obj.id, item: this.groundItem(obj), corpse: !!obj.isCorpse, name: obj.isCorpse ? obj.name : null })),
+      stats: this.statsFor(player),
       layout: player.uiLayout
     };
   }
