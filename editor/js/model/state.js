@@ -60,7 +60,7 @@ export const TOOLS = [
   { id:'stairs', label:'Escada', paint:'stairsPaint' },
   { id:'hole', label:'Buraco / entrada', paint:'holePaint' },
   { id:'border', label:'Borda', paint:'borderPaint' },
-  { id:'border-eraser', label:'Tirar bordas' },
+  { id:'border-eraser', label:'Tirar bordas (a de cima)' },
   { id:'item', label:'Objeto', paint:'itemPaint' },
   { id:'enemy', label:'Criatura' },
   { id:'spawn', label:'Respawn do jogador' },

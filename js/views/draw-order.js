@@ -45,6 +45,8 @@ export function getRoofLevel(player, world) {
 
 // ================================================================================================================================================================================================================================================
 // compareDrawables
+// No mesmo andar e sqm, player e inimigo ficam sempre por cima de itens,
+// cadáveres e objetos; só o que está num andar acima passa por cima deles.
 
 function compareDrawables(a, b) {
   if (a.level !== b.level) return a.level - b.level;
@@ -56,6 +58,8 @@ function compareDrawables(a, b) {
   const tileXA = Math.round(a.renderX);
   const tileXB = Math.round(b.renderX);
   if (tileXA !== tileXB) return tileXA - tileXB;
+
+  if (!!a.isCreature !== !!b.isCreature) return a.isCreature ? 1 : -1;
 
   const orderA = a.order || 0;
   const orderB = b.order || 0;
@@ -126,6 +130,7 @@ export function prepareDrawables(gameState) {
       renderX: other.renderX,
       renderY: other.renderY,
       entity: other,
+      isCreature: true,
       hasVolume: false,
       order: other.order || 0,
       isFloor: false
@@ -141,6 +146,7 @@ export function prepareDrawables(gameState) {
       renderX: enemy.renderX,
       renderY: enemy.renderY,
       entity: enemy,
+      isCreature: true,
       hasVolume: true,
       order: enemy.order || 0,
       isFloor: false
