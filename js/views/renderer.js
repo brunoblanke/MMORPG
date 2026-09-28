@@ -10,6 +10,7 @@ const TINT_HIT = { color: '#ff2a2a', alpha: 0.55 };
 const TINT_ENEMY_HOVER = { color: '#ff2a2a', alpha: 0.35 };
 const TINT_TARGET = { color: '#ff2a2a', alpha: 0.2 };
 const TINT_HOVER = { color: '#3b82f6', alpha: 0.35 };
+const FLOOR_DARKEN = 0.1;
 
 export class Renderer {
   constructor(canvas, camera) {
@@ -447,6 +448,18 @@ export class Renderer {
            mouseY >= base.y - stackOffset.y && mouseY <= base.y + size - stackOffset.y;
   }
 
+  // ================================================================================================================================================================================================================================================
+  // darkenBelow
+
+  darkenBelow(floors) {
+    if (floors <= 0) return;
+    this.ctx.save();
+    this.ctx.globalAlpha = 1 - Math.pow(1 - FLOOR_DARKEN, floors);
+    this.ctx.fillStyle = '#000';
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    this.ctx.restore();
+  }
+
   // ================================================================================================================================================================================
   // render
 
@@ -502,7 +515,11 @@ export class Renderer {
     // andar do player, contornos amarelos) e por fim objetos, cadáveres,
     // inimigos e players na ordem normal: sqm a sqm (mais ao sul e a leste por
     // cima) e, dentro do sqm, na ordem da pilha.
+    // Cada andar abaixo do do player fica 10% mais escuro por andar de
+    // distância (o escurecimento acumula a cada andar desenhado por cima).
     const playerLevel = getEntityLevel(gameState.player);
+    const playerFloor = Math.floor(gameState.player.z || 0);
+    let lastLevel = null;
     let highlightsDrawn = false;
     const drawHighlights = () => {
       if (highlightsDrawn || !this.devMode) return;
@@ -521,6 +538,8 @@ export class Renderer {
       while (end < drawables.length && drawables[end].level === level) end++;
       const group = drawables.slice(start, end);
 
+      if (lastLevel !== null && level <= playerFloor) this.darkenBelow(level - lastLevel);
+      lastLevel = level;
       for (const obj of group) if (obj.isFloor) drawDrawable(obj);
       if (level >= playerLevel) drawHighlights();
       if (this.showYellowOutline) {
