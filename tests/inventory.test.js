@@ -311,3 +311,15 @@ test('skill sobe com o uso: golpe com machado treina axe, ataque recebido com es
   assert.equal(player.skills.sword.lvl, 10);
   assert.ok(sim.drainEvents().some(e => e.type === 'message' && e.text === 'Você avançou em Axe Fighting (11).'));
 });
+
+test('equipamento e container não empilham, mesmo marcados como empilháveis no gerador', async () => {
+  const { itemInfo } = await import('../shared/items.js');
+  setAssets([
+    asset('itens/escudos/marcado', { move: true, empilhavel: true, def: 5 }),
+    asset('itens/recipientes/marcada', { move: true, empilhavel: true, espacos: 8 }),
+    asset(COIN, { move: true, peso: 0.1, empilhavel: true })
+  ]);
+  assert.equal(itemInfo('itens/escudos/marcado').stack, 0);
+  assert.equal(itemInfo('itens/recipientes/marcada').stack, 0);
+  assert.equal(itemInfo(COIN).stack, 100);
+});

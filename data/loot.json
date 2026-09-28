@@ -1,7 +1,8 @@
 {
   "criaturas/mamiferos/rat": [
     { "tipo": "itens/recipientes/bag", "chance": 0.15 },
-    { "tipo": "itens/machados/fire-axe", "chance": 0.05 }
+    { "tipo": "itens/machados/fire-axe", "chance": 0.05 },
+    { "tipo": "itens/recipientes/parcel", "chance": 0.1 }
   ],
   "criaturas/vermes/spider": [
     { "tipo": "itens/recipientes/bag-verde", "chance": 0.15 },
@@ -11,7 +12,8 @@
     { "tipo": "itens/recipientes/backpack-cinza", "chance": 0.2 },
     { "tipo": "itens/espadas/fire-sword", "chance": 0.15 },
     { "tipo": "itens/machados/fire-axe", "chance": 0.15 },
-    { "tipo": "itens/capacetes/crown-helmet", "chance": 0.05 }
+    { "tipo": "itens/capacetes/crown-helmet", "chance": 0.05 },
+    { "tipo": "itens/recipientes/parcel", "chance": 0.1 }
   ],
   "criaturas/vermes/giant-spider": [
     { "tipo": "itens/recipientes/backpack-verde", "chance": 0.3 },

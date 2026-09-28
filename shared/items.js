@@ -41,7 +41,8 @@ const SLOT_BY_FOLDER = {
 // itemInfo
 // { name, slot, weight, stack, size, atk, def, ml } do tipo: slot é o espaço
 // do inventário (ou null), weight o peso de uma unidade (oz), stack o máximo
-// da pilha (0 = não empilha), size os espaços, se for container (0 = não é),
+// da pilha (0 = não empilha; equipamento e container nunca empilham, mesmo
+// marcados no gerador), size os espaços, se for container (0 = não é),
 // e atk/def/ml os bônus de quem usa o item (0 = não tem).
 
 export function itemInfo(type) {
@@ -50,12 +51,14 @@ export function itemInfo(type) {
   const folder = asset ? asset.pasta : null;
   const weight = Number(props.peso);
   const size = Number(props.espacos);
+  const slot = SLOT_BY_FOLDER[folder] || null;
+  const containerSize = size > 0 ? Math.floor(size) : (folder === 'recipientes' ? DEFAULT_CONTAINER_SIZE : 0);
   return {
     name: displayName(type),
-    slot: SLOT_BY_FOLDER[folder] || null,
+    slot,
     weight: weight > 0 ? weight : DEFAULT_WEIGHT,
-    stack: props.empilhavel ? STACK_MAX : 0,
-    size: size > 0 ? Math.floor(size) : (folder === 'recipientes' ? DEFAULT_CONTAINER_SIZE : 0),
+    stack: props.empilhavel && !slot && !containerSize ? STACK_MAX : 0,
+    size: containerSize,
     atk: bonusValue(props.atk),
     def: bonusValue(props.def),
     ml: bonusValue(props.ml),
