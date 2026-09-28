@@ -83,6 +83,12 @@ export class InputController {
 
   handleKeyDown(e) {
     const key = e.key.toLowerCase();
+    const tag = e.target && e.target.tagName;
+    if (key === 'v' && tag !== 'INPUT' && tag !== 'TEXTAREA') {
+      this.camera.floorShift = !this.camera.floorShift;
+      this.game.showMessage(this.camera.floorShift ? 'Câmera: mapa parado na troca de andar' : 'Câmera: centralizada no player', performance.now());
+      return;
+    }
     if (!KEY_DIRECTIONS[key]) return;
     e.preventDefault();
     if (this.keysPressed[key]) return;

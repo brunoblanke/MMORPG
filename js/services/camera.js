@@ -8,14 +8,18 @@ export class Camera {
     this.tileSize = CONFIG.tileSize;
     this.offset = { x: 0, y: 0 };
     this.target = { x: 0, y: 0 };
+    this.floorShift = CONFIG.cameraFloorShift !== false;
   }
 
   // ================================================================================================================================================================================================================================================
   // update
+  // Centraliza a tela no player. Com floorShift, soma o andar dele (o andar de
+  // cima é montado 1 sqm acima/à esquerda): o chão não pula ao trocar de andar.
 
   update(player) {
-    const px = (player && player.renderX !== undefined) ? player.renderX : 0;
-    const py = (player && player.renderY !== undefined) ? player.renderY : 0;
+    const z = this.floorShift && player ? (player.renderZ ?? player.z ?? 0) : 0;
+    const px = ((player && player.renderX !== undefined) ? player.renderX : 0) + z;
+    const py = ((player && player.renderY !== undefined) ? player.renderY : 0) + z;
     const pos = this.gridToScreen(px, py);
     this.target = { x: px, y: py };
     this.offset = {
