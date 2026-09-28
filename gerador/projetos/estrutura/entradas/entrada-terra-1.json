@@ -1,0 +1,27 @@
+{
+  "formato": {
+    "quadro": 32,
+    "quadros": 1
+  },
+  "objeto": {
+    "tibia": {
+      "id": 1067,
+      "variacao": 0
+    }
+  },
+  "propriedades": {
+    "bloqueia": false,
+    "move": false,
+    "altura": false,
+    "empilhavel": false,
+    "peso": 9999,
+    "espacos": 0,
+    "atk": 0,
+    "def": 0,
+    "ml": 0
+  },
+  "ferramenta": "objetos",
+  "grupo": "estrutura",
+  "pasta": "entradas",
+  "nome": "entrada-terra-1"
+}
