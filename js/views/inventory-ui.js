@@ -100,10 +100,15 @@ export class InventoryUI {
     const input = this.game.inputController;
     const obj = input && input.dragOccurred ? input.draggingCandidate : null;
     if (!obj) {
-      if (this.groundGhost) this.groundGhost.remove();
+      if (this.groundGhost) {
+        this.groundGhost.remove();
+        this.markSlot(null);
+      }
       this.groundGhost = null;
       return;
     }
+    const slot = document.elementFromPoint(this.mouse.x, this.mouse.y)?.closest('.inv-slot');
+    this.markSlot(slot || null, (place) => !obj.isCorpse && this.canDropOn(objectIdType(obj.id), null, place));
     if (!this.groundGhost) {
       this.groundGhost = document.createElement('div');
       this.groundGhost.className = 'inv-ghost';
@@ -674,12 +679,8 @@ export class InventoryUI {
     ghost.innerHTML = this.spriteHtml(item.type) + (item.count > 1 ? `<span class="inv-count">${item.count}</span>` : '');
     document.body.appendChild(ghost);
     sourceEl.classList.add('source');
-    const slot = itemInfo(item.type).slot;
     document.querySelectorAll('.inv-slot').forEach(el => {
-      if (el === sourceEl) return;
-      const place = this.placeOf(el);
-      const bag = this.view.equip.mochila;
-      if (place.t === 'c' || place.key === slot || (place.key === 'mochila' && bag && bag.uid !== item.uid)) el.classList.add('can-drop');
+      if (el !== sourceEl && this.canDropOn(item.type, item.uid, this.placeOf(el))) el.classList.add('can-drop');
     });
     this.drag = { kind: 'item', from, item, ghost, sourceEl };
     this.moveGhost(evt);
@@ -688,18 +689,44 @@ export class InventoryUI {
   moveGhost(evt) {
     this.drag.ghost.style.left = `${evt.clientX + 6}px`;
     this.drag.ghost.style.top = `${evt.clientY + 6}px`;
-    document.querySelectorAll('.inv-slot.over').forEach(el => el.classList.remove('over'));
     const slot = document.elementFromPoint(evt.clientX, evt.clientY)?.closest('.inv-slot');
-    if (slot && slot !== this.drag.sourceEl) slot.classList.add('over');
+    const { item } = this.drag;
+    this.markSlot(slot && slot !== this.drag.sourceEl ? slot : null, (place) => this.canDropOn(item.type, item.uid, place));
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // markSlot
+  // Espaço sob o item arrastado: borda verde se ele vai ali, vermelha se não.
+
+  markSlot(slot, accepts) {
+    document.querySelectorAll('.inv-slot.over').forEach(el => el.classList.remove('over', 'reject'));
+    if (!slot) return;
+    slot.classList.add('over');
+    if (!accepts(this.placeOf(slot))) slot.classList.add('reject');
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // canDropOn
+  // O item (tipo, uid) pode ir pro espaço? Container aceita qualquer um (vai
+  // pro primeiro vazio); o espaço do inventário, só o que é dele — ou, o da
+  // mochila, qualquer item que caiba dentro dela.
+
+  canDropOn(type, uid, place) {
+    if (!type || !place) return false;
+    if (place.t === 'c') return true;
+    const bag = this.view && this.view.equip.mochila;
+    if (place.key === 'mochila' && bag && bag.items && bag.uid !== uid) return true;
+    return itemInfo(type).slot === place.key;
   }
 
   endItemDrag(evt) {
     const { from, item, ghost } = this.drag;
     ghost.remove();
-    document.querySelectorAll('.inv-slot').forEach(el => el.classList.remove('can-drop', 'over', 'source'));
+    document.querySelectorAll('.inv-slot').forEach(el => el.classList.remove('can-drop', 'over', 'reject', 'source'));
     this.drag = null;
     const target = document.elementFromPoint(evt.clientX, evt.clientY);
     const slot = target && target.closest('.inv-slot');
+    if (slot && !this.canDropOn(item.type, item.uid, this.placeOf(slot))) return;
     const to = slot ? this.placeOf(slot) : this.worldDrop({ target, clientX: evt.clientX, clientY: evt.clientY });
     if (to) this.sendMove(from, to, item.count || 1, evt);
     this.lastKey = '';
@@ -820,7 +847,7 @@ export class InventoryUI {
       input.draggingCandidate = null;
       input.dragOccurred = false;
       input.dragStartMouse = null;
-      if (!slot || obj.isCorpse) return;
+      if (!slot || obj.isCorpse || !this.canDropOn(objectIdType(obj.id), null, this.placeOf(slot))) return;
       this.sendMove({ t: 'g', id: obj.id }, this.placeOf(slot), obj.count || 1, evt);
     });
 

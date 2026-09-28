@@ -78,12 +78,13 @@ function stepAcrossFloors(world, from, dx, dy, enemiesPassable) {
 
 // ================================================================================================================================================================================================================================================
 // getTransitionTarget
-// Escada, topo de escada ou buraco no sqm: pra onde leva. Transição que
-// aponta pra sqm sem piso está "morta" e não leva a lugar nenhum (null).
+// Escada, topo de escada ou buraco no sqm: pra onde leva ao pisar. Transição
+// que aponta pra sqm sem piso está "morta" e escada sem altura só leva quando
+// usada (duplo clique): as duas não levam a lugar nenhum ao pisar (null).
 
 export function getTransitionTarget(world, x, y, z) {
   const transition = world.getTransitionAt(x, y, z);
-  if (!transition || !isValidFloor(transition.targetZ)) return null;
+  if (!transition || transition.manualStairs || !isValidFloor(transition.targetZ)) return null;
   if (!world.hasFloorAt(transition.targetX, transition.targetY, transition.targetZ)) return null;
   return { x: transition.targetX, y: transition.targetY, z: transition.targetZ, step: 0, transition };
 }

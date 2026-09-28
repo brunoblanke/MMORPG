@@ -278,33 +278,43 @@ export class MovementController {
       const floor = entity.z || 0;
       const transitionObj = this.world.getTransitionAt(entity.x, entity.y, floor);
 
-      if (!transitionObj) continue;
-
-      const targetFloor = transitionObj.targetZ;
-      if (!isValidFloor(targetFloor)) continue;
-
-      if (!this.world.hasFloorAt(transitionObj.targetX, transitionObj.targetY, targetFloor)) {
-        console.log(`💀 ${transitionObj.id} está morta: não há piso em (${transitionObj.targetX},${transitionObj.targetY}) andar ${targetFloor}`);
-        continue;
-      }
-
-      const fromX = entity.x;
-      const fromY = entity.y;
-
-      this.world.moveEntityTile(entity, fromX, fromY, floor, transitionObj.targetX, transitionObj.targetY, targetFloor);
-      entity.x = transitionObj.targetX;
-      entity.y = transitionObj.targetY;
-      entity.z = targetFloor;
-      entity.step = 0;
-      entity.renderX = entity.x;
-      entity.renderY = entity.y;
-      entity.renderZ = entity.z;
-      entity.isMoving = false;
-      entity.route.path = null;
-
-      const who = entity.isPlayer ? 'Player' : `Inimigo ${entity.id}`;
-      const via = transitionObj.stairDirection === 'up' ? 'escada' : 'buraco';
-      console.log(`🪜 ${who} usou ${via} (${transitionObj.id}): (${fromX},${fromY}) andar ${floor} → (${entity.x},${entity.y}) andar ${targetFloor}`);
+      if (!transitionObj || transitionObj.manualStairs) continue;
+      this.useTransition(entity, transitionObj);
     }
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // useTransition
+  // Leva a entidade pro alvo da escada/buraco, se ele tiver piso. Devolve true
+  // se ela trocou de andar.
+
+  useTransition(entity, transitionObj) {
+    const floor = entity.z || 0;
+    const targetFloor = transitionObj.targetZ;
+    if (!isValidFloor(targetFloor)) return false;
+
+    if (!this.world.hasFloorAt(transitionObj.targetX, transitionObj.targetY, targetFloor)) {
+      console.log(`💀 ${transitionObj.id} está morta: não há piso em (${transitionObj.targetX},${transitionObj.targetY}) andar ${targetFloor}`);
+      return false;
+    }
+
+    const fromX = entity.x;
+    const fromY = entity.y;
+
+    this.world.moveEntityTile(entity, fromX, fromY, floor, transitionObj.targetX, transitionObj.targetY, targetFloor);
+    entity.x = transitionObj.targetX;
+    entity.y = transitionObj.targetY;
+    entity.z = targetFloor;
+    entity.step = 0;
+    entity.renderX = entity.x;
+    entity.renderY = entity.y;
+    entity.renderZ = entity.z;
+    entity.isMoving = false;
+    entity.route.path = null;
+
+    const who = entity.isPlayer ? 'Player' : `Inimigo ${entity.id}`;
+    const via = transitionObj.stairDirection === 'up' ? 'escada' : 'buraco';
+    console.log(`🪜 ${who} usou ${via} (${transitionObj.id}): (${fromX},${fromY}) andar ${floor} → (${entity.x},${entity.y}) andar ${targetFloor}`);
+    return true;
   }
 }

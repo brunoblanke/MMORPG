@@ -40,6 +40,7 @@ export class PlayerControl {
       case 'openContainer': return this.sim.inventory.open(player, command.itemId);
       case 'closeContainer': return this.sim.inventory.close(player, command.itemId);
       case 'saveLayout': return this.sim.inventory.saveLayout(player, command.layout);
+      case 'useStairs': return this.useStairs(player, command.x, command.y, command.z);
       default: console.warn('Comando desconhecido:', command);
     }
   }
@@ -49,6 +50,7 @@ export class PlayerControl {
   // Tecla de direção apertada: larga o caminho do clique e, com alvo, para de segui-lo.
 
   setWalkDir(player, dx, dy) {
+    player.pendingStairs = null;
     if (dx === 0 && dy === 0) {
       player.walkDir = null;
       return;
@@ -82,6 +84,7 @@ export class PlayerControl {
   // desce pro vizinho mais baixo.
 
   walkTo(player, x, y) {
+    player.pendingStairs = null;
     if (!this.sim.movement.isInsideMap(x, y)) return;
     if (x === player.x && y === player.y) {
       this.stepDownFromCurrentTile(player);
@@ -229,5 +232,37 @@ export class PlayerControl {
       this.sim.movement.moveEntity(player, player.walkDir.dx, player.walkDir.dy, now);
     }
     this.sim.objectDrag.checkPendingDrag(player);
+    this.checkPendingStairs(player);
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // useStairs
+  // Comando useStairs (duplo clique no sqm de uma escada sem altura): em cima
+  // dela, sobe; longe, anda até o sqm dela e sobe ao chegar.
+
+  useStairs(player, x, y, z) {
+    const stairs = this.sim.world.getTransitionAt(x, y, z);
+    if (!stairs || !stairs.manualStairs) return;
+    if (player.x === x && player.y === y && (player.z || 0) === z) {
+      player.pendingStairs = null;
+      this.clearWalk(player);
+      this.sim.movement.useTransition(player, stairs);
+      return;
+    }
+    player.pendingStairs = { x, y, z };
+    this.setWalkTarget(player, x, y, z);
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // checkPendingStairs
+  // Chegou na escada do duplo clique: sobe. Parou em outro lugar: desiste.
+
+  checkPendingStairs(player) {
+    const pending = player.pendingStairs;
+    if (!pending || this.isWalking(player)) return;
+    player.pendingStairs = null;
+    if (player.x !== pending.x || player.y !== pending.y || (player.z || 0) !== pending.z) return;
+    const stairs = this.sim.world.getTransitionAt(pending.x, pending.y, pending.z);
+    if (stairs && stairs.manualStairs) this.sim.movement.useTransition(player, stairs);
   }
 }

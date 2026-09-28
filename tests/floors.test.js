@@ -17,7 +17,7 @@ setAssets([
   floor('estrutura/pisos/teste', null),
   floor(WATER, { comportamento: 'bloqueia' }),
   floor(POISON, { comportamento: 'dano', dano: 7 }),
-  { id: STAIRS_STRAIGHT, ferramenta: 'objetos', grupo: 'estrutura', pasta: 'escadas', nome: 'reta', url: '/r.png', quadro: 64, quadros: 1, pecas: [], propriedades: { escada: 'reta' } },
+  { id: STAIRS_STRAIGHT, ferramenta: 'objetos', grupo: 'estrutura', pasta: 'escadas', nome: 'reta', url: '/r.png', quadro: 64, quadros: 1, pecas: [], propriedades: { altura: false } },
   { id: SWORD, ferramenta: 'objetos', grupo: 'itens', pasta: 'espadas', nome: 'espada', url: '/e.png', quadro: 32, quadros: 1, pecas: [], propriedades: { move: true, peso: 30 } }
 ]);
 
@@ -80,7 +80,7 @@ test('veneno tira vida ao pisar e a cada segundo parado nele', () => {
   assert.ok(sim.player.currentHp <= afterStep - 14);
 });
 
-test('escada reta sai na frente do topo; a normal, atrás; as duas descem pra frente do pé', () => {
+test('escada sem altura: pisar só posiciona; usada (duplo clique), sobe e sai na frente do topo', () => {
   const objects = [...floorRect(0, 14, 0, 14, 0), ...floorRect(0, 14, 0, 14, 1)];
   const mapData = { version: 3, objetosData: objects, transicoesData: [[STAIRS_STRAIGHT, 7, 7, 0]], enemyData: [], safeZoneData: [], spawn: { x: 7, y: 11, z: 0 } };
   const sim = new Simulation(mapData);
@@ -88,6 +88,16 @@ test('escada reta sai na frente do topo; a normal, atrás; as duas descem pra fr
   const player = sim.addPlayer('p1', { name: 'Ana' });
   sim.enqueue('p1', { type: 'walkTo', x: 7, y: 7, z: 0 });
   run(sim, 3000);
+  assert.deepEqual([player.x, player.y, player.z], [7, 7, 0]);
+  sim.enqueue('p1', { type: 'useStairs', x: 7, y: 7, z: 0 });
+  run(sim, 200);
+  assert.deepEqual([player.x, player.y, player.z], [6, 7, 1]);
+
+  sim.enqueue('p1', { type: 'walkTo', x: 6, y: 6, z: 1 });
+  run(sim, 2000);
+  assert.deepEqual([player.x, player.y, player.z], [7, 8, 0]);
+  sim.enqueue('p1', { type: 'useStairs', x: 7, y: 7, z: 0 });
+  run(sim, 2000);
   assert.deepEqual([player.x, player.y, player.z], [6, 7, 1]);
 
   const top = sim.world.getTransitionAt(6, 6, 1);

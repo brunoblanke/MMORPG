@@ -3,7 +3,8 @@
 import { isPositionAdjacentTo, distance } from '../utils/helpers.js';
 import { getLevel } from '../core/geometry.js';
 import { CONFIG } from '../config.js';
-import { equipBonus } from '../../shared/items.js';
+import { equipBonus, itemInfo } from '../../shared/items.js';
+import { addSkillTry } from '../../shared/skills.js';
 
 const FLOOR_DAMAGE_INTERVAL = 1000;
 
@@ -36,8 +37,24 @@ export class CombatController {
     const damage = this.calculateDamage(attacker, defender);
     const hpLeft = defender.takeDamage(damage, now);
     attacker.lastAttackTime = now;
+    if (attacker.isPlayer) this.trainSkill(attacker, equipBonus(attacker.equip).atkSkill);
+    if (defender.isPlayer && defender.equip && defender.equip.escudo && itemInfo(defender.equip.escudo.type).slot === 'escudo') {
+      this.trainSkill(defender, 'shielding');
+    }
     this.sim.emit({ type: 'damage', targetId: defender.id, x: defender.x, y: defender.y, amount: damage });
     return hpLeft;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // trainSkill
+  // Um uso do skill (golpe com a arma, ataque recebido com escudo). Magic
+  // level só sobe com magia (ainda não existe). Avisa quando sobe de nível.
+
+  trainSkill(player, key) {
+    if (!player.skills || key === 'magic') return;
+    if (!addSkillTry(player.skills, key)) return;
+    const names = { fist: 'Fist Fighting', club: 'Club Fighting', sword: 'Sword Fighting', axe: 'Axe Fighting', distance: 'Distance Fighting', shielding: 'Shielding', fishing: 'Fishing' };
+    this.sim.emit({ type: 'message', playerId: player.id, text: `Você avançou em ${names[key]} (${player.skills[key].lvl}).` });
   }
 
   // ================================================================================================================================================================================================================================================

@@ -176,18 +176,14 @@ test('jogar no chão até 25 sqm; o item aparece no espelho do navegador e some 
   assert.equal(bag.items[0].type, AXE);
 });
 
-test('caixa no chão abre só colado e fecha quando o player se afasta', () => {
+test('caixa no chão: de longe, o player anda até o lado e abre; fecha quando ele se afasta', () => {
   const sim = game([[CHEST, 9, 5]]);
   const chest = groundAt(sim, 9, 5)[0];
 
-  assert.deepEqual(send(sim, { type: 'openContainer', itemId: chest.id }), ['Chegue perto pra abrir.']);
-  run(sim, 3000);
-  assert.deepEqual([sim.player.x, sim.player.y], [5, 5]);
-  assert.equal(sim.inventory.viewFor(sim.player).opened.length, 0);
-
-  send(sim, { type: 'walkTo', x: 9, y: 5, z: 0 });
-  run(sim, 3000);
   send(sim, { type: 'openContainer', itemId: chest.id });
+  assert.equal(sim.inventory.viewFor(sim.player).opened.length, 0);
+  run(sim, 3000);
+  assert.deepEqual([sim.player.x, sim.player.y], [8, 5]);
   const opened = sim.inventory.viewFor(sim.player).opened;
   assert.equal(opened.length, 1);
   assert.equal(opened[0].item.items.length, 6);
@@ -270,12 +266,12 @@ test('player morto: o corpo fica com a mochila e, por sorteio, outros itens; ele
 test('skills começam no padrão do 7.6 e voltam com o personagem', () => {
   const mapData = buildMapData({ objects: floorRect(0, 29, 0, 29), spawn: { x: 5, y: 5, z: 0 } });
   const player = new Simulation(mapData).addPlayer('p1', { name: 'Ana' });
-  assert.deepEqual(player.skills.sword, { lvl: 10, pct: 0 });
-  assert.deepEqual(player.skills.magic, { lvl: 0, pct: 0 });
-  player.skills.sword = { lvl: 42, pct: 37 };
+  assert.deepEqual(player.skills.sword, { lvl: 10, pct: 0, tries: 0 });
+  assert.deepEqual(player.skills.magic, { lvl: 0, pct: 0, tries: 0 });
+  player.skills.sword = { lvl: 11, pct: 50, tries: 28 };
   const saved = JSON.parse(JSON.stringify(player.toSave()));
   const again = new Simulation(mapData).addPlayer('p2', { name: 'Ana', saved });
-  assert.deepEqual(again.skills.sword, { lvl: 42, pct: 37 });
+  assert.deepEqual(again.skills.sword, { lvl: 11, pct: 50, tries: 28 });
   assert.equal(again.skills.fishing.lvl, 10);
 });
 
@@ -293,4 +289,25 @@ test('atk, def e ml dos itens do inventário somam nos skills e no combate', () 
   assert.equal(stats.skills.axe.bonus, 0);
   assert.ok(sim.combat.calculateDamage(player, { def: 0 }) > base);
   assert.equal(stats.maxMana, player.maxMana);
+});
+
+test('skill sobe com o uso: golpe com machado treina axe, ataque recebido com escudo treina shielding', () => {
+  const sim = game();
+  const player = sim.player;
+  player.equip.arma = { uid: 'a1', type: AXE };
+  player.equip.escudo = { uid: 'e1', type: SHIELD };
+  const enemy = { isPlayer: false, atk: 1, def: 0, currentHp: 1e9, lastAttackTime: -1e9, isAlive: () => true, takeDamage(n) { this.currentHp -= n; return this.currentHp; } };
+  let now = 10000;
+  for (let i = 0; i < 50; i++) {
+    player.lastAttackTime = -1e9;
+    sim.combat.attackTarget(player, enemy, now);
+    enemy.lastAttackTime = -1e9;
+    sim.combat.attackTarget(enemy, player, now);
+    player.currentHp = player.hp;
+    now += 10;
+  }
+  assert.equal(player.skills.axe.lvl, 11);
+  assert.equal(player.skills.shielding.lvl, 11);
+  assert.equal(player.skills.sword.lvl, 10);
+  assert.ok(sim.drainEvents().some(e => e.type === 'message' && e.text === 'Você avançou em Axe Fighting (11).'));
 });
