@@ -2,7 +2,7 @@
 
 import { isFloorType, isHoleType, isStairsType, isItemType, objectProps } from './assets.js';
 import { getStairTarget } from './stairs.js';
-import { borderEntryType, parseBorderType } from './floor-borders.js';
+import { borderEntryType, parseBorderType, mergeSavedInnerCorners } from './floor-borders.js';
 
 // Versão 2: as bordas dos pisos vêm gravadas (shared/floor-borders.js).
 // Versão 3: os tipos são as folhas do gerador (shared/assets.js).
@@ -267,6 +267,11 @@ export function buildLayersFromMapData(mapData, GRID) {
     stats.spawnFound = true;
   }
 
+  for (const layer of Object.values(layers)) {
+    for (const cell of Object.values(layer)) {
+      if (cell.borders.length > 1) cell.borders = mergeSavedInnerCorners(cell.borders);
+    }
+  }
   return { layers, layerOrder, stats };
 }
 

@@ -1,8 +1,8 @@
 // shared/floor-borders.js
 
-import { computeBorderPieces } from './floor-variant.js';
+import { computeBorderPieces, mergeInnerCorners } from './floor-variant.js';
 import { getStairTop } from './stairs.js';
-import { isFloorType, isStairsType } from './assets.js';
+import { isFloorType, isStairsType, floorHasPiece } from './assets.js';
 
 // Bordas de piso como peças do mapa. O editor gera sozinho (ao pintar ou
 // apagar piso, buraco ou escada, recalcula os 3×3 em volta) e dá pra tirar
@@ -83,7 +83,16 @@ export function computeCellBorders(layer, x, y, voidKeys = new Set()) {
     return neighbor && !voidKeys.has(neighborKey) ? visibleBorderFloor(neighbor) : null;
   };
   const cellFloor = voidKeys.has(key) ? null : visibleBorderFloor(cell);
-  return computeBorderPieces(x, y, getFloor, cellFloor).map(({ type, variant }) => ({ type, variant }));
+  return computeBorderPieces(x, y, getFloor, cellFloor, floorHasPiece).map(({ type, variant }) => ({ type, variant }));
+}
+
+// ================================================================================================================================================================================================================================================
+// mergeSavedInnerCorners
+// Bordas gravadas numa célula: dois lados que se encontram viram o canto de
+// dentro da folha (mapas salvos antes de o jogo usar os cantos de dentro).
+
+export function mergeSavedInnerCorners(borders) {
+  return mergeInnerCorners(borders, floorHasPiece);
 }
 
 // ================================================================================================================================================================================================================================================

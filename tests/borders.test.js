@@ -97,3 +97,19 @@ test('pintar um piso refaz só as bordas em volta dele', () => {
   assert.deepEqual(layer['25,25'].borders, [{ type: FLOOR2, variant: 'n' }]);
   assert.deepEqual(computeCellBorders(layer, 12, 7), []);
 });
+
+test('canto de dentro: com a peça na folha, dois lados que se encontram viram int-*, como no gerador', async () => {
+  const { computeBorderPieces, mergeInnerCorners } = await import('../shared/floor-variant.js');
+  const L = new Set(['4,5', '4,4', '5,4', '6,4', '4,6']);
+  const getFloor = (x, y) => (L.has(`${x},${y}`) ? { type: 'grama', seq: 1 } : null);
+  const all = () => true;
+  const none = () => false;
+
+  const sides = computeBorderPieces(5, 5, getFloor, null, none).map(p => p.variant);
+  assert.deepEqual(sides.sort(), ['l', 's']);
+  assert.deepEqual(computeBorderPieces(5, 5, getFloor, null, all).map(p => p.variant), ['int-sl']);
+
+  const saved = [{ type: 'grama', variant: 'n' }, { type: 'grama', variant: 'o' }, { type: 'grama', variant: 'l' }, { type: 'terra', variant: 's' }];
+  assert.deepEqual(mergeInnerCorners(saved, all).map(p => `${p.type}:${p.variant}`), ['grama:int-no', 'grama:int-nl', 'terra:s']);
+  assert.deepEqual(mergeInnerCorners(saved, (type, piece) => piece === 'int-no').map(p => p.variant), ['l', 'int-no', 's']);
+});

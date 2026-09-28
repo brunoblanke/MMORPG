@@ -3,10 +3,10 @@
 import { randEnemyColor } from '../utils/helpers.js';
 import { Enemy } from './enemy.js';
 import { computeBorderPieces } from '../../shared/floor-variant.js';
-import { isFloorType, isHoleType, objectIdType, splitType, pieceType, interiorVariant, getAsset } from '../../shared/assets.js';
+import { isFloorType, isHoleType, objectIdType, splitType, pieceType, interiorVariant, getAsset, floorHasPiece } from '../../shared/assets.js';
 import { collectObjectDescriptors, collectEnemyDescriptors } from '../../shared/map-format.js';
 import { getStairTop, getStairTopTarget, getHoleTarget } from '../../shared/stairs.js';
-import { parseBorderType, hasSavedBorders } from '../../shared/floor-borders.js';
+import { parseBorderType, hasSavedBorders, mergeSavedInnerCorners } from '../../shared/floor-borders.js';
 
 export class GameObject {
   constructor(data) {
@@ -48,12 +48,14 @@ export class GameObject {
 
 export function generateObjects(mapData) {
   let objs = [];
-  const savedBorders = [];
+  const bordersByCell = new Map();
 
   collectObjectDescriptors(mapData).forEach((descriptor) => {
     const piece = parseBorderType(descriptor.type);
     if (piece) {
-      savedBorders.push(createBorder(piece, descriptor, savedBorders.length + 1));
+      const key = `${descriptor.x},${descriptor.y},${descriptor.z}`;
+      if (!bordersByCell.has(key)) bordersByCell.set(key, { position: descriptor, pieces: [] });
+      bordersByCell.get(key).pieces.push(piece);
       return;
     }
     const obj = new GameObject(descriptor);
@@ -61,6 +63,11 @@ export function generateObjects(mapData) {
     obj.seq = descriptor.seq;
     objs.push(obj);
   });
+
+  const savedBorders = [];
+  for (const { position, pieces } of bordersByCell.values()) {
+    for (const piece of mergeSavedInnerCorners(pieces)) savedBorders.push(createBorder(piece, position, savedBorders.length + 1));
+  }
 
   objs = applyTransitions(objs);
   const visibleFloorsByZ = applyFloorVariants(objs);
@@ -229,7 +236,7 @@ function generateFloorBorders(objs, visibleFloorsByZ) {
     for (const key of candidates) {
       const [x, y] = key.split(',').map(Number);
       if (holeKeys.has(`${x},${y},${z}`)) continue;
-      for (const piece of computeBorderPieces(x, y, getFloor, getFloor(x, y))) {
+      for (const piece of computeBorderPieces(x, y, getFloor, getFloor(x, y), floorHasPiece)) {
         borderCounter++;
         const border = new GameObject({
           id: `${pieceType(piece.type, piece.variant)}_${borderCounter}`,

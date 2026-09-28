@@ -16,10 +16,12 @@
 // piso de seq menor). Sobre um piso mais novo ela ficaria por baixo — então
 // nem entra. Borda do mesmo tipo do piso da célula também não entra (o piso
 // é contínuo). As peças voltam ordenadas da mais antiga pra mais nova.
+// Com hasPiece(tipo, peça), dois lados que se encontram viram o canto de
+// dentro da folha (int-no…), se ele existir — igual à prévia do gerador.
 
 const NEIGHBORS = [[0, -1], [0, 1], [-1, 0], [1, 0], [-1, -1], [1, -1], [-1, 1], [1, 1]];
 
-export function computeBorderPieces(x, y, getFloor, cellFloor = null) {
+export function computeBorderPieces(x, y, getFloor, cellFloor = null, hasPiece = null) {
   const casts = (floor) => !!floor && (!cellFloor || (floor.type !== cellFloor.type && floor.seq > cellFloor.seq));
   const castingType = (dx, dy) => {
     const floor = getFloor(x + dx, y + dy);
@@ -52,5 +54,29 @@ export function computeBorderPieces(x, y, getFloor, cellFloor = null) {
     if (!has(0, -1) && !has(-1, 0) && is(-1, -1)) pieces.push({ variant: 'sl', type });
   }
 
-  return pieces;
+  return hasPiece ? mergeInnerCorners(pieces, hasPiece) : pieces;
+}
+
+// ================================================================================================================================================================================================================================================
+// mergeInnerCorners
+// Dois lados do mesmo piso que se encontram no sqm (n + o…) viram o canto de
+// dentro (int-no…), quando a folha tem essa peça. Serve também pras bordas já
+// gravadas no mapa, que podem ter vindo com os dois lados.
+
+const INNER_CORNERS = [['n', 'o', 'int-no'], ['n', 'l', 'int-nl'], ['s', 'o', 'int-so'], ['s', 'l', 'int-sl']];
+
+export function mergeInnerCorners(pieces, hasPiece) {
+  const result = [];
+  const done = new Set();
+  for (const piece of pieces) {
+    if (done.has(piece.type)) continue;
+    const own = pieces.filter(p => p.type === piece.type);
+    const variants = new Set(own.map(p => p.variant));
+    const inner = INNER_CORNERS.filter(([a, b, corner]) => variants.has(a) && variants.has(b) && !variants.has(corner) && hasPiece(piece.type, corner));
+    const covered = new Set(inner.flatMap(([a, b]) => [a, b]));
+    for (const p of own) if (!covered.has(p.variant)) result.push(p);
+    for (const [, , corner] of inner) result.push({ ...piece, variant: corner });
+    done.add(piece.type);
+  }
+  return result;
 }

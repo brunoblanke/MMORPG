@@ -139,7 +139,7 @@ function descreverSprite(id, grupo, pasta, nome, receita) {
     quadros: formato.quadros || 1,
     variacoes: receita.variacoesDoMeio || 0,
     ordem: formato.pecas || null,
-    pecas: receita.pecas ? Object.keys(receita.pecas) : [],
+    pecas: Object.keys(receita.pecas || receita.slots || {}),
     propriedades: receita.propriedades || null,
     cadaver: !!(receita.cadaver && Object.keys(receita.cadaver).length)
   };

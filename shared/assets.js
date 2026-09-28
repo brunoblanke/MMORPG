@@ -110,6 +110,15 @@ export function objectIdType(id) {
 }
 
 // ================================================================================================================================================================================================================================================
+// floorHasPiece
+// A folha de piso tem a peça preenchida no gerador (ex.: 'int-no')?
+
+export function floorHasPiece(type, piece) {
+  const asset = getAsset(type);
+  return !!asset && Array.isArray(asset.pecas) && asset.pecas.includes(piece);
+}
+
+// ================================================================================================================================================================================================================================================
 // isFloorType / isStairsType / isHoleType
 // Pela pasta da folha (não precisa da lista: vale no servidor também).
 
