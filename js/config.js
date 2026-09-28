@@ -27,6 +27,12 @@ export const CONFIG = {
   // no piso do andar de cima; sobre floorHeight ou mais a criatura já conta
   // como andar de cima. Itens nunca mudam de andar por estarem empilhados.
   floorHeight: 4,
+  // Câmera ao trocar de andar: o andar de cima é montado deslocado 1 sqm pra
+  // cima e pra esquerda, então com true a câmera compensa isso (o chão fica
+  // parado na tela e o player aparece 1 sqm acima/à esquerda do centro por
+  // andar acima do térreo). Com false, ela sempre centraliza o player e o mapa
+  // pula na troca de andar. A tecla V alterna, pra comparar.
+  cameraFloorShift: true,
   playerSpriteDirections: ['sul', 'norte', 'leste', 'oeste'],
   playerFrameDuration: 150,
 
