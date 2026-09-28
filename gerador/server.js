@@ -13,7 +13,7 @@ const { TibiaAssets, paletaDeRoupa } = require('./tibia-assets.js');
 // Receitas antigas, de antes das pastas, ficam em projetos/<ferramenta>/<nome>.json.
 // A página Classificar põe cada sprite do Tibia numa pasta (classificacao.json).
 
-const PORTA = process.env.PORT || 8100;
+const PORTA = process.env.GERADOR_PORT || 8100;
 const PASTA_APP = path.join(__dirname, 'app');
 const PASTA_TIBIA = path.join(__dirname, 'tibia', '780');
 const PASTA_SAIDA = path.join(__dirname, 'saida');
