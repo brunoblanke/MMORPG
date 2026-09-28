@@ -2,6 +2,7 @@
 
 import { CONFIG } from '../config.js';
 import { isCreature } from './geometry.js';
+import { floorBehavior } from '../../shared/assets.js';
 
 export class World {
 
@@ -12,7 +13,8 @@ export class World {
   //   - floorTiles: andares com piso em cada coluna (x, y);
   //   - transitions: escada, topo de escada e buraco por sqm;
   //   - columns: objetos do mapa em cada coluna (x, y), de todos os andares;
-  //   - blockers: quantos objetos intransponíveis há em cada sqm.
+  //   - blockers: quantos objetos intransponíveis há em cada sqm;
+//   - topFloors: o piso de cima de cada sqm (o que diz se bloqueia ou machuca).
 
   constructor(width = CONFIG.mapWidth, height = CONFIG.mapHeight) {
     this.width = width;
@@ -22,6 +24,7 @@ export class World {
     this.transitions = new Map();
     this.columns = new Map();
     this.blockers = new Map();
+    this.topFloors = new Map();
     this.objects = new Set();
     this.safeTiles = new Set();
   }
@@ -91,7 +94,10 @@ export class World {
     this.addToColumn(obj);
     if (obj.blocksMovement) this.changeBlockers(obj.x, obj.y, obj.z || 0, 1);
     if (obj.stairDirection) this.registerTransition(obj);
-    if (obj.floorType && !obj.isBorder) this.registerFloor(obj.x, obj.y, obj.z || 0);
+    if (obj.floorType && !obj.isBorder) {
+      this.registerFloor(obj.x, obj.y, obj.z || 0);
+      this.topFloors.set(this.getTileKey(obj.x, obj.y, obj.z || 0), obj);
+    }
     if (obj.inStack) this.addToTile(obj, obj.x, obj.y, obj.z || 0);
   }
 
@@ -222,10 +228,26 @@ export class World {
 
   // ================================================================================================================================================================================================================================================
   // isBlocked
-  // Sqm intransponível: objeto que bloqueia ou criatura viva (menos ignore).
+  // Sqm intransponível: objeto que bloqueia, piso que bloqueia (água…) ou
+  // criatura viva (menos ignore).
 
   isBlocked(x, y, z, ignore = null, enemiesPassable = false) {
-    return this.hasBlockerAt(x, y, z) || this.getCreatureAt(x, y, z, ignore, enemiesPassable) !== null;
+    return this.hasBlockerAt(x, y, z) || this.isFloorBlocked(x, y, z) || this.getCreatureAt(x, y, z, ignore, enemiesPassable) !== null;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // isFloorBlocked / floorDamageAt
+  // Pelo piso de cima do sqm (gerador → Pisos → Comportamento). Piso que
+  // bloqueia não segura item nem impede arremesso por cima dele.
+
+  isFloorBlocked(x, y, z) {
+    const top = this.topFloors.get(this.getTileKey(x, y, z));
+    return !!top && floorBehavior(top.floorType).blocks;
+  }
+
+  floorDamageAt(x, y, z) {
+    const top = this.topFloors.get(this.getTileKey(x, y, z));
+    return top ? floorBehavior(top.floorType).damage : 0;
   }
 
   // ================================================================================================================================================================================================================================================

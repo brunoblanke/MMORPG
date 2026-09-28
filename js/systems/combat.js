@@ -5,6 +5,8 @@ import { getLevel } from '../core/geometry.js';
 import { CONFIG } from '../config.js';
 import { equipBonus } from '../../shared/items.js';
 
+const FLOOR_DAMAGE_INTERVAL = 1000;
+
 export class CombatController {
 
   // ================================================================================================================================================================================================================================================
@@ -36,6 +38,26 @@ export class CombatController {
     attacker.lastAttackTime = now;
     this.sim.emit({ type: 'damage', targetId: defender.id, x: defender.x, y: defender.y, amount: damage });
     return hpLeft;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // processFloorDamage
+  // Piso que machuca (veneno, fogo…): tira vida ao entrar no sqm e a cada
+  // FLOOR_DAMAGE_INTERVAL parado nele.
+
+  processFloorDamage(player, now) {
+    const z = player.z || 0;
+    const damage = this.sim.world.floorDamageAt(player.x, player.y, z);
+    if (!damage || !player.isAlive()) {
+      player.floorDamageKey = null;
+      return;
+    }
+    const key = `${player.x},${player.y},${z}`;
+    if (key === player.floorDamageKey && now - player.lastFloorDamage < FLOOR_DAMAGE_INTERVAL) return;
+    player.floorDamageKey = key;
+    player.lastFloorDamage = now;
+    player.takeDamage(damage, now);
+    this.sim.emit({ type: 'damage', targetId: player.id, x: player.x, y: player.y, amount: damage });
   }
 
   // ================================================================================================================================================================================================================================================

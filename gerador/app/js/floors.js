@@ -84,6 +84,8 @@ const floors = {
   selected: 'meio-1',
   name: '',
   path: '',
+  behavior: 'normal',
+  damage: 10,
   dirty: false,
   saving: false
 };
@@ -92,6 +94,9 @@ const rowsEl = document.getElementById('sheetRows');
 const statusEl = document.getElementById('status');
 const nameEl = document.getElementById('projectName');
 const folderEl = document.getElementById('floorFolder');
+const behaviorEl = document.getElementById('floorBehavior');
+const damageEl = document.getElementById('floorDamage');
+const damageFieldEl = document.getElementById('floorDamageField');
 const groundCanvas = document.getElementById('groundPreview');
 const sheetCanvas = document.getElementById('sheetPreview');
 
@@ -113,6 +118,15 @@ export function initFloors() {
   nameEl.addEventListener('input', () => { floors.dirty = true; });
   fillFolderSelect(folderEl, CATEGORY);
   folderEl.addEventListener('change', () => { floors.dirty = true; });
+  behaviorEl.addEventListener('change', () => {
+    floors.behavior = behaviorEl.value;
+    floors.dirty = true;
+    showBehavior();
+  });
+  damageEl.addEventListener('input', () => {
+    floors.damage = Math.max(1, Math.floor(Number(damageEl.value)) || 1);
+    floors.dirty = true;
+  });
   render();
 }
 
@@ -464,7 +478,10 @@ async function save() {
       ]
     },
     variacoesDoMeio: middleKeysInUse().length,
-    slots: floors.slots
+    slots: floors.slots,
+    propriedades: floors.behavior === 'dano'
+      ? { comportamento: 'dano', dano: floors.damage }
+      : { comportamento: floors.behavior }
   };
 
   try {
@@ -495,6 +512,10 @@ function openRecipe(recipe) {
   }
   floors.name = recipe.nome || '';
   nameEl.value = floors.name;
+  const props = recipe.propriedades || {};
+  floors.behavior = ['bloqueia', 'dano'].includes(props.comportamento) ? props.comportamento : 'normal';
+  floors.damage = Math.max(1, Math.floor(Number(props.dano)) || 10);
+  showBehavior();
   floors.path = recipePath(recipe, CATEGORY);
   setFolder(folderEl, recipe);
   floors.selected = 'meio-1';
@@ -502,6 +523,16 @@ function openRecipe(recipe) {
   setStatus(recipe.nome ? `Aberto: ${recipe.nome}` : '');
   render();
   refreshProjects();
+}
+
+// ================================================================================================================================================================================================================================================
+// showBehavior
+// Comportamento do piso no formulário; o dano só aparece em "Dano ao pisar".
+
+function showBehavior() {
+  behaviorEl.value = floors.behavior;
+  damageEl.value = floors.damage;
+  damageFieldEl.hidden = floors.behavior !== 'dano';
 }
 
 // ================================================================================================================================================================================================================================================
