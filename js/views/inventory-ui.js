@@ -53,6 +53,8 @@ export class InventoryUI {
     this.drag = null;
     this.qty = null;
     this.saveTimer = null;
+    this.groundGhost = null;
+    this.mouse = { x: 0, y: 0 };
     this.bindEvents();
   }
 
@@ -61,6 +63,7 @@ export class InventoryUI {
   // A cada quadro: pega o inventário da sessão e redesenha se mudou.
 
   update() {
+    this.updateGroundGhost();
     const view = this.game.session && this.game.session.inventoryView;
     if (!view) return;
     this.view = view;
@@ -71,6 +74,29 @@ export class InventoryUI {
     if (key === this.lastKey || this.drag) return;
     this.lastKey = key;
     this.render();
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // updateGroundGhost
+  // Item arrastado da tela do jogo: o desenho dele segue o mouse, no canto
+  // inferior direito, como o das janelas.
+
+  updateGroundGhost() {
+    const input = this.game.inputController;
+    const obj = input && input.dragOccurred ? input.draggingCandidate : null;
+    if (!obj || obj.isCorpse) {
+      if (this.groundGhost) this.groundGhost.remove();
+      this.groundGhost = null;
+      return;
+    }
+    if (!this.groundGhost) {
+      this.groundGhost = document.createElement('div');
+      this.groundGhost.className = 'inv-ghost';
+      this.groundGhost.innerHTML = this.spriteHtml(objectIdType(obj.id)) + (obj.count > 1 ? `<span class="inv-count">${obj.count}</span>` : '');
+      document.body.appendChild(this.groundGhost);
+    }
+    this.groundGhost.style.left = `${this.mouse.x + 6}px`;
+    this.groundGhost.style.top = `${this.mouse.y + 6}px`;
   }
 
   // ================================================================================================================================================================================================================================================
@@ -688,6 +714,8 @@ export class InventoryUI {
     });
 
     document.addEventListener('pointermove', (evt) => {
+      this.mouse.x = evt.clientX;
+      this.mouse.y = evt.clientY;
       if (this.pending && !this.drag) {
         if (Math.hypot(evt.clientX - this.pending.x, evt.clientY - this.pending.y) < 5) return;
         const p = this.pending;

@@ -96,7 +96,7 @@
 .inv-sksep{ height:1px; margin:5px 0; background:var(--inv-line-soft); }
 
 .inv-dropline{ flex-shrink:0; height:3px; border-radius:2px; background:var(--inv-accent); box-shadow:0 0 8px var(--inv-accent); }
-.inv-ghost{ position:fixed; z-index:50; pointer-events:none; width:24px; height:24px; filter:drop-shadow(0 3px 4px rgba(0,0,0,.6)); }
+.inv-ghost{ position:fixed; z-index:50; pointer-events:none; width:24px; height:24px; }
 .inv-ghost .inv-spr{ transform:scale(.75); transform-origin:0 0; }
 .inv-ghost .inv-count{ right:-4px; bottom:-6px; font-size:9px; }
 

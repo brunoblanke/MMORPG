@@ -196,11 +196,7 @@ export class Renderer {
   // ================================================================================================================================================================================
   // drawFloor
 
-  drawFloor(base, size, entity, isHovered) {
-    if (isHovered) {
-      this.ctx.globalAlpha = 0.6;
-    }
-
+  drawFloor(base, size, entity) {
     const sheet = this.getObjectSpriteSheet(entity ? entity.id : null);
     if (isSheetReady(sheet)) {
       const duration = sheet._frameDuration || 1000 / sheet.totalFrames || 50;
@@ -214,7 +210,6 @@ export class Renderer {
       this.ctx.fillStyle = "#444";
       this.ctx.fillRect(base.x, base.y, size, size);
     }
-    this.ctx.globalAlpha = 1;
   }
 
   // ================================================================================================================================================================================
@@ -354,7 +349,7 @@ export class Renderer {
     const size = CONFIG.tileSize;
 
     if (isFloor) {
-      this.drawFloor(base, size, entity, isHovered);
+      this.drawFloor(base, size, entity);
       return;
     }
 
