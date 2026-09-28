@@ -8,7 +8,7 @@
 //     próprio pé (x, y, z), que não sobe sozinho;
 //   - a normal sobe ao pisar e sai atrás do topo, (x-1, y-2, z+1); a reta
 //     só sobe quando usada (duplo clique) e sai na frente dele, (x-1, y, z+1).
-// Buraco comum em (x, y, z) leva pra (x+1, y+1, z-1).
+// Buraco comum em (x, y, z) leva pro mesmo sqm no andar de baixo, (x, y, z-1).
 //
 // Nenhum dos dois impede borda: o piso vizinho solta borda normalmente no
 // sqm. O buraco comum é um item sobre o chão (em geral ord 1); o topo de
@@ -54,5 +54,5 @@ export function getStairTopTarget(x, y, z, kind = 'normal') {
 // getHoleTarget
 
 export function getHoleTarget(x, y, z) {
-  return toLowerLevel(x, y, z);
+  return { x, y, z: z - 1 };
 }

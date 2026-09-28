@@ -11,6 +11,7 @@ export const SPRITES_URL = '/api/sprites';
 export const FLOOR_FOLDER = 'estrutura/pisos/';
 export const STAIRS_FOLDER = 'estrutura/escadas/';
 export const HOLE_FOLDER = 'estrutura/entradas/';
+export const WALL_FOLDER = 'estrutura/paredes/';
 
 // Folha de piso (32 px): linha 1 com as variações do meio, depois as bordas.
 const FLOOR_CELLS = {
@@ -128,6 +129,18 @@ export function floorBehavior(type) {
 export function floorHasPiece(type, piece) {
   const asset = getAsset(type);
   return !!asset && Array.isArray(asset.pecas) && asset.pecas.includes(piece);
+}
+
+// ================================================================================================================================================================================================================================================
+// blocksThrow
+// O que barra item jogado: parede (Estrutura › Paredes), menos janela e porta
+// aberta. Árvore, pedra e outros objetos que bloqueiam a passagem de player e
+// inimigos deixam o item passar por cima.
+
+export function blocksThrow(type) {
+  const { asset, piece } = splitType(type);
+  if (!asset.startsWith(WALL_FOLDER)) return false;
+  return !/^janela|^porta-.*-aberta$/.test(piece || '');
 }
 
 // ================================================================================================================================================================================================================================================

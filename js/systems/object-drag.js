@@ -4,7 +4,7 @@ import { CONFIG } from '../config.js';
 import { distance, getAdjacentPositions, isPositionAdjacentTo } from '../utils/helpers.js';
 import { toUpperLevel } from '../../shared/stairs.js';
 import { isValidFloor } from '../../shared/constants.js';
-import { objectIdType } from '../../shared/assets.js';
+import { objectIdType, blocksThrow } from '../../shared/assets.js';
 import { itemInfo } from '../../shared/items.js';
 
 export class ObjectDragController {
@@ -90,7 +90,7 @@ export class ObjectDragController {
     }
 
     if (!this.isThrowPathClear(player, obj, targetX, targetY, targetZ)) {
-      console.log(`🧱 Arremesso travado: algo intransponível entre o player e (${targetX}, ${targetY}) andar ${targetZ}`);
+      console.log(`🧱 Arremesso travado: parede entre o player e (${targetX}, ${targetY}) andar ${targetZ}`);
       return;
     }
 
@@ -132,9 +132,11 @@ export class ObjectDragController {
   // ================================================================================================================================================================================================================================================
   // isThrowPathClear
   // O objeto vai em linha reta, sqm a sqm, de onde o player aparece até o
-  // destino. Trava se algum sqm no caminho (ou o destino) tem algo
-  // intransponível (parede etc.) — num passo diagonal, também trava se os dois
-  // sqm laterais estão bloqueados (não passa pela quina entre paredes).
+  // destino. Trava só em parede (janela e porta aberta deixam passar; árvore
+  // e outros objetos que bloqueiam o player também) no caminho ou no destino
+  // — num passo diagonal, também trava se os dois sqm laterais têm parede
+  // (não passa pela quina entre paredes). O destino ainda precisa aceitar o
+  // objeto (moveObject: nada que bloqueie lá).
   // Em cima de pilha alta o player aparece no andar de cima (toUpperLevel).
   // Andar checado: o mais alto entre a origem e o destino. Pra cima, o objeto
   // voa por cima das paredes de baixo e só o que está no andar de destino o
@@ -147,7 +149,7 @@ export class ObjectDragController {
     if ((player.step || 0) >= floorHeight - 1) origin = toUpperLevel(origin.x, origin.y, origin.z);
 
     const floor = Math.max(origin.z, toZ);
-    const isBlocked = (x, y) => this.hasOtherBlocker(obj, x, y, floor);
+    const isBlocked = (x, y) => this.hasWallAt(x, y, floor);
 
     // Bresenham: sqm a sqm, da origem (fora) até o destino (dentro).
     let x = origin.x;
@@ -172,6 +174,14 @@ export class ObjectDragController {
       y = ny;
     }
     return true;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // hasWallAt
+  // Parede no sqm (o que barra item jogado: shared/assets.js → blocksThrow).
+
+  hasWallAt(x, y, z) {
+    return this.sim.world.getObjectsAt(x, y).some(o => (o.z || 0) === z && o.blocksMovement && blocksThrow(objectIdType(o.id)));
   }
 
   // ================================================================================================================================================================================================================================================

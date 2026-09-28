@@ -78,7 +78,7 @@ test('objeto solto num buraco cai pro andar de baixo', () => {
   const parcel = game.objects.find(o => o.id.startsWith('Parcel'));
 
   game.objectDrag.moveObject(game.player, parcel, 5, 5, 1);
-  assert.deepEqual([parcel.x, parcel.y, parcel.z], [6, 6, 0]);
+  assert.deepEqual([parcel.x, parcel.y, parcel.z], [5, 5, 0]);
 });
 
 test('arremesso pro andar de cima passa por cima das paredes de baixo; parede no andar de cima barra', () => {
@@ -94,4 +94,14 @@ test('arremesso pro andar de cima passa por cima das paredes de baixo; parede no
   const other = box(blocked, 3, 5);
   blocked.objectDrag.moveObject(blocked.player, other, 9, 5, 1);
   assert.deepEqual([other.x, other.y, other.z], [3, 5, 0]);
+});
+
+test('árvore e objetos que bloqueiam o player não barram o arremesso; parede barra', () => {
+  const tree = [['estrutura/natureza/arvore#x', 6, 5, 0, 0, 0, 1, 1]];
+  const game = setup(pile(3, 5, 1), tree);
+  placeAt(game, game.player, 4, 5, 0);
+  const parcel = box(game, 3, 5);
+  game.objectDrag.moveObject(game.player, parcel, 8, 5, 0);
+  assert.deepEqual([parcel.x, parcel.y], [8, 5]);
+  assert.equal(game.world.isBlocked(6, 5, 0), true);
 });

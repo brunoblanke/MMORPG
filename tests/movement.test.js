@@ -57,10 +57,10 @@ test('do andar de cima desce pra pilha de 3 volumes, o espelho da subida', () =>
   assert.equal(landing(game, 6, 8, 1, 0, 0, 1), null);
 });
 
-test('buraco leva pro sqm (x+1, y+1) do andar de baixo; sem piso embaixo não derruba', () => {
+test('buraco leva pro mesmo sqm do andar de baixo; sem piso embaixo não derruba', () => {
   const game = building(hole(5, 5, 1), hole(40, 40, 1));
   const fall = game.movementController.simulateMove({ x: 4, y: 5, z: 1, step: 0 }, 1, 0);
-  assert.deepEqual({ x: fall.x, y: fall.y, z: fall.z, step: fall.step }, { x: 6, y: 6, z: 0, step: 0 });
+  assert.deepEqual({ x: fall.x, y: fall.y, z: fall.z, step: fall.step }, { x: 5, y: 5, z: 0, step: 0 });
   assert.deepEqual(fall.via, { x: 5, y: 5, z: 1 });
   assert.deepEqual(landing(game, 39, 40, 1, 0, 1, 0), { x: 40, y: 40, z: 1, step: 0 });
 });
@@ -82,7 +82,7 @@ test('moveEntity troca de andar pela pilha e checkFloorTransitions aplica o bura
 
   assert.equal(movementController.moveEntity(player, 0, -1, 5000), true);
   movementController.checkFloorTransitions([player]);
-  assert.deepEqual([player.x, player.y, player.z], [6, 8, 0]);
+  assert.deepEqual([player.x, player.y, player.z], [5, 7, 0]);
 });
 
 test('criatura bloqueia o passo; parede também', () => {
@@ -109,7 +109,7 @@ test('sem rota pro andar de cima quando não há pilha, escada nem buraco', () =
 
 test('andares negativos: buraco do térreo desce pro -1 e escada do -1 sobe pro térreo', () => {
   const game = buildGame({ objects: [...floorRect(0, 14, 0, 14, 0), ...floorRect(0, 14, 0, 14, -1), ...hole(5, 5, 0)], stairs: [[7, 10, -1]] });
-  assert.deepEqual(landing(game, 4, 5, 0, 0, 1, 0), { x: 6, y: 6, z: -1, step: 0 });
+  assert.deepEqual(landing(game, 4, 5, 0, 0, 1, 0), { x: 5, y: 5, z: -1, step: 0 });
   assert.deepEqual(landing(game, 7, 11, -1, 0, 0, -1), { x: 6, y: 8, z: 0, step: 0 });
 });
 
