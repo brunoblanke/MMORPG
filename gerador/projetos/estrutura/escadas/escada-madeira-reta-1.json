@@ -1,0 +1,24 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 1
+  },
+  "objeto": {
+    "tibia": {
+      "id": 1948,
+      "variacao": 0
+    }
+  },
+  "propriedades": {
+    "bloqueia": false,
+    "move": false,
+    "altura": false,
+    "empilhavel": false,
+    "peso": 9999,
+    "espacos": 0
+  },
+  "ferramenta": "objetos",
+  "grupo": "estrutura",
+  "pasta": "escadas",
+  "nome": "escada-madeira-reta-1"
+}

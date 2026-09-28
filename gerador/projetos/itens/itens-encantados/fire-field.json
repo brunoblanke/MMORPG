@@ -1,0 +1,24 @@
+{
+  "formato": {
+    "quadro": 32,
+    "quadros": 2
+  },
+  "objeto": {
+    "tibia": {
+      "id": 2118,
+      "variacao": 0
+    }
+  },
+  "propriedades": {
+    "bloqueia": false,
+    "move": false,
+    "altura": false,
+    "empilhavel": false,
+    "peso": 40,
+    "espacos": 0
+  },
+  "ferramenta": "objetos",
+  "grupo": "itens",
+  "pasta": "itens-encantados",
+  "nome": "fire-field"
+}

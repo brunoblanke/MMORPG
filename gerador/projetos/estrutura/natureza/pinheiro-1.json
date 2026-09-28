@@ -1,0 +1,24 @@
+{
+  "formato": {
+    "quadro": 32,
+    "quadros": 1
+  },
+  "objeto": {
+    "tibia": {
+      "id": 3682,
+      "variacao": 0
+    }
+  },
+  "propriedades": {
+    "bloqueia": true,
+    "move": false,
+    "altura": false,
+    "empilhavel": false,
+    "peso": 40,
+    "espacos": 0
+  },
+  "ferramenta": "objetos",
+  "grupo": "estrutura",
+  "pasta": "natureza",
+  "nome": "pinheiro-1"
+}

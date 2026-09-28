@@ -1,0 +1,24 @@
+{
+  "formato": {
+    "quadro": 32,
+    "quadros": 1
+  },
+  "objeto": {
+    "tibia": {
+      "id": 2853,
+      "variacao": 0
+    }
+  },
+  "propriedades": {
+    "bloqueia": false,
+    "move": true,
+    "altura": false,
+    "empilhavel": true,
+    "peso": 10,
+    "espacos": 4
+  },
+  "ferramenta": "objetos",
+  "grupo": "itens",
+  "pasta": "recipientes",
+  "nome": "bag"
+}

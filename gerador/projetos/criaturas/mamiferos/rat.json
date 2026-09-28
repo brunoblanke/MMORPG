@@ -20,7 +20,26 @@
     ],
     "addons": []
   },
-  "cadaver": {},
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 4255,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4256,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 4257,
+        "variacao": 0
+      }
+    }
+  },
   "ferramenta": "criaturas",
   "grupo": "criaturas",
   "pasta": "mamiferos",
