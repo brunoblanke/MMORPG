@@ -215,7 +215,7 @@ test('cadáver é container com o loot; duplo clique leva o player até ele e ab
   assert.equal(corpse.itemData.items[1], null);
 });
 
-test('corpo que some no caminho: o player termina de andar e não abre nada', () => {
+test('corpo que some no caminho: o player termina de andar até o sqm colado e não abre nada', () => {
   const mapData = buildMapData({ objects: floorRect(0, 29, 0, 29), enemies: [[15, 5, 0]], spawn: { x: 5, y: 5, z: 0 } });
   const sim = new Simulation(mapData, { lootTable: {} });
   sim.time = 1000;
@@ -228,7 +228,7 @@ test('corpo que some no caminho: o player termina de andar e não abre nada', ()
   sim.tick(sim.time + TICK_MS);
   sim.lifeCycle.removeCorpse(corpse);
   run(sim, 6000);
-  assert.deepEqual([player.x, player.y], [15, 5]);
+  assert.deepEqual([player.x, player.y], [14, 5]);
   assert.equal(sim.inventory.viewFor(player).opened.length, 0);
 });
 
