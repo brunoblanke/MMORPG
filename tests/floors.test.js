@@ -80,7 +80,7 @@ test('veneno tira vida ao pisar e a cada segundo parado nele', () => {
   assert.ok(sim.player.currentHp <= afterStep - 14);
 });
 
-test('escada sem altura: pisar só posiciona; usada (duplo clique), sobe e sai na frente do topo', () => {
+test('escada sem altura: pisar só posiciona; usada (duplo clique), sobe e sai na frente do topo; descer cai no pé dela', () => {
   const objects = [...floorRect(0, 14, 0, 14, 0), ...floorRect(0, 14, 0, 14, 1)];
   const mapData = { version: 3, objetosData: objects, transicoesData: [[STAIRS_STRAIGHT, 7, 7, 0]], enemyData: [], safeZoneData: [], spawn: { x: 7, y: 11, z: 0 } };
   const sim = new Simulation(mapData);
@@ -95,11 +95,13 @@ test('escada sem altura: pisar só posiciona; usada (duplo clique), sobe e sai n
 
   sim.enqueue('p1', { type: 'walkTo', x: 6, y: 6, z: 1 });
   run(sim, 2000);
-  assert.deepEqual([player.x, player.y, player.z], [7, 8, 0]);
+  assert.deepEqual([player.x, player.y, player.z], [7, 7, 0]);
+  sim.enqueue('p1', { type: 'walkTo', x: 7, y: 9, z: 0 });
+  run(sim, 2000);
   sim.enqueue('p1', { type: 'useStairs', x: 7, y: 7, z: 0 });
   run(sim, 2000);
   assert.deepEqual([player.x, player.y, player.z], [6, 7, 1]);
 
   const top = sim.world.getTransitionAt(6, 6, 1);
-  assert.deepEqual([top.targetX, top.targetY, top.targetZ], [7, 8, 0]);
+  assert.deepEqual([top.targetX, top.targetY, top.targetZ], [7, 7, 0]);
 });

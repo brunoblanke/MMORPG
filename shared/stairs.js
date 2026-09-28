@@ -4,7 +4,8 @@
 // com altura, normal; sem, reta). Numa escada em (x, y, z):
 //   - o sqm (x-1, y-1, z+1), logo acima do pé, é o TOPO da escada: vira um
 //     buraco (sem piso, coberto pelo próprio sprite) que leva de volta pra
-//     baixo, em (x, y+1, z), logo à frente do pé;
+//     baixo: na normal, em (x, y+1, z), logo à frente do pé; na reta, no
+//     próprio pé (x, y, z), que não sobe sozinho;
 //   - a normal sobe ao pisar e sai atrás do topo, (x-1, y-2, z+1); a reta
 //     só sobe quando usada (duplo clique) e sai na frente dele, (x-1, y, z+1).
 // Buraco comum em (x, y, z) leva pra (x+1, y+1, z-1).
@@ -45,8 +46,8 @@ export function getStairTop(x, y, z) {
 // ================================================================================================================================================================================================================================================
 // getStairTopTarget
 
-export function getStairTopTarget(x, y, z) {
-  return { x: x, y: y + 1, z: z };
+export function getStairTopTarget(x, y, z, kind = 'normal') {
+  return kind === 'reta' ? { x, y, z } : { x, y: y + 1, z };
 }
 
 // ================================================================================================================================================================================================================================================

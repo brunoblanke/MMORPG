@@ -116,7 +116,7 @@ function applyTransitions(objs) {
   for (const obj of objs) {
     if (obj.stairDirection !== 'up') continue;
     const top = getStairTop(obj.x, obj.y, obj.z);
-    const target = getStairTopTarget(obj.x, obj.y, obj.z);
+    const target = getStairTopTarget(obj.x, obj.y, obj.z, obj.manualStairs ? 'reta' : 'normal');
     const stairTop = new GameObject({
       id: `StairTop_${stairTops.length + 1}`,
       x: top.x, y: top.y, z: top.z,
