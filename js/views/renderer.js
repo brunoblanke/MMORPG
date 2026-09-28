@@ -6,6 +6,18 @@ import { drawTileTooltip } from './tile-tooltip.js';
 import { prepareDrawables } from './draw-order.js';
 import { getEntityLevel } from '../core/geometry.js';
 
+// ================================================================================================================================================================================================================================================
+// isGroundLayer
+// Solto no chão, sem altura: item que não bloqueia nem tem volume, cadáver ou
+// borda. Vai por baixo de criaturas, paredes e volumes do mesmo andar.
+
+function isGroundLayer(obj) {
+  if (obj.isCorpse) return true;
+  const entity = obj.entity;
+  if (!entity || entity.isPlayer === true || entity.type === 'enemy') return false;
+  return !obj.hasVolume && !obj.blocksMovement;
+}
+
 const TINT_HIT = { color: '#ff2a2a', alpha: 0.55 };
 const TINT_ENEMY_HOVER = { color: '#ff2a2a', alpha: 0.35 };
 const TINT_TARGET = { color: '#ff2a2a', alpha: 0.2 };
@@ -499,9 +511,12 @@ export class Renderer {
 
     // Andar por andar (drawables já vêm ordenados por nível): primeiro o chão
     // do andar, depois o que o modo inspecionar desenha (áreas/caminho/alvo no
-    // andar do player, contornos amarelos), os cadáveres (sempre por baixo de
-    // quem está vivo, mesmo o de 64 px que avança sobre o sqm do lado) e por
-    // fim objetos, inimigos e player na ordem normal.
+    // andar do player, contornos amarelos), o que está solto no chão (itens,
+    // cadáveres e bordas, na ordem da pilha de cada sqm — dá pra empilhar
+    // item em cima de corpo e corpo em cima de item) e por fim paredes,
+    // volumes, inimigos e players na ordem normal. Assim quem está vivo fica
+    // sempre por cima do que está no chão, mesmo do corpo de 64 px do sqm do
+    // lado, e o que tem altura ainda cobre quem está atrás.
     const playerLevel = getEntityLevel(gameState.player);
     let highlightsDrawn = false;
     const drawHighlights = () => {
@@ -526,8 +541,8 @@ export class Renderer {
       if (this.showYellowOutline) {
         for (const obj of group) this.drawDrawableOutline(obj);
       }
-      for (const obj of group) if (obj.isCorpse) drawDrawable(obj);
-      for (const obj of group) if (!obj.isFloor && !obj.isCorpse) drawDrawable(obj);
+      for (const obj of group) if (!obj.isFloor && isGroundLayer(obj)) drawDrawable(obj);
+      for (const obj of group) if (!obj.isFloor && !isGroundLayer(obj)) drawDrawable(obj);
 
       start = end;
     }

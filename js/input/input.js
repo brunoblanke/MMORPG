@@ -22,6 +22,7 @@ export class InputController {
     this.hoverEnemy = null;
     this.hoverObject = null;
     this.hoverCorpse = null;
+    this.hoverMovable = null;
     this.mouseX = 0;
     this.mouseY = 0;
     this.draggingCandidate = null;
@@ -133,17 +134,32 @@ updateHoverEnemy(enemies, world, offset, player, deadBodies) {
     this.hoverEnemy = null;
     this.hoverObject = null;
     this.hoverCorpse = null;
+    this.hoverMovable = null;
     return;
   }
 
   this.hoverEnemy = null;
   this.hoverObject = null;
   this.hoverCorpse = null;
+  this.hoverMovable = null;
 
   // O que está acima do teto do player não aparece na tela, então não pode ser apontado.
   const roofLevel = getRoofLevel(player, world);
   const isVisible = (e) => getEntityLevel(e) <= roofLevel;
   const byTopmost = (a, b) => (getEntityLevel(b) - getEntityLevel(a)) || ((b.order || 0) - (a.order || 0));
+
+  // Pilha do sqm (itens e cadáveres juntos, na ordem em que foram parar ali):
+  // o de cima é o apontado; o de cima que dá pra mover pode ser arrastado
+  // mesmo com um player ou inimigo em cima dele.
+  const tileX = this.hoverTile.x;
+  const tileY = this.hoverTile.y;
+  const corpsesOnTile = (deadBodies || []).filter(c => c.x === tileX && c.y === tileY && isVisible(c));
+  const objectsOnTile = world.getObjectsAt(tileX, tileY).filter(o =>
+    isVisible(o) && !o.isBorder &&
+    (o.hasVolume || o.blocksMovement || o.movable === true || o.floorType)
+  );
+  const stack = [...corpsesOnTile, ...objectsOnTile].sort(byTopmost);
+  this.hoverMovable = stack.find(o => (o.isCorpse ? o.movable !== false : o.movable === true)) || null;
 
   const enemiesSorted = enemies.filter(isVisible).sort(byTopmost);
   for (const enemy of enemiesSorted) {
@@ -157,27 +173,10 @@ updateHoverEnemy(enemies, world, offset, player, deadBodies) {
     }
   }
 
-  const tileX = this.hoverTile.x;
-  const tileY = this.hoverTile.y;
-
-  if (deadBodies && deadBodies.length) {
-    const corpsesOnTile = deadBodies.filter(c => c.x === tileX && c.y === tileY && isVisible(c));
-    if (corpsesOnTile.length > 0) {
-      corpsesOnTile.sort(byTopmost);
-      this.hoverCorpse = corpsesOnTile[0];
-      return;
-    }
-  }
-
-  const objectsOnTile = world.getObjectsAt(tileX, tileY).filter(o =>
-    isVisible(o) && !o.isBorder &&
-    (o.hasVolume || o.blocksMovement || o.movable === true || o.floorType)
-  );
-
-  if (objectsOnTile.length > 0) {
-    objectsOnTile.sort(byTopmost);
-    this.hoverObject = objectsOnTile[0];
-  }
+  const top = stack[0];
+  if (!top) return;
+  if (top.isCorpse) this.hoverCorpse = top;
+  else this.hoverObject = top;
 }
 
   // ================================================================================================================================================================================================================================================
@@ -191,16 +190,7 @@ updateHoverEnemy(enemies, world, offset, player, deadBodies) {
     this.dragStartMouse = { x: mouseX, y: mouseY };
     this.dragOccurred = false;
 
-    console.log('Hover - Object:', this.hoverObject?.id, 'Corpse:', this.hoverCorpse?.type);
-
-    if (this.hoverObject && this.hoverObject.movable !== false) {
-      this.draggingCandidate = this.hoverObject;
-    } else if (this.hoverCorpse && this.hoverCorpse.movable !== false) {
-      this.draggingCandidate = this.hoverCorpse;
-      console.log('Dragging corpse:', this.hoverCorpse.type);
-    } else {
-      this.draggingCandidate = null;
-    }
+    this.draggingCandidate = this.hoverMovable;
   }
 
   // ================================================================================================================================================================================================================================================
@@ -257,6 +247,7 @@ updateHoverEnemy(enemies, world, offset, player, deadBodies) {
       this.hoverEnemy = null;
       this.hoverObject = null;
       this.hoverCorpse = null;
+      this.hoverMovable = null;
     }
   }
 }

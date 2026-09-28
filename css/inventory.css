@@ -93,8 +93,8 @@
 .inv-skbar{ height:3px; margin:0 0 4px; border-radius:2px; background:var(--inv-slot); overflow:hidden; }
 .inv-skbar i{ display:block; height:100%; background:#3fb68b; }
 .inv-skbonus{ font-style:normal; color:var(--inv-accent); }
-.inv-vitals{ flex-direction:column; align-items:stretch; gap:4px; padding:7px 8px; border-bottom:none; }
-.inv-vbar{ height:9px; border-radius:3px; background:var(--inv-slot); border:1px solid var(--inv-line); overflow:hidden; }
+.inv-vitals{ gap:6px; padding:7px 8px; border-bottom:none; }
+.inv-vbar{ flex:1; height:12px; border-radius:3px; background:var(--inv-slot); border:1px solid var(--inv-line); overflow:hidden; }
 .inv-vbar i{ display:block; height:100%; transition:width .2s; }
 .inv-vbar.hp i{ background:linear-gradient(180deg, #4fcf9f, #3fb68b); }
 .inv-vbar.mana i{ background:linear-gradient(180deg, #6fa3ff, #4c8dff); }
