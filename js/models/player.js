@@ -25,8 +25,6 @@ export class Player extends Entity {
     this.target = null;
     this.autoFollow = true;
     this.followMode = true;
-    this.attackMode = false;
-    this.aggro = [];
     this.walk = { target: null, path: [] };
     this.walkDir = null;
     this.pendingDrag = null;
@@ -101,8 +99,7 @@ export class Player extends Entity {
       mana: this.mana,
       equip: this.equip ? Object.fromEntries(EQUIP_SLOTS.map(key => [key, toPlain(this.equip[key])])) : null,
       layout: this.uiLayout || null,
-      followMode: this.followMode,
-      attackMode: this.attackMode
+      followMode: this.followMode
     };
   }
 
@@ -121,7 +118,6 @@ export class Player extends Entity {
     this.skills = loadSkills(saved.skills);
     this.mana = Number.isInteger(saved.mana) && saved.mana >= 0 ? Math.min(saved.mana, this.maxMana) : this.maxMana;
     if (typeof saved.followMode === 'boolean') this.followMode = this.autoFollow = saved.followMode;
-    if (typeof saved.attackMode === 'boolean') this.attackMode = saved.attackMode;
 
     const hasPosition = Number.isInteger(saved.x) && Number.isInteger(saved.y) && isValidFloor(saved.z);
     return hasPosition ? { x: saved.x, y: saved.y, z: saved.z } : null;

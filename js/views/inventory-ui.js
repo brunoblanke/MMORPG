@@ -32,11 +32,9 @@ const ICONS = {
   municao: '<path d="M4 20L18 6M14 5l5 0 0 5M4 16l4 4"/>',
   pes: '<path d="M6 5h5v9l7 2v4H6z"/>'
 };
-const MODE_ICONS = {
-  follow: '<svg viewBox="0 0 161.65 181.2" fill="currentColor"><path d="M122.52,42.51c10.97,5.99,24.72,1.94,30.71-9.03,5.99-10.97,1.94-24.72-9.03-30.71-10.97-5.99-24.72-1.94-30.71,9.03-5.99,10.97-1.94,24.72,9.03,30.71Z"/><path d="M69,128.3l-12.08,12.56c-2,2.1-4.66,3.32-7.49,3.64-.4,0-.81.08-1.21.08l-36.28-.24C5.31,144.34-.08,138.92,0,132.31c0-6.71,5.39-12.02,12.02-12.02l31.13.16,8.36-8.68c2.05,3.59,4.82,6.82,8.27,9.46l9.22,7.06Z"/><path d="M161.63,89.64c-.24,5.25-4.35,9.44-9.52,9.92-.48.08-1.05.08-1.61.08l-21.94-1.21c-4.03-.24-7.58-2.75-9.19-6.46l-5.24-12.34-22.99,25.08,23.15,17.75c2.82,2.18,4.6,5.48,4.76,9.03l1.53,37.18c.24,6.37-4.52,11.85-10.89,12.42-.16,0-.4.08-.64.08-6.61.24-12.26-4.92-12.5-11.54l-1.37-31.53-30.48-23.31c-8.99-6.88-11.74-19.27-6.43-29.27.84-1.58,1.63-2.96,2.31-3.97,6.85-10.08,15.32-21.94,22.18-30l-9.6-3.71-17.75,9.03c-5.16,2.66-11.53.56-14.2-4.68-2.66-5.16-.57-11.54,4.68-14.2l21.86-11.13c2.66-1.29,5.81-1.45,8.63-.41l26.86,10.33c2.42.97,4.68,2.26,6.69,3.87l10.97,8.71c3.31,2.58,5.89,6.05,7.58,9.92l7.74,18.39,15.49.81c5.81.32,10.24,5.32,9.92,11.13Z"/></svg>',
-  stand: '<svg viewBox="0 0 108.92 191.98" fill="currentColor"><path d="M54.46,41.18c11.37,0,20.59-9.22,20.59-20.59S65.83,0,54.46,0s-20.59,9.22-20.59,20.59,9.22,20.59,20.59,20.59Z"/><path d="M107.36,71.45c-.68-1.01-17.06-24.91-52.9-24.91S2.24,70.43,1.56,71.45c-2.14,3.21-2.08,7.4.16,10.53l16.22,22.72c1.81,2.53,4.65,3.88,7.55,3.88,1.86,0,3.74-.56,5.37-1.73.5-.35.94-.76,1.35-1.18l-.05,6.45-5.72,68.71c-.48,5.66,3.74,10.64,9.4,11.11.29.03.58.04.87.04,5.3,0,9.8-4.06,10.25-9.43l5.5-66.08h4.01l5.5,66.08c.47,5.66,5.48,9.9,11.11,9.4,5.66-.47,9.87-5.45,9.4-11.11l-5.72-68.71-.04-6.45c.4.43.85.83,1.35,1.18,1.63,1.16,3.51,1.73,5.37,1.73,2.9,0,5.74-1.35,7.55-3.88l16.22-22.72c2.24-3.14,2.3-7.32.16-10.53ZM32.3,92.93l-11.21-15.71c2.54-2.33,6.33-5.14,11.37-7.49l-.16,23.19ZM76.62,92.93l-.16-23.22c5.06,2.35,8.85,5.17,11.39,7.5l-11.22,15.72Z"/></svg>',
-  attack: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5 3 6V3h3l11.5 11.5"/><path d="m13 19 6-6"/><path d="m16 16 4 4"/><path d="m19 21 2-2"/><path d="M14.5 6.5 18 3h3v3l-3.5 3.5"/><path d="m5 14 4 4"/><path d="m7 17-3 3"/><path d="m3 19 2 2"/></svg>',
-  defense: '<svg viewBox="0 0 24 24" fill="currentColor" fill-opacity=".35" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg>'
+const FOLLOW_ICONS = {
+  follow: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="15" cy="4" r="2"/><path d="M13.5 7.5 11 13"/><path d="M8 9.5l3.5-2 3 3 3 .5"/><path d="M11 13l3.5 3-1 5"/><path d="M11 13l-2 4-4.5 1"/></svg>',
+  stand: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4" r="2"/><path d="M12 7.5V14"/><path d="M8 12.5l4-3.5 4 3.5"/><path d="M12 14l-2.5 7"/><path d="M12 14l2.5 7"/></svg>'
 };
 const SKILL_NAMES = {
   magic: 'ML', fist: 'Fist', club: 'Club', sword: 'Sword', axe: 'Axe',
@@ -82,7 +80,7 @@ export class InventoryUI {
     this.dropMissingWindows();
     const player = this.game.player;
     this.battle = this.findWindow('battle') ? this.battleList() : [];
-    const modes = player ? [player.followMode, player.attackMode] : null;
+    const modes = player ? player.followMode : null;
     const key = JSON.stringify([view.equip, view.cap, view.opened, view.stats, this.layout, modes, this.battle]);
     if (key === this.lastKey || this.drag) return;
     this.lastKey = key;
@@ -481,7 +479,7 @@ export class InventoryUI {
       const spare = '<div class="inv-capbox"></div>';
       const last = EQUIP_LAYOUT.length - 1;
       const cell = ([key], i) => key ? this.slotHtml(equip[key], { t: 'e', key }, key) : (i === last ? capBox : (i === last - 2 ? spare : ''));
-      const cells = [0, 1, 2].map(col => `<div class="inv-dollcol">${col === 0 ? this.modesHtml() : ''}${EQUIP_LAYOUT.map((entry, i) => i % 3 === col ? cell(entry, i) : '').join('')}</div>`).join('');
+      const cells = [0, 1, 2].map(col => `<div class="inv-dollcol">${col === 0 ? this.followHtml() : ''}${EQUIP_LAYOUT.map((entry, i) => i % 3 === col ? cell(entry, i) : '').join('')}</div>`).join('');
       return `<section class="inv-win${win.min ? ' min' : ''}" data-win="${win.id}">
         <header class="inv-head tight"><span class="inv-title">Inventário</span>
           <button class="inv-btn wide${this.findWindow('battle') ? ' on' : ''}" data-act="battle" type="button" aria-label="Abrir battle">Battle</button><button class="inv-btn wide${this.findWindow('skills') ? ' on' : ''}" data-act="skills" type="button" aria-label="Abrir skills">Skills</button>${buttons(false)}</header>
@@ -566,19 +564,15 @@ export class InventoryUI {
   }
 
   // ================================================================================================================================================================================================================================================
-  // modesHtml
-  // Os dois modos, no canto do inventário: seguir o alvo (pegadas) ou ficar
-  // parado (boneco); auto ataque (espadas vermelhas) ou defesa (escudo verde).
+  // followHtml
+  // Seguir o alvo (boneco correndo, colorido) ou ficar parado (boneco em pé,
+  // na cor dos outros ícones), no canto do inventário: mesma caixa da cap.
 
-  modesHtml() {
+  followHtml() {
     const player = this.game.player;
     if (!player) return '';
     const follow = player.followMode !== false;
-    const attack = !!player.attackMode;
-    return `<div class="inv-modes">
-      <button class="inv-btn inv-mode${follow ? ' on' : ''}" data-act="follow" type="button" title="${follow ? 'Seguindo o alvo (clique pra ficar parado)' : 'Parado (clique pra seguir o alvo)'}">${MODE_ICONS[follow ? 'follow' : 'stand']}</button>
-      <button class="inv-btn inv-mode ${attack ? 'attack' : 'defense'}" data-act="attackmode" type="button" title="${attack ? 'Auto ataque: ataca quem se aproximar (clique pra defesa)' : 'Defesa: só ataca o alvo escolhido (clique pra auto ataque)'}">${MODE_ICONS[attack ? 'attack' : 'defense']}</button>
-    </div>`;
+    return `<button class="inv-follow${follow ? ' on' : ''}" data-act="follow" type="button" title="${follow ? 'Seguindo o alvo (clique pra ficar parado)' : 'Parado (clique pra seguir o alvo)'}">${FOLLOW_ICONS[follow ? 'follow' : 'stand']}</button>`;
   }
 
   // ================================================================================================================================================================================================================================================
@@ -928,7 +922,7 @@ export class InventoryUI {
     });
 
     document.addEventListener('click', (evt) => {
-      const btn = evt.target.closest('.inv-btn');
+      const btn = evt.target.closest('.inv-btn, .inv-follow');
       if (!btn || !inPanels(btn)) return;
       const found = this.findWindow(btn.closest('.inv-win').dataset.win);
       if (!found) return;
@@ -938,10 +932,6 @@ export class InventoryUI {
       }
       if (btn.dataset.act === 'follow') {
         this.game.send({ type: 'toggleFollow' });
-        return;
-      }
-      if (btn.dataset.act === 'attackmode') {
-        this.game.send({ type: 'toggleAttackMode' });
         return;
       }
       if (btn.dataset.act === 'up') {

@@ -248,7 +248,6 @@ export class Simulation {
     }
 
     for (const player of this.players) {
-      this.combat.updateAutoAttack(player);
       this.combat.processPlayer(player, now);
       this.combat.processEnemies(player, now);
       this.combat.processFloorDamage(player, now);
