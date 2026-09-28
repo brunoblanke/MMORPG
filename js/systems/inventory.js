@@ -4,7 +4,7 @@ import { GameObject } from '../models/game-object.js';
 import { getAdjacentPositions, isPositionAdjacentTo } from '../utils/helpers.js';
 import { objectIdType, objectProps, getAsset, splitType, listAssets } from '../../shared/assets.js';
 import {
-  EQUIP_SLOTS, THROW_RANGE, DEATH_DROP_CHANCE, itemInfo, capacityFor, newItem, weightOf, contains, findInTree, fromPlain
+  EQUIP_SLOTS, THROW_RANGE, DEATH_DROP_CHANCE, itemInfo, capacityFor, newItem, weightOf, contains, findInTree, fromPlain, equipBonus
 } from '../../shared/items.js';
 import { PLAYER_SPRITES, DEFAULT_GENDER } from '../../shared/catalog.js';
 import { SKILL_KEYS } from '../../shared/skills.js';
@@ -513,18 +513,24 @@ export class InventoryController {
 
   // ================================================================================================================================================================================================================================================
   // statsFor
-  // O que a janela de skills mostra (formato do Tibia 7.6).
+  // O que a janela de skills e a de vida/mana mostram. bonus: o que os itens
+  // do inventário somam no skill (atk no da arma, def no shielding, ml no
+  // magic level).
 
   statsFor(player) {
+    const bonus = equipBonus(player.equip);
+    const extra = { magic: bonus.ml, shielding: bonus.def };
+    extra[bonus.atkSkill] = (extra[bonus.atkSkill] || 0) + bonus.atk;
     const skills = {};
-    for (const key of ['magic', ...SKILL_KEYS]) skills[key] = { ...player.skills[key] };
+    for (const key of ['magic', ...SKILL_KEYS]) skills[key] = { ...player.skills[key], bonus: extra[key] || 0 };
     return {
       experience: player.xp,
       level: player.lvl,
       levelPct: Math.min(99, Math.floor(player.xp / player.nextLevelXp * 100)),
       hp: player.currentHp,
+      maxHp: player.hp,
       mana: player.mana,
-      soul: player.soul,
+      maxMana: player.maxMana,
       skills
     };
   }

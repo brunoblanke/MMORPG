@@ -14,6 +14,7 @@ const CHEST = 'itens/recipientes/caixote';
 const SWORD = 'itens/espadas/espada';
 const AXE = 'itens/machados/machado';
 const COIN = 'itens/valiosos/moeda';
+const SHIELD = 'itens/escudos/escudo';
 
 const asset = (id, propriedades) => {
   const [grupo, pasta, nome] = id.split('/');
@@ -23,8 +24,9 @@ const asset = (id, propriedades) => {
 setAssets([
   asset(BAG, { move: true, peso: 10, espacos: 4 }),
   asset(CHEST, { move: true, peso: 100, espacos: 6 }),
-  asset(SWORD, { move: true, peso: 30 }),
+  asset(SWORD, { move: true, peso: 30, atk: 12, ml: 1 }),
   asset(AXE, { move: true, peso: 40 }),
+  asset(SHIELD, { move: true, peso: 50, def: 8, atk: 2 }),
   asset(COIN, { move: true, peso: 0.1, empilhavel: true })
 ]);
 
@@ -280,12 +282,25 @@ test('skills começam no padrão do 7.6 e voltam com o personagem', () => {
   const player = new Simulation(mapData).addPlayer('p1', { name: 'Ana' });
   assert.deepEqual(player.skills.sword, { lvl: 10, pct: 0 });
   assert.deepEqual(player.skills.magic, { lvl: 0, pct: 0 });
-  assert.equal(player.soul, 100);
   player.skills.sword = { lvl: 42, pct: 37 };
-  player.soul = 80;
   const saved = JSON.parse(JSON.stringify(player.toSave()));
   const again = new Simulation(mapData).addPlayer('p2', { name: 'Ana', saved });
   assert.deepEqual(again.skills.sword, { lvl: 42, pct: 37 });
-  assert.equal(again.soul, 80);
   assert.equal(again.skills.fishing.lvl, 10);
+});
+
+test('atk, def e ml dos itens do inventário somam nos skills e no combate', () => {
+  const sim = game();
+  const player = sim.player;
+  const base = sim.combat.calculateDamage(player, { def: 0 });
+  player.equip.arma = { uid: 's1', type: SWORD };
+  player.equip.escudo = { uid: 's2', type: SHIELD };
+  player.equip.mochila.items[0] = { uid: 's3', type: SWORD };
+  const stats = sim.inventory.viewFor(player).stats;
+  assert.equal(stats.skills.sword.bonus, 14);
+  assert.equal(stats.skills.shielding.bonus, 8);
+  assert.equal(stats.skills.magic.bonus, 1);
+  assert.equal(stats.skills.axe.bonus, 0);
+  assert.ok(sim.combat.calculateDamage(player, { def: 0 }) > base);
+  assert.equal(stats.maxMana, player.maxMana);
 });

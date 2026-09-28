@@ -3,6 +3,7 @@
 import { isPositionAdjacentTo, distance } from '../utils/helpers.js';
 import { getLevel } from '../core/geometry.js';
 import { CONFIG } from '../config.js';
+import { equipBonus } from '../../shared/items.js';
 
 export class CombatController {
 
@@ -17,8 +18,8 @@ export class CombatController {
   // calculateDamage
 
   calculateDamage(attacker, defender) {
-    const baseDamage = attacker.atk;
-    const defense = defender.def;
+    const baseDamage = attacker.atk + equipBonus(attacker.equip).atk;
+    const defense = defender.def + equipBonus(defender.equip).def;
     const rawDamage = baseDamage - Math.floor(defense / 2);
     return Math.max(1, Math.round(rawDamage * CONFIG.damageScale));
   }

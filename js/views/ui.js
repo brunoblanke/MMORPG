@@ -55,45 +55,22 @@ export class UI {
 
   // ================================================================================================================================================================================================================================================
   // drawPlayerStatus
-  // Canto inferior esquerdo: nível, barra de XP até o próximo nível e o
-  // aviso de zona segura.
+  // Canto inferior esquerdo: só o aviso de zona segura (nível e XP ficam na
+  // janela de skills).
 
   drawPlayerStatus(ctx, player, inSafeZone) {
+    if (!inSafeZone) return;
     const x = 16;
-    const width = 200;
-    const barHeight = 8;
-    const y = ctx.canvas.height - 16 - barHeight;
-    const progress = player.nextLevelXp ? Math.min(1, (player.xp || 0) / player.nextLevelXp) : 0;
-
+    const y = ctx.canvas.height - 16;
+    const label = '🛡 Zona segura';
     ctx.save();
-    ctx.font = 'bold 13px Arial';
-    ctx.textBaseline = 'bottom';
-    ctx.lineWidth = 3;
-    ctx.strokeStyle = '#000';
-    const text = `Nível ${player.lvl}   XP ${Math.floor(player.xp || 0)} / ${player.nextLevelXp}`;
-    ctx.strokeText(text, x, y - 6);
-    ctx.fillStyle = '#fff';
-    ctx.fillText(text, x, y - 6);
-
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
-    ctx.fillRect(x, y, width, barHeight);
-    ctx.fillStyle = this.iconColor;
-    ctx.fillRect(x, y, width * progress, barHeight);
-    ctx.strokeStyle = 'rgba(0, 0, 0, 0.8)';
-    ctx.lineWidth = 1;
-    ctx.strokeRect(x + 0.5, y + 0.5, width - 1, barHeight - 1);
-
-    if (inSafeZone) {
-      const label = '🛡 Zona segura';
-      ctx.font = 'bold 12px Arial';
-      const labelWidth = ctx.measureText(label).width + 16;
-      const labelY = y - 30;
-      ctx.fillStyle = 'rgba(46, 204, 113, 0.85)';
-      ctx.fillRect(x, labelY - 20, labelWidth, 20);
-      ctx.fillStyle = '#0b2e17';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(label, x + 8, labelY - 10);
-    }
+    ctx.font = 'bold 12px Arial';
+    const labelWidth = ctx.measureText(label).width + 16;
+    ctx.fillStyle = 'rgba(46, 204, 113, 0.85)';
+    ctx.fillRect(x, y - 20, labelWidth, 20);
+    ctx.fillStyle = '#0b2e17';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(label, x + 8, y - 10);
     ctx.restore();
   }
 

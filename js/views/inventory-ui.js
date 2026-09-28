@@ -32,7 +32,7 @@ const ICONS = {
   pes: '<path d="M6 5h5v9l7 2v4H6z"/>'
 };
 const SKILL_NAMES = {
-  fist: 'Fist Fighting', club: 'Club Fighting', sword: 'Sword Fighting', axe: 'Axe Fighting',
+  magic: 'Magic Level', fist: 'Fist Fighting', club: 'Club Fighting', sword: 'Sword Fighting', axe: 'Axe Fighting',
   distance: 'Distance Fighting', shielding: 'Shielding', fishing: 'Fishing'
 };
 const PITCH = 40;
@@ -111,7 +111,7 @@ export class InventoryUI {
     if (saved && Array.isArray(saved.left) && Array.isArray(saved.right)) {
       for (const col of ['left', 'right']) {
         for (const entry of saved[col]) {
-          if (entry && (entry.ref === 'inventory' || entry.ref === 'skills')) {
+          if (entry && (entry.ref === 'inventory' || entry.ref === 'skills' || entry.ref === 'vitals')) {
             layout[col].push(this.makeWindow(entry.ref, null, entry));
             continue;
           }
@@ -119,11 +119,29 @@ export class InventoryUI {
           if (item && item.items) layout[col].push(this.makeWindow('container', item.uid, entry));
         }
       }
-      if ([...layout.left, ...layout.right].some(w => w.kind === 'inventory')) return layout;
+      if ([...layout.left, ...layout.right].some(w => w.kind === 'inventory')) return this.withVitals(layout);
     }
     layout.right.push(this.makeWindow('inventory', null));
     const bag = view.equip.mochila;
     if (bag && bag.items) layout.right.push(this.makeWindow('container', bag.uid, { rows: 3 }));
+    return this.withVitals(layout);
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // withVitals
+  // A janela de vida e mana sempre existe: sem ela no layout, entra logo
+  // embaixo do inventário.
+
+  withVitals(layout) {
+    if ([...layout.left, ...layout.right].some(w => w.kind === 'vitals')) return layout;
+    for (const col of ['left', 'right']) {
+      const i = layout[col].findIndex(w => w.kind === 'inventory');
+      if (i >= 0) {
+        layout[col].splice(i + 1, 0, this.makeWindow('vitals', null));
+        return layout;
+      }
+    }
+    layout.right.unshift(this.makeWindow('vitals', null));
     return layout;
   }
 
@@ -409,7 +427,8 @@ export class InventoryUI {
     const info = itemInfo(item.type);
     const count = item.count > 1 ? `<span class="inv-count">${item.count}</span>` : '';
     const open = item.items && this.isOpen(item.uid) ? '<span class="inv-open"></span>' : '';
-    const title = `${info.name}${item.count > 1 ? ` (${item.count})` : ''} · ${weightOf(item)} oz${item.items ? ' · duplo clique abre' : ''}`;
+    const attrs = [info.atk && `Atk ${info.atk}`, info.def && `Def ${info.def}`, info.ml && `ML ${info.ml}`].filter(Boolean).join(' · ');
+    const title = `${info.name}${item.count > 1 ? ` (${item.count})` : ''}${attrs ? ` · ${attrs}` : ''} · ${weightOf(item)} oz${item.items ? ' · duplo clique abre' : ''}`;
     return `<div class="inv-slot filled" data-place="${key}" data-uid="${item.uid}" title="${title}">${this.spriteHtml(item.type)}${count}${open}</div>`;
   }
 
@@ -434,6 +453,7 @@ export class InventoryUI {
       </section>`;
     }
     if (win.kind === 'skills') return this.skillsHtml(win, buttons(true));
+    if (win.kind === 'vitals') return this.vitalsHtml(win);
     const box = this.findContainer(win.uid);
     if (!box) return '';
     const used = box.items.filter(Boolean).length;
@@ -471,22 +491,41 @@ export class InventoryUI {
     const fmt = (n) => Number(n).toLocaleString('pt-BR');
     const line = (label, value, pct) => `<div class="inv-skrow"><span>${label}</span><b>${value}</b></div>` +
       (pct === undefined ? '' : `<div class="inv-skbar" title="${pct}% até o próximo"><i style="width:${pct}%"></i></div>`);
+    const skill = (key) => {
+      const entry = stats.skills[key];
+      const value = entry.bonus ? `${entry.lvl} <em class="inv-skbonus">+ ${entry.bonus}</em>` : entry.lvl;
+      return line(SKILL_NAMES[key], value, entry.pct);
+    };
     const body = [
       line('Experience', fmt(stats.experience)),
       line('Level', stats.level, stats.levelPct),
       '<div class="inv-sksep"></div>',
       line('Hit Points', fmt(stats.hp)),
       line('Mana', fmt(stats.mana)),
-      line('Soul Points', stats.soul),
       line('Capacity', Math.floor(Math.max(0, cap.max - cap.used))),
       '<div class="inv-sksep"></div>',
-      line('Magic Level', stats.skills.magic.lvl, stats.skills.magic.pct),
-      '<div class="inv-sksep"></div>',
-      ...SKILL_KEYS.map(key => line(SKILL_NAMES[key], stats.skills[key].lvl, stats.skills[key].pct))
+      ...['magic', ...SKILL_KEYS].map(skill)
     ].join('');
     return `<section class="inv-win${win.min ? ' min' : ''}" data-win="${win.id}">
       <header class="inv-head"><span class="inv-title">Skills</span>${buttons}</header>
       <div class="inv-body"><div class="inv-skills">${body}</div></div>
+    </section>`;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // vitalsHtml
+  // Barras de vida e mana, só o desenho (sem números). A janela toda é a alça:
+  // dá pra arrastar, mas não minimizar nem fechar.
+
+  vitalsHtml(win) {
+    const stats = this.view.stats;
+    if (!stats) return '';
+    const pct = (value, max) => (max > 0 ? Math.max(0, Math.min(100, value / max * 100)) : 0);
+    return `<section class="inv-win" data-win="${win.id}">
+      <header class="inv-head inv-vitals" aria-label="Vida e mana">
+        <div class="inv-vbar hp"><i style="width:${pct(stats.hp, stats.maxHp)}%"></i></div>
+        <div class="inv-vbar mana"><i style="width:${pct(stats.mana, stats.maxMana)}%"></i></div>
+      </header>
     </section>`;
   }
 
@@ -499,9 +538,9 @@ export class InventoryUI {
     if (found) {
       this.layout[found.col].splice(found.i, 1);
     } else {
-      const inv = this.findWindow('inventory');
-      const col = inv ? inv.col : 'right';
-      this.layout[col].splice(inv ? inv.i + 1 : 0, 0, this.makeWindow('skills', null));
+      const above = this.findWindow('vitals') || this.findWindow('inventory');
+      const col = above ? above.col : 'right';
+      this.layout[col].splice(above ? above.i + 1 : 0, 0, this.makeWindow('skills', null));
     }
     this.scheduleSave();
     this.lastKey = '';

@@ -22,6 +22,12 @@ export const CAP_BASE_LEVEL = 8;
 export const CAP_AT_BASE = 300;
 export const CAP_PER_LEVEL = 10;
 
+// Skill que o atk de cada tipo de arma soma (o resto: fist).
+const SKILL_BY_WEAPON_FOLDER = {
+  espadas: 'sword', machados: 'axe', clavas: 'club', distancia: 'distance', municao: 'distance',
+  rods: 'magic', wands: 'magic', 'wands-e-rods-antigas': 'magic', punhos: 'fist'
+};
+
 // Espaço do inventário de cada pasta de Itens.
 const SLOT_BY_FOLDER = {
   capacetes: 'cabeca', armaduras: 'corpo', escudos: 'escudo', spellbooks: 'escudo',
@@ -33,9 +39,10 @@ const SLOT_BY_FOLDER = {
 
 // ================================================================================================================================================================================================================================================
 // itemInfo
-// { name, slot, weight, stack, size } do tipo: slot é o espaço do inventário
-// (ou null), weight o peso de uma unidade (oz), stack o máximo da pilha (0 =
-// não empilha) e size os espaços, se for container (0 = não é).
+// { name, slot, weight, stack, size, atk, def, ml } do tipo: slot é o espaço
+// do inventário (ou null), weight o peso de uma unidade (oz), stack o máximo
+// da pilha (0 = não empilha), size os espaços, se for container (0 = não é),
+// e atk/def/ml os bônus de quem usa o item (0 = não tem).
 
 export function itemInfo(type) {
   const asset = getAsset(splitType(type).asset);
@@ -48,8 +55,38 @@ export function itemInfo(type) {
     slot: SLOT_BY_FOLDER[folder] || null,
     weight: weight > 0 ? weight : DEFAULT_WEIGHT,
     stack: props.empilhavel ? STACK_MAX : 0,
-    size: size > 0 ? Math.floor(size) : (folder === 'recipientes' ? DEFAULT_CONTAINER_SIZE : 0)
+    size: size > 0 ? Math.floor(size) : (folder === 'recipientes' ? DEFAULT_CONTAINER_SIZE : 0),
+    atk: bonusValue(props.atk),
+    def: bonusValue(props.def),
+    ml: bonusValue(props.ml),
+    weaponSkill: SKILL_BY_WEAPON_FOLDER[folder] || null
   };
+}
+
+function bonusValue(value) {
+  const number = Math.floor(Number(value));
+  return number > 0 ? number : 0;
+}
+
+// ================================================================================================================================================================================================================================================
+// equipBonus
+// Soma dos bônus do que está nos espaços do inventário (o que está dentro da
+// mochila não conta). atkSkill: o skill que recebe o atk — o da arma na mão
+// (espada → sword…) ou fist, sem arma.
+
+export function equipBonus(equip) {
+  const bonus = { atk: 0, def: 0, ml: 0, atkSkill: 'fist' };
+  if (!equip) return bonus;
+  for (const key of EQUIP_SLOTS) {
+    const item = equip[key];
+    if (!item) continue;
+    const info = itemInfo(item.type);
+    bonus.atk += info.atk;
+    bonus.def += info.def;
+    bonus.ml += info.ml;
+    if (key === 'arma' && info.weaponSkill) bonus.atkSkill = info.weaponSkill;
+  }
+  return bonus;
 }
 
 // ================================================================================================================================================================================================================================================

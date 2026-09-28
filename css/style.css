@@ -9,7 +9,6 @@ canvas {
   display: block; 
   margin: 0 auto; 
   background: #444; 
-  cursor: crosshair;
 }
 
 .modal {
@@ -78,12 +77,10 @@ canvas {
   color: #1b1e24;
   font-size: 15px;
   font-weight: bold;
-  cursor: pointer;
 }
 
 .modal-box button:disabled {
   opacity: 0.6;
-  cursor: default;
 }
 
 .gender-picker {
@@ -120,4 +117,9 @@ canvas {
 .modal-box .gender-option svg {
   width: 26px;
   height: 26px;
+}
+
+/* Seta tradicional em tudo: tela do jogo, janelas, botões e itens. */
+*, *::before, *::after {
+  cursor: default !important;
 }

@@ -6,6 +6,11 @@ import { drawTileTooltip } from './tile-tooltip.js';
 import { prepareDrawables } from './draw-order.js';
 import { getEntityLevel } from '../core/geometry.js';
 
+const TINT_HIT = { color: '#ff2a2a', alpha: 0.55 };
+const TINT_ENEMY_HOVER = { color: '#ff2a2a', alpha: 0.35 };
+const TINT_TARGET = { color: '#ff2a2a', alpha: 0.2 };
+const TINT_HOVER = { color: '#3b82f6', alpha: 0.35 };
+
 export class Renderer {
   constructor(canvas, camera) {
     this.canvas = canvas;
@@ -170,7 +175,7 @@ export class Renderer {
   // drawAnchoredSprite
   // Desenha o frame alinhado ao canto inferior direito do tile (sprites maiores que o tile crescem pra cima/esquerda).
 
-  drawAnchoredSprite(image, frameRect, base, size, stackOffsetX, stackOffsetY) {
+  drawAnchoredSprite(image, frameRect, base, size, stackOffsetX, stackOffsetY, tint = null) {
     const drawX = base.x + size - frameRect.sw - stackOffsetX;
     const drawY = base.y + size - frameRect.sh - stackOffsetY;
     this.ctx.drawImage(
@@ -178,12 +183,48 @@ export class Renderer {
       frameRect.sx, frameRect.sy, frameRect.sw, frameRect.sh,
       drawX, drawY, frameRect.sw, frameRect.sh
     );
+    if (tint) this.drawTint(image, frameRect, drawX, drawY, tint);
+  }
+
+  // ================================================================================================================================================================================
+  // drawTint
+  // Pinta a silhueta do sprite com a cor por cima (só onde o sprite tem pixel).
+
+  drawTint(image, frameRect, drawX, drawY, tint) {
+    if (!this.tintCanvas) this.tintCanvas = document.createElement('canvas');
+    const canvas = this.tintCanvas;
+    canvas.width = frameRect.sw;
+    canvas.height = frameRect.sh;
+    const tctx = canvas.getContext('2d');
+    tctx.imageSmoothingEnabled = false;
+    tctx.globalCompositeOperation = 'source-over';
+    tctx.drawImage(image, frameRect.sx, frameRect.sy, frameRect.sw, frameRect.sh, 0, 0, frameRect.sw, frameRect.sh);
+    tctx.globalCompositeOperation = 'source-in';
+    tctx.fillStyle = tint.color;
+    tctx.fillRect(0, 0, frameRect.sw, frameRect.sh);
+    this.ctx.save();
+    this.ctx.globalAlpha = tint.alpha;
+    this.ctx.drawImage(canvas, drawX, drawY);
+    this.ctx.restore();
+  }
+
+  // ================================================================================================================================================================================
+  // getTint
+  // Vermelho: dano recebido (player ou inimigo), inimigo sob o mouse e o alvo
+  // do player. Azul: item, parede ou cadáver sob o mouse. Nada fica transparente.
+
+  getTint(entity, isHovered, isPlayer, isEnemy) {
+    if (entity && entity.hitFlash) return TINT_HIT;
+    if (isEnemy && isHovered) return TINT_ENEMY_HOVER;
+    if (entity && entity === this.selectedTarget) return TINT_TARGET;
+    if (isHovered && !isPlayer && !isEnemy) return TINT_HOVER;
+    return null;
   }
 
   // ================================================================================================================================================================================
   // drawFallbackSquare
 
-  drawFallbackSquare(base, size, stackOffsetX, stackOffsetY, color) {
+  drawFallbackSquare(base, size, stackOffsetX, stackOffsetY, color, tint = null) {
     const fallbackX = base.x + size * 0.1 - stackOffsetX;
     const fallbackY = base.y + size * 0.1 - stackOffsetY;
     this.ctx.fillStyle = color;
@@ -191,12 +232,18 @@ export class Renderer {
     this.ctx.strokeStyle = shadeColor(color, -30);
     this.ctx.lineWidth = 2;
     this.ctx.strokeRect(fallbackX, fallbackY, size * 0.8, size * 0.8);
+    if (!tint) return;
+    this.ctx.save();
+    this.ctx.globalAlpha = tint.alpha;
+    this.ctx.fillStyle = tint.color;
+    this.ctx.fillRect(fallbackX, fallbackY, size * 0.8, size * 0.8);
+    this.ctx.restore();
   }
 
   // ================================================================================================================================================================================
   // drawFloor
 
-  drawFloor(base, size, entity) {
+  drawFloor(base, size, entity, isHovered) {
     const sheet = this.getObjectSpriteSheet(entity ? entity.id : null);
     if (isSheetReady(sheet)) {
       const duration = sheet._frameDuration || 1000 / sheet.totalFrames || 50;
@@ -210,6 +257,12 @@ export class Renderer {
       this.ctx.fillStyle = "#444";
       this.ctx.fillRect(base.x, base.y, size, size);
     }
+    if (!isHovered) return;
+    this.ctx.save();
+    this.ctx.globalAlpha = TINT_HOVER.alpha;
+    this.ctx.fillStyle = TINT_HOVER.color;
+    this.ctx.fillRect(base.x, base.y, size, size);
+    this.ctx.restore();
   }
 
   // ================================================================================================================================================================================
@@ -252,23 +305,6 @@ export class Renderer {
     const drawY = base.y + size - outline.h - stackOffsetY;
 
     this.ctx.strokeRect(drawX, drawY, outline.w, outline.h);
-    this.ctx.restore();
-  }
-
-  // ================================================================================================================================================================================
-  // drawTargetMarker
-
-  drawTargetMarker(entity, base, size, stackOffsetX, stackOffsetY) {
-    this.ctx.save();
-    if (entity.hitFlash) {
-      this.ctx.globalAlpha = 1;
-      this.ctx.lineWidth = 4;
-    } else {
-      this.ctx.globalAlpha = 0.5;
-      this.ctx.lineWidth = 3;
-    }
-    this.ctx.strokeStyle = "#FF0000";
-    this.ctx.strokeRect(base.x - stackOffsetX, base.y - stackOffsetY, size, size);
     this.ctx.restore();
   }
 
@@ -349,7 +385,7 @@ export class Renderer {
     const size = CONFIG.tileSize;
 
     if (isFloor) {
-      this.drawFloor(base, size, entity);
+      this.drawFloor(base, size, entity, isHovered);
       return;
     }
 
@@ -359,34 +395,27 @@ export class Renderer {
     const stackOffsetX = stackOffset.x;
     const stackOffsetY = stackOffset.y;
 
-    if (entity && (entity.isTarget || entity === this.selectedTarget)) {
-      this.drawTargetMarker(entity, base, size, stackOffsetX, stackOffsetY);
-    }
-
-    if (isHovered) {
-      this.ctx.globalAlpha = 0.6;
-    }
+    const tint = this.getTint(entity, isHovered, isPlayer, isEnemy);
 
     if (isCorpse) {
       const sheet = this.sprites.getCorpseSheet(corpseData);
       if (isSheetReady(sheet)) {
         const elapsed = Math.max(0, this.frameTimestamp - (corpseData.deathTime || 0));
         const frameRect = sheet.getFrameRect('idle', elapsed, CONFIG.corpseFrameDuration);
-        this.drawAnchoredSprite(sheet.image, frameRect, base, size, stackOffsetX, stackOffsetY);
+        this.drawAnchoredSprite(sheet.image, frameRect, base, size, stackOffsetX, stackOffsetY, tint);
       } else {
-        this.drawFallbackSquare(base, size, stackOffsetX, stackOffsetY, "#888888");
+        this.drawFallbackSquare(base, size, stackOffsetX, stackOffsetY, "#888888", tint);
       }
     } else {
       const frame = this.getEntityFrame(entity, isPlayer, isEnemy);
       if (frame) {
-        this.drawAnchoredSprite(frame.image, frame.frameRect, base, size, stackOffsetX, stackOffsetY);
+        this.drawAnchoredSprite(frame.image, frame.frameRect, base, size, stackOffsetX, stackOffsetY, tint);
       } else {
         const color = entity && entity.color ? entity.color : "#888888";
-        this.drawFallbackSquare(base, size, stackOffsetX, stackOffsetY, color);
+        this.drawFallbackSquare(base, size, stackOffsetX, stackOffsetY, color, tint);
       }
     }
 
-    this.ctx.globalAlpha = 1;
     // Nome/vida/stats vão numa passada final (render), por cima de qualquer piso.
     this.pendingOverlays.push({ entity, base, stackOffsetX, stackOffsetY, size });
   }
@@ -440,15 +469,16 @@ export class Renderer {
     this.pendingOverlays = [];
     const hoverEnemy = gameState.inputController.hoverEnemy;
     const hoverObject = gameState.inputController.hoverObject;
+    const hoverCorpse = gameState.inputController.hoverCorpse;
 
     const drawDrawable = (obj) => {
       let isHovered = false;
-      if (hoverEnemy && obj.entity === hoverEnemy) {
-        isHovered = true;
+      if (hoverEnemy) {
+        isHovered = obj.entity === hoverEnemy;
+      } else if (obj.isCorpse) {
+        isHovered = !!hoverCorpse && !hoverObject && obj.id === hoverCorpse.id;
       } else if (hoverObject) {
-        if (obj.id === hoverObject.id) {
-          isHovered = true;
-        }
+        isHovered = obj.id === hoverObject.id;
       }
 
       this.drawEntitySprite(
@@ -469,8 +499,9 @@ export class Renderer {
 
     // Andar por andar (drawables já vêm ordenados por nível): primeiro o chão
     // do andar, depois o que o modo inspecionar desenha (áreas/caminho/alvo no
-    // andar do player, contornos amarelos) e por fim objetos, inimigos e
-    // player na ordem normal. Assim o inspecionar fica sobre o piso e sob o resto.
+    // andar do player, contornos amarelos), os cadáveres (sempre por baixo de
+    // quem está vivo, mesmo o de 64 px que avança sobre o sqm do lado) e por
+    // fim objetos, inimigos e player na ordem normal.
     const playerLevel = getEntityLevel(gameState.player);
     let highlightsDrawn = false;
     const drawHighlights = () => {
@@ -495,7 +526,8 @@ export class Renderer {
       if (this.showYellowOutline) {
         for (const obj of group) this.drawDrawableOutline(obj);
       }
-      for (const obj of group) if (!obj.isFloor) drawDrawable(obj);
+      for (const obj of group) if (obj.isCorpse) drawDrawable(obj);
+      for (const obj of group) if (!obj.isFloor && !obj.isCorpse) drawDrawable(obj);
 
       start = end;
     }

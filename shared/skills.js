@@ -6,7 +6,6 @@
 export const SKILL_KEYS = ['fist', 'club', 'sword', 'axe', 'distance', 'shielding', 'fishing'];
 export const SKILL_START = 10;
 export const MAGIC_START = 0;
-export const SOUL_START = 100;
 
 // ================================================================================================================================================================================================================================================
 // newSkills

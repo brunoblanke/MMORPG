@@ -98,6 +98,7 @@ export function prepareDrawables(gameState) {
 
   for (const corpse of gameState.deadBodies) {
     push({
+      id: corpse.id,
       x: corpse.x,
       y: corpse.y,
       z: corpse.z ?? 0,

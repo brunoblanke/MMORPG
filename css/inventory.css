@@ -32,7 +32,7 @@
 .inv-win.dragging{ opacity:.35; }
 .inv-head{
   display:flex; align-items:center; gap:6px; padding:5px 6px 5px 7px; background:var(--inv-panel-2);
-  border-bottom:1px solid var(--inv-line); cursor:grab; user-select:none; touch-action:none;
+  border-bottom:1px solid var(--inv-line); user-select:none; touch-action:none;
 }
 .inv-win.min .inv-head{ border-bottom:none; }
 .inv-win.min .inv-body, .inv-win.min .inv-resize{ display:none; }
@@ -42,7 +42,7 @@
 .inv-cap.full{ color:var(--inv-warn); }
 .inv-btn{
   width:18px; height:18px; display:grid; place-items:center; padding:0; border-radius:4px; background:transparent;
-  border:1px solid var(--inv-line); color:var(--inv-muted); font-size:12px; line-height:1; cursor:pointer;
+  border:1px solid var(--inv-line); color:var(--inv-muted); font-size:12px; line-height:1;
 }
 .inv-btn:hover{ color:var(--inv-text); border-color:var(--inv-accent-dim); }
 .inv-btn.close:hover{ color:var(--inv-danger); border-color:var(--inv-danger); }
@@ -56,7 +56,7 @@
 .inv-body.more-up::before, .inv-body.more-down::after{ opacity:1; }
 .inv-scroller{ overflow-y:auto; scrollbar-width:none; padding:6px; box-sizing:border-box; }
 .inv-scroller::-webkit-scrollbar{ display:none; }
-.inv-resize{ height:7px; cursor:ns-resize; touch-action:none; display:grid; place-items:center; }
+.inv-resize{ height:7px; touch-action:none; display:grid; place-items:center; }
 .inv-resize::after{ content:''; width:28px; height:2px; border-radius:2px; background:var(--inv-line); }
 .inv-resize:hover::after{ background:var(--inv-accent-dim); }
 
@@ -67,7 +67,6 @@
   width:36px; height:36px; position:relative; display:grid; place-items:center; box-sizing:border-box;
   background:var(--inv-slot); border:1px solid var(--inv-line-soft); border-radius:4px; touch-action:none; user-select:none;
 }
-.inv-slot.filled{ cursor:grab; }
 .inv-slot.filled:hover{ border-color:var(--inv-accent-dim); }
 .inv-slot.source{ opacity:.35; }
 .inv-slot.can-drop{ border-color:var(--inv-accent-dim); background:#14211f; }
@@ -83,7 +82,7 @@
 .inv-capbox{
   width:36px; height:18px; box-sizing:border-box; display:grid; place-items:center; border-radius:4px;
   background:var(--inv-slot); border:1px solid var(--inv-line-soft); color:var(--inv-text);
-  font:500 10px 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric:tabular-nums; cursor:default;
+  font:500 10px 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric:tabular-nums;
 }
 .inv-capbox.heavy{ color:var(--inv-warn); }
 .inv-btn.wide{ width:auto; padding:0 6px; font:500 10px 'IBM Plex Mono', ui-monospace, monospace; }
@@ -93,6 +92,12 @@
 .inv-skrow b{ color:var(--inv-text); font-weight:500; }
 .inv-skbar{ height:3px; margin:0 0 4px; border-radius:2px; background:var(--inv-slot); overflow:hidden; }
 .inv-skbar i{ display:block; height:100%; background:#3fb68b; }
+.inv-skbonus{ font-style:normal; color:var(--inv-accent); }
+.inv-vitals{ flex-direction:column; align-items:stretch; gap:4px; padding:7px 8px; border-bottom:none; }
+.inv-vbar{ height:9px; border-radius:3px; background:var(--inv-slot); border:1px solid var(--inv-line); overflow:hidden; }
+.inv-vbar i{ display:block; height:100%; transition:width .2s; }
+.inv-vbar.hp i{ background:linear-gradient(180deg, #4fcf9f, #3fb68b); }
+.inv-vbar.mana i{ background:linear-gradient(180deg, #6fa3ff, #4c8dff); }
 .inv-sksep{ height:1px; margin:5px 0; background:var(--inv-line-soft); }
 
 .inv-dropline{ flex-shrink:0; height:3px; border-radius:2px; background:var(--inv-accent); box-shadow:0 0 8px var(--inv-accent); }
@@ -108,7 +113,7 @@
 .inv-qty .row{ display:flex; align-items:center; gap:8px; }
 .inv-qty input[type=range]{ flex:1; accent-color:var(--inv-accent); }
 .inv-qty input[type=number]{ width:56px; padding:4px 6px; border-radius:5px; border:1px solid var(--inv-line); background:#0d0f13; color:var(--inv-text); font:500 12px 'IBM Plex Mono', monospace; text-align:right; }
-.inv-qty button{ flex:1; padding:6px; border-radius:5px; border:1px solid var(--inv-line); background:#0d0f13; color:var(--inv-text); cursor:pointer; font:inherit; }
+.inv-qty button{ flex:1; padding:6px; border-radius:5px; border:1px solid var(--inv-line); background:#0d0f13; color:var(--inv-text); font:inherit; }
 .inv-qty button.primary{ background:var(--inv-accent); color:#0b1512; border:none; font-weight:600; }
 
 @media (prefers-reduced-motion: reduce){ .inv-win.flash{ animation:none; } }

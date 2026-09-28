@@ -5,7 +5,7 @@ import { calculateStats } from '../utils/helpers.js';
 import { PLAYER_GENDERS, DEFAULT_GENDER } from '../../shared/catalog.js';
 import { isValidFloor } from '../../shared/constants.js';
 import { EQUIP_SLOTS, toPlain } from '../../shared/items.js';
-import { newSkills, loadSkills, SOUL_START } from '../../shared/skills.js';
+import { newSkills, loadSkills } from '../../shared/skills.js';
 
 export class Player extends Entity {
   constructor(data) {
@@ -20,8 +20,8 @@ export class Player extends Entity {
     this.lvl = data.lvl || 1;
     this.nextLevelXp = this.calculateNextLevelXp();
     this.skills = newSkills();
-    this.soul = SOUL_START;
-    this.mana = 0;
+    this.maxMana = this.calculateMaxMana();
+    this.mana = this.maxMana;
     this.target = null;
     this.autoFollow = true;
     this.walk = { target: null, path: [] };
@@ -45,6 +45,7 @@ export class Player extends Entity {
       levels++;
       this.applyLevelStats();
       this.currentHp = this.hp;
+      this.mana = this.maxMana;
     }
     return levels;
   }
@@ -61,6 +62,8 @@ export class Player extends Entity {
     this.def = stats.def;
     this.spd = stats.spd;
     this.nextLevelXp = this.calculateNextLevelXp();
+    this.maxMana = this.calculateMaxMana();
+    this.mana = Math.min(this.mana ?? this.maxMana, this.maxMana);
   }
 
   // ================================================================================================================================================================================================================================================
@@ -78,7 +81,7 @@ export class Player extends Entity {
       y: this.y,
       z: this.z || 0,
       skills: this.skills,
-      soul: this.soul,
+      mana: this.mana,
       equip: this.equip ? Object.fromEntries(EQUIP_SLOTS.map(key => [key, toPlain(this.equip[key])])) : null,
       layout: this.uiLayout || null
     };
@@ -97,7 +100,7 @@ export class Player extends Entity {
     this.xp = Number.isInteger(saved.xp) ? Math.min(Math.max(saved.xp, 0), this.nextLevelXp - 1) : 0;
     this.currentHp = Number.isInteger(saved.currentHp) && saved.currentHp > 0 ? Math.min(saved.currentHp, this.hp) : this.hp;
     this.skills = loadSkills(saved.skills);
-    this.soul = Number.isInteger(saved.soul) && saved.soul >= 0 ? saved.soul : SOUL_START;
+    this.mana = Number.isInteger(saved.mana) && saved.mana >= 0 ? Math.min(saved.mana, this.maxMana) : this.maxMana;
 
     const hasPosition = Number.isInteger(saved.x) && Number.isInteger(saved.y) && isValidFloor(saved.z);
     return hasPosition ? { x: saved.x, y: saved.y, z: saved.z } : null;
@@ -105,6 +108,14 @@ export class Player extends Entity {
 
   calculateNextLevelXp() {
     return 100 + this.lvl * 20;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // calculateMaxMana
+  // Mana máxima pelo nível (provisório: ainda não há magia que gaste).
+
+  calculateMaxMana() {
+    return 50 + this.lvl * 5;
   }
 
   respawn(spot = { x: this.spawnX, y: this.spawnY }) {
@@ -119,6 +130,7 @@ export class Player extends Entity {
     this.step = 0;
     this.renderZ = this.spawnZ;
     this.currentHp = this.hp;
+    this.mana = this.maxMana;
     this.isTarget = false;
   }
 }

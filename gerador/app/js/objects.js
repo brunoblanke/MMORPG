@@ -15,12 +15,16 @@ import { fillFolderSelect, folderOf, setFolder, recipePath } from './folders.js'
 const CATEGORY = 'objetos';
 const FRAME_MS = 500;
 const STACK_OFFSET = 7;
-// Números da receita pro jogo: peso de uma unidade e espaços (container).
+// Números da receita pro jogo: peso de uma unidade, espaços (container) e os
+// bônus que somam nos skills de quem usa o item (atk, def, ml).
 const NUMBERS = [
   { key: 'peso', label: 'Peso (oz)', min: 0, step: 0.1 },
-  { key: 'espacos', label: 'Espaços (0 = não é container)', min: 0, step: 1 }
+  { key: 'espacos', label: 'Espaços (0 = não é container)', min: 0, step: 1 },
+  { key: 'atk', label: 'Ataque (atk)', min: 0, step: 1 },
+  { key: 'def', label: 'Defesa (def)', min: 0, step: 1 },
+  { key: 'ml', label: 'Magic level (ml)', min: 0, step: 1 }
 ];
-const DEFAULT_PROPERTIES = { bloqueia: false, move: true, altura: false, empilhavel: false, peso: 10, espacos: 0 };
+const DEFAULT_PROPERTIES = { bloqueia: false, move: true, altura: false, empilhavel: false, peso: 10, espacos: 0, atk: 0, def: 0, ml: 0 };
 const CONTAINER_SIZE = 8;
 const PROPERTIES = [
   { key: 'bloqueia', label: 'Bloqueia a passagem' },
