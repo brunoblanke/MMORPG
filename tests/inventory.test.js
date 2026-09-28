@@ -14,6 +14,7 @@ const CHEST = 'itens/recipientes/caixote';
 const SWORD = 'itens/espadas/espada';
 const AXE = 'itens/machados/machado';
 const COIN = 'itens/valiosos/moeda';
+const BOOTS = 'itens/botas/boots-of-haste';
 const SHIELD = 'itens/escudos/escudo';
 
 const asset = (id, propriedades) => {
@@ -27,7 +28,8 @@ setAssets([
   asset(SWORD, { move: true, peso: 30, atk: 12, ml: 1 }),
   asset(AXE, { move: true, peso: 40 }),
   asset(SHIELD, { move: true, peso: 50, def: 8, atk: 2 }),
-  asset(COIN, { move: true, peso: 0.1, empilhavel: true })
+  asset(COIN, { move: true, peso: 0.1, empilhavel: true }),
+  asset(BOOTS, { move: true, peso: 8, speed: 20 })
 ]);
 
 // ================================================================================================================================================================================================================================================
@@ -309,7 +311,21 @@ test('skill sobe com o uso: golpe com machado treina axe, ataque recebido com es
   assert.equal(player.skills.axe.lvl, 11);
   assert.equal(player.skills.shielding.lvl, 11);
   assert.equal(player.skills.sword.lvl, 10);
-  assert.ok(sim.drainEvents().some(e => e.type === 'message' && e.text === 'Você avançou em Axe Fighting (11).'));
+  assert.ok(sim.drainEvents().some(e => e.type === 'message' && e.text === 'Você avançou em Axe (11).'));
+});
+
+test('bota com speed soma na velocidade do player enquanto está nos pés', () => {
+  const sim = game();
+  const player = sim.player;
+  player.spd = 60;
+  const base = player.spd;
+  const baseDelay = player.getStepInterval();
+  player.equip.pes = { uid: 'b1', type: BOOTS };
+  assert.equal(player.spd, base + 20);
+  assert.ok(player.getStepInterval() < baseDelay);
+  player.equip.pes = null;
+  player.equip.mochila.items[0] = { uid: 'b1', type: BOOTS };
+  assert.equal(player.spd, base);
 });
 
 test('equipamento e container não empilham, mesmo marcados como empilháveis no gerador', async () => {

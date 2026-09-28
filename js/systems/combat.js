@@ -53,7 +53,7 @@ export class CombatController {
   trainSkill(player, key) {
     if (!player.skills || key === 'magic') return;
     if (!addSkillTry(player.skills, key)) return;
-    const names = { fist: 'Fist Fighting', club: 'Club Fighting', sword: 'Sword Fighting', axe: 'Axe Fighting', distance: 'Distance Fighting', shielding: 'Shielding', fishing: 'Fishing' };
+    const names = { fist: 'Fist', club: 'Club', sword: 'Sword', axe: 'Axe', distance: 'Distance', shielding: 'Shielding', fishing: 'Fishing' };
     this.sim.emit({ type: 'message', playerId: player.id, text: `Você avançou em ${names[key]} (${player.skills[key].lvl}).` });
   }
 

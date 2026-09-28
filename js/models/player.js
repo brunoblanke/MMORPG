@@ -4,7 +4,7 @@ import { Entity } from './entity.js';
 import { calculateStats } from '../utils/helpers.js';
 import { PLAYER_GENDERS, DEFAULT_GENDER } from '../../shared/catalog.js';
 import { isValidFloor } from '../../shared/constants.js';
-import { EQUIP_SLOTS, toPlain } from '../../shared/items.js';
+import { EQUIP_SLOTS, toPlain, equipBonus } from '../../shared/items.js';
 import { newSkills, loadSkills } from '../../shared/skills.js';
 
 export class Player extends Entity {
@@ -48,6 +48,20 @@ export class Player extends Entity {
       this.mana = this.maxMana;
     }
     return levels;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // spd
+  // Velocidade do nível (baseSpd) mais o que os itens do inventário somam
+  // (bota de haste…). No cliente o player não tem equip: vale o que o
+  // servidor mandou.
+
+  get spd() {
+    return this.baseSpd + (this.equip ? equipBonus(this.equip).speed : 0);
+  }
+
+  set spd(value) {
+    this.baseSpd = value;
   }
 
   // ================================================================================================================================================================================================================================================

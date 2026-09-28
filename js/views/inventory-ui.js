@@ -32,8 +32,8 @@ const ICONS = {
   pes: '<path d="M6 5h5v9l7 2v4H6z"/>'
 };
 const SKILL_NAMES = {
-  magic: 'Magic Level', fist: 'Fist Fighting', club: 'Club Fighting', sword: 'Sword Fighting', axe: 'Axe Fighting',
-  distance: 'Distance Fighting', shielding: 'Shielding', fishing: 'Fishing'
+  magic: 'ML', fist: 'Fist', club: 'Club', sword: 'Sword', axe: 'Axe',
+  distance: 'Distance', shielding: 'Shielding', fishing: 'Fishing'
 };
 const PITCH = 40;
 const SAVE_DELAY_MS = 600;
@@ -445,7 +445,7 @@ export class InventoryUI {
     const info = itemInfo(item.type);
     const count = item.count > 1 ? `<span class="inv-count">${item.count}</span>` : '';
     const open = item.items && this.isOpen(item.uid) ? '<span class="inv-open"></span>' : '';
-    const attrs = [info.atk && `Atk ${info.atk}`, info.def && `Def ${info.def}`, info.ml && `ML ${info.ml}`].filter(Boolean).join(' · ');
+    const attrs = [info.atk && `Atk ${info.atk}`, info.def && `Def ${info.def}`, info.ml && `ML ${info.ml}`, info.speed && `Speed +${info.speed}`].filter(Boolean).join(' · ');
     const title = `${info.name}${item.count > 1 ? ` (${item.count})` : ''}${attrs ? ` · ${attrs}` : ''} · ${weightOf(item)} oz${item.items ? ' · duplo clique abre' : ''}`;
     return `<div class="inv-slot filled" data-place="${key}" data-uid="${item.uid}" title="${title}">${this.spriteHtml(item.type)}${count}${open}</div>`;
   }
@@ -500,12 +500,12 @@ export class InventoryUI {
 
   // ================================================================================================================================================================================================================================================
   // skillsHtml
-  // Janela de skills no formato do Tibia 7.6; a capacity é a cap livre.
+  // Janela de skills no formato do Tibia 7.6, com nomes curtos (a cap fica
+  // só no inventário).
 
   skillsHtml(win, buttons) {
     const stats = this.view.stats;
     if (!stats) return '';
-    const cap = this.view.cap;
     const fmt = (n) => Number(n).toLocaleString('pt-BR');
     const line = (label, value, pct) => `<div class="inv-skrow"><span>${label}</span><b>${value}</b></div>` +
       (pct === undefined ? '' : `<div class="inv-skbar" title="${pct}% até o próximo"><i style="width:${pct}%"></i></div>`);
@@ -515,12 +515,11 @@ export class InventoryUI {
       return line(SKILL_NAMES[key], value, entry.pct);
     };
     const body = [
-      line('Experience', fmt(stats.experience)),
-      line('Level', stats.level, stats.levelPct),
+      line('XP', fmt(stats.experience)),
+      line('LVL', stats.level, stats.levelPct),
       '<div class="inv-sksep"></div>',
-      line('Hit Points', fmt(stats.hp)),
-      line('Mana', fmt(stats.mana)),
-      line('Capacity', Math.floor(Math.max(0, cap.max - cap.used))),
+      line('HP', fmt(stats.hp)),
+      line('MP', fmt(stats.mana)),
       '<div class="inv-sksep"></div>',
       ...['magic', ...SKILL_KEYS].map(skill)
     ].join('');

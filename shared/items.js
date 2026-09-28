@@ -39,11 +39,11 @@ const SLOT_BY_FOLDER = {
 
 // ================================================================================================================================================================================================================================================
 // itemInfo
-// { name, slot, weight, stack, size, atk, def, ml } do tipo: slot é o espaço
+// { name, slot, weight, stack, size, atk, def, ml, speed } do tipo: slot é o espaço
 // do inventário (ou null), weight o peso de uma unidade (oz), stack o máximo
 // da pilha (0 = não empilha; equipamento e container nunca empilham, mesmo
 // marcados no gerador), size os espaços, se for container (0 = não é),
-// e atk/def/ml os bônus de quem usa o item (0 = não tem).
+// e atk/def/ml/speed os bônus de quem usa o item (0 = não tem).
 
 export function itemInfo(type) {
   const asset = getAsset(splitType(type).asset);
@@ -62,6 +62,7 @@ export function itemInfo(type) {
     atk: bonusValue(props.atk),
     def: bonusValue(props.def),
     ml: bonusValue(props.ml),
+    speed: bonusValue(props.speed),
     weaponSkill: SKILL_BY_WEAPON_FOLDER[folder] || null
   };
 }
@@ -78,7 +79,7 @@ function bonusValue(value) {
 // (espada → sword…) ou fist, sem arma.
 
 export function equipBonus(equip) {
-  const bonus = { atk: 0, def: 0, ml: 0, atkSkill: 'fist' };
+  const bonus = { atk: 0, def: 0, ml: 0, speed: 0, atkSkill: 'fist' };
   if (!equip) return bonus;
   for (const key of EQUIP_SLOTS) {
     const item = equip[key];
@@ -87,6 +88,7 @@ export function equipBonus(equip) {
     bonus.atk += info.atk;
     bonus.def += info.def;
     bonus.ml += info.ml;
+    bonus.speed += info.speed;
     if (key === 'arma' && info.weaponSkill) bonus.atkSkill = info.weaponSkill;
   }
   return bonus;
