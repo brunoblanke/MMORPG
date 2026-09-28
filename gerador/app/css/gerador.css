@@ -89,6 +89,7 @@ button:focus-visible, input:focus-visible, .slot:focus-visible{ outline:2px soli
 
 .save-bar{ display:flex; align-items:flex-end; gap:12px; flex-wrap:wrap; }
 .field{ display:flex; flex-direction:column; gap:4px; }
+.field[hidden]{ display:none; }
 .field label{ font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; }
 .field input, .field select, input[type=search]{
   background:var(--panel-2); border:1px solid var(--line); border-radius:6px; color:var(--text);

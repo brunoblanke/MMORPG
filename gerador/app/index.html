@@ -42,6 +42,18 @@
         <label for="floorFolder">Pasta</label>
         <select id="floorFolder"></select>
       </div>
+      <div class="field">
+        <label for="floorBehavior">Comportamento</label>
+        <select id="floorBehavior" title="Como o jogo trata quem pisa nesse piso">
+          <option value="normal">Normal (anda por cima)</option>
+          <option value="bloqueia">Bloqueia (água, lava…; item jogado afunda)</option>
+          <option value="dano">Dano ao pisar (veneno, fogo…)</option>
+        </select>
+      </div>
+      <div class="field" id="floorDamageField" hidden>
+        <label for="floorDamage">Dano por segundo</label>
+        <input type="number" id="floorDamage" min="1" step="1" value="10" />
+      </div>
       <button type="submit" class="primary-btn" id="saveBtn">Salvar PNG</button>
       <p class="status" id="status" role="status"></p>
     </form>

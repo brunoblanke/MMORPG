@@ -4,6 +4,8 @@ import { CONFIG } from '../config.js';
 import { distance, getAdjacentPositions, isPositionAdjacentTo } from '../utils/helpers.js';
 import { toUpperLevel } from '../../shared/stairs.js';
 import { isValidFloor } from '../../shared/constants.js';
+import { objectIdType } from '../../shared/assets.js';
+import { itemInfo } from '../../shared/items.js';
 
 export class ObjectDragController {
 
@@ -97,6 +99,10 @@ export class ObjectDragController {
     targetX = landing.x;
     targetY = landing.y;
     const floor = landing.z;
+    if (world.isFloorBlocked(targetX, targetY, floor)) {
+      this.sink(player, obj);
+      return;
+    }
     if (this.hasOtherBlocker(obj, targetX, targetY, floor)) {
       return;
     }
@@ -177,6 +183,18 @@ export class ObjectDragController {
   hasOtherBlocker(obj, x, y, z) {
     const own = obj.blocksMovement && obj.x === x && obj.y === y && (obj.z || 0) === z ? 1 : 0;
     return this.sim.world.countBlockersAt(x, y, z) > own;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // sink
+  // Item ou cadáver jogado em piso que bloqueia (água, lava…) afunda e some,
+  // com o que tiver dentro.
+
+  sink(player, obj) {
+    const name = obj.isCorpse ? 'O corpo' : itemInfo(objectIdType(obj.id)).name;
+    if (obj.isCorpse) this.sim.lifeCycle.removeCorpse(obj);
+    else this.sim.inventory.removeGroundObject(obj);
+    if (player) this.sim.emit({ type: 'message', playerId: player.id, text: `${name} afundou.` });
   }
 
   // ================================================================================================================================================================================================================================================

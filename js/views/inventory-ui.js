@@ -79,6 +79,19 @@ export class InventoryUI {
   }
 
   // ================================================================================================================================================================================================================================================
+  // openableUnderMouse
+  // Caixa ou cadáver sob o mouse na tela do jogo (o que o duplo clique abre).
+
+  openableUnderMouse() {
+    const input = this.game.inputController;
+    if (!input) return null;
+    if (input.hoverCorpse) return input.hoverCorpse;
+    const obj = input.hoverObject;
+    if (!obj || obj.movable !== true || !itemInfo(objectIdType(obj.id)).size) return null;
+    return obj;
+  }
+
+  // ================================================================================================================================================================================================================================================
   // updateGroundGhost
   // Item arrastado da tela do jogo: o desenho dele segue o mouse, no canto
   // inferior direito, como o das janelas.
@@ -853,15 +866,10 @@ export class InventoryUI {
     // servidor abrir (o player vai até o sqm e abre ao chegar; o clique
     // simples só anda até lá).
     const openGround = () => {
-      const input = this.game.inputController;
-      const corpse = input && input.hoverCorpse;
-      if (corpse) {
-        this.game.send({ type: 'openContainer', itemId: corpse.id });
-        return true;
-      }
-      const obj = input && input.hoverObject;
-      if (!obj || obj.movable !== true || !itemInfo(objectIdType(obj.id)).size) return false;
-      this.game.send({ type: 'openContainer', itemId: obj.id });
+      const target = this.openableUnderMouse();
+      if (!target) return false;
+      this.game.cancelPendingWalk();
+      this.game.send({ type: 'openContainer', itemId: target.id });
       return true;
     };
     this.game.canvas.addEventListener('dblclick', openGround);

@@ -110,6 +110,18 @@ export function objectIdType(id) {
 }
 
 // ================================================================================================================================================================================================================================================
+// floorBehavior
+// O que o piso faz com quem pisa (gerador → Pisos → Comportamento): blocks,
+// ninguém pisa e item jogado afunda; damage, vida que tira a cada segundo.
+
+export function floorBehavior(type) {
+  const asset = getAsset(splitType(type).asset);
+  const props = (asset && asset.propriedades) || {};
+  const damage = props.comportamento === 'dano' ? Math.max(0, Math.floor(Number(props.dano)) || 0) : 0;
+  return { blocks: props.comportamento === 'bloqueia', damage };
+}
+
+// ================================================================================================================================================================================================================================================
 // floorHasPiece
 // A folha de piso tem a peça preenchida no gerador (ex.: 'int-no')?
 

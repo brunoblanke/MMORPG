@@ -8,14 +8,16 @@ import { getEntityLevel } from '../core/geometry.js';
 
 // ================================================================================================================================================================================================================================================
 // isGroundLayer
-// Solto no chão, sem altura: item que não bloqueia nem tem volume, cadáver ou
-// borda. Vai por baixo de criaturas, paredes e volumes do mesmo andar.
+// Solto no chão: cadáver, borda ou item que dá pra mover e não tem volume nem
+// bloqueia. Vai por baixo de criaturas do mesmo andar. Escada, parede e
+// decoração fixa ficam na ordem normal (vale quem está mais ao sul e a leste).
 
 function isGroundLayer(obj) {
   if (obj.isCorpse) return true;
   const entity = obj.entity;
   if (!entity || entity.isPlayer === true || entity.type === 'enemy') return false;
-  return !obj.hasVolume && !obj.blocksMovement;
+  if (entity.isBorder) return true;
+  return entity.movable === true && !obj.hasVolume && !obj.blocksMovement;
 }
 
 const TINT_HIT = { color: '#ff2a2a', alpha: 0.55 };
