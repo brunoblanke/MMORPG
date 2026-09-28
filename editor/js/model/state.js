@@ -47,6 +47,8 @@ export const state = {
   openAccordion: null,
   showBorders: true,
   painting: false,
+  brushSize: 1,
+  hoverCell: null,
   strokeTouched: new Set(),
   ghost: true
 };

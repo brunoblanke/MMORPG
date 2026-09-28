@@ -10,6 +10,7 @@ import { getStairTopKeys } from '../model/borders.js';
 import { state } from '../model/state.js';
 import { restackItems } from '../../../shared/map-format.js';
 import { loadImage, setImageUpdateCallback } from './image-cache.js';
+import { brushCells, brushSize } from '../model/brush.js';
 
 export const canvas = document.getElementById('canvas');
 export const ctx = canvas.getContext('2d');
@@ -221,6 +222,36 @@ export function draw() {
     ctx.lineTo(canvas.width, i * TILE + 0.5);
     ctx.stroke();
   }
+  drawBrush();
+}
+
+// ================================================================================================================================================================================================================================================
+// drawBrush
+// Contorno do pincel sob o mouse; maior que 1 sqm, com o tamanho no canto.
+
+function drawBrush() {
+  const hover = state.hoverCell;
+  if (!hover) return;
+  const cells = brushCells(hover.x, hover.y);
+  if (!cells.length) return;
+  const minX = Math.min(...cells.map(c => c.x));
+  const minY = Math.min(...cells.map(c => c.y));
+  const maxX = Math.max(...cells.map(c => c.x));
+  const maxY = Math.max(...cells.map(c => c.y));
+  ctx.save();
+  ctx.strokeStyle = 'rgba(94, 234, 212, 0.9)';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(minX * TILE + 1, minY * TILE + 1, (maxX - minX + 1) * TILE - 2, (maxY - minY + 1) * TILE - 2);
+  const size = brushSize();
+  if (size > 1) {
+    const label = `${size}×${size}`;
+    ctx.font = '600 11px sans-serif';
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+    ctx.fillRect(minX * TILE + 2, minY * TILE + 2, ctx.measureText(label).width + 8, 15);
+    ctx.fillStyle = '#5eead4';
+    ctx.fillText(label, minX * TILE + 6, minY * TILE + 13);
+  }
+  ctx.restore();
 }
 
 // ================================================================================================================================================================================================================================================

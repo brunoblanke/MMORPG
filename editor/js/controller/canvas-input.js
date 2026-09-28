@@ -7,6 +7,7 @@ import { openEnemyForm } from '../view/forms.js';
 import { addFloorToCell, restackItems } from '../../../shared/map-format.js';
 import { refreshBordersAt } from '../model/borders.js';
 import { isStairsType } from '../../../shared/assets.js';
+import { brushCells, MAX_BRUSH } from '../model/brush.js';
 
 // ================================================================================================================================================================================================================================================
 // eraseTopmost
@@ -64,6 +65,16 @@ export function applyTool(x, y, clientX, clientY) {
     return;
   }
 
+  for (const cell of brushCells(x, y)) paintCell(cell.x, cell.y);
+  updateStats();
+  scheduleRender();
+}
+
+// ================================================================================================================================================================================================================================================
+// paintCell
+// A ferramenta num sqm (uma vez por traço).
+
+function paintCell(x, y) {
   const strokeKey = `${x},${y}`;
   if (state.painting && state.strokeTouched.has(strokeKey)) return;
   state.strokeTouched.add(strokeKey);
@@ -96,9 +107,6 @@ export function applyTool(x, y, clientX, clientY) {
   } else if (state.tool === 'wall') {
     if (state.wallPaint) cell.objects.push({ type: state.wallPaint });
   }
-
-  updateStats();
-  scheduleRender();
 }
 
 // ================================================================================================================================================================================================================================================
@@ -124,6 +132,11 @@ canvas.addEventListener('mousedown', (evt) => {
 
 canvas.addEventListener('mousemove', (evt) => {
   updateCoordDisplay(evt);
+  const hover = cellFromEvent(evt);
+  if (!state.hoverCell || !hover || hover.x !== state.hoverCell.x || hover.y !== state.hoverCell.y) {
+    state.hoverCell = hover;
+    scheduleRender();
+  }
   if (!state.painting) return;
   if (state.tool === 'stairs' || state.tool === 'enemy' || state.tool === 'spawn') return;
   const cell = cellFromEvent(evt);
@@ -132,6 +145,8 @@ canvas.addEventListener('mousemove', (evt) => {
 });
 
 canvas.addEventListener('mouseleave', () => {
+  state.hoverCell = null;
+  scheduleRender();
   const coordLocal = document.getElementById('coordLocal');
   const coordWorld = document.getElementById('coordWorld');
   if (coordLocal) coordLocal.textContent = '-';
@@ -139,3 +154,14 @@ canvas.addEventListener('mouseleave', () => {
 });
 
 window.addEventListener('mouseup', () => { state.painting = false; });
+
+// Setas ↑/↓ aumentam e diminuem o pincel (fora de campos de texto).
+window.addEventListener('keydown', (evt) => {
+  if (evt.key !== 'ArrowUp' && evt.key !== 'ArrowDown') return;
+  const tag = evt.target && evt.target.tagName;
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+  evt.preventDefault();
+  const delta = evt.key === 'ArrowUp' ? 1 : -1;
+  state.brushSize = Math.max(1, Math.min(MAX_BRUSH, state.brushSize + delta));
+  scheduleRender();
+});
