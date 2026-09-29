@@ -151,3 +151,14 @@ test('inimigo colado na borda da zona segura não ataca quem está dentro', () =
   }
   assert.equal(sim.player.currentHp, hp);
 });
+
+test('subir de nível não enche a vida nem a mana: só soma o que o máximo aumentou, como no Tibia', async () => {
+  const { Player } = await import('../js/models/player.js');
+  const player = new Player({ x: 0, y: 0, lvl: 1 });
+  player.currentHp = 40;
+  player.mana = 10;
+  player.gainXp(player.nextLevelXp);
+  assert.equal(player.lvl, 2);
+  assert.deepEqual([player.hp, player.maxMana], [155, 60]);
+  assert.deepEqual([player.currentHp, player.mana], [45, 15]);
+});
