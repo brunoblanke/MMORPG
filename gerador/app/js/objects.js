@@ -24,9 +24,13 @@ const NUMBERS = [
   { key: 'atk', label: 'Ataque (atk)', min: 0, step: 1 },
   { key: 'def', label: 'Defesa (def)', min: 0, step: 1 },
   { key: 'ml', label: 'Magic level (ml)', min: 0, step: 1 },
-  { key: 'speed', label: 'Velocidade (speed)', min: 0, step: 1 }
+  { key: 'speed', label: 'Velocidade (speed)', min: 0, step: 1 },
+  { key: 'vidaMin', label: 'Recupera vida (mín.)', min: 0, step: 1 },
+  { key: 'vidaMax', label: 'Recupera vida (máx.)', min: 0, step: 1 },
+  { key: 'manaMin', label: 'Recupera mana (mín.)', min: 0, step: 1 },
+  { key: 'manaMax', label: 'Recupera mana (máx.)', min: 0, step: 1 }
 ];
-const DEFAULT_PROPERTIES = { bloqueia: false, move: true, altura: false, empilhavel: false, peso: 10, espacos: 0, atk: 0, def: 0, ml: 0, speed: 0 };
+const DEFAULT_PROPERTIES = { bloqueia: false, move: true, altura: false, empilhavel: false, peso: 10, espacos: 0, atk: 0, def: 0, ml: 0, speed: 0, vidaMin: 0, vidaMax: 0, manaMin: 0, manaMax: 0 };
 const CONTAINER_SIZE = 8;
 const PROPERTIES = [
   { key: 'bloqueia', label: 'Bloqueia a passagem' },

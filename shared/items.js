@@ -17,6 +17,9 @@ export const DEFAULT_CONTAINER_SIZE = 8;
 // inventário, com esta chance (provisório).
 export const DEATH_DROP_CHANCE = 0.3;
 
+// Intervalo entre um item de usar (potion) e o seguinte, como no Tibia.
+export const USE_COOLDOWN_MS = 1000;
+
 // Cap como no Tibia (sem vocação): 400 oz no nível 1 e +10 por nível.
 export const CAP_BASE_LEVEL = 1;
 export const CAP_AT_BASE = 400;
@@ -39,11 +42,12 @@ const SLOT_BY_FOLDER = {
 
 // ================================================================================================================================================================================================================================================
 // itemInfo
-// { name, slot, weight, stack, size, atk, def, ml, speed } do tipo: slot é o espaço
+// { name, slot, weight, stack, size, atk, def, ml, speed, heal } do tipo: slot é o espaço
 // do inventário (ou null), weight o peso de uma unidade (oz), stack o máximo
 // da pilha (0 = não empilha; equipamento e container nunca empilham, mesmo
 // marcados no gerador), size os espaços, se for container (0 = não é),
-// e atk/def/ml/speed os bônus de quem usa o item (0 = não tem).
+// atk/def/ml/speed os bônus de quem usa o item (0 = não tem) e heal o que
+// ele recupera ao ser usado ({ hp: [min, max], mana: [min, max] }, ou null).
 
 export function itemInfo(type) {
   const asset = getAsset(splitType(type).asset);
@@ -63,9 +67,28 @@ export function itemInfo(type) {
     def: bonusValue(props.def),
     ml: bonusValue(props.ml),
     speed: bonusValue(props.speed),
+    heal: healOf(props),
     weaponSkill: SKILL_BY_WEAPON_FOLDER[folder] || null
   };
 }
+
+// ================================================================================================================================================================================================================================================
+// healOf
+// Faixas de vida e mana que o item recupera (vidaMin/vidaMax, manaMin/manaMax
+// no gerador); null se não recupera nada.
+
+function healOf(props) {
+  const range = (min, max) => {
+    const low = bonusValue(min);
+    return [low, Math.max(low, bonusValue(max))];
+  };
+  const hp = range(props.vidaMin, props.vidaMax);
+  const mana = range(props.manaMin, props.manaMax);
+  return hp[1] > 0 || mana[1] > 0 ? { hp, mana } : null;
+}
+
+// ================================================================================================================================================================================================================================================
+// bonusValue
 
 function bonusValue(value) {
   const number = Math.floor(Number(value));

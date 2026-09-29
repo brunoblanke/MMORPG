@@ -24,6 +24,24 @@ export class ParticleSystem {
   }
 
   // ================================================================================================================================================================================================================================================
+  // spawnText
+  // Número flutuante com texto e cor próprios (vida/mana recuperadas).
+
+  spawnText(x, y, text, color, renderer, offsetY = 0) {
+    const pos = renderer.gridToScreenWithOffset(x, y);
+    this.particles.push({
+      x: pos.x,
+      y: pos.y - 30 + offsetY,
+      text,
+      color,
+      maxLife: 1.5,
+      velocityY: -1.2,
+      opacity: 1.0,
+      createdAt: performance.now()
+    });
+  }
+
+  // ================================================================================================================================================================================================================================================
   // spawnMissile
   // Projétil de magia: uma bolinha que voa do sqm de origem até o de destino.
 
@@ -77,8 +95,8 @@ export class ParticleSystem {
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
 
-      const text = p.isXP ? `+${p.value} XP` : `-${p.value}`;
-      ctx.fillStyle = p.isXP ? "#00FF00" : "#FF0000";
+      const text = p.text || (p.isXP ? `+${p.value} XP` : `-${p.value}`);
+      ctx.fillStyle = p.color || (p.isXP ? "#00FF00" : "#FF0000");
       ctx.fillText(text, p.x, p.y);
 
       ctx.restore();

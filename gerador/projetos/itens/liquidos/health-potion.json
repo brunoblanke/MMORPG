@@ -19,7 +19,11 @@
     "atk": 0,
     "def": 0,
     "ml": 0,
-    "speed": 0
+    "speed": 0,
+    "vidaMin": 125,
+    "vidaMax": 175,
+    "manaMin": 0,
+    "manaMax": 0
   },
   "ferramenta": "objetos",
   "grupo": "itens",

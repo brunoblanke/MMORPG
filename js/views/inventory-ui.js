@@ -982,7 +982,12 @@ export class InventoryUI {
     const openFromSlot = (evt) => {
       const slot = evt.target.closest && evt.target.closest('.inv-slot.filled');
       if (!slot || !inPanels(slot)) return false;
-      const item = this.itemAt(this.placeOf(slot));
+      const place = this.placeOf(slot);
+      const item = this.itemAt(place);
+      if (item && !item.items && itemInfo(item.type).heal && (place.t === 'e' || place.t === 'c')) {
+        this.game.send({ type: 'useItem', from: place });
+        return true;
+      }
       if (!item || !item.items) return false;
       const origin = this.findWindow(slot.closest('.inv-win').dataset.win);
       if (origin && origin.win.kind === 'container' && !evt.shiftKey) this.showInWindow(origin, item.uid);

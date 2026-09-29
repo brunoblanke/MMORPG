@@ -22,6 +22,15 @@ export class ParticleController {
   }
 
   // ================================================================================================================================================================================================================================================
+  // spawnHeal
+  // Vida (verde) e mana (azul) recuperadas; a mana sai um pouco acima.
+
+  spawnHeal(event, renderer) {
+    if (event.hp > 0) this.particleSystem.spawnText(event.x, event.y, `+${event.hp}`, '#4ade80', renderer, 0);
+    if (event.mana > 0) this.particleSystem.spawnText(event.x, event.y, `+${event.mana}`, '#60a5fa', renderer, event.hp > 0 ? -14 : 0);
+  }
+
+  // ================================================================================================================================================================================================================================================
   // spawnMissile
 
   spawnMissile(event, renderer) {

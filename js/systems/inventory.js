@@ -4,7 +4,7 @@ import { GameObject } from '../models/game-object.js';
 import { getAdjacentPositions, isPositionAdjacentTo } from '../utils/helpers.js';
 import { objectIdType, objectProps, getAsset, splitType } from '../../shared/assets.js';
 import {
-  EQUIP_SLOTS, THROW_RANGE, DEATH_DROP_CHANCE, itemInfo, capacityFor, newItem, weightOf, contains, findInTree, fromPlain, equipBonus
+  EQUIP_SLOTS, THROW_RANGE, DEATH_DROP_CHANCE, USE_COOLDOWN_MS, itemInfo, capacityFor, newItem, weightOf, contains, findInTree, fromPlain, equipBonus
 } from '../../shared/items.js';
 import { PLAYER_SPRITES, DEFAULT_GENDER } from '../../shared/catalog.js';
 import { SKILL_KEYS } from '../../shared/skills.js';
@@ -442,6 +442,37 @@ export class InventoryController {
       return;
     }
     this.walkNextTo(player, obj, { type: 'openContainer', itemId });
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // use
+  // Comando useItem: usa um item que o player carrega (potion). Sorteia a
+  // vida e a mana dentro da faixa do item (sem passar do máximo), gasta uma
+  // unidade e espera USE_COOLDOWN_MS até o próximo uso.
+
+  use(player, from) {
+    if (!from || (from.t !== 'e' && from.t !== 'c')) return;
+    const src = this.source(player, from);
+    if (src.error || !src.carried) return;
+    const heal = itemInfo(src.item.type).heal;
+    if (!heal) return;
+
+    const now = this.sim.time || 0;
+    if (now < (player.useReadyAt || 0)) {
+      this.message(player, 'Você está exausto.');
+      return;
+    }
+    player.useReadyAt = now + USE_COOLDOWN_MS;
+
+    const roll = ([min, max]) => min + Math.floor(Math.random() * (max - min + 1));
+    const hp = Math.min(roll(heal.hp), player.hp - player.currentHp);
+    const mana = Math.min(roll(heal.mana), player.maxMana - player.mana);
+    player.currentHp += hp;
+    player.mana += mana;
+
+    if ((src.item.count || 1) > 1) src.item.count--;
+    else src.remove();
+    this.sim.emit({ type: 'heal', playerId: player.id, x: player.x, y: player.y, hp, mana });
   }
 
   // ================================================================================================================================================================================================================================================
