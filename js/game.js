@@ -170,6 +170,11 @@ export class GameController {
       self.useStairsAtMouse();
     });
 
+    this.canvas.addEventListener('contextmenu', function(evt) {
+      evt.preventDefault();
+      self.useStairsAtMouse();
+    });
+
     window.addEventListener('resize', function() {
       self.camera.resize();
     });
@@ -215,8 +220,8 @@ export class GameController {
 
   // ================================================================================================================================================================================================================================================
   // useStairsAtMouse
-  // Duplo clique no sqm de uma escada sem altura (no andar do player): sobe
-  // por ela (o servidor leva o player até lá, se precisar).
+  // Duplo clique ou botão direito no sqm de uma escada sem altura (no andar
+  // do player): sobe por ela (o servidor leva o player até lá, se precisar).
 
   useStairsAtMouse() {
     const tile = this.inputController && this.inputController.hoverTile;

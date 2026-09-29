@@ -173,6 +173,7 @@ updateHoverEnemy(enemies, world, offset, player, deadBodies) {
   // handleMouseDown
 
   handleMouseDown(e) {
+    if (e.button !== 0) return;
     const rect = this.canvas.getBoundingClientRect();
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
