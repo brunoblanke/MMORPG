@@ -29198,16 +29198,6 @@
       306
     ],
     [
-      "itens/recipientes/backpack-marrom",
-      178,
-      175,
-      0,
-      0,
-      true,
-      false,
-      false
-    ],
-    [
       "estrutura/pisos/piso-grama-1",
       179,
       175,
@@ -34796,16 +34786,6 @@
       false,
       false,
       620
-    ],
-    [
-      "itens/botas/boots-of-haste",
-      170,
-      180,
-      0,
-      0,
-      true,
-      false,
-      false
     ],
     [
       "estrutura/pisos/piso-grama-1",
@@ -69631,16 +69611,6 @@
       1514
     ],
     [
-      "itens/recipientes/bag-verde",
-      156,
-      172,
-      1,
-      0,
-      true,
-      false,
-      false
-    ],
-    [
       "estrutura/pisos/piso-madeira-1",
       157,
       172,
@@ -69943,38 +69913,8 @@
       false
     ],
     [
-      "Border:estrutura/pisos/piso-madeira-1:n",
-      176,
-      177,
-      1,
-      0,
-      false,
-      false,
-      false
-    ],
-    [
-      "Border:estrutura/pisos/piso-madeira-1:n",
-      177,
-      177,
-      1,
-      0,
-      false,
-      false,
-      false
-    ],
-    [
-      "Border:estrutura/pisos/piso-madeira-1:n",
-      178,
-      177,
-      1,
-      0,
-      false,
-      false,
-      false
-    ],
-    [
-      "Border:estrutura/pisos/piso-madeira-1:n",
-      179,
+      "Border:estrutura/pisos/piso-grama-2:no",
+      175,
       177,
       1,
       0,
@@ -69984,6 +69924,56 @@
     ],
     [
       "Border:estrutura/pisos/piso-madeira-1:nl",
+      176,
+      177,
+      1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:n",
+      176,
+      177,
+      1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:n",
+      177,
+      177,
+      1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:n",
+      178,
+      177,
+      1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:n",
+      179,
+      177,
+      1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:nl",
       180,
       177,
       1,
@@ -70011,7 +70001,7 @@
       false,
       false,
       false,
-      3019
+      6082
     ],
     [
       "estrutura/entradas/entrada-madeira-1",
@@ -70032,7 +70022,7 @@
       false,
       false,
       false,
-      3017
+      6102
     ],
     [
       "estrutura/pisos/piso-madeira-1",
@@ -70043,7 +70033,17 @@
       false,
       false,
       false,
-      3016
+      6101
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:o",
+      175,
+      178,
+      1,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-madeira-1",
@@ -70054,7 +70054,28 @@
       false,
       false,
       false,
-      3015
+      6100
+    ],
+    [
+      "estrutura/pisos/piso-grama-2",
+      176,
+      178,
+      1,
+      0,
+      false,
+      false,
+      false,
+      6122
+    ],
+    [
+      "itens/itens-encantados/fire-field",
+      176,
+      178,
+      1,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-madeira-1",
@@ -70065,7 +70086,28 @@
       false,
       false,
       false,
-      3014
+      6099
+    ],
+    [
+      "estrutura/pisos/piso-grama-2",
+      177,
+      178,
+      1,
+      0,
+      false,
+      false,
+      false,
+      6123
+    ],
+    [
+      "estrutura/natureza/arvore-1",
+      177,
+      178,
+      1,
+      0,
+      false,
+      false,
+      true
     ],
     [
       "estrutura/pisos/piso-madeira-1",
@@ -70076,7 +70118,28 @@
       false,
       false,
       false,
-      3013
+      6098
+    ],
+    [
+      "estrutura/pisos/piso-grama-2",
+      178,
+      178,
+      1,
+      0,
+      false,
+      false,
+      false,
+      6124
+    ],
+    [
+      "estrutura/natureza/pinheiro-1",
+      178,
+      178,
+      1,
+      0,
+      false,
+      false,
+      true
     ],
     [
       "estrutura/pisos/piso-madeira-1",
@@ -70087,10 +70150,31 @@
       false,
       false,
       false,
-      3012
+      6097
     ],
     [
-      "Border:estrutura/pisos/piso-madeira-1:l",
+      "estrutura/pisos/piso-grama-2",
+      179,
+      178,
+      1,
+      0,
+      false,
+      false,
+      false,
+      6125
+    ],
+    [
+      "itens/itens-encantados/fire-field",
+      179,
+      178,
+      1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:l",
       180,
       178,
       1,
@@ -70118,7 +70202,7 @@
       false,
       false,
       false,
-      3020
+      6083
     ],
     [
       "estrutura/pisos/piso-madeira-1",
@@ -70129,7 +70213,7 @@
       false,
       false,
       false,
-      3062
+      6104
     ],
     [
       "estrutura/pisos/piso-madeira-1",
@@ -70140,7 +70224,7 @@
       false,
       false,
       false,
-      3043
+      6109
     ],
     [
       "estrutura/pisos/piso-madeira-1",
@@ -70151,7 +70235,17 @@
       false,
       false,
       false,
-      3042
+      6110
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:so",
+      175,
+      179,
+      1,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-madeira-1",
@@ -70162,7 +70256,27 @@
       false,
       false,
       false,
-      3041
+      6111
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:s",
+      176,
+      179,
+      1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:no",
+      176,
+      179,
+      1,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-madeira-1",
@@ -70173,7 +70287,37 @@
       false,
       false,
       false,
-      3045
+      6112
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:n",
+      177,
+      179,
+      1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:s",
+      177,
+      179,
+      1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/natureza/pinheiro-1",
+      177,
+      179,
+      1,
+      0,
+      false,
+      false,
+      true
     ],
     [
       "estrutura/pisos/piso-madeira-1",
@@ -70184,7 +70328,27 @@
       false,
       false,
       false,
-      3046
+      6113
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:int-no",
+      178,
+      179,
+      1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:int-so",
+      178,
+      179,
+      1,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-madeira-1",
@@ -70195,10 +70359,31 @@
       false,
       false,
       false,
-      3038
+      6096
     ],
     [
-      "Border:estrutura/pisos/piso-madeira-1:l",
+      "estrutura/pisos/piso-grama-2",
+      179,
+      179,
+      1,
+      0,
+      false,
+      false,
+      false,
+      6126
+    ],
+    [
+      "estrutura/natureza/pinheiro-1",
+      179,
+      179,
+      1,
+      0,
+      false,
+      false,
+      true
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:l",
       180,
       179,
       1,
@@ -70218,107 +70403,9 @@
       false
     ],
     [
-      "estrutura/pisos/piso-madeira-1",
-      172,
-      180,
-      1,
-      0,
-      false,
-      false,
-      false,
-      3021
-    ],
-    [
-      "estrutura/pisos/piso-madeira-1",
-      173,
-      180,
-      1,
-      0,
-      false,
-      false,
-      false,
-      3022
-    ],
-    [
-      "estrutura/pisos/piso-madeira-1",
-      174,
-      180,
-      1,
-      0,
-      false,
-      false,
-      false,
-      3054
-    ],
-    [
-      "estrutura/pisos/piso-madeira-1",
-      175,
-      180,
-      1,
-      0,
-      false,
-      false,
-      false,
-      3052
-    ],
-    [
-      "estrutura/pisos/piso-madeira-1",
-      176,
-      180,
-      1,
-      0,
-      false,
-      false,
-      false,
-      3053
-    ],
-    [
-      "estrutura/pisos/piso-madeira-1",
-      177,
-      180,
-      1,
-      0,
-      false,
-      false,
-      false,
-      3040
-    ],
-    [
-      "estrutura/pisos/piso-madeira-1",
-      178,
-      180,
-      1,
-      0,
-      false,
-      false,
-      false,
-      3039
-    ],
-    [
-      "estrutura/pisos/piso-madeira-1",
-      179,
-      180,
-      1,
-      0,
-      false,
-      false,
-      false,
-      3037
-    ],
-    [
-      "Border:estrutura/pisos/piso-madeira-1:l",
-      180,
-      180,
-      1,
-      0,
-      false,
-      false,
-      false
-    ],
-    [
-      "Border:estrutura/pisos/piso-madeira-1:o",
+      "Border:estrutura/pisos/piso-grama-2:no",
       171,
-      181,
+      180,
       1,
       0,
       false,
@@ -70328,203 +70415,178 @@
     [
       "estrutura/pisos/piso-madeira-1",
       172,
-      181,
-      1,
-      0,
-      false,
-      false,
-      false,
-      3026
-    ],
-    [
-      "estrutura/pisos/piso-madeira-1",
-      173,
-      181,
-      1,
-      0,
-      false,
-      false,
-      false,
-      3023
-    ],
-    [
-      "estrutura/pisos/piso-madeira-1",
-      174,
-      181,
-      1,
-      0,
-      false,
-      false,
-      false,
-      3051
-    ],
-    [
-      "estrutura/pisos/piso-madeira-1",
-      175,
-      181,
-      1,
-      0,
-      false,
-      false,
-      false,
-      3050
-    ],
-    [
-      "estrutura/pisos/piso-madeira-1",
-      176,
-      181,
-      1,
-      0,
-      false,
-      false,
-      false,
-      3049
-    ],
-    [
-      "estrutura/pisos/piso-madeira-1",
-      177,
-      181,
-      1,
-      0,
-      false,
-      false,
-      false,
-      3048
-    ],
-    [
-      "estrutura/pisos/piso-madeira-1",
-      178,
-      181,
-      1,
-      0,
-      false,
-      false,
-      false,
-      3047
-    ],
-    [
-      "estrutura/pisos/piso-madeira-1",
-      179,
-      181,
-      1,
-      0,
-      false,
-      false,
-      false,
-      3036
-    ],
-    [
-      "Border:estrutura/pisos/piso-madeira-1:l",
       180,
-      181,
       1,
       0,
       false,
       false,
-      false
+      false,
+      6084
     ],
     [
-      "Border:estrutura/pisos/piso-madeira-1:o",
-      171,
-      182,
-      1,
-      0,
-      false,
-      false,
-      false
-    ],
-    [
-      "estrutura/pisos/piso-madeira-1",
+      "Border:estrutura/pisos/piso-grama-2:n",
       172,
-      182,
+      180,
       1,
       0,
       false,
       false,
-      false,
-      3025
+      false
     ],
     [
       "estrutura/pisos/piso-madeira-1",
       173,
-      182,
+      180,
       1,
       0,
       false,
       false,
       false,
-      3024
+      6105
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:nl",
+      173,
+      180,
+      1,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-madeira-1",
       174,
-      182,
+      180,
       1,
       0,
       false,
       false,
       false,
-      3055
+      6106
     ],
     [
       "estrutura/pisos/piso-madeira-1",
       175,
-      182,
+      180,
       1,
       0,
       false,
       false,
       false,
-      3056
+      6119
     ],
     [
       "estrutura/pisos/piso-madeira-1",
       176,
-      182,
+      180,
       1,
       0,
       false,
       false,
       false,
-      3057
+      6120
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:o",
+      176,
+      180,
+      1,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-madeira-1",
       177,
-      182,
+      180,
       1,
       0,
       false,
       false,
       false,
-      3058
+      6121
+    ],
+    [
+      "estrutura/pisos/piso-grama-2",
+      177,
+      180,
+      1,
+      0,
+      false,
+      false,
+      false,
+      6133
     ],
     [
       "estrutura/pisos/piso-madeira-1",
       178,
-      182,
+      180,
       1,
       0,
       false,
       false,
       false,
-      3059
+      6114
+    ],
+    [
+      "estrutura/pisos/piso-grama-2",
+      178,
+      180,
+      1,
+      0,
+      false,
+      false,
+      false,
+      6132
+    ],
+    [
+      "estrutura/natureza/arvore-1",
+      178,
+      180,
+      1,
+      0,
+      false,
+      false,
+      true
     ],
     [
       "estrutura/pisos/piso-madeira-1",
       179,
-      182,
+      180,
       1,
       0,
       false,
       false,
       false,
-      3035
+      6095
     ],
     [
-      "Border:estrutura/pisos/piso-madeira-1:l",
+      "estrutura/pisos/piso-grama-2",
+      179,
       180,
-      182,
+      1,
+      0,
+      false,
+      false,
+      false,
+      6127
+    ],
+    [
+      "estrutura/natureza/pinheiro-1",
+      179,
+      180,
+      1,
+      0,
+      false,
+      false,
+      true
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:l",
+      180,
+      180,
       1,
       0,
       false,
@@ -70534,6 +70596,459 @@
     [
       "Border:estrutura/pisos/piso-madeira-1:so",
       171,
+      181,
+      1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:o",
+      171,
+      181,
+      1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-madeira-1",
+      172,
+      181,
+      1,
+      0,
+      false,
+      false,
+      false,
+      6085
+    ],
+    [
+      "estrutura/pisos/piso-grama-2",
+      172,
+      181,
+      1,
+      0,
+      false,
+      false,
+      false,
+      6136
+    ],
+    [
+      "estrutura/natureza/arvore-1",
+      172,
+      181,
+      1,
+      0,
+      false,
+      false,
+      true
+    ],
+    [
+      "estrutura/pisos/piso-madeira-1",
+      173,
+      181,
+      1,
+      0,
+      false,
+      false,
+      false,
+      6108
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:int-nl",
+      173,
+      181,
+      1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/natureza/pinheiro-1",
+      173,
+      181,
+      1,
+      0,
+      false,
+      false,
+      true
+    ],
+    [
+      "estrutura/pisos/piso-madeira-1",
+      174,
+      181,
+      1,
+      0,
+      false,
+      false,
+      false,
+      6107
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:nl",
+      174,
+      181,
+      1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-madeira-1",
+      175,
+      181,
+      1,
+      0,
+      false,
+      false,
+      false,
+      6118
+    ],
+    [
+      "estrutura/pisos/piso-madeira-1",
+      176,
+      181,
+      1,
+      0,
+      false,
+      false,
+      false,
+      6117
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:so",
+      176,
+      181,
+      1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-madeira-1",
+      177,
+      181,
+      1,
+      0,
+      false,
+      false,
+      false,
+      6116
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:int-so",
+      177,
+      181,
+      1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/natureza/pinheiro-1",
+      177,
+      181,
+      1,
+      0,
+      false,
+      false,
+      true
+    ],
+    [
+      "itens/itens-encantados/fire-field",
+      177,
+      181,
+      1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-madeira-1",
+      178,
+      181,
+      1,
+      0,
+      false,
+      false,
+      false,
+      6115
+    ],
+    [
+      "estrutura/pisos/piso-grama-2",
+      178,
+      181,
+      1,
+      0,
+      false,
+      false,
+      false,
+      6131
+    ],
+    [
+      "estrutura/pisos/piso-madeira-1",
+      179,
+      181,
+      1,
+      0,
+      false,
+      false,
+      false,
+      6094
+    ],
+    [
+      "estrutura/pisos/piso-grama-2",
+      179,
+      181,
+      1,
+      0,
+      false,
+      false,
+      false,
+      6128
+    ],
+    [
+      "itens/itens-encantados/fire-field",
+      179,
+      181,
+      1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:l",
+      180,
+      181,
+      1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:o",
+      171,
+      182,
+      1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-madeira-1",
+      172,
+      182,
+      1,
+      0,
+      false,
+      false,
+      false,
+      6086
+    ],
+    [
+      "estrutura/pisos/piso-grama-2",
+      172,
+      182,
+      1,
+      0,
+      false,
+      false,
+      false,
+      6135
+    ],
+    [
+      "estrutura/natureza/pinheiro-1",
+      172,
+      182,
+      1,
+      0,
+      false,
+      false,
+      true
+    ],
+    [
+      "estrutura/pisos/piso-madeira-1",
+      173,
+      182,
+      1,
+      0,
+      false,
+      false,
+      false,
+      6087
+    ],
+    [
+      "estrutura/pisos/piso-grama-2",
+      173,
+      182,
+      1,
+      0,
+      false,
+      false,
+      false,
+      6134
+    ],
+    [
+      "itens/itens-encantados/fire-field",
+      173,
+      182,
+      1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-madeira-1",
+      174,
+      182,
+      1,
+      0,
+      false,
+      false,
+      false,
+      6088
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:l",
+      174,
+      182,
+      1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-madeira-1",
+      175,
+      182,
+      1,
+      0,
+      false,
+      false,
+      false,
+      6089
+    ],
+    [
+      "estrutura/pisos/piso-madeira-1",
+      176,
+      182,
+      1,
+      0,
+      false,
+      false,
+      false,
+      6090
+    ],
+    [
+      "estrutura/pisos/piso-madeira-1",
+      177,
+      182,
+      1,
+      0,
+      false,
+      false,
+      false,
+      6091
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:o",
+      177,
+      182,
+      1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/natureza/arvore-1",
+      177,
+      182,
+      1,
+      0,
+      false,
+      false,
+      true
+    ],
+    [
+      "estrutura/pisos/piso-madeira-1",
+      178,
+      182,
+      1,
+      0,
+      false,
+      false,
+      false,
+      6092
+    ],
+    [
+      "estrutura/pisos/piso-grama-2",
+      178,
+      182,
+      1,
+      0,
+      false,
+      false,
+      false,
+      6130
+    ],
+    [
+      "estrutura/natureza/pinheiro-1",
+      178,
+      182,
+      1,
+      0,
+      false,
+      false,
+      true
+    ],
+    [
+      "estrutura/pisos/piso-madeira-1",
+      179,
+      182,
+      1,
+      0,
+      false,
+      false,
+      false,
+      6093
+    ],
+    [
+      "estrutura/pisos/piso-grama-2",
+      179,
+      182,
+      1,
+      0,
+      false,
+      false,
+      false,
+      6129
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:l",
+      180,
+      182,
+      1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:so",
+      171,
       183,
       1,
       0,
@@ -70542,7 +71057,7 @@
       false
     ],
     [
-      "Border:estrutura/pisos/piso-madeira-1:s",
+      "Border:estrutura/pisos/piso-grama-2:s",
       172,
       183,
       1,
@@ -70552,7 +71067,17 @@
       false
     ],
     [
-      "Border:estrutura/pisos/piso-madeira-1:s",
+      "Border:estrutura/pisos/piso-madeira-1:so",
+      173,
+      183,
+      1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:s",
       173,
       183,
       1,
@@ -70563,6 +71088,16 @@
     ],
     [
       "Border:estrutura/pisos/piso-madeira-1:s",
+      174,
+      183,
+      1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:sl",
       174,
       183,
       1,
@@ -70602,18 +71137,8 @@
       false
     ],
     [
-      "Border:estrutura/pisos/piso-madeira-1:s",
-      178,
-      183,
-      1,
-      0,
-      false,
-      false,
-      false
-    ],
-    [
-      "Border:estrutura/pisos/piso-madeira-1:s",
-      179,
+      "Border:estrutura/pisos/piso-grama-2:so",
+      177,
       183,
       1,
       0,
@@ -70623,6 +71148,36 @@
     ],
     [
       "Border:estrutura/pisos/piso-madeira-1:sl",
+      178,
+      183,
+      1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:s",
+      178,
+      183,
+      1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:s",
+      179,
+      183,
+      1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:sl",
       180,
       183,
       1,
@@ -72130,36 +72685,196 @@
   ],
   "enemyData": [
     [
-      171,
-      168,
-      0,
-      5,
+      170,
+      166,
+      -1,
+      15,
       32,
       "criaturas/mortos-vivos/skeleton"
     ],
     [
-      178,
-      174,
-      0,
+      173,
+      166,
+      -1,
+      15,
+      32,
+      "criaturas/mortos-vivos/skeleton"
+    ],
+    [
+      171,
+      167,
+      -1,
       5,
-      64,
-      "criaturas/demonios/demon"
+      32,
+      "criaturas/mamiferos/rat"
+    ],
+    [
+      173,
+      167,
+      -1,
+      5,
+      32,
+      "criaturas/mamiferos/rat"
     ],
     [
       170,
-      180,
-      0,
-      20,
-      64,
-      "criaturas/vermes/giant-spider"
+      169,
+      -1,
+      15,
+      32,
+      "criaturas/mortos-vivos/skeleton"
     ],
     [
-      175,
-      184,
+      174,
+      169,
+      -1,
+      15,
+      32,
+      "criaturas/mortos-vivos/skeleton"
+    ],
+    [
+      172,
+      170,
+      -1,
+      15,
+      32,
+      "criaturas/mortos-vivos/skeleton"
+    ],
+    [
+      158,
+      169,
       0,
       5,
       32,
       "criaturas/mamiferos/rat"
+    ],
+    [
+      160,
+      170,
+      0,
+      5,
+      32,
+      "criaturas/mamiferos/rat"
+    ],
+    [
+      160,
+      176,
+      0,
+      5,
+      32,
+      "criaturas/mamiferos/rat"
+    ],
+    [
+      154,
+      178,
+      0,
+      5,
+      32,
+      "criaturas/mamiferos/rat"
+    ],
+    [
+      153,
+      179,
+      0,
+      5,
+      32,
+      "criaturas/mamiferos/rat"
+    ],
+    [
+      177,
+      179,
+      0,
+      10,
+      32,
+      "criaturas/vermes/spider"
+    ],
+    [
+      179,
+      179,
+      0,
+      10,
+      32,
+      "criaturas/vermes/spider"
+    ],
+    [
+      159,
+      180,
+      0,
+      5,
+      32,
+      "criaturas/mamiferos/rat"
+    ],
+    [
+      178,
+      180,
+      0,
+      50,
+      64,
+      "criaturas/vermes/giant-spider"
+    ],
+    [
+      157,
+      181,
+      0,
+      5,
+      32,
+      "criaturas/mamiferos/rat"
+    ],
+    [
+      178,
+      181,
+      0,
+      10,
+      32,
+      "criaturas/vermes/spider"
+    ],
+    [
+      177,
+      182,
+      0,
+      10,
+      32,
+      "criaturas/vermes/spider"
+    ],
+    [
+      179,
+      182,
+      0,
+      10,
+      32,
+      "criaturas/vermes/spider"
+    ],
+    [
+      175,
+      180,
+      1,
+      30,
+      32,
+      "criaturas/elementais/fire-elemental"
+    ],
+    [
+      153,
+      170,
+      2,
+      100,
+      64,
+      "criaturas/demonios/demon"
+    ],
+    [
+      154,
+      170,
+      2,
+      30,
+      32,
+      "criaturas/elementais/fire-elemental"
+    ],
+    [
+      153,
+      171,
+      2,
+      30,
+      32,
+      "criaturas/elementais/fire-elemental"
     ]
   ],
   "safeZoneData": [
