@@ -147,23 +147,12 @@ export class Renderer {
   // drawAutoAttackArea
   // Modo dev: o raio em volta do player onde um inimigo que chega entra na
   // fila do auto ataque (o mesmo raio em que ele percebe o player). Vermelho
-  // forte com o auto ataque ligado; fraco na defesa. Borda só no contorno.
+  // mais forte com o auto ataque ligado; fraco desligado.
 
   drawAutoAttackArea(x, y, pos, size, player) {
-    const radius = CONFIG.detectionRadius;
-    const inside = (tx, ty) => isInRadius(tx, ty, player.x, player.y, radius);
-    if (!inside(x, y)) return;
-    const on = !!player.attackMode;
-    this.ctx.fillStyle = on ? "rgba(239, 68, 68, 0.12)" : "rgba(239, 68, 68, 0.05)";
+    if (!isInRadius(x, y, player.x, player.y, CONFIG.detectionRadius)) return;
+    this.ctx.fillStyle = player.attackMode ? "rgba(239, 68, 68, 0.12)" : "rgba(239, 68, 68, 0.05)";
     this.ctx.fillRect(pos.x, pos.y, size, size);
-    this.ctx.strokeStyle = on ? "rgba(239, 68, 68, 0.8)" : "rgba(239, 68, 68, 0.35)";
-    this.ctx.lineWidth = 1.5;
-    this.ctx.beginPath();
-    if (!inside(x, y - 1)) { this.ctx.moveTo(pos.x, pos.y); this.ctx.lineTo(pos.x + size, pos.y); }
-    if (!inside(x, y + 1)) { this.ctx.moveTo(pos.x, pos.y + size); this.ctx.lineTo(pos.x + size, pos.y + size); }
-    if (!inside(x - 1, y)) { this.ctx.moveTo(pos.x, pos.y); this.ctx.lineTo(pos.x, pos.y + size); }
-    if (!inside(x + 1, y)) { this.ctx.moveTo(pos.x + size, pos.y); this.ctx.lineTo(pos.x + size, pos.y + size); }
-    this.ctx.stroke();
   }
 
   // ================================================================================================================================================================================
