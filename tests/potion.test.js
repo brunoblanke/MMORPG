@@ -93,7 +93,7 @@ test('comida: soma tempo de regeneração até 1200s e recupera 1 de vida e mana
   sim.player.currentHp = 10;
   sim.player.mana = 10;
 
-  send(sim, { type: 'useItem', from: { t: 'c', uid: bag.uid, i: 0 } });
+  assert.deepEqual(send(sim, { type: 'useItem', from: { t: 'c', uid: bag.uid, i: 0 } }), ['Smack.']);
   assert.equal(bag.items[0].count, 9);
   assert.ok(sim.player.food > 179000 && sim.player.food <= 180000);
 

@@ -624,6 +624,7 @@ export class InventoryController {
       return;
     }
     player.food = food + seconds * 1000;
+    this.message(player, 'Smack.');
     if ((src.item.count || 1) > 1) src.item.count--;
     else src.remove();
   }
