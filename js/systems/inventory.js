@@ -507,9 +507,12 @@ export class InventoryController {
     const z = player.z || 0;
     if (!Number.isInteger(target.x) || !Number.isInteger(target.y) || (target.z ?? z) !== z) return;
     if (!this.sim.movement.isInsideMap(target.x, target.y)) return;
-    if (Math.max(Math.abs(target.x - player.x), Math.abs(target.y - player.y)) > POTION_RANGE ||
-        !this.sim.movement.hasLineOfSight(player, target)) {
+    if (Math.max(Math.abs(target.x - player.x), Math.abs(target.y - player.y)) > POTION_RANGE) {
       this.message(player, 'Longe demais.');
+      return;
+    }
+    if (!this.sim.movement.hasLineOfSight(player, target)) {
+      this.message(player, 'Tem algo no caminho.');
       return;
     }
     const at = (e) => e.x === target.x && e.y === target.y && (e.z || 0) === z && e.isAlive();

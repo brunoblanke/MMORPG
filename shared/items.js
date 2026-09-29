@@ -21,9 +21,9 @@ export const DEATH_DROP_CHANCE = 0.3;
 export const USE_COOLDOWN_MS = 1000;
 
 // Potion: usada com a mira em player (cura) ou no chão (vaza), até
-// POTION_RANGE sqm; sempre vira EMPTY_VIAL. O respingo some em
+// POTION_RANGE sqm (o mesmo alcance de jogar item); sempre vira EMPTY_VIAL. O respingo some em
 // SPLASH_STAGES quadros de SPLASH_STAGE_MS.
-export const POTION_RANGE = 7;
+export const POTION_RANGE = THROW_RANGE;
 export const EMPTY_VIAL = 'itens/liquidos/vial';
 export const SPLASH_HP = 'itens/liquidos/respingo-vida';
 export const SPLASH_MANA = 'itens/liquidos/respingo-mana';
