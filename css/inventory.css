@@ -106,8 +106,9 @@
 .inv-skline.toggles:hover .inv-skrow span{ color:var(--inv-text); }
 .inv-skbonus{ font-style:normal; color:var(--inv-accent); }
 .inv-vitals{ gap:6px; padding:7px 8px; border-bottom:none; }
-.inv-vbar{ flex:1; height:12px; border-radius:3px; background:var(--inv-slot); border:1px solid var(--inv-line); overflow:hidden; }
+.inv-vbar{ position:relative; flex:1; height:16px; border-radius:3px; background:var(--inv-slot); border:1px solid var(--inv-line); overflow:hidden; }
 .inv-vbar i{ display:block; height:100%; transition:width .2s; }
+.inv-vbar span{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; color:#fff; text-shadow:0 0 2px #000, 0 1px 1px #000; white-space:nowrap; pointer-events:none; font-variant-numeric:tabular-nums; }
 .inv-vbar.hp i{ background:linear-gradient(180deg, #4fcf9f, #3fb68b); }
 .inv-vbar.mana i{ background:linear-gradient(180deg, #6fa3ff, #4c8dff); }
 .inv-sksep{ height:1px; margin:7px -12px 4px; background:var(--inv-line-soft); }

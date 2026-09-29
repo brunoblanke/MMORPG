@@ -366,3 +366,16 @@ test('com alvo, mover o player (tecla ou clique no chão) troca o seguir pra par
   runFor(sim, 100);
   assert.equal(sim.player.followMode, false);
 });
+
+test('com alvo e seguir ligado, um caminho interno (ir abrir uma caixa…) só pausa o seguir: ao chegar, volta a perseguir', () => {
+  const sim = buildGame({ objects: GROUND, enemies: [[14, 5, 0]], player: { x: 4, y: 5, z: 0 } });
+  const enemy = sim.enemies[0];
+  enemy.detectionRadius = 0;
+  enemy.patrolRadius = 0;
+  sim.enqueue('player1', { type: 'attack', targetId: enemy.id });
+  runFor(sim, 50);
+  sim.control.setWalkTarget(sim.player, 4, 7, 0);
+  assert.equal(sim.player.autoFollow, true);
+  runFor(sim, 8000);
+  assert.ok(Math.abs(sim.player.x - enemy.x) <= 1 && Math.abs(sim.player.y - enemy.y) <= 1, `player em (${sim.player.x}, ${sim.player.y}), inimigo em (${enemy.x}, ${enemy.y}), alvo ${sim.player.target && sim.player.target.id}`);
+});

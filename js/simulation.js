@@ -241,6 +241,7 @@ export class Simulation {
     for (const player of this.players) {
       this.control.update(player, now);
       this.inventory.update(player);
+      this.inventory.digest(player, now);
     }
 
     for (const enemy of this.enemies) {

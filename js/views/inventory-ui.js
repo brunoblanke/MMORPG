@@ -2,7 +2,7 @@
 
 import { getAsset, spriteFrame, splitType, objectIdType, displayName } from '../../shared/assets.js';
 import { getLevel } from '../core/geometry.js';
-import { itemInfo, weightOf } from '../../shared/items.js';
+import { itemInfo, weightOf, stackFrame } from '../../shared/items.js';
 import { PLAYER_SPRITES, DEFAULT_GENDER } from '../../shared/catalog.js';
 import { CORPSE_ROW } from './sprite-registry.js';
 
@@ -142,7 +142,7 @@ export class InventoryUI {
     if (!this.groundGhost) {
       this.groundGhost = document.createElement('div');
       this.groundGhost.className = 'inv-ghost';
-      this.groundGhost.innerHTML = obj.isCorpse ? this.corpseSpriteHtml(obj) : this.spriteHtml(objectIdType(obj.id)) + (obj.count > 1 ? `<span class="inv-count">${obj.count}</span>` : '');
+      this.groundGhost.innerHTML = obj.isCorpse ? this.corpseSpriteHtml(obj) : this.spriteHtml(objectIdType(obj.id), obj.count) + (obj.count > 1 ? `<span class="inv-count">${obj.count}</span>` : '');
       document.body.appendChild(this.groundGhost);
     }
     this.groundGhost.style.left = `${this.mouse.x + 6}px`;
@@ -437,16 +437,18 @@ export class InventoryUI {
 
   // ================================================================================================================================================================================================================================================
   // spriteHtml
-  // O 1º quadro do item em 32 px (recortado da folha do gerador).
+  // O 1º quadro do item em 32 px (recortado da folha do gerador); item de
+  // pilha usa o quadro da quantidade (stackFrame).
 
-  spriteHtml(type) {
+  spriteHtml(type, count = 1) {
     const frame = spriteFrame(type);
     const asset = getAsset(splitType(type).asset);
     if (!frame || !asset) return '<i class="inv-spr missing"></i>';
     const scale = 32 / frame.size;
     const width = Math.max(1, asset.quadros || 1) * asset.quadro * scale;
     const height = asset.quadro * scale;
-    return `<i class="inv-spr" style="background-image:url(${frame.url});background-size:${width}px ${height}px;background-position:${-frame.x * scale}px ${-frame.y * scale}px"></i>`;
+    const x = frame.x + (asset.pilha ? Math.min(stackFrame(count), (asset.quadros || 1) - 1) * asset.quadro : 0);
+    return `<i class="inv-spr" style="background-image:url(${frame.url});background-size:${width}px ${height}px;background-position:${-x * scale}px ${-frame.y * scale}px"></i>`;
   }
 
   // ================================================================================================================================================================================================================================================
@@ -477,7 +479,7 @@ export class InventoryUI {
     const open = item.items && this.isOpen(item.uid) ? '<span class="inv-open"></span>' : '';
     const attrs = [info.atk && `Atk ${info.atk}`, info.def && `Def ${info.def}`, info.ml && `ML ${info.ml}`, info.speed && `Speed +${info.speed}`].filter(Boolean).join(' · ');
     const title = `${info.name}${item.count > 1 ? ` (${item.count})` : ''}${attrs ? ` · ${attrs}` : ''} · ${weightOf(item)} oz${item.items ? ' · duplo clique abre' : ''}`;
-    return `<div class="inv-slot filled" data-place="${key}" data-uid="${item.uid}" title="${title}">${this.spriteHtml(item.type)}${count}${open}</div>`;
+    return `<div class="inv-slot filled" data-place="${key}" data-uid="${item.uid}" title="${title}">${this.spriteHtml(item.type, item.count)}${count}${open}</div>`;
   }
 
   // ================================================================================================================================================================================================================================================
@@ -559,7 +561,7 @@ export class InventoryUI {
       line('mana', 'Mana', fmt(stats.mana), pctOf(stats.mana, stats.maxMana), 'mp', `${fmt(stats.mana)} de ${fmt(stats.maxMana)}`),
       line('cap', 'Capacity', Math.floor(free), pctOf(free, cap.max), 'cap', `${Math.floor(free)} de ${Math.floor(cap.max)} oz livres`),
       line('speed', 'Speed', fmt(stats.speed || 0), pctOf(stats.speed || 0, SPEED_FULL), 'speed', `${stats.speed || 0} (passo mais rápido a partir de ${SPEED_FULL})`),
-      line('food', 'Food', '—'),
+      line('food', 'Food', stats.food ? `${Math.floor(stats.food / 60)}:${String(stats.food % 60).padStart(2, '0')}` : '—'),
       '<div class="inv-sksep"></div>',
       ...SKILL_ORDER.map(skill)
     ].join('');
@@ -587,17 +589,19 @@ export class InventoryUI {
 
   // ================================================================================================================================================================================================================================================
   // vitalsHtml
-  // Barras de vida e mana, só o desenho (sem números). A janela toda é a alça:
-  // dá pra arrastar, mas não minimizar nem fechar.
+  // Barras de vida e mana com o valor atual/máximo dentro. A janela toda é a
+  // alça: dá pra arrastar, mas não minimizar nem fechar.
 
   vitalsHtml(win) {
     const stats = this.view.stats;
     if (!stats) return '';
     const pct = (value, max) => (max > 0 ? Math.max(0, Math.min(100, value / max * 100)) : 0);
+    const fmt = (n) => Number(n).toLocaleString('pt-BR');
+    const bar = (kind, value, max) => `<div class="inv-vbar ${kind}"><i style="width:${pct(value, max)}%"></i><span>${fmt(value)} / ${fmt(max)}</span></div>`;
     return `<section class="inv-win" data-win="${win.id}">
       <header class="inv-head inv-vitals" aria-label="Vida e mana">
-        <div class="inv-vbar hp"><i style="width:${pct(stats.hp, stats.maxHp)}%"></i></div>
-        <div class="inv-vbar mana"><i style="width:${pct(stats.mana, stats.maxMana)}%"></i></div>
+        ${bar('hp', stats.hp, stats.maxHp)}
+        ${bar('mana', stats.mana, stats.maxMana)}
       </header>
     </section>`;
   }
@@ -766,7 +770,7 @@ export class InventoryUI {
   startItemDrag(evt, from, item, sourceEl) {
     const ghost = document.createElement('div');
     ghost.className = 'inv-ghost';
-    ghost.innerHTML = this.spriteHtml(item.type) + (item.count > 1 ? `<span class="inv-count">${item.count}</span>` : '');
+    ghost.innerHTML = this.spriteHtml(item.type, item.count) + (item.count > 1 ? `<span class="inv-count">${item.count}</span>` : '');
     document.body.appendChild(ghost);
     sourceEl.classList.add('source');
     document.querySelectorAll('.inv-slot').forEach(el => {
@@ -984,7 +988,7 @@ export class InventoryUI {
       if (!slot || !inPanels(slot)) return false;
       const place = this.placeOf(slot);
       const item = this.itemAt(place);
-      if (item && !item.items && itemInfo(item.type).heal && (place.t === 'e' || place.t === 'c')) {
+      if (item && !item.items && (itemInfo(item.type).heal || itemInfo(item.type).food) && (place.t === 'e' || place.t === 'c')) {
         this.game.send({ type: 'useItem', from: place });
         return true;
       }

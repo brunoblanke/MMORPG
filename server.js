@@ -137,6 +137,7 @@ function descreverSprite(id, grupo, pasta, nome, receita) {
     url: `/gerador/saida/${id}.png`,
     quadro: formato.quadro || 32,
     quadros: formato.quadros || 1,
+    pilha: !!formato.pilha,
     variacoes: receita.variacoesDoMeio || 0,
     ordem: formato.pecas || null,
     pecas: Object.keys(receita.pecas || receita.slots || {}),

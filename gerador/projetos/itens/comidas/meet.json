@@ -1,7 +1,8 @@
 {
   "formato": {
     "quadro": 32,
-    "quadros": 1
+    "quadros": 8,
+    "pilha": true
   },
   "objeto": {
     "tibia": {
@@ -19,7 +20,8 @@
     "atk": 0,
     "def": 0,
     "ml": 0,
-    "speed": 0
+    "speed": 0,
+    "alimento": 180
   },
   "ferramenta": "objetos",
   "grupo": "itens",

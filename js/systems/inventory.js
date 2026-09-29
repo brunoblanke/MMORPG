@@ -4,7 +4,7 @@ import { GameObject } from '../models/game-object.js';
 import { getAdjacentPositions, isPositionAdjacentTo } from '../utils/helpers.js';
 import { objectIdType, objectProps, getAsset, splitType } from '../../shared/assets.js';
 import {
-  EQUIP_SLOTS, THROW_RANGE, DEATH_DROP_CHANCE, USE_COOLDOWN_MS, itemInfo, capacityFor, newItem, weightOf, contains, findInTree, fromPlain, equipBonus
+  EQUIP_SLOTS, THROW_RANGE, DEATH_DROP_CHANCE, USE_COOLDOWN_MS, FOOD_MAX_SECONDS, REGEN_MS, REGEN_HP, REGEN_MANA, itemInfo, capacityFor, newItem, weightOf, contains, findInTree, fromPlain, equipBonus
 } from '../../shared/items.js';
 import { PLAYER_SPRITES, DEFAULT_GENDER } from '../../shared/catalog.js';
 import { SKILL_KEYS } from '../../shared/skills.js';
@@ -446,15 +446,21 @@ export class InventoryController {
 
   // ================================================================================================================================================================================================================================================
   // use
-  // Comando useItem: usa um item que o player carrega (potion). Sorteia a
-  // vida e a mana dentro da faixa do item (sem passar do máximo), gasta uma
-  // unidade e espera USE_COOLDOWN_MS até o próximo uso.
+  // Comando useItem: usa um item que o player carrega. Comida soma tempo de
+  // regeneração (até FOOD_MAX_SECONDS; passou disso, "Você está cheio.").
+  // Potion sorteia a vida e a mana dentro da faixa do item (sem passar do
+  // máximo) e espera USE_COOLDOWN_MS até o próximo uso. Gasta uma unidade.
 
   use(player, from) {
     if (!from || (from.t !== 'e' && from.t !== 'c')) return;
     const src = this.source(player, from);
     if (src.error || !src.carried) return;
-    const heal = itemInfo(src.item.type).heal;
+    const info = itemInfo(src.item.type);
+    if (info.food) {
+      this.eat(player, src, info.food);
+      return;
+    }
+    const heal = info.heal;
     if (!heal) return;
 
     const now = this.sim.time || 0;
@@ -473,6 +479,44 @@ export class InventoryController {
     if ((src.item.count || 1) > 1) src.item.count--;
     else src.remove();
     this.sim.emit({ type: 'heal', playerId: player.id, x: player.x, y: player.y, hp, mana });
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // eat
+  // Soma os segundos da comida no estômago do player (player.food, em ms).
+
+  eat(player, src, seconds) {
+    const food = player.food || 0;
+    if (food + seconds * 1000 > FOOD_MAX_SECONDS * 1000) {
+      this.message(player, 'Você está cheio.');
+      return;
+    }
+    player.food = food + seconds * 1000;
+    if ((src.item.count || 1) > 1) src.item.count--;
+    else src.remove();
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // digest
+  // Com comida no estômago, o player recupera REGEN_HP de vida e REGEN_MANA
+  // de mana a cada REGEN_MS (como no Tibia sem vocação); a comida vai
+  // acabando com o tempo.
+
+  digest(player, now) {
+    const last = player.digestAt ?? now;
+    player.digestAt = now;
+    if (!player.food || !player.isAlive()) {
+      player.regenElapsed = 0;
+      return;
+    }
+    const elapsed = Math.min(now - last, player.food);
+    player.food = Math.max(0, player.food - elapsed);
+    player.regenElapsed = (player.regenElapsed || 0) + elapsed;
+    while (player.regenElapsed >= REGEN_MS) {
+      player.regenElapsed -= REGEN_MS;
+      player.currentHp = Math.min(player.hp, player.currentHp + REGEN_HP);
+      player.mana = Math.min(player.maxMana, player.mana + REGEN_MANA);
+    }
   }
 
   // ================================================================================================================================================================================================================================================
@@ -578,6 +622,7 @@ export class InventoryController {
       mana: player.mana,
       maxMana: player.maxMana,
       speed: player.spd,
+      food: Math.ceil((player.food || 0) / 1000),
       skills
     };
   }
