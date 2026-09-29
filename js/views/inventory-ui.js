@@ -155,7 +155,7 @@ export class InventoryUI {
     if (!this.groundGhost) {
       this.groundGhost = document.createElement('div');
       this.groundGhost.className = 'inv-ghost';
-      this.groundGhost.innerHTML = obj.isCorpse ? this.corpseSpriteHtml(obj) : this.spriteHtml(objectIdType(obj.id), obj.count) + (obj.count > 1 ? `<span class="inv-count">${obj.count}</span>` : '');
+      this.groundGhost.innerHTML = obj.isCorpse ? this.corpseSpriteHtml(obj) : this.spriteHtml(objectIdType(obj.id), obj.count);
       document.body.appendChild(this.groundGhost);
     }
     this.groundGhost.style.left = `${this.mouse.x + 6}px`;
@@ -783,7 +783,7 @@ export class InventoryUI {
   startItemDrag(evt, from, item, sourceEl) {
     const ghost = document.createElement('div');
     ghost.className = 'inv-ghost';
-    ghost.innerHTML = this.spriteHtml(item.type, item.count) + (item.count > 1 ? `<span class="inv-count">${item.count}</span>` : '');
+    ghost.innerHTML = this.spriteHtml(item.type, item.count);
     document.body.appendChild(ghost);
     sourceEl.classList.add('source');
     document.querySelectorAll('.inv-slot').forEach(el => {
