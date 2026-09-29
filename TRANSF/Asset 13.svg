@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.79 19.19">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: none;
+        stroke: #000;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-width: 1.91px;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <g>
+      <path class="cls-1" d="M1.55.95l13.11,13.11M18.24.95L5.13,14.06"/>
+      <path class="cls-1" d="M12.28,16.45l4.77-4.77M2.74,11.68l4.77,4.77"/>
+      <path class="cls-1" d="M15.85,15.26l2.98,2.98M3.93,15.26l-2.98,2.98"/>
+    </g>
+  </g>
+</svg>
