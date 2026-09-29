@@ -45,6 +45,7 @@ const creatures = {
 const statusEl = document.getElementById('creatureStatus');
 const nameEl = document.getElementById('creatureName');
 const folderEl = document.getElementById('creatureFolder');
+const fleeEl = document.getElementById('creatureFlee');
 const infoEl = document.getElementById('creatureInfo');
 const thumbCanvas = document.getElementById('creatureThumb');
 const walkCanvas = document.getElementById('walkPreview');
@@ -67,6 +68,7 @@ function initCreatures() {
     if (file) setCorpse(creatures.selectedStage, { png: await readPngFile(file) });
   });
   nameEl.addEventListener('input', () => { creatures.dirty = true; });
+  fleeEl.addEventListener('input', () => { creatures.dirty = true; });
   fillFolderSelect(folderEl, CATEGORY);
   folderEl.addEventListener('change', () => { creatures.dirty = true; });
   fetch('/api/paleta').then(r => r.json()).then(data => {
@@ -411,6 +413,14 @@ function drawWalkPreview() {
 }
 
 // ================================================================================================================================================================================================================================================
+// fleePercent
+// Vida (% do máximo) em que a criatura foge do player; 0 = nunca foge.
+
+function fleePercent() {
+  return Math.max(0, Math.min(100, Math.floor(Number(fleeEl.value)) || 0));
+}
+
+// ================================================================================================================================================================================================================================================
 // save
 
 async function save() {
@@ -448,7 +458,8 @@ async function save() {
       linhas: ['sul', 'norte', 'leste', 'oeste', 'cadáver: fresco, apodrecendo, ossos']
     },
     criatura: { id: creatures.outfit.id, cores: creatures.colors, addons: creatures.addons },
-    cadaver: creatures.corpse
+    cadaver: creatures.corpse,
+    propriedades: { foge: fleePercent() }
   };
 
   try {
@@ -474,6 +485,7 @@ function openRecipe(recipe) {
   creatures.outfit = saved.id ? creatureInfo(saved.id) : null;
   creatures.colors = Array.isArray(saved.cores) && saved.cores.length === 4 ? [...saved.cores] : [...DEFAULT_COLORS];
   creatures.addons = Array.isArray(saved.addons) ? [...saved.addons] : [];
+  fleeEl.value = String(Math.max(0, Math.min(100, Math.floor(Number((recipe.propriedades || {}).foge)) || 0)));
   creatures.corpse = {};
   creatures.corpseImages.clear();
   for (const stage of CORPSE_STAGES) {

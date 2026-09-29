@@ -4,7 +4,7 @@ import { Entity } from './entity.js';
 import { distance } from '../utils/helpers.js';
 import { CONFIG } from '../config.js';
 
-export const AI_STATE = { PATROL: 'patrol', CHASE: 'chase' };
+export const AI_STATE = { PATROL: 'patrol', CHASE: 'chase', FLEE: 'flee' };
 
 export class Enemy extends Entity {
   constructor(data) {

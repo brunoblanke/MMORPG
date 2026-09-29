@@ -2,6 +2,7 @@
 
 import { isPositionAdjacentTo, distance } from '../utils/helpers.js';
 import { getLevel } from '../core/geometry.js';
+import { AI_STATE } from '../models/enemy.js';
 import { CONFIG } from '../config.js';
 import { equipBonus, itemInfo } from '../../shared/items.js';
 import { addSkillTry } from '../../shared/skills.js';
@@ -146,7 +147,7 @@ export class CombatController {
   // ================================================================================================================================================================================================================================================
   // processEnemies
   // Inimigo que vê o player e está colado nele, no mesmo andar, ataca — a não
-  // ser que o player esteja na zona segura.
+  // ser que o player esteja na zona segura ou o inimigo esteja fugindo.
   // player.isTarget: algum inimigo o vê (marca vermelha no player).
 
   processEnemies(player, now) {
@@ -164,7 +165,8 @@ export class CombatController {
 
       const isAdjacent = isPositionAdjacentTo(enemy.x, enemy.y, player.x, player.y);
       const canReach = getLevel(enemy) === getLevel(player);
-      if (isAdjacent && canReach && player.isAlive()) {
+      const fleeing = enemy.ai && enemy.ai.state === AI_STATE.FLEE;
+      if (isAdjacent && canReach && !fleeing && player.isAlive()) {
         this.attackTarget(enemy, player, now);
       }
     }

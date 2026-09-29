@@ -43,5 +43,8 @@
   "ferramenta": "criaturas",
   "grupo": "criaturas",
   "pasta": "mamiferos",
-  "nome": "rat"
+  "nome": "rat",
+  "propriedades": {
+    "foge": 20
+  }
 }

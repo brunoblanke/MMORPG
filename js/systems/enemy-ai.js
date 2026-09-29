@@ -4,11 +4,14 @@ import { calculateMoveDelay, distance, getAdjacentPositions, isPositionAdjacentT
 import { getLevel } from '../core/geometry.js';
 import { AI_STATE } from '../models/enemy.js';
 import { CONFIG } from '../config.js';
+import { getAsset } from '../../shared/assets.js';
 
 // Máquina de estados de cada inimigo (enemy.ai):
 //
 //   patrol ──(vê o player e tem rota)──▶ chase
 //   chase ──(perdeu o player de vista ou ficou sem rota)──▶ patrol
+//   qualquer um ──(vê o player com a vida no limite de fuga)──▶ flee
+//   flee ──(perdeu o player de vista)──▶ patrol
 //
 // patrol: parado (ai.resumeAt) → anda até um sqm sorteado da área → para.
 // chase: vai pra um sqm livre colado no player (ai.slot), ataca dali e de
@@ -34,11 +37,57 @@ export class EnemyAI {
     const seesPlayer = !!player && !this.movement.world.isInSafeZone(player) &&
       getLevel(enemy) === getLevel(player) && enemy.isInDetectionRange(player.x, player.y);
 
+    if (seesPlayer && this.shouldFlee(enemy)) {
+      this.flee(enemy, player, enemies, timestamp);
+      return;
+    }
+    if (enemy.ai.state === AI_STATE.FLEE) {
+      this.enterPatrol(enemy, timestamp);
+    }
+
     if (enemy.ai.state === AI_STATE.CHASE) {
       this.updateChase(enemy, player, enemies, timestamp, searchBounds, seesPlayer);
     } else {
       this.updatePatrol(enemy, player, enemies, timestamp, searchBounds, seesPlayer);
     }
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // shouldFlee
+  // A criatura foge com a vida em até `foge`% (gerador → Criaturas; 0 = nunca).
+
+  shouldFlee(enemy) {
+    const asset = getAsset(enemy.creature);
+    const percent = Number(asset && asset.propriedades && asset.propriedades.foge) || 0;
+    return percent > 0 && enemy.currentHp > 0 && enemy.currentHp <= enemy.maxHp * percent / 100;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // flee
+  // Fugindo: não ataca e, a cada passo, vai pro sqm vizinho livre que mais o
+  // afasta do player. Encurralado (nenhum sqm afasta), fica parado.
+
+  flee(enemy, player, enemies, timestamp) {
+    if (enemy.ai.state !== AI_STATE.FLEE) {
+      enemy.ai.state = AI_STATE.FLEE;
+      enemy.ai.slot = null;
+      enemy.ai.sidestepAt = null;
+      enemy.route = { path: null, x: null, y: null };
+      console.log(`🏃 Inimigo ${enemy.id} fugindo com ${enemy.currentHp}/${enemy.maxHp} de vida`);
+    }
+    if (timestamp - enemy.lastMoveTime < calculateMoveDelay(enemy.spd)) return;
+    const here = distance(enemy.x, enemy.y, player.x, player.y);
+    let best = null;
+    let bestDist = here;
+    for (const pos of getAdjacentPositions(enemy.x, enemy.y)) {
+      const dx = pos.x - enemy.x;
+      const dy = pos.y - enemy.y;
+      const landing = this.movement.resolveStep(enemy, dx, dy, { sameFloor: true });
+      if (!landing || this.isOccupiedByOther(enemy, enemies, landing.x, landing.y)) continue;
+      const d = distance(landing.x, landing.y, player.x, player.y);
+      if (d > bestDist) { bestDist = d; best = { dx, dy }; }
+    }
+    if (best) this.movement.moveEntity(enemy, best.dx, best.dy, timestamp);
   }
 
   // ================================================================================================================================================================================================================================================
