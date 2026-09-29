@@ -4,7 +4,7 @@
     [
       "Border:estrutura/pisos/piso-terra-2:no",
       169,
-      165,
+      155,
       -1,
       0,
       false,
@@ -14,7 +14,7 @@
     [
       "Border:estrutura/pisos/piso-terra-2:n",
       170,
-      165,
+      155,
       -1,
       0,
       false,
@@ -24,7 +24,27 @@
     [
       "Border:estrutura/pisos/piso-terra-2:n",
       171,
-      165,
+      155,
+      -1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:nl",
+      172,
+      155,
+      -1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:no",
+      167,
+      156,
       -1,
       0,
       false,
@@ -33,17 +53,840 @@
     ],
     [
       "Border:estrutura/pisos/piso-terra-2:n",
+      168,
+      156,
+      -1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:int-no",
+      169,
+      156,
+      -1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      170,
+      156,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7267
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      171,
+      156,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7268
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:int-nl",
+      172,
+      156,
+      -1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:nl",
+      173,
+      156,
+      -1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:o",
+      167,
+      157,
+      -1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      168,
+      157,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7265
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      169,
+      157,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7266
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      170,
+      157,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7292
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      171,
+      157,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7269
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      172,
+      157,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7270
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:int-nl",
+      173,
+      157,
+      -1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:nl",
+      174,
+      157,
+      -1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:o",
+      167,
+      158,
+      -1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      168,
+      158,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7264
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      169,
+      158,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7293
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      170,
+      158,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7291
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      171,
+      158,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7290
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      172,
+      158,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7271
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      173,
+      158,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7272
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:l",
+      174,
+      158,
+      -1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:o",
+      167,
+      159,
+      -1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      168,
+      159,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7263
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      169,
+      159,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7287
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      170,
+      159,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7286
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      171,
+      159,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7285
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      172,
+      159,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7284
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      173,
+      159,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7273
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:l",
+      174,
+      159,
+      -1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:o",
+      167,
+      160,
+      -1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      168,
+      160,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7262
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      169,
+      160,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7288
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      170,
+      160,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7294
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      171,
+      160,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7289
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      172,
+      160,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7283
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      173,
+      160,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7274
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:l",
+      174,
+      160,
+      -1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:o",
+      167,
+      161,
+      -1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      168,
+      161,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7261
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      169,
+      161,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7297
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      170,
+      161,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7299
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      171,
+      161,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7295
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      172,
+      161,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7296
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      173,
+      161,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7275
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:int-nl",
+      174,
+      161,
+      -1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:nl",
+      175,
+      161,
+      -1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:o",
+      167,
+      162,
+      -1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      168,
+      162,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7260
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      169,
+      162,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7259
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      170,
+      162,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7300
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      171,
+      162,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7282
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      172,
+      162,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7304
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      173,
+      162,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7303
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      174,
+      162,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7276
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:l",
+      175,
+      162,
+      -1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:so",
+      167,
+      163,
+      -1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:int-so",
+      168,
+      163,
+      -1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      169,
+      163,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7258
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      170,
+      163,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7298
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      171,
+      163,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7305
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      172,
+      163,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7281
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      173,
+      163,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7302
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      174,
+      163,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7277
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:l",
+      175,
+      163,
+      -1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:so",
+      168,
+      164,
+      -1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:int-so",
+      169,
+      164,
+      -1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      170,
+      164,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7257
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      171,
+      164,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7301
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      172,
+      164,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7280
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      173,
+      164,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7279
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      174,
+      164,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7278
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:l",
+      175,
+      164,
+      -1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:o",
+      169,
+      165,
+      -1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      170,
+      165,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7256
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      171,
+      165,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7255
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
       172,
       165,
       -1,
       0,
       false,
       false,
-      false
+      false,
+      7254
     ],
     [
-      "Border:estrutura/pisos/piso-terra-2:n",
+      "estrutura/pisos/piso-terra-2",
       173,
+      165,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      7253
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:int-nl",
+      174,
       165,
       -1,
       0,
@@ -52,7 +895,7 @@
       false
     ],
     [
-      "Border:estrutura/pisos/piso-terra-2:n",
+      "Border:estrutura/pisos/piso-terra-2:int-sl",
       174,
       165,
       -1,
@@ -63,6 +906,16 @@
     ],
     [
       "Border:estrutura/pisos/piso-terra-2:nl",
+      175,
+      165,
+      -1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:sl",
       175,
       165,
       -1,
@@ -5077,7 +5930,7 @@
       false,
       false,
       false,
-      3166
+      7102
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -5088,7 +5941,17 @@
       false,
       false,
       false,
-      3167
+      7101
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:no",
+      144,
+      151,
+      0,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -5099,7 +5962,17 @@
       false,
       false,
       false,
-      3168
+      7100
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:n",
+      145,
+      151,
+      0,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -5110,7 +5983,17 @@
       false,
       false,
       false,
-      3169
+      7099
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:n",
+      146,
+      151,
+      0,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -5121,7 +6004,17 @@
       false,
       false,
       false,
-      3194
+      7098
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:n",
+      147,
+      151,
+      0,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -5132,7 +6025,17 @@
       false,
       false,
       false,
-      3195
+      7097
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:nl",
+      148,
+      151,
+      0,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -5143,7 +6046,7 @@
       false,
       false,
       false,
-      3196
+      7096
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -5154,7 +6057,7 @@
       false,
       false,
       false,
-      3210
+      7095
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -5165,7 +6068,7 @@
       false,
       false,
       false,
-      3211
+      7094
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -5176,7 +6079,7 @@
       false,
       false,
       false,
-      3222
+      7093
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -5187,7 +6090,7 @@
       false,
       false,
       false,
-      3223
+      7092
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -5198,7 +6101,7 @@
       false,
       false,
       false,
-      3232
+      7091
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -5209,7 +6112,7 @@
       false,
       false,
       false,
-      3240
+      7090
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -5220,7 +6123,7 @@
       false,
       false,
       false,
-      3241
+      7089
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -5231,7 +6134,7 @@
       false,
       false,
       false,
-      3250
+      7088
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -5242,7 +6145,7 @@
       false,
       false,
       false,
-      3258
+      7087
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -5253,7 +6156,7 @@
       false,
       false,
       false,
-      3259
+      7086
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -5264,7 +6167,7 @@
       false,
       false,
       false,
-      3270
+      7085
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -5275,7 +6178,7 @@
       false,
       false,
       false,
-      3271
+      7084
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -5286,7 +6189,7 @@
       false,
       false,
       false,
-      3282
+      7083
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -5297,7 +6200,7 @@
       false,
       false,
       false,
-      3283
+      7082
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -5308,7 +6211,7 @@
       false,
       false,
       false,
-      3292
+      7081
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -5319,7 +6222,7 @@
       false,
       false,
       false,
-      3134
+      7080
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -5330,7 +6233,7 @@
       false,
       false,
       false,
-      3135
+      7079
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -5341,7 +6244,7 @@
       false,
       false,
       false,
-      3136
+      7078
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -5352,7 +6255,7 @@
       false,
       false,
       false,
-      3137
+      7077
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -5363,7 +6266,7 @@
       false,
       false,
       false,
-      3138
+      7076
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -5374,7 +6277,7 @@
       false,
       false,
       false,
-      3139
+      7075
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -5385,7 +6288,7 @@
       false,
       false,
       false,
-      3304
+      7074
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -5396,7 +6299,7 @@
       false,
       false,
       false,
-      3310
+      7073
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -5407,7 +6310,7 @@
       false,
       false,
       false,
-      3456
+      7072
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -5418,7 +6321,7 @@
       false,
       false,
       false,
-      3462
+      7071
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -5429,7 +6332,7 @@
       false,
       false,
       false,
-      3472
+      7070
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -5966,7 +6869,28 @@
       false,
       false,
       false,
-      3172
+      7103
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:no",
+      143,
+      152,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      144,
+      152,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6766
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -5977,7 +6901,17 @@
       false,
       false,
       false,
-      3173
+      6950
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:int-no",
+      144,
+      152,
+      0,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -5988,7 +6922,28 @@
       false,
       false,
       false,
-      3174
+      6951
+    ],
+    [
+      "estrutura/pisos/piso-grama-2",
+      145,
+      152,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7242
+    ],
+    [
+      "estrutura/natureza/arvore-1",
+      145,
+      152,
+      0,
+      0,
+      false,
+      false,
+      true
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -5999,7 +6954,18 @@
       false,
       false,
       false,
-      3175
+      6952
+    ],
+    [
+      "estrutura/pisos/piso-grama-2",
+      146,
+      152,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7243
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -6010,7 +6976,39 @@
       false,
       false,
       false,
-      3197
+      6953
+    ],
+    [
+      "estrutura/pisos/piso-grama-2",
+      147,
+      152,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7244
+    ],
+    [
+      "estrutura/natureza/pinheiro-1",
+      147,
+      152,
+      0,
+      0,
+      false,
+      false,
+      true
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      148,
+      152,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6684
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -6021,7 +7019,28 @@
       false,
       false,
       false,
-      3198
+      6954
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:int-nl",
+      148,
+      152,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      149,
+      152,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6685
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -6032,7 +7051,28 @@
       false,
       false,
       false,
-      3199
+      6955
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:nl",
+      149,
+      152,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      150,
+      152,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6686
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -6043,7 +7083,18 @@
       false,
       false,
       false,
-      3212
+      6956
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      151,
+      152,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6687
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -6054,7 +7105,18 @@
       false,
       false,
       false,
-      3213
+      6957
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      152,
+      152,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6688
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -6065,7 +7127,18 @@
       false,
       false,
       false,
-      3224
+      6958
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      153,
+      152,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6702
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -6076,7 +7149,18 @@
       false,
       false,
       false,
-      3225
+      6959
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      154,
+      152,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6703
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -6087,7 +7171,18 @@
       false,
       false,
       false,
-      3233
+      6960
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      155,
+      152,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6704
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -6098,7 +7193,18 @@
       false,
       false,
       false,
-      3242
+      6961
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      156,
+      152,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6873
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -6109,7 +7215,18 @@
       false,
       false,
       false,
-      3243
+      6962
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      157,
+      152,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6740
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -6120,7 +7237,18 @@
       false,
       false,
       false,
-      3251
+      6963
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      158,
+      152,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6741
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -6131,7 +7259,18 @@
       false,
       false,
       false,
-      3260
+      6964
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      159,
+      152,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6742
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -6142,7 +7281,18 @@
       false,
       false,
       false,
-      3261
+      6965
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      160,
+      152,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6743
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -6153,7 +7303,18 @@
       false,
       false,
       false,
-      3272
+      6966
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      161,
+      152,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6744
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -6164,7 +7325,18 @@
       false,
       false,
       false,
-      3273
+      6967
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      162,
+      152,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6753
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -6175,7 +7347,18 @@
       false,
       false,
       false,
-      3284
+      6968
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      163,
+      152,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6871
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -6186,7 +7369,18 @@
       false,
       false,
       false,
-      3285
+      6969
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      164,
+      152,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6872
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -6197,7 +7391,18 @@
       false,
       false,
       false,
-      3293
+      6970
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      165,
+      152,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6866
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -6208,7 +7413,18 @@
       false,
       false,
       false,
-      3140
+      6971
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      166,
+      152,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6867
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -6219,7 +7435,18 @@
       false,
       false,
       false,
-      3141
+      6972
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      167,
+      152,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6868
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -6230,7 +7457,18 @@
       false,
       false,
       false,
-      3142
+      6973
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      168,
+      152,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6869
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -6241,7 +7479,18 @@
       false,
       false,
       false,
-      3143
+      6974
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      169,
+      152,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6870
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -6252,7 +7501,18 @@
       false,
       false,
       false,
-      3144
+      6975
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      170,
+      152,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6860
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -6263,7 +7523,18 @@
       false,
       false,
       false,
-      3145
+      6976
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      171,
+      152,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6861
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -6274,7 +7545,18 @@
       false,
       false,
       false,
-      3305
+      6977
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      172,
+      152,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6862
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -6285,7 +7567,18 @@
       false,
       false,
       false,
-      3311
+      6978
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      173,
+      152,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6863
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -6296,7 +7589,18 @@
       false,
       false,
       false,
-      3457
+      6979
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      174,
+      152,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6864
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -6307,7 +7611,7 @@
       false,
       false,
       false,
-      3463
+      6980
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -6318,7 +7622,7 @@
       false,
       false,
       false,
-      3474
+      7069
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -6855,7 +8159,17 @@
       false,
       false,
       false,
-      3178
+      7104
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:o",
+      143,
+      153,
+      0,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -6866,10 +8180,21 @@
       false,
       false,
       false,
-      3179
+      6949
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-grama-2",
+      144,
+      153,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7241
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       145,
       153,
       0,
@@ -6877,10 +8202,21 @@
       false,
       false,
       false,
-      3180
+      6771
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-grama-2",
+      145,
+      153,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7228
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       146,
       153,
       0,
@@ -6888,10 +8224,21 @@
       false,
       false,
       false,
-      3181
+      6673
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-grama-2",
+      146,
+      153,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7227
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       147,
       153,
       0,
@@ -6899,10 +8246,31 @@
       false,
       false,
       false,
-      3200
+      6674
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-grama-2",
+      147,
+      153,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7226
+    ],
+    [
+      "estrutura/natureza/arvore-1",
+      147,
+      153,
+      0,
+      0,
+      false,
+      false,
+      true
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       148,
       153,
       0,
@@ -6910,10 +8278,21 @@
       false,
       false,
       false,
-      3201
+      6675
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-grama-2",
+      148,
+      153,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7225
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       149,
       153,
       0,
@@ -6921,7 +8300,38 @@
       false,
       false,
       false,
-      3202
+      6676
+    ],
+    [
+      "Border:estrutura/pisos/piso-agua-1:int-so",
+      149,
+      153,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:l",
+      149,
+      153,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      150,
+      153,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6677
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -6932,7 +8342,18 @@
       false,
       false,
       false,
-      3214
+      7151
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      151,
+      153,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6689
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -6943,7 +8364,18 @@
       false,
       false,
       false,
-      3215
+      7152
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      152,
+      153,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6690
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -6954,7 +8386,18 @@
       false,
       false,
       false,
-      3226
+      7156
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      153,
+      153,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6705
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -6965,10 +8408,10 @@
       false,
       false,
       false,
-      3227
+      7155
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       154,
       153,
       0,
@@ -6976,10 +8419,20 @@
       false,
       false,
       false,
-      3234
+      6706
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:int-sl",
+      154,
+      153,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       155,
       153,
       0,
@@ -6987,10 +8440,20 @@
       false,
       false,
       false,
-      3244
+      6707
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:s",
+      155,
+      153,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       156,
       153,
       0,
@@ -6998,10 +8461,20 @@
       false,
       false,
       false,
-      3245
+      6717
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:s",
+      156,
+      153,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       157,
       153,
       0,
@@ -7009,10 +8482,20 @@
       false,
       false,
       false,
-      3252
+      6718
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:s",
+      157,
+      153,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       158,
       153,
       0,
@@ -7020,7 +8503,28 @@
       false,
       false,
       false,
-      3262
+      6730
+    ],
+    [
+      "Border:estrutura/pisos/piso-agua-1:int-so",
+      158,
+      153,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      159,
+      153,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6731
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -7031,7 +8535,18 @@
       false,
       false,
       false,
-      3263
+      7215
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      160,
+      153,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6745
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -7042,7 +8557,18 @@
       false,
       false,
       false,
-      3274
+      7216
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      161,
+      153,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6746
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -7053,7 +8579,18 @@
       false,
       false,
       false,
-      3275
+      7217
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      162,
+      153,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6754
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -7064,7 +8601,18 @@
       false,
       false,
       false,
-      3286
+      7219
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      163,
+      153,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6795
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -7075,10 +8623,10 @@
       false,
       false,
       false,
-      3287
+      7218
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       164,
       153,
       0,
@@ -7086,10 +8634,20 @@
       false,
       false,
       false,
-      3294
+      6796
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:int-sl",
+      164,
+      153,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       165,
       153,
       0,
@@ -7097,10 +8655,20 @@
       false,
       false,
       false,
-      3146
+      6797
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:s",
+      165,
+      153,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       166,
       153,
       0,
@@ -7108,10 +8676,20 @@
       false,
       false,
       false,
-      3147
+      6802
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:s",
+      166,
+      153,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       167,
       153,
       0,
@@ -7119,10 +8697,20 @@
       false,
       false,
       false,
-      3148
+      6803
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:s",
+      167,
+      153,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       168,
       153,
       0,
@@ -7130,10 +8718,20 @@
       false,
       false,
       false,
-      3149
+      6804
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:s",
+      168,
+      153,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       169,
       153,
       0,
@@ -7141,7 +8739,28 @@
       false,
       false,
       false,
-      3150
+      6817
+    ],
+    [
+      "Border:estrutura/pisos/piso-agua-1:int-so",
+      169,
+      153,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      170,
+      153,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6822
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -7152,7 +8771,18 @@
       false,
       false,
       false,
-      3151
+      7221
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      171,
+      153,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6823
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -7163,7 +8793,18 @@
       false,
       false,
       false,
-      3306
+      7220
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      172,
+      153,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6832
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -7174,7 +8815,18 @@
       false,
       false,
       false,
-      3312
+      7210
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      173,
+      153,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6833
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -7185,7 +8837,18 @@
       false,
       false,
       false,
-      3486
+      7208
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      174,
+      153,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6865
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -7196,7 +8859,7 @@
       false,
       false,
       false,
-      3487
+      6981
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -7207,7 +8870,7 @@
       false,
       false,
       false,
-      3488
+      7068
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -7744,7 +9407,17 @@
       false,
       false,
       false,
-      3184
+      7105
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:o",
+      143,
+      154,
+      0,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -7755,10 +9428,31 @@
       false,
       false,
       false,
-      3185
+      6948
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-grama-2",
+      144,
+      154,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7240
+    ],
+    [
+      "estrutura/natureza/pinheiro-1",
+      144,
+      154,
+      0,
+      0,
+      false,
+      false,
+      true
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       145,
       154,
       0,
@@ -7766,10 +9460,21 @@
       false,
       false,
       false,
-      3186
+      6661
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-grama-2",
+      145,
+      154,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7229
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       146,
       154,
       0,
@@ -7777,10 +9482,31 @@
       false,
       false,
       false,
-      3187
+      6662
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-grama-2",
+      146,
+      154,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7222
+    ],
+    [
+      "estrutura/entradas/entrada-terra-1",
+      146,
+      154,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       147,
       154,
       0,
@@ -7788,10 +9514,21 @@
       false,
       false,
       false,
-      3203
+      6663
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-grama-2",
+      147,
+      154,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7223
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       148,
       154,
       0,
@@ -7799,10 +9536,21 @@
       false,
       false,
       false,
-      3204
+      6664
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-grama-2",
+      148,
+      154,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7224
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       149,
       154,
       0,
@@ -7810,10 +9558,30 @@
       false,
       false,
       false,
-      3205
+      6678
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:so",
+      149,
+      154,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:l",
+      149,
+      154,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       150,
       154,
       0,
@@ -7821,7 +9589,28 @@
       false,
       false,
       false,
-      3216
+      6679
+    ],
+    [
+      "Border:estrutura/pisos/piso-agua-1:int-so",
+      150,
+      154,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      151,
+      154,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6691
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -7832,7 +9621,18 @@
       false,
       false,
       false,
-      3217
+      7153
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      152,
+      154,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6692
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -7843,10 +9643,10 @@
       false,
       false,
       false,
-      3228
+      7154
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       153,
       154,
       0,
@@ -7854,10 +9654,20 @@
       false,
       false,
       false,
-      3229
+      6708
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:int-sl",
+      153,
+      154,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       154,
       154,
       0,
@@ -7865,10 +9675,20 @@
       false,
       false,
       false,
-      3235
+      6709
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:sl",
+      154,
+      154,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       155,
       154,
       0,
@@ -7876,10 +9696,10 @@
       false,
       false,
       false,
-      3246
+      6710
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       156,
       154,
       0,
@@ -7887,10 +9707,20 @@
       false,
       false,
       false,
-      3247
+      6719
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "itens/itens-encantados/fire-field",
+      156,
+      154,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       157,
       154,
       0,
@@ -7898,10 +9728,20 @@
       false,
       false,
       false,
-      3253
+      6720
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/natureza/arvore-1",
+      157,
+      154,
+      0,
+      0,
+      false,
+      false,
+      true
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       158,
       154,
       0,
@@ -7909,10 +9749,20 @@
       false,
       false,
       false,
-      3264
+      6732
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:so",
+      158,
+      154,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       159,
       154,
       0,
@@ -7920,10 +9770,20 @@
       false,
       false,
       false,
-      3265
+      6733
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:s",
+      159,
+      154,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       160,
       154,
       0,
@@ -7931,10 +9791,20 @@
       false,
       false,
       false,
-      3276
+      6747
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:s",
+      160,
+      154,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       161,
       154,
       0,
@@ -7942,10 +9812,20 @@
       false,
       false,
       false,
-      3277
+      6748
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:s",
+      161,
+      154,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       162,
       154,
       0,
@@ -7953,10 +9833,20 @@
       false,
       false,
       false,
-      3288
+      6755
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:s",
+      162,
+      154,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       163,
       154,
       0,
@@ -7964,10 +9854,20 @@
       false,
       false,
       false,
-      3289
+      6785
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:s",
+      163,
+      154,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       164,
       154,
       0,
@@ -7975,10 +9875,20 @@
       false,
       false,
       false,
-      3295
+      6786
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:sl",
+      164,
+      154,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       165,
       154,
       0,
@@ -7986,10 +9896,10 @@
       false,
       false,
       false,
-      3296
+      6798
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       166,
       154,
       0,
@@ -7997,10 +9907,20 @@
       false,
       false,
       false,
-      3297
+      6805
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/natureza/arvore-1",
+      166,
+      154,
+      0,
+      0,
+      false,
+      false,
+      true
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       167,
       154,
       0,
@@ -8008,10 +9928,20 @@
       false,
       false,
       false,
-      3298
+      6806
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "itens/itens-encantados/fire-field",
+      167,
+      154,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       168,
       154,
       0,
@@ -8019,10 +9949,10 @@
       false,
       false,
       false,
-      3299
+      6807
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       169,
       154,
       0,
@@ -8030,10 +9960,20 @@
       false,
       false,
       false,
-      3300
+      6818
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:so",
+      169,
+      154,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       170,
       154,
       0,
@@ -8041,10 +9981,20 @@
       false,
       false,
       false,
-      3301
+      6824
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:s",
+      170,
+      154,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       171,
       154,
       0,
@@ -8052,7 +10002,28 @@
       false,
       false,
       false,
-      3307
+      6825
+    ],
+    [
+      "Border:estrutura/pisos/piso-agua-1:int-so",
+      171,
+      154,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      172,
+      154,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6834
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -8063,7 +10034,18 @@
       false,
       false,
       false,
-      3313
+      7209
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      173,
+      154,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6835
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -8074,7 +10056,18 @@
       false,
       false,
       false,
-      3492
+      7211
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      174,
+      154,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6842
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -8085,7 +10078,7 @@
       false,
       false,
       false,
-      3493
+      6982
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -8096,7 +10089,7 @@
       false,
       false,
       false,
-      3494
+      7067
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -8633,7 +10626,17 @@
       false,
       false,
       false,
-      1833
+      7106
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:o",
+      143,
+      155,
+      0,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -8644,10 +10647,21 @@
       false,
       false,
       false,
-      1834
+      6947
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-grama-2",
+      144,
+      155,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7239
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       145,
       155,
       0,
@@ -8655,10 +10669,21 @@
       false,
       false,
       false,
-      1603
+      6666
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-grama-2",
+      145,
+      155,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7230
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       146,
       155,
       0,
@@ -8666,10 +10691,21 @@
       false,
       false,
       false,
-      1604
+      6667
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-grama-2",
+      146,
+      155,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7231
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       147,
       155,
       0,
@@ -8677,10 +10713,50 @@
       false,
       false,
       false,
-      1605
+      6668
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-grama-2:int-no",
+      147,
+      155,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:int-nl",
+      147,
+      155,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:int-so",
+      147,
+      155,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:int-sl",
+      147,
+      155,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       148,
       155,
       0,
@@ -8688,10 +10764,21 @@
       false,
       false,
       false,
-      1606
+      6669
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-grama-2",
+      148,
+      155,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7245
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       149,
       155,
       0,
@@ -8699,10 +10786,20 @@
       false,
       false,
       false,
-      1607
+      6680
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-grama-2:l",
+      149,
+      155,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       150,
       155,
       0,
@@ -8710,10 +10807,20 @@
       false,
       false,
       false,
-      1608
+      6681
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:so",
+      150,
+      155,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       151,
       155,
       0,
@@ -8721,10 +10828,20 @@
       false,
       false,
       false,
-      1637
+      6693
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:s",
+      151,
+      155,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       152,
       155,
       0,
@@ -8732,10 +10849,20 @@
       false,
       false,
       false,
-      1643
+      6694
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:s",
+      152,
+      155,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       153,
       155,
       0,
@@ -8743,10 +10870,20 @@
       false,
       false,
       false,
-      1649
+      6711
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:sl",
+      153,
+      155,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       154,
       155,
       0,
@@ -8754,10 +10891,10 @@
       false,
       false,
       false,
-      1655
+      6712
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       155,
       155,
       0,
@@ -8765,10 +10902,10 @@
       false,
       false,
       false,
-      1661
+      6713
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       156,
       155,
       0,
@@ -8776,10 +10913,10 @@
       false,
       false,
       false,
-      1662
+      6721
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       157,
       155,
       0,
@@ -8787,10 +10924,10 @@
       false,
       false,
       false,
-      1673
+      6722
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       158,
       155,
       0,
@@ -8798,10 +10935,10 @@
       false,
       false,
       false,
-      1674
+      6734
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       159,
       155,
       0,
@@ -8809,10 +10946,10 @@
       false,
       false,
       false,
-      1685
+      6735
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       160,
       155,
       0,
@@ -8820,10 +10957,10 @@
       false,
       false,
       false,
-      1686
+      6749
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       161,
       155,
       0,
@@ -8831,10 +10968,10 @@
       false,
       false,
       false,
-      1697
+      6750
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       162,
       155,
       0,
@@ -8842,10 +10979,10 @@
       false,
       false,
       false,
-      1698
+      6756
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       163,
       155,
       0,
@@ -8853,10 +10990,20 @@
       false,
       false,
       false,
-      1709
+      6787
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/natureza/pinheiro-1",
+      163,
+      155,
+      0,
+      0,
+      false,
+      false,
+      true
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       164,
       155,
       0,
@@ -8864,10 +11011,10 @@
       false,
       false,
       false,
-      1710
+      6788
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       165,
       155,
       0,
@@ -8875,10 +11022,10 @@
       false,
       false,
       false,
-      1711
+      6799
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       166,
       155,
       0,
@@ -8886,10 +11033,10 @@
       false,
       false,
       false,
-      1727
+      6808
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       167,
       155,
       0,
@@ -8897,10 +11044,10 @@
       false,
       false,
       false,
-      1733
+      6809
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       168,
       155,
       0,
@@ -8908,10 +11055,20 @@
       false,
       false,
       false,
-      1734
+      6810
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/natureza/pinheiro-1",
+      168,
+      155,
+      0,
+      0,
+      false,
+      false,
+      true
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       169,
       155,
       0,
@@ -8919,10 +11076,10 @@
       false,
       false,
       false,
-      1745
+      6819
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       170,
       155,
       0,
@@ -8930,10 +11087,20 @@
       false,
       false,
       false,
-      1746
+      6826
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/natureza/arvore-1",
+      170,
+      155,
+      0,
+      0,
+      false,
+      false,
+      true
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       171,
       155,
       0,
@@ -8941,10 +11108,20 @@
       false,
       false,
       false,
-      1747
+      6827
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:so",
+      171,
+      155,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       172,
       155,
       0,
@@ -8952,7 +11129,28 @@
       false,
       false,
       false,
-      1763
+      6836
+    ],
+    [
+      "Border:estrutura/pisos/piso-agua-1:int-so",
+      172,
+      155,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      173,
+      155,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6837
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -8963,7 +11161,18 @@
       false,
       false,
       false,
-      1764
+      7212
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      174,
+      155,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6843
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -8974,7 +11183,7 @@
       false,
       false,
       false,
-      1765
+      6983
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -8985,7 +11194,7 @@
       false,
       false,
       false,
-      1766
+      7066
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -9522,7 +11731,28 @@
       false,
       false,
       false,
-      1839
+      7107
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:so",
+      143,
+      156,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      144,
+      156,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6670
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -9533,10 +11763,20 @@
       false,
       false,
       false,
-      1840
+      6946
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-grama-2:int-so",
+      144,
+      156,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       145,
       156,
       0,
@@ -9544,10 +11784,21 @@
       false,
       false,
       false,
-      1609
+      6648
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-grama-2",
+      145,
+      156,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7234
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       146,
       156,
       0,
@@ -9555,10 +11806,31 @@
       false,
       false,
       false,
-      1610
+      6649
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-grama-2",
+      146,
+      156,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7232
+    ],
+    [
+      "estrutura/natureza/arvore-1",
+      146,
+      156,
+      0,
+      0,
+      false,
+      false,
+      true
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       147,
       156,
       0,
@@ -9566,10 +11838,21 @@
       false,
       false,
       false,
-      1611
+      6650
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-grama-2",
+      147,
+      156,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7233
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       148,
       156,
       0,
@@ -9577,10 +11860,20 @@
       false,
       false,
       false,
-      1612
+      6651
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-grama-2:int-sl",
+      148,
+      156,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       149,
       156,
       0,
@@ -9588,10 +11881,20 @@
       false,
       false,
       false,
-      1613
+      6652
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-grama-2:sl",
+      149,
+      156,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       150,
       156,
       0,
@@ -9599,10 +11902,10 @@
       false,
       false,
       false,
-      1614
+      6682
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       151,
       156,
       0,
@@ -9610,10 +11913,10 @@
       false,
       false,
       false,
-      1638
+      6695
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       152,
       156,
       0,
@@ -9621,10 +11924,10 @@
       false,
       false,
       false,
-      1644
+      6696
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       153,
       156,
       0,
@@ -9632,10 +11935,10 @@
       false,
       false,
       false,
-      1650
+      6714
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       154,
       156,
       0,
@@ -9643,10 +11946,10 @@
       false,
       false,
       false,
-      1656
+      6715
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       155,
       156,
       0,
@@ -9654,10 +11957,10 @@
       false,
       false,
       false,
-      1663
+      6716
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       156,
       156,
       0,
@@ -9665,10 +11968,10 @@
       false,
       false,
       false,
-      1664
+      6723
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       157,
       156,
       0,
@@ -9676,10 +11979,10 @@
       false,
       false,
       false,
-      1675
+      6724
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       158,
       156,
       0,
@@ -9687,10 +11990,20 @@
       false,
       false,
       false,
-      1676
+      6736
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/natureza/pinheiro-1",
+      158,
+      156,
+      0,
+      0,
+      false,
+      false,
+      true
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       159,
       156,
       0,
@@ -9698,10 +12011,20 @@
       false,
       false,
       false,
-      1687
+      6737
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "itens/itens-encantados/fire-field",
+      159,
+      156,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       160,
       156,
       0,
@@ -9709,10 +12032,10 @@
       false,
       false,
       false,
-      1688
+      6751
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       161,
       156,
       0,
@@ -9720,10 +12043,20 @@
       false,
       false,
       false,
-      1699
+      6752
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/natureza/arvore-1",
+      161,
+      156,
+      0,
+      0,
+      false,
+      false,
+      true
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       162,
       156,
       0,
@@ -9731,10 +12064,10 @@
       false,
       false,
       false,
-      1700
+      6757
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       163,
       156,
       0,
@@ -9742,10 +12075,20 @@
       false,
       false,
       false,
-      1712
+      6789
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:no",
+      163,
+      156,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       164,
       156,
       0,
@@ -9753,10 +12096,20 @@
       false,
       false,
       false,
-      1713
+      6790
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:n",
+      164,
+      156,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       165,
       156,
       0,
@@ -9764,10 +12117,20 @@
       false,
       false,
       false,
-      1714
+      6800
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:n",
+      165,
+      156,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       166,
       156,
       0,
@@ -9775,10 +12138,20 @@
       false,
       false,
       false,
-      1728
+      6811
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:n",
+      166,
+      156,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       167,
       156,
       0,
@@ -9786,10 +12159,20 @@
       false,
       false,
       false,
-      1735
+      6812
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:nl",
+      167,
+      156,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       168,
       156,
       0,
@@ -9797,10 +12180,10 @@
       false,
       false,
       false,
-      1736
+      6813
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       169,
       156,
       0,
@@ -9808,10 +12191,10 @@
       false,
       false,
       false,
-      1748
+      6820
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       170,
       156,
       0,
@@ -9819,10 +12202,10 @@
       false,
       false,
       false,
-      1749
+      6828
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       171,
       156,
       0,
@@ -9830,10 +12213,20 @@
       false,
       false,
       false,
-      1750
+      6829
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/natureza/pinheiro-1",
+      171,
+      156,
+      0,
+      0,
+      false,
+      false,
+      true
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       172,
       156,
       0,
@@ -9841,7 +12234,28 @@
       false,
       false,
       false,
-      1767
+      6838
+    ],
+    [
+      "Border:estrutura/pisos/piso-agua-1:o",
+      172,
+      156,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      173,
+      156,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6839
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -9852,7 +12266,18 @@
       false,
       false,
       false,
-      1768
+      7213
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      174,
+      156,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6844
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -9863,7 +12288,7 @@
       false,
       false,
       false,
-      1769
+      6984
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -9874,7 +12299,7 @@
       false,
       false,
       false,
-      1770
+      7065
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -10411,7 +12836,18 @@
       false,
       false,
       false,
-      1845
+      7108
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      144,
+      157,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6671
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -10422,10 +12858,20 @@
       false,
       false,
       false,
-      1600
+      6945
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-grama-2:o",
+      144,
+      157,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       145,
       157,
       0,
@@ -10433,10 +12879,21 @@
       false,
       false,
       false,
-      1615
+      6653
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-grama-2",
+      145,
+      157,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7235
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       146,
       157,
       0,
@@ -10444,10 +12901,21 @@
       false,
       false,
       false,
-      1616
+      6654
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-grama-2",
+      146,
+      157,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7238
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       147,
       157,
       0,
@@ -10455,10 +12923,40 @@
       false,
       false,
       false,
-      1601
+      6655
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-grama-2:int-nl",
+      147,
+      157,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:int-sl",
+      147,
+      157,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/natureza/pinheiro-1",
+      147,
+      157,
+      0,
+      0,
+      false,
+      false,
+      true
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       148,
       157,
       0,
@@ -10466,10 +12964,30 @@
       false,
       false,
       false,
-      1617
+      6656
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-grama-2:nl",
+      148,
+      157,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:sl",
+      148,
+      157,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       149,
       157,
       0,
@@ -10477,10 +12995,10 @@
       false,
       false,
       false,
-      1602
+      6657
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       150,
       157,
       0,
@@ -10488,10 +13006,10 @@
       false,
       false,
       false,
-      1618
+      6683
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       151,
       157,
       0,
@@ -10499,10 +13017,10 @@
       false,
       false,
       false,
-      1639
+      6758
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       152,
       157,
       0,
@@ -10510,10 +13028,10 @@
       false,
       false,
       false,
-      1645
+      6759
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       153,
       157,
       0,
@@ -10521,10 +13039,10 @@
       false,
       false,
       false,
-      1651
+      6725
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       154,
       157,
       0,
@@ -10532,10 +13050,10 @@
       false,
       false,
       false,
-      1657
+      6726
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       155,
       157,
       0,
@@ -10543,10 +13061,10 @@
       false,
       false,
       false,
-      1665
+      6727
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       156,
       157,
       0,
@@ -10554,10 +13072,20 @@
       false,
       false,
       false,
-      1666
+      6728
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:no",
+      156,
+      157,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       157,
       157,
       0,
@@ -10565,10 +13093,20 @@
       false,
       false,
       false,
-      1677
+      6729
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:n",
+      157,
+      157,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       158,
       157,
       0,
@@ -10576,10 +13114,20 @@
       false,
       false,
       false,
-      1678
+      6738
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:n",
+      158,
+      157,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       159,
       157,
       0,
@@ -10587,10 +13135,20 @@
       false,
       false,
       false,
-      1689
+      6739
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:n",
+      159,
+      157,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       160,
       157,
       0,
@@ -10598,10 +13156,20 @@
       false,
       false,
       false,
-      1690
+      6777
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:n",
+      160,
+      157,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       161,
       157,
       0,
@@ -10609,10 +13177,20 @@
       false,
       false,
       false,
-      1701
+      6778
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:n",
+      161,
+      157,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       162,
       157,
       0,
@@ -10620,10 +13198,20 @@
       false,
       false,
       false,
-      1702
+      6779
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:n",
+      162,
+      157,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       163,
       157,
       0,
@@ -10631,7 +13219,28 @@
       false,
       false,
       false,
-      1715
+      6791
+    ],
+    [
+      "Border:estrutura/pisos/piso-agua-1:int-no",
+      163,
+      157,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      164,
+      157,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6792
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -10642,7 +13251,18 @@
       false,
       false,
       false,
-      1716
+      6997
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      165,
+      157,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6801
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -10653,7 +13273,18 @@
       false,
       false,
       false,
-      1717
+      6996
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      166,
+      157,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6814
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -10664,10 +13295,10 @@
       false,
       false,
       false,
-      1729
+      6995
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       167,
       157,
       0,
@@ -10675,10 +13306,20 @@
       false,
       false,
       false,
-      1737
+      6815
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:int-nl",
+      167,
+      157,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       168,
       157,
       0,
@@ -10686,10 +13327,20 @@
       false,
       false,
       false,
-      1738
+      6816
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:nl",
+      168,
+      157,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       169,
       157,
       0,
@@ -10697,10 +13348,10 @@
       false,
       false,
       false,
-      1751
+      6821
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       170,
       157,
       0,
@@ -10708,10 +13359,20 @@
       false,
       false,
       false,
-      1752
+      6830
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/entradas/entrada-terra-1",
+      170,
+      157,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       171,
       157,
       0,
@@ -10719,10 +13380,20 @@
       false,
       false,
       false,
-      1753
+      6831
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "itens/itens-encantados/fire-field",
+      171,
+      157,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       172,
       157,
       0,
@@ -10730,7 +13401,28 @@
       false,
       false,
       false,
-      1771
+      6840
+    ],
+    [
+      "Border:estrutura/pisos/piso-agua-1:o",
+      172,
+      157,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      173,
+      157,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6841
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -10741,7 +13433,18 @@
       false,
       false,
       false,
-      1772
+      7214
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      174,
+      157,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6845
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -10752,7 +13455,7 @@
       false,
       false,
       false,
-      1773
+      6985
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -10763,7 +13466,7 @@
       false,
       false,
       false,
-      1774
+      7064
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -11300,7 +14003,18 @@
       false,
       false,
       false,
-      1850
+      7109
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      144,
+      158,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6672
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -11311,10 +14025,20 @@
       false,
       false,
       false,
-      1851
+      6944
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-grama-2:so",
+      144,
+      158,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       145,
       158,
       0,
@@ -11322,10 +14046,30 @@
       false,
       false,
       false,
-      1619
+      6658
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:int-nl",
+      145,
+      158,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:int-so",
+      145,
+      158,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       146,
       158,
       0,
@@ -11333,10 +14077,21 @@
       false,
       false,
       false,
-      1620
+      6659
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-grama-2",
+      146,
+      158,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7236
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       147,
       158,
       0,
@@ -11344,10 +14099,21 @@
       false,
       false,
       false,
-      1621
+      6633
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-grama-2",
+      147,
+      158,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7237
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       148,
       158,
       0,
@@ -11355,10 +14121,20 @@
       false,
       false,
       false,
-      1622
+      6634
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-grama-2:l",
+      148,
+      158,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       149,
       158,
       0,
@@ -11366,10 +14142,10 @@
       false,
       false,
       false,
-      1623
+      6635
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       150,
       158,
       0,
@@ -11377,10 +14153,10 @@
       false,
       false,
       false,
-      1624
+      6636
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       151,
       158,
       0,
@@ -11388,10 +14164,10 @@
       false,
       false,
       false,
-      1640
+      6637
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       152,
       158,
       0,
@@ -11399,10 +14175,10 @@
       false,
       false,
       false,
-      1646
+      6644
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       153,
       158,
       0,
@@ -11410,10 +14186,20 @@
       false,
       false,
       false,
-      1652
+      6760
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:no",
+      153,
+      158,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       154,
       158,
       0,
@@ -11421,10 +14207,20 @@
       false,
       false,
       false,
-      1658
+      6761
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:n",
+      154,
+      158,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       155,
       158,
       0,
@@ -11432,10 +14228,20 @@
       false,
       false,
       false,
-      1667
+      6874
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:n",
+      155,
+      158,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       156,
       158,
       0,
@@ -11443,7 +14249,28 @@
       false,
       false,
       false,
-      1668
+      6875
+    ],
+    [
+      "Border:estrutura/pisos/piso-agua-1:int-no",
+      156,
+      158,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      157,
+      158,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6876
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -11454,7 +14281,18 @@
       false,
       false,
       false,
-      1679
+      7005
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      158,
+      158,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6780
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -11465,7 +14303,18 @@
       false,
       false,
       false,
-      1680
+      7004
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      159,
+      158,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6781
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -11476,7 +14325,18 @@
       false,
       false,
       false,
-      1691
+      7003
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      160,
+      158,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6782
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -11487,7 +14347,18 @@
       false,
       false,
       false,
-      1692
+      7002
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      161,
+      158,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6783
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -11498,7 +14369,18 @@
       false,
       false,
       false,
-      1703
+      7001
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      162,
+      158,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6784
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -11509,7 +14391,18 @@
       false,
       false,
       false,
-      1704
+      7000
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      163,
+      158,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6793
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -11520,7 +14413,18 @@
       false,
       false,
       false,
-      1718
+      6999
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      164,
+      158,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6794
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -11531,7 +14435,7 @@
       false,
       false,
       false,
-      1719
+      6998
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -11542,7 +14446,7 @@
       false,
       false,
       false,
-      1720
+      7062
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -11553,7 +14457,18 @@
       false,
       false,
       false,
-      1730
+      7058
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      167,
+      158,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7170
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -11564,10 +14479,10 @@
       false,
       false,
       false,
-      1739
+      7193
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       168,
       158,
       0,
@@ -11575,10 +14490,20 @@
       false,
       false,
       false,
-      1740
+      7190
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:l",
+      168,
+      158,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       169,
       158,
       0,
@@ -11586,10 +14511,20 @@
       false,
       false,
       false,
-      1754
+      7191
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/natureza/arvore-1",
+      169,
+      158,
+      0,
+      0,
+      false,
+      false,
+      true
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       170,
       158,
       0,
@@ -11597,10 +14532,20 @@
       false,
       false,
       false,
-      1755
+      6846
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "itens/itens-encantados/fire-field",
+      170,
+      158,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       171,
       158,
       0,
@@ -11608,10 +14553,20 @@
       false,
       false,
       false,
-      1756
+      6847
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:no",
+      171,
+      158,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       172,
       158,
       0,
@@ -11619,7 +14574,28 @@
       false,
       false,
       false,
-      1775
+      6848
+    ],
+    [
+      "Border:estrutura/pisos/piso-agua-1:int-no",
+      172,
+      158,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      173,
+      158,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6849
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -11630,7 +14606,18 @@
       false,
       false,
       false,
-      1776
+      7207
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      174,
+      158,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6850
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -11641,7 +14628,7 @@
       false,
       false,
       false,
-      1777
+      6986
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -11652,7 +14639,7 @@
       false,
       false,
       false,
-      1778
+      7063
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -12189,7 +15176,18 @@
       false,
       false,
       false,
-      1856
+      7110
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      144,
+      159,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6891
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -12200,7 +15198,18 @@
       false,
       false,
       false,
-      1857
+      6943
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      145,
+      159,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6616
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -12211,10 +15220,20 @@
       false,
       false,
       false,
-      1625
+      7150
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-grama-2:o",
+      145,
+      159,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       146,
       159,
       0,
@@ -12222,10 +15241,31 @@
       false,
       false,
       false,
-      1626
+      6617
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-grama-2",
+      146,
+      159,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7249
+    ],
+    [
+      "estrutura/natureza/arvore-1",
+      146,
+      159,
+      0,
+      0,
+      false,
+      false,
+      true
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       147,
       159,
       0,
@@ -12233,10 +15273,21 @@
       false,
       false,
       false,
-      1627
+      6618
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-grama-2",
+      147,
+      159,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7246
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       148,
       159,
       0,
@@ -12244,10 +15295,20 @@
       false,
       false,
       false,
-      1628
+      6619
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-grama-2:l",
+      148,
+      159,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       149,
       159,
       0,
@@ -12255,10 +15316,10 @@
       false,
       false,
       false,
-      1629
+      6620
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       150,
       159,
       0,
@@ -12266,10 +15327,10 @@
       false,
       false,
       false,
-      1630
+      6638
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       151,
       159,
       0,
@@ -12277,10 +15338,10 @@
       false,
       false,
       false,
-      1641
+      6639
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       152,
       159,
       0,
@@ -12288,10 +15349,10 @@
       false,
       false,
       false,
-      1647
+      6645
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       153,
       159,
       0,
@@ -12299,7 +15360,28 @@
       false,
       false,
       false,
-      1653
+      6877
+    ],
+    [
+      "Border:estrutura/pisos/piso-agua-1:o",
+      153,
+      159,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      154,
+      159,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6878
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -12310,7 +15392,18 @@
       false,
       false,
       false,
-      1659
+      7166
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      155,
+      159,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6879
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -12321,7 +15414,18 @@
       false,
       false,
       false,
-      1669
+      7167
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      156,
+      159,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6880
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -12332,7 +15436,18 @@
       false,
       false,
       false,
-      1670
+      7007
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      157,
+      159,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6881
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -12343,7 +15458,7 @@
       false,
       false,
       false,
-      1681
+      7006
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -12354,7 +15469,7 @@
       false,
       false,
       false,
-      1682
+      7040
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -12365,7 +15480,7 @@
       false,
       false,
       false,
-      1693
+      7039
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -12376,7 +15491,7 @@
       false,
       false,
       false,
-      1694
+      7043
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -12387,7 +15502,7 @@
       false,
       false,
       false,
-      1705
+      7042
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -12398,7 +15513,7 @@
       false,
       false,
       false,
-      1706
+      7044
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -12409,7 +15524,7 @@
       false,
       false,
       false,
-      1721
+      7045
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -12420,7 +15535,7 @@
       false,
       false,
       false,
-      1722
+      7046
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -12431,7 +15546,7 @@
       false,
       false,
       false,
-      1723
+      7047
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -12442,7 +15557,18 @@
       false,
       false,
       false,
-      1731
+      7048
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      167,
+      159,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7171
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -12453,10 +15579,10 @@
       false,
       false,
       false,
-      1741
+      7194
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       168,
       159,
       0,
@@ -12464,10 +15590,20 @@
       false,
       false,
       false,
-      1742
+      7189
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:int-nl",
+      168,
+      159,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       169,
       159,
       0,
@@ -12475,10 +15611,20 @@
       false,
       false,
       false,
-      1757
+      7188
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:nl",
+      169,
+      159,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       170,
       159,
       0,
@@ -12486,10 +15632,20 @@
       false,
       false,
       false,
-      1758
+      7192
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/natureza/pinheiro-1",
+      170,
+      159,
+      0,
+      0,
+      false,
+      false,
+      true
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       171,
       159,
       0,
@@ -12497,7 +15653,28 @@
       false,
       false,
       false,
-      1759
+      7184
+    ],
+    [
+      "Border:estrutura/pisos/piso-agua-1:o",
+      171,
+      159,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      172,
+      159,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7182
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -12508,7 +15685,18 @@
       false,
       false,
       false,
-      1779
+      7206
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      173,
+      159,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7183
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -12519,7 +15707,7 @@
       false,
       false,
       false,
-      1780
+      7204
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -12530,7 +15718,7 @@
       false,
       false,
       false,
-      1781
+      7056
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -12541,7 +15729,7 @@
       false,
       false,
       false,
-      1782
+      7057
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -13078,7 +16266,18 @@
       false,
       false,
       false,
-      1862
+      7111
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      144,
+      160,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6892
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -13089,7 +16288,18 @@
       false,
       false,
       false,
-      1863
+      6942
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      145,
+      160,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6621
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -13100,10 +16310,20 @@
       false,
       false,
       false,
-      1631
+      7149
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-grama-2:o",
+      145,
+      160,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       146,
       160,
       0,
@@ -13111,10 +16331,21 @@
       false,
       false,
       false,
-      1632
+      6622
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-grama-2",
+      146,
+      160,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7248
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       147,
       160,
       0,
@@ -13122,10 +16353,31 @@
       false,
       false,
       false,
-      1633
+      6623
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-grama-2",
+      147,
+      160,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7247
+    ],
+    [
+      "estrutura/natureza/arvore-1",
+      147,
+      160,
+      0,
+      0,
+      false,
+      false,
+      true
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       148,
       160,
       0,
@@ -13133,10 +16385,20 @@
       false,
       false,
       false,
-      1634
+      6624
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-grama-2:int-nl",
+      148,
+      160,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       149,
       160,
       0,
@@ -13144,10 +16406,20 @@
       false,
       false,
       false,
-      1635
+      6625
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-grama-2:nl",
+      149,
+      160,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       150,
       160,
       0,
@@ -13155,10 +16427,10 @@
       false,
       false,
       false,
-      1636
+      6640
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       151,
       160,
       0,
@@ -13166,10 +16438,10 @@
       false,
       false,
       false,
-      1642
+      6641
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       152,
       160,
       0,
@@ -13177,10 +16449,10 @@
       false,
       false,
       false,
-      1648
+      6646
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       153,
       160,
       0,
@@ -13188,7 +16460,28 @@
       false,
       false,
       false,
-      1654
+      6882
+    ],
+    [
+      "Border:estrutura/pisos/piso-agua-1:o",
+      153,
+      160,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      154,
+      160,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6883
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -13199,7 +16492,18 @@
       false,
       false,
       false,
-      1660
+      7165
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      155,
+      160,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6884
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -13210,7 +16514,18 @@
       false,
       false,
       false,
-      1671
+      7163
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      156,
+      160,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6885
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -13221,7 +16536,7 @@
       false,
       false,
       false,
-      1672
+      7008
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -13232,7 +16547,7 @@
       false,
       false,
       false,
-      1683
+      7034
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -13243,7 +16558,7 @@
       false,
       false,
       false,
-      1684
+      7035
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -13254,7 +16569,7 @@
       false,
       false,
       false,
-      1695
+      7036
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -13265,7 +16580,7 @@
       false,
       false,
       false,
-      1696
+      7038
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -13276,7 +16591,7 @@
       false,
       false,
       false,
-      1707
+      7041
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -13334,6 +16649,17 @@
       1732
     ],
     [
+      "estrutura/pisos/piso-terra-1",
+      167,
+      160,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7172
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       167,
       160,
@@ -13342,7 +16668,18 @@
       false,
       false,
       false,
-      1743
+      7195
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      168,
+      160,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7173
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -13353,10 +16690,10 @@
       false,
       false,
       false,
-      1744
+      7201
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       169,
       160,
       0,
@@ -13364,10 +16701,20 @@
       false,
       false,
       false,
-      1760
+      7187
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:int-nl",
+      169,
+      160,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       170,
       160,
       0,
@@ -13375,10 +16722,20 @@
       false,
       false,
       false,
-      1761
+      7186
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:n",
+      170,
+      160,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       171,
       160,
       0,
@@ -13386,7 +16743,28 @@
       false,
       false,
       false,
-      1762
+      7185
+    ],
+    [
+      "Border:estrutura/pisos/piso-agua-1:int-no",
+      171,
+      160,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      172,
+      160,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7181
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -13397,7 +16775,7 @@
       false,
       false,
       false,
-      1783
+      7205
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -13967,7 +17345,18 @@
       false,
       false,
       false,
-      1868
+      7112
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      144,
+      161,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6893
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -13978,7 +17367,18 @@
       false,
       false,
       false,
-      1869
+      6941
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      145,
+      161,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6626
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -13989,7 +17389,28 @@
       false,
       false,
       false,
-      1299
+      7148
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:so",
+      145,
+      161,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      146,
+      161,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6627
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -14000,7 +17421,27 @@
       false,
       false,
       false,
-      1282
+      7144
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:int-so",
+      146,
+      161,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/natureza/pinheiro-1",
+      146,
+      161,
+      0,
+      0,
+      false,
+      false,
+      true
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -14011,10 +17452,21 @@
       false,
       false,
       false,
-      985
+      7143
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-grama-2",
+      147,
+      161,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7250
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       148,
       161,
       0,
@@ -14022,10 +17474,21 @@
       false,
       false,
       false,
-      991
+      6629
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-grama-2",
+      148,
+      161,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7251
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       149,
       161,
       0,
@@ -14033,10 +17496,20 @@
       false,
       false,
       false,
-      992
+      6630
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-grama-2:l",
+      149,
+      161,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       150,
       161,
       0,
@@ -14044,10 +17517,10 @@
       false,
       false,
       false,
-      993
+      6642
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       151,
       161,
       0,
@@ -14055,10 +17528,10 @@
       false,
       false,
       false,
-      994
+      6643
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       152,
       161,
       0,
@@ -14066,10 +17539,20 @@
       false,
       false,
       false,
-      995
+      6647
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:no",
+      152,
+      161,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       153,
       161,
       0,
@@ -14077,7 +17560,28 @@
       false,
       false,
       false,
-      996
+      6886
+    ],
+    [
+      "Border:estrutura/pisos/piso-agua-1:int-no",
+      153,
+      161,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      154,
+      161,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6887
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -14088,7 +17592,18 @@
       false,
       false,
       false,
-      997
+      7161
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      155,
+      161,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6888
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -14099,7 +17614,18 @@
       false,
       false,
       false,
-      998
+      7162
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      156,
+      161,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6889
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -14110,7 +17636,7 @@
       false,
       false,
       false,
-      999
+      7009
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -14121,7 +17647,7 @@
       false,
       false,
       false,
-      1000
+      7033
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -14132,7 +17658,7 @@
       false,
       false,
       false,
-      1001
+      7032
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -14143,7 +17669,7 @@
       false,
       false,
       false,
-      1002
+      7031
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -14154,7 +17680,7 @@
       false,
       false,
       false,
-      1003
+      7037
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -14234,6 +17760,17 @@
       1010
     ],
     [
+      "estrutura/pisos/piso-terra-1",
+      168,
+      161,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7174
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       168,
       161,
@@ -14242,7 +17779,18 @@
       false,
       false,
       false,
-      1011
+      7196
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      169,
+      161,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7175
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -14253,7 +17801,18 @@
       false,
       false,
       false,
-      1012
+      7200
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      170,
+      161,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7176
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -14264,7 +17823,18 @@
       false,
       false,
       false,
-      1013
+      7199
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      171,
+      161,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7177
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -14275,7 +17845,18 @@
       false,
       false,
       false,
-      1014
+      7203
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      172,
+      161,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7180
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -14286,7 +17867,7 @@
       false,
       false,
       false,
-      1015
+      7202
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -14856,7 +18437,18 @@
       false,
       false,
       false,
-      1874
+      7113
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      144,
+      162,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6894
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -14867,7 +18459,18 @@
       false,
       false,
       false,
-      1875
+      6940
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      145,
+      162,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6631
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -14878,7 +18481,18 @@
       false,
       false,
       false,
-      1300
+      7146
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      146,
+      162,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6600
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -14889,7 +18503,28 @@
       false,
       false,
       false,
-      1283
+      7145
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:so",
+      146,
+      162,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      147,
+      162,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6601
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -14900,10 +18535,20 @@
       false,
       false,
       false,
-      986
+      7142
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-grama-2:int-so",
+      147,
+      162,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       148,
       162,
       0,
@@ -14911,10 +18556,31 @@
       false,
       false,
       false,
-      1028
+      6602
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-grama-2",
+      148,
+      162,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7252
+    ],
+    [
+      "estrutura/natureza/arvore-1",
+      148,
+      162,
+      0,
+      0,
+      false,
+      false,
+      true
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       149,
       162,
       0,
@@ -14922,10 +18588,20 @@
       false,
       false,
       false,
-      1029
+      6603
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-grama-2:l",
+      149,
+      162,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       150,
       162,
       0,
@@ -14933,10 +18609,10 @@
       false,
       false,
       false,
-      1030
+      6604
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       151,
       162,
       0,
@@ -14944,10 +18620,10 @@
       false,
       false,
       false,
-      1056
+      6530
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       152,
       162,
       0,
@@ -14955,7 +18631,28 @@
       false,
       false,
       false,
-      1057
+      6531
+    ],
+    [
+      "Border:estrutura/pisos/piso-agua-1:o",
+      152,
+      162,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      153,
+      162,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6532
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -14966,7 +18663,18 @@
       false,
       false,
       false,
-      1031
+      7160
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      154,
+      162,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6533
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -14977,7 +18685,18 @@
       false,
       false,
       false,
-      1058
+      7164
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      155,
+      162,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6534
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -14988,7 +18707,18 @@
       false,
       false,
       false,
-      1059
+      7011
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      156,
+      162,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6890
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -14999,7 +18729,7 @@
       false,
       false,
       false,
-      1032
+      7010
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -15010,7 +18740,7 @@
       false,
       false,
       false,
-      1033
+      7027
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -15021,7 +18751,7 @@
       false,
       false,
       false,
-      1034
+      7028
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -15032,7 +18762,7 @@
       false,
       false,
       false,
-      1035
+      7029
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -15043,7 +18773,7 @@
       false,
       false,
       false,
-      1124
+      7030
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -15156,6 +18886,17 @@
       1134
     ],
     [
+      "estrutura/pisos/piso-terra-1",
+      171,
+      162,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7178
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       171,
       162,
@@ -15164,7 +18905,18 @@
       false,
       false,
       false,
-      1135
+      7198
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      172,
+      162,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7179
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -15175,7 +18927,7 @@
       false,
       false,
       false,
-      1136
+      7197
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -15745,7 +19497,18 @@
       false,
       false,
       false,
-      1880
+      7114
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      144,
+      163,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6895
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -15756,7 +19519,18 @@
       false,
       false,
       false,
-      1881
+      6939
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      145,
+      163,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6632
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -15767,7 +19541,18 @@
       false,
       false,
       false,
-      1311
+      7147
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      146,
+      163,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6605
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -15778,7 +19563,18 @@
       false,
       false,
       false,
-      1284
+      7140
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      147,
+      163,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6606
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -15789,10 +19585,20 @@
       false,
       false,
       false,
-      987
+      7141
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-grama-2:so",
+      147,
+      163,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       148,
       163,
       0,
@@ -15800,10 +19606,30 @@
       false,
       false,
       false,
-      1047
+      6607
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:l",
+      148,
+      163,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-grama-2:s",
+      148,
+      163,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       149,
       163,
       0,
@@ -15811,10 +19637,20 @@
       false,
       false,
       false,
-      1046
+      6608
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-grama-2:sl",
+      149,
+      163,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       150,
       163,
       0,
@@ -15822,10 +19658,10 @@
       false,
       false,
       false,
-      1045
+      6555
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       151,
       163,
       0,
@@ -15833,10 +19669,10 @@
       false,
       false,
       false,
-      1044
+      6535
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       152,
       163,
       0,
@@ -15844,7 +19680,28 @@
       false,
       false,
       false,
-      1043
+      6536
+    ],
+    [
+      "Border:estrutura/pisos/piso-agua-1:o",
+      152,
+      163,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      153,
+      163,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6537
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -15855,7 +19712,18 @@
       false,
       false,
       false,
-      1042
+      7159
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      154,
+      163,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6538
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -15866,7 +19734,18 @@
       false,
       false,
       false,
-      1041
+      7158
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      155,
+      163,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6539
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -15877,7 +19756,7 @@
       false,
       false,
       false,
-      1040
+      7012
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -15888,7 +19767,7 @@
       false,
       false,
       false,
-      1039
+      7019
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -15899,7 +19778,7 @@
       false,
       false,
       false,
-      1038
+      7020
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -15910,7 +19789,7 @@
       false,
       false,
       false,
-      1037
+      7026
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -15921,7 +19800,7 @@
       false,
       false,
       false,
-      1036
+      7025
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -15932,7 +19811,7 @@
       false,
       false,
       false,
-      693
+      7024
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -16634,7 +20513,18 @@
       false,
       false,
       false,
-      1886
+      7115
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      144,
+      164,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6896
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -16645,7 +20535,18 @@
       false,
       false,
       false,
-      1887
+      6938
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      145,
+      164,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6897
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -16656,7 +20557,18 @@
       false,
       false,
       false,
-      1301
+      6937
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      146,
+      164,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6609
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -16667,10 +20579,10 @@
       false,
       false,
       false,
-      1285
+      7139
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       147,
       164,
       0,
@@ -16678,10 +20590,20 @@
       false,
       false,
       false,
-      988
+      6610
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:int-sl",
+      147,
+      164,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       148,
       164,
       0,
@@ -16689,10 +20611,20 @@
       false,
       false,
       false,
-      1048
+      6611
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:sl",
+      148,
+      164,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       149,
       164,
       0,
@@ -16700,10 +20632,10 @@
       false,
       false,
       false,
-      1049
+      6577
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       150,
       164,
       0,
@@ -16711,10 +20643,10 @@
       false,
       false,
       false,
-      1050
+      6556
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       151,
       164,
       0,
@@ -16722,10 +20654,10 @@
       false,
       false,
       false,
-      1060
+      6540
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       152,
       164,
       0,
@@ -16733,10 +20665,20 @@
       false,
       false,
       false,
-      1051
+      6541
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:so",
+      152,
+      164,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       153,
       164,
       0,
@@ -16744,7 +20686,28 @@
       false,
       false,
       false,
-      1055
+      6542
+    ],
+    [
+      "Border:estrutura/pisos/piso-agua-1:int-so",
+      153,
+      164,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      154,
+      164,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6543
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -16755,7 +20718,18 @@
       false,
       false,
       false,
-      1052
+      7157
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      155,
+      164,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6544
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -16766,7 +20740,7 @@
       false,
       false,
       false,
-      1053
+      7013
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -16777,7 +20751,7 @@
       false,
       false,
       false,
-      1054
+      7018
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -16788,7 +20762,7 @@
       false,
       false,
       false,
-      689
+      7017
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -16799,7 +20773,7 @@
       false,
       false,
       false,
-      690
+      7021
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -16810,7 +20784,7 @@
       false,
       false,
       false,
-      691
+      7022
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -16821,7 +20795,7 @@
       false,
       false,
       false,
-      692
+      7023
     ],
     [
       "estrutura/pisos/piso-grama-1",
@@ -17633,7 +21607,7 @@
       false,
       false,
       false,
-      1892
+      7116
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -17644,7 +21618,18 @@
       false,
       false,
       false,
-      1893
+      7129
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      145,
+      165,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6898
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -17655,10 +21640,10 @@
       false,
       false,
       false,
-      1302
+      6936
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       146,
       165,
       0,
@@ -17666,10 +21651,20 @@
       false,
       false,
       false,
-      1286
+      6612
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:int-sl",
+      146,
+      165,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       147,
       165,
       0,
@@ -17677,10 +21672,20 @@
       false,
       false,
       false,
-      989
+      6613
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:sl",
+      147,
+      165,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       148,
       165,
       0,
@@ -17688,10 +21693,10 @@
       false,
       false,
       false,
-      1064
+      6586
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       149,
       165,
       0,
@@ -17699,10 +21704,10 @@
       false,
       false,
       false,
-      1063
+      6578
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       150,
       165,
       0,
@@ -17710,10 +21715,10 @@
       false,
       false,
       false,
-      1062
+      6557
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       151,
       165,
       0,
@@ -17721,10 +21726,10 @@
       false,
       false,
       false,
-      1061
+      6545
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       152,
       165,
       0,
@@ -17732,10 +21737,10 @@
       false,
       false,
       false,
-      1065
+      6546
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       153,
       165,
       0,
@@ -17743,10 +21748,20 @@
       false,
       false,
       false,
-      1067
+      6547
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:so",
+      153,
+      165,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       154,
       165,
       0,
@@ -17754,7 +21769,28 @@
       false,
       false,
       false,
-      1066
+      6548
+    ],
+    [
+      "Border:estrutura/pisos/piso-agua-1:int-so",
+      154,
+      165,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      155,
+      165,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6549
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -17765,7 +21801,7 @@
       false,
       false,
       false,
-      686
+      7014
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -17776,7 +21812,7 @@
       false,
       false,
       false,
-      687
+      7015
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -17787,7 +21823,7 @@
       false,
       false,
       false,
-      688
+      7016
     ],
     [
       "estrutura/pisos/piso-grama-1",
@@ -18602,7 +22638,7 @@
       false,
       false,
       false,
-      1898
+      7117
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -18613,7 +22649,18 @@
       false,
       false,
       false,
-      1899
+      7128
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      145,
+      166,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6899
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -18624,10 +22671,10 @@
       false,
       false,
       false,
-      1303
+      6935
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       146,
       166,
       0,
@@ -18635,10 +22682,20 @@
       false,
       false,
       false,
-      1287
+      6614
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:l",
+      146,
+      166,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       147,
       166,
       0,
@@ -18646,10 +22703,10 @@
       false,
       false,
       false,
-      990
+      6615
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       148,
       166,
       0,
@@ -18657,10 +22714,10 @@
       false,
       false,
       false,
-      1072
+      6587
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       149,
       166,
       0,
@@ -18668,10 +22725,10 @@
       false,
       false,
       false,
-      1071
+      6579
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       150,
       166,
       0,
@@ -18679,10 +22736,10 @@
       false,
       false,
       false,
-      1073
+      6558
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       151,
       166,
       0,
@@ -18690,10 +22747,10 @@
       false,
       false,
       false,
-      1070
+      6550
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       152,
       166,
       0,
@@ -18701,10 +22758,10 @@
       false,
       false,
       false,
-      1068
+      6551
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       153,
       166,
       0,
@@ -18712,10 +22769,10 @@
       false,
       false,
       false,
-      1069
+      6552
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       154,
       166,
       0,
@@ -18723,10 +22780,20 @@
       false,
       false,
       false,
-      684
+      6553
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:so",
+      154,
+      166,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       155,
       166,
       0,
@@ -18734,7 +22801,17 @@
       false,
       false,
       false,
-      685
+      6554
+    ],
+    [
+      "Border:estrutura/pisos/piso-agua-1:s",
+      155,
+      166,
+      0,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-grama-1",
@@ -18748,7 +22825,17 @@
       52
     ],
     [
-      "Border:estrutura/pisos/piso-agua-1:int-sl",
+      "Border:estrutura/pisos/piso-terra-1:l",
+      156,
+      166,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-agua-1:s",
       156,
       166,
       0,
@@ -19631,7 +23718,7 @@
       false,
       false,
       false,
-      1903
+      7118
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -19642,7 +23729,18 @@
       false,
       false,
       false,
-      1904
+      7127
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      145,
+      167,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6900
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -19653,10 +23751,10 @@
       false,
       false,
       false,
-      1304
+      6934
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       146,
       167,
       0,
@@ -19664,10 +23762,20 @@
       false,
       false,
       false,
-      1288
+      6901
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:l",
+      146,
+      167,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       147,
       167,
       0,
@@ -19675,10 +23783,10 @@
       false,
       false,
       false,
-      984
+      6902
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       148,
       167,
       0,
@@ -19686,10 +23794,10 @@
       false,
       false,
       false,
-      1087
+      6588
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       149,
       167,
       0,
@@ -19697,10 +23805,10 @@
       false,
       false,
       false,
-      1074
+      6580
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       150,
       167,
       0,
@@ -19708,10 +23816,10 @@
       false,
       false,
       false,
-      1078
+      6559
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       151,
       167,
       0,
@@ -19719,10 +23827,10 @@
       false,
       false,
       false,
-      1079
+      6560
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       152,
       167,
       0,
@@ -19730,10 +23838,10 @@
       false,
       false,
       false,
-      1085
+      6561
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       153,
       167,
       0,
@@ -19741,10 +23849,10 @@
       false,
       false,
       false,
-      682
+      6562
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       154,
       167,
       0,
@@ -19752,7 +23860,7 @@
       false,
       false,
       false,
-      683
+      6563
     ],
     [
       "estrutura/pisos/piso-grama-1",
@@ -19766,7 +23874,7 @@
       53
     ],
     [
-      "Border:estrutura/pisos/piso-agua-1:int-sl",
+      "Border:estrutura/pisos/piso-terra-1:int-sl",
       155,
       167,
       0,
@@ -19787,7 +23895,7 @@
       138
     ],
     [
-      "Border:estrutura/pisos/piso-agua-1:sl",
+      "Border:estrutura/pisos/piso-terra-1:sl",
       156,
       167,
       0,
@@ -20633,7 +24741,7 @@
       false,
       false,
       false,
-      1908
+      7119
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -20644,7 +24752,18 @@
       false,
       false,
       false,
-      1909
+      7130
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      145,
+      168,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6903
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -20655,10 +24774,10 @@
       false,
       false,
       false,
-      1305
+      6933
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       146,
       168,
       0,
@@ -20666,10 +24785,20 @@
       false,
       false,
       false,
-      1289
+      6904
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:l",
+      146,
+      168,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       147,
       168,
       0,
@@ -20677,10 +24806,10 @@
       false,
       false,
       false,
-      983
+      6905
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       148,
       168,
       0,
@@ -20688,10 +24817,10 @@
       false,
       false,
       false,
-      1076
+      6589
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       149,
       168,
       0,
@@ -20699,10 +24828,10 @@
       false,
       false,
       false,
-      1075
+      6581
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       150,
       168,
       0,
@@ -20710,10 +24839,10 @@
       false,
       false,
       false,
-      1080
+      6582
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       151,
       168,
       0,
@@ -20721,10 +24850,10 @@
       false,
       false,
       false,
-      1086
+      6583
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       152,
       168,
       0,
@@ -20732,10 +24861,10 @@
       false,
       false,
       false,
-      680
+      6584
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       153,
       168,
       0,
@@ -20743,7 +24872,7 @@
       false,
       false,
       false,
-      681
+      6585
     ],
     [
       "estrutura/pisos/piso-grama-1",
@@ -20757,7 +24886,7 @@
       55
     ],
     [
-      "Border:estrutura/pisos/piso-agua-1:int-sl",
+      "Border:estrutura/pisos/piso-terra-1:int-sl",
       154,
       168,
       0,
@@ -20778,7 +24907,7 @@
       54
     ],
     [
-      "Border:estrutura/pisos/piso-agua-1:sl",
+      "Border:estrutura/pisos/piso-terra-1:sl",
       155,
       168,
       0,
@@ -21655,7 +25784,7 @@
       false,
       false,
       false,
-      1913
+      7120
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -21666,7 +25795,18 @@
       false,
       false,
       false,
-      1914
+      7131
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      145,
+      169,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6906
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -21677,10 +25817,10 @@
       false,
       false,
       false,
-      1306
+      6932
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       146,
       169,
       0,
@@ -21688,10 +25828,20 @@
       false,
       false,
       false,
-      1290
+      6907
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:int-nl",
+      146,
+      169,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       147,
       169,
       0,
@@ -21699,10 +25849,20 @@
       false,
       false,
       false,
-      982
+      6908
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:n",
+      147,
+      169,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       148,
       169,
       0,
@@ -21710,10 +25870,20 @@
       false,
       false,
       false,
-      1077
+      6590
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:nl",
+      148,
+      169,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       149,
       169,
       0,
@@ -21721,10 +25891,10 @@
       false,
       false,
       false,
-      1082
+      6591
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       150,
       169,
       0,
@@ -21732,10 +25902,10 @@
       false,
       false,
       false,
-      1083
+      6592
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       151,
       169,
       0,
@@ -21743,10 +25913,10 @@
       false,
       false,
       false,
-      678
+      6593
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       152,
       169,
       0,
@@ -21754,7 +25924,7 @@
       false,
       false,
       false,
-      679
+      6594
     ],
     [
       "estrutura/pisos/piso-grama-1",
@@ -21768,7 +25938,7 @@
       56
     ],
     [
-      "Border:estrutura/pisos/piso-agua-1:int-sl",
+      "Border:estrutura/pisos/piso-terra-1:int-sl",
       153,
       169,
       0,
@@ -21789,7 +25959,7 @@
       141
     ],
     [
-      "Border:estrutura/pisos/piso-agua-1:sl",
+      "Border:estrutura/pisos/piso-terra-1:sl",
       154,
       169,
       0,
@@ -22769,7 +26939,7 @@
       false,
       false,
       false,
-      1918
+      7126
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -22780,7 +26950,18 @@
       false,
       false,
       false,
-      1919
+      7121
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      145,
+      170,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6909
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -22791,7 +26972,18 @@
       false,
       false,
       false,
-      1307
+      6931
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      146,
+      170,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6910
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -22802,7 +26994,18 @@
       false,
       false,
       false,
-      1291
+      6930
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      147,
+      170,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6911
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -22813,10 +27016,10 @@
       false,
       false,
       false,
-      981
+      6929
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       148,
       170,
       0,
@@ -22824,10 +27027,20 @@
       false,
       false,
       false,
-      1088
+      6595
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:int-nl",
+      148,
+      170,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       149,
       170,
       0,
@@ -22835,10 +27048,20 @@
       false,
       false,
       false,
-      1081
+      6596
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:n",
+      149,
+      170,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       150,
       170,
       0,
@@ -22846,10 +27069,20 @@
       false,
       false,
       false,
-      1084
+      6597
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "Border:estrutura/pisos/piso-agua-1:n",
+      150,
+      170,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
       151,
       170,
       0,
@@ -22857,28 +27090,28 @@
       false,
       false,
       false,
-      677
+      6598
     ],
     [
-      "estrutura/pisos/piso-grama-1",
-      152,
-      170,
-      0,
-      0,
-      false,
-      false,
-      false,
-      58
-    ],
-    [
-      "Border:estrutura/pisos/piso-agua-1:int-sl",
-      152,
+      "Border:estrutura/pisos/piso-agua-1:nl",
+      151,
       170,
       0,
       0,
       false,
       false,
       false
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      152,
+      170,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6599
     ],
     [
       "estrutura/pisos/piso-grama-1",
@@ -22892,7 +27125,7 @@
       57
     ],
     [
-      "Border:estrutura/pisos/piso-agua-1:sl",
+      "Border:estrutura/pisos/piso-terra-1:l",
       153,
       170,
       0,
@@ -23835,7 +28068,7 @@
       false,
       false,
       false,
-      1923
+      7125
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -23846,7 +28079,7 @@
       false,
       false,
       false,
-      1924
+      7122
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -23857,7 +28090,7 @@
       false,
       false,
       false,
-      1308
+      7133
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -23868,7 +28101,18 @@
       false,
       false,
       false,
-      1292
+      7134
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      147,
+      171,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6912
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -23879,7 +28123,18 @@
       false,
       false,
       false,
-      980
+      6928
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      148,
+      171,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6913
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -23890,7 +28145,18 @@
       false,
       false,
       false,
-      1089
+      6927
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      149,
+      171,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6914
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -23901,7 +28167,18 @@
       false,
       false,
       false,
-      1092
+      6926
+    ],
+    [
+      "estrutura/pisos/piso-terra-1",
+      150,
+      171,
+      0,
+      0,
+      false,
+      false,
+      false,
+      6915
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -23912,10 +28189,10 @@
       false,
       false,
       false,
-      675
+      6925
     ],
     [
-      "estrutura/pisos/piso-agua-1",
+      "estrutura/pisos/piso-terra-1",
       151,
       171,
       0,
@@ -23923,7 +28200,17 @@
       false,
       false,
       false,
-      676
+      6916
+    ],
+    [
+      "Border:estrutura/pisos/piso-agua-1:l",
+      151,
+      171,
+      0,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-grama-1",
@@ -23937,7 +28224,7 @@
       59
     ],
     [
-      "Border:estrutura/pisos/piso-agua-1:l",
+      "Border:estrutura/pisos/piso-terra-1:int-sl",
       152,
       171,
       0,
@@ -23959,6 +28246,16 @@
     ],
     [
       "Border:estrutura/pisos/piso-pedra-3:no",
+      153,
+      171,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-1:sl",
       153,
       171,
       0,
@@ -24986,7 +29283,7 @@
       false,
       false,
       false,
-      1928
+      7124
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -24997,7 +29294,7 @@
       false,
       false,
       false,
-      1929
+      7123
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -25008,7 +29305,7 @@
       false,
       false,
       false,
-      1309
+      7132
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -25019,7 +29316,7 @@
       false,
       false,
       false,
-      1293
+      7135
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -25030,7 +29327,7 @@
       false,
       false,
       false,
-      979
+      7136
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -25041,7 +29338,7 @@
       false,
       false,
       false,
-      1090
+      7137
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -25052,7 +29349,7 @@
       false,
       false,
       false,
-      673
+      7138
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -25063,7 +29360,7 @@
       false,
       false,
       false,
-      674
+      6924
     ],
     [
       "estrutura/pisos/piso-grama-1",
@@ -25077,7 +29374,17 @@
       60
     ],
     [
-      "Border:estrutura/pisos/piso-agua-1:int-sl",
+      "Border:estrutura/pisos/piso-terra-1:s",
+      151,
+      172,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-agua-1:l",
       151,
       172,
       0,
@@ -25098,7 +29405,7 @@
       9
     ],
     [
-      "Border:estrutura/pisos/piso-agua-1:sl",
+      "Border:estrutura/pisos/piso-terra-1:sl",
       152,
       172,
       0,
@@ -72709,6 +77016,15 @@
   "transicoesData": [
     [
       "estrutura/escadas/escada-madeira-reta-1",
+      171,
+      158,
+      -1,
+      "up",
+      170,
+      158
+    ],
+    [
+      "estrutura/escadas/escada-madeira-reta-1",
       172,
       168,
       -1,
@@ -72811,12 +77127,92 @@
       "criaturas/mortos-vivos/skeleton"
     ],
     [
+      144,
+      153,
+      0,
+      5,
+      32,
+      "criaturas/vermes/spider"
+    ],
+    [
+      148,
+      155,
+      0,
+      5,
+      32,
+      "criaturas/vermes/spider"
+    ],
+    [
+      169,
+      156,
+      0,
+      30,
+      64,
+      "criaturas/vermes/giant-spider"
+    ],
+    [
+      170,
+      156,
+      0,
+      5,
+      32,
+      "criaturas/vermes/spider"
+    ],
+    [
+      145,
+      157,
+      0,
+      5,
+      32,
+      "criaturas/vermes/spider"
+    ],
+    [
+      169,
+      157,
+      0,
+      5,
+      32,
+      "criaturas/vermes/spider"
+    ],
+    [
+      150,
+      159,
+      0,
+      3,
+      32,
+      "criaturas/mamiferos/rat"
+    ],
+    [
+      150,
+      165,
+      0,
+      3,
+      32,
+      "criaturas/mamiferos/rat"
+    ],
+    [
       170,
       165,
       0,
       20,
       32,
       "criaturas/humanoides/elf-arcanist"
+    ],
+    [
+      148,
+      167,
+      0,
+      3,
+      32,
+      "criaturas/mamiferos/rat"
+    ],
+    [
+      152,
+      167,
+      0,
+      3,
+      32,
+      "criaturas/mamiferos/rat"
     ],
     [
       169,
@@ -72835,46 +77231,6 @@
       "criaturas/humanoides/elf-arcanist"
     ],
     [
-      158,
-      169,
-      0,
-      5,
-      32,
-      "criaturas/mamiferos/rat"
-    ],
-    [
-      160,
-      170,
-      0,
-      5,
-      32,
-      "criaturas/mamiferos/rat"
-    ],
-    [
-      160,
-      176,
-      0,
-      5,
-      32,
-      "criaturas/mamiferos/rat"
-    ],
-    [
-      154,
-      178,
-      0,
-      5,
-      32,
-      "criaturas/mamiferos/rat"
-    ],
-    [
-      153,
-      179,
-      0,
-      5,
-      32,
-      "criaturas/mamiferos/rat"
-    ],
-    [
       177,
       179,
       0,
@@ -72891,28 +77247,12 @@
       "criaturas/vermes/spider"
     ],
     [
-      159,
-      180,
-      0,
-      5,
-      32,
-      "criaturas/mamiferos/rat"
-    ],
-    [
       178,
       180,
       0,
       50,
       64,
       "criaturas/vermes/giant-spider"
-    ],
-    [
-      157,
-      181,
-      0,
-      5,
-      32,
-      "criaturas/mamiferos/rat"
     ],
     [
       178,
