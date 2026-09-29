@@ -17962,6 +17962,16 @@
       128
     ],
     [
+      "estrutura/natureza/arvore-1",
+      169,
+      165,
+      0,
+      0,
+      false,
+      false,
+      true
+    ],
+    [
       "estrutura/pisos/piso-grama-1",
       170,
       165,
@@ -18972,6 +18982,16 @@
       323
     ],
     [
+      "estrutura/natureza/pinheiro-1",
+      170,
+      166,
+      0,
+      0,
+      false,
+      false,
+      true
+    ],
+    [
       "estrutura/pisos/piso-grama-1",
       171,
       166,
@@ -18992,6 +19012,16 @@
       false,
       false,
       228
+    ],
+    [
+      "estrutura/natureza/arvore-1",
+      172,
+      166,
+      0,
+      0,
+      false,
+      false,
+      true
     ],
     [
       "estrutura/pisos/piso-grama-1",
@@ -20028,6 +20058,16 @@
       225
     ],
     [
+      "estrutura/natureza/pinheiro-1",
+      174,
+      167,
+      0,
+      0,
+      false,
+      false,
+      true
+    ],
+    [
       "estrutura/pisos/piso-grama-1",
       175,
       167,
@@ -20965,6 +21005,16 @@
       false
     ],
     [
+      "estrutura/natureza/arvore-1",
+      169,
+      168,
+      0,
+      0,
+      false,
+      false,
+      true
+    ],
+    [
       "estrutura/pisos/piso-grama-1",
       170,
       168,
@@ -20984,6 +21034,16 @@
       false,
       false,
       false
+    ],
+    [
+      "estrutura/natureza/pinheiro-1",
+      170,
+      168,
+      0,
+      0,
+      false,
+      false,
+      true
     ],
     [
       "estrutura/pisos/piso-grama-1",
@@ -22050,6 +22110,16 @@
       false,
       false,
       425
+    ],
+    [
+      "estrutura/natureza/arvore-1",
+      172,
+      169,
+      0,
+      0,
+      false,
+      false,
+      true
     ],
     [
       "estrutura/pisos/piso-grama-1",
@@ -72741,6 +72811,30 @@
       "criaturas/mortos-vivos/skeleton"
     ],
     [
+      170,
+      165,
+      0,
+      20,
+      32,
+      "criaturas/humanoides/elf-arcanist"
+    ],
+    [
+      169,
+      167,
+      0,
+      20,
+      32,
+      "criaturas/humanoides/elf-arcanist"
+    ],
+    [
+      173,
+      167,
+      0,
+      20,
+      32,
+      "criaturas/humanoides/elf-arcanist"
+    ],
+    [
       158,
       169,
       0,
@@ -72843,6 +72937,14 @@
       10,
       32,
       "criaturas/vermes/spider"
+    ],
+    [
+      177,
+      185,
+      0,
+      20,
+      32,
+      "criaturas/mortos-vivos/banshee"
     ],
     [
       175,

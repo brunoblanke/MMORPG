@@ -1,6 +1,6 @@
 {
   "formato": {
-    "quadro": 64,
+    "quadro": 32,
     "quadros": 3,
     "linhas": [
       "sul",
@@ -11,7 +11,7 @@
     ]
   },
   "criatura": {
-    "id": 38,
+    "id": 63,
     "cores": [
       78,
       69,
@@ -23,28 +23,28 @@
   "cadaver": {
     "fresco": {
       "tibia": {
-        "id": 4038,
+        "id": 4160,
         "variacao": 0
       }
     },
     "apodrecendo": {
       "tibia": {
-        "id": 4039,
+        "id": 4161,
         "variacao": 0
       }
     },
     "ossos": {
       "tibia": {
-        "id": 4040,
+        "id": 4128,
         "variacao": 0
       }
     }
   },
   "propriedades": {
-    "comportamento": "foge"
+    "comportamento": "mago"
   },
   "ferramenta": "criaturas",
   "grupo": "criaturas",
-  "pasta": "vermes",
-  "nome": "giant-spider"
+  "pasta": "humanoides",
+  "nome": "elf-arcanist"
 }
