@@ -45,6 +45,6 @@
   "pasta": "mamiferos",
   "nome": "rat",
   "propriedades": {
-    "foge": 20
+    "comportamento": "foge"
   }
 }

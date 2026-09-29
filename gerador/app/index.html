@@ -101,8 +101,12 @@
         <select id="creatureFolder"></select>
       </div>
       <div class="field">
-        <label for="creatureFlee">Foge com vida até (%)</label>
-        <input type="number" id="creatureFlee" min="0" max="100" step="1" value="0" title="0 = nunca foge" />
+        <label for="creatureBehavior">Comportamento</label>
+        <select id="creatureBehavior">
+          <option value="normal">Normal (persegue e ataca colado)</option>
+          <option value="foge">Foge com a vida baixa</option>
+          <option value="mago">Mago (ataca de longe e mantém distância)</option>
+        </select>
       </div>
       <button type="submit" class="primary-btn" id="creatureSaveBtn">Salvar PNG</button>
       <p class="status" id="creatureStatus" role="status"></p>

@@ -304,7 +304,9 @@ export class GameController {
   handleSimEvents(events, timestamp) {
     const playerId = this.session.playerId;
     for (const event of events) {
-      if (event.type === 'damage') {
+      if (event.type === 'missile') {
+        this.particleController.spawnMissile(event, this.renderer);
+      } else if (event.type === 'damage') {
         this.particleController.spawnDamage(event.x, event.y, event.amount, this.renderer);
       } else if (event.type === 'xp' && event.playerId === playerId) {
         this.particleController.spawnXP(event.x, event.y, event.amount, this.renderer);

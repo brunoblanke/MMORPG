@@ -4,7 +4,7 @@ import { calculateMoveDelay, distance, getAdjacentPositions, isPositionAdjacentT
 import { getLevel } from '../core/geometry.js';
 import { AI_STATE } from '../models/enemy.js';
 import { CONFIG } from '../config.js';
-import { getAsset } from '../../shared/assets.js';
+import { creatureBehavior } from '../../shared/assets.js';
 
 // Máquina de estados de cada inimigo (enemy.ai):
 //
@@ -12,6 +12,8 @@ import { getAsset } from '../../shared/assets.js';
 //   chase ──(perdeu o player de vista ou ficou sem rota)──▶ patrol
 //   qualquer um ──(vê o player com a vida no limite de fuga)──▶ flee
 //   flee ──(perdeu o player de vista)──▶ patrol
+// Mago (comportamento 'mago'), vendo o player, fica em chase mas não cola:
+// mantém entre mageKeepDistance e mageRange sqm e ataca de longe (combat.js).
 //
 // patrol: parado (ai.resumeAt) → anda até um sqm sorteado da área → para.
 // chase: vai pra um sqm livre colado no player (ai.slot), ataca dali e de
@@ -44,6 +46,10 @@ export class EnemyAI {
     if (enemy.ai.state === AI_STATE.FLEE) {
       this.enterPatrol(enemy, timestamp);
     }
+    if (seesPlayer && creatureBehavior(enemy.creature) === 'mago') {
+      this.keepDistance(enemy, player, enemies, timestamp, searchBounds);
+      return;
+    }
 
     if (enemy.ai.state === AI_STATE.CHASE) {
       this.updateChase(enemy, player, enemies, timestamp, searchBounds, seesPlayer);
@@ -54,18 +60,16 @@ export class EnemyAI {
 
   // ================================================================================================================================================================================================================================================
   // shouldFlee
-  // A criatura foge com a vida em até `foge`% (gerador → Criaturas; 0 = nunca).
+  // Criatura 'foge' (gerador → Criaturas) com a vida em até fleeHealth.
 
   shouldFlee(enemy) {
-    const asset = getAsset(enemy.creature);
-    const percent = Number(asset && asset.propriedades && asset.propriedades.foge) || 0;
-    return percent > 0 && enemy.currentHp > 0 && enemy.currentHp <= enemy.maxHp * percent / 100;
+    if (creatureBehavior(enemy.creature) !== 'foge') return false;
+    return enemy.currentHp > 0 && enemy.currentHp <= enemy.maxHp * CONFIG.fleeHealth;
   }
 
   // ================================================================================================================================================================================================================================================
   // flee
-  // Fugindo: não ataca e, a cada passo, vai pro sqm vizinho livre que mais o
-  // afasta do player. Encurralado (nenhum sqm afasta), fica parado.
+  // Fugindo: não ataca e, a cada passo, se afasta do player (stepAway).
 
   flee(enemy, player, enemies, timestamp) {
     if (enemy.ai.state !== AI_STATE.FLEE) {
@@ -75,10 +79,18 @@ export class EnemyAI {
       enemy.route = { path: null, x: null, y: null };
       console.log(`🏃 Inimigo ${enemy.id} fugindo com ${enemy.currentHp}/${enemy.maxHp} de vida`);
     }
-    if (timestamp - enemy.lastMoveTime < calculateMoveDelay(enemy.spd)) return;
-    const here = distance(enemy.x, enemy.y, player.x, player.y);
+    this.stepAway(enemy, player, enemies, timestamp);
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // stepAway
+  // Um passo pro sqm vizinho livre que mais afasta do player. Encurralado
+  // (nenhum sqm afasta), fica parado. false se não andou.
+
+  stepAway(enemy, player, enemies, timestamp) {
+    if (timestamp - enemy.lastMoveTime < calculateMoveDelay(enemy.spd)) return false;
     let best = null;
-    let bestDist = here;
+    let bestDist = distance(enemy.x, enemy.y, player.x, player.y);
     for (const pos of getAdjacentPositions(enemy.x, enemy.y)) {
       const dx = pos.x - enemy.x;
       const dy = pos.y - enemy.y;
@@ -87,7 +99,29 @@ export class EnemyAI {
       const d = distance(landing.x, landing.y, player.x, player.y);
       if (d > bestDist) { bestDist = d; best = { dx, dy }; }
     }
-    if (best) this.movement.moveEntity(enemy, best.dx, best.dy, timestamp);
+    return best ? this.movement.moveEntity(enemy, best.dx, best.dy, timestamp) : false;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // keepDistance
+  // Mago vendo o player: perto demais (menos de mageKeepDistance sqm), se
+  // afasta; longe demais (mais de mageRange) ou sem linha livre, chega mais
+  // perto; na faixa, fica parado atacando (combat.js).
+
+  keepDistance(enemy, player, enemies, timestamp, searchBounds) {
+    enemy.ai.state = AI_STATE.CHASE;
+    enemy.ai.slot = null;
+    enemy.ai.sidestepAt = null;
+    const range = Math.max(Math.abs(enemy.x - player.x), Math.abs(enemy.y - player.y));
+    if (range < CONFIG.mageKeepDistance) {
+      this.stepAway(enemy, player, enemies, timestamp);
+      return;
+    }
+    if (range > CONFIG.mageRange || !this.movement.hasLineOfSight(enemy, player)) {
+      this.movement.moveTowardsPosition(enemy, player.x, player.y, timestamp, player, searchBounds, enemies);
+      return;
+    }
+    enemy.route = { path: null, x: null, y: null };
   }
 
   // ================================================================================================================================================================================================================================================

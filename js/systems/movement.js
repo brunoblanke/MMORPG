@@ -4,6 +4,7 @@ import { calculateMoveDelay, distance, directionFromDelta, getAdjacentPositions,
 import { resolveStep, isSameLanding } from '../core/movement.js';
 import { findPath } from '../core/pathfinding.js';
 import { isValidFloor } from '../../shared/constants.js';
+import { blocksThrow, objectIdType } from '../../shared/assets.js';
 
 export class MovementController {
 
@@ -217,6 +218,36 @@ export class MovementController {
     }
 
     path.shift();
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // hasLineOfSight
+  // Linha reta livre de parede entre from e to, no andar de from (a mesma
+  // regra do arremesso: janela e porta aberta deixam passar; não passa pela
+  // quina entre duas paredes). Usado pelo ataque de longe do mago.
+
+  hasLineOfSight(from, to) {
+    const z = from.z || 0;
+    const isWall = (x, y) => this.world.getObjectsAt(x, y).some(o => (o.z || 0) === z && o.blocksMovement && blocksThrow(objectIdType(o.id)));
+    let x = from.x;
+    let y = from.y;
+    const dx = Math.abs(to.x - x);
+    const dy = Math.abs(to.y - y);
+    const sx = to.x > x ? 1 : -1;
+    const sy = to.y > y ? 1 : -1;
+    let err = dx - dy;
+    while (x !== to.x || y !== to.y) {
+      const e2 = 2 * err;
+      let nx = x;
+      let ny = y;
+      if (e2 > -dy) { err -= dy; nx += sx; }
+      if (e2 < dx) { err += dx; ny += sy; }
+      if (nx !== x && ny !== y && isWall(nx, y) && isWall(x, ny)) return false;
+      if (isWall(nx, ny)) return false;
+      x = nx;
+      y = ny;
+    }
+    return true;
   }
 
   // ================================================================================================================================================================================================================================================

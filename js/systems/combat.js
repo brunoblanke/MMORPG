@@ -3,6 +3,7 @@
 import { isPositionAdjacentTo, distance } from '../utils/helpers.js';
 import { getLevel } from '../core/geometry.js';
 import { AI_STATE } from '../models/enemy.js';
+import { creatureBehavior } from '../../shared/assets.js';
 import { CONFIG } from '../config.js';
 import { equipBonus, itemInfo } from '../../shared/items.js';
 import { addSkillTry } from '../../shared/skills.js';
@@ -44,6 +45,19 @@ export class CombatController {
     }
     this.sim.emit({ type: 'damage', targetId: defender.id, x: defender.x, y: defender.y, amount: damage });
     return hpLeft;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // rangedAttack
+  // Mago: ataca de até mageRange sqm, com linha livre de parede. O projétil
+  // sai como evento pro navegador desenhar (missile).
+
+  rangedAttack(enemy, player, now) {
+    const range = Math.max(Math.abs(enemy.x - player.x), Math.abs(enemy.y - player.y));
+    if (range > CONFIG.mageRange || !this.sim.movement.hasLineOfSight(enemy, player)) return;
+    if (now - enemy.lastAttackTime < CONFIG.attackCooldown) return;
+    this.sim.emit({ type: 'missile', fromX: enemy.x, fromY: enemy.y, toX: player.x, toY: player.y });
+    this.attackTarget(enemy, player, now);
   }
 
   // ================================================================================================================================================================================================================================================
@@ -147,7 +161,8 @@ export class CombatController {
   // ================================================================================================================================================================================================================================================
   // processEnemies
   // Inimigo que vê o player e está colado nele, no mesmo andar, ataca — a não
-  // ser que o player esteja na zona segura ou o inimigo esteja fugindo.
+  // ser que o player esteja na zona segura ou o inimigo esteja fugindo. O
+  // mago ataca de longe (rangedAttack).
   // player.isTarget: algum inimigo o vê (marca vermelha no player).
 
   processEnemies(player, now) {
@@ -166,7 +181,10 @@ export class CombatController {
       const isAdjacent = isPositionAdjacentTo(enemy.x, enemy.y, player.x, player.y);
       const canReach = getLevel(enemy) === getLevel(player);
       const fleeing = enemy.ai && enemy.ai.state === AI_STATE.FLEE;
-      if (isAdjacent && canReach && !fleeing && player.isAlive()) {
+      if (!canReach || fleeing || !player.isAlive()) continue;
+      if (creatureBehavior(enemy.creature) === 'mago') {
+        this.rangedAttack(enemy, player, now);
+      } else if (isAdjacent) {
         this.attackTarget(enemy, player, now);
       }
     }

@@ -24,6 +24,15 @@ export class ParticleSystem {
   }
 
   // ================================================================================================================================================================================================================================================
+  // spawnMissile
+  // Projétil de magia: uma bolinha que voa do sqm de origem até o de destino.
+
+  spawnMissile(fromX, fromY, toX, toY, renderer) {
+    this.missiles = this.missiles || [];
+    this.missiles.push({ fromX, fromY, toX, toY, renderer, createdAt: performance.now(), duration: 280 });
+  }
+
+  // ================================================================================================================================================================================================================================================
   // update
 
   update(timestamp) {
@@ -38,12 +47,29 @@ export class ParticleSystem {
       
       return true;
     });
+    this.missiles = (this.missiles || []).filter(m => timestamp - m.createdAt < m.duration);
   }
 
   // ================================================================================================================================================================================================================================================
   // render
 
   render(ctx) {
+    for (const m of this.missiles || []) {
+      const t = Math.max(0, Math.min(1, (performance.now() - m.createdAt) / m.duration));
+      const size = m.renderer.camera.tileSize;
+      const from = m.renderer.gridToScreenWithOffset(m.fromX, m.fromY);
+      const to = m.renderer.gridToScreenWithOffset(m.toX, m.toY);
+      const x = from.x + (to.x - from.x) * t + size / 2;
+      const y = from.y + (to.y - from.y) * t + size / 2;
+      ctx.save();
+      ctx.fillStyle = '#c084fc';
+      ctx.shadowColor = '#a855f7';
+      ctx.shadowBlur = 10;
+      ctx.beginPath();
+      ctx.arc(x, y, 4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
     for (const p of this.particles) {
       ctx.save();
       ctx.globalAlpha = p.opacity;
@@ -64,5 +90,6 @@ export class ParticleSystem {
 
   clear() {
     this.particles = [];
+    this.missiles = [];
   }
 }

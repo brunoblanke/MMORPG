@@ -50,6 +50,19 @@ const WALL_PROPS = {
 const assets = new Map();
 
 // ================================================================================================================================================================================================================================================
+// creatureBehavior
+// Comportamento da criatura (gerador → Criaturas): 'normal' persegue e ataca
+// colado; 'foge' igual, mas foge com a vida baixa; 'mago' ataca de longe e
+// mantém distância. Receita antiga com foge > 0 vale 'foge'.
+
+export function creatureBehavior(type) {
+  const asset = getAsset(type);
+  const props = (asset && asset.propriedades) || {};
+  if (['normal', 'foge', 'mago'].includes(props.comportamento)) return props.comportamento;
+  return Number(props.foge) > 0 ? 'foge' : 'normal';
+}
+
+// ================================================================================================================================================================================================================================================
 // doorState / doorType
 // Porta de parede ('<folha>#porta-x', '<folha>#porta-y-aberta'…): { open,
 // hasVolume, blocksMovement } do tipo, ou null se não é porta. doorType dá o
