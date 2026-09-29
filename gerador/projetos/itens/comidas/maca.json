@@ -15,7 +15,7 @@
     "move": true,
     "altura": false,
     "empilhavel": true,
-    "peso": 1,
+    "peso": 1.5,
     "espacos": 0,
     "atk": 0,
     "def": 0,
