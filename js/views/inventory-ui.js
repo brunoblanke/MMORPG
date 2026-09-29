@@ -23,7 +23,7 @@ const EQUIP_LAYOUT = [
 const ICONS = {
   amuleto: '<path d="M6 3c0 6 3 9 6 11 3-2 6-5 6-11"/><circle cx="12" cy="18" r="3"/>',
   cabeca: '<path d="M5 15a7 7 0 0 1 14 0v3H5z"/><path d="M9 18v2m6-2v2"/>',
-  mochila: '<g transform="translate(12 12) rotate(45) scale(.82) translate(-12 -12)"><path d="M10 7.5 8.5 3.5c1 .8 2 .8 3 0 1 .8 2 .8 3 0L14 7.5"/><rect x="9" y="7.5" width="6" height="2" rx="1"/><path d="M9.5 9.5C6.5 11 4.5 14 4.5 16.5c0 3.2 3.3 5 7.5 5s7.5-1.8 7.5-5c0-2.5-2-5.5-5-7"/><path d="M15 8.5c2 0 2.8 1.5 5 1.5"/></g>',
+  mochila: '<path d="M10 7.5 8.5 3.5c1 .8 2 .8 3 0 1 .8 2 .8 3 0L14 7.5"/><rect x="9" y="7.5" width="6" height="2" rx="1"/><path d="M9.5 9.5C6.5 11 4.5 14 4.5 16.5c0 3.2 3.3 5 7.5 5s7.5-1.8 7.5-5c0-2.5-2-5.5-5-7"/><path d="M15 8.5c2 0 2.8 1.5 5 1.5"/>',
   arma: '<path d="M14.5 17.5 3 6V3h3l11.5 11.5"/><path d="m13 19 6-6"/><path d="m16 16 4 4"/><path d="m19 21 2-2"/>',
   corpo: '<path d="M8 4l4 2 4-2 4 4-3 3v9H7v-9L4 8z"/>',
   escudo: '<path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/>',
