@@ -103,7 +103,8 @@ export class InventoryUI {
   // ================================================================================================================================================================================================================================================
   // updateGroundGhost
   // Item arrastado da tela do jogo: o desenho dele segue o mouse, no canto
-  // inferior direito, como o das janelas.
+  // inferior direito, e os espaços que aceitam o item ficam destacados, como
+  // no arrastar das janelas.
 
   updateGroundGhost() {
     const input = this.game.inputController;
@@ -112,12 +113,15 @@ export class InventoryUI {
       if (this.groundGhost) {
         this.groundGhost.remove();
         this.markSlot(null);
+        document.querySelectorAll('.inv-slot.can-drop').forEach(el => el.classList.remove('can-drop'));
       }
       this.groundGhost = null;
       return;
     }
+    const accepts = (place) => !obj.isCorpse && this.canDropOn(objectIdType(obj.id), null, place);
+    document.querySelectorAll('.inv-slot').forEach(el => el.classList.toggle('can-drop', accepts(this.placeOf(el))));
     const slot = document.elementFromPoint(this.mouse.x, this.mouse.y)?.closest('.inv-slot');
-    this.markSlot(slot || null, (place) => !obj.isCorpse && this.canDropOn(objectIdType(obj.id), null, place));
+    this.markSlot(slot || null, accepts);
     if (!this.groundGhost) {
       this.groundGhost = document.createElement('div');
       this.groundGhost.className = 'inv-ghost';

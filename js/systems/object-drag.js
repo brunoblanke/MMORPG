@@ -103,6 +103,9 @@ export class ObjectDragController {
       this.sink(player, obj);
       return;
     }
+    if (this.sim.inventory.dropIntoContainer(player, obj, targetX, targetY, floor)) {
+      return;
+    }
     if (this.hasOtherBlocker(obj, targetX, targetY, floor)) {
       return;
     }
