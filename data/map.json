@@ -26034,16 +26034,6 @@
       334
     ],
     [
-      "itens/recipientes/parcel",
-      159,
-      169,
-      0,
-      0,
-      true,
-      true,
-      false
-    ],
-    [
       "estrutura/pisos/piso-grama-1",
       160,
       169,
@@ -27232,16 +27222,6 @@
       false,
       false,
       451
-    ],
-    [
-      "itens/recipientes/parcel",
-      162,
-      170,
-      0,
-      0,
-      true,
-      true,
-      false
     ],
     [
       "estrutura/pisos/piso-grama-1",
@@ -28442,16 +28422,6 @@
       455
     ],
     [
-      "itens/recipientes/parcel",
-      160,
-      171,
-      0,
-      0,
-      true,
-      true,
-      false
-    ],
-    [
       "estrutura/pisos/piso-grama-1",
       161,
       171,
@@ -29616,16 +29586,6 @@
       481
     ],
     [
-      "itens/comidas/maca",
-      159,
-      172,
-      0,
-      0,
-      true,
-      false,
-      false
-    ],
-    [
       "estrutura/pisos/piso-grama-1",
       160,
       172,
@@ -29635,16 +29595,6 @@
       false,
       false,
       480
-    ],
-    [
-      "itens/comidas/maca",
-      160,
-      172,
-      0,
-      0,
-      true,
-      false,
-      false
     ],
     [
       "estrutura/pisos/piso-grama-1",
@@ -30802,16 +30752,6 @@
       486
     ],
     [
-      "itens/recipientes/parcel",
-      160,
-      173,
-      0,
-      0,
-      true,
-      true,
-      false
-    ],
-    [
       "estrutura/pisos/piso-grama-1",
       161,
       173,
@@ -30821,16 +30761,6 @@
       false,
       false,
       487
-    ],
-    [
-      "itens/comidas/maca",
-      161,
-      173,
-      0,
-      0,
-      true,
-      false,
-      false
     ],
     [
       "estrutura/pisos/piso-grama-1",
@@ -30851,16 +30781,6 @@
       0,
       false,
       false,
-      false
-    ],
-    [
-      "itens/recipientes/parcel",
-      162,
-      173,
-      0,
-      0,
-      true,
-      true,
       false
     ],
     [
@@ -32046,16 +31966,6 @@
       0,
       0,
       false,
-      false,
-      false
-    ],
-    [
-      "itens/comidas/maca",
-      160,
-      174,
-      0,
-      0,
-      true,
       false,
       false
     ],
@@ -34236,116 +34146,6 @@
       false,
       false,
       153
-    ],
-    [
-      "itens/recipientes/parcel",
-      152,
-      176,
-      0,
-      0,
-      true,
-      true,
-      false
-    ],
-    [
-      "itens/comidas/meet",
-      152,
-      176,
-      0,
-      1,
-      true,
-      false,
-      false
-    ],
-    [
-      "itens/comidas/meet",
-      152,
-      176,
-      0,
-      1,
-      true,
-      false,
-      false
-    ],
-    [
-      "itens/comidas/meet",
-      152,
-      176,
-      0,
-      1,
-      true,
-      false,
-      false
-    ],
-    [
-      "itens/comidas/meet",
-      152,
-      176,
-      0,
-      1,
-      true,
-      false,
-      false
-    ],
-    [
-      "itens/comidas/meet",
-      152,
-      176,
-      0,
-      1,
-      true,
-      false,
-      false
-    ],
-    [
-      "itens/comidas/meet",
-      152,
-      176,
-      0,
-      1,
-      true,
-      false,
-      false
-    ],
-    [
-      "itens/comidas/meet",
-      152,
-      176,
-      0,
-      1,
-      true,
-      false,
-      false
-    ],
-    [
-      "itens/comidas/meet",
-      152,
-      176,
-      0,
-      1,
-      true,
-      false,
-      false
-    ],
-    [
-      "itens/comidas/meet",
-      152,
-      176,
-      0,
-      1,
-      true,
-      false,
-      false
-    ],
-    [
-      "itens/comidas/meet",
-      152,
-      176,
-      0,
-      1,
-      true,
-      false,
-      false
     ],
     [
       "estrutura/pisos/piso-grama-1",
@@ -73999,6 +73799,26 @@
       1501
     ],
     [
+      "itens/recipientes/parcel",
+      155,
+      171,
+      1,
+      0,
+      true,
+      true,
+      false
+    ],
+    [
+      "itens/recipientes/parcel",
+      155,
+      171,
+      1,
+      1,
+      true,
+      true,
+      false
+    ],
+    [
       "estrutura/pisos/piso-madeira-1",
       156,
       171,
@@ -74008,6 +73828,26 @@
       false,
       false,
       1502
+    ],
+    [
+      "itens/recipientes/parcel",
+      156,
+      171,
+      1,
+      0,
+      true,
+      true,
+      false
+    ],
+    [
+      "itens/recipientes/parcel",
+      156,
+      171,
+      1,
+      1,
+      true,
+      true,
+      false
     ],
     [
       "estrutura/pisos/piso-madeira-1",
@@ -74021,6 +73861,36 @@
       1503
     ],
     [
+      "itens/recipientes/parcel",
+      157,
+      171,
+      1,
+      0,
+      true,
+      true,
+      false
+    ],
+    [
+      "itens/recipientes/parcel",
+      157,
+      171,
+      1,
+      1,
+      true,
+      true,
+      false
+    ],
+    [
+      "itens/recipientes/parcel",
+      157,
+      171,
+      1,
+      2,
+      true,
+      true,
+      false
+    ],
+    [
       "estrutura/pisos/piso-madeira-1",
       158,
       171,
@@ -74030,6 +73900,26 @@
       false,
       false,
       2977
+    ],
+    [
+      "itens/recipientes/parcel",
+      158,
+      171,
+      1,
+      0,
+      true,
+      true,
+      false
+    ],
+    [
+      "itens/recipientes/parcel",
+      158,
+      171,
+      1,
+      1,
+      true,
+      true,
+      false
     ],
     [
       "estrutura/pisos/piso-madeira-1",
@@ -74096,6 +73986,16 @@
       1512
     ],
     [
+      "itens/recipientes/parcel",
+      154,
+      172,
+      1,
+      0,
+      true,
+      true,
+      false
+    ],
+    [
       "estrutura/pisos/piso-madeira-1",
       155,
       172,
@@ -74105,6 +74005,16 @@
       false,
       false,
       1513
+    ],
+    [
+      "itens/recipientes/parcel",
+      155,
+      172,
+      1,
+      0,
+      true,
+      true,
+      false
     ],
     [
       "estrutura/pisos/piso-madeira-1",
@@ -74118,6 +74028,36 @@
       1514
     ],
     [
+      "itens/recipientes/parcel",
+      156,
+      172,
+      1,
+      0,
+      true,
+      true,
+      false
+    ],
+    [
+      "itens/recipientes/parcel",
+      156,
+      172,
+      1,
+      1,
+      true,
+      true,
+      false
+    ],
+    [
+      "itens/recipientes/parcel",
+      156,
+      172,
+      1,
+      2,
+      true,
+      true,
+      false
+    ],
+    [
       "estrutura/pisos/piso-madeira-1",
       157,
       172,
@@ -74129,6 +74069,16 @@
       1504
     ],
     [
+      "itens/recipientes/parcel",
+      157,
+      172,
+      1,
+      0,
+      true,
+      true,
+      false
+    ],
+    [
       "estrutura/pisos/piso-madeira-1",
       158,
       172,
@@ -74138,6 +74088,16 @@
       false,
       false,
       2984
+    ],
+    [
+      "itens/recipientes/parcel",
+      158,
+      172,
+      1,
+      0,
+      true,
+      true,
+      false
     ],
     [
       "estrutura/pisos/piso-madeira-1",
