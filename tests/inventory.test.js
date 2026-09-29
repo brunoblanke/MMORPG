@@ -328,7 +328,7 @@ test('skill sobe com o uso: golpe com machado treina axe, ataque recebido com es
   player.equip.escudo = { uid: 'e1', type: SHIELD };
   const enemy = { isPlayer: false, atk: 1, def: 0, currentHp: 1e9, lastAttackTime: -1e9, isAlive: () => true, takeDamage(n) { this.currentHp -= n; return this.currentHp; } };
   let now = 10000;
-  for (let i = 0; i < 50; i++) {
+  for (let i = 0; i < 100; i++) {
     player.lastAttackTime = -1e9;
     sim.combat.attackTarget(player, enemy, now);
     enemy.lastAttackTime = -1e9;

@@ -8,7 +8,7 @@ export const CONFIG = {
   mapHeight: GRID_HEIGHT,
   mapDataUrl: 'data/map.json',
   lootDataUrl: 'data/loot.json',
-  playerStartLevel: 50,        // nível de quem entra pela primeira vez (personagem salvo mantém o dele)
+  playerStartLevel: 1,        // nível de quem entra pela primeira vez (personagem salvo mantém o dele)
   patrolRadius: 4,
   detectionRadius: 7,
   fleeHealth: 0.2,             // criatura "foge" foge com a vida em até 20%

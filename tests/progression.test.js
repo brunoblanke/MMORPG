@@ -37,17 +37,38 @@ function runFor(sim, ms) {
 
 test('subir de nível guarda o XP que sobra e melhora os atributos', () => {
   const player = new Player({ x: 0, y: 0, lvl: 1 });
-  assert.equal(player.nextLevelXp, 120);
+  assert.equal(player.nextLevelXp, 100);
 
   assert.equal(player.gainXp(130), 1);
   assert.equal(player.lvl, 2);
-  assert.equal(player.xp, 10);
+  assert.equal(player.xp, 30);
   const stats = calculateStats(2);
   assert.deepEqual([player.maxHp, player.currentHp, player.atk, player.def, player.spd], [stats.hp, stats.hp, stats.atk, stats.def, stats.spd]);
 
-  assert.equal(player.gainXp(500), 3);
-  assert.equal(player.lvl, 5);
-  assert.equal(player.xp, 500 + 10 - 140 - 160 - 180);
+  assert.equal(player.gainXp(500), 2);
+  assert.equal(player.lvl, 4);
+  assert.equal(player.xp, 500 + 30 - 100 - 200);
+});
+
+test('XP por nível segue a tabela do Tibia (total: 100, 200, 400, 800, 1500…)', () => {
+  const totals = [];
+  let total = 0;
+  for (let lvl = 1; lvl <= 9; lvl++) {
+    totals.push(total);
+    total += new Player({ x: 0, y: 0, lvl }).nextLevelXp;
+  }
+  assert.deepEqual(totals, [0, 100, 200, 400, 800, 1500, 2600, 4200, 6400]);
+});
+
+test('skills seguem a progressão do Tibia (valores do Knight)', async () => {
+  const { triesFor } = await import('../shared/skills.js');
+  assert.equal(triesFor(10, 'sword'), 50);
+  assert.equal(triesFor(11, 'sword'), 55);
+  assert.equal(triesFor(10, 'distance'), 30);
+  assert.equal(triesFor(11, 'distance'), 42);
+  assert.equal(triesFor(10, 'shielding'), 100);
+  assert.equal(triesFor(10, 'fist'), 50);
+  assert.equal(triesFor(11, 'fist'), 75);
 });
 
 test('matar um inimigo dá o XP inteiro dele e pode subir o nível', () => {
