@@ -127,6 +127,7 @@ export class ObjectDragController {
       this.liftSupportedEntities(targetX, targetY, floor, topStep, newTopStep);
     }
     this.dropUnsupportedEntities(oldX, oldY, fromFloor);
+    this.sim.inventory.mergeGroundStack(obj);
   }
 
   // ================================================================================================================================================================================================================================================

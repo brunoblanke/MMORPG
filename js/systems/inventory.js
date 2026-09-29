@@ -395,6 +395,32 @@ export class InventoryController {
   }
 
   // ================================================================================================================================================================================================================================================
+  // mergeGroundStack
+  // Item de pilha que chega num sqm com uma pilha igual (a de cima) junta
+  // nela até o máximo, como no Tibia; o que sobra fica como estava. Assim o
+  // desenho da pilha muda com a quantidade.
+
+  mergeGroundStack(obj) {
+    if (!this.isPickable(obj)) return;
+    const type = objectIdType(obj.id);
+    const stack = itemInfo(type).stack;
+    if (!stack) return;
+    const z = obj.z || 0;
+    const target = this.sim.world.getObjectsAt(obj.x, obj.y)
+      .filter(other => other !== obj && (other.z || 0) === z && objectIdType(other.id) === type && this.isPickable(other))
+      .sort((a, b) => (b.order || 0) - (a.order || 0))
+      .find(other => (this.groundItem(other).count || 1) < stack);
+    if (!target) return;
+
+    const item = this.groundItem(obj);
+    const into = this.groundItem(target);
+    const taken = Math.min(item.count || 1, stack - (into.count || 1));
+    into.count = (into.count || 1) + taken;
+    item.count = (item.count || 1) - taken;
+    if (item.count <= 0) this.removeGroundObject(obj);
+  }
+
+  // ================================================================================================================================================================================================================================================
   // removeGroundObject
   // Tira o objeto do chão (item pego); o que estava em cima dele desce.
 
@@ -446,16 +472,22 @@ export class InventoryController {
 
   // ================================================================================================================================================================================================================================================
   // use
-  // Comando useItem: usa um item que o player carrega. Comida soma tempo de
-  // regeneração (até FOOD_MAX_SECONDS; passou disso, "Você está cheio.").
+  // Comando useItem: usa um item do inventário, de uma caixa aberta ou do
+  // chão (longe, o player anda até o lado e usa ao chegar). Comida soma tempo
+  // de regeneração (até FOOD_MAX_SECONDS; passou disso, "Você está cheio.").
   // Potion sorteia a vida e a mana dentro da faixa do item (sem passar do
   // máximo) e espera USE_COOLDOWN_MS até o próximo uso. Gasta uma unidade.
 
   use(player, from) {
-    if (!from || (from.t !== 'e' && from.t !== 'c')) return;
+    if (!from || !['e', 'c', 'g'].includes(from.t)) return;
     const src = this.source(player, from);
-    if (src.error || !src.carried) return;
+    if (src.error) return;
     const info = itemInfo(src.item.type);
+    if (!info.food && !info.heal) return;
+    if (src.obj && !this.isNear(player, src.obj)) {
+      this.walkNextTo(player, src.obj, { type: 'useItem', from });
+      return;
+    }
     if (info.food) {
       this.eat(player, src, info.food);
       return;

@@ -118,6 +118,19 @@ export class InventoryUI {
   }
 
   // ================================================================================================================================================================================================================================================
+  // usableUnderMouse
+  // Comida ou potion no chão sob o mouse (duplo clique ou botão direito usa;
+  // o player anda até o lado se estiver longe).
+
+  usableUnderMouse() {
+    const input = this.game.inputController;
+    const obj = input && !input.hoverCorpse ? input.hoverObject : null;
+    if (!obj || obj.movable !== true) return null;
+    const info = itemInfo(objectIdType(obj.id));
+    return info.food || info.heal ? obj : null;
+  }
+
+  // ================================================================================================================================================================================================================================================
   // updateGroundGhost
   // Item arrastado da tela do jogo: o desenho dele segue o mouse, no canto
   // inferior direito, e os espaços que aceitam o item ficam destacados, como
@@ -988,7 +1001,7 @@ export class InventoryUI {
       if (!slot || !inPanels(slot)) return false;
       const place = this.placeOf(slot);
       const item = this.itemAt(place);
-      if (item && !item.items && (itemInfo(item.type).heal || itemInfo(item.type).food) && (place.t === 'e' || place.t === 'c')) {
+      if (item && !item.items && (itemInfo(item.type).heal || itemInfo(item.type).food)) {
         this.game.send({ type: 'useItem', from: place });
         return true;
       }
@@ -1008,9 +1021,15 @@ export class InventoryUI {
     // simples só anda até lá).
     const openGround = () => {
       const target = this.openableUnderMouse();
-      if (!target) return false;
+      if (target) {
+        this.game.cancelPendingWalk();
+        this.game.send({ type: 'openContainer', itemId: target.id });
+        return true;
+      }
+      const usable = this.usableUnderMouse();
+      if (!usable) return false;
       this.game.cancelPendingWalk();
-      this.game.send({ type: 'openContainer', itemId: target.id });
+      this.game.send({ type: 'useItem', from: { t: 'g', id: usable.id } });
       return true;
     };
     this.game.canvas.addEventListener('dblclick', openGround);

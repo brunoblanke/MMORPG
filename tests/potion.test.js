@@ -107,3 +107,31 @@ test('comida: soma tempo de regeneração até 1200s e recupera 1 de vida e mana
 test('pilha: o quadro muda com a quantidade, como no Tibia', () => {
   assert.deepEqual([1, 2, 3, 4, 5, 9, 10, 24, 25, 49, 50, 100].map(stackFrame), [0, 1, 2, 3, 4, 4, 5, 5, 6, 6, 7, 7]);
 });
+
+test('comer do chão: colado come na hora; longe, o player anda até o lado e come', () => {
+  const sim = game();
+  const near = sim.inventory.spawnGroundItem({ uid: 'g1', type: MEAT, count: 2 }, 6, 5, 0);
+  send(sim, { type: 'useItem', from: { t: 'g', id: near.id } });
+  assert.equal(near.itemData.count, 1);
+  assert.ok(sim.player.food > 0);
+
+  sim.player.food = 0;
+  const far = sim.inventory.spawnGroundItem({ uid: 'g2', type: MEAT, count: 1 }, 12, 5, 0);
+  send(sim, { type: 'useItem', from: { t: 'g', id: far.id } });
+  run(sim, 5000);
+  assert.ok(Math.abs(sim.player.x - 12) <= 1);
+  assert.ok(sim.player.food > 0);
+  assert.equal(sim.world.objects.has(far), false, 'a última unidade some do chão');
+});
+
+test('pilha no chão: jogar item igual no mesmo sqm junta na pilha de cima (até 100)', () => {
+  const sim = game();
+  const bag = sim.player.equip.mochila;
+  const pile = sim.inventory.spawnGroundItem({ uid: 'g1', type: MEAT, count: 95 }, 7, 5, 0);
+  bag.items[0] = { uid: 'c1', type: MEAT, count: 8 };
+  send(sim, { type: 'moveInv', from: { t: 'c', uid: bag.uid, i: 0 }, to: { t: 'w', x: 7, y: 5, z: 0 } });
+  assert.equal(pile.itemData.count, 100);
+  const onTile = sim.world.getObjectsAt(7, 5).filter(o => o.id.startsWith(MEAT));
+  assert.equal(onTile.length, 2);
+  assert.equal(onTile.find(o => o !== pile).itemData.count, 3);
+});
