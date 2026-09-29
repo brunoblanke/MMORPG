@@ -334,11 +334,11 @@ export class Renderer {
       const sheet = isPlayer ? this.sprites.getPlayerSheet(entity && entity.gender) : (entity ? this.sprites.getEnemySheet(entity.creature) : null);
       if (!isSheetReady(sheet)) return null;
 
-      const isMoving = entity && entity.isMoving;
+      const isWalking = entity && (entity.isMoving || this.frameTimestamp < (entity.walkingUntil || 0));
       const direction = (entity && entity.direction) || 'sul';
       const frameDuration = entity && entity.getFrameDuration ? entity.getFrameDuration() : CONFIG.playerFrameDuration;
-      const frameRect = isMoving
-        ? sheet.getFrameRect(direction, this.frameTimestamp, frameDuration)
+      const frameRect = isWalking
+        ? sheet.getWalkRect(direction, this.frameTimestamp, frameDuration)
         : sheet.getIdleRect(direction);
       return { image: sheet.image, frameRect };
     }

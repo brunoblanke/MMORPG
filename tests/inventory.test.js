@@ -148,18 +148,15 @@ test('container se organiza sozinho: sem espaços vazios entre os itens', () => 
   assert.deepEqual(bag.items.slice(0, 4).map(i => i && i.uid), ['a', 'c', 'b', null], 'solto num espaço lá no fim, vai pro primeiro livre');
 });
 
-test('item solto em cima de uma caixa no mapa entra nela; caixa com altura continua empilhando', () => {
-  const sim = game([[SWORD, 6, 5], [CHEST, 7, 5], [CHEST, 6, 6]]);
-  for (const obj of [...groundAt(sim, 7, 5), ...groundAt(sim, 6, 6)]) obj.hasVolume = true;
+test('item solto em cima de uma caixa no mapa fica em cima dela (não entra)', () => {
+  const sim = game([[SWORD, 6, 5], [CHEST, 7, 5]]);
+  for (const obj of groundAt(sim, 7, 5)) obj.hasVolume = true;
   const sword = groundAt(sim, 6, 5)[0];
-  const box = groundAt(sim, 7, 5)[0];
+  const box = groundAt(sim, 7, 5).find(o => o !== sword);
   send(sim, { type: 'moveItem', itemId: sword.id, x: 7, y: 5, z: 0 });
-  assert.equal(groundAt(sim, 7, 5).length, 1);
-  assert.equal(sim.inventory.groundItem(box).items[0].type, SWORD);
-
-  const other = groundAt(sim, 6, 6)[0];
-  send(sim, { type: 'moveItem', itemId: other.id, x: 7, y: 5, z: 0 });
-  assert.equal(groundAt(sim, 7, 5).length, 2, 'caixa com altura vai pro topo da pilha, não pra dentro');
+  assert.deepEqual([sword.x, sword.y], [7, 5]);
+  assert.equal(groundAt(sim, 7, 5).length, 2);
+  assert.ok(sim.inventory.groundItem(box).items.every(i => i === null));
 });
 
 test('pegar do chão: longe, o player anda até ficar colado; a cap não deixa passar do peso', () => {

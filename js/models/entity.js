@@ -3,6 +3,8 @@
 import { calculateStats, calculateMoveDelay, roundUpToTick, rand } from '../utils/helpers.js';
 import { CONFIG } from '../config.js';
 
+const WALK_GRACE_MS = 120;
+
 export class Entity {
   constructor(data) {
     const stats = calculateStats(data.lvl || 1);
@@ -41,6 +43,8 @@ export class Entity {
     this.flashUntil = 0;
     
     this.isMoving = false;
+    this.moveDirection = null;
+    this.walkingUntil = 0;
     this.moveStartX = 0;
     this.moveStartY = 0;
     this.moveStartZ = 0;
@@ -94,8 +98,17 @@ export class Entity {
   // passo emenda no outro sem frear. renderTime: quando a posição desenhada
   // foi calculada (um passo novo continua dali).
 
+  // Virou pra outro lado no meio do passo: o deslize para ali (a criatura já
+  // está no sqm) em vez de continuar de costas. Entre um passo e o seguinte,
+  // walkingUntil segura o quadro de andar por um instante (o parado só
+  // aparece quando ela realmente para).
+
   updateAnimation(timestamp) {
     this.renderTime = timestamp;
+    if (this.isMoving && this.direction && this.moveDirection && this.direction !== this.moveDirection) {
+      this.isMoving = false;
+      this.walkingUntil = timestamp + WALK_GRACE_MS;
+    }
     if (this.isMoving) {
       const elapsed = timestamp - this.moveStartTime;
       const duration = this.stepDuration || this.getStepInterval();
@@ -112,6 +125,7 @@ export class Entity {
         this.renderZ = this.z;
         this.renderStep = this.step || 0;
         this.isMoving = false;
+        this.walkingUntil = timestamp + WALK_GRACE_MS;
       }
     } else {
       this.renderX = this.x;

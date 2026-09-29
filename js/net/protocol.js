@@ -5,6 +5,7 @@ import { Enemy } from '../models/enemy.js';
 import { GameObject } from '../models/game-object.js';
 import { PLAYER_GENDERS, DEFAULT_GENDER } from '../../shared/catalog.js';
 import { TICK_MS } from '../../shared/constants.js';
+import { directionFromDelta } from '../utils/helpers.js';
 import { objectIdType, doorState } from '../../shared/assets.js';
 
 // Mensagens entre navegador e servidor (JSON pelo WebSocket, em /ws):
@@ -131,6 +132,7 @@ function placeCreature(world, entity, data, renderNow) {
   if (isStep) {
     const midStep = entity.isMoving && Math.abs(entity.renderX - fromX) <= 1 && Math.abs(entity.renderY - fromY) <= 1;
     entity.isMoving = true;
+    entity.moveDirection = directionFromDelta(entity.x - fromX, entity.y - fromY);
     entity.moveStartX = midStep ? entity.renderX : fromX;
     entity.moveStartY = midStep ? entity.renderY : fromY;
     entity.moveStartZ = midStep ? entity.renderZ : fromZ;

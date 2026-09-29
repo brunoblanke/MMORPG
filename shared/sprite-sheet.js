@@ -53,6 +53,20 @@ export class SpriteSheet {
   }
 
   // ================================================================================================================================================================================================================================================
+  // getWalkRect
+  // Andando: só os quadros de caminhada (do 2º em diante); o 1º, parado, fica
+  // pra quando a criatura realmente para.
+
+  getWalkRect(direction, timestamp, durationPerFrame) {
+    if (this.totalFrames <= 1) return this.getIdleRect(direction);
+    const walkFrames = this.totalFrames - 1;
+    const duration = durationPerFrame || 100;
+    const frameIndex = 1 + Math.floor((timestamp % (walkFrames * duration)) / duration);
+    const idle = this.getIdleRect(direction);
+    return { ...idle, sx: idle.sx + frameIndex * this.frameWidth };
+  }
+
+  // ================================================================================================================================================================================================================================================
   // getIdleRect
 
   getIdleRect(direction) {
