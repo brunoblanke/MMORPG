@@ -76,9 +76,18 @@ export function safeRect(minX, maxX, minY, maxY, z = 0) {
 // Simulação com um jogador em `player`. `player` e `movementController`
 // ficam à mão no objeto devolvido.
 
+// O player dos testes é nível TEST_LEVEL (forte o bastante pras lutas dos
+// testes), seja qual for o nível de quem começa no jogo.
+
+export const TEST_LEVEL = 50;
+
 export function buildGame({ objects = [], stairs = [], enemies = [], safe = [], player = { x: 1, y: 1, z: 0 } }) {
   const sim = new Simulation(buildMapData({ objects, stairs, enemies, safe, spawn: player }));
   sim.player = sim.addPlayer('player1');
+  sim.player.lvl = TEST_LEVEL;
+  sim.player.applyLevelStats();
+  sim.player.currentHp = sim.player.hp;
+  sim.player.mana = sim.player.maxMana;
   sim.movementController = sim.movement;
   return sim;
 }
