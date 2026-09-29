@@ -2,7 +2,7 @@
 
 import { GameObject } from '../models/game-object.js';
 import { getAdjacentPositions, isPositionAdjacentTo } from '../utils/helpers.js';
-import { objectIdType, objectProps, getAsset, splitType, listAssets } from '../../shared/assets.js';
+import { objectIdType, objectProps, getAsset, splitType } from '../../shared/assets.js';
 import {
   EQUIP_SLOTS, THROW_RANGE, DEATH_DROP_CHANCE, itemInfo, capacityFor, newItem, weightOf, contains, findInTree, fromPlain, equipBonus
 } from '../../shared/items.js';
@@ -51,8 +51,8 @@ export class InventoryController {
 
   // ================================================================================================================================================================================================================================================
   // setupPlayer
-  // Inventário vazio, o guardado (saved.equip) ou, pra quem é novo, a primeira
-  // mochila que existir (Itens › Recipientes). O layout das janelas volta junto.
+  // O inventário guardado (saved.equip); quem é novo começa sem nada, nem
+  // mochila. O layout das janelas volta junto.
 
   setupPlayer(player, saved) {
     player.equip = Object.fromEntries(EQUIP_SLOTS.map(key => [key, null]));
@@ -65,18 +65,7 @@ export class InventoryController {
         const item = fromPlain(saved.equip[key], () => this.nextUid());
         if (item && (itemInfo(item.type).slot === key)) player.equip[key] = item;
       }
-      return;
     }
-    const bag = this.firstOfFolder('itens', 'recipientes');
-    if (bag) player.equip.mochila = newItem(this.nextUid(), bag);
-  }
-
-  // ================================================================================================================================================================================================================================================
-  // firstOfFolder
-
-  firstOfFolder(group, folder) {
-    const found = listAssets('objetos', asset => asset.grupo === group && asset.pasta === folder)[0];
-    return found ? found.id : null;
   }
 
   // ================================================================================================================================================================================================================================================

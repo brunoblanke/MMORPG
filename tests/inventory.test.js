@@ -36,9 +36,10 @@ setAssets([
 // game
 // Chão de 30×30, player em (5, 5) e itens soltos no mapa: [tipo, x, y].
 
-function game(items = []) {
+function game(items = [], { withBag = true } = {}) {
   const objects = [...floorRect(0, 29, 0, 29), ...items.map(([type, x, y]) => [type, x, y, 0, 0, 1, 0, 0])];
   const sim = buildGame({ objects, player: { x: 5, y: 5, z: 0 } });
+  if (withBag) sim.player.equip.mochila = { uid: 'bag0', type: BAG, items: new Array(4).fill(null) };
   sim.time = 1000;
   return sim;
 }
@@ -58,7 +59,12 @@ function groundAt(sim, x, y) {
   return sim.objects.filter(o => o.itemData !== undefined || o.id.startsWith('itens/')).filter(o => o.x === x && o.y === y && sim.world.objects.has(o));
 }
 
-test('quem entra pela primeira vez ganha a mochila; o inventário troca e o item de antes volta', () => {
+test('quem entra pela primeira vez começa sem nada', () => {
+  const sim = game([], { withBag: false });
+  assert.ok(Object.values(sim.player.equip).every(item => item === null));
+});
+
+test('o inventário troca e o item de antes volta', () => {
   const sim = game();
   const bag = sim.player.equip.mochila;
   assert.equal(bag.type, BAG);
@@ -228,6 +234,7 @@ test('cadáver é container com o loot; abre com o player em cima dele', () => {
   const sim = new Simulation(mapData, { lootTable: { 'criaturas/mamiferos/teste': [{ tipo: COIN, chance: 1, min: 5, max: 5 }, { tipo: SWORD, chance: 1 }] } });
   sim.time = 1000;
   const player = sim.addPlayer('player1', { name: 'Ana' });
+  player.equip.mochila = { uid: 'bag0', type: BAG, items: new Array(4).fill(null) };
   const enemy = sim.enemies[0];
   enemy.currentHp = 0;
   sim.tick(sim.time + TICK_MS);
@@ -254,6 +261,7 @@ test('personagem volta com os itens e o layout', () => {
   const mapData = buildMapData({ objects: floorRect(0, 29, 0, 29), spawn: { x: 5, y: 5, z: 0 } });
   const sim = new Simulation(mapData);
   const player = sim.addPlayer('p1', { name: 'Ana' });
+  player.equip.mochila = { uid: 'bag0', type: BAG, items: new Array(4).fill(null) };
   player.equip.mochila.items[0] = { uid: 'z', type: COIN, count: 42 };
   sim.inventory.saveLayout(player, { left: [], right: [{ ref: 'inventory' }] });
   const saved = JSON.parse(JSON.stringify(player.toSave()));
