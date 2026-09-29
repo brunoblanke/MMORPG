@@ -35,7 +35,6 @@ const ICONS = {
 const FOLLOW_ICONS = {
   follow: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="15" cy="4" r="2"/><path d="M13.5 7.5 11 13"/><path d="M8 9.5l3.5-2 3 3 3 .5"/><path d="M11 13l3.5 3-1 5"/><path d="M11 13l-2 4-4.5 1"/></svg>',
   attack: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 5l11 11M19 5 8 16"/><path d="M14 18l4-4M6 14l4 4"/><path d="M17 17l2.5 2.5M7 17l-2.5 2.5"/></svg>',
-  defense: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg>',
   stand: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4" r="2"/><path d="M12 7.5V14"/><path d="M8 12.5l4-3.5 4 3.5"/><path d="M12 14l-2.5 7"/><path d="M12 14l2.5 7"/></svg>'
 };
 const SKILL_NAMES = {
@@ -557,7 +556,7 @@ export class InventoryUI {
   // ================================================================================================================================================================================================================================================
   // followHtml
   // Seguir o alvo (boneco correndo verde) ou ficar parado (boneco em pé
-  // vermelho), no canto do inventário, ao lado do auto ataque.
+  // cinza), no canto do inventário, ao lado do auto ataque.
 
   followHtml() {
     const player = this.game.player;
@@ -568,14 +567,14 @@ export class InventoryUI {
 
   // ================================================================================================================================================================================================================================================
   // attackModeHtml
-  // Auto ataque (espadas vermelhas: ataca quem se aproxima) ou defesa (escudo
-  // verde: só o alvo escolhido), ao lado do seguir.
+  // Auto ataque: espadas verdes ligado (ataca quem se aproxima), cinza
+  // desligado (só o alvo escolhido), ao lado do seguir.
 
   attackModeHtml() {
     const player = this.game.player;
     if (!player) return '';
     const attack = !!player.attackMode;
-    return `<button class="inv-follow ${attack ? 'attack' : 'defense'}" data-act="attackmode" type="button" title="${attack ? 'Auto ataque: ataca quem se aproximar (clique pra defesa)' : 'Defesa: só ataca o alvo escolhido (clique pra auto ataque)'}">${FOLLOW_ICONS[attack ? 'attack' : 'defense']}</button>`;
+    return `<button class="inv-follow ${attack ? 'on' : 'off'}" data-act="attackmode" type="button" title="${attack ? 'Auto ataque ligado: ataca quem se aproximar' : 'Auto ataque desligado: só ataca o alvo escolhido'}">${FOLLOW_ICONS.attack}</button>`;
   }
 
   // ================================================================================================================================================================================================================================================
