@@ -5,6 +5,8 @@ import { drawEntityOverlay } from './entity-overlay.js';
 import { drawTileTooltip } from './tile-tooltip.js';
 import { prepareDrawables } from './draw-order.js';
 import { getEntityLevel } from '../core/geometry.js';
+import { getAsset, objectIdType } from '../../shared/assets.js';
+import { stackFrame } from '../../shared/items.js';
 
 const TINT_HIT = { color: '#ff2a2a', alpha: 0.55 };
 const TINT_ENEMY_HOVER = { color: '#ff2a2a', alpha: 0.35 };
@@ -346,6 +348,12 @@ export class Renderer {
     if (entity && entity.id) {
       const sheet = this.getObjectSpriteSheet(entity.id);
       if (isSheetReady(sheet)) {
+        const asset = getAsset(objectIdType(entity.id));
+        if (asset && asset.pilha) {
+          const rect = sheet.getIdleRect('idle');
+          const frame = Math.min(stackFrame(entity.count || (entity.itemData && entity.itemData.count) || 1), sheet.totalFrames - 1);
+          return { image: sheet.image, frameRect: { ...rect, sx: rect.sx + frame * sheet.frameWidth } };
+        }
         const duration = sheet._frameDuration || 1000 / sheet.totalFrames || 50;
         return { image: sheet.image, frameRect: sheet.getFrameRect('idle', this.frameTimestamp, duration) };
       }

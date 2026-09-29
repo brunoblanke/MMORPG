@@ -165,10 +165,6 @@ export class PlayerControl {
       return;
     }
 
-    if (player.target) {
-      player.autoFollow = false;
-    }
-
     const start = { x: player.x, y: player.y, z: player.z || 0, step: player.step || 0 };
     const path = movement.findPath(start, { x, y, z }, { sameFloor: true });
 

@@ -97,7 +97,8 @@ export class CombatController {
   // Com alvo, o player está sempre num destes estados:
   //   perdeu o alvo (outro andar ou longe demais) → larga o alvo e avisa;
   //   colado no alvo → ataca;
-  //   seguir ligado → anda até ele;
+  //   seguir ligado → anda até ele (pausa enquanto o player faz um caminho
+  //   próprio, como ir abrir uma caixa, e volta a seguir ao chegar);
   //   seguir desligado (andou pelas teclas) → só espera: ataca se o alvo
   //   encostar, e o clique no alvo liga o seguir de novo.
 
@@ -117,7 +118,7 @@ export class CombatController {
 
     if (isPositionAdjacentTo(player.x, player.y, target.x, target.y)) {
       this.attackTarget(player, target, now);
-    } else if (player.autoFollow) {
+    } else if (player.autoFollow && !this.sim.control.isWalking(player)) {
       const searchBounds = this.sim.searchBoundsAround(player);
       this.sim.movement.moveTowardsPosition(player, target.x, target.y, now, target, searchBounds, this.sim.enemies);
     }

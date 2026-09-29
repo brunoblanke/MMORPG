@@ -4,7 +4,7 @@ import { Entity } from './entity.js';
 import { playerStats } from '../utils/helpers.js';
 import { PLAYER_GENDERS, DEFAULT_GENDER } from '../../shared/catalog.js';
 import { isValidFloor } from '../../shared/constants.js';
-import { EQUIP_SLOTS, toPlain, equipBonus } from '../../shared/items.js';
+import { EQUIP_SLOTS, FOOD_MAX_SECONDS, toPlain, equipBonus } from '../../shared/items.js';
 import { newSkills, loadSkills } from '../../shared/skills.js';
 
 export class Player extends Entity {
@@ -104,7 +104,8 @@ export class Player extends Entity {
       equip: this.equip ? Object.fromEntries(EQUIP_SLOTS.map(key => [key, toPlain(this.equip[key])])) : null,
       layout: this.uiLayout || null,
       followMode: this.followMode,
-      attackMode: this.attackMode
+      attackMode: this.attackMode,
+      food: this.food || 0
     };
   }
 
@@ -124,6 +125,7 @@ export class Player extends Entity {
     this.mana = Number.isInteger(saved.mana) && saved.mana >= 0 ? Math.min(saved.mana, this.maxMana) : this.maxMana;
     if (typeof saved.followMode === 'boolean') this.followMode = this.autoFollow = saved.followMode;
     if (typeof saved.attackMode === 'boolean') this.attackMode = saved.attackMode;
+    if (Number.isFinite(saved.food) && saved.food > 0) this.food = Math.min(saved.food, FOOD_MAX_SECONDS * 1000);
 
     const hasPosition = Number.isInteger(saved.x) && Number.isInteger(saved.y) && isValidFloor(saved.z);
     return hasPosition ? { x: saved.x, y: saved.y, z: saved.z } : null;

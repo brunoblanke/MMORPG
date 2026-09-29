@@ -20,6 +20,14 @@ export const DEATH_DROP_CHANCE = 0.3;
 // Intervalo entre um item de usar (potion) e o seguinte, como no Tibia.
 export const USE_COOLDOWN_MS = 1000;
 
+// Comida como no Tibia (sem vocação): cada item soma segundos de
+// regeneração, até FOOD_MAX_SECONDS; enquanto dura, recupera REGEN_HP de
+// vida e REGEN_MANA de mana a cada REGEN_MS.
+export const FOOD_MAX_SECONDS = 1200;
+export const REGEN_MS = 6000;
+export const REGEN_HP = 1;
+export const REGEN_MANA = 1;
+
 // Cap como no Tibia (sem vocação): 400 oz no nível 1 e +10 por nível.
 export const CAP_BASE_LEVEL = 1;
 export const CAP_AT_BASE = 400;
@@ -47,7 +55,8 @@ const SLOT_BY_FOLDER = {
 // da pilha (0 = não empilha; equipamento e container nunca empilham, mesmo
 // marcados no gerador), size os espaços, se for container (0 = não é),
 // atk/def/ml/speed os bônus de quem usa o item (0 = não tem) e heal o que
-// ele recupera ao ser usado ({ hp: [min, max], mana: [min, max] }, ou null).
+// ele recupera ao ser usado ({ hp: [min, max], mana: [min, max] }, ou null)
+// e food os segundos de regeneração, se for comida (0 = não é).
 
 export function itemInfo(type) {
   const asset = getAsset(splitType(type).asset);
@@ -68,8 +77,23 @@ export function itemInfo(type) {
     ml: bonusValue(props.ml),
     speed: bonusValue(props.speed),
     heal: healOf(props),
+    food: bonusValue(props.alimento),
     weaponSkill: SKILL_BY_WEAPON_FOLDER[folder] || null
   };
+}
+
+// ================================================================================================================================================================================================================================================
+// stackFrame
+// Quadro da folha de um item de pilha (gerador: 8 quadros, um por
+// quantidade, como no Tibia): 1, 2, 3, 4, 5–9, 10–24, 25–49 e 50+.
+
+export function stackFrame(count) {
+  const n = Math.max(1, Math.floor(count) || 1);
+  if (n < 5) return n - 1;
+  if (n < 10) return 4;
+  if (n < 25) return 5;
+  if (n < 50) return 6;
+  return 7;
 }
 
 // ================================================================================================================================================================================================================================================

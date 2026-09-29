@@ -28,10 +28,12 @@ const NUMBERS = [
   { key: 'vidaMin', label: 'Recupera vida (mín.)', min: 0, step: 1 },
   { key: 'vidaMax', label: 'Recupera vida (máx.)', min: 0, step: 1 },
   { key: 'manaMin', label: 'Recupera mana (mín.)', min: 0, step: 1 },
-  { key: 'manaMax', label: 'Recupera mana (máx.)', min: 0, step: 1 }
+  { key: 'manaMax', label: 'Recupera mana (máx.)', min: 0, step: 1 },
+  { key: 'alimento', label: 'Comida (segundos de regeneração)', min: 0, step: 1 }
 ];
-const DEFAULT_PROPERTIES = { bloqueia: false, move: true, altura: false, empilhavel: false, peso: 10, espacos: 0, atk: 0, def: 0, ml: 0, speed: 0, vidaMin: 0, vidaMax: 0, manaMin: 0, manaMax: 0 };
+const DEFAULT_PROPERTIES = { bloqueia: false, move: true, altura: false, empilhavel: false, peso: 10, espacos: 0, atk: 0, def: 0, ml: 0, speed: 0, vidaMin: 0, vidaMax: 0, manaMin: 0, manaMax: 0, alimento: 0 };
 const CONTAINER_SIZE = 8;
+const STACK_VARIATIONS = 8;
 const PROPERTIES = [
   { key: 'bloqueia', label: 'Bloqueia a passagem' },
   { key: 'move', label: 'Pode ser movido (arrastar)' },
@@ -111,22 +113,35 @@ async function pick(kind, id, variation) {
 // ================================================================================================================================================================================================================================================
 // setSource
 // Carrega os quadros: do Tibia, um PNG por quadro da animação; de um PNG,
-// a imagem inteira (os quadros saem dela em sourceFrames).
+// a imagem inteira (os quadros saem dela em sourceFrames). Item de pilha do
+// Tibia (8 variações): um quadro por quantidade (1, 2, 3, 4, 5, 10, 25, 50),
+// que o jogo escolhe pela quantidade em vez de animar.
 
 function setSource(source, info) {
   objects.source = source;
   objects.info = info;
   objects.frames = [];
   objects.dirty = true;
+  objects.stack = isStackSource(source, info);
   if (source) {
     const urls = source.png
       ? [source.png]
-      : Array.from({ length: info.quadros }, (_, frame) => spriteUrl(source.tibia.id, source.tibia.variacao, frame));
+      : objects.stack
+        ? Array.from({ length: STACK_VARIATIONS }, (_, variation) => spriteUrl(source.tibia.id, variation, 0))
+        : Array.from({ length: info.quadros }, (_, frame) => spriteUrl(source.tibia.id, source.tibia.variacao, frame));
     objects.frames = urls.map(url => loadImage(url, () => {
       if (objects.source === source) render();
     }));
   }
   render();
+}
+
+// ================================================================================================================================================================================================================================================
+// isStackSource
+// Item do Tibia que empilha e muda de desenho com a quantidade.
+
+function isStackSource(source, info) {
+  return !!(source && source.tibia && info && info.empilhavel && info.variacoes === STACK_VARIATIONS);
 }
 
 // ================================================================================================================================================================================================================================================
@@ -216,7 +231,7 @@ function render() {
   } else {
     const info = objects.info || {};
     infoEl.innerHTML = `<b>Item ${source.tibia.id}</b><br>${info.tamanho || '?'} px · ${info.quadros || 1} ${info.quadros > 1 ? 'quadros' : 'quadro'}` +
-      `${info.variacoes > 1 ? ` · variação ${source.tibia.variacao + 1} de ${info.variacoes}` : ''}${info.pegavel ? ' · dá pra pegar' : ''}`;
+      `${objects.stack ? ' · pilha: um quadro por quantidade (1, 2, 3, 4, 5, 10, 25, 50)' : info.variacoes > 1 ? ` · variação ${source.tibia.variacao + 1} de ${info.variacoes}` : ''}${info.pegavel ? ' · dá pra pegar' : ''}`;
   }
   composeSheet(sheetCanvas, frames);
   drawPreview();
@@ -306,7 +321,7 @@ async function save() {
   const canvas = document.createElement('canvas');
   composeSheet(canvas, frames);
   const recipe = {
-    formato: { quadro: frameSize(frames), quadros: frames.length },
+    formato: { quadro: frameSize(frames), quadros: frames.length, ...(objects.stack ? { pilha: true } : {}) },
     objeto: objects.source,
     propriedades: objects.properties
   };
