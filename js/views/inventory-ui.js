@@ -532,19 +532,22 @@ export class InventoryUI {
     const stats = this.view.stats;
     if (!stats) return '';
     const fmt = (n) => Number(n).toLocaleString('pt-BR');
-    const line = (label, value, pct) => `<div class="inv-skrow"><span>${label}</span><b>${value}</b></div>` +
-      (pct === undefined ? '' : `<div class="inv-skbar" title="${pct}% até o próximo"><i style="width:${pct}%"></i></div>`);
+    const pctOf = (value, max) => (max > 0 ? Math.max(0, Math.min(100, Math.round(value / max * 100))) : 0);
+    const line = (label, value, pct, kind = '', title = `${pct}% até o próximo`) => `<div class="inv-skrow"><span>${label}</span><b>${value}</b></div>` +
+      (pct === undefined ? '' : `<div class="inv-skbar${kind ? ` ${kind}` : ''}" title="${title}"><i style="width:${pct}%"></i></div>`);
     const skill = (key) => {
       const entry = stats.skills[key];
       const value = entry.bonus ? `${entry.lvl} <em class="inv-skbonus">+ ${entry.bonus}</em>` : entry.lvl;
       return line(SKILL_NAMES[key], value, entry.pct);
     };
+    const hpPct = pctOf(stats.hp, stats.maxHp);
+    const mpPct = pctOf(stats.mana, stats.maxMana);
     const body = [
-      line('XP', fmt(stats.experience)),
-      line('LVL', stats.level, stats.levelPct),
+      line('XP', fmt(stats.experience), stats.levelPct),
+      line('LVL', stats.level),
       '<div class="inv-sksep"></div>',
-      line('HP', fmt(stats.hp)),
-      line('MP', fmt(stats.mana)),
+      line('HP', fmt(stats.hp), hpPct, `hp${hpPct <= 25 ? ' low' : hpPct <= 50 ? ' mid' : ''}`, `${fmt(stats.hp)} de ${fmt(stats.maxHp)}`),
+      line('MP', fmt(stats.mana), mpPct, 'mp', `${fmt(stats.mana)} de ${fmt(stats.maxMana)}`),
       '<div class="inv-sksep"></div>',
       ...['magic', ...SKILL_KEYS].map(skill)
     ].join('');
