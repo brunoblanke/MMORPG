@@ -143,9 +143,34 @@ function reloadSheet() {
   if (creatures.addons.length) params.set('addons', creatures.addons.join(','));
   const url = `/api/criatura/${creatures.outfit.id}/folha?${params}`;
   const img = loadImage(url, () => {
+    img.contentSize = contentSize(img);
     if (creatures.sheetImage === img) render();
   });
   creatures.sheetImage = img;
+}
+
+// ================================================================================================================================================================================================================================================
+// contentSize
+// Quanto do quadro a criatura realmente ocupa (ancorada embaixo à direita),
+// arredondado pra múltiplo de 32: roupa do Tibia de 2×2 sqm com o desenho
+// todo num canto de 32 vira folha de 32.
+
+function contentSize(img) {
+  const full = img.naturalHeight / 4;
+  const canvas = document.createElement('canvas');
+  canvas.width = img.naturalWidth;
+  canvas.height = img.naturalHeight;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(img, 0, 0);
+  const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+  let used = 0;
+  for (let y = 0; y < canvas.height; y++) {
+    for (let x = 0; x < canvas.width; x++) {
+      if (data[(y * canvas.width + x) * 4 + 3] === 0) continue;
+      used = Math.max(used, full - (x % full), full - (y % full));
+    }
+  }
+  return Math.min(full, Math.max(32, Math.ceil(used / 32) * 32));
 }
 
 // ================================================================================================================================================================================================================================================
@@ -273,13 +298,14 @@ function corpseImage(key) {
 
 // ================================================================================================================================================================================================================================================
 // outfitSize
-// Tamanho do quadro da criatura: o da folha que veio do servidor (que já
-// cabe o deslocamento do Tibia) ou, enquanto carrega, o do catálogo.
+// Tamanho do quadro da criatura: o que o desenho ocupa na folha que veio do
+// servidor (contentSize) ou, enquanto carrega, o do catálogo.
 
 function outfitSize() {
   if (!creatures.outfit) return 32;
   const img = creatures.sheetImage;
-  return isReady(img) ? img.naturalHeight / 4 : creatures.outfit.size;
+  if (!isReady(img)) return creatures.outfit.size;
+  return img.contentSize || img.naturalHeight / 4;
 }
 
 // ================================================================================================================================================================================================================================================
@@ -302,8 +328,9 @@ function frameSize() {
 function drawCreatureFrame(ctx, direction, frame, x, y, size) {
   const img = creatures.sheetImage;
   if (!isReady(img) || !creatures.outfit) return;
+  const full = img.naturalHeight / 4;
   const own = outfitSize();
-  ctx.drawImage(img, frame * own, direction * own, own, own, x + size - own, y + size - own, own, own);
+  ctx.drawImage(img, frame * full + full - own, direction * full + full - own, own, own, x + size - own, y + size - own, own, own);
 }
 
 // ================================================================================================================================================================================================================================================
