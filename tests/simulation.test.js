@@ -340,3 +340,20 @@ test('modo defesa: inimigo perto não vira alvo sozinho', () => {
   assert.equal(sim.player.attackMode, false);
   assert.equal(sim.player.target, null);
 });
+
+test('mover o player (tecla ou clique no chão) troca o seguir pra parado, mesmo no auto ataque', () => {
+  const sim = buildGame({ objects: GROUND, player: { x: 4, y: 5, z: 0 } });
+  sim.enqueue('player1', { type: 'toggleAttackMode' });
+  sim.enqueue('player1', { type: 'walkDir', dx: 1, dy: 0 });
+  runFor(sim, 100);
+  assert.equal(sim.player.followMode, false);
+  assert.equal(sim.player.attackMode, true);
+
+  sim.enqueue('player1', { type: 'walkDir', dx: 0, dy: 0 });
+  sim.enqueue('player1', { type: 'toggleFollow' });
+  runFor(sim, 100);
+  assert.equal(sim.player.followMode, true);
+  sim.enqueue('player1', { type: 'walkTo', x: 8, y: 5, z: 0 });
+  runFor(sim, 100);
+  assert.equal(sim.player.followMode, false);
+});

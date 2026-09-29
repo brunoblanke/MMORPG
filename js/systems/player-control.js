@@ -61,10 +61,19 @@ export class PlayerControl {
     }
     player.walkDir = { dx, dy };
     this.clearWalk(player);
-    if (player.target) {
-      player.autoFollow = false;
-      console.log('⌨️ Auto-follow desligado por tecla');
-    }
+    this.stopFollowing(player);
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // stopFollowing
+  // O player se moveu por conta própria (tecla ou clique no chão): o modo
+  // seguir passa pra parado, mesmo com o auto ataque ligado.
+
+  stopFollowing(player) {
+    if (!player.followMode && !player.autoFollow) return;
+    player.followMode = false;
+    player.autoFollow = false;
+    console.log('🧍 Seguir desligado: o player se moveu');
   }
 
   // ================================================================================================================================================================================================================================================
@@ -92,6 +101,7 @@ export class PlayerControl {
   walkTo(player, x, y) {
     player.pendingStairs = null;
     if (!this.sim.movement.isInsideMap(x, y)) return;
+    this.stopFollowing(player);
     if (x === player.x && y === player.y) {
       this.stepDownFromCurrentTile(player);
       return;
