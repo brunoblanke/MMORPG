@@ -88,8 +88,9 @@ test('attack: segue o alvo, mata, ganha XP e o inimigo renasce depois', () => {
   assert.equal(sim.player.target, null);
   assert.ok(sim.deadBodies.some(c => c.type === 'enemy_corpse'));
 
-  const respawnedAt = xp.time + CONFIG.enemyRespawnTime;
-  assert.ok(sim.time >= respawnedAt ? sim.enemies.length === 1 : sim.enemies.length === 0);
+  assert.equal(sim.enemies.length, 0, 'com o player vendo o spawn, não renasce');
+  sim.world.moveEntityTile(sim.player, sim.player.x, sim.player.y, 0, 24, 24, 0);
+  Object.assign(sim.player, { x: 24, y: 24 });
   runFor(sim, CONFIG.enemyRespawnTime + TICK_MS);
   assert.equal(sim.enemies.length, 1);
   assert.equal(sim.enemies[0].id, enemy.id);
@@ -232,12 +233,13 @@ test('inimigo morto renasce no lugar original do mapa, mesmo tendo perseguido pr
 });
 
 test('se tiver alguém no lugar original, o inimigo renasce no sqm livre mais perto', () => {
-  const sim = buildGame({ objects: GROUND, enemies: [[18, 18, 0, 1]], safe: [[18, 18, 0]], player: { x: 2, y: 2, z: 0 } });
-  const enemy = sim.enemies[0];
+  const sim = buildGame({ objects: GROUND, enemies: [[18, 18, 0, 1], [24, 24, 0, 1]], safe: [[18, 18, 0]], player: { x: 2, y: 2, z: 0 } });
+  const [enemy, other] = sim.enemies;
+  Object.assign(other, { detectionRadius: 0, patrolRadius: 0 });
   enemy.currentHp = 0;
   runFor(sim, TICK_MS);
-  sim.world.moveEntityTile(sim.player, sim.player.x, sim.player.y, 0, 18, 18, 0);
-  Object.assign(sim.player, { x: 18, y: 18 });
+  sim.world.moveEntityTile(other, other.x, other.y, 0, 18, 18, 0);
+  Object.assign(other, { x: 18, y: 18, renderX: 18, renderY: 18 });
   runFor(sim, CONFIG.enemyRespawnTime + TICK_MS);
   const reborn = sim.enemies.find(e => e.id === enemy.id);
   assert.ok(Math.max(Math.abs(reborn.x - 18), Math.abs(reborn.y - 18)) === 1, `em ${reborn.x},${reborn.y}`);

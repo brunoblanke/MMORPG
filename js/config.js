@@ -20,7 +20,9 @@ export const CONFIG = {
   // 0.4 = 60% mais fraco / 60% mais lento.
   damageScale: 0.4,   // multiplica o dano de cada golpe
   speedScale: 0.4,    // divide o tempo de passo e das animações de andar
-  enemyRespawnTime: 10000,
+  enemyRespawnTime: 60000,   // como no Tibia: 1 min depois de morrer
+  spawnViewX: 9,             // player a até 9 sqm na horizontal e 7 na vertical
+  spawnViewY: 7,             // do spawn (a tela do Tibia) segura o respawn
   corpseFrameDuration: 60000,
   corpseFrameCount: 3,
   stackOffsetX: STACK_OFFSET,
