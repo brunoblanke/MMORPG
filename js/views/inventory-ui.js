@@ -22,8 +22,8 @@ const EQUIP_LAYOUT = [
 ];
 const ICONS = {
   amuleto: '<path d="M6 3c0 6 3 9 6 11 3-2 6-5 6-11"/><circle cx="12" cy="18" r="3"/>',
-  cabeca: '<path d="M5 15a7 7 0 0 1 14 0v3H5z"/><path d="M9 18v2m6-2v2"/>',
-  mochila: '<rect x="5" y="7" width="14" height="13" rx="2"/><path d="M9 7V5h6v2M5 12h14"/>',
+  cabeca: '<path d="M12 2.5c-4 0-6.5 3.5-6.5 8V18l2.5 3h8l2.5-3v-7.5c0-4.5-2.5-8-6.5-8z"/><path d="M5.5 11h13M12 2.5V21"/><path d="M9 14.5h.01M9 17h.01M15 14.5h.01M15 17h.01"/>',
+  mochila: '<path d="M10 7.5 8.5 3.5c1 .8 2 .8 3 0 1 .8 2 .8 3 0L14 7.5"/><rect x="9" y="7.5" width="6" height="2" rx="1"/><path d="M9.5 9.5C6.5 11 4.5 14 4.5 16.5c0 3.2 3.3 5 7.5 5s7.5-1.8 7.5-5c0-2.5-2-5.5-5-7"/><path d="M15 8.5c2 0 2.8 1.5 5 1.5"/>',
   arma: '<path d="M18 3l3 3-11 11-3-3z"/><path d="M5 16l3 3M4 20l2-2"/>',
   corpo: '<path d="M8 4l4 2 4-2 4 4-3 3v9H7v-9L4 8z"/>',
   escudo: '<path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/>',
@@ -34,6 +34,8 @@ const ICONS = {
 };
 const FOLLOW_ICONS = {
   follow: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="15" cy="4" r="2"/><path d="M13.5 7.5 11 13"/><path d="M8 9.5l3.5-2 3 3 3 .5"/><path d="M11 13l3.5 3-1 5"/><path d="M11 13l-2 4-4.5 1"/></svg>',
+  attack: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5 3 6V3h3l11.5 11.5"/><path d="m13 19 6-6M16 16l4 4M19 21l2-2"/><path d="M14.5 6.5 18 3h3v3l-3.5 3.5"/><path d="m5 14 4 4M7 17l-3 3M3 19l2 2"/></svg>',
+  defense: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg>',
   stand: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4" r="2"/><path d="M12 7.5V14"/><path d="M8 12.5l4-3.5 4 3.5"/><path d="M12 14l-2.5 7"/><path d="M12 14l2.5 7"/></svg>'
 };
 const SKILL_NAMES = {
@@ -79,7 +81,7 @@ export class InventoryUI {
     this.dropMissingWindows();
     const player = this.game.player;
     this.battle = this.findWindow('battle') ? this.battleList() : [];
-    const modes = player ? player.followMode : null;
+    const modes = player ? [player.followMode, player.attackMode] : null;
     const key = JSON.stringify([view.equip, view.cap, view.opened, view.stats, this.layout, modes, this.battle]);
     if (key === this.lastKey || this.drag) return;
     this.lastKey = key;
@@ -471,7 +473,7 @@ export class InventoryUI {
       const spare = '<div class="inv-capbox"></div>';
       const last = EQUIP_LAYOUT.length - 1;
       const cell = ([key], i) => key ? this.slotHtml(equip[key], { t: 'e', key }, key) : (i === last ? capBox : (i === last - 2 ? spare : ''));
-      const cells = [0, 1, 2].map(col => `<div class="inv-dollcol">${col === 0 ? this.followHtml() : ''}${EQUIP_LAYOUT.map((entry, i) => i % 3 === col ? cell(entry, i) : '').join('')}</div>`).join('');
+      const cells = [0, 1, 2].map(col => `<div class="inv-dollcol">${col === 0 ? this.followHtml() : ''}${col === 2 ? this.attackModeHtml() : ''}${EQUIP_LAYOUT.map((entry, i) => i % 3 === col ? cell(entry, i) : '').join('')}</div>`).join('');
       return `<section class="inv-win${win.min ? ' min' : ''}" data-win="${win.id}">
         <header class="inv-head tight"><span class="inv-title">Inventário</span>
           <button class="inv-btn wide${this.findWindow('battle') ? ' on' : ''}" data-act="battle" type="button" aria-label="Abrir battle">Battle</button><button class="inv-btn wide${this.findWindow('skills') ? ' on' : ''}" data-act="skills" type="button" aria-label="Abrir skills">Skills</button>${buttons(false)}</header>
@@ -566,6 +568,18 @@ export class InventoryUI {
     if (!player) return '';
     const follow = player.followMode !== false;
     return `<button class="inv-follow${follow ? ' on' : ''}" data-act="follow" type="button" title="${follow ? 'Seguindo o alvo (clique pra ficar parado)' : 'Parado (clique pra seguir o alvo)'}">${FOLLOW_ICONS[follow ? 'follow' : 'stand']}</button>`;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // attackModeHtml
+  // Auto ataque (espadas vermelhas: ataca quem se aproxima) ou defesa (escudo
+  // verde: só o alvo escolhido), à direita do capacete, espelhando o seguir.
+
+  attackModeHtml() {
+    const player = this.game.player;
+    if (!player) return '';
+    const attack = !!player.attackMode;
+    return `<button class="inv-follow ${attack ? 'attack' : 'defense'}" data-act="attackmode" type="button" title="${attack ? 'Auto ataque: ataca quem se aproximar (clique pra defesa)' : 'Defesa: só ataca o alvo escolhido (clique pra auto ataque)'}">${FOLLOW_ICONS[attack ? 'attack' : 'defense']}</button>`;
   }
 
   // ================================================================================================================================================================================================================================================
@@ -923,6 +937,10 @@ export class InventoryUI {
       }
       if (btn.dataset.act === 'follow') {
         this.game.send({ type: 'toggleFollow' });
+        return;
+      }
+      if (btn.dataset.act === 'attackmode') {
+        this.game.send({ type: 'toggleAttackMode' });
         return;
       }
       if (btn.dataset.act === 'up') {

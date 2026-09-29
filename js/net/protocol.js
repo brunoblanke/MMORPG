@@ -95,6 +95,7 @@ export function serializeState(sim, playerId) {
       target: me.target ? me.target.id : null,
       autoFollow: me.autoFollow,
       followMode: me.followMode,
+      attackMode: me.attackMode,
       walk: { target: me.walk.target, path: me.walk.path.map(s => ({ x: s.x, y: s.y, z: s.z })) },
       inventory: sim.inventory.viewFor(me)
     } : null
@@ -230,6 +231,7 @@ export function applyState(mirror, message, playerId, renderNow) {
     me.target = state.you.target ? mirror.enemies.find(e => e.id === state.you.target) || null : null;
     me.autoFollow = state.you.autoFollow;
     me.followMode = state.you.followMode;
+    me.attackMode = state.you.attackMode;
     me.walk = state.you.walk;
     mirror.inventoryView = state.you.inventory;
   }

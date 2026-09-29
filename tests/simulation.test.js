@@ -312,3 +312,31 @@ test('clique na escada: o player vai até ela e sobe', () => {
   assert.deepEqual([sim.player.x, sim.player.y, sim.player.z], [6, 8, 1]);
   assert.equal(sim.player.walk.path.length, 0);
 });
+
+test('auto ataque: o primeiro inimigo que se aproxima vira alvo; morto, ataca o próximo da fila', () => {
+  const sim = buildGame({ objects: GROUND, enemies: [[12, 5, 0], [7, 5, 0]], player: { x: 4, y: 5, z: 0 } });
+  const [far, near] = sim.enemies;
+  far.detectionRadius = 0;
+  near.detectionRadius = 5;
+  for (const enemy of sim.enemies) enemy.patrolRadius = 0;
+  sim.enqueue('player1', { type: 'toggleAttackMode' });
+  runFor(sim, 200);
+  assert.equal(sim.player.target, near);
+
+  far.detectionRadius = 20;
+  runFor(sim, 200);
+  assert.equal(sim.player.target, near, 'quem chegou depois espera na fila');
+  assert.deepEqual(sim.player.aggro, [near, far]);
+
+  near.currentHp = 0;
+  runFor(sim, 200);
+  assert.equal(sim.player.target, far);
+});
+
+test('modo defesa: inimigo perto não vira alvo sozinho', () => {
+  const sim = buildGame({ objects: GROUND, enemies: [[7, 5, 0]], player: { x: 4, y: 5, z: 0 } });
+  sim.enemies[0].detectionRadius = 5;
+  runFor(sim, 500);
+  assert.equal(sim.player.attackMode, false);
+  assert.equal(sim.player.target, null);
+});

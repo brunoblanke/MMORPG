@@ -12,6 +12,7 @@ import { isHoleType, objectIdType } from '../../shared/assets.js';
 //                                        próprio sqm, desce da pilha
 //   { type: 'attack', targetId }         escolher inimigo como alvo (null tira)
 //   { type: 'toggleFollow' }             liga/desliga seguir o alvo
+//   { type: 'toggleAttackMode' }         alterna auto ataque / defesa
 //   { type: 'moveItem', itemId, x, y, z } arrastar item/cadáver pro sqm
 //   { type: 'moveInv', from, to, amount } mover item do inventário, de um
 //                                        container ou do chão (systems/inventory.js)
@@ -37,6 +38,7 @@ export class PlayerControl {
       case 'walkTo': return this.walkTo(player, command.x, command.y, command.z);
       case 'attack': return this.setAttackTarget(player, command.targetId);
       case 'toggleFollow': return this.toggleFollow(player);
+      case 'toggleAttackMode': return this.toggleAttackMode(player);
       case 'moveItem': return this.moveItem(player, command.itemId, command.x, command.y, command.z);
       case 'moveInv': return this.sim.inventory.move(player, command.from, command.to, command.amount);
       case 'openContainer': return this.sim.inventory.open(player, command.itemId);
@@ -216,6 +218,16 @@ export class PlayerControl {
     player.followMode = !player.followMode;
     player.autoFollow = player.followMode;
     console.log("🏃 Auto-follow: " + (player.followMode ? 'ATIVADO' : 'DESATIVADO'));
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // toggleAttackMode
+  // Auto ataque (espadas) ou defesa (escudo): no auto ataque, sem alvo, o
+  // player ataca o primeiro inimigo da fila (combat.updateAutoAttack).
+
+  toggleAttackMode(player) {
+    player.attackMode = !player.attackMode;
+    console.log("⚔️ Modo: " + (player.attackMode ? 'AUTO ATAQUE' : 'DEFESA'));
   }
 
   // ================================================================================================================================================================================================================================================

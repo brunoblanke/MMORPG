@@ -131,6 +131,8 @@
 .inv-follow svg{ width:13px; height:13px; }
 .inv-follow:hover{ color:var(--inv-text); border-color:var(--inv-accent-dim); }
 .inv-follow.on{ color:var(--inv-accent); border-color:var(--inv-accent-dim); }
+.inv-follow.attack{ color:#ef4444; }
+.inv-follow.defense{ color:#4ade80; }
 .inv-battle{ padding:5px 6px 6px; display:flex; flex-direction:column; gap:3px; }
 .inv-battle-row{ padding:3px 6px 4px; border:1px solid transparent; border-radius:4px; cursor:default; }
 .inv-battle-row:hover{ border-color:var(--inv-accent-dim); }

@@ -109,6 +109,32 @@ export class CombatController {
   }
 
   // ================================================================================================================================================================================================================================================
+  // updateAutoAttack
+  // Fila de inimigos que chegaram perto (entraram no raio de detecção, no
+  // mesmo andar), na ordem em que chegaram; quem morre ou se afasta sai dela.
+  // No auto ataque, sem alvo, o player ataca o primeiro da fila — até ele
+  // morrer ou o player trocar de alvo. Na zona segura não há fila.
+
+  updateAutoAttack(player) {
+    if (!player.isAlive() || this.sim.world.isInSafeZone(player)) {
+      player.aggro = [];
+      return;
+    }
+    const level = getLevel(player);
+    const isNear = (enemy) => enemy.isAlive() && getLevel(enemy) === level && enemy.isInDetectionRange(player.x, player.y);
+    player.aggro = player.aggro.filter(isNear);
+    for (const enemy of this.sim.enemies) {
+      if (isNear(enemy) && !player.aggro.includes(enemy)) player.aggro.push(enemy);
+    }
+    if (!player.attackMode || player.target) return;
+    const next = player.aggro.find(enemy => !this.isTargetLost(player, enemy));
+    if (!next) return;
+    player.target = next;
+    player.autoFollow = player.followMode;
+    console.log(`⚔️ Auto ataque: alvo ${next.id}`);
+  }
+
+  // ================================================================================================================================================================================================================================================
   // isTargetLost
   // Alvo em outro andar ou a mais de targetLoseRange sqms.
 
