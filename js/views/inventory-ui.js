@@ -478,7 +478,7 @@ export class InventoryUI {
     const count = item.count > 1 ? `<span class="inv-count">${item.count}</span>` : '';
     const open = item.items && this.isOpen(item.uid) ? '<span class="inv-open"></span>' : '';
     const attrs = [info.atk && `Atk ${info.atk}`, info.def && `Def ${info.def}`, info.ml && `ML ${info.ml}`, info.speed && `Speed +${info.speed}`].filter(Boolean).join(' · ');
-    const title = `${info.name}${item.count > 1 ? ` (${item.count})` : ''}${attrs ? ` · ${attrs}` : ''} · ${weightOf(item)} oz${item.items ? ' · duplo clique abre' : ''}`;
+    const title = `${info.name}${item.count > 1 ? ` (${item.count})` : ''}${attrs ? ` · ${attrs}` : ''} · ${weightOf(item)} oz${item.items ? ' · duplo clique abre' : info.food ? ' · duplo clique ou botão direito: comer' : info.heal ? ' · duplo clique ou botão direito: usar' : ''}`;
     return `<div class="inv-slot filled" data-place="${key}" data-uid="${item.uid}" title="${title}">${this.spriteHtml(item.type, item.count)}${count}${open}</div>`;
   }
 
