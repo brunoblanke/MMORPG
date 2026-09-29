@@ -1,0 +1,34 @@
+{
+  "formato": {
+    "quadro": 32,
+    "quadros": 3,
+    "respingo": true
+  },
+  "objeto": {
+    "tibia": {
+      "id": 2889,
+      "variacao": 2
+    }
+  },
+  "propriedades": {
+    "bloqueia": false,
+    "altura": false,
+    "espacos": 0,
+    "atk": 0,
+    "def": 0,
+    "ml": 0,
+    "speed": 0,
+    "vidaMin": 0,
+    "vidaMax": 0,
+    "manaMin": 0,
+    "manaMax": 0,
+    "alimento": 0,
+    "move": false,
+    "empilhavel": false,
+    "peso": 0
+  },
+  "ferramenta": "objetos",
+  "grupo": "itens",
+  "pasta": "liquidos",
+  "nome": "respingo-vida"
+}

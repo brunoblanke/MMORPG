@@ -118,6 +118,78 @@ export class InventoryUI {
   }
 
   // ================================================================================================================================================================================================================================================
+  // startAim
+  // Potion clicada: o cursor vira mira até o próximo clique (Esc ou botão
+  // direito cancelam).
+
+  startAim(from) {
+    this.aim = { from, at: performance.now() };
+    document.body.classList.add('inv-aiming');
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // stopAim
+
+  stopAim() {
+    this.aim = null;
+    document.body.classList.remove('inv-aiming');
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // aimTarget
+  // Sqm apontado na tela: o do player sob o mouse (o desenho dele passa do
+  // sqm) ou o do chão; null fora do mapa.
+
+  aimTarget(evt) {
+    const { canvas, camera, renderer, session } = this.game;
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = evt.clientX - rect.left;
+    const mouseY = evt.clientY - rect.top;
+    const offset = camera.getOffset();
+    const z = (this.game.player && this.game.player.z) || 0;
+    const player = session.players.find(p => (p.z || 0) === z && renderer.isPointInCube(mouseX, mouseY, p.renderX, p.renderY, offset, p.z || 0, p.step || 0));
+    if (player) return { x: player.x, y: player.y, z };
+    const grid = camera.screenToGrid(mouseX, mouseY);
+    return Number.isInteger(grid.x) && Number.isInteger(grid.y) ? { x: grid.x, y: grid.y, z } : null;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // bindAim
+  // Com a mira ligada, o próximo clique na tela do jogo usa a potion no sqm
+  // (player ou chão) e não anda; clique fora da tela cancela.
+
+  bindAim() {
+    const swallow = (evt) => {
+      if (!this.swallowClick) return;
+      evt.stopImmediatePropagation();
+      evt.preventDefault();
+    };
+    document.addEventListener('pointerdown', (evt) => {
+      if (!this.aim || performance.now() - this.aim.at < 50) return;
+      const aim = this.aim;
+      const slot = evt.target.closest && evt.target.closest('.inv-slot');
+      if (slot && JSON.stringify(this.placeOf(slot)) === JSON.stringify(aim.from)) {
+        evt.stopImmediatePropagation();
+        this.swallowClick = true;
+        setTimeout(() => { this.swallowClick = false; }, 400);
+        return;
+      }
+      this.stopAim();
+      this.swallowClick = true;
+      setTimeout(() => { this.swallowClick = false; }, 400);
+      evt.stopImmediatePropagation();
+      evt.preventDefault();
+      if (evt.button !== 0 || evt.target !== this.game.canvas) return;
+      const target = this.aimTarget(evt);
+      if (target) this.game.send({ type: 'useItem', from: aim.from, target });
+    }, true);
+    for (const type of ['mousedown', 'mouseup', 'click', 'dblclick', 'contextmenu']) document.addEventListener(type, swallow, true);
+    document.addEventListener('keydown', (evt) => {
+      if (evt.key === 'Escape' && this.aim) this.stopAim();
+    });
+  }
+
+  // ================================================================================================================================================================================================================================================
   // usableUnderMouse
   // Comida ou potion no chão sob o mouse (duplo clique ou botão direito usa;
   // o player anda até o lado se estiver longe).
@@ -890,6 +962,7 @@ export class InventoryUI {
   bindEvents() {
     const panels = Object.values(this.columns);
     const inPanels = (el) => panels.some(p => p.contains(el));
+    this.bindAim();
 
     document.addEventListener('pointerdown', (evt) => {
       if (this.qty && !evt.target.closest('.inv-qty')) this.closeQty();
@@ -944,7 +1017,12 @@ export class InventoryUI {
     });
 
     document.addEventListener('pointerup', (evt) => {
+      const clicked = this.pending && this.pending.kind === 'item' && !this.drag ? this.pending : null;
       this.pending = null;
+      if (clicked && evt.button === 0 && clicked.item && !clicked.item.items && itemInfo(clicked.item.type).heal) {
+        this.startAim(clicked.from);
+        return;
+      }
       if (!this.drag) return;
       if (this.drag.kind === 'item') this.endItemDrag(evt);
       else if (this.drag.kind === 'win') this.endWinDrag();
@@ -1001,7 +1079,11 @@ export class InventoryUI {
       if (!slot || !inPanels(slot)) return false;
       const place = this.placeOf(slot);
       const item = this.itemAt(place);
-      if (item && !item.items && (itemInfo(item.type).heal || itemInfo(item.type).food)) {
+      if (item && !item.items && itemInfo(item.type).heal) {
+        this.startAim(place);
+        return true;
+      }
+      if (item && !item.items && itemInfo(item.type).food) {
         this.game.send({ type: 'useItem', from: place });
         return true;
       }
@@ -1029,7 +1111,8 @@ export class InventoryUI {
       const usable = this.usableUnderMouse();
       if (!usable) return false;
       this.game.cancelPendingWalk();
-      this.game.send({ type: 'useItem', from: { t: 'g', id: usable.id } });
+      if (itemInfo(objectIdType(usable.id)).heal) this.startAim({ t: 'g', id: usable.id });
+      else this.game.send({ type: 'useItem', from: { t: 'g', id: usable.id } });
       return true;
     };
     this.game.canvas.addEventListener('dblclick', openGround);

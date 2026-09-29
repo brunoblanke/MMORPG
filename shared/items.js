@@ -20,6 +20,16 @@ export const DEATH_DROP_CHANCE = 0.3;
 // Intervalo entre um item de usar (potion) e o seguinte, como no Tibia.
 export const USE_COOLDOWN_MS = 1000;
 
+// Potion: usada com a mira em player (cura) ou no chão (vaza), até
+// POTION_RANGE sqm; sempre vira EMPTY_VIAL. O respingo some em
+// SPLASH_STAGES quadros de SPLASH_STAGE_MS.
+export const POTION_RANGE = 7;
+export const EMPTY_VIAL = 'itens/liquidos/vial';
+export const SPLASH_HP = 'itens/liquidos/respingo-vida';
+export const SPLASH_MANA = 'itens/liquidos/respingo-mana';
+export const SPLASH_STAGES = 3;
+export const SPLASH_STAGE_MS = 20000;
+
 // Comida como no Tibia (sem vocação): cada item soma segundos de
 // regeneração, até FOOD_MAX_SECONDS; enquanto dura, recupera REGEN_HP de
 // vida e REGEN_MANA de mana a cada REGEN_MS.

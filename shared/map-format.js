@@ -66,7 +66,7 @@ export function collectObjectDescriptors(mapData) {
     return `${tipo}_${counters[tipo]}`;
   };
 
-  (mapData.objetosData || []).forEach(([tipo, x, y, z, step, movable, hasVolume, blocksMovement, seq], index) => {
+  (mapData.objetosData || []).forEach(([tipo, x, y, z, step, movable, hasVolume, blocksMovement, seq, count], index) => {
     descriptors.push({
       id: nextId(tipo),
       type: tipo,
@@ -76,7 +76,8 @@ export function collectObjectDescriptors(mapData) {
       hasVolume: !!hasVolume,
       blocksMovement: !!blocksMovement,
       // Pisos: ordem em que foram colocados (mapas antigos: ordem no arquivo).
-      seq: Number.isFinite(seq) ? seq : index + 1
+      seq: Number.isFinite(seq) ? seq : index + 1,
+      count: Number.isInteger(count) && count > 1 ? count : undefined
     });
   });
 
@@ -164,7 +165,9 @@ export function serializeMapFromLayers(layerOrder, layers, GRID) {
             // Paredes e objetos: o comportamento vai gravado (o servidor não lê as folhas).
             const props = objectProps(obj.type);
             const step = isItemType(obj.type) ? obj.step || 0 : 0;
-            objetosData.push([obj.type, x, y, z, step, props.movable, props.hasVolume, props.blocksMovement]);
+            const entry = [obj.type, x, y, z, step, props.movable, props.hasVolume, props.blocksMovement];
+            if (obj.count > 1) entry.push(null, obj.count);
+            objetosData.push(entry);
           }
         });
 
@@ -218,7 +221,7 @@ export function buildLayersFromMapData(mapData, GRID) {
   const inRange = (x, y) => x >= 0 && y >= 0 && x < GRID && y < GRID;
 
   (mapData.objetosData || []).forEach((entry, index) => {
-    const [type, x, y, z, step, , , , seq] = entry;
+    const [type, x, y, z, step, , , , seq, count] = entry;
     if (!inRange(x, y)) { stats.outOfRange++; return; }
     ensureLayer(z);
     const cell = layers[z][`${x},${y}`];
@@ -233,7 +236,7 @@ export function buildLayersFromMapData(mapData, GRID) {
     } else if (isHoleType(type)) {
       cell.hole = type;
     } else if (isItemType(type)) {
-      cell.objects.push({ type, step: step || 0 });
+      cell.objects.push(Number.isInteger(count) && count > 1 ? { type, step: step || 0, count } : { type, step: step || 0 });
       stats.item++;
     } else {
       cell.objects.push({ type });

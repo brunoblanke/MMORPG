@@ -62,6 +62,7 @@ export function generateObjects(mapData) {
     const obj = new GameObject(descriptor);
     if (descriptor.color) obj.color = descriptor.color;
     obj.seq = descriptor.seq;
+    if (descriptor.count) obj.count = descriptor.count;
     objs.push(obj);
   });
 

@@ -349,6 +349,10 @@ export class Renderer {
       const sheet = this.getObjectSpriteSheet(entity.id);
       if (isSheetReady(sheet)) {
         const asset = getAsset(objectIdType(entity.id));
+        if (entity.isSplash) {
+          const rect = sheet.getIdleRect('idle');
+          return { image: sheet.image, frameRect: { ...rect, sx: rect.sx + Math.min(entity.stage || 0, sheet.totalFrames - 1) * sheet.frameWidth } };
+        }
         if (asset && asset.pilha) {
           const rect = sheet.getIdleRect('idle');
           const frame = Math.min(stackFrame(entity.count || (entity.itemData && entity.itemData.count) || 1), sheet.totalFrames - 1);

@@ -138,6 +138,7 @@ function descreverSprite(id, grupo, pasta, nome, receita) {
     quadro: formato.quadro || 32,
     quadros: formato.quadros || 1,
     pilha: !!formato.pilha,
+    respingo: !!formato.respingo,
     variacoes: receita.variacoesDoMeio || 0,
     ordem: formato.pecas || null,
     pecas: Object.keys(receita.pecas || receita.slots || {}),

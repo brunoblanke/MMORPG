@@ -10,6 +10,7 @@ import { getStairTopKeys } from '../model/borders.js';
 import { state } from '../model/state.js';
 import { restackItems } from '../../../shared/map-format.js';
 import { loadImage, setImageUpdateCallback } from './image-cache.js';
+import { stackFrame } from '../../../shared/items.js';
 import { brushCells, brushSize } from '../model/brush.js';
 
 export const canvas = document.getElementById('canvas');
@@ -73,16 +74,20 @@ function drawLabel(text, x, y) {
 // ================================================================================================================================================================================================================================================
 // drawPiece
 // Peça de uma folha do gerador ancorada no canto de baixo à direita do sqm
-// (com a animação, se tiver quadros). Sem imagem, um bloco da cor dada.
+// (com a animação, se tiver quadros). Item de pilha não anima: usa o quadro
+// da quantidade (count), como no jogo. Sem imagem, um bloco da cor dada.
 
-function drawPiece(type, px, py, fallback = null, target = ctx) {
+function drawPiece(type, px, py, fallback = null, target = ctx, count = 1) {
   const frame = spriteFrame(type);
   const entry = frame && loadImage(frame.url);
   const drawX = px + TILE - (frame ? frame.size : TILE);
   const drawY = py + TILE - (frame ? frame.size : TILE);
   if (entry && entry.status === 'ok') {
+    const asset = getAsset(type);
     const duration = ANIMATION_CYCLE_MS / frame.frames;
-    const rect = pickFrameRect(['idle'], frame.size, frame.size, frame.frames, 'idle', performance.now(), duration);
+    const rect = asset && (asset.pilha || asset.respingo)
+      ? { sx: Math.min(asset.pilha ? stackFrame(count) : 0, frame.frames - 1) * frame.size, sy: 0 }
+      : pickFrameRect(['idle'], frame.size, frame.size, frame.frames, 'idle', performance.now(), duration);
     target.drawImage(entry.img, frame.x + rect.sx, frame.y + rect.sy, frame.size, frame.size, drawX, drawY, frame.size, frame.size);
   } else if (fallback) {
     target.fillStyle = fallback;
@@ -160,7 +165,7 @@ function drawLayer(layer, alpha, z) {
       restackItems(cell.objects);
       cell.objects.forEach(obj => {
         const lift = isItemType(obj.type) ? (obj.step || 0) * STACK_OFFSET : 0;
-        drawPiece(obj.type, px - lift, py - lift, '#8a5a3a');
+        drawPiece(obj.type, px - lift, py - lift, '#8a5a3a', ctx, obj.count || 1);
       });
 
       if (cell.enemy) {

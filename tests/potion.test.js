@@ -11,6 +11,8 @@ const BAG = 'itens/recipientes/bolsa';
 const POTION = 'itens/liquidos/health-potion';
 const MANA = 'itens/liquidos/mana-potion';
 const MEAT = 'itens/comidas/meet';
+const VIAL = 'itens/liquidos/vial';
+const SPLASH = 'itens/liquidos/respingo-vida';
 
 const asset = (id, propriedades) => {
   const [grupo, pasta, nome] = id.split('/');
@@ -21,7 +23,9 @@ setAssets([
   asset(BAG, { move: true, peso: 10, espacos: 4 }),
   asset(POTION, { move: true, peso: 1.8, empilhavel: true, vidaMin: 125, vidaMax: 175 }),
   asset(MANA, { move: true, peso: 1.9, empilhavel: true, manaMin: 75, manaMax: 125 }),
-  asset(MEAT, { move: true, peso: 13, empilhavel: true, alimento: 180 })
+  asset(MEAT, { move: true, peso: 13, empilhavel: true, alimento: 180 }),
+  asset(VIAL, { move: true, peso: 1.2, empilhavel: true }),
+  asset(SPLASH, { move: false })
 ]);
 
 // ================================================================================================================================================================================================================================================
@@ -73,7 +77,7 @@ test('potion: usar no inventário recupera dentro da faixa do Tibia, gasta uma e
   send(sim, { type: 'useItem', from: { t: 'c', uid: bag.uid, i: 1 } });
   assert.ok(sim.player.mana >= 75 && sim.player.mana <= 125);
   assert.equal(sim.player.mana <= sim.player.maxMana, true);
-  assert.equal(bag.items[1], null);
+  assert.equal(bag.items[1].type, VIAL, 'a última potion vira vial vazio no mesmo lugar');
 
   run(sim, 1000);
   sim.player.currentHp = sim.player.hp;
@@ -134,4 +138,38 @@ test('pilha no chão: jogar item igual no mesmo sqm junta na pilha de cima (até
   const onTile = sim.world.getObjectsAt(7, 5).filter(o => o.id.startsWith(MEAT));
   assert.equal(onTile.length, 2);
   assert.equal(onTile.find(o => o !== pile).itemData.count, 3);
+});
+
+test('potion com a mira: em outro player cura ele; no chão vaza; em criatura não; sempre vira vial', () => {
+  const sim = buildGame({ objects: floorRect(0, 29, 0, 29), enemies: [[5, 9, 0]], player: { x: 5, y: 5, z: 0 } });
+  sim.player.equip.mochila = { uid: 'bag0', type: BAG, items: new Array(4).fill(null) };
+  sim.time = 1000;
+  const other = sim.addPlayer('player2', { name: 'Caio' });
+  other.x = 7; other.y = 5; other.z = 0;
+  other.currentHp = 10;
+  const bag = sim.player.equip.mochila;
+  bag.items[0] = { uid: 'p1', type: POTION, count: 3 };
+  const hpBefore = sim.player.currentHp;
+
+  send(sim, { type: 'useItem', from: { t: 'c', uid: bag.uid, i: 0 }, target: { x: 7, y: 5, z: 0 } });
+  assert.ok(other.currentHp >= 135 && other.currentHp <= 185, `curou o outro: ${other.currentHp}`);
+  assert.equal(sim.player.currentHp, hpBefore);
+  assert.equal(bag.items[0].count, 2);
+  assert.equal(bag.items[1].type, VIAL);
+
+  run(sim, 1000);
+  send(sim, { type: 'useItem', from: { t: 'c', uid: bag.uid, i: 0 }, target: { x: 3, y: 3, z: 0 } });
+  assert.equal(bag.items[0].count, 1);
+  assert.equal(bag.items[1].count, 2, 'o vial junta na pilha de vials');
+  const splash = sim.world.getObjectsAt(3, 3).find(o => o.isSplash);
+  assert.ok(splash, 'o líquido vazou no chão');
+
+  run(sim, 1000);
+  const enemy = sim.enemies[0];
+  const messages = send(sim, { type: 'useItem', from: { t: 'c', uid: bag.uid, i: 0 }, target: { x: enemy.x, y: enemy.y, z: 0 } });
+  assert.deepEqual(messages, ['Só dá pra usar em players.']);
+  assert.equal(bag.items[0].count, 1);
+
+  run(sim, 61000);
+  assert.equal(sim.world.getObjectsAt(3, 3).some(o => o.isSplash), false, 'o respingo some com o tempo');
 });

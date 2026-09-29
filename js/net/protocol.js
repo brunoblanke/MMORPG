@@ -75,7 +75,7 @@ function pick(source, fields) {
 // Itens que podem mudar de lugar (arrastados). Pisos, bordas e paredes fixas não.
 
 export function isSyncedItem(obj) {
-  return obj.movable === true && !obj.floorType && !obj.isBorder && !obj.stairDirection;
+  return (obj.movable === true || obj.isSplash === true) && !obj.floorType && !obj.isBorder && !obj.stairDirection;
 }
 
 // ================================================================================================================================================================================================================================================
@@ -92,7 +92,8 @@ export function serializeState(sim, playerId) {
     doors: sim.doors.map(d => ({ x: d.x, y: d.y, z: d.z || 0, id: d.id })),
     items: sim.objects.filter(isSyncedItem).map(o => ({
       id: o.id, x: o.x, y: o.y, z: o.z, step: o.step, hasVolume: o.hasVolume, blocksMovement: o.blocksMovement,
-      count: o.itemData && o.itemData.count ? o.itemData.count : undefined
+      count: o.itemData ? o.itemData.count : o.count,
+      splash: o.isSplash ? o.stage : undefined
     })),
     you: me ? {
       target: me.target ? me.target.id : null,
@@ -268,7 +269,11 @@ function syncItems(mirror, incoming) {
     seen.add(data.id);
     let obj = mirror.objectsById.get(data.id);
     if (!obj) {
-      obj = new GameObject({ id: data.id, x: data.x, y: data.y, z: data.z, step: data.step, movable: true, hasVolume: data.hasVolume, blocksMovement: data.blocksMovement });
+      obj = new GameObject({ id: data.id, x: data.x, y: data.y, z: data.z, step: data.step, movable: data.splash === undefined, hasVolume: data.hasVolume, blocksMovement: data.blocksMovement });
+      if (data.splash !== undefined) {
+        obj.isSplash = true;
+        obj.order = -1;
+      }
       mirror.objects.push(obj);
       mirror.objectsById.set(obj.id, obj);
       world.addObject(obj);
@@ -277,6 +282,7 @@ function syncItems(mirror, incoming) {
     }
     obj.step = data.step;
     obj.count = data.count;
+    if (obj.isSplash) obj.stage = data.splash;
   }
   for (const obj of [...mirror.objects]) {
     if (!isSyncedItem(obj) || seen.has(obj.id)) continue;

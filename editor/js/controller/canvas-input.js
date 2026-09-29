@@ -7,6 +7,7 @@ import { openEnemyForm } from '../view/forms.js';
 import { addFloorToCell, restackItems } from '../../../shared/map-format.js';
 import { refreshBordersAt } from '../model/borders.js';
 import { isStairsType } from '../../../shared/assets.js';
+import { itemInfo } from '../../../shared/items.js';
 import { brushCells, MAX_BRUSH } from '../model/brush.js';
 
 // ================================================================================================================================================================================================================================================
@@ -102,7 +103,13 @@ function paintCell(x, y) {
     cell.safe = state.safePaintValue;
   } else if (state.tool === 'item') {
     if (state.itemPaint) {
-      cell.objects.push({ type: state.itemPaint, step: 0 });
+      const top = cell.objects[cell.objects.length - 1];
+      const stack = itemInfo(state.itemPaint).stack;
+      if (stack && top && top.type === state.itemPaint && (top.count || 1) < stack) {
+        top.count = (top.count || 1) + 1;
+      } else {
+        cell.objects.push({ type: state.itemPaint, step: 0 });
+      }
       restackItems(cell.objects);
     }
   } else if (state.tool === 'wall') {

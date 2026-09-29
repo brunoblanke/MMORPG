@@ -148,3 +148,4 @@
 .inv-battle-hp.mid i{ background:#eab308; }
 .inv-battle-hp.low i{ background:#ef4444; }
 .inv-battle-empty{ padding:4px 2px; color:var(--inv-muted); font-size:11px; }
+.inv-aiming, .inv-aiming *{ cursor:crosshair !important; }

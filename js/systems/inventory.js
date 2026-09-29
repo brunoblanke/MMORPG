@@ -4,7 +4,7 @@ import { GameObject } from '../models/game-object.js';
 import { getAdjacentPositions, isPositionAdjacentTo } from '../utils/helpers.js';
 import { objectIdType, objectProps, getAsset, splitType } from '../../shared/assets.js';
 import {
-  EQUIP_SLOTS, THROW_RANGE, DEATH_DROP_CHANCE, USE_COOLDOWN_MS, FOOD_MAX_SECONDS, REGEN_MS, REGEN_HP, REGEN_MANA, itemInfo, capacityFor, newItem, weightOf, contains, findInTree, fromPlain, equipBonus
+  EQUIP_SLOTS, THROW_RANGE, DEATH_DROP_CHANCE, USE_COOLDOWN_MS, FOOD_MAX_SECONDS, POTION_RANGE, EMPTY_VIAL, SPLASH_HP, SPLASH_MANA, SPLASH_STAGES, SPLASH_STAGE_MS, REGEN_MS, REGEN_HP, REGEN_MANA, itemInfo, capacityFor, newItem, weightOf, contains, findInTree, fromPlain, equipBonus
 } from '../../shared/items.js';
 import { PLAYER_SPRITES, DEFAULT_GENDER } from '../../shared/catalog.js';
 import { SKILL_KEYS } from '../../shared/skills.js';
@@ -117,7 +117,7 @@ export class InventoryController {
   // O item de um objeto do chão (criado na primeira vez que alguém mexe nele).
 
   groundItem(obj) {
-    if (!obj.itemData) obj.itemData = newItem(this.nextUid(), objectIdType(obj.id));
+    if (!obj.itemData) obj.itemData = newItem(this.nextUid(), objectIdType(obj.id), obj.count || 1);
     return obj.itemData;
   }
 
@@ -475,25 +475,49 @@ export class InventoryController {
   // Comando useItem: usa um item do inventário, de uma caixa aberta ou do
   // chão (longe, o player anda até o lado e usa ao chegar). Comida soma tempo
   // de regeneração (até FOOD_MAX_SECONDS; passou disso, "Você está cheio.").
-  // Potion sorteia a vida e a mana dentro da faixa do item (sem passar do
-  // máximo) e espera USE_COOLDOWN_MS até o próximo uso. Gasta uma unidade.
+  // Potion vai no sqm target (a mira; sem target, no próprio player): em
+  // player, cura; no chão, o líquido vaza. Nos dois casos a potion vira um
+  // vial vazio.
 
-  use(player, from) {
+  use(player, from, target = null) {
     if (!from || !['e', 'c', 'g'].includes(from.t)) return;
     const src = this.source(player, from);
     if (src.error) return;
     const info = itemInfo(src.item.type);
     if (!info.food && !info.heal) return;
     if (src.obj && !this.isNear(player, src.obj)) {
-      this.walkNextTo(player, src.obj, { type: 'useItem', from });
+      this.walkNextTo(player, src.obj, { type: 'useItem', from, target });
       return;
     }
     if (info.food) {
       this.eat(player, src, info.food);
       return;
     }
-    const heal = info.heal;
-    if (!heal) return;
+    this.usePotion(player, src, info.heal, target || { x: player.x, y: player.y, z: player.z || 0 });
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // usePotion
+  // Potion no sqm alvo (até POTION_RANGE, com linha de visão): player vivo
+  // lá recupera vida e mana sorteadas na faixa (sem passar do máximo);
+  // criatura não aceita; sqm vazio ganha o respingo. Espera USE_COOLDOWN_MS
+  // até o próximo uso.
+
+  usePotion(player, src, heal, target) {
+    const z = player.z || 0;
+    if (!Number.isInteger(target.x) || !Number.isInteger(target.y) || (target.z ?? z) !== z) return;
+    if (!this.sim.movement.isInsideMap(target.x, target.y)) return;
+    if (Math.max(Math.abs(target.x - player.x), Math.abs(target.y - player.y)) > POTION_RANGE ||
+        !this.sim.movement.hasLineOfSight(player, target)) {
+      this.message(player, 'Longe demais.');
+      return;
+    }
+    const at = (e) => e.x === target.x && e.y === target.y && (e.z || 0) === z && e.isAlive();
+    const patient = this.sim.players.find(at);
+    if (!patient && this.sim.enemies.some(at)) {
+      this.message(player, 'Só dá pra usar em players.');
+      return;
+    }
 
     const now = this.sim.time || 0;
     if (now < (player.useReadyAt || 0)) {
@@ -502,15 +526,88 @@ export class InventoryController {
     }
     player.useReadyAt = now + USE_COOLDOWN_MS;
 
-    const roll = ([min, max]) => min + Math.floor(Math.random() * (max - min + 1));
-    const hp = Math.min(roll(heal.hp), player.hp - player.currentHp);
-    const mana = Math.min(roll(heal.mana), player.maxMana - player.mana);
-    player.currentHp += hp;
-    player.mana += mana;
+    if (patient) {
+      const roll = ([min, max]) => min + Math.floor(Math.random() * (max - min + 1));
+      const hp = Math.min(roll(heal.hp), patient.hp - patient.currentHp);
+      const mana = Math.min(roll(heal.mana), patient.maxMana - patient.mana);
+      patient.currentHp += hp;
+      patient.mana += mana;
+      this.sim.emit({ type: 'heal', playerId: patient.id, x: patient.x, y: patient.y, hp, mana });
+    } else {
+      this.spill(target.x, target.y, z, heal.hp[1] > 0 ? SPLASH_HP : SPLASH_MANA);
+    }
+    this.emptyPotion(player, src);
+  }
 
-    if ((src.item.count || 1) > 1) src.item.count--;
-    else src.remove();
-    this.sim.emit({ type: 'heal', playerId: player.id, x: player.x, y: player.y, hp, mana });
+  // ================================================================================================================================================================================================================================================
+  // emptyPotion
+  // A potion usada vira vial vazio onde estava (inventário, caixa ou chão).
+  // Numa pilha, sai uma e o vial vai pra uma pilha de vials do mesmo lugar,
+  // pro primeiro espaço livre dele ou, sem espaço, pro chão aos pés do player.
+
+  emptyPotion(player, src) {
+    const whole = (src.item.count || 1) <= 1;
+    if (src.obj) {
+      const { x, y } = src.obj;
+      const z = src.obj.z || 0;
+      if (whole) src.remove();
+      else src.item.count--;
+      const vial = this.spawnGroundItem(newItem(this.nextUid(), EMPTY_VIAL), x, y, z);
+      this.mergeGroundStack(vial);
+      return;
+    }
+    if (whole) {
+      const vial = newItem(this.nextUid(), EMPTY_VIAL);
+      if (src.place.t === 'e') player.equip[src.place.key] = vial;
+      else src.container.items[src.place.i] = vial;
+      return;
+    }
+    src.item.count--;
+    const box = src.container || (player.equip.mochila && player.equip.mochila.items ? player.equip.mochila : null);
+    if (box) {
+      const stack = box.items.find(it => it && it.type === EMPTY_VIAL && (it.count || 1) < itemInfo(EMPTY_VIAL).stack);
+      if (stack) {
+        stack.count = (stack.count || 1) + 1;
+        return;
+      }
+      const free = box.items.indexOf(null);
+      if (free >= 0) {
+        box.items[free] = newItem(this.nextUid(), EMPTY_VIAL);
+        return;
+      }
+    }
+    const vial = this.spawnGroundItem(newItem(this.nextUid(), EMPTY_VIAL), player.x, player.y, player.z || 0);
+    this.mergeGroundStack(vial);
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // spill
+  // Respingo do líquido no sqm: some aos poucos (um quadro a cada
+  // SPLASH_STAGE_MS) e depois desaparece.
+
+  spill(x, y, z, type) {
+    const { world, objects, objectsById } = this.sim;
+    this.objectCounter++;
+    const obj = new GameObject({ id: `${type}_${this.objectCounter}`, x, y, z, step: this.sim.movement.getStepHeight(x, y, z), movable: false, hasVolume: false, blocksMovement: false });
+    obj.isSplash = true;
+    obj.stage = 0;
+    obj.order = -1;
+    objects.push(obj);
+    objectsById.set(obj.id, obj);
+    world.addObject(obj);
+    const fade = () => {
+      if (!world.objects.has(obj)) return;
+      if (obj.stage < SPLASH_STAGES - 1) {
+        obj.stage++;
+        this.sim.schedule((this.sim.time || 0) + SPLASH_STAGE_MS, fade);
+        return;
+      }
+      world.removeObject(obj);
+      objectsById.delete(obj.id);
+      const index = objects.indexOf(obj);
+      if (index > -1) objects.splice(index, 1);
+    };
+    this.sim.schedule((this.sim.time || 0) + SPLASH_STAGE_MS, fade);
   }
 
   // ================================================================================================================================================================================================================================================
