@@ -98,17 +98,11 @@ export class Entity {
   // passo emenda no outro sem frear. renderTime: quando a posição desenhada
   // foi calculada (um passo novo continua dali).
 
-  // Virou pra outro lado no meio do passo: o deslize para ali (a criatura já
-  // está no sqm) em vez de continuar de costas. Entre um passo e o seguinte,
-  // walkingUntil segura o quadro de andar por um instante (o parado só
-  // aparece quando ela realmente para).
+  // Entre um passo e o seguinte, walkingUntil segura o quadro de andar por um
+  // instante (o parado só aparece quando ela realmente para).
 
   updateAnimation(timestamp) {
     this.renderTime = timestamp;
-    if (this.isMoving && this.direction && this.moveDirection && this.direction !== this.moveDirection) {
-      this.isMoving = false;
-      this.walkingUntil = timestamp + WALK_GRACE_MS;
-    }
     if (this.isMoving) {
       const elapsed = timestamp - this.moveStartTime;
       const duration = this.stepDuration || this.getStepInterval();
@@ -135,5 +129,15 @@ export class Entity {
     }
 
     this.hitFlash = timestamp < this.flashUntil;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // getFacing
+  // Lado desenhado: no meio de um passo, o do passo (virar pro alvo no meio do
+  // caminho não faz andar de costas nem corta o deslize); o novo lado aparece
+  // quando o passo termina.
+
+  getFacing() {
+    return (this.isMoving && this.moveDirection) || this.direction || 'sul';
   }
 }

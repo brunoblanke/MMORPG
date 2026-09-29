@@ -335,7 +335,7 @@ export class Renderer {
       if (!isSheetReady(sheet)) return null;
 
       const isWalking = entity && (entity.isMoving || this.frameTimestamp < (entity.walkingUntil || 0));
-      const direction = (entity && entity.direction) || 'sul';
+      const direction = entity ? (entity.getFacing ? entity.getFacing() : entity.direction || 'sul') : 'sul';
       const frameDuration = entity && entity.getFrameDuration ? entity.getFrameDuration() : CONFIG.playerFrameDuration;
       const frameRect = isWalking
         ? sheet.getWalkRect(direction, this.frameTimestamp, frameDuration)

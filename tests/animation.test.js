@@ -22,14 +22,18 @@ test('andando: no meio do passo desliza na direção dele', () => {
   assert.equal(player.renderX, 5.5);
 });
 
-test('virou pro outro lado no meio do passo: o deslize para no sqm, sem andar de costas', () => {
+test('virou pro outro lado no meio do passo: o deslize continua de frente pro passo e só vira no fim', () => {
   const player = stepping();
   player.updateAnimation(100);
   player.direction = 'oeste';
-  player.updateAnimation(150);
+  player.updateAnimation(200);
+  assert.equal(player.isMoving, true);
+  assert.equal(player.renderX, 5.5);
+  assert.equal(player.getFacing(), 'leste');
+  player.updateAnimation(400);
   assert.equal(player.isMoving, false);
-  assert.deepEqual([player.renderX, player.renderY], [6, 5]);
-  assert.ok(player.walkingUntil > 150, 'segura o quadro de andar um instante');
+  assert.equal(player.getFacing(), 'oeste');
+  assert.ok(player.walkingUntil > 400, 'segura o quadro de andar um instante');
 });
 
 test('quadro de andar nunca usa o quadro parado (o 1º da linha)', () => {
