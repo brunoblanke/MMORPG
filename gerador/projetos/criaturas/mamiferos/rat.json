@@ -45,6 +45,11 @@
   "pasta": "mamiferos",
   "nome": "rat",
   "propriedades": {
-    "comportamento": "foge"
+    "comportamento": "foge",
+    "vida": 20,
+    "xp": 5,
+    "velocidade": 67,
+    "armadura": 1,
+    "ataque": 8
   }
 }

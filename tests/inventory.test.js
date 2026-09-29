@@ -174,7 +174,7 @@ test('pegar do chão: longe, o player anda até ficar colado; a cap não deixa p
   sim.player.lvl = 1;
   const chest = groundAt(sim, 6, 5)[0];
   sim.player.x = 5; sim.player.y = 5;
-  const heavy = { uid: 'h', type: CHEST, items: new Array(6).fill(null).map((_, i) => ({ uid: `s${i}`, type: AXE })) };
+  const heavy = { uid: 'h', type: CHEST, items: new Array(50).fill(null).map((_, i) => ({ uid: `s${i}`, type: AXE })) };
   sim.inventory.groundItem(chest);
   chest.itemData = heavy;
   const messages = send(sim, { type: 'moveInv', from: { t: 'g', id: chest.id }, to: { t: 'c', uid: bag.uid, i: 1 } });

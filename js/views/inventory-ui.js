@@ -57,7 +57,7 @@ const SKILL_NAMES = {
   distance: 'Distance', shielding: 'Shielding', fishing: 'Fishing'
 };
 const SKILL_ORDER = ['magic', 'fist', 'sword', 'axe', 'distance', 'shielding', 'fishing'];
-const SPEED_FULL = 150;
+const SPEED_FULL = 640;
 const PITCH = 40;
 const SAVE_DELAY_MS = 600;
 

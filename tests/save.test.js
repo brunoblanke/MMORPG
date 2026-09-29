@@ -3,7 +3,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { buildGame, floorRect, wall } from './helpers/fixture.js';
-import { calculateStats } from '../js/utils/helpers.js';
+import { playerStats } from '../js/utils/helpers.js';
 import { CONFIG } from '../js/config.js';
 
 const START = CONFIG.playerStartLevel;
@@ -30,10 +30,10 @@ test('personagem volta com nível, XP, vida e lugar onde saiu', () => {
   game.removePlayer('player2');
   const back = game.addPlayer('player3', { name: 'Ana', gender: 'female', saved });
 
-  assert.deepEqual([back.lvl, back.xp, back.currentHp, back.maxHp], [START + 1, 7, 40, calculateStats(START + 1).hp]);
+  assert.deepEqual([back.lvl, back.xp, back.currentHp, back.maxHp], [START + 1, 7, 40, playerStats(START + 1).hp]);
   assert.deepEqual([back.x, back.y, back.z], [15, 12, 0]);
   assert.deepEqual([back.spawnX, back.spawnY, back.spawnZ], [2, 2, 0]);
-  assert.equal(back.atk, calculateStats(START + 1).atk);
+  assert.equal(back.atk, playerStats(START + 1).atk);
 });
 
 test('lugar guardado ocupado: nasce no sqm livre mais perto', () => {
@@ -60,5 +60,5 @@ test('dados estragados não quebram: valores fora do lugar são corrigidos', () 
   assert.equal(back.z, 0);
 
   const fresh = game.addPlayer('player3', { name: 'Duda', saved: null });
-  assert.deepEqual([fresh.lvl, fresh.xp, fresh.currentHp], [START, 0, calculateStats(START).hp]);
+  assert.deepEqual([fresh.lvl, fresh.xp, fresh.currentHp], [START, 0, playerStats(START).hp]);
 });

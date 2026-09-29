@@ -3,6 +3,7 @@
 import { Entity } from './entity.js';
 import { distance } from '../utils/helpers.js';
 import { CONFIG } from '../config.js';
+import { creatureStats } from '../../shared/assets.js';
 
 export const AI_STATE = { PATROL: 'patrol', CHASE: 'chase', FLEE: 'flee' };
 
@@ -26,8 +27,15 @@ export class Enemy extends Entity {
     this.patrolCenterX = this.spawnX;
     this.patrolCenterY = this.spawnY;
     // Tipo da criatura (a folha do gerador, ex.: 'criaturas/mamiferos/rat'):
-    // define nome, sprite e cadáver.
+    // define nome, sprite, cadáver e os números (vida, XP, velocidade,
+    // armadura, ataque) que estiverem no gerador.
     this.creature = data.creature || '';
+    const stats = creatureStats(this.creature);
+    if (stats.hp) this.hp = this.maxHp = this.currentHp = stats.hp;
+    if (stats.xp) this.xp = stats.xp;
+    if (stats.spd) this.spd = stats.spd;
+    if (stats.def) this.def = stats.def;
+    if (stats.atk) this.atk = stats.atk;
   }
 
   isInPatrolZone(x, y) {

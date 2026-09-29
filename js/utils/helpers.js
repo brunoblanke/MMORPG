@@ -46,14 +46,33 @@ export function randEnemyColor() {
 
 // ================================================================================================================================================================================================================================================
 // calculateStats
+// Atributos de criatura pelo nível do mapa, pra criatura sem números próprios
+// no gerador (creatureStats). A velocidade já vem na escala do Tibia.
 
 export function calculateStats(level) {
   return {
     hp: 50 + level * 10,
     atk: 5 + level * 2,
     def: 2 + level,
-    spd: 50 + level * 3,
+    spd: Math.round(STEP_FACTOR / Math.max(50, 150 - level * 3)),
     xp: 20 + level * 5
+  };
+}
+
+// ================================================================================================================================================================================================================================================
+// playerStats
+// Progressão do Tibia (sem vocação): no nível 1, 150 de vida, 55 de mana e
+// 220 de velocidade; cada nível soma 5 de vida, 5 de mana e 2 de velocidade.
+// Ataque e defesa seguem a nossa regra.
+
+export function playerStats(level) {
+  const gained = Math.max(0, level - 1);
+  return {
+    hp: 150 + gained * 5,
+    mana: 55 + gained * 5,
+    atk: 5 + level * 2,
+    def: 2 + level,
+    spd: 220 + gained * 2
   };
 }
 
@@ -67,9 +86,13 @@ export function roundUpToTick(ms) {
 
 // ================================================================================================================================================================================================================================================
 // calculateMoveDelay
+// Tempo entre passos pela velocidade na escala do Tibia: quanto mais speed,
+// mais rápido (220, o player nível 1, dá uns 360 ms; 67, o rat, 1,2 s).
+
+export const STEP_FACTOR = 32000;
 
 export function calculateMoveDelay(spd) {
-  return Math.max(50, 200 - spd) / CONFIG.speedScale;
+  return Math.max(50, STEP_FACTOR / Math.max(1, spd)) / CONFIG.speedScale;
 }
 
 // ================================================================================================================================================================================================================================================

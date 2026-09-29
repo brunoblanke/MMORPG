@@ -4,7 +4,7 @@ import { test, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
 import { buildGame, floorRect, safeRect } from './helpers/fixture.js';
 import { Player } from '../js/models/player.js';
-import { calculateStats } from '../js/utils/helpers.js';
+import { playerStats } from '../js/utils/helpers.js';
 import { TICK_MS } from '../js/simulation.js';
 
 const GROUND = floorRect(0, 24, 0, 24, 0);
@@ -42,7 +42,7 @@ test('subir de nível guarda o XP que sobra e melhora os atributos', () => {
   assert.equal(player.gainXp(130), 1);
   assert.equal(player.lvl, 2);
   assert.equal(player.xp, 30);
-  const stats = calculateStats(2);
+  const stats = playerStats(2);
   assert.deepEqual([player.maxHp, player.currentHp, player.atk, player.def, player.spd], [stats.hp, stats.hp, stats.atk, stats.def, stats.spd]);
 
   assert.equal(player.gainXp(500), 2);

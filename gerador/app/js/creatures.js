@@ -46,6 +46,13 @@ const statusEl = document.getElementById('creatureStatus');
 const nameEl = document.getElementById('creatureName');
 const folderEl = document.getElementById('creatureFolder');
 const behaviorEl = document.getElementById('creatureBehavior');
+const STAT_FIELDS = [
+  ['vida', document.getElementById('creatureHp')],
+  ['xp', document.getElementById('creatureXp')],
+  ['velocidade', document.getElementById('creatureSpeed')],
+  ['armadura', document.getElementById('creatureArmor')],
+  ['ataque', document.getElementById('creatureAttack')]
+];
 const infoEl = document.getElementById('creatureInfo');
 const thumbCanvas = document.getElementById('creatureThumb');
 const walkCanvas = document.getElementById('walkPreview');
@@ -69,6 +76,7 @@ function initCreatures() {
   });
   nameEl.addEventListener('input', () => { creatures.dirty = true; });
   behaviorEl.addEventListener('change', () => { creatures.dirty = true; });
+  for (const [, el] of STAT_FIELDS) el.addEventListener('input', () => { creatures.dirty = true; });
   fillFolderSelect(folderEl, CATEGORY);
   folderEl.addEventListener('change', () => { creatures.dirty = true; });
   fetch('/api/paleta').then(r => r.json()).then(data => {
@@ -413,6 +421,15 @@ function drawWalkPreview() {
 }
 
 // ================================================================================================================================================================================================================================================
+// statValues
+// Números da criatura pro jogo (vida, XP, velocidade na escala do Tibia,
+// armadura e ataque); 0 = usa o do nível no mapa.
+
+function statValues() {
+  return Object.fromEntries(STAT_FIELDS.map(([key, el]) => [key, Math.max(0, Math.floor(Number(el.value)) || 0)]));
+}
+
+// ================================================================================================================================================================================================================================================
 // behaviorOf
 // Comportamento guardado na receita: normal, foge (com a vida baixa) ou mago
 // (ataca de longe). Receita antiga com foge > 0 vira "foge".
@@ -461,7 +478,7 @@ async function save() {
     },
     criatura: { id: creatures.outfit.id, cores: creatures.colors, addons: creatures.addons },
     cadaver: creatures.corpse,
-    propriedades: { comportamento: behaviorEl.value }
+    propriedades: { comportamento: behaviorEl.value, ...statValues() }
   };
 
   try {
@@ -488,6 +505,7 @@ function openRecipe(recipe) {
   creatures.colors = Array.isArray(saved.cores) && saved.cores.length === 4 ? [...saved.cores] : [...DEFAULT_COLORS];
   creatures.addons = Array.isArray(saved.addons) ? [...saved.addons] : [];
   behaviorEl.value = behaviorOf(recipe.propriedades || {});
+  for (const [key, el] of STAT_FIELDS) el.value = String(Math.max(0, Math.floor(Number((recipe.propriedades || {})[key])) || 0));
   creatures.corpse = {};
   creatures.corpseImages.clear();
   for (const stage of CORPSE_STAGES) {

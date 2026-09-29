@@ -63,6 +63,23 @@ export function creatureBehavior(type) {
 }
 
 // ================================================================================================================================================================================================================================================
+// creatureStats
+// Números da criatura no gerador (Criaturas): vida, XP dado ao morrer,
+// velocidade (escala do Tibia), armadura (defesa) e ataque. Só os
+// preenchidos (> 0); o que faltar vem do nível no mapa.
+
+export function creatureStats(type) {
+  const asset = getAsset(type);
+  const props = (asset && asset.propriedades) || {};
+  const stats = {};
+  for (const [key, field] of [['hp', 'vida'], ['xp', 'xp'], ['spd', 'velocidade'], ['def', 'armadura'], ['atk', 'ataque']]) {
+    const value = Math.floor(Number(props[field]));
+    if (value > 0) stats[key] = value;
+  }
+  return stats;
+}
+
+// ================================================================================================================================================================================================================================================
 // doorState / doorType
 // Porta de parede ('<folha>#porta-x', '<folha>#porta-y-aberta'…): { open,
 // hasVolume, blocksMovement } do tipo, ou null se não é porta. doorType dá o

@@ -17,9 +17,9 @@ export const DEFAULT_CONTAINER_SIZE = 8;
 // inventário, com esta chance (provisório).
 export const DEATH_DROP_CHANCE = 0.3;
 
-// Cap: 300 oz no nível 8 e mais um tanto por nível (provisório).
-export const CAP_BASE_LEVEL = 8;
-export const CAP_AT_BASE = 300;
+// Cap como no Tibia (sem vocação): 400 oz no nível 1 e +10 por nível.
+export const CAP_BASE_LEVEL = 1;
+export const CAP_AT_BASE = 400;
 export const CAP_PER_LEVEL = 10;
 
 // Skill que o atk de cada tipo de arma soma (o resto: fist).

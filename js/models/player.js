@@ -1,7 +1,7 @@
 // js/models/player.js
 
 import { Entity } from './entity.js';
-import { calculateStats } from '../utils/helpers.js';
+import { playerStats } from '../utils/helpers.js';
 import { PLAYER_GENDERS, DEFAULT_GENDER } from '../../shared/catalog.js';
 import { isValidFloor } from '../../shared/constants.js';
 import { EQUIP_SLOTS, toPlain, equipBonus } from '../../shared/items.js';
@@ -22,6 +22,8 @@ export class Player extends Entity {
     this.skills = newSkills();
     this.maxMana = this.calculateMaxMana();
     this.mana = this.maxMana;
+    this.applyLevelStats();
+    this.currentHp = this.hp;
     this.target = null;
     this.autoFollow = true;
     this.followMode = true;
@@ -72,7 +74,7 @@ export class Player extends Entity {
   // Vida máxima, ataque, defesa, velocidade e XP do próximo nível pelo lvl atual.
 
   applyLevelStats() {
-    const stats = calculateStats(this.lvl);
+    const stats = playerStats(this.lvl);
     this.hp = stats.hp;
     this.maxHp = stats.hp;
     this.atk = stats.atk;
@@ -140,10 +142,10 @@ export class Player extends Entity {
 
   // ================================================================================================================================================================================================================================================
   // calculateMaxMana
-  // Mana máxima pelo nível (provisório: ainda não há magia que gaste).
+  // Mana máxima pelo nível, como no Tibia (55 no nível 1, +5 por nível).
 
   calculateMaxMana() {
-    return 50 + this.lvl * 5;
+    return playerStats(this.lvl).mana;
   }
 
   respawn(spot = { x: this.spawnX, y: this.spawnY }) {
