@@ -77,7 +77,7 @@ export class LifeCycleController {
   // handleEnemyDeath
   // O XP do inimigo (enemy.xp, pelo lvl dele) vai inteiro pro player que o
   // tinha como alvo (ou, sem ninguém, pro mais perto). Renasce no centro da
-  // patrulha depois de enemyRespawnTime (se ninguém estiver vendo o spawn).
+  // patrulha depois de enemyRespawnTime.
 
   handleEnemyDeath(enemy, now) {
     const sim = this.sim;
@@ -110,14 +110,8 @@ export class LifeCycleController {
   // respawnEnemy
   // Renasce no lugar original do mapa (spawnX/Y/Z), não onde morreu nem onde
   // estava patrulhando. Se alguém estiver em cima, no sqm livre mais perto.
-  // Como no Tibia, não nasce na frente de um player: com alguém vendo o
-  // spawn, tenta de novo depois de enemyRespawnTime.
 
   respawnEnemy(enemy) {
-    if (this.isSpawnWatched(enemy)) {
-      this.sim.schedule((this.sim.time || 0) + CONFIG.enemyRespawnTime, () => this.respawnEnemy(enemy));
-      return;
-    }
     const spot = this.sim.findFreeSpot(enemy.spawnX, enemy.spawnY, enemy.spawnZ, { avoidSafe: true });
     const respawnedEnemy = new Enemy({
       id: enemy.id,
@@ -137,15 +131,6 @@ export class LifeCycleController {
     this.sim.enemies.push(respawnedEnemy);
     this.sim.world.addCreature(respawnedEnemy);
     console.log(`♻️ ${displayName(enemy.creature)} LV${enemy.lvl} respawnou em (${spot.x}, ${spot.y}, ${enemy.spawnZ})`);
-  }
-
-  // ================================================================================================================================================================================================================================================
-  // isSpawnWatched
-  // Algum player vivo no mesmo andar vê o spawn (até spawnViewX × spawnViewY sqm).
-
-  isSpawnWatched(enemy) {
-    return this.sim.players.some(p => p.isAlive() && (p.z || 0) === (enemy.spawnZ || 0) &&
-      Math.abs(p.x - enemy.spawnX) <= CONFIG.spawnViewX && Math.abs(p.y - enemy.spawnY) <= CONFIG.spawnViewY);
   }
 
   // ================================================================================================================================================================================================================================================

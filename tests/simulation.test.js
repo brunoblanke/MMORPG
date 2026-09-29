@@ -88,9 +88,8 @@ test('attack: segue o alvo, mata, ganha XP e o inimigo renasce depois', () => {
   assert.equal(sim.player.target, null);
   assert.ok(sim.deadBodies.some(c => c.type === 'enemy_corpse'));
 
-  assert.equal(sim.enemies.length, 0, 'com o player vendo o spawn, não renasce');
-  sim.world.moveEntityTile(sim.player, sim.player.x, sim.player.y, 0, 24, 24, 0);
-  Object.assign(sim.player, { x: 24, y: 24 });
+  const respawnedAt = xp.time + CONFIG.enemyRespawnTime;
+  assert.ok(sim.time >= respawnedAt ? sim.enemies.length === 1 : sim.enemies.length === 0);
   runFor(sim, CONFIG.enemyRespawnTime + TICK_MS);
   assert.equal(sim.enemies.length, 1);
   assert.equal(sim.enemies[0].id, enemy.id);
