@@ -14,6 +14,7 @@ import { ObjectDragController } from './systems/object-drag.js';
 import { LifeCycleController } from './systems/life-cycle.js';
 import { PlayerControl } from './systems/player-control.js';
 import { InventoryController } from './systems/inventory.js';
+import { objectIdType, doorState } from '../shared/assets.js';
 
 export { TICK_MS };
 
@@ -42,6 +43,7 @@ export class Simulation {
     this.world.loadSafeZones(mapData.safeZoneData);
     for (const enemy of this.enemies) this.world.addCreature(enemy);
     this.objectsById = new Map(this.objects.map(obj => [obj.id, obj]));
+    this.doors = this.objects.filter(obj => doorState(objectIdType(obj.id)));
 
     this.time = 0;
     this.commands = [];

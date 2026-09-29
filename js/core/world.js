@@ -2,7 +2,7 @@
 
 import { CONFIG } from '../config.js';
 import { isCreature } from './geometry.js';
-import { floorBehavior } from '../../shared/assets.js';
+import { floorBehavior, objectIdType, doorState, doorType } from '../../shared/assets.js';
 
 export class World {
 
@@ -168,6 +168,32 @@ export class World {
 
   getObjectsAt(x, y) {
     return this.columns.get(this.getColumnKey(x, y)) || [];
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // getDoorAt / setDoorOpen
+  // Porta de parede no sqm (x, y, z), ou null. setDoorOpen troca a peça pela
+  // porta aberta/fechada (id, bloqueio e altura) e devolve o id antigo, ou
+  // null se ela já estava assim.
+
+  getDoorAt(x, y, z) {
+    return this.getObjectsAt(x, y).find(obj => (obj.z ?? 0) === z && doorState(objectIdType(obj.id))) || null;
+  }
+
+  setDoorOpen(obj, open) {
+    const type = objectIdType(obj.id);
+    const state = doorState(type);
+    if (!state || state.open === open) return null;
+    const newType = doorType(type, open);
+    const next = doorState(newType);
+    const z = obj.z || 0;
+    if (obj.blocksMovement && !next.blocksMovement) this.changeBlockers(obj.x, obj.y, z, -1);
+    if (!obj.blocksMovement && next.blocksMovement) this.changeBlockers(obj.x, obj.y, z, 1);
+    const oldId = obj.id;
+    obj.id = newType + oldId.slice(type.length);
+    obj.blocksMovement = next.blocksMovement;
+    obj.hasVolume = next.hasVolume;
+    return oldId;
   }
 
   // ================================================================================================================================================================================================================================================

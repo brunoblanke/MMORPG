@@ -133,3 +133,17 @@ test('troca de andar (buraco) aparece direto no espelho, sem deslizar', () => {
   assert.equal(seen.isMoving, false);
   assert.deepEqual([seen.renderX, seen.renderY, seen.renderZ], [6, 5, 0]);
 });
+
+test('porta aberta no servidor abre no espelho do navegador (desenho e bloqueio)', () => {
+  const door = ['estrutura/paredes/teste#porta-y', 6, 5, 0, 0, 0, 1, 1];
+  const mapData = buildMapData({ objects: [...GROUND, door], spawn: { x: 5, y: 5, z: 0 } });
+  const sim = buildGame({ objects: [...GROUND, door], player: { x: 5, y: 5, z: 0 } });
+  const mirror = makeMirror(mapData);
+  sync(sim, mirror, 'player1');
+  assert.ok(mirror.world.isBlocked(6, 5, 0));
+
+  sim.enqueue('player1', { type: 'useDoor', x: 6, y: 5, z: 0 });
+  sync(sim, mirror, 'player1');
+  assert.ok(!mirror.world.isBlocked(6, 5, 0));
+  assert.match(mirror.world.getDoorAt(6, 5, 0).id, /#porta-y-aberta_/);
+});

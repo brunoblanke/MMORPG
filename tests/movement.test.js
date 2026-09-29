@@ -131,3 +131,20 @@ test('jogador que nasce num andar negativo renasce nele', () => {
   game.tick(1000);
   assert.deepEqual([game.player.x, game.player.y, game.player.z], [4, 4, -3]);
 });
+
+test('porta: clique de longe anda até ela e abre; aberta deixa passar; clique de novo fecha', () => {
+  const door = ['estrutura/paredes/teste#porta-x', 7, 5, 0, 0, 0, 1, 1];
+  const game = buildGame({ objects: [...GROUND, door], player: { x: 2, y: 5, z: 0 } });
+  const world = game.world;
+  assert.ok(world.isBlocked(7, 5, 0), 'fechada bloqueia');
+
+  game.enqueue('player1', { type: 'useDoor', x: 7, y: 5, z: 0 });
+  for (let i = 0; i < 400 && world.isBlocked(7, 5, 0); i++) game.tick(game.time + 25);
+  assert.ok(!world.isBlocked(7, 5, 0), 'aberta deixa passar');
+  assert.ok(Math.max(Math.abs(game.player.x - 7), Math.abs(game.player.y - 5)) <= 1, 'o player foi até a porta');
+  assert.match(world.getDoorAt(7, 5, 0).id, /#porta-x-aberta_/);
+
+  game.enqueue('player1', { type: 'useDoor', x: 7, y: 5, z: 0 });
+  game.tick(game.time + 25);
+  assert.ok(world.isBlocked(7, 5, 0), 'fechou de novo');
+});

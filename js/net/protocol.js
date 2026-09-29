@@ -5,6 +5,7 @@ import { Enemy } from '../models/enemy.js';
 import { GameObject } from '../models/game-object.js';
 import { PLAYER_GENDERS, DEFAULT_GENDER } from '../../shared/catalog.js';
 import { TICK_MS } from '../../shared/constants.js';
+import { objectIdType, doorState } from '../../shared/assets.js';
 
 // Mensagens entre navegador e servidor (JSON pelo WebSocket, em /ws):
 //
@@ -87,6 +88,7 @@ export function serializeState(sim, playerId) {
     players: sim.players.map(p => ({ id: p.id, ...pick(p, PLAYER_FIELDS) })),
     enemies: sim.enemies.map(e => ({ id: e.id, ...pick(e, ENEMY_FIELDS), state: e.ai.state })),
     corpses: sim.deadBodies.map(c => pick(c, CORPSE_FIELDS)),
+    doors: sim.doors.map(d => ({ x: d.x, y: d.y, z: d.z || 0, id: d.id })),
     items: sim.objects.filter(isSyncedItem).map(o => ({
       id: o.id, x: o.x, y: o.y, z: o.z, step: o.step, hasVolume: o.hasVolume, blocksMovement: o.blocksMovement,
       count: o.itemData && o.itemData.count ? o.itemData.count : undefined
@@ -225,6 +227,7 @@ export function applyState(mirror, message, playerId, renderNow) {
   mirror.deadBodies = syncCorpses(world, mirror.deadBodies, state.corpses, time, renderNow);
 
   syncItems(mirror, state.items);
+  syncDoors(world, state.doors || []);
 
   const me = mirror.players.find(p => p.id === playerId);
   if (me && state.you) {
@@ -234,6 +237,20 @@ export function applyState(mirror, message, playerId, renderNow) {
     me.attackMode = state.you.attackMode;
     me.walk = state.you.walk;
     mirror.inventoryView = state.you.inventory;
+  }
+}
+
+// ================================================================================================================================================================================================================================================
+// syncDoors
+// Porta aberta ou fechada no servidor: a do mapa do cliente troca junto
+// (desenho e bloqueio).
+
+function syncDoors(world, doors) {
+  for (const data of doors) {
+    const door = world.getDoorAt(data.x, data.y, data.z);
+    if (!door || door.id === data.id) continue;
+    const state = doorState(objectIdType(data.id));
+    if (state) world.setDoorOpen(door, state.open);
   }
 }
 

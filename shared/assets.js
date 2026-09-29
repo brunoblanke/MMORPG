@@ -50,6 +50,27 @@ const WALL_PROPS = {
 const assets = new Map();
 
 // ================================================================================================================================================================================================================================================
+// doorState / doorType
+// Porta de parede ('<folha>#porta-x', '<folha>#porta-y-aberta'…): { open,
+// hasVolume, blocksMovement } do tipo, ou null se não é porta. doorType dá o
+// tipo da mesma porta aberta ou fechada.
+
+const DOOR_PIECE = /^porta-[xy](-aberta)?$/;
+
+export function doorState(type) {
+  const { piece } = splitType(type);
+  if (!DOOR_PIECE.test(piece || '')) return null;
+  const [hasVolume, blocksMovement] = WALL_PROPS[piece];
+  return { open: piece.endsWith('-aberta'), hasVolume, blocksMovement };
+}
+
+export function doorType(type, open) {
+  const { asset, piece } = splitType(type);
+  const base = piece.replace(/-aberta$/, '');
+  return `${asset}#${open ? `${base}-aberta` : base}`;
+}
+
+// ================================================================================================================================================================================================================================================
 // setAssets
 // Lista de /api/sprites: [{ id, ferramenta, grupo, pasta, nome, rotulo, url,
 // quadro, quadros, variacoes, pecas, propriedades, cadaver }].

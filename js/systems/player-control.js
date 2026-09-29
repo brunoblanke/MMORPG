@@ -19,6 +19,7 @@ import { isHoleType, objectIdType } from '../../shared/assets.js';
 //   { type: 'openContainer', itemId }    abrir caixa do chão (anda até ela)
 //   { type: 'closeContainer', itemId }   fechar caixa do chão
 //   { type: 'saveLayout', layout }       guardar o layout das janelas
+//   { type: 'useDoor', x, y, z }         abrir/fechar porta (anda até ela)
 
 export class PlayerControl {
 
@@ -45,6 +46,7 @@ export class PlayerControl {
       case 'closeContainer': return this.sim.inventory.close(player, command.itemId);
       case 'saveLayout': return this.sim.inventory.saveLayout(player, command.layout);
       case 'useStairs': return this.useStairs(player, command.x, command.y, command.z);
+      case 'useDoor': return this.useDoor(player, command.x, command.y, command.z);
       default: console.warn('Comando desconhecido:', command);
     }
   }
@@ -55,6 +57,7 @@ export class PlayerControl {
 
   setWalkDir(player, dx, dy) {
     player.pendingStairs = null;
+    player.pendingDoor = null;
     if (dx === 0 && dy === 0) {
       player.walkDir = null;
       return;
@@ -102,6 +105,7 @@ export class PlayerControl {
 
   walkTo(player, x, y) {
     player.pendingStairs = null;
+    player.pendingDoor = null;
     if (!this.sim.movement.isInsideMap(x, y)) return;
     this.stopFollowing(player);
     if (x === player.x && y === player.y) {
@@ -299,6 +303,7 @@ export class PlayerControl {
     }
     this.sim.objectDrag.checkPendingDrag(player);
     this.checkPendingStairs(player);
+    this.checkPendingDoor(player);
   }
 
   // ================================================================================================================================================================================================================================================
@@ -330,5 +335,70 @@ export class PlayerControl {
     if (player.x !== pending.x || player.y !== pending.y || (player.z || 0) !== pending.z) return;
     const stairs = this.sim.world.getTransitionAt(pending.x, pending.y, pending.z);
     if (stairs && stairs.manualStairs) this.sim.movement.useTransition(player, stairs);
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // useDoor
+  // Comando useDoor (clique na porta): colado nela, abre ou fecha; longe, o
+  // player anda até o sqm colado mais perto e abre ao chegar.
+
+  useDoor(player, x, y, z) {
+    const door = this.sim.world.getDoorAt(x, y, z);
+    if (!door) return;
+    if (this.isNextTo(player, door)) {
+      player.pendingDoor = null;
+      this.toggleDoor(player, door);
+      return;
+    }
+    const movement = this.sim.movement;
+    let best = null;
+    let bestDist = Infinity;
+    for (const pos of getAdjacentPositions(x, y)) {
+      if (!movement.isInsideMap(pos.x, pos.y) || movement.isBlocked(pos.x, pos.y, z)) continue;
+      if (movement.getPassableStep(pos.x, pos.y, z) === null) continue;
+      const d = Math.max(Math.abs(player.x - pos.x), Math.abs(player.y - pos.y));
+      if (d < bestDist) { bestDist = d; best = pos; }
+    }
+    if (!best) return;
+    player.pendingDoor = { x, y, z };
+    this.setWalkTarget(player, best.x, best.y, z);
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // isNextTo
+
+  isNextTo(player, obj) {
+    if ((player.z || 0) !== (obj.z || 0)) return false;
+    return Math.max(Math.abs(player.x - obj.x), Math.abs(player.y - obj.y)) <= 1;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // toggleDoor
+  // Abre a porta fechada ou fecha a aberta. Não fecha com alguém no vão.
+
+  toggleDoor(player, door) {
+    const world = this.sim.world;
+    const open = !door.blocksMovement;
+    if (open && world.getCreatureAt(door.x, door.y, door.z || 0) !== null) {
+      this.sim.emit({ type: 'message', playerId: player.id, text: 'Tem alguém no caminho.' });
+      return;
+    }
+    const oldId = world.setDoorOpen(door, !open);
+    if (!oldId) return;
+    this.sim.objectsById.delete(oldId);
+    this.sim.objectsById.set(door.id, door);
+    console.log(`🚪 Porta em (${door.x}, ${door.y}) ${open ? 'fechada' : 'aberta'}`);
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // checkPendingDoor
+  // Chegou do lado da porta clicada: abre (ou fecha). Parou longe: desiste.
+
+  checkPendingDoor(player) {
+    const pending = player.pendingDoor;
+    if (!pending || this.isWalking(player)) return;
+    player.pendingDoor = null;
+    const door = this.sim.world.getDoorAt(pending.x, pending.y, pending.z);
+    if (door && this.isNextTo(player, door)) this.toggleDoor(player, door);
   }
 }

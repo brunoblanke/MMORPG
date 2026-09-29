@@ -198,15 +198,23 @@ export class GameController {
 
   // ================================================================================================================================================================================================================================================
   // handleGameClick
-  // Clique em inimigo escolhe/tira o alvo; no chão, anda até o sqm no andar
-  // em que o player está. Em cima de caixa ou cadáver, espera um instante: se
-  // for duplo clique (abrir), o player não sai do lugar.
+  // Clique em inimigo escolhe/tira o alvo; na porta, abre ou fecha (o player
+  // anda até ela se precisar); no chão, anda até o sqm no andar em que o
+  // player está. Em cima de caixa ou cadáver, espera um instante: se for
+  // duplo clique (abrir), o player não sai do lugar.
 
   handleGameClick(gridPos) {
     if (!this.player) return;
     if (this.trySelectEnemyAtMouse()) return;
 
-    const command = { type: 'walkTo', x: gridPos.x, y: gridPos.y, z: this.player.z || 0 };
+    const z = this.player.z || 0;
+    if (this.session.world.getDoorAt(gridPos.x, gridPos.y, z)) {
+      this.cancelPendingWalk();
+      this.send({ type: 'useDoor', x: gridPos.x, y: gridPos.y, z });
+      return;
+    }
+
+    const command = { type: 'walkTo', x: gridPos.x, y: gridPos.y, z };
     this.cancelPendingWalk();
     if (!this.inventoryUI || !this.inventoryUI.openableUnderMouse()) {
       this.send(command);
