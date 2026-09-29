@@ -40,6 +40,9 @@
       }
     }
   },
+  "propriedades": {
+    "comportamento": "foge"
+  },
   "ferramenta": "criaturas",
   "grupo": "criaturas",
   "pasta": "elementais",
