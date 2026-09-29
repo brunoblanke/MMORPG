@@ -66,10 +66,12 @@ export class PlayerControl {
 
   // ================================================================================================================================================================================================================================================
   // stopFollowing
-  // O player se moveu por conta própria (tecla ou clique no chão): o modo
-  // seguir passa pra parado, mesmo com o auto ataque ligado.
+  // O player se moveu por conta própria (tecla ou clique no chão) tendo um
+  // alvo: o modo seguir passa pra parado, mesmo com o auto ataque ligado.
+  // Sem alvo, andar não mexe no seguir.
 
   stopFollowing(player) {
+    if (!player.target) return;
     if (!player.followMode && !player.autoFollow) return;
     player.followMode = false;
     player.autoFollow = false;
