@@ -3,7 +3,6 @@
 import { getAsset, spriteFrame, splitType, objectIdType, displayName } from '../../shared/assets.js';
 import { getLevel } from '../core/geometry.js';
 import { itemInfo, weightOf } from '../../shared/items.js';
-import { SKILL_KEYS } from '../../shared/skills.js';
 import { PLAYER_SPRITES, DEFAULT_GENDER } from '../../shared/catalog.js';
 import { CORPSE_ROW } from './sprite-registry.js';
 
@@ -52,9 +51,11 @@ const FOLLOW_ICONS = {
   stand: svgIcon('0 0 11.44 19.84', '<circle cx="5.72" cy="3.4" r="2.44"/><path d="M5.72,8.76v4.17"/><path d="M.95,9.95l4.77-1.79,4.77,1.79"/><path d="M5.72,12.93l-4.17,5.96"/><path d="M5.72,12.93l4.17,5.96"/>', MODE_ICON_SCALE)
 };
 const SKILL_NAMES = {
-  magic: 'ML', fist: 'Fist', club: 'Club', sword: 'Sword', axe: 'Axe',
+  magic: 'Magic', fist: 'Fist', club: 'Club', sword: 'Sword', axe: 'Axe',
   distance: 'Distance', shielding: 'Shielding', fishing: 'Fishing'
 };
+const SKILL_ORDER = ['magic', 'fist', 'sword', 'axe', 'distance', 'shielding', 'fishing'];
+const SPEED_FULL = 150;
 const PITCH = 40;
 const SAVE_DELAY_MS = 600;
 
@@ -199,7 +200,8 @@ export class InventoryUI {
       uid,
       ground: saved.ground || null,
       rows: Number.isInteger(saved.rows) && saved.rows > 0 ? saved.rows : 2,
-      min: !!saved.min
+      min: !!saved.min,
+      bars: Array.isArray(saved.bars) ? saved.bars.filter(b => typeof b === 'string') : []
     };
   }
 
@@ -418,7 +420,7 @@ export class InventoryUI {
     this.saveTimer = setTimeout(() => {
       if (!this.view || !this.layout) return;
       const entry = (w) => {
-        if (w.kind !== 'container') return { ref: w.kind, rows: w.rows, min: w.min };
+        if (w.kind !== 'container') return { ref: w.kind, rows: w.rows, min: w.min, bars: w.bars };
         if (w.ground) return null;
         const path = this.pathOf(this.view, w.uid);
         return path ? { path, rows: w.rows, min: w.min } : null;
@@ -525,36 +527,60 @@ export class InventoryUI {
 
   // ================================================================================================================================================================================================================================================
   // skillsHtml
-  // Janela de skills no formato do Tibia 7.6, com nomes curtos (a cap fica
-  // só no inventário).
+  // Janela de skills: Level e XP; vida, mana, cap livre, speed e food; e os
+  // skills. Clique numa linha abre ou fecha a barra de progresso dela.
 
   skillsHtml(win, buttons) {
     const stats = this.view.stats;
     if (!stats) return '';
+    const cap = this.view.cap;
     const fmt = (n) => Number(n).toLocaleString('pt-BR');
     const pctOf = (value, max) => (max > 0 ? Math.max(0, Math.min(100, Math.round(value / max * 100))) : 0);
-    const line = (label, value, pct, kind = '', title = `${pct}% até o próximo`) => `<div class="inv-skrow"><span>${label}</span><b>${value}</b></div>` +
-      (pct === undefined ? '' : `<div class="inv-skbar${kind ? ` ${kind}` : ''}" title="${title}"><i style="width:${pct}%"></i></div>`);
+    const open = new Set(win.bars || []);
+    const line = (key, label, value, pct, kind = '', title = `${pct}% até o próximo`) => {
+      const hasBar = pct !== undefined;
+      const bar = hasBar && open.has(key) ? `<div class="inv-skbar${kind ? ` ${kind}` : ''}" title="${title}"><i style="width:${pct}%"></i></div>` : '';
+      return `<div class="inv-skline${hasBar ? ' toggles' : ''}"${hasBar ? ` data-bar="${key}" title="Clique pra mostrar ou esconder a barra"` : ''}><div class="inv-skrow"><span>${label}</span><b>${value}</b></div>${bar}</div>`;
+    };
     const skill = (key) => {
       const entry = stats.skills[key];
       const value = entry.bonus ? `${entry.lvl} <em class="inv-skbonus">+ ${entry.bonus}</em>` : entry.lvl;
-      return line(SKILL_NAMES[key], value, entry.pct);
+      return line(key, SKILL_NAMES[key], value, entry.pct);
     };
     const hpPct = pctOf(stats.hp, stats.maxHp);
-    const mpPct = pctOf(stats.mana, stats.maxMana);
+    const free = Math.max(0, cap.max - cap.used);
     const body = [
-      line('XP', fmt(stats.experience), stats.levelPct),
-      line('LVL', stats.level),
+      line('level', 'Level', stats.level, stats.levelPct),
+      line('xp', 'XP', fmt(stats.experience), stats.levelPct),
       '<div class="inv-sksep"></div>',
-      line('HP', fmt(stats.hp), hpPct, `hp${hpPct <= 25 ? ' low' : hpPct <= 50 ? ' mid' : ''}`, `${fmt(stats.hp)} de ${fmt(stats.maxHp)}`),
-      line('MP', fmt(stats.mana), mpPct, 'mp', `${fmt(stats.mana)} de ${fmt(stats.maxMana)}`),
+      line('hp', 'Hit Points', fmt(stats.hp), hpPct, `hp${hpPct <= 25 ? ' low' : hpPct <= 50 ? ' mid' : ''}`, `${fmt(stats.hp)} de ${fmt(stats.maxHp)}`),
+      line('mana', 'Mana', fmt(stats.mana), pctOf(stats.mana, stats.maxMana), 'mp', `${fmt(stats.mana)} de ${fmt(stats.maxMana)}`),
+      line('cap', 'Capacity', Math.floor(free), pctOf(free, cap.max), 'cap', `${Math.floor(free)} de ${Math.floor(cap.max)} oz livres`),
+      line('speed', 'Speed', fmt(stats.speed || 0), pctOf(stats.speed || 0, SPEED_FULL), 'speed', `${stats.speed || 0} (passo mais rápido a partir de ${SPEED_FULL})`),
+      line('food', 'Food', '—'),
       '<div class="inv-sksep"></div>',
-      ...['magic', ...SKILL_KEYS].map(skill)
+      ...SKILL_ORDER.map(skill)
     ].join('');
     return `<section class="inv-win${win.min ? ' min' : ''}" data-win="${win.id}">
       <header class="inv-head"><span class="inv-title">Skills</span>${buttons}</header>
       <div class="inv-body"><div class="inv-skills">${body}</div></div>
     </section>`;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // toggleBar
+  // Clique numa linha dos skills mostra ou esconde a barra de progresso dela
+  // (a escolha fica guardada no layout).
+
+  toggleBar(winId, key) {
+    const found = this.findWindow(winId);
+    if (!found || !key) return;
+    const bars = new Set(found.win.bars || []);
+    if (bars.has(key)) bars.delete(key);
+    else bars.add(key);
+    found.win.bars = [...bars];
+    this.scheduleSave();
+    this.lastKey = '';
   }
 
   // ================================================================================================================================================================================================================================================
@@ -920,6 +946,11 @@ export class InventoryUI {
     });
 
     document.addEventListener('click', (evt) => {
+      const barLine = evt.target.closest('.inv-skline.toggles');
+      if (barLine && inPanels(barLine)) {
+        this.toggleBar(barLine.closest('.inv-win').dataset.win, barLine.dataset.bar);
+        return;
+      }
       const btn = evt.target.closest('.inv-btn, .inv-follow');
       if (!btn || !inPanels(btn)) return;
       const found = this.findWindow(btn.closest('.inv-win').dataset.win);

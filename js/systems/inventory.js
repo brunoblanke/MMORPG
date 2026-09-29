@@ -608,6 +608,7 @@ export class InventoryController {
       maxHp: player.hp,
       mana: player.mana,
       maxMana: player.maxMana,
+      speed: player.spd,
       skills
     };
   }
