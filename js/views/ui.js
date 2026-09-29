@@ -4,7 +4,7 @@ export class UI {
     this.devBtnPadding = 12;
     // Largura das colunas de janelas (css/inventory.css, --inv-side): elas
     // ficam por cima da tela, então o botão e os avisos vão pra dentro delas.
-    this.sideInset = 204;
+    this.sideInset = 186;
     this.iconColor = '#ccff33';
     this.iconCache = {};
 

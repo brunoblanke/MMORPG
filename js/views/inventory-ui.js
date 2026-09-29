@@ -22,9 +22,9 @@ const EQUIP_LAYOUT = [
 ];
 const ICONS = {
   amuleto: '<path d="M6 3c0 6 3 9 6 11 3-2 6-5 6-11"/><circle cx="12" cy="18" r="3"/>',
-  cabeca: '<path d="M12 2.5c-4 0-6.5 3.5-6.5 8V18l2.5 3h8l2.5-3v-7.5c0-4.5-2.5-8-6.5-8z"/><path d="M5.5 11h13M12 2.5V21"/><path d="M9 14.5h.01M9 17h.01M15 14.5h.01M15 17h.01"/>',
-  mochila: '<path d="M10 7.5 8.5 3.5c1 .8 2 .8 3 0 1 .8 2 .8 3 0L14 7.5"/><rect x="9" y="7.5" width="6" height="2" rx="1"/><path d="M9.5 9.5C6.5 11 4.5 14 4.5 16.5c0 3.2 3.3 5 7.5 5s7.5-1.8 7.5-5c0-2.5-2-5.5-5-7"/><path d="M15 8.5c2 0 2.8 1.5 5 1.5"/>',
-  arma: '<path d="M18 3l3 3-11 11-3-3z"/><path d="M5 16l3 3M4 20l2-2"/>',
+  cabeca: '<path d="M5 15a7 7 0 0 1 14 0v3H5z"/><path d="M9 18v2m6-2v2"/>',
+  mochila: '<g transform="translate(12 12) rotate(45) scale(.82) translate(-12 -12)"><path d="M10 7.5 8.5 3.5c1 .8 2 .8 3 0 1 .8 2 .8 3 0L14 7.5"/><rect x="9" y="7.5" width="6" height="2" rx="1"/><path d="M9.5 9.5C6.5 11 4.5 14 4.5 16.5c0 3.2 3.3 5 7.5 5s7.5-1.8 7.5-5c0-2.5-2-5.5-5-7"/><path d="M15 8.5c2 0 2.8 1.5 5 1.5"/></g>',
+  arma: '<path d="M14.5 17.5 3 6V3h3l11.5 11.5"/><path d="m13 19 6-6"/><path d="m16 16 4 4"/><path d="m19 21 2-2"/>',
   corpo: '<path d="M8 4l4 2 4-2 4 4-3 3v9H7v-9L4 8z"/>',
   escudo: '<path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/>',
   anel: '<circle cx="12" cy="14" r="6"/><path d="M10 6l2-3 2 3"/>',
@@ -34,8 +34,8 @@ const ICONS = {
 };
 const FOLLOW_ICONS = {
   follow: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="15" cy="4" r="2"/><path d="M13.5 7.5 11 13"/><path d="M8 9.5l3.5-2 3 3 3 .5"/><path d="M11 13l3.5 3-1 5"/><path d="M11 13l-2 4-4.5 1"/></svg>',
-  attack: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5 3 6V3h3l11.5 11.5"/><path d="m13 19 6-6M16 16l4 4M19 21l2-2"/><path d="M14.5 6.5 18 3h3v3l-3.5 3.5"/><path d="m5 14 4 4M7 17l-3 3M3 19l2 2"/></svg>',
-  defense: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg>',
+  attack: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 5l11 11M19 5 8 16"/><path d="M14 18l4-4M6 14l4 4"/><path d="M17 17l2.5 2.5M7 17l-2.5 2.5"/></svg>',
+  defense: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg>',
   stand: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4" r="2"/><path d="M12 7.5V14"/><path d="M8 12.5l4-3.5 4 3.5"/><path d="M12 14l-2.5 7"/><path d="M12 14l2.5 7"/></svg>'
 };
 const SKILL_NAMES = {
@@ -157,19 +157,18 @@ export class InventoryUI {
 
   // ================================================================================================================================================================================================================================================
   // withVitals
-  // A janela de vida e mana sempre existe: sem ela no layout, entra logo
-  // embaixo do inventário.
+  // Vida e mana, skills e battle sempre existem (não fecham, só minimizam):
+  // a que falta no layout entra embaixo do inventário, nessa ordem.
 
   withVitals(layout) {
-    if ([...layout.left, ...layout.right].some(w => w.kind === 'vitals')) return layout;
-    for (const col of ['left', 'right']) {
-      const i = layout[col].findIndex(w => w.kind === 'inventory');
-      if (i >= 0) {
-        layout[col].splice(i + 1, 0, this.makeWindow('vitals', null));
-        return layout;
+    let after = 'inventory';
+    for (const kind of ['vitals', 'skills', 'battle']) {
+      if (![...layout.left, ...layout.right].some(w => w.kind === kind)) {
+        const col = ['left', 'right'].find(c => layout[c].some(w => w.kind === after)) || 'right';
+        layout[col].splice(layout[col].findIndex(w => w.kind === after) + 1, 0, this.makeWindow(kind, null));
       }
+      after = kind;
     }
-    layout.right.unshift(this.makeWindow('vitals', null));
     return layout;
   }
 
@@ -473,25 +472,23 @@ export class InventoryUI {
       const spare = '<div class="inv-capbox"></div>';
       const last = EQUIP_LAYOUT.length - 1;
       const cell = ([key], i) => key ? this.slotHtml(equip[key], { t: 'e', key }, key) : (i === last ? capBox : (i === last - 2 ? spare : ''));
-      const cells = [0, 1, 2].map(col => `<div class="inv-dollcol">${col === 0 ? this.followHtml() : ''}${col === 2 ? this.attackModeHtml() : ''}${EQUIP_LAYOUT.map((entry, i) => i % 3 === col ? cell(entry, i) : '').join('')}</div>`).join('');
+      const top = [`<div class="inv-modes">${this.followHtml()}${this.attackModeHtml()}</div>`, '', spare];
+      const cells = [0, 1, 2].map(col => `<div class="inv-dollcol">${top[col]}${EQUIP_LAYOUT.map((entry, i) => i % 3 === col ? cell(entry, i) : '').join('')}</div>`).join('');
       return `<section class="inv-win${win.min ? ' min' : ''}" data-win="${win.id}">
-        <header class="inv-head tight"><span class="inv-title">Inventário</span>
-          <button class="inv-btn wide${this.findWindow('battle') ? ' on' : ''}" data-act="battle" type="button" aria-label="Abrir battle">Battle</button><button class="inv-btn wide${this.findWindow('skills') ? ' on' : ''}" data-act="skills" type="button" aria-label="Abrir skills">Skills</button>${buttons(false)}</header>
+        <header class="inv-head"><span class="inv-title">Inventário</span>${buttons(false)}</header>
         <div class="inv-body"><div class="inv-doll">${cells}</div></div>
       </section>`;
     }
-    if (win.kind === 'skills') return this.skillsHtml(win, buttons(true));
-    if (win.kind === 'battle') return this.battleHtml(win, buttons(true));
+    if (win.kind === 'skills') return this.skillsHtml(win, buttons(false));
+    if (win.kind === 'battle') return this.battleHtml(win, buttons(false));
     if (win.kind === 'vitals') return this.vitalsHtml(win);
     const box = this.findContainer(win.uid);
     if (!box) return '';
-    const used = box.items.filter(Boolean).length;
     const slots = box.items.map((item, i) => this.slotHtml(item, { t: 'c', uid: box.uid, i })).join('');
     const up = this.parentOf(win.uid) ? '<button class="inv-btn" data-act="up" type="button" aria-label="Voltar pro container de fora" title="Voltar pro container de fora">↑</button>' : '';
     return `<section class="inv-win${win.min ? ' min' : ''}" data-win="${win.id}">
       <header class="inv-head"><span class="inv-icon">${this.spriteHtml(box.type)}</span>
-        <span class="inv-title">${this.windowTitle(win, box)}</span>
-        <span class="inv-cap${used === box.items.length ? ' full' : ''}">${used}/${box.items.length}</span>${up}${buttons(true)}</header>
+        <span class="inv-title">${this.windowTitle(win, box)}</span>${up}${buttons(true)}</header>
       <div class="inv-body"><div class="inv-scroller" style="height:${Math.min(win.rows, Math.ceil(box.items.length / 4)) * PITCH + 8}px"><div class="inv-grid">${slots}</div></div></div>
       <div class="inv-resize" title="Arraste pra mostrar mais ou menos linhas"></div>
     </section>`;
@@ -559,21 +556,20 @@ export class InventoryUI {
 
   // ================================================================================================================================================================================================================================================
   // followHtml
-  // Seguir o alvo (boneco correndo, aceso como Skills e Battle abertas) ou
-  // ficar parado (boneco em pé, apagado), no canto do inventário, do tamanho
-  // da caixa da cap.
+  // Seguir o alvo (boneco correndo verde) ou ficar parado (boneco em pé
+  // vermelho), no canto do inventário, ao lado do auto ataque.
 
   followHtml() {
     const player = this.game.player;
     if (!player) return '';
     const follow = player.followMode !== false;
-    return `<button class="inv-follow${follow ? ' on' : ''}" data-act="follow" type="button" title="${follow ? 'Seguindo o alvo (clique pra ficar parado)' : 'Parado (clique pra seguir o alvo)'}">${FOLLOW_ICONS[follow ? 'follow' : 'stand']}</button>`;
+    return `<button class="inv-follow ${follow ? 'on' : 'off'}" data-act="follow" type="button" title="${follow ? 'Seguindo o alvo (clique pra ficar parado)' : 'Parado (clique pra seguir o alvo)'}">${FOLLOW_ICONS[follow ? 'follow' : 'stand']}</button>`;
   }
 
   // ================================================================================================================================================================================================================================================
   // attackModeHtml
   // Auto ataque (espadas vermelhas: ataca quem se aproxima) ou defesa (escudo
-  // verde: só o alvo escolhido), à direita do capacete, espelhando o seguir.
+  // verde: só o alvo escolhido), ao lado do seguir.
 
   attackModeHtml() {
     const player = this.game.player;
@@ -609,32 +605,9 @@ export class InventoryUI {
         <div class="inv-battle-hp${e.hp <= 25 ? ' low' : e.hp <= 50 ? ' mid' : ''}"><i style="width:${e.hp}%"></i></div>
       </div>`).join('');
     return `<section class="inv-win${win.min ? ' min' : ''}" data-win="${win.id}">
-      <header class="inv-head"><span class="inv-title">Battle</span><span class="inv-cap">${this.battle.length}</span>${buttons}</header>
+      <header class="inv-head"><span class="inv-title">Battle</span>${buttons}</header>
       <div class="inv-body"><div class="inv-battle">${rows || '<div class="inv-battle-empty">Nenhum inimigo à vista</div>'}</div></div>
     </section>`;
-  }
-
-  // ================================================================================================================================================================================================================================================
-  // toggleWindow
-  // Skills e battle: abre a janela logo embaixo da vida e mana (ou do
-  // inventário), ou fecha se já está aberta.
-
-  toggleWindow(kind) {
-    const found = this.findWindow(kind);
-    if (found) {
-      this.layout[found.col].splice(found.i, 1);
-    } else {
-      const above = this.findWindow('vitals') || this.findWindow('inventory');
-      const col = above ? above.col : 'right';
-      this.layout[col].splice(above ? above.i + 1 : 0, 0, this.makeWindow(kind, null));
-    }
-    this.scheduleSave();
-    this.lastKey = '';
-    if (!found) {
-      this.update();
-      this.render();
-      this.flash(kind);
-    }
   }
 
   // ================================================================================================================================================================================================================================================
@@ -931,10 +904,6 @@ export class InventoryUI {
       if (!btn || !inPanels(btn)) return;
       const found = this.findWindow(btn.closest('.inv-win').dataset.win);
       if (!found) return;
-      if (btn.dataset.act === 'skills' || btn.dataset.act === 'battle') {
-        this.toggleWindow(btn.dataset.act);
-        return;
-      }
       if (btn.dataset.act === 'follow') {
         this.game.send({ type: 'toggleFollow' });
         return;
