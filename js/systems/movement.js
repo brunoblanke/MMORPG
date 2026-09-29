@@ -122,6 +122,7 @@ export class MovementController {
     entity.lastMoveTime = timestamp;
 
     entity.isMoving = true;
+    entity.moveDirection = directionFromDelta(entity.x - fromX, entity.y - fromY);
     entity.moveStartX = midStep ? entity.renderX : fromX;
     entity.moveStartY = midStep ? entity.renderY : fromY;
     entity.moveStartZ = midStep ? entity.renderZ : fromZ;

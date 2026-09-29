@@ -259,57 +259,6 @@ export class InventoryController {
   }
 
   // ================================================================================================================================================================================================================================================
-  // dropIntoContainer
-  // Item do chão (sem altura) solto em cima de uma caixa com altura no mapa
-  // (a de cima da pilha do sqm): entra nela, somando na pilha do mesmo tipo e
-  // depois no primeiro espaço livre. Item com altura continua empilhando (dá
-  // pra subir). Devolve true se tratou (entrou, ou a caixa estava cheia e o
-  // item fica onde estava).
-
-  dropIntoContainer(player, obj, x, y, z) {
-    if (!this.isPickable(obj) || obj.hasVolume) return false;
-    const target = this.topContainerAt(x, y, z, obj);
-    if (!target) return false;
-    const box = this.groundItem(target);
-    const item = this.groundItem(obj);
-    if (item.uid === box.uid || contains(item, box)) return false;
-    this.compactTree(box);
-    const stack = itemInfo(item.type).stack;
-    if (stack) {
-      for (const there of box.items) {
-        if (!there || there.type !== item.type || there.count >= stack) continue;
-        const moved = Math.min(item.count, stack - there.count);
-        there.count += moved;
-        item.count -= moved;
-        if (item.count <= 0) break;
-      }
-      if (item.count <= 0) {
-        this.removeGroundObject(obj);
-        return true;
-      }
-    }
-    const free = box.items.indexOf(null);
-    if (free < 0) {
-      if (player) this.message(player, `Sem espaço em ${itemInfo(box.type).name}.`);
-      return true;
-    }
-    box.items[free] = item;
-    this.removeGroundObject(obj);
-    return true;
-  }
-
-  // ================================================================================================================================================================================================================================================
-  // topContainerAt
-  // A caixa com altura mais de cima no sqm (sem contar o objeto arrastado).
-
-  topContainerAt(x, y, z, except) {
-    const boxes = this.sim.world.getObjectsAt(x, y).filter(o =>
-      o !== except && (o.z ?? 0) === z && o.hasVolume && !o.isCorpse && this.isOpenable(o));
-    boxes.sort((a, b) => ((b.step || 0) - (a.step || 0)) || ((b.order || 0) - (a.order || 0)));
-    return boxes[0] || null;
-  }
-
-  // ================================================================================================================================================================================================================================================
   // moveNow
 
   moveNow(player, from, to, amount) {
