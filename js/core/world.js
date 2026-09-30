@@ -285,6 +285,15 @@ export class World {
     this.transitions.set(this.getTileKey(obj.x, obj.y, obj.z), obj);
   }
 
+  // ================================================================================================================================================================================================================================================
+  // unregisterTransition
+  // Tira a transição do sqm (buraco de pá que fechou), se ainda for ela.
+
+  unregisterTransition(obj) {
+    const key = this.getTileKey(obj.x, obj.y, obj.z);
+    if (this.transitions.get(key) === obj) this.transitions.delete(key);
+  }
+
   getTransitionAt(x, y, z) {
     return this.transitions.get(this.getTileKey(x, y, z)) || null;
   }

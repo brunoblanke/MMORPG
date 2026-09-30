@@ -225,18 +225,20 @@ export function stairKind(type) {
 
 // ================================================================================================================================================================================================================================================
 // isFloorType / isStairsType / isHoleType
-// Pela pasta da folha (não precisa da lista: vale no servidor também).
+// Pela pasta da folha. Com Uso no gerador, o uso manda: marca de corda na
+// pasta de escadas não é escada; monte da pá e bueiro na pasta de entradas
+// não são buraco (o monte só vira quando a pá abre; o bueiro se usa).
 
 export function isFloorType(type) {
   return splitType(type).asset.startsWith(FLOOR_FOLDER);
 }
 
 export function isStairsType(type) {
-  return splitType(type).asset.startsWith(STAIRS_FOLDER);
+  return splitType(type).asset.startsWith(STAIRS_FOLDER) && objectUse(type) !== 'corda';
 }
 
 export function isHoleType(type) {
-  return splitType(type).asset.startsWith(HOLE_FOLDER);
+  return splitType(type).asset.startsWith(HOLE_FOLDER) && !['pa', 'descer'].includes(objectUse(type));
 }
 
 // ================================================================================================================================================================================================================================================
@@ -267,6 +269,32 @@ export function objectProps(type) {
   }
   const props = (asset && asset.propriedades) || {};
   return { movable: !!props.move, hasVolume: !!props.altura, blocksMovement: !!props.bloqueia };
+}
+
+// ================================================================================================================================================================================================================================================
+// objectUse
+// Pra que serve o objeto (gerador → Objetos → Uso): 'placa' (mostra o texto),
+// 'livro' (abre o texto), 'bau-quest' (dá os itens uma vez por player),
+// 'corda' (marca de corda: sobe um andar com a corda), 'pa' (monte que a pá
+// abre em buraco), 'descer' (bueiro: usar leva pro andar de baixo),
+// 'ferramenta-corda' ou 'ferramenta-pa'; null se nenhum.
+
+export const OBJECT_USES = ['placa', 'livro', 'bau-quest', 'corda', 'pa', 'descer', 'ferramenta-corda', 'ferramenta-pa'];
+
+export function objectUse(type) {
+  const asset = getAsset(splitType(type).asset);
+  const use = asset && asset.propriedades && asset.propriedades.uso;
+  return OBJECT_USES.includes(use) ? use : null;
+}
+
+// ================================================================================================================================================================================================================================================
+// openedAs
+// Monte da pá: a folha do buraco aberto (gerador → Abre como), ou null.
+
+export function openedAs(type) {
+  const asset = getAsset(splitType(type).asset);
+  const target = asset && asset.propriedades && asset.propriedades.abreComo;
+  return target && getAsset(target) ? target : null;
 }
 
 // ================================================================================================================================================================================================================================================

@@ -109,7 +109,8 @@ export class Player extends Entity {
       layout: this.uiLayout || null,
       followMode: this.followMode,
       attackMode: this.attackMode,
-      food: this.food || 0
+      food: this.food || 0,
+      quests: this.quests || []
     };
   }
 
@@ -129,6 +130,7 @@ export class Player extends Entity {
     this.mana = Number.isInteger(saved.mana) && saved.mana >= 0 ? Math.min(saved.mana, this.maxMana) : this.maxMana;
     if (typeof saved.followMode === 'boolean') this.followMode = this.autoFollow = saved.followMode;
     if (typeof saved.attackMode === 'boolean') this.attackMode = saved.attackMode;
+    if (Array.isArray(saved.quests)) this.quests = saved.quests.filter(q => typeof q === 'string').slice(0, 1000);
     if (Number.isFinite(saved.food) && saved.food > 0) this.food = Math.min(saved.food, FOOD_MAX_SECONDS * 1000);
 
     const hasPosition = Number.isInteger(saved.x) && Number.isInteger(saved.y) && isValidFloor(saved.z);

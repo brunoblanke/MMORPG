@@ -228,6 +228,7 @@ export function toPlain(item) {
   const plain = { type: item.type };
   if (item.count) plain.count = item.count;
   if (item.items) plain.items = item.items.map(toPlain);
+  if (item.texto) plain.texto = item.texto;
   return plain;
 }
 
@@ -242,5 +243,6 @@ export function fromPlain(plain, nextUid) {
   if (item.items && Array.isArray(plain.items)) {
     plain.items.slice(0, item.items.length).forEach((child, i) => { item.items[i] = fromPlain(child, nextUid); });
   }
+  if (typeof plain.texto === 'string' && plain.texto) item.texto = plain.texto.slice(0, 2000);
   return item;
 }

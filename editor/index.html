@@ -86,6 +86,25 @@
 </div>
 
 
+<div class="float-panel wide" id="objectDataForm">
+  <div class="field">
+    <label id="objectDataTitle">Objeto</label>
+  </div>
+  <div class="field" id="objectDataTextField">
+    <label for="objectDataText">Texto</label>
+    <textarea id="objectDataText" rows="6" maxlength="2000"></textarea>
+  </div>
+  <div class="field" id="objectDataItemsField">
+    <label>Itens do baú (cada player pega uma vez)</label>
+    <div id="objectDataItems" class="object-data-items"></div>
+    <button type="button" id="objectDataAddItem">+ Item</button>
+  </div>
+  <div class="actions">
+    <button id="objectDataCancel">Cancelar</button>
+    <button class="primary" id="objectDataConfirm">Salvar</button>
+  </div>
+</div>
+
 <script type="module" src="js/controller/app.js"></script>
 
 </body>

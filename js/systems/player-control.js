@@ -43,6 +43,7 @@ export class PlayerControl {
       case 'moveItem': return this.moveItem(player, command.itemId, command.x, command.y, command.z);
       case 'moveInv': return this.sim.inventory.move(player, command.from, command.to, command.amount);
       case 'openContainer': return this.sim.inventory.open(player, command.itemId);
+      case 'useObject': return this.sim.interactions.useObject(player, command.id);
       case 'useItem': return this.sim.inventory.use(player, command.from, command.target || null);
       case 'closeContainer': return this.sim.inventory.close(player, command.itemId);
       case 'saveLayout': return this.sim.inventory.saveLayout(player, command.layout);

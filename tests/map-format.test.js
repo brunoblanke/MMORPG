@@ -36,3 +36,16 @@ test('pilha do editor: a quantidade vai pro arquivo e volta, e o jogo carrega el
   assert.equal(entry[9], 12);
   assert.equal(collectObjectDescriptors(saved).find(d => d.type === 'itens/comidas/meet').count, 12);
 });
+
+test('texto da placa/livro e itens do baú vão pro arquivo e voltam', async () => {
+  const { collectObjectDescriptors } = await import('../shared/map-format.js');
+  const { setAssets } = await import('../shared/assets.js');
+  setAssets([{ id: 'estrutura/natureza/placa', ferramenta: 'objetos', grupo: 'estrutura', pasta: 'natureza', nome: 'placa', rotulo: 'Estrutura › Natureza', url: '/p.png', quadro: 32, quadros: 1, pecas: [], propriedades: { bloqueia: true, uso: 'placa' } }]);
+  const mapData = { objetosData: [['estrutura/natureza/placa', 1, 2, 0, 0, false, false, true, null, null, { texto: 'Oi' }]] };
+  const { layers, layerOrder } = buildLayersFromMapData(mapData, 10);
+  assert.deepEqual(layers[0]['1,2'].objects[0].dados, { texto: 'Oi' });
+  const saved = serializeMapFromLayers(layerOrder, layers, 10);
+  const entry = saved.objetosData.find(e => e[0] === 'estrutura/natureza/placa');
+  assert.deepEqual(entry[10], { texto: 'Oi' });
+  assert.deepEqual(collectObjectDescriptors(saved).find(d => d.type === 'estrutura/natureza/placa').data, { texto: 'Oi' });
+});

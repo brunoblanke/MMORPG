@@ -1,6 +1,6 @@
 // js/views/inventory-ui.js
 
-import { getAsset, spriteFrame, splitType, objectIdType, displayName } from '../../shared/assets.js';
+import { getAsset, spriteFrame, splitType, objectIdType, displayName, objectUse } from '../../shared/assets.js';
 import { getLevel } from '../core/geometry.js';
 import { itemInfo, weightOf, stackFrame } from '../../shared/items.js';
 import { PLAYER_SPRITES, DEFAULT_GENDER } from '../../shared/catalog.js';
@@ -60,6 +60,17 @@ const SKILL_ORDER = ['magic', 'fist', 'sword', 'axe', 'distance', 'shielding', '
 const SPEED_FULL = 640;
 const PITCH = 40;
 const SAVE_DELAY_MS = 600;
+
+const MAP_USES = ['placa', 'livro', 'bau-quest', 'corda', 'pa', 'descer'];
+
+// ================================================================================================================================================================================================================================================
+// aimsWith
+// Item usado com a mira: potion (em player ou no chão), corda e pá.
+
+function aimsWith(type) {
+  const use = objectUse(type);
+  return !!itemInfo(type).heal || use === 'ferramenta-corda' || use === 'ferramenta-pa';
+}
 
 export class InventoryUI {
 
@@ -197,9 +208,11 @@ export class InventoryUI {
   usableUnderMouse() {
     const input = this.game.inputController;
     const obj = input && !input.hoverCorpse ? input.hoverObject : null;
-    if (!obj || obj.movable !== true) return null;
+    if (!obj) return null;
+    if (MAP_USES.includes(objectUse(objectIdType(obj.id)))) return obj;
+    if (obj.movable !== true) return null;
     const info = itemInfo(objectIdType(obj.id));
-    return info.food || info.heal ? obj : null;
+    return info.food || info.heal || objectUse(objectIdType(obj.id)) ? obj : null;
   }
 
   // ================================================================================================================================================================================================================================================
@@ -1019,7 +1032,7 @@ export class InventoryUI {
     document.addEventListener('pointerup', (evt) => {
       const clicked = this.pending && this.pending.kind === 'item' && !this.drag ? this.pending : null;
       this.pending = null;
-      if (clicked && evt.button === 0 && clicked.item && !clicked.item.items && itemInfo(clicked.item.type).heal) {
+      if (clicked && evt.button === 0 && clicked.item && !clicked.item.items && aimsWith(clicked.item.type)) {
         this.startAim(clicked.from);
         return;
       }
@@ -1079,11 +1092,11 @@ export class InventoryUI {
       if (!slot || !inPanels(slot)) return false;
       const place = this.placeOf(slot);
       const item = this.itemAt(place);
-      if (item && !item.items && itemInfo(item.type).heal) {
+      if (item && !item.items && aimsWith(item.type)) {
         this.startAim(place);
         return true;
       }
-      if (item && !item.items && itemInfo(item.type).food) {
+      if (item && !item.items && (itemInfo(item.type).food || objectUse(item.type) === 'livro')) {
         this.game.send({ type: 'useItem', from: place });
         return true;
       }
@@ -1111,7 +1124,9 @@ export class InventoryUI {
       const usable = this.usableUnderMouse();
       if (!usable) return false;
       this.game.cancelPendingWalk();
-      if (itemInfo(objectIdType(usable.id)).heal) this.startAim({ t: 'g', id: usable.id });
+      const type = objectIdType(usable.id);
+      if (MAP_USES.includes(objectUse(type))) this.game.send({ type: 'useObject', id: usable.id });
+      else if (aimsWith(type)) this.startAim({ t: 'g', id: usable.id });
       else this.game.send({ type: 'useItem', from: { t: 'g', id: usable.id } });
       return true;
     };

@@ -63,6 +63,7 @@ export function generateObjects(mapData) {
     if (descriptor.color) obj.color = descriptor.color;
     obj.seq = descriptor.seq;
     if (descriptor.count) obj.count = descriptor.count;
+    if (descriptor.data) obj.data = descriptor.data;
     objs.push(obj);
   });
 
