@@ -39,6 +39,7 @@ const USES = [
   ['bau-quest', 'Baú de quest (itens no editor, uma vez por player)'],
   ['corda', 'Marca de corda (sobe um andar usando a corda)'],
   ['pa', 'Monte que a pá abre em buraco'],
+  ['descer', 'Bueiro (usar leva pro andar de baixo)'],
   ['ferramenta-corda', 'Ferramenta: corda'],
   ['ferramenta-pa', 'Ferramenta: pá']
 ];

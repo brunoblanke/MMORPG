@@ -20,6 +20,7 @@ const COIN = 'itens/valiosos/gold-coin';
 const STONE_PILE = 'estrutura/entradas/buraco-pedra-fechado';
 const STONE_HOLE = 'estrutura/entradas/buraco-pedra-aberto';
 const SHADOW = 'estrutura/escadas/sombra-buraco';
+const GRATE = 'estrutura/entradas/bueiro';
 
 const asset = (id, propriedades) => {
   const [grupo, pasta, nome] = id.split('/');
@@ -39,7 +40,8 @@ setAssets([
   asset(COIN, { move: true, peso: 0.1, empilhavel: true }),
   asset(STONE_PILE, { uso: 'pa', abreComo: STONE_HOLE }),
   asset(STONE_HOLE, {}),
-  asset(SHADOW, { uso: 'corda' })
+  asset(SHADOW, { uso: 'corda' }),
+  asset(GRATE, { uso: 'descer' })
 ]);
 
 // ================================================================================================================================================================================================================================================
@@ -135,4 +137,15 @@ test('com Uso, a pasta não manda: monte da pá em Entradas não é buraco e mar
   const other = new Simulation(mapData);
   assert.equal(other.world.getTransitionAt(2, 2, 0), null, 'a marca de corda não sobe sozinha');
   assert.ok(other.objects.some(o => o.id.startsWith(SHADOW + '_')));
+});
+
+test('bueiro: pisar não derruba; usar leva pro andar de baixo', () => {
+  const entries = [[GRATE, 5, 6, 1, 0, false, false, false]];
+  const up = buildGame({ objects: [...floorRect(0, 20, 0, 20, 0), ...floorRect(0, 20, 0, 20, 1), ...entries], player: { x: 5, y: 5, z: 1 } });
+  up.time = 1000;
+  assert.equal(up.world.getTransitionAt(5, 6, 1), null);
+  const grate = up.objects.find(o => o.id.startsWith(GRATE + '_'));
+  up.enqueue('player1', { type: 'useObject', id: grate.id });
+  up.tick(up.time + TICK_MS);
+  assert.deepEqual([up.player.x, up.player.y, up.player.z], [5, 6, 0]);
 });

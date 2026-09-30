@@ -10,11 +10,12 @@ import { getHoleTarget } from '../../shared/stairs.js';
 //   livro     → abre o texto numa janela (no chão ou carregado);
 //   bau-quest → dá os itens (editor) uma vez por player;
 //   corda     → marca de corda: com a corda, sobe pro andar de cima;
-//   pa        → monte que a pá abre em buraco (fecha depois de DUG_HOLE_MS).
+//   pa        → monte que a pá abre em buraco (fecha depois de DUG_HOLE_MS);
+//   descer    → bueiro: usar leva pro andar de baixo (pisar não).
 // Longe, o player anda até o lado e usa ao chegar.
 
 export const DUG_HOLE_MS = 60000;
-const MAP_USES = ['placa', 'livro', 'bau-quest', 'corda', 'pa'];
+const MAP_USES = ['placa', 'livro', 'bau-quest', 'corda', 'pa', 'descer'];
 const CLIMB_OFFSETS = [[0, 1], [1, 1], [-1, 1], [1, 0], [-1, 0], [0, -1], [1, -1], [-1, -1]];
 
 export class InteractionController {
@@ -60,6 +61,7 @@ export class InteractionController {
     else if (use === 'bau-quest') this.openQuestChest(player, obj);
     else if (use === 'corda') this.message(player, 'Use uma corda aqui pra subir.');
     else if (use === 'pa') this.message(player, obj.dug ? 'O buraco está aberto.' : 'Use uma pá aqui pra abrir.');
+    else if (use === 'descer') this.goDown(player, obj);
   }
 
   // ================================================================================================================================================================================================================================================
@@ -112,6 +114,20 @@ export class InteractionController {
       }
     }
     this.message(player, 'Não dá pra subir por aqui.');
+    return false;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // goDown
+  // Bueiro: leva o player pro sqm embaixo dele, no andar de baixo.
+
+  goDown(player, grate) {
+    const target = getHoleTarget(grate.x, grate.y, grate.z || 0);
+    if (this.sim.movement.useTransition(player, { id: 'bueiro', targetX: target.x, targetY: target.y, targetZ: target.z })) {
+      this.sim.control.clearWalk(player);
+      return true;
+    }
+    this.message(player, 'Não dá pra descer por aqui.');
     return false;
   }
 

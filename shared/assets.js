@@ -226,8 +226,8 @@ export function stairKind(type) {
 // ================================================================================================================================================================================================================================================
 // isFloorType / isStairsType / isHoleType
 // Pela pasta da folha. Com Uso no gerador, o uso manda: marca de corda na
-// pasta de escadas não é escada; monte da pá na pasta de entradas não é
-// buraco (só vira quando a pá abre).
+// pasta de escadas não é escada; monte da pá e bueiro na pasta de entradas
+// não são buraco (o monte só vira quando a pá abre; o bueiro se usa).
 
 export function isFloorType(type) {
   return splitType(type).asset.startsWith(FLOOR_FOLDER);
@@ -238,7 +238,7 @@ export function isStairsType(type) {
 }
 
 export function isHoleType(type) {
-  return splitType(type).asset.startsWith(HOLE_FOLDER) && objectUse(type) !== 'pa';
+  return splitType(type).asset.startsWith(HOLE_FOLDER) && !['pa', 'descer'].includes(objectUse(type));
 }
 
 // ================================================================================================================================================================================================================================================
@@ -276,9 +276,10 @@ export function objectProps(type) {
 // Pra que serve o objeto (gerador → Objetos → Uso): 'placa' (mostra o texto),
 // 'livro' (abre o texto), 'bau-quest' (dá os itens uma vez por player),
 // 'corda' (marca de corda: sobe um andar com a corda), 'pa' (monte que a pá
-// abre em buraco), 'ferramenta-corda' ou 'ferramenta-pa'; null se nenhum.
+// abre em buraco), 'descer' (bueiro: usar leva pro andar de baixo),
+// 'ferramenta-corda' ou 'ferramenta-pa'; null se nenhum.
 
-export const OBJECT_USES = ['placa', 'livro', 'bau-quest', 'corda', 'pa', 'ferramenta-corda', 'ferramenta-pa'];
+export const OBJECT_USES = ['placa', 'livro', 'bau-quest', 'corda', 'pa', 'descer', 'ferramenta-corda', 'ferramenta-pa'];
 
 export function objectUse(type) {
   const asset = getAsset(splitType(type).asset);
