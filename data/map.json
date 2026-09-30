@@ -121612,47 +121612,7 @@
       false,
       false,
       false,
-      15218
-    ],
-    [
-      "Border:estrutura/pisos/piso-paralelepipedo:int-no",
-      191,
-      209,
-      0,
-      0,
-      false,
-      false,
-      false
-    ],
-    [
-      "Border:estrutura/pisos/piso-paralelepipedo:int-nl",
-      191,
-      209,
-      0,
-      0,
-      false,
-      false,
-      false
-    ],
-    [
-      "Border:estrutura/pisos/piso-paralelepipedo:int-so",
-      191,
-      209,
-      0,
-      0,
-      false,
-      false,
-      false
-    ],
-    [
-      "Border:estrutura/pisos/piso-paralelepipedo:int-sl",
-      191,
-      209,
-      0,
-      0,
-      false,
-      false,
-      false
+      15219
     ],
     [
       "estrutura/entradas/bueiro",
