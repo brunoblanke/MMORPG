@@ -12324,6 +12324,16 @@
       1793
     ],
     [
+      "Border:estrutura/pisos/piso-acido-1:no",
+      177,
+      156,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       178,
       156,
@@ -12333,6 +12343,16 @@
       false,
       false,
       1794
+    ],
+    [
+      "Border:estrutura/pisos/piso-acido-1:n",
+      178,
+      156,
+      0,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -12346,6 +12366,16 @@
       1795
     ],
     [
+      "Border:estrutura/pisos/piso-acido-1:n",
+      179,
+      156,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       180,
       156,
@@ -12355,6 +12385,16 @@
       false,
       false,
       1796
+    ],
+    [
+      "Border:estrutura/pisos/piso-acido-1:n",
+      180,
+      156,
+      0,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -12368,6 +12408,16 @@
       1819
     ],
     [
+      "Border:estrutura/pisos/piso-acido-1:n",
+      181,
+      156,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       182,
       156,
@@ -12377,6 +12427,16 @@
       false,
       false,
       1820
+    ],
+    [
+      "Border:estrutura/pisos/piso-acido-1:n",
+      182,
+      156,
+      0,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -12390,6 +12450,16 @@
       2602
     ],
     [
+      "Border:estrutura/pisos/piso-acido-1:n",
+      183,
+      156,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       184,
       156,
@@ -12399,6 +12469,16 @@
       false,
       false,
       2603
+    ],
+    [
+      "Border:estrutura/pisos/piso-acido-1:nl",
+      184,
+      156,
+      0,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -13480,6 +13560,16 @@
       1797
     ],
     [
+      "Border:estrutura/pisos/piso-acido-1:no",
+      176,
+      157,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       177,
       157,
@@ -13489,6 +13579,16 @@
       false,
       false,
       1798
+    ],
+    [
+      "Border:estrutura/pisos/piso-acido-1:int-no",
+      177,
+      157,
+      0,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -13502,6 +13602,17 @@
       1799
     ],
     [
+      "estrutura/pisos/piso-acido-1",
+      178,
+      157,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7312
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       179,
       157,
@@ -13511,6 +13622,27 @@
       false,
       false,
       1800
+    ],
+    [
+      "estrutura/pisos/piso-acido-1",
+      179,
+      157,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7311
+    ],
+    [
+      "itens/itens-encantados/fire-field",
+      179,
+      157,
+      0,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -13524,6 +13656,17 @@
       1801
     ],
     [
+      "estrutura/pisos/piso-acido-1",
+      180,
+      157,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7310
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       181,
       157,
@@ -13533,6 +13676,27 @@
       false,
       false,
       1821
+    ],
+    [
+      "estrutura/pisos/piso-acido-1",
+      181,
+      157,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7309
+    ],
+    [
+      "estrutura/natureza/pinheiro-1",
+      181,
+      157,
+      0,
+      0,
+      false,
+      false,
+      true
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -13546,6 +13710,17 @@
       1822
     ],
     [
+      "estrutura/pisos/piso-acido-1",
+      182,
+      157,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7308
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       183,
       157,
@@ -13555,6 +13730,27 @@
       false,
       false,
       2606
+    ],
+    [
+      "estrutura/pisos/piso-acido-1",
+      183,
+      157,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7307
+    ],
+    [
+      "itens/itens-encantados/fire-field",
+      183,
+      157,
+      0,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -13568,6 +13764,16 @@
       2607
     ],
     [
+      "Border:estrutura/pisos/piso-acido-1:int-nl",
+      184,
+      157,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       185,
       157,
@@ -13577,6 +13783,16 @@
       false,
       false,
       2608
+    ],
+    [
+      "Border:estrutura/pisos/piso-acido-1:nl",
+      185,
+      157,
+      0,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -14653,6 +14869,16 @@
       1802
     ],
     [
+      "Border:estrutura/pisos/piso-acido-1:o",
+      176,
+      158,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       177,
       158,
@@ -14662,6 +14888,17 @@
       false,
       false,
       1803
+    ],
+    [
+      "estrutura/pisos/piso-acido-1",
+      177,
+      158,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7313
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -14675,6 +14912,27 @@
       1804
     ],
     [
+      "estrutura/pisos/piso-acido-1",
+      178,
+      158,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7324
+    ],
+    [
+      "estrutura/natureza/arvore-1",
+      178,
+      158,
+      0,
+      0,
+      false,
+      false,
+      true
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       179,
       158,
@@ -14684,6 +14942,17 @@
       false,
       false,
       1805
+    ],
+    [
+      "estrutura/pisos/piso-acido-1",
+      179,
+      158,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7323
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -14697,6 +14966,17 @@
       1806
     ],
     [
+      "estrutura/pisos/piso-acido-1",
+      180,
+      158,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7322
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       181,
       158,
@@ -14706,6 +14986,17 @@
       false,
       false,
       1823
+    ],
+    [
+      "estrutura/pisos/piso-acido-1",
+      181,
+      158,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7320
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -14719,6 +15010,17 @@
       1824
     ],
     [
+      "estrutura/pisos/piso-acido-1",
+      182,
+      158,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7321
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       183,
       158,
@@ -14728,6 +15030,17 @@
       false,
       false,
       2610
+    ],
+    [
+      "estrutura/pisos/piso-acido-1",
+      183,
+      158,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7338
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -14741,6 +15054,17 @@
       2611
     ],
     [
+      "estrutura/pisos/piso-acido-1",
+      184,
+      158,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7306
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       185,
       158,
@@ -14752,6 +15076,16 @@
       2612
     ],
     [
+      "Border:estrutura/pisos/piso-acido-1:int-nl",
+      185,
+      158,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       186,
       158,
@@ -14761,6 +15095,16 @@
       false,
       false,
       2613
+    ],
+    [
+      "Border:estrutura/pisos/piso-acido-1:nl",
+      186,
+      158,
+      0,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -15743,6 +16087,16 @@
       1807
     ],
     [
+      "Border:estrutura/pisos/piso-acido-1:o",
+      176,
+      159,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       177,
       159,
@@ -15752,6 +16106,17 @@
       false,
       false,
       1808
+    ],
+    [
+      "estrutura/pisos/piso-acido-1",
+      177,
+      159,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7314
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -15765,6 +16130,27 @@
       1809
     ],
     [
+      "estrutura/pisos/piso-acido-1",
+      178,
+      159,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7325
+    ],
+    [
+      "itens/liquidos/respingo-vida",
+      178,
+      159,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       179,
       159,
@@ -15774,6 +16160,27 @@
       false,
       false,
       1810
+    ],
+    [
+      "estrutura/pisos/piso-acido-1",
+      179,
+      159,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7326
+    ],
+    [
+      "estrutura/natureza/pinheiro-1",
+      179,
+      159,
+      0,
+      0,
+      false,
+      false,
+      true
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -15787,6 +16194,17 @@
       1811
     ],
     [
+      "estrutura/pisos/piso-acido-1",
+      180,
+      159,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7318
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       181,
       159,
@@ -15796,6 +16214,17 @@
       false,
       false,
       1825
+    ],
+    [
+      "estrutura/pisos/piso-acido-1",
+      181,
+      159,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7319
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -15809,6 +16238,27 @@
       1826
     ],
     [
+      "estrutura/pisos/piso-acido-1",
+      182,
+      159,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7327
+    ],
+    [
+      "itens/liquidos/respingo-vida",
+      182,
+      159,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       183,
       159,
@@ -15818,6 +16268,17 @@
       false,
       false,
       2614
+    ],
+    [
+      "estrutura/pisos/piso-acido-1",
+      183,
+      159,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7328
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -15831,6 +16292,27 @@
       2615
     ],
     [
+      "estrutura/pisos/piso-acido-1",
+      184,
+      159,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7337
+    ],
+    [
+      "estrutura/natureza/arvore-1",
+      184,
+      159,
+      0,
+      0,
+      false,
+      false,
+      true
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       185,
       159,
@@ -15842,6 +16324,17 @@
       2616
     ],
     [
+      "estrutura/pisos/piso-acido-1",
+      185,
+      159,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7357
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       186,
       159,
@@ -15851,6 +16344,16 @@
       false,
       false,
       2617
+    ],
+    [
+      "Border:estrutura/pisos/piso-acido-1:l",
+      186,
+      159,
+      0,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -16822,6 +17325,16 @@
       1812
     ],
     [
+      "Border:estrutura/pisos/piso-acido-1:so",
+      176,
+      160,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       177,
       160,
@@ -16831,6 +17344,16 @@
       false,
       false,
       1813
+    ],
+    [
+      "Border:estrutura/pisos/piso-acido-1:int-so",
+      177,
+      160,
+      0,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -16844,6 +17367,17 @@
       1814
     ],
     [
+      "estrutura/pisos/piso-acido-1",
+      178,
+      160,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7315
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       179,
       160,
@@ -16853,6 +17387,17 @@
       false,
       false,
       1815
+    ],
+    [
+      "estrutura/pisos/piso-acido-1",
+      179,
+      160,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7316
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -16866,6 +17411,17 @@
       1816
     ],
     [
+      "estrutura/pisos/piso-acido-1",
+      180,
+      160,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7317
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       181,
       160,
@@ -16875,6 +17431,17 @@
       false,
       false,
       1827
+    ],
+    [
+      "estrutura/pisos/piso-acido-1",
+      181,
+      160,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7330
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -16888,6 +17455,17 @@
       1828
     ],
     [
+      "estrutura/pisos/piso-acido-1",
+      182,
+      160,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7329
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       183,
       160,
@@ -16897,6 +17475,27 @@
       false,
       false,
       2618
+    ],
+    [
+      "estrutura/pisos/piso-acido-1",
+      183,
+      160,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7336
+    ],
+    [
+      "estrutura/natureza/pinheiro-1",
+      183,
+      160,
+      0,
+      0,
+      false,
+      false,
+      true
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -16910,6 +17509,17 @@
       2619
     ],
     [
+      "estrutura/pisos/piso-acido-1",
+      184,
+      160,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7356
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       185,
       160,
@@ -16921,6 +17531,17 @@
       2620
     ],
     [
+      "estrutura/pisos/piso-acido-1",
+      185,
+      160,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7358
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       186,
       160,
@@ -16930,6 +17551,16 @@
       false,
       false,
       2621
+    ],
+    [
+      "Border:estrutura/pisos/piso-acido-1:l",
+      186,
+      160,
+      0,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -17925,6 +18556,16 @@
       1019
     ],
     [
+      "Border:estrutura/pisos/piso-acido-1:so",
+      177,
+      161,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       178,
       161,
@@ -17934,6 +18575,16 @@
       false,
       false,
       1020
+    ],
+    [
+      "Border:estrutura/pisos/piso-acido-1:int-so",
+      178,
+      161,
+      0,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -17947,6 +18598,17 @@
       1021
     ],
     [
+      "estrutura/pisos/piso-acido-1",
+      179,
+      161,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7354
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       180,
       161,
@@ -17956,6 +18618,27 @@
       false,
       false,
       1022
+    ],
+    [
+      "estrutura/pisos/piso-acido-1",
+      180,
+      161,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7339
+    ],
+    [
+      "itens/itens-encantados/fire-field",
+      180,
+      161,
+      0,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -17969,6 +18652,17 @@
       1023
     ],
     [
+      "estrutura/pisos/piso-acido-1",
+      181,
+      161,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7331
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       182,
       161,
@@ -17978,6 +18672,27 @@
       false,
       false,
       1024
+    ],
+    [
+      "estrutura/pisos/piso-acido-1",
+      182,
+      161,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7332
+    ],
+    [
+      "estrutura/natureza/arvore-1",
+      182,
+      161,
+      0,
+      0,
+      false,
+      false,
+      true
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -17991,6 +18706,17 @@
       1025
     ],
     [
+      "estrutura/pisos/piso-acido-1",
+      183,
+      161,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7333
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       184,
       161,
@@ -18000,6 +18726,17 @@
       false,
       false,
       1026
+    ],
+    [
+      "estrutura/pisos/piso-acido-1",
+      184,
+      161,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7334
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -18013,6 +18750,16 @@
       1187
     ],
     [
+      "Border:estrutura/pisos/piso-acido-1:int-sl",
+      185,
+      161,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       186,
       161,
@@ -18022,6 +18769,16 @@
       false,
       false,
       1268
+    ],
+    [
+      "Border:estrutura/pisos/piso-acido-1:sl",
+      186,
+      161,
+      0,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -18996,6 +19753,16 @@
       1151
     ],
     [
+      "Border:estrutura/pisos/piso-acido-1:o",
+      178,
+      162,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       179,
       162,
@@ -19005,6 +19772,27 @@
       false,
       false,
       1157
+    ],
+    [
+      "estrutura/pisos/piso-acido-1",
+      179,
+      162,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7353
+    ],
+    [
+      "estrutura/natureza/pinheiro-1",
+      179,
+      162,
+      0,
+      0,
+      false,
+      false,
+      true
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -19018,6 +19806,17 @@
       1164
     ],
     [
+      "estrutura/pisos/piso-acido-1",
+      180,
+      162,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7340
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       181,
       162,
@@ -19027,6 +19826,17 @@
       false,
       false,
       1165
+    ],
+    [
+      "estrutura/pisos/piso-acido-1",
+      181,
+      162,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7341
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -19040,6 +19850,17 @@
       1173
     ],
     [
+      "estrutura/pisos/piso-acido-1",
+      182,
+      162,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7355
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       183,
       162,
@@ -19049,6 +19870,27 @@
       false,
       false,
       1186
+    ],
+    [
+      "estrutura/pisos/piso-acido-1",
+      183,
+      162,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7335
+    ],
+    [
+      "itens/liquidos/respingo-vida",
+      183,
+      162,
+      0,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -19062,6 +19904,16 @@
       1191
     ],
     [
+      "Border:estrutura/pisos/piso-acido-1:int-sl",
+      184,
+      162,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       185,
       162,
@@ -19071,6 +19923,16 @@
       false,
       false,
       1188
+    ],
+    [
+      "Border:estrutura/pisos/piso-acido-1:sl",
+      185,
+      162,
+      0,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -20001,6 +20863,16 @@
       1147
     ],
     [
+      "Border:estrutura/pisos/piso-acido-1:no",
+      177,
+      163,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       178,
       163,
@@ -20010,6 +20882,16 @@
       false,
       false,
       1149
+    ],
+    [
+      "Border:estrutura/pisos/piso-acido-1:int-no",
+      178,
+      163,
+      0,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -20023,6 +20905,17 @@
       1156
     ],
     [
+      "estrutura/pisos/piso-acido-1",
+      179,
+      163,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7343
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       180,
       163,
@@ -20032,6 +20925,17 @@
       false,
       false,
       1163
+    ],
+    [
+      "estrutura/pisos/piso-acido-1",
+      180,
+      163,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7342
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -20045,6 +20949,16 @@
       1166
     ],
     [
+      "Border:estrutura/pisos/piso-acido-1:int-sl",
+      181,
+      163,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       182,
       163,
@@ -20054,6 +20968,16 @@
       false,
       false,
       1167
+    ],
+    [
+      "Border:estrutura/pisos/piso-acido-1:s",
+      182,
+      163,
+      0,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -20067,6 +20991,16 @@
       1185
     ],
     [
+      "Border:estrutura/pisos/piso-acido-1:s",
+      183,
+      163,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       184,
       163,
@@ -20076,6 +21010,16 @@
       false,
       false,
       1192
+    ],
+    [
+      "Border:estrutura/pisos/piso-acido-1:sl",
+      184,
+      163,
+      0,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -21073,6 +22017,16 @@
       1143
     ],
     [
+      "Border:estrutura/pisos/piso-acido-1:no",
+      175,
+      164,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       176,
       164,
@@ -21082,6 +22036,16 @@
       false,
       false,
       1144
+    ],
+    [
+      "Border:estrutura/pisos/piso-acido-1:n",
+      176,
+      164,
+      0,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -21095,6 +22059,16 @@
       1148
     ],
     [
+      "Border:estrutura/pisos/piso-acido-1:int-no",
+      177,
+      164,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       178,
       164,
@@ -21104,6 +22078,17 @@
       false,
       false,
       1152
+    ],
+    [
+      "estrutura/pisos/piso-acido-1",
+      178,
+      164,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7345
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -21117,6 +22102,17 @@
       1155
     ],
     [
+      "estrutura/pisos/piso-acido-1",
+      179,
+      164,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7344
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       180,
       164,
@@ -21128,6 +22124,16 @@
       1162
     ],
     [
+      "Border:estrutura/pisos/piso-acido-1:int-sl",
+      180,
+      164,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       181,
       164,
@@ -21137,6 +22143,16 @@
       false,
       false,
       1172
+    ],
+    [
+      "Border:estrutura/pisos/piso-acido-1:sl",
+      181,
+      164,
+      0,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -22093,6 +23109,16 @@
       709
     ],
     [
+      "Border:estrutura/pisos/piso-acido-1:no",
+      174,
+      165,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       175,
       165,
@@ -22102,6 +23128,16 @@
       false,
       false,
       710
+    ],
+    [
+      "Border:estrutura/pisos/piso-acido-1:int-no",
+      175,
+      165,
+      0,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -22115,6 +23151,17 @@
       711
     ],
     [
+      "estrutura/pisos/piso-acido-1",
+      176,
+      165,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7352
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       177,
       165,
@@ -22124,6 +23171,17 @@
       false,
       false,
       712
+    ],
+    [
+      "estrutura/pisos/piso-acido-1",
+      177,
+      165,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7347
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -22137,6 +23195,17 @@
       1153
     ],
     [
+      "estrutura/pisos/piso-acido-1",
+      178,
+      165,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7346
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       179,
       165,
@@ -22148,6 +23217,16 @@
       1154
     ],
     [
+      "Border:estrutura/pisos/piso-acido-1:int-sl",
+      179,
+      165,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       180,
       165,
@@ -22157,6 +23236,16 @@
       false,
       false,
       1161
+    ],
+    [
+      "Border:estrutura/pisos/piso-acido-1:sl",
+      180,
+      165,
+      0,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -23153,6 +24242,16 @@
       false
     ],
     [
+      "Border:estrutura/pisos/piso-acido-1:o",
+      174,
+      166,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-grama-1",
       175,
       166,
@@ -23164,14 +24263,15 @@
       117
     ],
     [
-      "Border:estrutura/pisos/piso-agua-1:s",
+      "estrutura/pisos/piso-acido-1",
       175,
       166,
       0,
       0,
       false,
       false,
-      false
+      false,
+      7359
     ],
     [
       "estrutura/pisos/piso-grama-1",
@@ -23185,14 +24285,15 @@
       41
     ],
     [
-      "Border:estrutura/pisos/piso-agua-1:int-so",
+      "estrutura/pisos/piso-acido-1",
       176,
       166,
       0,
       0,
       false,
       false,
-      false
+      false,
+      7351
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -23206,6 +24307,17 @@
       713
     ],
     [
+      "estrutura/pisos/piso-acido-1",
+      177,
+      166,
+      0,
+      0,
+      false,
+      false,
+      false,
+      7348
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       178,
       166,
@@ -23217,6 +24329,16 @@
       714
     ],
     [
+      "Border:estrutura/pisos/piso-acido-1:int-sl",
+      178,
+      166,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       179,
       166,
@@ -23226,6 +24348,16 @@
       false,
       false,
       1158
+    ],
+    [
+      "Border:estrutura/pisos/piso-acido-1:sl",
+      179,
+      166,
+      0,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -24166,6 +25298,16 @@
       225
     ],
     [
+      "Border:estrutura/pisos/piso-acido-1:so",
+      174,
+      167,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/natureza/pinheiro-1",
       174,
       167,
@@ -24187,6 +25329,16 @@
       121
     ],
     [
+      "Border:estrutura/pisos/piso-acido-1:int-so",
+      175,
+      167,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-grama-1",
       176,
       167,
@@ -24198,14 +25350,15 @@
       116
     ],
     [
-      "Border:estrutura/pisos/piso-agua-1:so",
+      "estrutura/pisos/piso-acido-1",
       176,
       167,
       0,
       0,
       false,
       false,
-      false
+      false,
+      7350
     ],
     [
       "estrutura/pisos/piso-grama-1",
@@ -24219,14 +25372,15 @@
       115
     ],
     [
-      "Border:estrutura/pisos/piso-agua-1:int-so",
+      "estrutura/pisos/piso-acido-1",
       177,
       167,
       0,
       0,
       false,
       false,
-      false
+      false,
+      7349
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -24238,6 +25392,16 @@
       false,
       false,
       715
+    ],
+    [
+      "Border:estrutura/pisos/piso-acido-1:l",
+      178,
+      167,
+      0,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -25230,6 +26394,16 @@
       223
     ],
     [
+      "Border:estrutura/pisos/piso-acido-1:so",
+      175,
+      168,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-grama-1",
       176,
       168,
@@ -25239,6 +26413,16 @@
       false,
       false,
       229
+    ],
+    [
+      "Border:estrutura/pisos/piso-acido-1:s",
+      176,
+      168,
+      0,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-grama-1",
@@ -25262,6 +26446,16 @@
       false
     ],
     [
+      "Border:estrutura/pisos/piso-acido-1:s",
+      177,
+      168,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-grama-1",
       178,
       168,
@@ -25274,6 +26468,16 @@
     ],
     [
       "Border:estrutura/pisos/piso-agua-1:int-so",
+      178,
+      168,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-acido-1:sl",
       178,
       168,
       0,
@@ -77264,6 +78468,14 @@
       "criaturas/mamiferos/rat"
     ],
     [
+      181,
+      159,
+      0,
+      99,
+      64,
+      "criaturas/demonios/demon"
+    ],
+    [
       150,
       165,
       0,
@@ -77312,6 +78524,54 @@
       "criaturas/humanoides/elf-arcanist"
     ],
     [
+      179,
+      172,
+      0,
+      5,
+      32,
+      "criaturas/mamiferos/sheep"
+    ],
+    [
+      164,
+      173,
+      0,
+      5,
+      32,
+      "criaturas/mamiferos/deer"
+    ],
+    [
+      177,
+      174,
+      0,
+      5,
+      32,
+      "criaturas/mamiferos/sheep"
+    ],
+    [
+      178,
+      174,
+      0,
+      5,
+      32,
+      "criaturas/mamiferos/black-sheep"
+    ],
+    [
+      180,
+      174,
+      0,
+      5,
+      32,
+      "criaturas/mamiferos/sheep"
+    ],
+    [
+      177,
+      176,
+      0,
+      5,
+      32,
+      "criaturas/mamiferos/sheep"
+    ],
+    [
       177,
       179,
       0,
@@ -77328,6 +78588,14 @@
       "criaturas/vermes/spider"
     ],
     [
+      163,
+      180,
+      0,
+      5,
+      32,
+      "criaturas/mamiferos/deer"
+    ],
+    [
       178,
       180,
       0,
@@ -77342,6 +78610,14 @@
       10,
       32,
       "criaturas/vermes/spider"
+    ],
+    [
+      165,
+      182,
+      0,
+      5,
+      32,
+      "criaturas/mamiferos/deer"
     ],
     [
       177,
