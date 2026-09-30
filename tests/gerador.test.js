@@ -21,7 +21,8 @@ test('gerador lê o Tibia 7.8 e separa o catálogo por categoria, com as variaç
   const count = (kind) => items.filter(([, category]) => category === kind).length;
   for (const kind of ['ground', 'border', 'wall', 'object', 'item']) assert.ok(count(kind) > 100, `${kind}: ${count(kind)}`);
   assert.ok(creatures.length > 100);
-  assert.deepEqual(items.find(([id]) => id === 103), [103, 'ground', 1, 1, 1, 12]);
+  assert.deepEqual(items.find(([id]) => id === 103), [103, 'ground', 1, 1, 1, 12, 12]);
+  assert.deepEqual(items.find(([id]) => id === 593).slice(5), [2, 1], 'monte de pedras: a 2ª variação traz as duas camadas');
   assert.deepEqual(items.filter(([id]) => id >= 4531 && id <= 4542).map(([, category]) => category), Array(12).fill('border'));
 });
 
@@ -33,6 +34,7 @@ test('gerador devolve o PNG de cada variação de um item', () => {
   assert.deepEqual(pngSize(assets.spriteDoItem(1284, 0)), [64, 64]);
   assert.equal(assets.spriteDoItem(103, 12), null);
   assert.equal(assets.spriteDoItem(99999, 0), null);
+  assert.notDeepEqual(assets.spriteDoItem(593, 0), assets.spriteDoItem(593, 1), 'com as camadas, o monte de pedras aparece');
 });
 
 test('gerador monta a folha da criatura: 4 direções × quadros, com cores e addons', () => {

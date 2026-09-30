@@ -79,7 +79,7 @@ class TibiaAssets {
     const items = [];
     for (const [id, thing] of this.things.item) {
       if (!this.temDesenho(thing)) continue;
-      items.push([id, categoriaDoItem(thing), thing.w, thing.h, thing.anim, thing.px * thing.py * thing.pz]);
+      items.push([id, categoriaDoItem(thing), thing.w, thing.h, thing.anim, totalDeVariacoes(thing), thing.px * thing.py * thing.pz]);
     }
     const creatures = [];
     for (const [id, thing] of this.things.outfit) {
@@ -100,21 +100,28 @@ class TibiaAssets {
   // spriteDoItem
   // PNG de um quadro da animação de uma variação do item. As variações vêm
   // na ordem do Tibia: x muda primeiro, depois y, depois z (no chão, a
-  // posição no mapa).
+  // posição no mapa). Item com mais de uma camada (monte de pedras sobre a
+  // grama, buraco de pá…) ganha, depois das normais, as mesmas variações com
+  // todas as camadas empilhadas, como o Tibia desenha.
 
   spriteDoItem(id, variacao = 0, anim = 0) {
     const thing = this.things.item.get(id);
     if (!thing) return null;
-    const total = thing.px * thing.py * thing.pz;
-    if (!Number.isInteger(variacao) || variacao < 0 || variacao >= total) return null;
+    const base = thing.px * thing.py * thing.pz;
+    if (!Number.isInteger(variacao) || variacao < 0 || variacao >= totalDeVariacoes(thing)) return null;
     if (!Number.isInteger(anim) || anim < 0 || anim >= thing.anim) return null;
 
     const chave = `item:${id}:${variacao}:${anim}`;
     if (this.thumbCache.has(chave)) return this.thumbCache.get(chave);
-    const x = variacao % thing.px;
-    const y = Math.floor(variacao / thing.px) % thing.py;
-    const z = Math.floor(variacao / (thing.px * thing.py));
+    const camadas = variacao >= base;
+    const v = variacao % base;
+    const x = v % thing.px;
+    const y = Math.floor(v / thing.px) % thing.py;
+    const z = Math.floor(v / (thing.px * thing.py));
     const quadro = this.quadro(thing, { x, y, z, anim });
+    for (let layer = 1; camadas && layer < thing.layers; layer++) {
+      colar(quadro.pixels, quadro.largura, this.quadro(thing, { x, y, z, anim, layer }), 0, 0);
+    }
     const png = gerarPng(quadro.pixels, quadro.largura, quadro.altura);
     this.thumbCache.set(chave, png);
     return png;
@@ -133,7 +140,8 @@ class TibiaAssets {
       categoria: categoriaDoItem(thing),
       tamanho: Math.max(thing.w, thing.h) * SPRITE_SIZE,
       quadros: thing.anim,
-      variacoes: thing.px * thing.py * thing.pz,
+      variacoes: totalDeVariacoes(thing),
+      variacoesSemCamadas: thing.px * thing.py * thing.pz,
       bloqueia: temFlag(thing, FLAG.UNPASSABLE),
       move: !temFlag(thing, FLAG.UNMOVEABLE),
       altura: temFlag(thing, FLAG.ELEVATION),
@@ -469,6 +477,16 @@ function lerDat(dat) {
 
   if (p !== dat.length) throw new Error(`Tibia.dat não é da versão 7.80–8.54 (leu ${p} de ${dat.length} bytes)`);
   return things;
+}
+
+// ================================================================================================================================================================================================================================================
+// totalDeVariacoes
+// Variações do item no gerador: as do Tibia e, se ele tem mais de uma camada
+// (e não é de pilha), as mesmas de novo com as camadas empilhadas.
+
+function totalDeVariacoes(thing) {
+  const base = thing.px * thing.py * thing.pz;
+  return thing.layers > 1 && !temFlag(thing, FLAG.STACKABLE) ? base * 2 : base;
 }
 
 // ================================================================================================================================================================================================================================================
