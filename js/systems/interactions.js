@@ -74,18 +74,22 @@ export class InteractionController {
 
   // ================================================================================================================================================================================================================================================
   // useTool
-  // Corda ou pá usada com a mira no sqm target (colado no player, no mesmo
-  // andar): corda na marca de corda sobe; pá no monte abre o buraco.
+  // Corda ou pá usada com a mira no sqm target (no mesmo andar): corda na
+  // marca de corda sobe; pá no monte abre o buraco. Longe, o player anda até
+  // o lado e usa ao chegar (from: de onde veio a ferramenta).
   // Devolve true se a ferramenta fez algo.
 
-  useTool(player, tool, target) {
+  useTool(player, tool, target, from = null) {
     const z = player.z || 0;
     if (!target || !Number.isInteger(target.x) || !Number.isInteger(target.y) || (target.z ?? z) !== z) return false;
-    if (Math.max(Math.abs(target.x - player.x), Math.abs(target.y - player.y)) > 1) return false;
     const wanted = tool === 'ferramenta-corda' ? 'corda' : 'pa';
     const obj = this.sim.world.getObjectsAt(target.x, target.y)
       .find(o => (o.z || 0) === z && objectUse(objectIdType(o.id)) === wanted);
     if (!obj) return false;
+    if (!this.sim.inventory.isNear(player, obj)) {
+      if (from) this.sim.inventory.walkNextTo(player, obj, { type: 'useItem', from, target });
+      return false;
+    }
     return wanted === 'corda' ? this.climb(player, obj) : this.dig(player, obj);
   }
 

@@ -114,7 +114,7 @@ test('corda na marca de corda sobe pro andar de cima; a pá abre o monte em bura
   bag[1] = { uid: 's1', type: SHOVEL };
 
   send(sim, { type: 'useItem', from: { t: 'c', uid: 'bag0', i: 0 }, target: { x: 9, y: 9, z: 0 } });
-  assert.equal(sim.player.z, 0, 'longe da marca, não sobe');
+  assert.equal(sim.player.z, 0, 'sem marca de corda no sqm, nada acontece');
   send(sim, { type: 'useItem', from: { t: 'c', uid: 'bag0', i: 0 }, target: { x: 6, y: 5, z: 0 } });
   assert.deepEqual([sim.player.x, sim.player.y, sim.player.z], [6, 6, 1]);
 
@@ -126,6 +126,23 @@ test('corda na marca de corda sobe pro andar de cima; a pá abre o monte em bura
   run(sim, DUG_HOLE_MS + 2 * TICK_MS);
   assert.equal(pile.dug, false);
   assert.equal(sim.world.getTransitionAt(5, 6, 1), null);
+});
+
+test('corda e pá de longe: o player anda até o lado e usa ao chegar', () => {
+  const sim = game([[SPOT, 12, 5, 0], [PILE, 5, 12, 1]]);
+  const bag = sim.player.equip.mochila.items;
+  bag[0] = { uid: 'r1', type: ROPE };
+  bag[1] = { uid: 's1', type: SHOVEL };
+  send(sim, { type: 'useItem', from: { t: 'c', uid: 'bag0', i: 0 }, target: { x: 12, y: 5, z: 0 } });
+  assert.equal(sim.player.z, 0);
+  for (let i = 0; i < 200 && sim.player.z === 0; i++) send(sim, { type: 'noop' });
+  assert.deepEqual([sim.player.x, sim.player.y, sim.player.z], [12, 6, 1]);
+  run(sim, 1000);
+  send(sim, { type: 'useItem', from: { t: 'c', uid: 'bag0', i: 1 }, target: { x: 5, y: 12, z: 1 } });
+  const pile = at(sim, PILE);
+  for (let i = 0; i < 300 && !pile.dug; i++) send(sim, { type: 'noop' });
+  assert.equal(pile.dug, true);
+  assert.ok(Math.max(Math.abs(sim.player.x - 5), Math.abs(sim.player.y - 12)) <= 1);
 });
 
 test('com Uso, a pasta não manda: monte da pá em Entradas não é buraco e marca de corda em Escadas não é escada', async () => {
