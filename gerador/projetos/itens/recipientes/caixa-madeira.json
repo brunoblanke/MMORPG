@@ -5,17 +5,17 @@
   },
   "objeto": {
     "tibia": {
-      "id": 3457,
+      "id": 2471,
       "variacao": 0
     }
   },
   "propriedades": {
     "bloqueia": false,
     "move": true,
-    "altura": false,
+    "altura": true,
     "empilhavel": true,
-    "peso": 35,
-    "espacos": 0,
+    "peso": 50,
+    "espacos": 8,
     "atk": 0,
     "def": 0,
     "ml": 0,
@@ -28,6 +28,6 @@
   },
   "ferramenta": "objetos",
   "grupo": "itens",
-  "pasta": "decoracoes",
-  "nome": "shovel"
+  "pasta": "recipientes",
+  "nome": "caixa-madeira"
 }

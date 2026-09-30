@@ -5,16 +5,16 @@
   },
   "objeto": {
     "tibia": {
-      "id": 3457,
+      "id": 2499,
       "variacao": 0
     }
   },
   "propriedades": {
-    "bloqueia": false,
-    "move": true,
-    "altura": false,
-    "empilhavel": true,
-    "peso": 35,
+    "bloqueia": true,
+    "move": false,
+    "altura": true,
+    "empilhavel": false,
+    "peso": 10,
     "espacos": 0,
     "atk": 0,
     "def": 0,
@@ -27,7 +27,7 @@
     "alimento": 0
   },
   "ferramenta": "objetos",
-  "grupo": "itens",
-  "pasta": "decoracoes",
-  "nome": "shovel"
+  "grupo": "estrutura",
+  "pasta": "natureza",
+  "nome": "cama-acampamento-norte"
 }

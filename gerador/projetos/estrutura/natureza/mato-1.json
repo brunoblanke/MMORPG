@@ -1,20 +1,20 @@
 {
   "formato": {
-    "quadro": 32,
-    "quadros": 1
+    "quadro": 64,
+    "quadros": 2
   },
   "objeto": {
     "tibia": {
-      "id": 3457,
+      "id": 5464,
       "variacao": 0
     }
   },
   "propriedades": {
-    "bloqueia": false,
-    "move": true,
+    "bloqueia": true,
+    "move": false,
     "altura": false,
-    "empilhavel": true,
-    "peso": 35,
+    "empilhavel": false,
+    "peso": 10,
     "espacos": 0,
     "atk": 0,
     "def": 0,
@@ -27,7 +27,7 @@
     "alimento": 0
   },
   "ferramenta": "objetos",
-  "grupo": "itens",
-  "pasta": "decoracoes",
-  "nome": "shovel"
+  "grupo": "estrutura",
+  "pasta": "natureza",
+  "nome": "mato-1"
 }

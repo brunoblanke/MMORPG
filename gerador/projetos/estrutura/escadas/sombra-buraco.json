@@ -5,16 +5,16 @@
   },
   "objeto": {
     "tibia": {
-      "id": 3457,
+      "id": 386,
       "variacao": 0
     }
   },
   "propriedades": {
     "bloqueia": false,
-    "move": true,
+    "move": false,
     "altura": false,
-    "empilhavel": true,
-    "peso": 35,
+    "empilhavel": false,
+    "peso": 10,
     "espacos": 0,
     "atk": 0,
     "def": 0,
@@ -27,7 +27,7 @@
     "alimento": 0
   },
   "ferramenta": "objetos",
-  "grupo": "itens",
-  "pasta": "decoracoes",
-  "nome": "shovel"
+  "grupo": "estrutura",
+  "pasta": "escadas",
+  "nome": "sombra-buraco"
 }

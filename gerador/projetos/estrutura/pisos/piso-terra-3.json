@@ -1,0 +1,45 @@
+{
+  "formato": {
+    "quadro": 32,
+    "linhas": [
+      "meio: 4 variações",
+      "s o n l",
+      "sl so nl no",
+      "int-sl int-so int-nl int-no"
+    ]
+  },
+  "variacoesDoMeio": 4,
+  "slots": {
+    "meio-1": {
+      "tibia": {
+        "id": 5711,
+        "variacao": 0
+      }
+    },
+    "meio-2": {
+      "tibia": {
+        "id": 5712,
+        "variacao": 0
+      }
+    },
+    "meio-3": {
+      "tibia": {
+        "id": 5726,
+        "variacao": 0
+      }
+    },
+    "meio-4": {
+      "tibia": {
+        "id": 5714,
+        "variacao": 0
+      }
+    }
+  },
+  "propriedades": {
+    "comportamento": "bloqueia"
+  },
+  "ferramenta": "pisos",
+  "grupo": "estrutura",
+  "pasta": "pisos",
+  "nome": "piso-terra-3"
+}

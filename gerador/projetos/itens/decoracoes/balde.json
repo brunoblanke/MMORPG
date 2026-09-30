@@ -5,7 +5,7 @@
   },
   "objeto": {
     "tibia": {
-      "id": 3457,
+      "id": 2873,
       "variacao": 0
     }
   },
@@ -13,8 +13,8 @@
     "bloqueia": false,
     "move": true,
     "altura": false,
-    "empilhavel": true,
-    "peso": 35,
+    "empilhavel": false,
+    "peso": 10,
     "espacos": 0,
     "atk": 0,
     "def": 0,
@@ -29,5 +29,5 @@
   "ferramenta": "objetos",
   "grupo": "itens",
   "pasta": "decoracoes",
-  "nome": "shovel"
+  "nome": "balde"
 }
