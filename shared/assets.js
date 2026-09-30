@@ -242,6 +242,19 @@ export function isHoleType(type) {
 }
 
 // ================================================================================================================================================================================================================================================
+// isStairsFolder / isEntranceFolder
+// Só a pasta (Estrutura › Escadas / Entradas): é onde o editor lista e
+// guarda a peça, qualquer que seja o uso dela no jogo.
+
+export function isStairsFolder(type) {
+  return splitType(type).asset.startsWith(STAIRS_FOLDER);
+}
+
+export function isEntranceFolder(type) {
+  return splitType(type).asset.startsWith(HOLE_FOLDER);
+}
+
+// ================================================================================================================================================================================================================================================
 // isWallType / isItemType
 // Peça de parede (ferramenta paredes) ou objeto solto (ferramenta objetos,
 // fora escada e buraco).
@@ -253,7 +266,7 @@ export function isWallType(type) {
 
 export function isItemType(type) {
   const asset = getAsset(splitType(type).asset);
-  return !!asset && asset.ferramenta === 'objetos' && !isStairsType(type) && !isHoleType(type);
+  return !!asset && asset.ferramenta === 'objetos' && !isStairsFolder(type) && !isEntranceFolder(type);
 }
 
 // ================================================================================================================================================================================================================================================

@@ -147,5 +147,5 @@ test('bueiro: pisar não derruba; usar leva pro andar de baixo', () => {
   const grate = up.objects.find(o => o.id.startsWith(GRATE + '_'));
   up.enqueue('player1', { type: 'useObject', id: grate.id });
   up.tick(up.time + TICK_MS);
-  assert.deepEqual([up.player.x, up.player.y, up.player.z], [5, 6, 0]);
+  assert.deepEqual([up.player.x, up.player.y, up.player.z], [6, 7, 0], '1 ao sul e 1 ao leste, no andar de baixo');
 });

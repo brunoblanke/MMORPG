@@ -4,7 +4,7 @@ import { state, TOOLS } from '../model/state.js';
 import { FLOOR_MIN, FLOOR_MAX, GROUND_FLOOR } from '../../../shared/constants.js';
 import { scheduleRender } from './canvas-renderer.js';
 import { BORDER_VARIANTS } from '../../../shared/floor-borders.js';
-import { listAssets, pieceType, splitType, displayName, isStairsType, isHoleType, isItemType, isWallType, WALL_PIECES, WALL_PIECE_NAMES } from '../../../shared/assets.js';
+import { listAssets, pieceType, splitType, displayName, isStairsFolder, isEntranceFolder, isItemType, isWallType, WALL_PIECES, WALL_PIECE_NAMES } from '../../../shared/assets.js';
 import { setThumb } from './sprite-thumb.js';
 
 // ================================================================================================================================================================================================================================================
@@ -82,8 +82,8 @@ export function choosePaintDefaults() {
   const first = (list) => (list[0] ? list[0].id : null);
   if (!state.floorPaint) state.floorPaint = first(floors);
   if (!state.wallPaint && walls[0]) state.wallPaint = pieceType(walls[0].id, wallPieces(walls[0])[0]);
-  if (!state.stairsPaint) state.stairsPaint = first(listAssets('objetos', a => isStairsType(a.id)));
-  if (!state.holePaint) state.holePaint = first(listAssets('objetos', a => isHoleType(a.id)));
+  if (!state.stairsPaint) state.stairsPaint = first(listAssets('objetos', a => isStairsFolder(a.id)));
+  if (!state.holePaint) state.holePaint = first(listAssets('objetos', a => isEntranceFolder(a.id)));
   if (!state.itemPaint) state.itemPaint = first(listAssets('objetos', a => isItemType(a.id)));
   if (!state.enemyPaint) state.enemyPaint = first(listAssets('criaturas'));
   if (!state.borderPaint && floors[0]) state.borderPaint = { type: floors[0].id, variant: 'n' };
@@ -158,8 +158,8 @@ function accordionGroups(tool) {
       }))
     };
   }
-  if (tool.id === 'stairs') return { empty: 'Nenhuma escada gerada (Estrutura › Escadas).', groups: byFolder(listAssets('objetos', a => isStairsType(a.id)), simple) };
-  if (tool.id === 'hole') return { empty: 'Nenhuma entrada gerada (Estrutura › Entradas).', groups: byFolder(listAssets('objetos', a => isHoleType(a.id)), simple) };
+  if (tool.id === 'stairs') return { empty: 'Nenhuma escada gerada (Estrutura › Escadas).', groups: byFolder(listAssets('objetos', a => isStairsFolder(a.id)), simple) };
+  if (tool.id === 'hole') return { empty: 'Nenhuma entrada gerada (Estrutura › Entradas).', groups: byFolder(listAssets('objetos', a => isEntranceFolder(a.id)), simple) };
   if (tool.id === 'item') return { empty: 'Nenhum objeto gerado.', groups: byFolder(listAssets('objetos', a => isItemType(a.id)), simple) };
   return { empty: '', groups: [] };
 }
@@ -310,7 +310,7 @@ export function updateStats() {
     if (c.hole) h++;
     if (c.enemy) cr++;
     c.objects.forEach(o => {
-      if (isStairsType(o.type)) s++;
+      if (isStairsFolder(o.type)) s++;
       else if (isWallType(o.type)) w++;
       else it++;
     });

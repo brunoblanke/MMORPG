@@ -1,6 +1,6 @@
 // shared/map-format.js
 
-import { isFloorType, isHoleType, isStairsType, isItemType, objectProps, stairKind } from './assets.js';
+import { isFloorType, isEntranceFolder, isStairsType, isItemType, objectProps, stairKind } from './assets.js';
 import { getStairTarget } from './stairs.js';
 import { borderEntryType, parseBorderType, mergeSavedInnerCorners } from './floor-borders.js';
 
@@ -240,7 +240,7 @@ export function buildLayersFromMapData(mapData, GRID) {
     } else if (isFloorType(type)) {
       // Mesmo fallback do jogo (collectObjectDescriptors): sem seq, vale a ordem no arquivo.
       if (addFloorToCell(cell, type, Number.isFinite(seq) ? seq : index + 1)) stats.floor++;
-    } else if (isHoleType(type)) {
+    } else if (isEntranceFolder(type)) {
       cell.hole = type;
     } else if (isItemType(type)) {
       const item = { type, step: step || 0 };
