@@ -11,6 +11,7 @@ import { creatureBehavior } from '../../shared/assets.js';
 //   patrol ──(vê o player e tem rota)──▶ chase
 //   chase ──(perdeu o player de vista ou ficou sem rota)──▶ patrol
 //   qualquer um ──(vê o player com a vida no limite de fuga)──▶ flee
+//   pacífico (comportamento 'pacifico', ex.: deer) ──(vê o player)──▶ flee
 //   flee ──(perdeu o player de vista)──▶ patrol
 // Mago (comportamento 'mago'), vendo o player, fica em chase mas não cola:
 // mantém entre mageKeepDistance e mageRange sqm e ataca de longe (combat.js).
@@ -60,10 +61,13 @@ export class EnemyAI {
 
   // ================================================================================================================================================================================================================================================
   // shouldFlee
-  // Criatura 'foge' (gerador → Criaturas) com a vida em até fleeHealth.
+  // Criatura 'pacifico' sempre; 'foge' (gerador → Criaturas) com a vida em
+  // até fleeHealth.
 
   shouldFlee(enemy) {
-    if (creatureBehavior(enemy.creature) !== 'foge') return false;
+    const behavior = creatureBehavior(enemy.creature);
+    if (behavior === 'pacifico') return true;
+    if (behavior !== 'foge') return false;
     return enemy.currentHp > 0 && enemy.currentHp <= enemy.maxHp * CONFIG.fleeHealth;
   }
 

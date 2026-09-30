@@ -128,6 +128,7 @@ export class CombatController {
   // updateAutoAttack
   // Fila de inimigos que chegaram perto (entraram no raio de detecção, no
   // mesmo andar), na ordem em que chegaram; quem morre ou se afasta sai dela.
+  // Criatura pacífica não entra (não ameaça: só vira alvo clicando nela).
   // No auto ataque, sem alvo, o player ataca o primeiro da fila — até ele
   // morrer ou o player trocar de alvo. Na zona segura não há fila.
 
@@ -137,7 +138,7 @@ export class CombatController {
       return;
     }
     const level = getLevel(player);
-    const isNear = (enemy) => enemy.isAlive() && getLevel(enemy) === level && enemy.isInDetectionRange(player.x, player.y);
+    const isNear = (enemy) => enemy.isAlive() && creatureBehavior(enemy.creature) !== 'pacifico' && getLevel(enemy) === level && enemy.isInDetectionRange(player.x, player.y);
     player.aggro = player.aggro.filter(isNear);
     for (const enemy of this.sim.enemies) {
       if (isNear(enemy) && !player.aggro.includes(enemy)) player.aggro.push(enemy);
@@ -163,8 +164,8 @@ export class CombatController {
   // processEnemies
   // Inimigo que vê o player e está colado nele, no mesmo andar, ataca — a não
   // ser que o player esteja na zona segura ou o inimigo esteja fugindo. O
-  // mago ataca de longe (rangedAttack).
-  // player.isTarget: algum inimigo o vê (marca vermelha no player).
+  // mago ataca de longe (rangedAttack); o pacífico nunca ataca.
+  // player.isTarget: algum inimigo (não pacífico) o vê (marca vermelha no player).
 
   processEnemies(player, now) {
     if (this.sim.world.isInSafeZone(player)) {
@@ -175,7 +176,7 @@ export class CombatController {
     let anyEnemyInRange = false;
 
     for (const enemy of this.sim.enemies) {
-      if (!enemy.isAlive()) continue;
+      if (!enemy.isAlive() || creatureBehavior(enemy.creature) === 'pacifico') continue;
       if (!enemy.isInDetectionRange(player.x, player.y)) continue;
       anyEnemyInRange = true;
 

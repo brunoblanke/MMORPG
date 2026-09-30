@@ -431,11 +431,12 @@ function statValues() {
 
 // ================================================================================================================================================================================================================================================
 // behaviorOf
-// Comportamento guardado na receita: normal, foge (com a vida baixa) ou mago
-// (ataca de longe). Receita antiga com foge > 0 vira "foge".
+// Comportamento guardado na receita: normal, foge (com a vida baixa), mago
+// (ataca de longe) ou pacifico (nunca ataca, foge de quem chega perto).
+// Receita antiga com foge > 0 vira "foge".
 
 function behaviorOf(props) {
-  if (['normal', 'foge', 'mago'].includes(props.comportamento)) return props.comportamento;
+  if (['normal', 'foge', 'mago', 'pacifico'].includes(props.comportamento)) return props.comportamento;
   return Number(props.foge) > 0 ? 'foge' : 'normal';
 }
 

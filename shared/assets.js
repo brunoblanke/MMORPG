@@ -58,7 +58,7 @@ const assets = new Map();
 export function creatureBehavior(type) {
   const asset = getAsset(type);
   const props = (asset && asset.propriedades) || {};
-  if (['normal', 'foge', 'mago'].includes(props.comportamento)) return props.comportamento;
+  if (['normal', 'foge', 'mago', 'pacifico'].includes(props.comportamento)) return props.comportamento;
   return Number(props.foge) > 0 ? 'foge' : 'normal';
 }
 
