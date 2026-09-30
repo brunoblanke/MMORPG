@@ -6,19 +6,19 @@
 // ainda não sobem (magia e pesca vêm depois).
 // Progressão do Tibia: pra passar do nível n pro n+1 são A × B^(n − 10)
 // tentativas (magic level: mana gasta, 1600 × B^n). A é do skill; B é da
-// vocação — por enquanto todos usam os valores do Knight.
+// vocação — o player não tem vocação, então vale a "None" do Tibia (TFS).
 
 export const SKILL_KEYS = ['fist', 'club', 'sword', 'axe', 'distance', 'shielding', 'fishing'];
 export const SKILL_START = 10;
 export const MAGIC_START = 0;
 export const SKILL_PROGRESSION = {
-  magic: { base: 1600, growth: 3.0, offset: 0 },
+  magic: { base: 1600, growth: 4.0, offset: 0 },
   fist: { base: 50, growth: 1.5, offset: 10 },
-  club: { base: 50, growth: 1.1, offset: 10 },
-  sword: { base: 50, growth: 1.1, offset: 10 },
-  axe: { base: 50, growth: 1.1, offset: 10 },
-  distance: { base: 30, growth: 1.4, offset: 10 },
-  shielding: { base: 100, growth: 1.1, offset: 10 },
+  club: { base: 50, growth: 2.0, offset: 10 },
+  sword: { base: 50, growth: 2.0, offset: 10 },
+  axe: { base: 50, growth: 2.0, offset: 10 },
+  distance: { base: 30, growth: 2.0, offset: 10 },
+  shielding: { base: 100, growth: 1.5, offset: 10 },
   fishing: { base: 20, growth: 1.1, offset: 10 }
 };
 

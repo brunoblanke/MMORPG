@@ -1,0 +1,61 @@
+{
+  "formato": {
+    "quadro": 32,
+    "quadros": 2,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 44,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 5989,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4080,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 4081,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "vermes",
+  "nome": "wasp",
+  "propriedades": {
+    "comportamento": "normal",
+    "vida": 35,
+    "xp": 24,
+    "velocidade": 320,
+    "armadura": 4,
+    "ataque": 20,
+    "loot": [
+      {
+        "tipo": "itens/decoracoes/honeycomb",
+        "chance": 0.03
+      }
+    ]
+  }
+}

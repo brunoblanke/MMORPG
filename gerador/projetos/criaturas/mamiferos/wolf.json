@@ -1,0 +1,67 @@
+{
+  "formato": {
+    "quadro": 32,
+    "quadros": 3,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 27,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 5968,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4268,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 4269,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "mamiferos",
+  "nome": "wolf",
+  "propriedades": {
+    "comportamento": "foge",
+    "vida": 25,
+    "xp": 18,
+    "velocidade": 164,
+    "armadura": 1,
+    "ataque": 17,
+    "loot": [
+      {
+        "tipo": "itens/comidas/meet",
+        "chance": 0.7,
+        "min": 1,
+        "max": 2
+      },
+      {
+        "tipo": "itens/decoracoes/wolf-paw",
+        "chance": 0.01
+      }
+    ]
+  }
+}

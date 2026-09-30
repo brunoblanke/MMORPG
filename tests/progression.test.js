@@ -60,12 +60,12 @@ test('XP por nível segue a tabela do Tibia (total: 100, 200, 400, 800, 1500…)
   assert.deepEqual(totals, [0, 100, 200, 400, 800, 1500, 2600, 4200, 6400]);
 });
 
-test('skills seguem a progressão do Tibia (valores do Knight)', async () => {
+test('skills seguem a progressão do Tibia (vocação None, o player não tem vocação)', async () => {
   const { triesFor } = await import('../shared/skills.js');
   assert.equal(triesFor(10, 'sword'), 50);
-  assert.equal(triesFor(11, 'sword'), 55);
+  assert.equal(triesFor(11, 'sword'), 100);
   assert.equal(triesFor(10, 'distance'), 30);
-  assert.equal(triesFor(11, 'distance'), 42);
+  assert.equal(triesFor(11, 'distance'), 60);
   assert.equal(triesFor(10, 'shielding'), 100);
   assert.equal(triesFor(10, 'fist'), 50);
   assert.equal(triesFor(11, 'fist'), 75);

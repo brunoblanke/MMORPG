@@ -303,10 +303,10 @@ test('skills começam no padrão do 7.6 e voltam com o personagem', () => {
   const player = new Simulation(mapData).addPlayer('p1', { name: 'Ana' });
   assert.deepEqual(player.skills.sword, { lvl: 10, pct: 0, tries: 0 });
   assert.deepEqual(player.skills.magic, { lvl: 0, pct: 0, tries: 0 });
-  player.skills.sword = { lvl: 11, pct: 50, tries: 28 };
+  player.skills.sword = { lvl: 11, pct: 50, tries: 50 };
   const saved = JSON.parse(JSON.stringify(player.toSave()));
   const again = new Simulation(mapData).addPlayer('p2', { name: 'Ana', saved });
-  assert.deepEqual(again.skills.sword, { lvl: 11, pct: 50, tries: 28 });
+  assert.deepEqual(again.skills.sword, { lvl: 11, pct: 50, tries: 50 });
   assert.equal(again.skills.fishing.lvl, 10);
 });
 

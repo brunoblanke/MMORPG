@@ -1,0 +1,56 @@
+{
+  "formato": {
+    "quadro": 32,
+    "quadros": 3,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 28,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 3998,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 3999,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 4000,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "repteis",
+  "nome": "snake",
+  "propriedades": {
+    "comportamento": "normal",
+    "vida": 15,
+    "xp": 10,
+    "velocidade": 120,
+    "armadura": 0,
+    "ataque": 8,
+    "loot": []
+  }
+}

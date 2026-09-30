@@ -1,0 +1,77 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 3,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 16,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 5975,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4291,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 4292,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "mamiferos",
+  "nome": "bear",
+  "propriedades": {
+    "comportamento": "foge",
+    "vida": 80,
+    "xp": 23,
+    "velocidade": 156,
+    "armadura": 6,
+    "ataque": 25,
+    "loot": [
+      {
+        "tipo": "itens/comidas/meet",
+        "chance": 0.3975,
+        "min": 1,
+        "max": 4
+      },
+      {
+        "tipo": "itens/comidas/ham",
+        "chance": 0.2,
+        "min": 1,
+        "max": 3
+      },
+      {
+        "tipo": "itens/decoracoes/bear-paw",
+        "chance": 0.02
+      },
+      {
+        "tipo": "itens/decoracoes/honeycomb",
+        "chance": 0.0046
+      }
+    ]
+  }
+}

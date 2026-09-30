@@ -18,7 +18,8 @@
     "espacos": 8,
     "atk": 0,
     "def": 0,
-    "ml": 0
+    "ml": 0,
+    "speed": 0
   },
   "ferramenta": "objetos",
   "grupo": "itens",
