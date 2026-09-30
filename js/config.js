@@ -7,7 +7,6 @@ export const CONFIG = {
   mapWidth: GRID_WIDTH,
   mapHeight: GRID_HEIGHT,
   mapDataUrl: 'data/map.json',
-  lootDataUrl: 'data/loot.json',
   playerStartLevel: 1,        // nível de quem entra pela primeira vez (personagem salvo mantém o dele)
   patrolRadius: 4,
   detectionRadius: 7,

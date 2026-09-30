@@ -65,8 +65,9 @@ export function creatureBehavior(type) {
 // ================================================================================================================================================================================================================================================
 // creatureStats
 // Números da criatura no gerador (Criaturas): vida, XP dado ao morrer,
-// velocidade (escala do Tibia), armadura (defesa) e ataque. Só os
-// preenchidos (> 0); o que faltar vem do nível no mapa.
+// velocidade (escala do Tibia: rat 134, player nível 1 = 220), armadura
+// (defesa) e ataque. Só os preenchidos (> 0; XP pode ser 0 quando a vida
+// está preenchida); o que faltar vem do nível no mapa.
 
 export function creatureStats(type) {
   const asset = getAsset(type);
@@ -74,9 +75,26 @@ export function creatureStats(type) {
   const stats = {};
   for (const [key, field] of [['hp', 'vida'], ['xp', 'xp'], ['spd', 'velocidade'], ['def', 'armadura'], ['atk', 'ataque']]) {
     const value = Math.floor(Number(props[field]));
-    if (value > 0) stats[key] = value;
+    if (value > 0 || (key === 'xp' && value === 0 && props.vida > 0)) stats[key] = value;
   }
   return stats;
+}
+
+// ================================================================================================================================================================================================================================================
+// creatureLoot
+// O que a criatura pode deixar no corpo (gerador → Criaturas → Loot):
+// [{ tipo, chance (0–1), min, max }], só as entradas válidas.
+
+export function creatureLoot(type) {
+  const asset = getAsset(type);
+  const loot = asset && asset.propriedades && asset.propriedades.loot;
+  if (!Array.isArray(loot)) return [];
+  return loot.filter(e => e && typeof e.tipo === 'string' && e.tipo && Number(e.chance) > 0).map(e => ({
+    tipo: e.tipo,
+    chance: Math.min(1, Number(e.chance)),
+    min: Math.max(1, Math.floor(Number(e.min)) || 1),
+    max: Math.max(1, Math.floor(Number(e.max)) || 1)
+  }));
 }
 
 // ================================================================================================================================================================================================================================================

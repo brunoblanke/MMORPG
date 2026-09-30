@@ -2,7 +2,7 @@
 
 import { GameObject } from '../models/game-object.js';
 import { getAdjacentPositions, isPositionAdjacentTo } from '../utils/helpers.js';
-import { objectIdType, objectProps, getAsset, splitType } from '../../shared/assets.js';
+import { objectIdType, objectProps, getAsset, splitType, creatureLoot } from '../../shared/assets.js';
 import {
   EQUIP_SLOTS, THROW_RANGE, DEATH_DROP_CHANCE, USE_COOLDOWN_MS, FOOD_MAX_SECONDS, POTION_RANGE, EMPTY_VIAL, SPLASH_HP, SPLASH_MANA, SPLASH_STAGES, SPLASH_STAGE_MS, REGEN_MS, REGEN_HP, REGEN_MANA, itemInfo, capacityFor, newItem, weightOf, contains, findInTree, fromPlain, equipBonus
 } from '../../shared/items.js';
@@ -32,7 +32,8 @@ export class InventoryController {
 
   // ================================================================================================================================================================================================================================================
   // constructor
-  // lootTable: { '<criatura>': [{ tipo, chance, min, max }] } — o que cai ao morrer.
+  // lootTable: { '<criatura>': [{ tipo, chance, min, max }] } — troca o loot
+  // da criatura (o normal vem do gerador: creatureLoot).
 
   constructor(sim, lootTable = {}) {
     this.sim = sim;
@@ -702,7 +703,7 @@ export class InventoryController {
   fillCorpse(corpse, enemy) {
     const box = { uid: this.nextUid(), type: enemy.creature, items: new Array(CORPSE_SIZE).fill(null) };
     let slot = 0;
-    for (const entry of this.lootTable[enemy.creature] || []) {
+    for (const entry of this.lootTable[enemy.creature] || creatureLoot(enemy.creature)) {
       if (slot >= CORPSE_SIZE) break;
       if (!entry || !getAsset(splitType(entry.tipo).asset) || Math.random() >= (entry.chance ?? 1)) continue;
       const min = Math.max(1, entry.min || 1);

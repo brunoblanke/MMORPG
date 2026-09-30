@@ -220,3 +220,10 @@ button:focus-visible, input:focus-visible, .slot:focus-visible{ outline:2px soli
 }
 .tile-tag[hidden]{ display:none; }
 .classify-help{ margin:0; padding:6px 20px; color:var(--muted); font-size:11px; background:var(--panel); border-top:1px solid var(--line); }
+
+.loot-field{ min-width:100%; }
+.loot-list{ display:flex; flex-direction:column; gap:4px; max-height:240px; overflow-y:auto; padding-right:4px; }
+.loot-row{ display:flex; align-items:center; gap:4px; font-size:11px; color:var(--muted); }
+.loot-row select{ flex:1; min-width:0; }
+.loot-row input[type=number]{ width:58px; }
+.loot-row .ghost-btn{ padding:2px 8px; }

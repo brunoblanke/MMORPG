@@ -43,5 +43,145 @@
   "ferramenta": "criaturas",
   "grupo": "criaturas",
   "pasta": "demonios",
-  "nome": "demon"
+  "nome": "demon",
+  "propriedades": {
+    "comportamento": "normal",
+    "vida": 8200,
+    "xp": 6000,
+    "velocidade": 256,
+    "armadura": 44,
+    "ataque": 500,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.5,
+        "min": 1,
+        "max": 100
+      },
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.5,
+        "min": 1,
+        "max": 100
+      },
+      {
+        "tipo": "itens/valiosos/platinum-coin",
+        "chance": 1,
+        "min": 1,
+        "max": 8
+      },
+      {
+        "tipo": "itens/liquidos/mana-potion",
+        "chance": 0.25,
+        "min": 1,
+        "max": 3
+      },
+      {
+        "tipo": "itens/produtos-de-criaturas/demon-horn",
+        "chance": 0.2
+      },
+      {
+        "tipo": "itens/liquidos/health-potion",
+        "chance": 0.2,
+        "min": 1,
+        "max": 3
+      },
+      {
+        "tipo": "itens/comidas/fire-mushroom",
+        "chance": 0.2,
+        "min": 1,
+        "max": 6
+      },
+      {
+        "tipo": "itens/valiosos/small-ruby",
+        "chance": 0.1,
+        "min": 1,
+        "max": 5
+      },
+      {
+        "tipo": "itens/valiosos/small-emerald",
+        "chance": 0.1,
+        "min": 1,
+        "max": 5
+      },
+      {
+        "tipo": "itens/valiosos/small-amethyst",
+        "chance": 0.1,
+        "min": 1,
+        "max": 5
+      },
+      {
+        "tipo": "itens/machados/fire-axe",
+        "chance": 0.04
+      },
+      {
+        "tipo": "itens/valiosos/talon",
+        "chance": 0.0357
+      },
+      {
+        "tipo": "itens/valiosos/orb",
+        "chance": 0.029
+      },
+      {
+        "tipo": "itens/valiosos/red-gem",
+        "chance": 0.029
+      },
+      {
+        "tipo": "itens/aneis/ring-of-healing",
+        "chance": 0.026
+      },
+      {
+        "tipo": "itens/aneis/might-ring",
+        "chance": 0.025
+      },
+      {
+        "tipo": "itens/aneis/stealth-ring",
+        "chance": 0.023
+      },
+      {
+        "tipo": "itens/espadas/giant-sword",
+        "chance": 0.02
+      },
+      {
+        "tipo": "itens/espadas/ice-rapier",
+        "chance": 0.018
+      },
+      {
+        "tipo": "itens/machados/golden-sickle",
+        "chance": 0.0143
+      },
+      {
+        "tipo": "itens/livros/purple-tome",
+        "chance": 0.0119
+      },
+      {
+        "tipo": "itens/capacetes/devil-helmet",
+        "chance": 0.012
+      },
+      {
+        "tipo": "itens/aneis/gold-ring",
+        "chance": 0.0101
+      },
+      {
+        "tipo": "itens/escudos/demon-shield",
+        "chance": 0.0075
+      },
+      {
+        "tipo": "itens/amuletos-e-colares/platinum-amulet",
+        "chance": 0.0071
+      },
+      {
+        "tipo": "itens/escudos/mastermind-shield",
+        "chance": 0.0047
+      },
+      {
+        "tipo": "itens/calcas/golden-legs",
+        "chance": 0.004
+      },
+      {
+        "tipo": "itens/armaduras/magic-plate-armor",
+        "chance": 0.0008
+      }
+    ]
+  }
 }

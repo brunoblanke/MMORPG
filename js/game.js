@@ -57,7 +57,6 @@ export class GameController {
       console.error('❌ Erro ao carregar mapa:', error);
       return {};
     });
-    this.lootReady = fetch(CONFIG.lootDataUrl).then(r => (r.ok ? r.json() : {})).catch(() => ({}));
     const socketReady = RemoteSession.openSocket().catch((error) => {
       console.log(`🕹️ Sem servidor de jogo (${error.message}): jogando sozinho`);
       return null;
@@ -92,12 +91,11 @@ export class GameController {
   // antes de entrar): joga sozinho no navegador com esse nome.
 
   async openSession(modal, mapData, socket) {
-    const lootTable = await this.lootReady;
     for (;;) {
       const { name, gender } = await modal.ask();
       if (!socket) {
         modal.close(name);
-        return new LocalSession(mapData, name, gender, lootTable);
+        return new LocalSession(mapData, name, gender);
       }
       try {
         const session = await RemoteSession.join(socket, mapData, name, gender);
@@ -113,7 +111,7 @@ export class GameController {
         console.log(`🕹️ ${error.message}: jogando sozinho`);
         socket = null;
         modal.close(name);
-        return new LocalSession(mapData, name, gender, lootTable);
+        return new LocalSession(mapData, name, gender);
       }
     }
   }

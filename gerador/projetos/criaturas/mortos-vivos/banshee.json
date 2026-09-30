@@ -41,7 +41,88 @@
     }
   },
   "propriedades": {
-    "comportamento": "mago"
+    "comportamento": "mago",
+    "vida": 1000,
+    "xp": 900,
+    "velocidade": 220,
+    "armadura": 25,
+    "ataque": 100,
+    "loot": [
+      {
+        "tipo": "itens/fontes-de-luz/candlestick",
+        "chance": 0.7
+      },
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.3,
+        "min": 1,
+        "max": 80
+      },
+      {
+        "tipo": "itens/amuletos-e-colares/silver-amulet",
+        "chance": 0.094
+      },
+      {
+        "tipo": "itens/armaduras/simple-dress",
+        "chance": 0.063
+      },
+      {
+        "tipo": "itens/valiosos/black-pearl",
+        "chance": 0.0213
+      },
+      {
+        "tipo": "itens/valiosos/silver-brooch",
+        "chance": 0.0155
+      },
+      {
+        "tipo": "itens/espadas/poison-dagger",
+        "chance": 0.0155
+      },
+      {
+        "tipo": "itens/valiosos/white-pearl",
+        "chance": 0.0111
+      },
+      {
+        "tipo": "itens/decoracoes/lyre",
+        "chance": 0.0097
+      },
+      {
+        "tipo": "itens/amuletos-e-colares/stone-skin-amulet",
+        "chance": 0.0082
+      },
+      {
+        "tipo": "itens/liquidos/mana-potion",
+        "chance": 0.0077
+      },
+      {
+        "tipo": "itens/aneis/ring-of-healing",
+        "chance": 0.0075
+      },
+      {
+        "tipo": "itens/armaduras/blue-robe",
+        "chance": 0.007
+      },
+      {
+        "tipo": "itens/aneis/wedding-ring",
+        "chance": 0.0056
+      },
+      {
+        "tipo": "itens/spellbooks/spellbook",
+        "chance": 0.0052
+      },
+      {
+        "tipo": "itens/aneis/crystal-ring",
+        "chance": 0.0018
+      },
+      {
+        "tipo": "itens/armaduras/red-robe",
+        "chance": 0.0015
+      },
+      {
+        "tipo": "itens/valiosos/life-crystal",
+        "chance": 0.001
+      }
+    ]
   },
   "ferramenta": "criaturas",
   "grupo": "criaturas",

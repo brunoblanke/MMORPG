@@ -1,6 +1,6 @@
 // gerador/app/js/creatures.js
 
-import { saveProject } from './api.js';
+import { saveProject, fetchProjects } from './api.js';
 import { creatureInfo, itemCategory } from './picker.js';
 import { sourceUrl, sourceLabel, loadImage, isReady, drawAnchored, readPngFile, normalizeName, setStatus } from './common.js';
 import { refreshProjects } from './projects.js';
@@ -39,7 +39,9 @@ const creatures = {
   name: '',
   path: '',
   dirty: false,
-  saving: false
+  saving: false,
+  loot: [],
+  lootItems: []
 };
 
 const statusEl = document.getElementById('creatureStatus');
@@ -58,6 +60,7 @@ const thumbCanvas = document.getElementById('creatureThumb');
 const walkCanvas = document.getElementById('walkPreview');
 const sheetCanvas = document.getElementById('creatureSheet');
 const slotsEl = document.getElementById('corpseSlots');
+const lootEl = document.getElementById('creatureLoot');
 
 // ================================================================================================================================================================================================================================================
 // initCreatures
@@ -79,6 +82,12 @@ function initCreatures() {
   for (const [, el] of STAT_FIELDS) el.addEventListener('input', () => { creatures.dirty = true; });
   fillFolderSelect(folderEl, CATEGORY);
   folderEl.addEventListener('change', () => { creatures.dirty = true; });
+  document.getElementById('creatureLootAdd').onclick = () => {
+    creatures.loot.push({ tipo: '', chance: 0.1, min: 1, max: 1 });
+    creatures.dirty = true;
+    renderLoot();
+  };
+  loadLootItems();
   fetch('/api/paleta').then(r => r.json()).then(data => {
     creatures.palette = data.cores || [];
     renderColors();
@@ -430,6 +439,70 @@ function statValues() {
 }
 
 // ================================================================================================================================================================================================================================================
+// loadLootItems
+// Os itens salvos no gerador (grupo Itens), pra escolher no loot.
+
+async function loadLootItems() {
+  try {
+    const projects = await fetchProjects();
+    creatures.lootItems = projects.filter(p => p.grupo === 'itens' && !p.nome.startsWith('respingo'))
+      .map(p => p.caminho).sort((a, b) => a.localeCompare(b, 'pt'));
+  } catch {
+    creatures.lootItems = [];
+  }
+  renderLoot();
+}
+
+// ================================================================================================================================================================================================================================================
+// renderLoot
+// Uma linha por item do loot: item, chance (%), quantidade mínima e máxima.
+
+function renderLoot() {
+  lootEl.innerHTML = '';
+  const items = creatures.lootItems || [];
+  creatures.loot.forEach((entry, index) => {
+    const row = document.createElement('div');
+    row.className = 'loot-row';
+    const select = document.createElement('select');
+    const options = entry.tipo && !items.includes(entry.tipo) ? [entry.tipo, ...items] : items;
+    select.innerHTML = '<option value="">— item —</option>' + options.map(tipo => `<option value="${tipo}">${tipo.replace(/^itens\//, '')}</option>`).join('');
+    select.value = entry.tipo;
+    select.onchange = () => { entry.tipo = select.value; creatures.dirty = true; };
+    const number = (value, min, max, step, title, apply) => {
+      const input = document.createElement('input');
+      input.type = 'number';
+      Object.assign(input, { min, max, step, title, value });
+      input.oninput = () => { apply(Number(input.value)); creatures.dirty = true; };
+      return input;
+    };
+    const chance = number(+(entry.chance * 100).toFixed(2), 0, 100, 0.01, 'Chance de cair (%)', v => { entry.chance = Math.max(0, Math.min(100, v || 0)) / 100; });
+    const min = number(entry.min, 1, 100, 1, 'Quantidade mínima', v => { entry.min = Math.max(1, Math.floor(v) || 1); });
+    const max = number(entry.max, 1, 100, 1, 'Quantidade máxima', v => { entry.max = Math.max(1, Math.floor(v) || 1); });
+    const remove = document.createElement('button');
+    remove.type = 'button';
+    remove.className = 'ghost-btn';
+    remove.textContent = '×';
+    remove.title = 'Tirar do loot';
+    remove.onclick = () => { creatures.loot.splice(index, 1); creatures.dirty = true; renderLoot(); };
+    row.append(select, chance, document.createTextNode('%'), min, document.createTextNode('–'), max, remove);
+    lootEl.appendChild(row);
+  });
+}
+
+// ================================================================================================================================================================================================================================================
+// lootValues
+// O loot pra receita: [{ tipo, chance (0–1), min, max }], sem linhas vazias.
+
+function lootValues() {
+  return creatures.loot.filter(e => e.tipo && e.chance > 0).map(e => {
+    const entry = { tipo: e.tipo, chance: Math.round(e.chance * 10000) / 10000 };
+    const max = Math.max(e.min || 1, e.max || 1);
+    if (max > 1) Object.assign(entry, { min: Math.min(e.min || 1, max), max });
+    return entry;
+  });
+}
+
+// ================================================================================================================================================================================================================================================
 // behaviorOf
 // Comportamento guardado na receita: normal, foge (com a vida baixa), mago
 // (ataca de longe) ou pacifico (nunca ataca, foge de quem chega perto).
@@ -479,7 +552,7 @@ async function save() {
     },
     criatura: { id: creatures.outfit.id, cores: creatures.colors, addons: creatures.addons },
     cadaver: creatures.corpse,
-    propriedades: { comportamento: behaviorEl.value, ...statValues() }
+    propriedades: { comportamento: behaviorEl.value, ...statValues(), loot: lootValues() }
   };
 
   try {
@@ -507,6 +580,9 @@ function openRecipe(recipe) {
   creatures.addons = Array.isArray(saved.addons) ? [...saved.addons] : [];
   behaviorEl.value = behaviorOf(recipe.propriedades || {});
   for (const [key, el] of STAT_FIELDS) el.value = String(Math.max(0, Math.floor(Number((recipe.propriedades || {})[key])) || 0));
+  const loot = (recipe.propriedades || {}).loot;
+  creatures.loot = Array.isArray(loot) ? loot.map(e => ({ tipo: e.tipo, chance: Number(e.chance) || 0, min: e.min || 1, max: e.max || e.min || 1 })) : [];
+  loadLootItems();
   creatures.corpse = {};
   creatures.corpseImages.clear();
   for (const stage of CORPSE_STAGES) {

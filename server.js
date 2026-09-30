@@ -15,7 +15,6 @@ const CHARACTERS_PATH = path.join(PASTA_JOGO, 'data', 'characters.json');
 const PASTA_PROJETOS = path.join(PASTA_JOGO, 'gerador', 'projetos');
 const PASTA_SAIDA = path.join(PASTA_JOGO, 'gerador', 'saida');
 const TAXONOMIA_PATH = path.join(PASTA_JOGO, 'gerador', 'taxonomia.json');
-const LOOT_PATH = path.join(PASTA_JOGO, 'data', 'loot.json');
 const SAVE_INTERVAL_MS = 10000;
 const PORT = process.env.PORT || 8000;
 
@@ -108,18 +107,6 @@ function lerSprites() {
   return sprites;
 }
 
-// ================================================================================================================================================================================================================================================
-// lerLoot
-// data/loot.json: { '<criatura>': [{ tipo, chance, min, max }] } (vazio se não existir).
-
-function lerLoot() {
-  try {
-    return fs.existsSync(LOOT_PATH) ? JSON.parse(fs.readFileSync(LOOT_PATH, 'utf8')) : {};
-  } catch (err) {
-    console.error('❌ data/loot.json inválido:', err.message);
-    return {};
-  }
-}
 
 // ================================================================================================================================================================================================================================================
 // descreverSprite
@@ -178,7 +165,7 @@ async function iniciarJogo(servidorHttp) {
   setAssets(lerSprites());
 
   const mapData = JSON.parse(fs.readFileSync(MAP_DATA_PATH, 'utf8'));
-  const sim = new Simulation(mapData, { lootTable: lerLoot() });
+  const sim = new Simulation(mapData);
   const personagens = carregarPersonagens();
   const conexoes = new Map();
   let proximoJogador = 1;
