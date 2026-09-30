@@ -1,0 +1,64 @@
+{
+  "formato": {
+    "quadro": 64,
+    "colunas": 4,
+    "pecas": [
+      "x",
+      "y",
+      "xy",
+      "yx",
+      "porta-x",
+      "porta-x-aberta",
+      "porta-y",
+      "porta-y-aberta",
+      "arco-x-oeste",
+      "arco-x-leste",
+      "arco-y-norte",
+      "arco-y-sul",
+      "janela-x",
+      "janela-y"
+    ]
+  },
+  "pecas": {
+    "x": {
+      "tibia": {
+        "id": 2230,
+        "variacao": 0
+      }
+    },
+    "y": {
+      "tibia": {
+        "id": 2231,
+        "variacao": 0
+      }
+    },
+    "xy": {
+      "tibia": {
+        "id": 5306,
+        "variacao": 0
+      }
+    },
+    "yx": {
+      "tibia": {
+        "id": 5307,
+        "variacao": 0
+      }
+    },
+    "arco-x-oeste": {
+      "tibia": {
+        "id": 5517,
+        "variacao": 0
+      }
+    },
+    "arco-y-norte": {
+      "tibia": {
+        "id": 5515,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "paredes",
+  "grupo": "estrutura",
+  "pasta": "cercas",
+  "nome": "parede-pedra-branca-1"
+}

@@ -1,0 +1,33 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 1
+  },
+  "objeto": {
+    "tibia": {
+      "id": 2021,
+      "variacao": 0
+    }
+  },
+  "propriedades": {
+    "bloqueia": true,
+    "move": false,
+    "altura": false,
+    "empilhavel": false,
+    "peso": 10,
+    "espacos": 0,
+    "atk": 0,
+    "def": 0,
+    "ml": 0,
+    "speed": 0,
+    "vidaMin": 0,
+    "vidaMax": 0,
+    "manaMin": 0,
+    "manaMax": 0,
+    "alimento": 0
+  },
+  "ferramenta": "objetos",
+  "grupo": "estrutura",
+  "pasta": "natureza",
+  "nome": "placa-alta-x"
+}
