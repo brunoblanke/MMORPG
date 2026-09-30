@@ -3,7 +3,7 @@
 import { GameObject } from '../models/game-object.js';
 import { objectIdType, objectUse, openedAs, displayName, getAsset, splitType } from '../../shared/assets.js';
 import { itemInfo, newItem, weightOf } from '../../shared/items.js';
-import { getHoleTarget } from '../../shared/stairs.js';
+import { getHoleTarget, toLowerLevel } from '../../shared/stairs.js';
 
 // Objetos do mapa que se usam (gerador → Objetos → Uso):
 //   placa     → o texto (editor) aparece no centro da tela;
@@ -119,10 +119,11 @@ export class InteractionController {
 
   // ================================================================================================================================================================================================================================================
   // goDown
-  // Bueiro: leva o player pro sqm embaixo dele, no andar de baixo.
+  // Bueiro: leva o player pro andar de baixo, 1 sqm ao sul e 1 ao leste do
+  // bueiro (onde fica o sqm embaixo dele na tela).
 
   goDown(player, grate) {
-    const target = getHoleTarget(grate.x, grate.y, grate.z || 0);
+    const target = toLowerLevel(grate.x, grate.y, grate.z || 0);
     if (this.sim.movement.useTransition(player, { id: 'bueiro', targetX: target.x, targetY: target.y, targetZ: target.z })) {
       this.sim.control.clearWalk(player);
       return true;

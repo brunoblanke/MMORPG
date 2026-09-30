@@ -6,7 +6,7 @@ import { updateStats } from '../view/tools-panel.js';
 import { openEnemyForm, openObjectDataForm } from '../view/forms.js';
 import { addFloorToCell, restackItems } from '../../../shared/map-format.js';
 import { refreshBordersAt } from '../model/borders.js';
-import { isStairsType } from '../../../shared/assets.js';
+import { isStairsFolder } from '../../../shared/assets.js';
 import { itemInfo } from '../../../shared/items.js';
 import { brushCells, MAX_BRUSH } from '../model/brush.js';
 
@@ -21,7 +21,7 @@ import { brushCells, MAX_BRUSH } from '../model/brush.js';
 function eraseTopmost(cell) {
   if (cell.enemy) { cell.enemy = null; return 'enemy'; }
   if (cell.spawn) { cell.spawn = false; return 'spawn'; }
-  if (cell.objects.length > 0) { return isStairsType(cell.objects.pop().type) ? 'stairs' : 'object'; }
+  if (cell.objects.length > 0) { return isStairsFolder(cell.objects.pop().type) ? 'stairs' : 'object'; }
   if (cell.borders.length > 0) { cell.borders.pop(); return 'border'; }
   if (cell.hole) { cell.hole = null; return 'hole'; }
   if (cell.floorTop) { cell.floorTop = null; return 'floor'; }
@@ -45,7 +45,7 @@ export function applyTool(x, y, clientX, clientY) {
   if (state.tool === 'stairs') {
     // Destino é fixo pela posição (shared/stairs.js): só escolhe o desenho.
     const cell = state.layers[state.activeZ][`${x},${y}`];
-    if (state.stairsPaint && !cell.objects.some(o => isStairsType(o.type))) {
+    if (state.stairsPaint && !cell.objects.some(o => isStairsFolder(o.type))) {
       cell.objects.push({ type: state.stairsPaint });
       refreshBordersAt(state.activeZ, x, y, true);
     }
