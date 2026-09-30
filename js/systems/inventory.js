@@ -507,7 +507,7 @@ export class InventoryController {
       return;
     }
     if (use === 'ferramenta-corda' || use === 'ferramenta-pa') {
-      this.sim.interactions.useTool(player, use, target);
+      this.sim.interactions.useTool(player, use, target, from);
       return;
     }
     if (!info.food && !info.heal) return;
