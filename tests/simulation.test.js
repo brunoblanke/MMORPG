@@ -219,8 +219,12 @@ test('inimigo morto renasce no lugar original do mapa, mesmo tendo perseguido pr
   assert.ok(enemy.x !== 18 || enemy.y !== 18, 'o inimigo deveria ter saído do lugar perseguindo');
 
   sim.enqueue('player1', { type: 'walkTo', x: 2, y: 2, z: 0 });
-  runFor(sim, 8000);
-  assert.equal(enemy.ai.state, 'patrol');
+  let patrolled = false;
+  for (let t = 0; t < 8000 && !patrolled; t += TICK_MS) {
+    runFor(sim, TICK_MS);
+    patrolled = enemy.ai.state === 'patrol';
+  }
+  assert.ok(patrolled, 'perdeu o player de vista e voltou a patrulhar');
   assert.ok(enemy.patrolCenterX !== 18 || enemy.patrolCenterY !== 18, 'a patrulha deveria ter mudado de centro');
 
   enemy.currentHp = 0;

@@ -53,6 +53,7 @@ const STAT_FIELDS = [
   ['xp', document.getElementById('creatureXp')],
   ['velocidade', document.getElementById('creatureSpeed')],
   ['armadura', document.getElementById('creatureArmor')],
+  ['defesa', document.getElementById('creatureDefense')],
   ['ataque', document.getElementById('creatureAttack')]
 ];
 const infoEl = document.getElementById('creatureInfo');

@@ -50,6 +50,7 @@
     "xp": 700,
     "velocidade": 172,
     "armadura": 25,
+    "defesa": 25,
     "ataque": 120,
     "loot": [
       {

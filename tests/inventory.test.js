@@ -310,19 +310,24 @@ test('skills começam no padrão do 7.6 e voltam com o personagem', () => {
   assert.equal(again.skills.fishing.lvl, 10);
 });
 
-test('atk, def e ml dos itens do inventário somam nos skills e no combate', () => {
+test('arma, escudo e armadura entram na fórmula do Tibia; só o ml soma no skill', () => {
   const sim = game();
   const player = sim.player;
-  const base = sim.combat.calculateDamage(player, { def: 0 });
+  const fist = sim.combat.maxDamage(player);
+  assert.equal(fist, Math.round(Math.floor(player.lvl / 5) + ((10 / 4 + 1) * (7 / 3) * 1.03) / 1.2));
   player.equip.arma = { uid: 's1', type: SWORD };
   player.equip.escudo = { uid: 's2', type: SHIELD };
   player.equip.mochila.items[0] = { uid: 's3', type: SWORD };
+  assert.equal(sim.combat.maxDamage(player), Math.round(Math.floor(player.lvl / 5) + ((10 / 4 + 1) * (12 / 3) * 1.03) / 1.2));
+  assert.equal(sim.combat.defenseOf(player, 100000), Math.floor((10 / 4 + 2.23) * 8 * 0.15));
+  assert.equal(sim.combat.defenseOf(player, 0), Math.floor((10 / 4 + 2.23) * 8 * 0.15 * 0.75), 'logo depois de atacar a defesa cai');
   const stats = sim.inventory.viewFor(player).stats;
-  assert.equal(stats.skills.sword.bonus, 14);
-  assert.equal(stats.skills.shielding.bonus, 8);
+  assert.equal(stats.skills.sword.bonus, 0);
   assert.equal(stats.skills.magic.bonus, 1);
-  assert.equal(stats.skills.axe.bonus, 0);
-  assert.ok(sim.combat.calculateDamage(player, { def: 0 }) > base);
+  for (let i = 0; i < 200; i++) {
+    const hit = sim.combat.calculateDamage(player, { atk: 0, def: 0, isPlayer: false }, 0);
+    assert.ok(hit >= 0 && hit <= sim.combat.maxDamage(player));
+  }
   assert.equal(stats.maxMana, player.maxMana);
 });
 

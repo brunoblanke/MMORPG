@@ -17,7 +17,6 @@ export const CONFIG = {
   targetLoseRange: 25,         // alvo mais longe que isso (ou em outro andar) é perdido
   // Escalas globais (player e inimigos, sem mexer nos atributos por lvl):
   // 0.4 = 60% mais fraco / 60% mais lento.
-  damageScale: 0.4,   // multiplica o dano de cada golpe
   speedScale: 0.4,    // divide o tempo de passo e das animações de andar
   enemyRespawnTime: 60000,   // como no Tibia: 1 min depois de morrer
   corpseFrameDuration: 60000,

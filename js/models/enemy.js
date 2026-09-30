@@ -35,6 +35,7 @@ export class Enemy extends Entity {
     if (stats.xp) this.xp = stats.xp;
     if (stats.spd) this.spd = stats.spd;
     if (stats.def) this.def = stats.def;
+    this.defense = stats.defense || this.def;
     if (stats.atk) this.atk = stats.atk;
   }
 

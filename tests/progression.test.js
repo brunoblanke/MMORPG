@@ -75,7 +75,7 @@ test('matar um inimigo dá o XP inteiro dele e pode subir o nível', () => {
   const sim = buildGame({ objects: GROUND, enemies: [[8, 5, 0, 30]], player: { x: 2, y: 5, z: 0 } });
   const enemy = sim.enemies[0];
   const reward = enemy.xp;
-  sim.player.atk = 999;
+  Object.assign(enemy, { currentHp: 1, def: 0, defense: 0 });
   sim.player.xp = sim.player.nextLevelXp - 1;
   const lvlBefore = sim.player.lvl;
 

@@ -743,8 +743,7 @@ export class InventoryController {
 
   statsFor(player) {
     const bonus = equipBonus(player.equip);
-    const extra = { magic: bonus.ml, shielding: bonus.def };
-    extra[bonus.atkSkill] = (extra[bonus.atkSkill] || 0) + bonus.atk;
+    const extra = { magic: bonus.ml };
     const skills = {};
     for (const key of ['magic', ...SKILL_KEYS]) skills[key] = { ...player.skills[key], bonus: extra[key] || 0 };
     return {

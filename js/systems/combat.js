@@ -10,6 +10,41 @@ import { addSkillTry } from '../../shared/skills.js';
 
 const FLOOR_DAMAGE_INTERVAL = 1000;
 
+// Fórmula do Tibia (TFS 1.4), modo "balanced" (o padrão do cliente):
+// golpe do player = 0..máximo (sorteio normal), com máximo =
+// nível/5 + ((skill/4 + 1) × ataque/3 × 1,03) / 1,2 — sem arma, ataque 7 no
+// fist. Criatura: 0..ataque dela. O golpe perde a defesa (entre metade e
+// ela toda) e depois a armadura (entre metade e ela toda, menos 1).
+// Defesa do player = (skill/4 + 2,23) × defesa do escudo (ou da arma, ou 7
+// sem nada) × 0,15 (× 0,75 logo depois de atacar).
+const ATTACK_FACTOR = 1.2;
+const DEFENSE_FACTOR_AFTER_ATTACK = 0.75;
+const FIST_ATTACK = 7;
+const FIST_DEFENSE = 7;
+const ARMOR_SLOTS = ['cabeca', 'amuleto', 'corpo', 'pernas', 'pes', 'anel'];
+
+// ================================================================================================================================================================================================================================================
+// normalRandom
+// Inteiro entre min e max puxado pro meio (normal com média no centro), como
+// o normal_random do Tibia.
+
+function normalRandom(min, max) {
+  let v;
+  do {
+    const u = 1 - Math.random();
+    const w = Math.random();
+    v = 0.5 + 0.25 * Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * w);
+  } while (v < 0 || v > 1);
+  return min + Math.round((max - min) * v);
+}
+
+// ================================================================================================================================================================================================================================================
+// uniformRandom
+
+function uniformRandom(min, max) {
+  return max <= min ? min : min + Math.floor(Math.random() * (max - min + 1));
+}
+
 export class CombatController {
 
   // ================================================================================================================================================================================================================================================
@@ -20,29 +55,89 @@ export class CombatController {
   }
 
   // ================================================================================================================================================================================================================================================
-  // calculateDamage
+  // maxDamage
+  // O maior golpe possível: do player pela fórmula do Tibia (nível, skill da
+  // arma na mão e ataque dela); da criatura, o ataque dela.
 
-  calculateDamage(attacker, defender) {
-    const baseDamage = attacker.atk + equipBonus(attacker.equip).atk;
-    const defense = defender.def + equipBonus(defender.equip).def;
-    const rawDamage = baseDamage - Math.floor(defense / 2);
-    return Math.max(1, Math.round(rawDamage * CONFIG.damageScale));
+  maxDamage(attacker) {
+    if (!attacker.isPlayer) return Math.max(0, attacker.atk || 0);
+    const weapon = attacker.equip && attacker.equip.arma;
+    const info = weapon ? itemInfo(weapon.type) : null;
+    const skillKey = (info && info.weaponSkill) || 'fist';
+    const skill = (attacker.skills && attacker.skills[skillKey] ? attacker.skills[skillKey].lvl : 10);
+    const attack = info && info.weaponSkill ? info.atk : FIST_ATTACK;
+    return Math.round(Math.floor(attacker.lvl / 5) + (((skill / 4) + 1) * (attack / 3) * 1.03) / ATTACK_FACTOR);
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // defenseOf
+  // Defesa de quem apanha: da criatura, a do gerador; do player, a do escudo
+  // (com shielding), senão a da arma (com o skill dela), senão 7 (fist).
+
+  defenseOf(defender, now) {
+    if (!defender.isPlayer) return Math.max(0, defender.defense ?? defender.def ?? 0);
+    const equip = defender.equip || {};
+    const skills = defender.skills || {};
+    const weapon = equip.arma ? itemInfo(equip.arma.type) : null;
+    const shield = equip.escudo ? itemInfo(equip.escudo.type) : null;
+    let value = FIST_DEFENSE;
+    let skill = skills.fist ? skills.fist.lvl : 10;
+    if (weapon && weapon.weaponSkill) {
+      value = weapon.def;
+      skill = skills[weapon.weaponSkill] ? skills[weapon.weaponSkill].lvl : 10;
+    }
+    if (shield && shield.slot === 'escudo') {
+      value = shield.def;
+      skill = skills.shielding ? skills.shielding.lvl : 10;
+    }
+    const recentlyAttacked = now - (defender.lastAttackTime || 0) < CONFIG.attackCooldown;
+    return Math.floor((skill / 4 + 2.23) * value * 0.15 * (recentlyAttacked ? DEFENSE_FACTOR_AFTER_ATTACK : 1));
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // armorOf
+  // Armadura: da criatura, a do gerador; do player, a soma do que veste.
+
+  armorOf(defender) {
+    if (!defender.isPlayer) return Math.max(0, defender.def || 0);
+    const equip = defender.equip || {};
+    return ARMOR_SLOTS.reduce((sum, key) => sum + (equip[key] ? itemInfo(equip[key].type).def : 0), 0);
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // calculateDamage
+  // Um golpe: sorteio de 0 ao máximo, menos a defesa (se o golpe é corpo a
+  // corpo) e a armadura. Pode dar 0 (bloqueado).
+
+  calculateDamage(attacker, defender, now = this.sim.time || 0, { melee = true } = {}) {
+    let damage = normalRandom(0, this.maxDamage(attacker));
+    if (melee && damage > 0) {
+      const defense = this.defenseOf(defender, now);
+      damage -= uniformRandom(Math.floor(defense / 2), defense);
+    }
+    if (damage > 0) {
+      const armor = this.armorOf(defender);
+      if (armor > 3) damage -= uniformRandom(Math.floor(armor / 2), armor - (armor % 2 + 1));
+      else if (armor > 0) damage--;
+    }
+    return Math.max(0, damage);
   }
 
   // ================================================================================================================================================================================================================================================
   // attackTarget
 
-  attackTarget(attacker, defender, now) {
+  attackTarget(attacker, defender, now, { melee = true } = {}) {
     if (now - attacker.lastAttackTime < CONFIG.attackCooldown) return false;
     if (!defender.isAlive()) return false;
 
-    const damage = this.calculateDamage(attacker, defender);
-    const hpLeft = defender.takeDamage(damage, now);
+    const damage = this.calculateDamage(attacker, defender, now, { melee });
     attacker.lastAttackTime = now;
     if (attacker.isPlayer) this.trainSkill(attacker, equipBonus(attacker.equip).atkSkill);
     if (defender.isPlayer && defender.equip && defender.equip.escudo && itemInfo(defender.equip.escudo.type).slot === 'escudo') {
       this.trainSkill(defender, 'shielding');
     }
+    if (damage <= 0) return defender.currentHp;
+    const hpLeft = defender.takeDamage(damage, now);
     this.sim.emit({ type: 'damage', targetId: defender.id, x: defender.x, y: defender.y, amount: damage });
     return hpLeft;
   }
@@ -57,7 +152,7 @@ export class CombatController {
     if (range > CONFIG.mageRange || !this.sim.movement.hasLineOfSight(enemy, player)) return;
     if (now - enemy.lastAttackTime < CONFIG.attackCooldown) return;
     this.sim.emit({ type: 'missile', fromX: enemy.x, fromY: enemy.y, toX: player.x, toY: player.y });
-    this.attackTarget(enemy, player, now);
+    this.attackTarget(enemy, player, now, { melee: false });
   }
 
   // ================================================================================================================================================================================================================================================
