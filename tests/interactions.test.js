@@ -17,6 +17,9 @@ const ROPE = 'itens/ferramentas/rope';
 const SHOVEL = 'itens/ferramentas/shovel';
 const BAG = 'itens/recipientes/bolsa';
 const COIN = 'itens/valiosos/gold-coin';
+const STONE_PILE = 'estrutura/entradas/buraco-pedra-fechado';
+const STONE_HOLE = 'estrutura/entradas/buraco-pedra-aberto';
+const SHADOW = 'estrutura/escadas/sombra-buraco';
 
 const asset = (id, propriedades) => {
   const [grupo, pasta, nome] = id.split('/');
@@ -33,7 +36,10 @@ setAssets([
   asset(ROPE, { move: true, peso: 18, uso: 'ferramenta-corda' }),
   asset(SHOVEL, { move: true, peso: 35, uso: 'ferramenta-pa' }),
   asset(BAG, { move: true, peso: 8, espacos: 4 }),
-  asset(COIN, { move: true, peso: 0.1, empilhavel: true })
+  asset(COIN, { move: true, peso: 0.1, empilhavel: true }),
+  asset(STONE_PILE, { uso: 'pa', abreComo: STONE_HOLE }),
+  asset(STONE_HOLE, {}),
+  asset(SHADOW, { uso: 'corda' })
 ]);
 
 // ================================================================================================================================================================================================================================================
@@ -118,4 +124,15 @@ test('corda na marca de corda sobe pro andar de cima; a pá abre o monte em bura
   run(sim, DUG_HOLE_MS + 2 * TICK_MS);
   assert.equal(pile.dug, false);
   assert.equal(sim.world.getTransitionAt(5, 6, 1), null);
+});
+
+test('com Uso, a pasta não manda: monte da pá em Entradas não é buraco e marca de corda em Escadas não é escada', async () => {
+  const { buildGame: build, floorRect: floors } = await import('./helpers/fixture.js');
+  const sim = build({ objects: [...floors(0, 20, 0, 20, 0), ...floors(0, 20, 0, 20, 1), [STONE_PILE, 6, 5, 0, 0, false, false, false]], player: { x: 5, y: 5, z: 0 } });
+  assert.equal(sim.world.getTransitionAt(6, 5, 0), null, 'o monte fechado não derruba ninguém');
+  const mapData = { objetosData: floors(0, 5, 0, 5, 0), transicoesData: [[SHADOW, 2, 2, 0, 'up', 1, 2]], spawn: { x: 1, y: 1, z: 0 } };
+  const { Simulation } = await import('../js/simulation.js');
+  const other = new Simulation(mapData);
+  assert.equal(other.world.getTransitionAt(2, 2, 0), null, 'a marca de corda não sobe sozinha');
+  assert.ok(other.objects.some(o => o.id.startsWith(SHADOW + '_')));
 });

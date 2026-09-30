@@ -225,18 +225,20 @@ export function stairKind(type) {
 
 // ================================================================================================================================================================================================================================================
 // isFloorType / isStairsType / isHoleType
-// Pela pasta da folha (não precisa da lista: vale no servidor também).
+// Pela pasta da folha. Com Uso no gerador, o uso manda: marca de corda na
+// pasta de escadas não é escada; monte da pá na pasta de entradas não é
+// buraco (só vira quando a pá abre).
 
 export function isFloorType(type) {
   return splitType(type).asset.startsWith(FLOOR_FOLDER);
 }
 
 export function isStairsType(type) {
-  return splitType(type).asset.startsWith(STAIRS_FOLDER);
+  return splitType(type).asset.startsWith(STAIRS_FOLDER) && objectUse(type) !== 'corda';
 }
 
 export function isHoleType(type) {
-  return splitType(type).asset.startsWith(HOLE_FOLDER);
+  return splitType(type).asset.startsWith(HOLE_FOLDER) && objectUse(type) !== 'pa';
 }
 
 // ================================================================================================================================================================================================================================================
