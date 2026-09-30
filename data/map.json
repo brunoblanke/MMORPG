@@ -1193,6 +1193,16 @@
       false
     ],
     [
+      "estrutura/escadas/sombra-buraco",
+      210,
+      211,
+      -3,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       211,
       211,
@@ -6420,6 +6430,16 @@
       false,
       false,
       15214
+    ],
+    [
+      "estrutura/escadas/sombra-buraco",
+      193,
+      226,
+      -3,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -13659,6 +13679,16 @@
     ],
     [
       "Border:estrutura/pisos/piso-terra-2:int-sl",
+      184,
+      209,
+      -2,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/escadas/sombra-buraco",
       184,
       209,
       -2,
@@ -24752,6 +24782,16 @@
       false,
       false,
       15116
+    ],
+    [
+      "estrutura/escadas/sombra-buraco",
+      188,
+      227,
+      -2,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-2",
@@ -42465,6 +42505,26 @@
       false,
       false,
       12472
+    ],
+    [
+      "itens/recipientes/bag",
+      187,
+      219,
+      -1,
+      0,
+      true,
+      false,
+      false
+    ],
+    [
+      "itens/liquidos/yellow-bottle",
+      187,
+      219,
+      -1,
+      0,
+      true,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -121544,17 +121604,6 @@
       10668
     ],
     [
-      "estrutura/pisos/piso-agua-1",
-      191,
-      209,
-      0,
-      0,
-      false,
-      false,
-      false,
-      4405
-    ],
-    [
       "estrutura/pisos/piso-paralelepipedo",
       191,
       209,
@@ -121563,7 +121612,47 @@
       false,
       false,
       false,
-      10667
+      15218
+    ],
+    [
+      "Border:estrutura/pisos/piso-paralelepipedo:int-no",
+      191,
+      209,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-paralelepipedo:int-nl",
+      191,
+      209,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-paralelepipedo:int-so",
+      191,
+      209,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-paralelepipedo:int-sl",
+      191,
+      209,
+      0,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/entradas/bueiro",
@@ -164812,33 +164901,6 @@
   ],
   "transicoesData": [
     [
-      "estrutura/escadas/sombra-buraco",
-      210,
-      211,
-      -3,
-      "up",
-      209,
-      211
-    ],
-    [
-      "estrutura/escadas/sombra-buraco",
-      193,
-      226,
-      -3,
-      "up",
-      192,
-      226
-    ],
-    [
-      "estrutura/escadas/sombra-buraco",
-      184,
-      209,
-      -2,
-      "up",
-      183,
-      209
-    ],
-    [
       "estrutura/escadas/escada-madeira-reta-1",
       196,
       214,
@@ -164873,15 +164935,6 @@
       "up",
       198,
       225
-    ],
-    [
-      "estrutura/escadas/sombra-buraco",
-      188,
-      227,
-      -2,
-      "up",
-      187,
-      227
     ],
     [
       "estrutura/escadas/escada-madeira-reta-1",
