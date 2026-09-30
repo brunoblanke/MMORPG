@@ -10,7 +10,7 @@ import { stackFrame } from '../../shared/items.js';
 
 const TINT_HIT = { color: '#ff2a2a', alpha: 0.55 };
 const TINT_ENEMY_HOVER = { color: '#ff2a2a', alpha: 0.35 };
-const TINT_TARGET = { color: '#ff2a2a', alpha: 0.2 };
+const TARGET_OUTLINE = '#ff2a2a';
 const TINT_HOVER = { color: '#3b82f6', alpha: 0.35 };
 const FLOOR_DARKEN = 0.2;
 
@@ -194,9 +194,10 @@ export class Renderer {
   // drawAnchoredSprite
   // Desenha o frame alinhado ao canto inferior direito do tile (sprites maiores que o tile crescem pra cima/esquerda).
 
-  drawAnchoredSprite(image, frameRect, base, size, stackOffsetX, stackOffsetY, tint = null) {
+  drawAnchoredSprite(image, frameRect, base, size, stackOffsetX, stackOffsetY, tint = null, outline = null) {
     const drawX = base.x + size - frameRect.sw - stackOffsetX;
     const drawY = base.y + size - frameRect.sh - stackOffsetY;
+    if (outline) this.drawOutline(image, frameRect, drawX, drawY, outline);
     this.ctx.drawImage(
       image,
       frameRect.sx, frameRect.sy, frameRect.sw, frameRect.sh,
@@ -206,10 +207,11 @@ export class Renderer {
   }
 
   // ================================================================================================================================================================================
-  // drawTint
-  // Pinta a silhueta do sprite com a cor por cima (só onde o sprite tem pixel).
+  // silhouette
+  // A silhueta do sprite pintada com a cor (só onde o sprite tem pixel), num
+  // canvas reaproveitado.
 
-  drawTint(image, frameRect, drawX, drawY, tint) {
+  silhouette(image, frameRect, color) {
     if (!this.tintCanvas) this.tintCanvas = document.createElement('canvas');
     const canvas = this.tintCanvas;
     canvas.width = frameRect.sw;
@@ -219,8 +221,17 @@ export class Renderer {
     tctx.globalCompositeOperation = 'source-over';
     tctx.drawImage(image, frameRect.sx, frameRect.sy, frameRect.sw, frameRect.sh, 0, 0, frameRect.sw, frameRect.sh);
     tctx.globalCompositeOperation = 'source-in';
-    tctx.fillStyle = tint.color;
+    tctx.fillStyle = color;
     tctx.fillRect(0, 0, frameRect.sw, frameRect.sh);
+    return canvas;
+  }
+
+  // ================================================================================================================================================================================
+  // drawTint
+  // Pinta a silhueta do sprite com a cor por cima (só onde o sprite tem pixel).
+
+  drawTint(image, frameRect, drawX, drawY, tint) {
+    const canvas = this.silhouette(image, frameRect, tint.color);
     this.ctx.save();
     this.ctx.globalAlpha = tint.alpha;
     this.ctx.drawImage(canvas, drawX, drawY);
@@ -228,14 +239,24 @@ export class Renderer {
   }
 
   // ================================================================================================================================================================================
+  // drawOutline
+  // Borda de 1px na cor em volta do desenho do sprite (a silhueta deslocada
+  // 1px pros quatro lados, por baixo do sprite): marca o alvo do player.
+
+  drawOutline(image, frameRect, drawX, drawY, color) {
+    const canvas = this.silhouette(image, frameRect, color);
+    for (const [ox, oy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) this.ctx.drawImage(canvas, drawX + ox, drawY + oy);
+  }
+
+  // ================================================================================================================================================================================
   // getTint
-  // Vermelho: dano recebido (player ou inimigo), inimigo sob o mouse e o alvo
-  // do player. Azul: item, parede ou cadáver sob o mouse. Nada fica transparente.
+  // Vermelho: dano recebido (player ou inimigo) e inimigo sob o mouse. Azul:
+  // item, parede ou cadáver sob o mouse. Nada fica transparente. O alvo do
+  // player ganha a borda vermelha (drawOutline), não um tom.
 
   getTint(entity, isHovered, isPlayer, isEnemy) {
     if (entity && entity.hitFlash) return TINT_HIT;
     if (isEnemy && isHovered) return TINT_ENEMY_HOVER;
-    if (entity && entity === this.selectedTarget) return TINT_TARGET;
     if (isHovered && !isPlayer && !isEnemy) return TINT_HOVER;
     return null;
   }
@@ -438,7 +459,8 @@ export class Renderer {
     } else {
       const frame = this.getEntityFrame(entity, isPlayer, isEnemy);
       if (frame) {
-        this.drawAnchoredSprite(frame.image, frame.frameRect, base, size, stackOffsetX, stackOffsetY, tint);
+        const outline = entity && entity === this.selectedTarget ? TARGET_OUTLINE : null;
+        this.drawAnchoredSprite(frame.image, frame.frameRect, base, size, stackOffsetX, stackOffsetY, tint, outline);
       } else {
         const color = entity && entity.color ? entity.color : "#888888";
         this.drawFallbackSquare(base, size, stackOffsetX, stackOffsetY, color, tint);
