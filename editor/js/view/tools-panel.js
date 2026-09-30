@@ -6,6 +6,7 @@ import { scheduleRender } from './canvas-renderer.js';
 import { BORDER_VARIANTS } from '../../../shared/floor-borders.js';
 import { listAssets, pieceType, splitType, displayName, isStairsFolder, isEntranceFolder, isItemType, isWallType, WALL_PIECES, WALL_PIECE_NAMES } from '../../../shared/assets.js';
 import { setThumb } from './sprite-thumb.js';
+import { closeSelectPanel } from './forms.js';
 
 // ================================================================================================================================================================================================================================================
 // renderLayerTabs
@@ -67,6 +68,7 @@ function layerHasContent(z) {
 
 export function onLayerChange() {
   document.getElementById('layerLabel').textContent = 'Andar ' + floorLabel(state.activeZ);
+  closeSelectPanel();
   renderLayerTabs();
   updateStats();
   scheduleRender();
@@ -213,6 +215,9 @@ export function renderTools() {
       swatch.style.alignItems = 'center';
       swatch.style.justifyContent = 'center';
       swatch.style.fontSize = '14px';
+    } else if (t.id === 'select') {
+      swatch.style.background = 'transparent';
+      swatch.style.border = '2px solid #f5c518';
     } else if (t.id === 'safe') {
       swatch.style.background = 'rgba(46, 204, 113, 0.35)';
       swatch.style.border = '1px solid rgba(46, 204, 113, 0.9)';
@@ -235,6 +240,7 @@ export function renderTools() {
     btn.onclick = () => {
       state.openAccordion = t.paint && state.openAccordion !== t.id ? t.id : null;
       state.tool = t.id;
+      if (t.id !== 'select') closeSelectPanel();
       renderTools();
     };
     wrap.appendChild(btn);

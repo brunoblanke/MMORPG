@@ -3,7 +3,7 @@
 import { canvas, cellFromEvent, scheduleRender } from '../view/canvas-renderer.js';
 import { state } from '../model/state.js';
 import { updateStats } from '../view/tools-panel.js';
-import { openEnemyForm, openObjectDataForm } from '../view/forms.js';
+import { openEnemyForm, openSelectPanel } from '../view/forms.js';
 import { addFloorToCell, restackItems } from '../../../shared/map-format.js';
 import { refreshBordersAt } from '../model/borders.js';
 import { isStairsFolder } from '../../../shared/assets.js';
@@ -51,6 +51,10 @@ export function applyTool(x, y, clientX, clientY) {
     }
     updateStats();
     scheduleRender();
+    return;
+  }
+  if (state.tool === 'select') {
+    openSelectPanel(x, y, clientX, clientY);
     return;
   }
   if (state.tool === 'enemy') {
@@ -147,7 +151,7 @@ canvas.addEventListener('mousemove', (evt) => {
     scheduleRender();
   }
   if (!state.painting) return;
-  if (state.tool === 'stairs' || state.tool === 'enemy' || state.tool === 'spawn') return;
+  if (state.tool === 'stairs' || state.tool === 'enemy' || state.tool === 'spawn' || state.tool === 'select') return;
   const cell = cellFromEvent(evt);
   if (!cell) return;
   applyTool(cell.x, cell.y, evt.clientX, evt.clientY);
@@ -163,13 +167,6 @@ canvas.addEventListener('mouseleave', () => {
 });
 
 window.addEventListener('mouseup', () => { state.painting = false; });
-
-// Botão direito num sqm com placa, livro ou baú de quest: texto ou itens dele.
-canvas.addEventListener('contextmenu', (evt) => {
-  const cell = cellFromEvent(evt);
-  if (!cell) return;
-  if (openObjectDataForm(cell.x, cell.y, evt.clientX, evt.clientY)) evt.preventDefault();
-});
 
 // Setas ↑/↓ aumentam e diminuem o pincel (fora de campos de texto).
 window.addEventListener('keydown', (evt) => {

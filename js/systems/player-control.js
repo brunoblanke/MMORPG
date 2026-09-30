@@ -2,7 +2,7 @@
 
 import { calculateMoveDelay, getAdjacentPositions } from '../utils/helpers.js';
 import { getStairTop } from '../../shared/stairs.js';
-import { isHoleType, objectIdType } from '../../shared/assets.js';
+import { isEntranceFolder, objectIdType } from '../../shared/assets.js';
 
 // Comandos que um jogador manda pra simulação (hoje pelo teclado/mouse; no
 // multiplayer, pela rede). Todos têm `type`:
@@ -132,7 +132,7 @@ export class PlayerControl {
     const world = this.sim.world;
     const transition = world.getTransitionAt(x, y, z);
     if (!transition || !transition.isStairTop) return false;
-    return !world.getObjectsAt(x, y).some(o => (o.z || 0) === z && isHoleType(objectIdType(o.id)));
+    return !world.getObjectsAt(x, y).some(o => (o.z || 0) === z && isEntranceFolder(objectIdType(o.id)));
   }
 
   // ================================================================================================================================================================================================================================================

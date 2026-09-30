@@ -56,11 +56,11 @@ export class InteractionController {
       return;
     }
     const use = objectUse(objectIdType(obj.id));
-    if (use === 'placa') this.message(player, (obj.data && obj.data.texto) || 'Não há nada escrito.');
+    if (use === 'placa') {
+      if (obj.data && obj.data.texto) this.message(player, obj.data.texto);
+    }
     else if (use === 'livro') this.readBook(player, obj.itemData || { type: objectIdType(obj.id), texto: obj.data && obj.data.texto });
     else if (use === 'bau-quest') this.openQuestChest(player, obj);
-    else if (use === 'corda') this.message(player, 'Use uma corda aqui pra subir.');
-    else if (use === 'pa') this.message(player, obj.dug ? 'O buraco está aberto.' : 'Use uma pá aqui pra abrir.');
     else if (use === 'descer') this.goDown(player, obj);
   }
 
@@ -81,17 +81,11 @@ export class InteractionController {
   useTool(player, tool, target) {
     const z = player.z || 0;
     if (!target || !Number.isInteger(target.x) || !Number.isInteger(target.y) || (target.z ?? z) !== z) return false;
-    if (Math.max(Math.abs(target.x - player.x), Math.abs(target.y - player.y)) > 1) {
-      this.message(player, 'Longe demais.');
-      return false;
-    }
+    if (Math.max(Math.abs(target.x - player.x), Math.abs(target.y - player.y)) > 1) return false;
     const wanted = tool === 'ferramenta-corda' ? 'corda' : 'pa';
     const obj = this.sim.world.getObjectsAt(target.x, target.y)
       .find(o => (o.z || 0) === z && objectUse(objectIdType(o.id)) === wanted);
-    if (!obj) {
-      this.message(player, 'Não dá pra usar isso aqui.');
-      return false;
-    }
+    if (!obj) return false;
     return wanted === 'corda' ? this.climb(player, obj) : this.dig(player, obj);
   }
 
@@ -113,7 +107,6 @@ export class InteractionController {
         return true;
       }
     }
-    this.message(player, 'Não dá pra subir por aqui.');
     return false;
   }
 
@@ -128,7 +121,6 @@ export class InteractionController {
       this.sim.control.clearWalk(player);
       return true;
     }
-    this.message(player, 'Não dá pra descer por aqui.');
     return false;
   }
 
@@ -138,14 +130,7 @@ export class InteractionController {
   // baixo e fecha sozinho depois de DUG_HOLE_MS.
 
   dig(player, pile) {
-    if (pile.dug) {
-      this.message(player, 'O buraco já está aberto.');
-      return false;
-    }
-    if (!openedAs(objectIdType(pile.id))) {
-      this.message(player, 'Esse monte não tem buraco (gerador → Abre como).');
-      return false;
-    }
+    if (pile.dug || !openedAs(objectIdType(pile.id))) return false;
     const target = getHoleTarget(pile.x, pile.y, pile.z || 0);
     const hole = new GameObject({ id: `Dug_${pile.id}`, x: pile.x, y: pile.y, z: pile.z || 0, movable: false, hasVolume: false, blocksMovement: false,
       stairDirection: 'down', targetX: target.x, targetY: target.y, targetZ: target.z });

@@ -54,5 +54,5 @@ export function getStairTopTarget(x, y, z, kind = 'normal') {
 // getHoleTarget
 
 export function getHoleTarget(x, y, z) {
-  return { x, y, z: z - 1 };
+  return toLowerLevel(x, y, z);
 }

@@ -121,18 +121,26 @@ export class InventoryController {
     if (!obj.itemData) {
       obj.itemData = newItem(this.nextUid(), objectIdType(obj.id), obj.count || 1);
       if (obj.data && obj.data.texto) obj.itemData.texto = obj.data.texto;
+      const inside = obj.itemData.items && obj.data && objectUse(objectIdType(obj.id)) !== 'bau-quest' ? obj.data.itens : null;
+      if (Array.isArray(inside)) {
+        inside.filter(e => e && getAsset(splitType(e.tipo).asset)).slice(0, obj.itemData.items.length)
+          .forEach((e, i) => { obj.itemData.items[i] = newItem(this.nextUid(), e.tipo, e.count || 1); });
+      }
     }
     return obj.itemData;
   }
 
   // ================================================================================================================================================================================================================================================
   // isOpenable
-  // Dá pra abrir: caixa do chão ou cadáver com loot (ainda no mapa).
+  // Dá pra abrir: caixa do chão (solta ou fixa no mapa, sem Uso) ou cadáver
+  // com loot (ainda no mapa).
 
   isOpenable(obj) {
     if (!obj) return false;
     if (obj.isCorpse) return !!obj.itemData && this.sim.deadBodies.includes(obj);
-    return this.isPickable(obj) && !!this.groundItem(obj).items;
+    const fixed = !obj.floorType && !obj.isBorder && !obj.stairDirection && this.sim.world.objects.has(obj) &&
+      !!getAsset(splitType(objectIdType(obj.id)).asset) && !objectUse(objectIdType(obj.id)) && itemInfo(objectIdType(obj.id)).size > 0;
+    return (this.isPickable(obj) || fixed) && !!this.groundItem(obj).items;
   }
 
   // ================================================================================================================================================================================================================================================

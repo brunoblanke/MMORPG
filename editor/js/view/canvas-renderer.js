@@ -228,6 +228,7 @@ export function draw() {
     ctx.stroke();
   }
   drawBrush();
+  drawSelection();
 }
 
 // ================================================================================================================================================================================================================================================
@@ -237,7 +238,7 @@ export function draw() {
 function drawBrush() {
   const hover = state.hoverCell;
   if (!hover) return;
-  const cells = brushCells(hover.x, hover.y);
+  const cells = state.tool === 'select' ? [hover] : brushCells(hover.x, hover.y);
   if (!cells.length) return;
   const minX = Math.min(...cells.map(c => c.x));
   const minY = Math.min(...cells.map(c => c.y));
@@ -247,7 +248,7 @@ function drawBrush() {
   ctx.strokeStyle = 'rgba(94, 234, 212, 0.9)';
   ctx.lineWidth = 2;
   ctx.strokeRect(minX * TILE + 1, minY * TILE + 1, (maxX - minX + 1) * TILE - 2, (maxY - minY + 1) * TILE - 2);
-  const size = brushSize();
+  const size = state.tool === 'select' ? 1 : brushSize();
   if (size > 1) {
     const label = `${size}×${size}`;
     ctx.font = '600 11px sans-serif';
@@ -256,6 +257,21 @@ function drawBrush() {
     ctx.fillStyle = '#5eead4';
     ctx.fillText(label, minX * TILE + 6, minY * TILE + 13);
   }
+  ctx.restore();
+}
+
+// ================================================================================================================================================================================================================================================
+// drawSelection
+// Contorno amarelo no sqm escolhido com a ferramenta Selecionar (no andar dele).
+
+function drawSelection() {
+  const selected = state.selected;
+  if (!selected || selected.z !== state.activeZ) return;
+  ctx.save();
+  ctx.strokeStyle = '#f5c518';
+  ctx.lineWidth = 2;
+  ctx.setLineDash([4, 3]);
+  ctx.strokeRect(selected.x * TILE + 1, selected.y * TILE + 1, TILE - 2, TILE - 2);
   ctx.restore();
 }
 

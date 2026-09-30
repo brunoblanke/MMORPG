@@ -71,14 +71,14 @@ function send(sim, command) {
 const at = (sim, type) => sim.objects.find(o => o.id.startsWith(type + '_'));
 const texts = (events) => events.filter(e => e.type === 'message').map(e => e.text);
 
-test('placa: usar mostra o texto escrito no editor; longe, o player vai até ela', () => {
+test('placa: usar mostra o texto escrito no editor; longe, o player vai até ela; sem texto, nada', () => {
   const sim = game([[SIGN, 6, 5, 0, { texto: 'Bem-vindo à vila!' }], [SIGN, 12, 5, 0]]);
   const [near, far] = sim.objects.filter(o => o.id.startsWith(SIGN));
   assert.deepEqual(texts(send(sim, { type: 'useObject', id: near.id })), ['Bem-vindo à vila!']);
   send(sim, { type: 'useObject', id: far.id });
   const events = [];
-  for (let i = 0; i < 60 && !texts(events).length; i++) events.push(...send(sim, { type: 'noop' }));
-  assert.deepEqual(texts(events), ['Não há nada escrito.']);
+  for (let i = 0; i < 60; i++) events.push(...send(sim, { type: 'noop' }));
+  assert.deepEqual(texts(events), []);
   assert.ok(Math.abs(sim.player.x - 12) <= 1);
 });
 
@@ -119,7 +119,7 @@ test('corda na marca de corda sobe pro andar de cima; a pá abre o monte em bura
   assert.deepEqual([sim.player.x, sim.player.y, sim.player.z], [6, 6, 1]);
 
   const pile = at(sim, PILE);
-  assert.deepEqual(texts(send(sim, { type: 'useObject', id: pile.id })), ['Use uma pá aqui pra abrir.']);
+  assert.deepEqual(texts(send(sim, { type: 'useObject', id: pile.id })), []);
   send(sim, { type: 'useItem', from: { t: 'c', uid: 'bag0', i: 1 }, target: { x: 5, y: 6, z: 1 } });
   assert.equal(pile.dug, true);
   assert.ok(sim.world.getTransitionAt(5, 6, 1));
@@ -148,4 +148,17 @@ test('bueiro: pisar não derruba; usar leva pro andar de baixo', () => {
   up.enqueue('player1', { type: 'useObject', id: grate.id });
   up.tick(up.time + TICK_MS);
   assert.deepEqual([up.player.x, up.player.y, up.player.z], [6, 7, 0], '1 ao sul e 1 ao leste, no andar de baixo');
+});
+
+test('container fixo no mapa começa com os itens do editor e abre sem ser pego', () => {
+  const box = 'decoracao/moveis/caixa';
+  setAssets([asset(box, { bloqueia: true, espacos: 4 }), asset(COIN, { move: true, peso: 0.1, empilhavel: true }), asset(ROPE, { move: true, peso: 18, uso: 'ferramenta-corda' })]);
+  const sim = buildGame({ objects: [...floorRect(0, 20, 0, 20, 0), [box, 6, 5, 0, 0, false, false, true, null, null, { itens: [{ tipo: COIN, count: 30 }, { tipo: ROPE, count: 1 }] }]], player: { x: 5, y: 5, z: 0 } });
+  const obj = sim.objects.find(o => o.id.startsWith(box + '_'));
+  assert.equal(sim.inventory.isOpenable(obj), true);
+  assert.equal(sim.inventory.isPickable(obj), false);
+  const items = sim.inventory.groundItem(obj).items;
+  assert.equal(items[0].count, 30);
+  assert.equal(items[1].type, ROPE);
+  assert.equal(items[2], null);
 });

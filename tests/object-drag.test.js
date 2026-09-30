@@ -78,7 +78,7 @@ test('objeto solto num buraco cai pro andar de baixo', () => {
   const parcel = game.objects.find(o => o.id.startsWith('Parcel'));
 
   game.objectDrag.moveObject(game.player, parcel, 5, 5, 1);
-  assert.deepEqual([parcel.x, parcel.y, parcel.z], [5, 5, 0]);
+  assert.deepEqual([parcel.x, parcel.y, parcel.z], [6, 6, 0]);
 });
 
 test('arremesso pro andar de cima passa por cima das paredes de baixo; parede no andar de cima barra', () => {

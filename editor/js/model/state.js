@@ -49,12 +49,14 @@ export const state = {
   painting: false,
   brushSize: 1,
   hoverCell: null,
+  selected: null,
   strokeTouched: new Set(),
   ghost: true
 };
 
 // paint: campo do state com o que a ferramenta pinta (as que têm lista).
 export const TOOLS = [
+  { id:'select', label:'Selecionar' },
   { id:'floor', label:'Piso', paint:'floorPaint' },
   { id:'wall', label:'Parede', paint:'wallPaint' },
   { id:'stairs', label:'Escada', paint:'stairsPaint' },

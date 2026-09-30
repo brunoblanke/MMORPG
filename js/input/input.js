@@ -4,6 +4,7 @@ import { CONFIG } from '../config.js';
 import { getRoofLevel } from '../views/draw-order.js';
 import { getEntityLevel } from '../core/geometry.js';
 import { objectUse, objectIdType } from '../../shared/assets.js';
+import { itemInfo } from '../../shared/items.js';
 
 const KEY_DIRECTIONS = {
   w: [0, -1], s: [0, 1], a: [-1, 0], d: [1, 0],
@@ -147,7 +148,7 @@ updateHoverEnemy(enemies, world, offset, player, deadBodies) {
   const corpsesOnTile = (deadBodies || []).filter(c => c.x === tileX && c.y === tileY && isVisible(c));
   const objectsOnTile = world.getObjectsAt(tileX, tileY).filter(o =>
     isVisible(o) && !o.isBorder &&
-    (o.hasVolume || o.blocksMovement || o.movable === true || o.floorType || objectUse(objectIdType(o.id)))
+    (o.hasVolume || o.blocksMovement || o.movable === true || o.floorType || objectUse(objectIdType(o.id)) || itemInfo(objectIdType(o.id)).size > 0)
   );
   const stack = [...corpsesOnTile, ...objectsOnTile].sort(byTopmost);
   this.hoverMovable = stack.find(o => (o.isCorpse ? o.movable !== false : o.movable === true)) || null;

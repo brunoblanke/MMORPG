@@ -3,7 +3,7 @@
 import { randEnemyColor } from '../utils/helpers.js';
 import { Enemy } from './enemy.js';
 import { computeBorderPieces } from '../../shared/floor-variant.js';
-import { isFloorType, isHoleType, objectIdType, splitType, pieceType, interiorVariant, getAsset, floorHasPiece } from '../../shared/assets.js';
+import { isFloorType, isHoleType, isEntranceFolder, objectIdType, splitType, pieceType, interiorVariant, getAsset, floorHasPiece } from '../../shared/assets.js';
 import { collectObjectDescriptors, collectEnemyDescriptors } from '../../shared/map-format.js';
 import { getStairTop, getStairTopTarget, getHoleTarget } from '../../shared/stairs.js';
 import { parseBorderType, hasSavedBorders, mergeSavedInnerCorners } from '../../shared/floor-borders.js';
@@ -133,7 +133,7 @@ function applyTransitions(objs) {
     stairTops.push(stairTop);
   }
 
-  const holeKeys = new Set(objs.filter(obj => isHoleType(objectIdType(obj.id))).map(obj => `${obj.x},${obj.y},${obj.z}`));
+  const holeKeys = new Set(objs.filter(obj => isEntranceFolder(objectIdType(obj.id))).map(obj => `${obj.x},${obj.y},${obj.z}`));
   const topKeys = new Set(stairTops.map(t => `${t.x},${t.y},${t.z}`).filter(key => !holeKeys.has(key)));
   const result = objs.filter(obj => !(obj.floorType && topKeys.has(`${obj.x},${obj.y},${obj.z}`)));
   result.push(...stairTops);

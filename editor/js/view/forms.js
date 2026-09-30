@@ -4,6 +4,9 @@ import { getAsset, listAssets, displayName, objectUse } from '../../../shared/as
 import { state } from '../model/state.js';
 import { scheduleRender } from './canvas-renderer.js';
 import { updateStats } from './tools-panel.js';
+import { setThumb } from './sprite-thumb.js';
+import { itemInfo } from '../../../shared/items.js';
+import { restackItems } from '../../../shared/map-format.js';
 
 // ================================================================================================================================================================================================================================================
 // positionFloatPanel
@@ -64,25 +67,141 @@ export function refreshCreatureOptions() {
 }
 
 // ================================================================================================================================================================================================================================================
+// openSelectPanel
+// Ferramenta Selecionar: lista o que está no sqm, só no andar ativo, de cima
+// pra baixo. ▲/▼ mudam a ordem na pilha; Editar abre o texto (placa, livro)
+// ou os itens (baú de quest ou qualquer container).
+
+const selectPanel = document.getElementById('selectPanel');
+
+export function openSelectPanel(x, y, clientX, clientY) {
+  state.selected = { x, y, z: state.activeZ };
+  renderSelectPanel();
+  positionFloatPanel(selectPanel, clientX, clientY);
+  selectPanel.classList.add('show');
+  scheduleRender();
+}
+
+// ================================================================================================================================================================================================================================================
+// closeSelectPanel
+
+export function closeSelectPanel() {
+  const panel = document.getElementById('selectPanel');
+  const form = document.getElementById('objectDataForm');
+  if (panel) panel.classList.remove('show');
+  if (form) form.classList.remove('show');
+  pendingObject = null;
+  if (!state.selected) return;
+  state.selected = null;
+  scheduleRender();
+}
+
+// ================================================================================================================================================================================================================================================
+// selectedCell
+
+function selectedCell() {
+  const selected = state.selected;
+  if (!selected || !state.layers[selected.z]) return null;
+  return state.layers[selected.z][`${selected.x},${selected.y}`] || null;
+}
+
+// ================================================================================================================================================================================================================================================
+// editableKind
+// 'texto' (placa, livro), 'itens' (baú de quest, container) ou null.
+
+function editableKind(type) {
+  const use = objectUse(type);
+  if (use === 'placa' || use === 'livro') return 'texto';
+  if (use === 'bau-quest' || itemInfo(type).size > 0) return 'itens';
+  return null;
+}
+
+// ================================================================================================================================================================================================================================================
+// renderSelectPanel
+
+function renderSelectPanel() {
+  const cell = selectedCell();
+  const { x, y, z } = state.selected;
+  document.getElementById('selectTitle').textContent = `Sqm ${x},${y} · andar ${z}`;
+  const list = document.getElementById('selectList');
+  list.innerHTML = '';
+  const objects = cell ? cell.objects : [];
+  if (!objects.length) {
+    const empty = document.createElement('div');
+    empty.className = 'select-empty';
+    empty.textContent = 'Nenhum objeto neste sqm.';
+    list.appendChild(empty);
+    return;
+  }
+  for (let index = objects.length - 1; index >= 0; index--) {
+    const obj = objects[index];
+    const row = document.createElement('div');
+    row.className = 'select-row';
+    const thumb = document.createElement('div');
+    thumb.className = 'select-thumb';
+    setThumb(thumb, obj.type, 24);
+    const name = document.createElement('span');
+    name.className = 'select-name';
+    name.textContent = displayName(obj.type) + (obj.count > 1 ? ` ×${obj.count}` : '') + (obj.dados ? ' •' : '');
+    name.title = obj.type;
+    const up = selectButton('▲', 'Subir na pilha', index === objects.length - 1, () => moveInStack(index, 1));
+    const down = selectButton('▼', 'Descer na pilha', index === 0, () => moveInStack(index, -1));
+    row.append(thumb, name, up, down);
+    const kind = editableKind(obj.type);
+    if (kind) row.appendChild(selectButton('✎', kind === 'texto' ? 'Escrever o texto' : 'Escolher os itens', false, (evt) => openObjectDataForm(obj, evt.clientX, evt.clientY)));
+    list.appendChild(row);
+  }
+}
+
+// ================================================================================================================================================================================================================================================
+// selectButton
+
+function selectButton(text, title, disabled, onClick) {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.textContent = text;
+  button.title = title;
+  button.disabled = disabled;
+  button.onclick = onClick;
+  return button;
+}
+
+// ================================================================================================================================================================================================================================================
+// moveInStack
+// Troca o objeto de lugar com o vizinho na pilha (delta 1 = pra cima).
+
+function moveInStack(index, delta) {
+  const cell = selectedCell();
+  const other = index + delta;
+  if (!cell || other < 0 || other >= cell.objects.length) return;
+  [cell.objects[index], cell.objects[other]] = [cell.objects[other], cell.objects[index]];
+  restackItems(cell.objects);
+  renderSelectPanel();
+  updateStats();
+  scheduleRender();
+}
+
+// ================================================================================================================================================================================================================================================
 // openObjectDataForm
-// Botão direito num sqm com placa, livro ou baú de quest: escreve o texto
-// (placa, livro) ou escolhe os itens (baú). Fica no objeto, no mapa.
-// Devolve false se o sqm não tem nenhum desses.
+// Texto (placa, livro) ou itens (baú de quest: cada player pega uma vez;
+// container: começa com eles dentro). Fica no objeto, no mapa.
 
 const objectDataForm = document.getElementById('objectDataForm');
 let pendingObject = null;
 let pendingItems = [];
 
-export function openObjectDataForm(x, y, clientX, clientY) {
-  const cell = state.layers[state.activeZ][`${x},${y}`];
-  const obj = [...cell.objects].reverse().find(o => ['placa', 'livro', 'bau-quest'].includes(objectUse(o.type)));
-  if (!obj) return false;
+export function openObjectDataForm(obj, clientX, clientY) {
+  const kind = editableKind(obj.type);
+  if (!kind) return false;
   pendingObject = obj;
   const use = objectUse(obj.type);
   const data = obj.dados || {};
-  document.getElementById('objectDataTitle').textContent = `${displayName(obj.type)} · ${use === 'placa' ? 'placa' : use === 'livro' ? 'livro' : 'baú de quest'}`;
-  document.getElementById('objectDataTextField').hidden = use === 'bau-quest';
-  document.getElementById('objectDataItemsField').hidden = use !== 'bau-quest';
+  const size = itemInfo(obj.type).size;
+  const label = use === 'placa' ? 'placa' : use === 'livro' ? 'livro' : use === 'bau-quest' ? 'baú de quest' : `container (${size} espaços)`;
+  document.getElementById('objectDataTitle').textContent = `${displayName(obj.type)} · ${label}`;
+  document.getElementById('objectDataItemsLabel').textContent = use === 'bau-quest' ? 'Itens do baú (cada player pega uma vez)' : 'Itens dentro';
+  document.getElementById('objectDataTextField').hidden = kind !== 'texto';
+  document.getElementById('objectDataItemsField').hidden = kind !== 'itens';
   document.getElementById('objectDataText').value = data.texto || '';
   pendingItems = Array.isArray(data.itens) ? data.itens.map(it => ({ tipo: it.tipo, count: it.count || 1 })) : [];
   renderObjectDataItems();
@@ -118,6 +237,8 @@ function renderObjectDataItems() {
 }
 
 document.getElementById('objectDataAddItem').onclick = () => {
+  const size = pendingObject && objectUse(pendingObject.type) !== 'bau-quest' ? itemInfo(pendingObject.type).size : 0;
+  if (size && pendingItems.length >= size) return;
   pendingItems.push({ tipo: '', count: 1 });
   renderObjectDataItems();
 };
@@ -129,8 +250,7 @@ document.getElementById('objectDataCancel').onclick = () => {
 
 document.getElementById('objectDataConfirm').onclick = () => {
   if (!pendingObject) return;
-  const use = objectUse(pendingObject.type);
-  if (use === 'bau-quest') {
+  if (editableKind(pendingObject.type) === 'itens') {
     const itens = pendingItems.filter(it => it.tipo).map(it => ({ tipo: it.tipo, count: it.count || 1 }));
     pendingObject.dados = itens.length ? { itens } : undefined;
   } else {
@@ -140,8 +260,11 @@ document.getElementById('objectDataConfirm').onclick = () => {
   if (!pendingObject.dados) delete pendingObject.dados;
   objectDataForm.classList.remove('show');
   pendingObject = null;
+  if (state.selected) renderSelectPanel();
   scheduleRender();
 };
+
+document.getElementById('selectClose').onclick = () => closeSelectPanel();
 
 document.getElementById('enemyType').onchange = (evt) => {
   state.enemyPaint = evt.target.value;

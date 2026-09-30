@@ -124,7 +124,7 @@ export class InventoryUI {
     if (!input) return null;
     if (input.hoverCorpse) return input.hoverCorpse;
     const obj = input.hoverObject;
-    if (!obj || obj.movable !== true || !itemInfo(objectIdType(obj.id)).size) return null;
+    if (!obj || objectUse(objectIdType(obj.id)) || !itemInfo(objectIdType(obj.id)).size) return null;
     return obj;
   }
 

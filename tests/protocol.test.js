@@ -129,9 +129,9 @@ test('troca de andar (buraco) aparece direto no espelho, sem deslizar', () => {
     const me = mirror.players.find(p => p.id === 'player1');
     if (me && me.z === 0) seen = me;
   }
-  assert.deepEqual([seen.x, seen.y, seen.z], [6, 5, 0]);
+  assert.deepEqual([seen.x, seen.y, seen.z], [7, 6, 0]);
   assert.equal(seen.isMoving, false);
-  assert.deepEqual([seen.renderX, seen.renderY, seen.renderZ], [6, 5, 0]);
+  assert.deepEqual([seen.renderX, seen.renderY, seen.renderZ], [7, 6, 0]);
 });
 
 test('porta aberta no servidor abre no espelho do navegador (desenho e bloqueio)', () => {
