@@ -5,7 +5,7 @@ import { drawEntityOverlay } from './entity-overlay.js';
 import { drawTileTooltip } from './tile-tooltip.js';
 import { prepareDrawables } from './draw-order.js';
 import { getEntityLevel } from '../core/geometry.js';
-import { getAsset, objectIdType } from '../../shared/assets.js';
+import { getAsset, objectIdType, openedAs } from '../../shared/assets.js';
 import { stackFrame } from '../../shared/items.js';
 
 const TINT_HIT = { color: '#ff2a2a', alpha: 0.55 };
@@ -367,7 +367,8 @@ export class Renderer {
     }
 
     if (entity && entity.id) {
-      const sheet = this.getObjectSpriteSheet(entity.id);
+      const opened = entity.dug ? openedAs(objectIdType(entity.id)) : null;
+      const sheet = this.getObjectSpriteSheet(opened ? `${opened}_0` : entity.id);
       if (isSheetReady(sheet)) {
         const asset = getAsset(objectIdType(entity.id));
         if (entity.isSplash) {

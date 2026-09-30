@@ -66,7 +66,7 @@ export function collectObjectDescriptors(mapData) {
     return `${tipo}_${counters[tipo]}`;
   };
 
-  (mapData.objetosData || []).forEach(([tipo, x, y, z, step, movable, hasVolume, blocksMovement, seq, count], index) => {
+  (mapData.objetosData || []).forEach(([tipo, x, y, z, step, movable, hasVolume, blocksMovement, seq, count, dados], index) => {
     descriptors.push({
       id: nextId(tipo),
       type: tipo,
@@ -77,7 +77,8 @@ export function collectObjectDescriptors(mapData) {
       blocksMovement: !!blocksMovement,
       // Pisos: ordem em que foram colocados (mapas antigos: ordem no arquivo).
       seq: Number.isFinite(seq) ? seq : index + 1,
-      count: Number.isInteger(count) && count > 1 ? count : undefined
+      count: Number.isInteger(count) && count > 1 ? count : undefined,
+      data: dados && typeof dados === 'object' ? dados : undefined
     });
   });
 
@@ -166,7 +167,9 @@ export function serializeMapFromLayers(layerOrder, layers, GRID) {
             const props = objectProps(obj.type);
             const step = isItemType(obj.type) ? obj.step || 0 : 0;
             const entry = [obj.type, x, y, z, step, props.movable, props.hasVolume, props.blocksMovement];
-            if (obj.count > 1) entry.push(null, obj.count);
+            const hasData = obj.dados && Object.keys(obj.dados).length > 0;
+            if (obj.count > 1 || hasData) entry.push(null, obj.count > 1 ? obj.count : null);
+            if (hasData) entry.push(obj.dados);
             objetosData.push(entry);
           }
         });
@@ -221,7 +224,7 @@ export function buildLayersFromMapData(mapData, GRID) {
   const inRange = (x, y) => x >= 0 && y >= 0 && x < GRID && y < GRID;
 
   (mapData.objetosData || []).forEach((entry, index) => {
-    const [type, x, y, z, step, , , , seq, count] = entry;
+    const [type, x, y, z, step, , , , seq, count, dados] = entry;
     if (!inRange(x, y)) { stats.outOfRange++; return; }
     ensureLayer(z);
     const cell = layers[z][`${x},${y}`];
@@ -236,10 +239,13 @@ export function buildLayersFromMapData(mapData, GRID) {
     } else if (isHoleType(type)) {
       cell.hole = type;
     } else if (isItemType(type)) {
-      cell.objects.push(Number.isInteger(count) && count > 1 ? { type, step: step || 0, count } : { type, step: step || 0 });
+      const item = { type, step: step || 0 };
+      if (Number.isInteger(count) && count > 1) item.count = count;
+      if (dados && typeof dados === 'object') item.dados = dados;
+      cell.objects.push(item);
       stats.item++;
     } else {
-      cell.objects.push({ type });
+      cell.objects.push(dados && typeof dados === 'object' ? { type, dados } : { type });
       stats.wall++;
     }
   });

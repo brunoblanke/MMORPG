@@ -14,6 +14,7 @@ import { ObjectDragController } from './systems/object-drag.js';
 import { LifeCycleController } from './systems/life-cycle.js';
 import { PlayerControl } from './systems/player-control.js';
 import { InventoryController } from './systems/inventory.js';
+import { InteractionController } from './systems/interactions.js';
 import { objectIdType, doorState } from '../shared/assets.js';
 
 export { TICK_MS };
@@ -58,6 +59,7 @@ export class Simulation {
     this.lifeCycle = new LifeCycleController(this);
     this.control = new PlayerControl(this);
     this.inventory = new InventoryController(this, options.lootTable || {});
+    this.interactions = new InteractionController(this);
   }
 
   // ================================================================================================================================================================================================================================================

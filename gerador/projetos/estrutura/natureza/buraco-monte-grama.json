@@ -5,16 +5,16 @@
   },
   "objeto": {
     "tibia": {
-      "id": 5710,
-      "variacao": 0
+      "id": 594,
+      "variacao": 1
     }
   },
   "propriedades": {
     "bloqueia": false,
-    "move": true,
+    "move": false,
     "altura": false,
-    "empilhavel": true,
-    "peso": 30,
+    "empilhavel": false,
+    "peso": 0,
     "espacos": 0,
     "atk": 0,
     "def": 0,
@@ -25,11 +25,11 @@
     "manaMin": 0,
     "manaMax": 0,
     "alimento": 0,
-    "uso": "ferramenta-pa",
+    "uso": "",
     "abreComo": ""
   },
   "ferramenta": "objetos",
-  "grupo": "itens",
-  "pasta": "ferramentas",
-  "nome": "shovel"
+  "grupo": "estrutura",
+  "pasta": "natureza",
+  "nome": "buraco-monte-grama"
 }

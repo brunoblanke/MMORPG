@@ -270,6 +270,31 @@ export function objectProps(type) {
 }
 
 // ================================================================================================================================================================================================================================================
+// objectUse
+// Pra que serve o objeto (gerador → Objetos → Uso): 'placa' (mostra o texto),
+// 'livro' (abre o texto), 'bau-quest' (dá os itens uma vez por player),
+// 'corda' (marca de corda: sobe um andar com a corda), 'pa' (monte que a pá
+// abre em buraco), 'ferramenta-corda' ou 'ferramenta-pa'; null se nenhum.
+
+export const OBJECT_USES = ['placa', 'livro', 'bau-quest', 'corda', 'pa', 'ferramenta-corda', 'ferramenta-pa'];
+
+export function objectUse(type) {
+  const asset = getAsset(splitType(type).asset);
+  const use = asset && asset.propriedades && asset.propriedades.uso;
+  return OBJECT_USES.includes(use) ? use : null;
+}
+
+// ================================================================================================================================================================================================================================================
+// openedAs
+// Monte da pá: a folha do buraco aberto (gerador → Abre como), ou null.
+
+export function openedAs(type) {
+  const asset = getAsset(splitType(type).asset);
+  const target = asset && asset.propriedades && asset.propriedades.abreComo;
+  return target && getAsset(target) ? target : null;
+}
+
+// ================================================================================================================================================================================================================================================
 // displayName
 // Nome pra mostrar: 'criaturas/elementais/fire-elemental' → 'Fire Elemental'.
 

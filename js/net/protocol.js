@@ -90,6 +90,7 @@ export function serializeState(sim, playerId) {
     enemies: sim.enemies.map(e => ({ id: e.id, ...pick(e, ENEMY_FIELDS), state: e.ai.state })),
     corpses: sim.deadBodies.map(c => pick(c, CORPSE_FIELDS)),
     doors: sim.doors.map(d => ({ x: d.x, y: d.y, z: d.z || 0, id: d.id })),
+    dug: sim.interactions ? [...sim.interactions.dugHoles.keys()] : [],
     items: sim.objects.filter(isSyncedItem).map(o => ({
       id: o.id, x: o.x, y: o.y, z: o.z, step: o.step, hasVolume: o.hasVolume, blocksMovement: o.blocksMovement,
       count: o.itemData ? o.itemData.count : o.count,
@@ -231,6 +232,7 @@ export function applyState(mirror, message, playerId, renderNow) {
 
   syncItems(mirror, state.items);
   syncDoors(world, state.doors || []);
+  syncDug(mirror, state.dug || []);
 
   const me = mirror.players.find(p => p.id === playerId);
   if (me && state.you) {
@@ -241,6 +243,25 @@ export function applyState(mirror, message, playerId, renderNow) {
     me.walk = state.you.walk;
     mirror.inventoryView = state.you.inventory;
   }
+}
+
+// ================================================================================================================================================================================================================================================
+// syncDug
+// Montes que a pá abriu: o navegador desenha o buraco no lugar deles.
+
+function syncDug(mirror, ids) {
+  const open = new Set(ids);
+  for (const id of open) {
+    const obj = mirror.objectsById.get(id);
+    if (obj) obj.dug = true;
+  }
+  if (!mirror.dugIds) mirror.dugIds = new Set();
+  for (const id of mirror.dugIds) {
+    if (open.has(id)) continue;
+    const obj = mirror.objectsById.get(id);
+    if (obj) obj.dug = false;
+  }
+  mirror.dugIds = open;
 }
 
 // ================================================================================================================================================================================================================================================

@@ -3,7 +3,7 @@
 import { canvas, cellFromEvent, scheduleRender } from '../view/canvas-renderer.js';
 import { state } from '../model/state.js';
 import { updateStats } from '../view/tools-panel.js';
-import { openEnemyForm } from '../view/forms.js';
+import { openEnemyForm, openObjectDataForm } from '../view/forms.js';
 import { addFloorToCell, restackItems } from '../../../shared/map-format.js';
 import { refreshBordersAt } from '../model/borders.js';
 import { isStairsType } from '../../../shared/assets.js';
@@ -131,6 +131,7 @@ export function updateCoordDisplay(evt) {
 }
 
 canvas.addEventListener('mousedown', (evt) => {
+  if (evt.button !== 0) return;
   const cell = cellFromEvent(evt);
   if (!cell) return;
   state.painting = true;
@@ -162,6 +163,13 @@ canvas.addEventListener('mouseleave', () => {
 });
 
 window.addEventListener('mouseup', () => { state.painting = false; });
+
+// Botão direito num sqm com placa, livro ou baú de quest: texto ou itens dele.
+canvas.addEventListener('contextmenu', (evt) => {
+  const cell = cellFromEvent(evt);
+  if (!cell) return;
+  if (openObjectDataForm(cell.x, cell.y, evt.clientX, evt.clientY)) evt.preventDefault();
+});
 
 // Setas ↑/↓ aumentam e diminuem o pincel (fora de campos de texto).
 window.addEventListener('keydown', (evt) => {

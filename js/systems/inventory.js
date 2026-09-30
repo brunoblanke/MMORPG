@@ -2,7 +2,7 @@
 
 import { GameObject } from '../models/game-object.js';
 import { getAdjacentPositions, isPositionAdjacentTo } from '../utils/helpers.js';
-import { objectIdType, objectProps, getAsset, splitType, creatureLoot } from '../../shared/assets.js';
+import { objectIdType, objectProps, getAsset, splitType, creatureLoot, objectUse } from '../../shared/assets.js';
 import {
   EQUIP_SLOTS, THROW_RANGE, DEATH_DROP_CHANCE, USE_COOLDOWN_MS, FOOD_MAX_SECONDS, POTION_RANGE, EMPTY_VIAL, SPLASH_HP, SPLASH_MANA, SPLASH_STAGES, SPLASH_STAGE_MS, REGEN_MS, REGEN_HP, REGEN_MANA, itemInfo, capacityFor, newItem, weightOf, contains, findInTree, fromPlain, equipBonus
 } from '../../shared/items.js';
@@ -118,7 +118,10 @@ export class InventoryController {
   // O item de um objeto do chão (criado na primeira vez que alguém mexe nele).
 
   groundItem(obj) {
-    if (!obj.itemData) obj.itemData = newItem(this.nextUid(), objectIdType(obj.id), obj.count || 1);
+    if (!obj.itemData) {
+      obj.itemData = newItem(this.nextUid(), objectIdType(obj.id), obj.count || 1);
+      if (obj.data && obj.data.texto) obj.itemData.texto = obj.data.texto;
+    }
     return obj.itemData;
   }
 
@@ -485,11 +488,21 @@ export class InventoryController {
     const src = this.source(player, from);
     if (src.error) return;
     const info = itemInfo(src.item.type);
-    if (!info.food && !info.heal) return;
+    const use = objectUse(src.item.type);
+    if (!info.food && !info.heal && !use) return;
     if (src.obj && !this.isNear(player, src.obj)) {
       this.walkNextTo(player, src.obj, { type: 'useItem', from, target });
       return;
     }
+    if (use === 'livro') {
+      this.sim.interactions.readBook(player, src.item);
+      return;
+    }
+    if (use === 'ferramenta-corda' || use === 'ferramenta-pa') {
+      this.sim.interactions.useTool(player, use, target);
+      return;
+    }
+    if (!info.food && !info.heal) return;
     if (info.food) {
       this.eat(player, src, info.food);
       return;
@@ -680,7 +693,7 @@ export class InventoryController {
     const pending = player.pendingInv;
     if (pending) {
       const obj = this.sim.getItem(pending.objId);
-      if (!obj || !(this.isPickable(obj) || this.isOpenable(obj))) {
+      if (!obj || !(this.isPickable(obj) || this.isOpenable(obj) || this.sim.interactions.isUsable(obj))) {
         player.pendingInv = null;
       } else if (this.isNear(player, obj)) {
         player.pendingInv = null;
