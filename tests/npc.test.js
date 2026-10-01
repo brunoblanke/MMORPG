@@ -139,7 +139,7 @@ test('fora de conversa o guia passeia em volta do lugar dele; conversando, fica 
   for (let i = 0; i < 60; i++) {
     run(sim, 1000);
     seen.add(`${guide.x},${guide.y}`);
-    assert.ok(Math.max(Math.abs(guide.x - guide.home.x), Math.abs(guide.y - guide.home.y)) <= guide.radius);
+    assert.ok(Math.hypot(guide.x - guide.home.x, guide.y - guide.home.y) <= guide.radius);
   }
   assert.ok(seen.size >= 3, `andou por ${seen.size} sqms`);
   moveTo(sim, guide.x + 1, guide.y);

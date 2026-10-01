@@ -177,9 +177,10 @@ export class NpcController {
 
   // ================================================================================================================================================================================================================================================
   // wander
-  // Um passo pra um sqm vizinho livre, sem escada nem buraco, a até
-  // npc.radius do lugar dele; depois uma pausa sorteada. Em conversa, fica
-  // parado (virado pra quem fala com ele).
+  // Um passo pra um sqm vizinho livre, sem escada nem buraco, dentro do
+  // círculo de raio npc.radius em volta do lugar dele (isInWanderArea);
+  // depois uma pausa sorteada. Em conversa, fica parado (virado pra quem
+  // fala com ele).
 
   wander(npc, now) {
     if (npc.radius <= 0 || npc.focus.size > 0 || now < npc.nextWalkAt) return;
@@ -188,7 +189,7 @@ export class NpcController {
     for (const [dx, dy] of options) {
       const landing = movement.resolveStep(npc, dx, dy);
       if (!landing || landing.z !== npc.home.z) continue;
-      if (Math.max(Math.abs(landing.x - npc.home.x), Math.abs(landing.y - npc.home.y)) > npc.radius) continue;
+      if (!npc.isInWanderArea(landing.x, landing.y)) continue;
       if (world.getTransitionAt(landing.x, landing.y, landing.z)) continue;
       movement.applyStep(npc, landing, now);
       npc.direction = npc.moveDirection || npc.direction;

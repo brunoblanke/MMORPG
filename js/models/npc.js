@@ -1,6 +1,7 @@
 // js/models/npc.js
 
 import { Entity } from './entity.js';
+import { distance } from '../utils/helpers.js';
 import { PLAYER_GENDERS, DEFAULT_GENDER, PLAYER_SPRITES } from '../../shared/catalog.js';
 
 // Personagem do jogo que conversa (systems/npcs.js): usa a folha creature do
@@ -19,10 +20,11 @@ export class Npc extends Entity {
 
   // ================================================================================================================================================================================================================================================
   // isInWanderArea
-  // O sqm (x, y) está na área onde ele passeia (radius em volta de homeX, homeY).
+  // O sqm (x, y) está na área onde ele passeia: o círculo de raio radius em
+  // volta de homeX, homeY (como a patrulha dos inimigos).
 
   isInWanderArea(x, y) {
-    return this.homeX !== undefined && Math.max(Math.abs(x - this.homeX), Math.abs(y - this.homeY)) <= (this.radius || 0);
+    return this.homeX !== undefined && distance(x, y, this.homeX, this.homeY) <= (this.radius || 0);
   }
 
   // ================================================================================================================================================================================================================================================
