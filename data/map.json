@@ -37287,6 +37287,16 @@
       12283
     ],
     [
+      "itens/fontes-de-luz/torch",
+      191,
+      211,
+      -1,
+      0,
+      true,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       192,
       211,
@@ -40015,6 +40025,16 @@
       false,
       false,
       12428
+    ],
+    [
+      "itens/itens-encantados/fire-field",
+      196,
+      215,
+      -1,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
