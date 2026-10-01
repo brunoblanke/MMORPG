@@ -39659,15 +39659,24 @@
       11528
     ],
     [
-      "estrutura/pisos/piso-terra-2",
+      "Border:estrutura/pisos/piso-terra-2:int-so",
       181,
       215,
       -1,
       0,
       false,
       false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:int-sl",
+      181,
+      215,
+      -1,
+      0,
       false,
-      12348
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -40325,7 +40334,17 @@
       11520
     ],
     [
-      "Border:estrutura/pisos/piso-terra-2:s",
+      "Border:estrutura/pisos/piso-terra-2:so",
+      181,
+      216,
+      -1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:sl",
       181,
       216,
       -1,
@@ -44689,7 +44708,7 @@
       12076
     ],
     [
-      "Border:estrutura/pisos/piso-terra-2:o",
+      "Border:estrutura/pisos/piso-terra-2:so",
       177,
       222,
       -1,
@@ -44710,15 +44729,14 @@
       12077
     ],
     [
-      "estrutura/pisos/piso-terra-2",
+      "Border:estrutura/pisos/piso-terra-2:int-so",
       178,
       222,
       -1,
       0,
       false,
       false,
-      false,
-      12387
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -45438,16 +45456,6 @@
       12081
     ],
     [
-      "Border:estrutura/pisos/piso-terra-2:so",
-      177,
-      223,
-      -1,
-      0,
-      false,
-      false,
-      false
-    ],
-    [
       "estrutura/pisos/piso-terra-3",
       178,
       223,
@@ -45459,7 +45467,7 @@
       12082
     ],
     [
-      "Border:estrutura/pisos/piso-terra-2:int-so",
+      "Border:estrutura/pisos/piso-terra-2:o",
       178,
       223,
       -1,
@@ -130917,6 +130925,16 @@
       10430
     ],
     [
+      "Border:estrutura/pisos/piso-agua-1:no",
+      185,
+      217,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-grama-1",
       186,
       217,
@@ -130937,6 +130955,16 @@
       false,
       false,
       10429
+    ],
+    [
+      "Border:estrutura/pisos/piso-agua-1:n",
+      186,
+      217,
+      0,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-grama-1",
@@ -130961,7 +130989,7 @@
       10434
     ],
     [
-      "Border:estrutura/pisos/piso-grama-1:n",
+      "Border:estrutura/pisos/piso-agua-1:n",
       187,
       217,
       0,
@@ -130993,7 +131021,7 @@
       10433
     ],
     [
-      "Border:estrutura/pisos/piso-grama-1:nl",
+      "Border:estrutura/pisos/piso-agua-1:n",
       188,
       217,
       0,
@@ -131025,6 +131053,16 @@
       10436
     ],
     [
+      "Border:estrutura/pisos/piso-agua-1:n",
+      189,
+      217,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-grama-1",
       190,
       217,
@@ -131045,6 +131083,16 @@
       false,
       false,
       10437
+    ],
+    [
+      "Border:estrutura/pisos/piso-agua-1:nl",
+      190,
+      217,
+      0,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-grama-1",
@@ -131855,6 +131903,16 @@
       10597
     ],
     [
+      "Border:estrutura/pisos/piso-agua-1:no",
+      184,
+      218,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-grama-1",
       185,
       218,
@@ -131877,15 +131935,14 @@
       10598
     ],
     [
-      "estrutura/pisos/piso-agua-1",
-      186,
+      "Border:estrutura/pisos/piso-agua-1:int-no",
+      185,
       218,
       0,
       0,
       false,
       false,
-      false,
-      7456
+      false
     ],
     [
       "estrutura/pisos/piso-grama-1",
@@ -131899,25 +131956,15 @@
       8614
     ],
     [
-      "Border:estrutura/pisos/piso-paralelepipedo:int-sl",
+      "estrutura/pisos/piso-agua-1",
       186,
       218,
       0,
       0,
       false,
       false,
-      false
-    ],
-    [
-      "estrutura/pisos/piso-paralelepipedo",
-      187,
-      218,
-      0,
-      0,
       false,
-      false,
-      false,
-      10601
+      15280
     ],
     [
       "estrutura/pisos/piso-grama-1",
@@ -131931,15 +131978,15 @@
       10750
     ],
     [
-      "estrutura/pisos/piso-grama-1",
-      188,
+      "estrutura/pisos/piso-agua-1",
+      187,
       218,
       0,
       0,
       false,
       false,
       false,
-      8383
+      15279
     ],
     [
       "estrutura/pisos/piso-paralelepipedo",
@@ -131953,25 +132000,15 @@
       10602
     ],
     [
-      "Border:estrutura/pisos/piso-grama-1:int-nl",
+      "estrutura/pisos/piso-agua-1",
       188,
       218,
       0,
       0,
       false,
       false,
-      false
-    ],
-    [
-      "estrutura/pisos/piso-grama-1",
-      189,
-      218,
-      0,
-      0,
       false,
-      false,
-      false,
-      8384
+      15278
     ],
     [
       "estrutura/pisos/piso-paralelepipedo",
@@ -131985,14 +132022,15 @@
       10606
     ],
     [
-      "Border:estrutura/pisos/piso-grama-1:n",
+      "estrutura/pisos/piso-agua-1",
       189,
       218,
       0,
       0,
       false,
       false,
-      false
+      false,
+      15277
     ],
     [
       "estrutura/pisos/piso-grama-1",
@@ -132018,6 +132056,16 @@
     ],
     [
       "Border:estrutura/pisos/piso-grama-1:nl",
+      190,
+      218,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-agua-1:l",
       190,
       218,
       0,
@@ -132865,15 +132913,14 @@
       false
     ],
     [
-      "estrutura/pisos/piso-grama-1",
-      185,
+      "Border:estrutura/pisos/piso-agua-1:o",
+      184,
       219,
       0,
       0,
       false,
       false,
-      false,
-      8363
+      false
     ],
     [
       "estrutura/pisos/piso-paralelepipedo",
@@ -132887,25 +132934,15 @@
       10599
     ],
     [
-      "Border:estrutura/pisos/piso-grama-1:int-no",
+      "estrutura/pisos/piso-agua-1",
       185,
       219,
       0,
       0,
       false,
       false,
-      false
-    ],
-    [
-      "estrutura/pisos/piso-paralelepipedo",
-      186,
-      219,
-      0,
-      0,
       false,
-      false,
-      false,
-      10600
+      15281
     ],
     [
       "estrutura/pisos/piso-grama-1",
@@ -132919,15 +132956,15 @@
       10749
     ],
     [
-      "estrutura/pisos/piso-paralelepipedo",
-      187,
+      "estrutura/pisos/piso-agua-1",
+      186,
       219,
       0,
       0,
       false,
       false,
       false,
-      10607
+      15283
     ],
     [
       "estrutura/pisos/piso-grama-1",
@@ -132939,6 +132976,17 @@
       false,
       false,
       10751
+    ],
+    [
+      "estrutura/pisos/piso-agua-1",
+      187,
+      219,
+      0,
+      0,
+      false,
+      false,
+      false,
+      15284
     ],
     [
       "estrutura/pisos/piso-paralelepipedo",
@@ -132963,6 +133011,16 @@
       10754
     ],
     [
+      "Border:estrutura/pisos/piso-agua-1:int-sl",
+      188,
+      219,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-paralelepipedo",
       189,
       219,
@@ -132983,6 +133041,31 @@
       false,
       false,
       10758
+    ],
+    [
+      "Border:estrutura/pisos/piso-agua-1:s",
+      189,
+      219,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/natureza/placa-baixa-oeste",
+      189,
+      219,
+      0,
+      0,
+      false,
+      false,
+      true,
+      null,
+      null,
+      {
+        "texto": "Proibido pescar!"
+      }
     ],
     [
       "estrutura/pisos/piso-grama-1",
@@ -133008,6 +133091,16 @@
     ],
     [
       "Border:estrutura/pisos/piso-grama-1:int-nl",
+      190,
+      219,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-agua-1:sl",
       190,
       219,
       0,
@@ -133885,6 +133978,16 @@
       10766
     ],
     [
+      "Border:estrutura/pisos/piso-agua-1:so",
+      184,
+      220,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-paralelepipedo",
       185,
       220,
@@ -133907,15 +134010,14 @@
       10765
     ],
     [
-      "estrutura/pisos/piso-paralelepipedo",
-      186,
+      "Border:estrutura/pisos/piso-agua-1:int-so",
+      185,
       220,
       0,
       0,
       false,
       false,
-      false,
-      10625
+      false
     ],
     [
       "estrutura/pisos/piso-grama-1",
@@ -133927,6 +134029,17 @@
       false,
       false,
       10748
+    ],
+    [
+      "estrutura/pisos/piso-agua-1",
+      186,
+      220,
+      0,
+      0,
+      false,
+      false,
+      false,
+      15282
     ],
     [
       "estrutura/pisos/piso-paralelepipedo",
@@ -133951,6 +134064,16 @@
       10752
     ],
     [
+      "Border:estrutura/pisos/piso-agua-1:int-sl",
+      187,
+      220,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-paralelepipedo",
       188,
       220,
@@ -133971,6 +134094,16 @@
       false,
       false,
       10753
+    ],
+    [
+      "Border:estrutura/pisos/piso-agua-1:sl",
+      188,
+      220,
+      0,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/natureza/arvore-1",
@@ -134887,6 +135020,16 @@
       10747
     ],
     [
+      "Border:estrutura/pisos/piso-agua-1:so",
+      185,
+      221,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/natureza/arvore-1",
       185,
       221,
@@ -134919,6 +135062,16 @@
       8348
     ],
     [
+      "Border:estrutura/pisos/piso-agua-1:s",
+      186,
+      221,
+      0,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       187,
       221,
@@ -134939,6 +135092,16 @@
       false,
       false,
       8349
+    ],
+    [
+      "Border:estrutura/pisos/piso-agua-1:sl",
+      187,
+      221,
+      0,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/natureza/pinheiro-1",
@@ -135199,6 +135362,16 @@
       false,
       false,
       10778
+    ],
+    [
+      "estrutura/natureza/mato-1",
+      197,
+      221,
+      0,
+      0,
+      false,
+      false,
+      true
     ],
     [
       "estrutura/pisos/piso-paralelepipedo",
@@ -138860,6 +139033,16 @@
       false,
       false,
       10777
+    ],
+    [
+      "estrutura/natureza/mato-1",
+      179,
+      225,
+      0,
+      0,
+      false,
+      false,
+      true
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -143523,6 +143706,16 @@
       false,
       false,
       8543
+    ],
+    [
+      "estrutura/natureza/arvore-3",
+      181,
+      229,
+      0,
+      0,
+      false,
+      false,
+      true
     ],
     [
       "estrutura/pisos/piso-agua-1",
@@ -153305,6 +153498,16 @@
       false,
       false,
       10135
+    ],
+    [
+      "estrutura/natureza/mato-1",
+      189,
+      238,
+      0,
+      0,
+      false,
+      false,
+      true
     ],
     [
       "estrutura/pisos/piso-grama-1",
@@ -165681,24 +165884,8 @@
   ],
   "enemyData": [
     [
-      212,
-      209,
-      -3,
-      5,
-      32,
-      "criaturas/humanoides/troll"
-    ],
-    [
       208,
       210,
-      -3,
-      5,
-      32,
-      "criaturas/humanoides/troll"
-    ],
-    [
-      211,
-      216,
       -3,
       5,
       32,
@@ -165715,14 +165902,6 @@
     [
       205,
       224,
-      -3,
-      5,
-      32,
-      "criaturas/humanoides/troll"
-    ],
-    [
-      194,
-      225,
       -3,
       5,
       32,
@@ -165785,14 +165964,6 @@
       "criaturas/humanoides/troll"
     ],
     [
-      197,
-      212,
-      -2,
-      1,
-      32,
-      "criaturas/mamiferos/rat"
-    ],
-    [
       198,
       213,
       -2,
@@ -165825,14 +165996,6 @@
       "criaturas/mamiferos/rat"
     ],
     [
-      190,
-      220,
-      -2,
-      1,
-      32,
-      "criaturas/mamiferos/rat"
-    ],
-    [
       201,
       220,
       -2,
@@ -165857,31 +166020,7 @@
       "criaturas/mamiferos/rat"
     ],
     [
-      202,
-      222,
-      -2,
-      1,
-      32,
-      "criaturas/mamiferos/rat"
-    ],
-    [
-      186,
-      225,
-      -2,
-      1,
-      32,
-      "criaturas/mamiferos/rat"
-    ],
-    [
       189,
-      226,
-      -2,
-      1,
-      32,
-      "criaturas/mamiferos/rat"
-    ],
-    [
-      196,
       226,
       -2,
       1,
@@ -165919,14 +166058,6 @@
       1,
       32,
       "criaturas/mamiferos/rat"
-    ],
-    [
-      189,
-      229,
-      -2,
-      2,
-      32,
-      "criaturas/vermes/spider"
     ],
     [
       170,
@@ -166001,14 +166132,6 @@
       "criaturas/mamiferos/rat"
     ],
     [
-      183,
-      210,
-      -1,
-      2,
-      32,
-      "criaturas/vermes/spider"
-    ],
-    [
       180,
       211,
       -1,
@@ -166023,14 +166146,6 @@
       1,
       32,
       "criaturas/mamiferos/rat"
-    ],
-    [
-      181,
-      215,
-      -1,
-      2,
-      32,
-      "criaturas/vermes/spider"
     ],
     [
       183,
@@ -166049,30 +166164,6 @@
       "criaturas/vermes/spider"
     ],
     [
-      178,
-      222,
-      -1,
-      2,
-      32,
-      "criaturas/vermes/spider"
-    ],
-    [
-      198,
-      223,
-      -1,
-      2,
-      32,
-      "criaturas/vermes/spider"
-    ],
-    [
-      200,
-      224,
-      -1,
-      2,
-      32,
-      "criaturas/vermes/spider"
-    ],
-    [
       184,
       225,
       -1,
@@ -166082,14 +166173,6 @@
     ],
     [
       182,
-      227,
-      -1,
-      2,
-      32,
-      "criaturas/vermes/spider"
-    ],
-    [
-      188,
       227,
       -1,
       2,
@@ -166338,54 +166421,118 @@
     ],
     [
       183,
-      217,
+      221,
       0,
       1,
       32,
-      "criaturas/mamiferos/rat"
+      "criaturas/mamiferos/sheep"
     ],
     [
-      192,
-      217,
+      189,
+      221,
       0,
-      1,
-      32,
-      "criaturas/mamiferos/rat"
-    ],
-    [
-      180,
-      218,
-      0,
-      1,
-      32,
-      "criaturas/mamiferos/rat"
-    ],
-    [
-      194,
-      219,
-      0,
-      1,
-      32,
-      "criaturas/mamiferos/rat"
-    ],
-    [
-      194,
-      232,
-      0,
-      5,
+      10,
       32,
       "criaturas/mamiferos/black-sheep"
     ],
     [
-      195,
-      233,
+      194,
+      221,
       0,
-      5,
+      1,
+      32,
+      "criaturas/mamiferos/sheep"
+    ],
+    [
+      192,
+      223,
+      0,
+      1,
+      32,
+      "criaturas/mamiferos/deer"
+    ],
+    [
+      181,
+      224,
+      0,
+      10,
       32,
       "criaturas/mamiferos/deer"
     ],
     [
       193,
+      225,
+      0,
+      5,
+      32,
+      "criaturas/mamiferos/sheep"
+    ],
+    [
+      183,
+      226,
+      0,
+      5,
+      32,
+      "criaturas/mamiferos/sheep"
+    ],
+    [
+      185,
+      229,
+      0,
+      1,
+      32,
+      "criaturas/mamiferos/deer"
+    ],
+    [
+      195,
+      233,
+      0,
+      10,
+      32,
+      "criaturas/mamiferos/deer"
+    ],
+    [
+      177,
+      234,
+      0,
+      1,
+      32,
+      "criaturas/mamiferos/deer"
+    ],
+    [
+      183,
+      234,
+      0,
+      1,
+      32,
+      "criaturas/mamiferos/sheep"
+    ],
+    [
+      194,
+      234,
+      0,
+      1,
+      32,
+      "criaturas/mamiferos/deer"
+    ],
+    [
+      185,
+      235,
+      0,
+      10,
+      32,
+      "criaturas/mamiferos/deer"
+    ],
+    [
+      192,
+      235,
+      0,
+      1,
+      32,
+      "criaturas/mamiferos/sheep"
+    ],
+    [
+      191,
       236,
       0,
       5,
