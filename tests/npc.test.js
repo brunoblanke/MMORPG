@@ -175,3 +175,26 @@ test('NPC criado no gerador e posto pelo editor: lugar, folha, conversa e não v
   assert.deepEqual(layers[0]['20,20'].npc, { type: SMITH });
   assert.deepEqual(serializeMapFromLayers([0], layers, 40).npcData, [[SMITH, 20, 20, 0]]);
 });
+
+test('conversando o NPC para; volta a passear com o tchau ou quando o player se afasta', () => {
+  const sim = game();
+  const guide = sim.npcs[0];
+  const walksWithin = (ms) => {
+    const seen = new Set();
+    for (let t = 0; t < ms; t += 500) {
+      run(sim, 500);
+      seen.add(`${guide.x},${guide.y}`);
+    }
+    return seen.size > 1;
+  };
+  moveTo(sim, guide.x + 1, guide.y + 1);
+  say(sim, 'oi');
+  assert.equal(walksWithin(15000), false);
+  say(sim, 'tchau');
+  assert.equal(walksWithin(30000), true);
+  moveTo(sim, guide.x + 1, guide.y + 1);
+  say(sim, 'oi');
+  assert.equal(walksWithin(10000), false);
+  moveTo(sim, 25, 25);
+  assert.equal(walksWithin(30000), true);
+});
