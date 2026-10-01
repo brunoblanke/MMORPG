@@ -52,7 +52,7 @@
       "topicos": [
         {
           "palavras": "andar, mover, movimento, caminhar",
-          "resposta": "Clique no chão pra andar até lá, ou use W, A, S, D (Q, E, Z e C nas diagonais)."
+          "resposta": "Clique no chão pra andar até lá, ou use as setas do teclado."
         },
         {
           "palavras": "combate, atacar, ataque, lutar, luta",

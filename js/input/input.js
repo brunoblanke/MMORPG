@@ -16,17 +16,11 @@ function isTextField(target) {
 }
 
 const KEY_DIRECTIONS = {
-  w: [0, -1], s: [0, 1], a: [-1, 0], d: [1, 0],
-  q: [-1, -1], e: [1, -1], z: [-1, 1], c: [1, 1],
   arrowup: [0, -1], arrowdown: [0, 1], arrowleft: [-1, 0], arrowright: [1, 0]
 };
 
-// Ctrl + direção: vira pro lado sem sair do sqm (setas também, já que o
-// navegador não deixa o jogo usar Ctrl+W).
-const TURN_KEYS = {
-  w: [0, -1], s: [0, 1], a: [-1, 0], d: [1, 0],
-  arrowup: [0, -1], arrowdown: [0, 1], arrowleft: [-1, 0], arrowright: [1, 0]
-};
+// Ctrl + seta: vira pro lado sem sair do sqm.
+const TURN_KEYS = KEY_DIRECTIONS;
 
 export class InputController {
   constructor(canvas, renderer, camera, eventManager, game) {
@@ -72,7 +66,7 @@ export class InputController {
 
   // ================================================================================================================================================================================================================================================
   // getKeyDirection
-  // Direção da primeira tecla apertada (w/a/s/d e diagonais q/e/z/c), ou null.
+  // Direção da primeira seta apertada, ou null.
 
   getKeyDirection() {
     for (const key in this.keysPressed) {
