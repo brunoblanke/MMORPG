@@ -57,12 +57,13 @@ function isInsideBounds(bounds, x, y) {
 //   - bounds: { minX, maxX, minY, maxY } — só procura dentro dessa área;
 //   - enemiesPassable: inimigos não bloqueiam (uma hora eles saem do lugar);
 //   - avoidSafe: não passa por zona segura (inimigos);
+//   - groundOnly: só chão, sem volume, escada nem buraco (criaturas, NPCs);
 //   - maxNodes: desiste depois de expandir tantos nós.
 // Devolve [] se não houver caminho.
 
 export function findPath(world, start, end, options = {}) {
-  const { sameFloor = false, bounds = null, enemiesPassable = false, avoidSafe = false, maxNodes = 20000 } = options;
-  const stepOptions = { sameFloor, transitions: !sameFloor, enemiesPassable, avoidSafe };
+  const { sameFloor = false, bounds = null, enemiesPassable = false, avoidSafe = false, groundOnly = false, maxNodes = 20000 } = options;
+  const stepOptions = { sameFloor, transitions: !sameFloor, enemiesPassable, avoidSafe, groundOnly };
   const origin = { x: start.x, y: start.y, z: start.z || 0, step: start.step || 0 };
   if (origin.x === end.x && origin.y === end.y && origin.z === end.z) return [];
 

@@ -190,3 +190,22 @@ test('bueiro em cima do topo de uma escada: pisar não desce', () => {
   run(up, 2000);
   assert.deepEqual([up.player.x, up.player.y, up.player.z], [5, 6, 1]);
 });
+
+test('criatura não sobe em caixa nem pisa em escada ou buraco; só sobe puxada pela corda no buraco', async () => {
+  const { hole, pile, buildGame: build, floorRect: floors, CREATURE } = await import('./helpers/fixture.js');
+  setAssets([asset(ROPE, { move: true, peso: 18, uso: 'ferramenta-corda' }), asset(BAG, { move: true, peso: 8, espacos: 4 })]);
+  const sim = build({ objects: [...floors(0, 20, 0, 20, 0), ...floors(0, 20, 0, 20, 1), ...pile(8, 5, 1, 0), ...hole(10, 10, 1)], enemies: [[11, 11, 0]], player: { x: 9, y: 10, z: 1 } });
+  const enemy = sim.enemies[0];
+  const { resolveStep } = await import('../js/core/movement.js');
+  const ground = { groundOnly: true };
+  assert.equal(resolveStep(sim.world, { x: 7, y: 5, z: 0, step: 0 }, 1, 0, ground), null, 'não sobe na caixa');
+  assert.ok(resolveStep(sim.world, { x: 7, y: 5, z: 0, step: 0 }, 1, 0), 'o player sobe');
+  assert.equal(resolveStep(sim.world, { x: 9, y: 10, z: 1, step: 0 }, 1, 0, { ...ground, transitions: true }), null, 'não pisa no buraco');
+  sim.player.equip.mochila = { uid: 'bag0', type: BAG, items: [{ uid: 'r1', type: ROPE }, null, null, null] };
+  sim.time = 1000;
+  sim.enqueue('player1', { type: 'useItem', from: { t: 'c', uid: 'bag0', i: 0 }, target: { x: 10, y: 10, z: 1 } });
+  sim.tick(sim.time + TICK_MS);
+  assert.equal(enemy.z, 1, 'puxada pela corda');
+  assert.ok(Math.max(Math.abs(enemy.x - 10), Math.abs(enemy.y - 10)) <= 1);
+  assert.equal(enemy.creature, CREATURE);
+});

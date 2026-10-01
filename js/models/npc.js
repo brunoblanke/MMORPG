@@ -12,6 +12,7 @@ export class Npc extends Entity {
   constructor(data) {
     super({ ...data, type: 'npc' });
     this.isNpc = true;
+    this.groundOnly = true;
     this.name = data.name || 'NPC';
     this.gender = PLAYER_GENDERS.includes(data.gender) ? data.gender : DEFAULT_GENDER;
     this.creature = data.creature || PLAYER_SPRITES[this.gender];

@@ -1,7 +1,7 @@
 // js/systems/interactions.js
 
 import { GameObject } from '../models/game-object.js';
-import { objectIdType, objectUse, openedAs, displayName, getAsset, splitType } from '../../shared/assets.js';
+import { objectIdType, objectUse, openedAs, displayName, getAsset, splitType, isEntranceFolder } from '../../shared/assets.js';
 import { itemInfo, newItem, weightOf } from '../../shared/items.js';
 import { getHoleTarget, toLowerLevel } from '../../shared/stairs.js';
 
@@ -75,21 +75,24 @@ export class InteractionController {
   // ================================================================================================================================================================================================================================================
   // useTool
   // Corda ou pá usada com a mira no sqm target (no mesmo andar): corda na
-  // marca de corda sobe; pá no monte abre o buraco. Longe, o player anda até
-  // o lado e usa ao chegar (from: de onde veio a ferramenta).
-  // Devolve true se a ferramenta fez algo.
+  // marca de corda sobe; corda num buraco ou bueiro puxa quem está embaixo
+  // dele; pá no monte abre o buraco. Longe, o player anda até o lado e usa ao
+  // chegar (from: de onde veio a ferramenta). Devolve true se a ferramenta
+  // fez algo.
 
   useTool(player, tool, target, from = null) {
     const z = player.z || 0;
     if (!target || !Number.isInteger(target.x) || !Number.isInteger(target.y) || (target.z ?? z) !== z) return false;
     const wanted = tool === 'ferramenta-corda' ? 'corda' : 'pa';
-    const obj = this.sim.world.getObjectsAt(target.x, target.y)
-      .find(o => (o.z || 0) === z && objectUse(objectIdType(o.id)) === wanted);
+    const here = this.sim.world.getObjectsAt(target.x, target.y).filter(o => (o.z || 0) === z);
+    const hole = wanted === 'corda' ? here.find(o => this.isOpening(o)) : null;
+    const obj = here.find(o => objectUse(objectIdType(o.id)) === wanted) || hole;
     if (!obj) return false;
     if (!this.sim.inventory.isNear(player, obj)) {
       if (from) this.sim.inventory.walkNextTo(player, obj, { type: 'useItem', from, target });
       return false;
     }
+    if (obj === hole) return this.pullUp(hole);
     return wanted === 'corda' ? this.climb(player, obj) : this.dig(player, obj);
   }
 
@@ -110,6 +113,43 @@ export class InteractionController {
         this.sim.control.clearWalk(player);
         return true;
       }
+    }
+    return false;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // isOpening
+  // Abertura pro andar de baixo: buraco ou bueiro (pasta Entradas) ou monte
+  // que a pá abriu.
+
+  isOpening(obj) {
+    const type = objectIdType(obj.id);
+    if (objectUse(type) === 'pa') return !!obj.dug;
+    return isEntranceFolder(type);
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // pullUp
+  // Corda na abertura: quem está no sqm embaixo dela (1 ao sul e 1 ao leste,
+  // no andar de baixo: toLowerLevel), player ou criatura, sobe pro sqm livre
+  // em volta da abertura (o do sul primeiro). É o único jeito de uma criatura
+  // trocar de andar.
+
+  pullUp(hole) {
+    const { movement, world } = this.sim;
+    const z = hole.z || 0;
+    const below = toLowerLevel(hole.x, hole.y, z);
+    const pulled = world.getCreatureAt(below.x, below.y, below.z);
+    if (!pulled || pulled.isNpc) return false;
+    for (const [dx, dy] of CLIMB_OFFSETS) {
+      const x = hole.x + dx;
+      const y = hole.y + dy;
+      if (!movement.isInsideMap(x, y) || !world.hasFloorAt(x, y, z)) continue;
+      if (movement.isBlocked(x, y, z) || world.getTransitionAt(x, y, z)) continue;
+      if (!movement.useTransition(pulled, { id: 'corda', targetX: x, targetY: y, targetZ: z })) continue;
+      if (pulled.isPlayer) this.sim.control.clearWalk(pulled);
+      else if (pulled.updatePatrolCenter) pulled.updatePatrolCenter();
+      return true;
     }
     return false;
   }

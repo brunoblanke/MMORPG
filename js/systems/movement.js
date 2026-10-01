@@ -67,7 +67,7 @@ export class MovementController {
   // avoidsSafeZones (inimigos) não pisa em zona segura.
 
   resolveStep(from, dx, dy, options = {}) {
-    return resolveStep(this.world, from, dx, dy, { enemiesPassable: this.enemiesPassable, avoidSafe: !!from.avoidsSafeZones, ...options });
+    return resolveStep(this.world, from, dx, dy, { enemiesPassable: this.enemiesPassable, avoidSafe: !!from.avoidsSafeZones, groundOnly: !!from.groundOnly, ...options });
   }
 
   // ================================================================================================================================================================================================================================================
@@ -84,7 +84,7 @@ export class MovementController {
   // Caminho de start até end = { x, y, z } (core/pathfinding.js).
 
   findPath(start, end, options = {}) {
-    return findPath(this.world, start, end, { enemiesPassable: this.enemiesPassable, avoidSafe: !!start.avoidsSafeZones, ...options });
+    return findPath(this.world, start, end, { enemiesPassable: this.enemiesPassable, avoidSafe: !!start.avoidsSafeZones, groundOnly: !!start.groundOnly, ...options });
   }
 
   // ================================================================================================================================================================================================================================================

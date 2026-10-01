@@ -13,6 +13,7 @@ export class Enemy extends Entity {
     this.patrolRadius = data.patrolRadius || CONFIG.patrolRadius || 3;
     this.detectionRadius = data.detectionRadius || CONFIG.detectionRadius || 6;
     this.avoidsSafeZones = true;   // não entra em zona segura (regra de passo e busca de caminho)
+    this.groundOnly = true;        // não sobe em caixa/pilha nem pisa em escada ou buraco
     this.ai = {
       state: AI_STATE.PATROL,
       slot: null,

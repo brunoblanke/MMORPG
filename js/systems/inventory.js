@@ -704,7 +704,7 @@ export class InventoryController {
     const pending = player.pendingInv;
     if (pending) {
       const obj = this.sim.getItem(pending.objId);
-      if (!obj || !(this.isPickable(obj) || this.isOpenable(obj) || this.sim.interactions.isUsable(obj))) {
+      if (!obj || !(this.isPickable(obj) || this.isOpenable(obj) || this.sim.interactions.isUsable(obj) || this.sim.interactions.isOpening(obj))) {
         player.pendingInv = null;
       } else if (this.isNear(player, obj)) {
         player.pendingInv = null;
