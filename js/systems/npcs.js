@@ -2,7 +2,8 @@
 
 import { Npc } from '../models/npc.js';
 import { getMapSpawn } from '../../shared/map-format.js';
-import { DEFAULT_RADIUS, normalizeSpeech, npcDefFromAsset } from '../../shared/npcs.js';
+import { DEFAULT_RADIUS, YES_WORDS, NO_WORDS, normalizeSpeech, npcDefFromAsset } from '../../shared/npcs.js';
+import { VOCATIONS, VOCATION_LEVEL } from '../../shared/vocations.js';
 import { getLevel } from '../core/geometry.js';
 import { directionFromDelta } from '../utils/helpers.js';
 
@@ -44,6 +45,7 @@ export class NpcController {
       npc.focus = new Map();
       npc.nearby = new Set();
       npc.welcomed = new Map();
+      npc.choosing = new Map();
       npc.home = { x: spot.x, y: spot.y, z };
       npc.homeX = spot.x;
       npc.homeY = spot.y;
@@ -122,11 +124,51 @@ export class NpcController {
     this.face(npc, player);
     if (this.hasWord(text, def.bye.words)) {
       npc.focus.delete(player.id);
+      npc.choosing.delete(player.id);
       this.npcSays(npc, player, def.bye.reply);
       return;
     }
+    if (def.vocation && this.talkVocation(npc, def, player, text)) return;
     const topic = def.topics.find(t => this.hasWord(text, t.words));
     if (topic) this.npcSays(npc, player, topic.reply);
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // talkVocation
+  // NPC de vocação: o nome de uma (knight, paladin, sorcerer, druid) pede a
+  // confirmação; sim dá a vocação (só a quem tem o nível VOCATION_LEVEL e
+  // ainda não tem nenhuma), faz do destino a nova casa do player e o leva
+  // pra lá; não desiste. Devolve true se a fala era dessa conversa.
+
+  talkVocation(npc, def, player, text) {
+    const pending = npc.choosing.get(player.id);
+    if (pending && this.hasWord(text, YES_WORDS)) {
+      npc.choosing.delete(player.id);
+      this.npcSays(npc, player, `Que assim seja, ${VOCATIONS[pending].name} {nome}!`);
+      player.setVocation(pending);
+      const dest = def.vocation.destination;
+      if (dest) this.sim.schedule((this.sim.time || 0) + REPLY_DELAY_MS * 2, () => {
+        npc.focus.delete(player.id);
+        this.sim.teleportPlayer(player, dest.x, dest.y, dest.z, { home: true });
+      });
+      return true;
+    }
+    if (pending && this.hasWord(text, NO_WORDS)) {
+      npc.choosing.delete(player.id);
+      this.npcSays(npc, player, 'Pense bem e volte quando decidir.');
+      return true;
+    }
+    const key = Object.keys(VOCATIONS).find(k => this.hasWord(text, VOCATIONS[k].words));
+    if (!key) return false;
+    if (player.vocation !== 'none') {
+      this.npcSays(npc, player, `Você já é ${VOCATIONS[player.vocation].name}.`);
+    } else if (player.lvl < VOCATION_LEVEL) {
+      this.npcSays(npc, player, `Você precisa chegar ao nível ${VOCATION_LEVEL} pra escolher sua vocação.`);
+    } else {
+      npc.choosing.set(player.id, key);
+      this.npcSays(npc, player, `Quer mesmo ser ${VOCATIONS[key].name}? Essa escolha não tem volta. (sim / não)`);
+    }
+    return true;
   }
 
   // ================================================================================================================================================================================================================================================
@@ -166,8 +208,10 @@ export class NpcController {
         const player = this.sim.getPlayer(playerId);
         if (!player) {
           npc.focus.delete(playerId);
+          npc.choosing.delete(playerId);
         } else if (this.distanceTo(npc, player) > FOCUS_RANGE || now - since > FOCUS_IDLE_MS) {
           npc.focus.delete(playerId);
+          npc.choosing.delete(playerId);
           if (def) this.npcSays(npc, player, def.bye.reply);
         }
       }

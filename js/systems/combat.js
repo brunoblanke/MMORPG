@@ -141,9 +141,20 @@ export class CombatController {
       this.trainSkill(defender, 'shielding');
     }
     if (damage <= 0) return defender.currentHp;
+    if (attacker.isPlayer && !defender.isPlayer) this.recordDamage(defender, attacker, Math.min(damage, defender.currentHp));
     const hpLeft = defender.takeDamage(damage, now);
     this.sim.emit({ type: 'damage', targetId: defender.id, x: defender.x, y: defender.y, amount: damage });
     return hpLeft;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // recordDamage
+  // Quanto de vida cada player tirou da criatura (pra dividir a XP na morte).
+
+  recordDamage(creature, player, amount) {
+    if (amount <= 0) return;
+    if (!creature.damageBy) creature.damageBy = new Map();
+    creature.damageBy.set(player.id, (creature.damageBy.get(player.id) || 0) + amount);
   }
 
   // ================================================================================================================================================================================================================================================
@@ -166,7 +177,7 @@ export class CombatController {
 
   trainSkill(player, key) {
     if (!player.skills || key === 'magic') return;
-    if (!addSkillTry(player.skills, key)) return;
+    if (!addSkillTry(player.skills, key, player.vocation)) return;
     const names = { fist: 'Fist', club: 'Club', sword: 'Sword', axe: 'Axe', distance: 'Distance', shielding: 'Shielding', fishing: 'Fishing' };
     this.sim.emit({ type: 'message', playerId: player.id, text: `Você avançou em ${names[key]} (${player.skills[key].lvl}).`, kind: 'info' });
   }

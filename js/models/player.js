@@ -5,7 +5,8 @@ import { playerStats } from '../utils/helpers.js';
 import { PLAYER_GENDERS, DEFAULT_GENDER } from '../../shared/catalog.js';
 import { isValidFloor } from '../../shared/constants.js';
 import { EQUIP_SLOTS, FOOD_MAX_SECONDS, toPlain, equipBonus } from '../../shared/items.js';
-import { newSkills, loadSkills } from '../../shared/skills.js';
+import { newSkills, loadSkills, loseSkills } from '../../shared/skills.js';
+import { vocationOf } from '../../shared/vocations.js';
 
 export class Player extends Entity {
   constructor(data) {
@@ -18,6 +19,7 @@ export class Player extends Entity {
     this.spawnZ = data.z || 0;
     this.xp = data.xp || 0;
     this.lvl = data.lvl || 1;
+    this.vocation = vocationOf(data.vocation);
     this.nextLevelXp = this.calculateNextLevelXp();
     this.skills = newSkills();
     this.maxMana = this.calculateMaxMana();
@@ -73,14 +75,13 @@ export class Player extends Entity {
 
   // ================================================================================================================================================================================================================================================
   // applyLevelStats
-  // Vida máxima, ataque, defesa, velocidade e XP do próximo nível pelo lvl atual.
+  // Vida e mana máximas, velocidade e XP do próximo nível pelo lvl atual e
+  // pela vocação.
 
   applyLevelStats() {
-    const stats = playerStats(this.lvl);
+    const stats = playerStats(this.lvl, this.vocation);
     this.hp = stats.hp;
     this.maxHp = stats.hp;
-    this.atk = stats.atk;
-    this.def = stats.def;
     this.spd = stats.spd;
     this.nextLevelXp = this.calculateNextLevelXp();
     this.maxMana = this.calculateMaxMana();
@@ -97,6 +98,8 @@ export class Player extends Entity {
       gender: this.gender,
       lvl: this.lvl,
       xp: this.xp,
+      vocation: this.vocation,
+      home: { x: this.spawnX, y: this.spawnY, z: this.spawnZ },
       currentHp: this.currentHp,
       x: this.x,
       y: this.y,
@@ -121,10 +124,13 @@ export class Player extends Entity {
     if (!saved || typeof saved !== 'object') return null;
 
     if (Number.isInteger(saved.lvl) && saved.lvl >= 1) this.lvl = saved.lvl;
+    this.vocation = vocationOf(saved.vocation);
+    const home = saved.home;
+    if (home && Number.isInteger(home.x) && Number.isInteger(home.y) && isValidFloor(home.z)) Object.assign(this, { spawnX: home.x, spawnY: home.y, spawnZ: home.z });
     this.applyLevelStats();
     this.xp = Number.isInteger(saved.xp) ? Math.min(Math.max(saved.xp, 0), this.nextLevelXp - 1) : 0;
     this.currentHp = Number.isInteger(saved.currentHp) && saved.currentHp > 0 ? Math.min(saved.currentHp, this.hp) : this.hp;
-    this.skills = loadSkills(saved.skills);
+    this.skills = loadSkills(saved.skills, this.vocation);
     this.mana = Number.isInteger(saved.mana) && saved.mana >= 0 ? Math.min(saved.mana, this.maxMana) : this.maxMana;
     if (typeof saved.followMode === 'boolean') this.followMode = this.autoFollow = saved.followMode;
     if (typeof saved.attackMode === 'boolean') this.attackMode = saved.attackMode;
@@ -148,16 +154,55 @@ export class Player extends Entity {
 
   // ================================================================================================================================================================================================================================================
   // calculateMaxMana
-  // Mana máxima pelo nível, como no Tibia (55 no nível 1, +5 por nível).
+  // Mana máxima pelo nível e pela vocação, como no Tibia.
 
   calculateMaxMana() {
-    return playerStats(this.lvl).mana;
+    return playerStats(this.lvl, this.vocation).mana;
   }
 
-  respawn(spot = { x: this.spawnX, y: this.spawnY }) {
-    const xpLoss = Math.floor(this.xp * 0.2);
-    this.xp = Math.max(0, this.xp - xpLoss);
+  // ================================================================================================================================================================================================================================================
+  // setVocation
+  // Passa a ter a vocação: vida, mana e cap do nível nela e o ritmo dos skills.
 
+  setVocation(vocation) {
+    this.vocation = vocationOf(vocation);
+    this.applyLevelStats();
+    this.skills = loadSkills(this.skills, this.vocation);
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // totalXp
+  // Toda a XP do player: a que leva até o nível atual mais a que já tem nele.
+
+  totalXp() {
+    return xpForLevel(this.lvl) + this.xp;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // applyDeathPenalty
+  // Morte como no Tibia atual (sem blessing nem promotion): abaixo do nível
+  // 24 perde 10% da XP total; dali pra cima, (L + 50) / 100 × 50 ×
+  // (L² − 5L + 8). Pode cair de nível. Os skills perdem a mesma fração.
+
+  applyDeathPenalty() {
+    const total = this.totalXp();
+    const L = this.lvl;
+    const loss = Math.min(total, L < 24 ? Math.floor(total * 0.1) : Math.floor((L + 50) / 100 * 50 * (L * L - 5 * L + 8)));
+    const left = total - loss;
+    let lvl = 1;
+    while (xpForLevel(lvl + 1) <= left) lvl++;
+    this.lvl = lvl;
+    this.applyLevelStats();
+    this.xp = left - xpForLevel(lvl);
+    if (total > 0) loseSkills(this.skills, loss / total, this.vocation);
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // respawn
+  // Depois da morte: perde XP e skills e volta no spot com vida e mana cheias.
+
+  respawn(spot = { x: this.spawnX, y: this.spawnY }) {
+    this.applyDeathPenalty();
     this.x = spot.x;
     this.y = spot.y;
     this.renderX = spot.x;
@@ -169,4 +214,12 @@ export class Player extends Entity {
     this.mana = this.maxMana;
     this.isTarget = false;
   }
+}
+
+// ================================================================================================================================================================================================================================================
+// xpForLevel
+// XP total pra chegar no nível L, como no Tibia: 50/3 × (L³ − 6L² + 17L − 12).
+
+export function xpForLevel(L) {
+  return Math.round(50 / 3 * (L * L * L - 6 * L * L + 17 * L - 12));
 }

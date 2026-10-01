@@ -1,6 +1,7 @@
 // shared/items.js
 
 import { getAsset, displayName, splitType } from './assets.js';
+import { vocationStats } from './vocations.js';
 
 // Regras dos itens que o player carrega (inventário e containers). Um item é
 // { uid, type, count?, items? }: type é a folha do gerador, count só em pilha
@@ -43,11 +44,6 @@ export const FOOD_MAX_SECONDS = 1200;
 export const REGEN_MS = 6000;
 export const REGEN_HP = 1;
 export const REGEN_MANA = 1;
-
-// Cap como no Tibia (sem vocação): 400 oz no nível 1 e +10 por nível.
-export const CAP_BASE_LEVEL = 1;
-export const CAP_AT_BASE = 400;
-export const CAP_PER_LEVEL = 10;
 
 // Skill que o atk de cada tipo de arma soma (o resto: fist).
 const SKILL_BY_WEAPON_FOLDER = {
@@ -185,10 +181,10 @@ export function equipBonus(equip) {
 
 // ================================================================================================================================================================================================================================================
 // capacityFor
-// Cap do player no nível (oz).
+// Cap do player no nível e na vocação (oz).
 
-export function capacityFor(level) {
-  return CAP_AT_BASE + Math.max(0, level - CAP_BASE_LEVEL) * CAP_PER_LEVEL;
+export function capacityFor(level, vocation = 'none') {
+  return vocationStats(level, vocation).cap;
 }
 
 // ================================================================================================================================================================================================================================================

@@ -211,3 +211,23 @@ test('calado por FOCUS_IDLE_MS (30 s) na conversa, o NPC se despede', async () =
   assert.deepEqual(npcLines(run(sim, FOCUS_IDLE_MS - 2000)), []);
   assert.deepEqual(npcLines(run(sim, 3000)), ['Até mais, Ana. Boa aventura!']);
 });
+
+test('NPC de vocação: pede nível 8, confirma, dá a vocação e leva pro destino como nova casa', () => {
+  GUIDE.vocation = { destination: { x: 3, y: 3, z: 0 } };
+  try {
+    const sim = game();
+    moveTo(sim, 9, 9);
+    say(sim, 'oi');
+    assert.match(npcLines(say(sim, 'knight')).join(), /nível 8/);
+    sim.player.lvl = 8;
+    sim.player.applyLevelStats();
+    assert.match(npcLines(say(sim, 'quero ser knight')).join(), /Knight\?/);
+    say(sim, 'sim');
+    run(sim, REPLY_DELAY_MS * 3);
+    assert.equal(sim.player.vocation, 'knight');
+    assert.ok(Math.max(Math.abs(sim.player.x - 3), Math.abs(sim.player.y - 3)) <= 1);
+    assert.deepEqual([sim.player.spawnX, sim.player.spawnY], [sim.player.x, sim.player.y]);
+  } finally {
+    delete GUIDE.vocation;
+  }
+});

@@ -3,7 +3,7 @@
 import { test, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
 import { buildGame, floorRect, safeRect } from './helpers/fixture.js';
-import { Player } from '../js/models/player.js';
+import { Player, xpForLevel } from '../js/models/player.js';
 import { playerStats } from '../js/utils/helpers.js';
 import { TICK_MS } from '../js/simulation.js';
 
@@ -43,7 +43,7 @@ test('subir de nível guarda o XP que sobra e melhora os atributos', () => {
   assert.equal(player.lvl, 2);
   assert.equal(player.xp, 30);
   const stats = playerStats(2);
-  assert.deepEqual([player.maxHp, player.currentHp, player.atk, player.def, player.spd], [stats.hp, stats.hp, stats.atk, stats.def, stats.spd]);
+  assert.deepEqual([player.maxHp, player.currentHp, player.maxMana, player.spd], [stats.hp, stats.hp, stats.mana, stats.spd]);
 
   assert.equal(player.gainXp(500), 2);
   assert.equal(player.lvl, 4);
@@ -171,4 +171,61 @@ test('criatura com a vida preenchida no gerador e armadura/defesa 0 fica com 0 (
     propriedades: { comportamento: 'normal', vida: 15, xp: 10, velocidade: 120, armadura: 0, defesa: 0, ataque: 8 } }]);
   const snake = new Enemy({ x: 0, y: 0, lvl: 5, creature: SNAKE });
   assert.deepEqual([snake.maxHp, snake.def, snake.defense, snake.atk, snake.xp], [15, 0, 0, 8, 10]);
+});
+
+test('a XP da criatura é dividida pelo dano que cada player causou', () => {
+  const sim = buildGame({ objects: GROUND, enemies: [[8, 5, 0, 30]], player: { x: 2, y: 5, z: 0 } });
+  const other = sim.addPlayer('player2');
+  const enemy = sim.enemies[0];
+  enemy.xp = 100;
+  sim.player.xp = 0;
+  other.xp = 0;
+  sim.combat.recordDamage(enemy, sim.player, 30);
+  sim.combat.recordDamage(enemy, other, 10);
+  enemy.currentHp = 0;
+  sim.tick(sim.time + TICK_MS);
+  const events = sim.drainEvents().filter(e => e.type === 'xp');
+
+  assert.deepEqual(events.map(e => [e.playerId, e.amount]).sort(), [['player1', 75], ['player2', 25]]);
+});
+
+test('morrer perde 10% da XP total abaixo do nível 24 e pode cair de nível', () => {
+  const player = new Player({ x: 0, y: 0, lvl: 1 });
+  player.gainXp(xpForLevel(10) + 50);
+  const total = player.totalXp();
+  player.respawn({ x: 0, y: 0 });
+  assert.equal(player.totalXp(), total - Math.floor(total * 0.1));
+  assert.equal(player.lvl, 9);
+});
+
+test('morrer do nível 24 pra cima segue a fórmula do Tibia atual', () => {
+  const player = new Player({ x: 0, y: 0, lvl: 1 });
+  player.gainXp(xpForLevel(30));
+  player.respawn({ x: 0, y: 0 });
+  assert.equal(player.totalXp(), xpForLevel(30) - Math.floor(80 / 100 * 50 * (900 - 150 + 8)));
+});
+
+test('morrer tira dos skills a mesma fração da XP', () => {
+  const player = new Player({ x: 0, y: 0, lvl: 1 });
+  player.gainXp(xpForLevel(10));
+  player.skills.sword = { lvl: 11, tries: 0, pct: 0 };
+  player.respawn({ x: 0, y: 0 });
+  assert.deepEqual([player.skills.sword.lvl, player.skills.sword.tries], [10, 45]);
+  assert.equal(player.skills.fist.lvl, 10);
+});
+
+test('vocação: vida, mana e cap do Tibia por nível e ritmo próprio dos skills', async () => {
+  const { vocationStats } = await import('../shared/vocations.js');
+  const { triesFor } = await import('../shared/skills.js');
+  assert.deepEqual(vocationStats(8, 'knight'), { hp: 185, mana: 90, cap: 470 });
+  assert.deepEqual(vocationStats(20, 'knight'), { hp: 365, mana: 150, cap: 770 });
+  assert.deepEqual(vocationStats(20, 'paladin'), { hp: 305, mana: 270, cap: 710 });
+  assert.deepEqual(vocationStats(20, 'sorcerer'), { hp: 245, mana: 450, cap: 590 });
+  assert.deepEqual(vocationStats(20, 'none'), { hp: 245, mana: 150, cap: 590 });
+  assert.equal(triesFor(11, 'sword', 'knight'), 55);
+  assert.equal(triesFor(11, 'distance', 'paladin'), 33);
+
+  const player = new Player({ x: 0, y: 0, lvl: 20 });
+  player.setVocation('knight');
+  assert.deepEqual([player.vocation, player.maxHp, player.maxMana], ['knight', 365, 150]);
 });
