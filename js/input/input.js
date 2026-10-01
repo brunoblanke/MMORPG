@@ -20,6 +20,13 @@ const KEY_DIRECTIONS = {
   q: [-1, -1], e: [1, -1], z: [-1, 1], c: [1, 1]
 };
 
+// Ctrl + direção: vira pro lado sem sair do sqm (setas também, já que o
+// navegador não deixa o jogo usar Ctrl+W).
+const TURN_KEYS = {
+  w: [0, -1], s: [0, 1], a: [-1, 0], d: [1, 0],
+  arrowup: [0, -1], arrowdown: [0, 1], arrowleft: [-1, 0], arrowright: [1, 0]
+};
+
 export class InputController {
   constructor(canvas, renderer, camera, eventManager, game) {
     this.game = game;
@@ -95,6 +102,12 @@ export class InputController {
   handleKeyDown(e) {
     if (isTextField(e.target)) return;
     const key = e.key.toLowerCase();
+    if (e.ctrlKey && TURN_KEYS[key]) {
+      e.preventDefault();
+      const [dx, dy] = TURN_KEYS[key];
+      this.game.send({ type: 'turn', dx, dy });
+      return;
+    }
     if (!KEY_DIRECTIONS[key]) return;
     e.preventDefault();
     if (this.keysPressed[key]) return;

@@ -1,6 +1,6 @@
 // js/systems/player-control.js
 
-import { calculateMoveDelay, getAdjacentPositions } from '../utils/helpers.js';
+import { calculateMoveDelay, getAdjacentPositions, directionFromDelta } from '../utils/helpers.js';
 import { getStairTop } from '../../shared/stairs.js';
 import { isEntranceFolder, objectIdType } from '../../shared/assets.js';
 
@@ -50,8 +50,18 @@ export class PlayerControl {
       case 'useStairs': return this.useStairs(player, command.x, command.y, command.z);
       case 'useDoor': return this.useDoor(player, command.x, command.y, command.z);
       case 'say': return this.sim.talk.playerSays(player, command.text);
+      case 'turn': return this.turn(player, command.dx, command.dy);
       default: console.warn('Comando desconhecido:', command);
     }
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // turn
+  // Ctrl + direção: vira pro lado (dx, dy) sem sair do sqm.
+
+  turn(player, dx, dy) {
+    const direction = directionFromDelta(Math.sign(dx) || 0, Math.sign(dy) || 0);
+    if (direction) player.direction = direction;
   }
 
   // ================================================================================================================================================================================================================================================

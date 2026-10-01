@@ -6,6 +6,7 @@ import { itemInfo, fitsSlot, stackFrame } from '../../shared/items.js';
 import { PLAYER_SPRITES, DEFAULT_GENDER } from '../../shared/catalog.js';
 import { CORPSE_ROW } from './sprite-registry.js';
 import { describeItem, describeEntity } from './look.js';
+import { ANIMATION_CYCLE_MS } from '../../shared/constants.js';
 
 // Janelas do inventário e dos containers, nas duas colunas ao lado da tela do
 // jogo. Só desenha e manda comandos (moveInv, openContainer, closeContainer,
@@ -576,7 +577,11 @@ export class InventoryUI {
     const width = Math.max(1, asset.quadros || 1) * asset.quadro * scale;
     const height = asset.quadro * scale;
     const x = frame.x + (asset.pilha ? Math.min(stackFrame(count), (asset.quadros || 1) - 1) * asset.quadro : 0);
-    return `<i class="inv-spr" style="background-image:url(${frame.url});background-size:${width}px ${height}px;background-position:${-x * scale}px ${-frame.y * scale}px"></i>`;
+    const frames = asset.pilha ? 1 : frame.frames || 1;
+    const animation = frames > 1
+      ? `;--x0:${-x * scale}px;--x1:${-(x + frames * frame.size) * scale}px;animation:inv-anim ${ANIMATION_CYCLE_MS}ms steps(${frames}) infinite`
+      : '';
+    return `<i class="inv-spr" style="background-image:url(${frame.url});background-size:${width}px ${height}px;background-position:${-x * scale}px ${-frame.y * scale}px${animation}"></i>`;
   }
 
   // ================================================================================================================================================================================================================================================
