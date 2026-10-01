@@ -6,8 +6,9 @@ import { prepareDrawables } from './draw-order.js';
 import { getEntityLevel } from '../core/geometry.js';
 import { getAsset, objectIdType, openedAs } from '../../shared/assets.js';
 import { stackFrame } from '../../shared/items.js';
+import { drawTibiaText } from './tibia-text.js';
 
-const MESSAGE_COLORS = { info: '#5fe35f', warn: '#ffd84a', danger: '#ff4a4a' };
+const MESSAGE_COLORS = { info: '#00f000', warn: '#f0f000', danger: '#f83030' };
 
 const TINT_HIT = { color: '#ff2a2a', alpha: 0.55 };
 const TINT_ENEMY_HOVER = { color: '#ff2a2a', alpha: 0.35 };
@@ -474,28 +475,16 @@ export class Renderer {
   // ================================================================================================================================================================================
   // drawStatusMessage
 
-  // Mensagem no centro da tela, na cor do tipo (MESSAGE_COLORS), com
-  // contorno escuro; quebra de linha com \n.
+  // Mensagem no centro da tela, um pouco acima do player, no estilo do Tibia
+  // (tibia-text.js), na cor do tipo (MESSAGE_COLORS); quebra de linha com \n.
 
   drawStatusMessage(statusMessage) {
     if (!statusMessage) return;
     const lines = String(statusMessage.text).split('\n');
-    const lineHeight = 12;
-    const top = this.canvas.height / 2 - (lines.length - 1) * lineHeight / 2;
-    this.ctx.save();
-    this.ctx.textAlign = 'center';
-    this.ctx.textBaseline = 'middle';
-    this.ctx.font = 'bold 10px Arial';
-    this.ctx.lineWidth = 2.5;
-    this.ctx.lineJoin = 'round';
-    this.ctx.strokeStyle = 'rgba(0, 0, 0, 0.85)';
-    this.ctx.fillStyle = MESSAGE_COLORS[statusMessage.kind] || MESSAGE_COLORS.info;
-    lines.forEach((line, i) => {
-      const y = top + i * lineHeight;
-      this.ctx.strokeText(line, this.canvas.width / 2, y);
-      this.ctx.fillText(line, this.canvas.width / 2, y);
-    });
-    this.ctx.restore();
+    const lineHeight = 13;
+    const bottom = this.canvas.height / 2 - CONFIG.tileSize - 16;
+    const color = MESSAGE_COLORS[statusMessage.kind] || MESSAGE_COLORS.info;
+    lines.forEach((line, i) => drawTibiaText(this.ctx, line, this.canvas.width / 2, bottom - (lines.length - 1 - i) * lineHeight, color));
   }
 
   // ================================================================================================================================================================================
