@@ -3,11 +3,12 @@
 import { displayName } from '../../shared/assets.js';
 import { drawTibiaText, healthColor } from './tibia-text.js';
 
-// Nome no estilo do Tibia (negrito, contorno preto) e barra com o mesmo
-// visual da janela de battle (css/inventory.css): 3px, cantos arredondados;
-// os dois na cor da vida (healthColor: verde/amarela/vermelha).
+// Nome no estilo do Tibia (negrito, contorno preto), sempre verde, e barra
+// com o mesmo visual da janela de battle (css/inventory.css): 3px, cantos
+// arredondados, na cor da vida (healthColor: verde/amarela/vermelha).
 const HP_BAR_HEIGHT = 3;
 const HP_BAR_BACK = '#12151b';
+const NAME_COLOR = '#5fe35f';
 const CORPSE_NAME_COLOR = '#a0a0a0';
 
 // ================================================================================================================================================================================================================================================
@@ -47,12 +48,12 @@ export function drawEntityOverlay(ctx, entity, base, stackOffsetX, stackOffsetY,
 
   const hasHp = entity.currentHp !== undefined && entity.maxHp !== undefined;
   const fraction = hasHp ? Math.max(0, Math.min(1, entity.currentHp / entity.maxHp)) : 1;
-  const color = isCorpse || !hasHp ? CORPSE_NAME_COLOR : healthColor(fraction);
+  const barColor = healthColor(fraction);
   const centerX = base.x + size / 2 - stackOffsetX;
   const barX = base.x - stackOffsetX;
   const barY = base.y - 15 - stackOffsetY;
 
-  drawTibiaText(ctx, name, centerX, barY - 3, color);
+  drawTibiaText(ctx, name, centerX, barY - 3, isCorpse ? CORPSE_NAME_COLOR : NAME_COLOR);
 
   if (hasHp && !isCorpse) {
     ctx.save();
@@ -60,7 +61,7 @@ export function drawEntityOverlay(ctx, entity, base, stackOffsetX, stackOffsetY,
     roundRect(ctx, barX - 1, barY - 1, size + 2, HP_BAR_HEIGHT + 2, 2);
     ctx.fillStyle = HP_BAR_BACK;
     roundRect(ctx, barX, barY, size, HP_BAR_HEIGHT, 2);
-    ctx.fillStyle = color;
+    ctx.fillStyle = barColor;
     if (fraction > 0) roundRect(ctx, barX, barY, Math.max(2, size * fraction), HP_BAR_HEIGHT, 2);
     ctx.restore();
   }

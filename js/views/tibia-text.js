@@ -27,7 +27,7 @@ export function drawTibiaText(ctx, text, x, y, color) {
 
 // ================================================================================================================================================================================================================================================
 // healthColor
-// Cor do nome pela vida: a mesma da barra e da janela de battle.
+// Cor da barra pela vida: a mesma da janela de battle.
 
 export function healthColor(fraction) {
   if (fraction <= 0.25) return '#ef4444';
