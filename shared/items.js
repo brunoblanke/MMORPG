@@ -73,8 +73,10 @@ const SLOT_BY_FOLDER = {
 // atk/def/ml/speed os bônus de quem usa o item (0 = não tem) e heal o que
 // ele recupera ao ser usado ({ hp: [min, max], mana: [min, max] }, ou null)
 // e food os segundos de regeneração, se for comida (0 = não é); light o raio
-// da luz (sqm) que ele dá equipado ou no chão (0 = não ilumina) e burn os
-// segundos que ele queima aceso até acabar (0 = não gasta).
+// da luz (sqm) que ele dá equipado ou no chão (0 = não ilumina), burn os
+// segundos que ele dura em uso (aceso, ou equipado se regenera) até acabar
+// (0 = não gasta) e regen o que ele recupera equipado a cada REGEN_MS
+// (anel de cura).
 
 export function itemInfo(type) {
   const asset = getAsset(splitType(type).asset);
@@ -98,6 +100,7 @@ export function itemInfo(type) {
     food: bonusValue(props.alimento),
     light: bonusValue(props.luz),
     burn: bonusValue(props.duracao),
+    regen: { hp: bonusValue(props.regenVida), mana: bonusValue(props.regenMana) },
     weaponSkill: SKILL_BY_WEAPON_FOLDER[folder] || null
   };
 }

@@ -453,21 +453,26 @@ export class InventoryController {
 
   // ================================================================================================================================================================================================================================================
   // burnLights
-  // Fonte de luz acesa gasta como no Tibia: item.fuel (ms que ainda queima)
-  // começa em burn (gerador → Duração) e só desce acesa, onde quer que ela
-  // esteja (equipada, num container ou no chão). Acabou, o item some.
+  // Item com Duração gasta como no Tibia enquanto está em uso: item.fuel (ms
+  // que ainda resta) começa em burn (gerador → Duração) e só desce com a
+  // fonte de luz acesa (equipada, num container ou no chão) ou com o anel de
+  // cura no espaço dele. Acabou, o item some.
 
   burnLights(ms) {
-    const burn = (item) => {
+    const burn = (item, worn = false) => {
       if (!item) return false;
       if (item.items) item.items.forEach((child, i) => { if (burn(child)) item.items[i] = null; });
-      const total = item.lit ? itemInfo(item.type).burn * 1000 : 0;
+      const info = itemInfo(item.type);
+      const total = item.lit || (worn && (info.regen.hp || info.regen.mana)) ? info.burn * 1000 : 0;
       if (!total) return false;
       item.fuel = Math.max(0, (item.fuel ?? total) - ms);
       return item.fuel === 0;
     };
     for (const player of this.sim.players) {
-      for (const key of EQUIP_SLOTS) if (burn(player.equip[key])) player.equip[key] = null;
+      for (const key of EQUIP_SLOTS) {
+        const item = player.equip[key];
+        if (burn(item, !!item && itemInfo(item.type).slot === key)) player.equip[key] = null;
+      }
     }
     for (const obj of [...this.sim.objects]) {
       if (obj.itemData && burn(obj.itemData)) this.removeGroundObject(obj);
@@ -695,6 +700,7 @@ export class InventoryController {
   digest(player, now) {
     const last = player.digestAt ?? now;
     player.digestAt = now;
+    this.wornRegen(player, now - last);
     if (!player.food || !player.isAlive()) {
       player.regenElapsed = 0;
       return;
@@ -706,6 +712,32 @@ export class InventoryController {
       player.regenElapsed -= REGEN_MS;
       player.currentHp = Math.min(player.hp, player.currentHp + REGEN_HP);
       player.mana = Math.min(player.maxMana, player.mana + REGEN_MANA);
+    }
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // wornRegen
+  // Item equipado no espaço dele que regenera (anel de cura): a cada REGEN_MS
+  // recupera a vida e a mana dele, com ou sem comida.
+
+  wornRegen(player, elapsed) {
+    let hp = 0;
+    let mana = 0;
+    for (const key of EQUIP_SLOTS) {
+      const item = player.equip[key];
+      if (!item || itemInfo(item.type).slot !== key) continue;
+      hp += itemInfo(item.type).regen.hp;
+      mana += itemInfo(item.type).regen.mana;
+    }
+    if ((!hp && !mana) || !player.isAlive()) {
+      player.wornRegenElapsed = 0;
+      return;
+    }
+    player.wornRegenElapsed = (player.wornRegenElapsed || 0) + elapsed;
+    while (player.wornRegenElapsed >= REGEN_MS) {
+      player.wornRegenElapsed -= REGEN_MS;
+      player.currentHp = Math.min(player.hp, player.currentHp + hp);
+      player.mana = Math.min(player.maxMana, player.mana + mana);
     }
   }
 

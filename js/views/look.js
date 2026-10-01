@@ -23,8 +23,9 @@ export function describeItem(item) {
   const lines = [`${name}${attrs.length ? ` (${attrs.join(', ')})` : ''}`];
   if (info.burn) {
     const left = Math.ceil((item.fuel ?? info.burn * 1000) / 60000);
-    lines.push(`${item.lit ? 'Acesa' : 'Apagada'}, queima por mais ${left} min.`);
+    lines.push(info.light ? `${item.lit ? 'Acesa' : 'Apagada'}, queima por mais ${left} min.` : `Dura mais ${left} min em uso.`);
   }
+  if (info.regen.hp || info.regen.mana) lines.push(`Equipado: +${info.regen.hp} de vida e +${info.regen.mana} de mana a cada 6 s.`);
   if (info.heal && info.heal.hp[1] > 0) lines.push(`Recupera ${info.heal.hp[0]}–${info.heal.hp[1]} de vida.`);
   if (info.heal && info.heal.mana[1] > 0) lines.push(`Recupera ${info.heal.mana[0]}–${info.heal.mana[1]} de mana.`);
   lines.push(`${item.count > 1 ? 'Pesam' : 'Pesa'} ${formatWeight(weightOf(item))} oz.`);

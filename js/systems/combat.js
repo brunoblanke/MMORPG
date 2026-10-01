@@ -247,8 +247,9 @@ export class CombatController {
   // Fila de inimigos que chegaram perto (entraram no raio de detecção, no
   // mesmo andar), na ordem em que chegaram; quem morre ou se afasta sai dela.
   // Criatura pacífica não entra (não ameaça: só vira alvo clicando nela).
-  // No auto ataque, sem alvo, o player ataca o primeiro da fila — até ele
-  // morrer ou o player trocar de alvo. Na zona segura não há fila.
+  // No auto ataque, o alvo é sempre o inimigo da fila mais perto do player:
+  // se outro ficar mais perto (o alvo fugiu, outro encostou), troca. Na zona
+  // segura não há fila.
 
   updateAutoAttack(player) {
     if (!player.isAlive() || this.sim.world.isInSafeZone(player)) {
@@ -261,10 +262,17 @@ export class CombatController {
     for (const enemy of this.sim.enemies) {
       if (isNear(enemy) && !player.aggro.includes(enemy)) player.aggro.push(enemy);
     }
-    if (!player.attackMode || player.target) return;
+    if (!player.attackMode) return;
     const skip = player.skipTarget && this.sim.time < player.skipTarget.until ? player.skipTarget.id : null;
-    const next = player.aggro.find(enemy => enemy.id !== skip && !this.isTargetLost(player, enemy));
-    if (!next) return;
+    const gap = (enemy) => Math.max(Math.abs(enemy.x - player.x), Math.abs(enemy.y - player.y));
+    let next = null;
+    for (const enemy of player.aggro) {
+      if (enemy.id === skip || this.isTargetLost(player, enemy)) continue;
+      if (!next || gap(enemy) < gap(next)) next = enemy;
+    }
+    const current = player.target;
+    if (!next || next === current) return;
+    if (current && current.isAlive() && gap(current) <= gap(next)) return;
     player.target = next;
     player.autoFollow = player.followMode;
     console.log(`⚔️ Auto ataque: alvo ${next.id}`);

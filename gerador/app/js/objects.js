@@ -31,9 +31,11 @@ const NUMBERS = [
   { key: 'manaMax', label: 'Recupera mana (máx.)', min: 0, step: 1 },
   { key: 'alimento', label: 'Comida (segundos de regeneração)', min: 0, step: 1 },
   { key: 'luz', label: 'Luz (raio em sqm; 0 = não ilumina)', min: 0, step: 1 },
-  { key: 'duracao', label: 'Duração acesa (segundos; 0 = não gasta)', min: 0, step: 1 }
+  { key: 'duracao', label: 'Duração em uso (segundos acesa, ou equipada se regenera; 0 = não gasta)', min: 0, step: 1 },
+  { key: 'regenVida', label: 'Equipado: recupera vida a cada 6 s', min: 0, step: 1 },
+  { key: 'regenMana', label: 'Equipado: recupera mana a cada 6 s', min: 0, step: 1 }
 ];
-const DEFAULT_PROPERTIES = { bloqueia: false, move: true, altura: false, empilhavel: false, peso: 10, espacos: 0, atk: 0, def: 0, ml: 0, speed: 0, vidaMin: 0, vidaMax: 0, manaMin: 0, manaMax: 0, alimento: 0, luz: 0, duracao: 0, uso: '', abreComo: '', acesoComo: '' };
+const DEFAULT_PROPERTIES = { bloqueia: false, move: true, altura: false, empilhavel: false, peso: 10, espacos: 0, atk: 0, def: 0, ml: 0, speed: 0, vidaMin: 0, vidaMax: 0, manaMin: 0, manaMax: 0, alimento: 0, luz: 0, duracao: 0, regenVida: 0, regenMana: 0, uso: '', abreComo: '', acesoComo: '' };
 const USES = [
   ['', 'Nenhum'],
   ['placa', 'Placa (mostra um texto, escrito no editor)'],

@@ -24,7 +24,10 @@
     "vidaMax": 0,
     "manaMin": 0,
     "manaMax": 0,
-    "alimento": 0
+    "alimento": 0,
+    "duracao": 450,
+    "regenVida": 6,
+    "regenMana": 24
   },
   "ferramenta": "objetos",
   "grupo": "itens",

@@ -31,3 +31,17 @@ test('auto ataque: alvo que ficou inacessível é largado e o próximo da fila v
   assert.notEqual(game.player.target, trapped);
   assert.equal(game.player.target, free);
 });
+
+test('auto ataque: o alvo é sempre o inimigo mais perto; se ele se afasta e outro fica mais perto, troca', () => {
+  const game = buildGame({ objects: floorRect(0, 24, 0, 24, 0), enemies: [[8, 5, 0], [5, 9, 0]], player: { x: 5, y: 5, z: 0 } });
+  const [a, b] = game.enemies;
+  for (const e of game.enemies) { e.detectionRadius = 10; e.atk = 0; e.patrolRadius = 0; }
+  game.player.attackMode = true;
+  game.player.autoFollow = false;
+  game.combat.updateAutoAttack(game.player);
+  assert.equal(game.player.target, a, '3 sqm contra 4');
+  game.world.moveEntityTile(a, a.x, a.y, 0, 11, 5, 0);
+  a.x = 11;
+  game.combat.updateAutoAttack(game.player);
+  assert.equal(game.player.target, b, 'o primeiro se afastou: o mais perto agora é o outro');
+});

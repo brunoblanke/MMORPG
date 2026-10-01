@@ -390,3 +390,25 @@ test('personagem novo nasce com a bag simples e a tocha na mão; quem volta fica
   assert.equal(back.equip.mochila, null);
   assert.equal(back.equip.arma.type, SWORD);
 });
+
+test('ring of healing: no espaço do anel recupera 6 de vida e 24 de mana a cada 6 s e dura 7,5 min; fora dele, nada', () => {
+  const RING = 'itens/aneis/ring-of-healing';
+  setAssets([asset(RING, { move: true, peso: 0.8, duracao: 450, regenVida: 6, regenMana: 24 })]);
+  const game = buildGame({ objects: floorRect(0, 10, 0, 10, 0), player: { x: 2, y: 2, z: 0 } });
+  const player = game.player;
+  player.currentHp = 10;
+  player.mana = 0;
+  player.food = 0;
+  player.equip.anel = { uid: 'r1', type: RING };
+  const run = (ms) => { const end = game.time + ms; while (game.time < end) game.tick(game.time + TICK_MS); };
+  run(6000 + TICK_MS);
+  assert.equal(player.currentHp, 16);
+  assert.equal(player.mana, 24);
+  run(450000);
+  assert.equal(player.equip.anel, null, 'acabou');
+  player.equip.municao = { uid: 'r2', type: RING };
+  const hp = player.currentHp;
+  run(12000);
+  assert.equal(player.currentHp, hp, 'no espaço de munição não regenera');
+  assert.equal(player.equip.municao.fuel, undefined, 'nem gasta');
+});
