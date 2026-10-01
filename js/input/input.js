@@ -17,7 +17,8 @@ function isTextField(target) {
 
 const KEY_DIRECTIONS = {
   w: [0, -1], s: [0, 1], a: [-1, 0], d: [1, 0],
-  q: [-1, -1], e: [1, -1], z: [-1, 1], c: [1, 1]
+  q: [-1, -1], e: [1, -1], z: [-1, 1], c: [1, 1],
+  arrowup: [0, -1], arrowdown: [0, 1], arrowleft: [-1, 0], arrowright: [1, 0]
 };
 
 // Ctrl + direção: vira pro lado sem sair do sqm (setas também, já que o

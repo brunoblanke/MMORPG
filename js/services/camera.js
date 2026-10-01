@@ -12,9 +12,9 @@ export class Camera {
 
   // ================================================================================================================================================================================================================================================
   // update
-  // Centra no player. O deslocamento é arredondado pro pixel inteiro: em
-  // meio pixel (no meio de um passo) os sprites borravam as bordas e
-  // apareciam frestas entre os sqms.
+  // Centra no player. O deslocamento é em pixel inteiro (em meio pixel os
+  // sprites borravam as bordas e apareciam frestas entre os sqms) e segue o
+  // pixel em que o player é desenhado, pra ele não tremer em relação ao mapa.
 
   update(player) {
     const px = (player && player.renderX !== undefined) ? player.renderX : 0;
@@ -22,8 +22,8 @@ export class Camera {
     const pos = this.gridToScreen(px, py);
     this.target = { x: px, y: py };
     this.offset = {
-      x: Math.round(this.canvas.width / 2 - pos.x - this.tileSize / 2),
-      y: Math.round(this.canvas.height / 2 - pos.y - this.tileSize / 2)
+      x: Math.round(this.canvas.width / 2 - this.tileSize / 2) - Math.round(pos.x),
+      y: Math.round(this.canvas.height / 2 - this.tileSize / 2) - Math.round(pos.y)
     };
   }
 
