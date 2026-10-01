@@ -16,6 +16,9 @@ export const DEFAULT_CONTAINER_SIZE = 8;
 // Bag simples com que todo personagem novo nasce (no espaço da mochila).
 export const STARTER_BAG = 'itens/recipientes/bag';
 
+// Tocha com que todo personagem novo nasce (na mão, espaço do escudo).
+export const STARTER_TORCH = 'itens/fontes-de-luz/torch';
+
 // Morte do player: a mochila vai sempre pro corpo; cada outro item do
 // inventário, com esta chance (provisório).
 export const DEATH_DROP_CHANCE = 0.3;

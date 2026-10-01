@@ -31,6 +31,8 @@ test('tocha vai na mão (espaço do escudo) e aumenta a luz do player', () => {
   setAssets([{ id: TORCH, ferramenta: 'objetos', grupo: 'itens', pasta: 'fontes-de-luz', nome: 'torch', rotulo: 'itens › fontes-de-luz', url: '/t.png', quadro: 32, quadros: 1, pecas: [], propriedades: { move: true, peso: 5, luz: 6 } }]);
   assert.deepEqual([itemInfo(TORCH).slot, itemInfo(TORCH).light], ['escudo', 6]);
   const sim = buildGame({ objects: floorRect(0, 10, 0, 10, 0), player: { x: 2, y: 2, z: 0 } });
+  assert.equal(sim.player.equip.escudo.type, TORCH, 'nasce com a tocha');
+  sim.player.equip.escudo = null;
   sim.tick(sim.time + TICK_MS);
   assert.equal(sim.player.light, PLAYER_LIGHT);
   sim.player.equip.escudo = { uid: 't1', type: TORCH };

@@ -615,6 +615,7 @@ export class Renderer {
     };
 
     const isDark = this.lighting.prepare(gameState, drawables, playerLevel, Date.now());
+    let litOverlays = [];
 
     let start = 0;
     while (start < drawables.length) {
@@ -631,15 +632,22 @@ export class Renderer {
         for (const obj of group) this.drawDrawableOutline(obj);
       }
       for (const obj of group) if (!obj.isFloor) drawDrawable(obj);
-      if (!isDark) this.flushOverlays();
+      if (isDark && level === playerLevel) {
+        litOverlays = this.pendingOverlays;
+        this.pendingOverlays = [];
+      } else {
+        this.flushOverlays();
+      }
 
       start = end;
     }
 
-    // No escuro, nome e vida saem depois da escuridão, só de quem está no claro.
+    // No escuro, nome e vida do andar do player saem depois da escuridão, só
+    // de quem está no claro; os dos outros andares saíram junto do andar deles
+    // (cobertos pelo piso de cima e pela escuridão).
     if (isDark) {
       this.lighting.draw(this.ctx, this);
-      this.pendingOverlays = this.pendingOverlays.filter(o => this.lighting.isLit(o.entity));
+      this.pendingOverlays = litOverlays.filter(o => this.lighting.isLit(o.entity));
       this.flushOverlays();
     }
 
