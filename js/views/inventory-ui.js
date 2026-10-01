@@ -448,13 +448,6 @@ export class InventoryUI {
   }
 
   // ================================================================================================================================================================================================================================================
-  // isOpen
-
-  isOpen(uid) {
-    return [...this.layout.left, ...this.layout.right].some(w => w.uid === uid);
-  }
-
-  // ================================================================================================================================================================================================================================================
   // syncGroundWindows
   // Caixa do chão que o servidor abriu ganha janela; a que ele fechou (player
   // se afastou) perde.
@@ -611,8 +604,7 @@ export class InventoryUI {
     }
     const info = itemInfo(item.type);
     const count = item.count > 1 ? `<span class="inv-count">${item.count}</span>` : '';
-    const open = item.items && this.isOpen(item.uid) ? '<span class="inv-open"></span>' : '';
-    return `<div class="inv-slot filled" data-place="${key}" data-uid="${item.uid}">${this.spriteHtml(item.type, item.count)}${count}${open}</div>`;
+    return `<div class="inv-slot filled" data-place="${key}" data-uid="${item.uid}">${this.spriteHtml(item.type, item.count)}${count}</div>`;
   }
 
   // ================================================================================================================================================================================================================================================

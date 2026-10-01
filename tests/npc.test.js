@@ -199,3 +199,15 @@ test('conversando o NPC para; volta a passear com o tchau ou quando o player se 
   assert.deepEqual(npcLines(run(sim, 1000)), ['Até mais, Ana. Boa aventura!']);
   assert.equal(walksWithin(30000), true);
 });
+
+test('calado por FOCUS_IDLE_MS (30 s) na conversa, o NPC se despede', async () => {
+  const { FOCUS_IDLE_MS } = await import('../js/systems/npcs.js');
+  assert.equal(FOCUS_IDLE_MS, 30000);
+  const sim = game();
+  const guide = sim.npcs[0];
+  moveTo(sim, guide.x + 1, guide.y);
+  run(sim, 1000);
+  say(sim, 'oi');
+  assert.deepEqual(npcLines(run(sim, FOCUS_IDLE_MS - 2000)), []);
+  assert.deepEqual(npcLines(run(sim, 3000)), ['Até mais, Ana. Boa aventura!']);
+});
