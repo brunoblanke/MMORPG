@@ -34,3 +34,19 @@ test('loot vem da criatura no gerador: chance e quantidade de cada item', () => 
 test('números do Tibia da criatura: vida, XP, velocidade, armadura e ataque', () => {
   assert.deepEqual(creatureStats(RAT), { hp: 20, xp: 5, spd: 134, def: 1, atk: 8 });
 });
+
+test('corpo no último estágio (ossos) não abre mais: o loot some', async () => {
+  const { buildGame, floorRect } = await import('./helpers/fixture.js');
+  const { CONFIG } = await import('../js/config.js');
+  const sim = buildGame({ objects: floorRect(0, 10, 0, 10, 0), enemies: [[3, 2, 0]], player: { x: 2, y: 2, z: 0 } });
+  const enemy = sim.enemies[0];
+  enemy.currentHp = 0;
+  sim.tick(sim.time + 50);
+  const corpse = sim.deadBodies[0];
+  corpse.itemData = corpse.itemData || { uid: 'x', type: enemy.creature, items: [null] };
+  assert.equal(sim.inventory.isOpenable(corpse), true);
+  sim.lifeCycle.processCorpseDecay(corpse.deathTime + CONFIG.corpseFrameDuration * (CONFIG.corpseFrameCount - 1) - 1);
+  assert.equal(sim.inventory.isOpenable(corpse), true, 'apodrecendo ainda abre');
+  sim.lifeCycle.processCorpseDecay(corpse.deathTime + CONFIG.corpseFrameDuration * (CONFIG.corpseFrameCount - 1));
+  assert.equal(sim.inventory.isOpenable(corpse), false);
+});
