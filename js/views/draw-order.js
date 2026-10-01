@@ -74,7 +74,10 @@ export function prepareDrawables(gameState) {
   const player = gameState.player;
   const roofLevel = getRoofLevel(player, gameState.world);
 
+  const area = gameState.visibleArea;
+  const isOnScreen = (x, y) => !area || (x >= area.startX && x < area.endX && y >= area.startY && y < area.endY);
   const push = (drawable, source) => {
+    if (!isOnScreen(drawable.x, drawable.y)) return;
     drawable.level = getEntityLevel(source);
     if (drawable.level > roofLevel) return;
     drawables.push(drawable);

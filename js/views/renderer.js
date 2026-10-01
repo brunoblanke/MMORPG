@@ -17,6 +17,25 @@ function isHumanoid(entity) {
   return !!entity && (entity.isPlayer === true || entity.isNpc === true);
 }
 
+// ================================================================================================================================================================================================================================================
+// hideCovered
+// Tira o que fica embaixo do piso de um andar de cima (no mesmo sqm da tela):
+// esse piso é desenhado por cima e cobriria tudo. Só sobra o que dá pra ver
+// (buraco, escada, borda de prédio), e o quadro fica bem mais leve.
+
+function hideCovered(drawables) {
+  const cover = new Map();
+  for (const obj of drawables) {
+    if (!obj.isFloor || !obj.entity || !obj.entity.floorType || obj.entity.isBorder) continue;
+    const key = `${obj.x},${obj.y}`;
+    if (!(cover.get(key) >= obj.level)) cover.set(key, obj.level);
+  }
+  return drawables.filter(obj => {
+    const top = cover.get(`${Math.round(obj.x)},${Math.round(obj.y)}`);
+    return top === undefined || obj.level >= top;
+  });
+}
+
 const MESSAGE_COLORS = { info: '#5fe35f', warn: '#ffd84a', danger: '#ff4a4a' };
 
 const TINT_HIT = { color: '#ff2a2a', alpha: 0.55 };
@@ -68,18 +87,6 @@ export class Renderer {
 
   screenToGrid(screenX, screenY) {
     return this.camera.screenToGrid(screenX, screenY);
-  }
-
-  // ================================================================================================================================================================================
-  // drawTile
-
-  drawTile(x, y) {
-    const pos = this.gridToScreenWithOffset(x, y);
-    const size = CONFIG.tileSize;
-    this.ctx.fillStyle = "#444";
-    this.ctx.fillRect(pos.x, pos.y, size, size);
-    this.ctx.strokeStyle = "#333";
-    this.ctx.strokeRect(pos.x, pos.y, size, size);
   }
 
   // ================================================================================================================================================================================
@@ -553,13 +560,14 @@ export class Renderer {
 
     const visible = this.camera.getVisibleTiles();
 
-    for (let y = visible.startY; y < visible.endY; y++) {
-      for (let x = visible.startX; x < visible.endX; x++) {
-        this.drawTile(x, y);
-      }
-    }
+    this.ctx.fillStyle = '#444';
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-    const drawables = prepareDrawables(gameState);
+    // Só o que está na tela (com folga pros sprites altos e pilhas, que
+    // desenham pra cima e pra esquerda do sqm).
+    const margin = 3;
+    gameState.visibleArea = { startX: visible.startX, endX: visible.endX + margin, startY: visible.startY, endY: visible.endY + margin };
+    const drawables = hideCovered(prepareDrawables(gameState));
     this.pendingOverlays = [];
     const hoverEnemy = gameState.inputController.hoverEnemy;
     const hoverObject = gameState.inputController.hoverObject;
