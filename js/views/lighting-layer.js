@@ -48,7 +48,7 @@ export class LightingLayer {
     for (const obj of drawables) {
       if (obj.level !== level || obj.isCreature || !obj.entity || !obj.entity.id) continue;
       const radius = itemInfo(objectIdType(obj.entity.id)).light;
-      if (radius > 0) this.sources.push({ x: obj.x, y: obj.y, radius, warm: true });
+      if (radius > 0 && (obj.entity.movable !== true || obj.entity.lit)) this.sources.push({ x: obj.x, y: obj.y, radius, warm: true });
     }
     return true;
   }
@@ -58,6 +58,7 @@ export class LightingLayer {
   // A criatura está num sqm claro o bastante pra mostrar nome e vida.
 
   isLit(entity) {
+    if (!entity) return false;
     return lightAt(Math.round(entity.renderX ?? entity.x), Math.round(entity.renderY ?? entity.y), this.ambient, this.sources) >= VISIBLE_LIGHT;
   }
 

@@ -5,7 +5,7 @@ import { PLAYER_LIGHT } from '../../shared/lighting.js';
 import { getAdjacentPositions, isPositionAdjacentTo } from '../utils/helpers.js';
 import { objectIdType, objectProps, getAsset, splitType, creatureLoot, objectUse } from '../../shared/assets.js';
 import {
-  EQUIP_SLOTS, STARTER_BAG, STARTER_TORCH, THROW_RANGE, DEATH_DROP_CHANCE, USE_COOLDOWN_MS, FOOD_MAX_SECONDS, POTION_RANGE, EMPTY_VIAL, SPLASH_HP, SPLASH_MANA, SPLASH_STAGES, SPLASH_STAGE_MS, REGEN_MS, REGEN_HP, REGEN_MANA, itemInfo, capacityFor, newItem, weightOf, contains, findInTree, fromPlain, equipBonus
+  EQUIP_SLOTS, STARTER_BAG, STARTER_TORCH, THROW_RANGE, DEATH_DROP_CHANCE, USE_COOLDOWN_MS, FOOD_MAX_SECONDS, POTION_RANGE, EMPTY_VIAL, SPLASH_HP, SPLASH_MANA, SPLASH_STAGES, SPLASH_STAGE_MS, REGEN_MS, REGEN_HP, REGEN_MANA, itemInfo, itemLight, fitsSlot, capacityFor, newItem, weightOf, contains, findInTree, fromPlain, equipBonus
 } from '../../shared/items.js';
 import { PLAYER_SPRITES, DEFAULT_GENDER } from '../../shared/catalog.js';
 import { SKILL_KEYS } from '../../shared/skills.js';
@@ -65,7 +65,7 @@ export class InventoryController {
     if (saved && saved.equip && typeof saved.equip === 'object') {
       for (const key of EQUIP_SLOTS) {
         const item = fromPlain(saved.equip[key], () => this.nextUid());
-        if (item && (itemInfo(item.type).slot === key)) player.equip[key] = item;
+        if (item && fitsSlot(item.type, key)) player.equip[key] = item;
       }
     } else {
       if (getAsset(splitType(STARTER_BAG).asset)) player.equip.mochila = newItem(this.nextUid(), STARTER_BAG);
@@ -217,7 +217,7 @@ export class InventoryController {
         if (free < 0) return { error: `Sem espaço em ${itemInfo(bag.type).name}.` };
         return { kind: 'slot', container: bag, index: free, carried: true };
       }
-      if (itemInfo(item.type).slot !== to.key) return { error: 'Esse item não vai nesse espaço.' };
+      if (!fitsSlot(item.type, to.key)) return { error: 'Esse item não vai nesse espaço.' };
       return { kind: 'equip', key: to.key, carried: true };
     }
     if (to.t === 'c') {
@@ -350,7 +350,7 @@ export class InventoryController {
       this.spawnGroundItem(item, src.obj.x, src.obj.y, src.obj.z || 0);
       return;
     }
-    if (whole && src.place.t === 'e' && itemInfo(item.type).slot === src.place.key && !player.equip[src.place.key]) {
+    if (whole && src.place.t === 'e' && fitsSlot(item.type, src.place.key) && !player.equip[src.place.key]) {
       player.equip[src.place.key] = item;
       return;
     }
@@ -492,6 +492,7 @@ export class InventoryController {
   // Comando useItem: usa um item do inventário, de uma caixa aberta ou do
   // chão (longe, o player anda até o lado e usa ao chegar). Comida soma tempo
   // de regeneração (até FOOD_MAX_SECONDS; passou disso, "Você está cheio.").
+  // Fonte de luz (tocha) acende ou apaga.
   // Potion vai no sqm target (a mira; sem target, no próprio player): em
   // player, cura; no chão, o líquido vaza. Nos dois casos a potion vira um
   // vial vazio.
@@ -502,9 +503,14 @@ export class InventoryController {
     if (src.error) return;
     const info = itemInfo(src.item.type);
     const use = objectUse(src.item.type);
-    if (!info.food && !info.heal && !use) return;
+    if (!info.food && !info.heal && !use && !info.light) return;
     if (src.obj && !this.isNear(player, src.obj)) {
       this.walkNextTo(player, src.obj, { type: 'useItem', from, target });
+      return;
+    }
+    if (info.light && !use && !info.food && !info.heal) {
+      src.item.lit = !src.item.lit;
+      if (src.obj) src.obj.lit = src.item.lit;
       return;
     }
     if (use === 'livro') {
@@ -704,7 +710,7 @@ export class InventoryController {
   // caixas do chão que ele não alcança mais.
 
   update(player) {
-    player.light = Math.max(PLAYER_LIGHT, ...EQUIP_SLOTS.map(key => (player.equip[key] ? itemInfo(player.equip[key].type).light : 0)));
+    player.light = Math.max(PLAYER_LIGHT, ...EQUIP_SLOTS.map(key => itemLight(player.equip[key])));
     const pending = player.pendingInv;
     if (pending) {
       const obj = this.sim.getItem(pending.objId);

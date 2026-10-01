@@ -101,6 +101,25 @@ export function itemInfo(type) {
 }
 
 // ================================================================================================================================================================================================================================================
+// fitsSlot
+// O item vai no espaço key do inventário: o espaço dele ou, no de munição,
+// qualquer item que não seja container (flechas, tocha, utilitários).
+
+export function fitsSlot(type, key) {
+  const info = itemInfo(type);
+  return info.slot === key || (key === 'municao' && !info.size);
+}
+
+// ================================================================================================================================================================================================================================================
+// itemLight
+// Raio da luz que o item dá agora: só aceso (item.lit, botão direito acende
+// e apaga).
+
+export function itemLight(item) {
+  return item && item.lit ? itemInfo(item.type).light : 0;
+}
+
+// ================================================================================================================================================================================================================================================
 // stackFrame
 // Quadro da folha de um item de pilha (gerador: 8 quadros, um por
 // quantidade, como no Tibia): 1, 2, 3, 4, 5–9, 10–24, 25–49 e 50+.
@@ -237,6 +256,7 @@ export function toPlain(item) {
   if (item.count) plain.count = item.count;
   if (item.items) plain.items = item.items.map(toPlain);
   if (item.texto) plain.texto = item.texto;
+  if (item.lit) plain.lit = true;
   return plain;
 }
 
@@ -252,5 +272,6 @@ export function fromPlain(plain, nextUid) {
     plain.items.slice(0, item.items.length).forEach((child, i) => { item.items[i] = fromPlain(child, nextUid); });
   }
   if (typeof plain.texto === 'string' && plain.texto) item.texto = plain.texto.slice(0, 2000);
+  if (plain.lit === true && itemInfo(item.type).light) item.lit = true;
   return item;
 }

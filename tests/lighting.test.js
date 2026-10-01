@@ -26,16 +26,23 @@ test('luz no sqm: a geral ou a da fonte, caindo até o raio', () => {
   assert.equal(lightAt(14, 10, 0.5, sources), 0.5);
 });
 
-test('tocha vai na mão (espaço do escudo) e aumenta a luz do player', () => {
+test('tocha vai na mão ou no espaço de munição; botão direito acende e apaga; acesa aumenta a luz do player', async () => {
+  const { fitsSlot } = await import('../shared/items.js');
   const TORCH = 'itens/fontes-de-luz/torch';
   setAssets([{ id: TORCH, ferramenta: 'objetos', grupo: 'itens', pasta: 'fontes-de-luz', nome: 'torch', rotulo: 'itens › fontes-de-luz', url: '/t.png', quadro: 32, quadros: 1, pecas: [], propriedades: { move: true, peso: 5, luz: 6 } }]);
   assert.deepEqual([itemInfo(TORCH).slot, itemInfo(TORCH).light], ['escudo', 6]);
+  assert.deepEqual([fitsSlot(TORCH, 'escudo'), fitsSlot(TORCH, 'municao'), fitsSlot(TORCH, 'cabeca')], [true, true, false]);
   const sim = buildGame({ objects: floorRect(0, 10, 0, 10, 0), player: { x: 2, y: 2, z: 0 } });
   assert.equal(sim.player.equip.escudo.type, TORCH, 'nasce com a tocha');
-  sim.player.equip.escudo = null;
   sim.tick(sim.time + TICK_MS);
-  assert.equal(sim.player.light, PLAYER_LIGHT);
-  sim.player.equip.escudo = { uid: 't1', type: TORCH };
+  assert.equal(sim.player.light, PLAYER_LIGHT, 'apagada não ilumina');
+  sim.enqueue('player1', { type: 'useItem', from: { t: 'e', key: 'escudo' } });
   sim.tick(sim.time + TICK_MS);
-  assert.equal(sim.player.light, 6);
+  sim.tick(sim.time + TICK_MS);
+  assert.equal(sim.player.light, 6, 'acesa');
+  assert.equal(sim.player.toSave().equip.escudo.lit, true, 'fica acesa ao salvar');
+  sim.enqueue('player1', { type: 'useItem', from: { t: 'e', key: 'escudo' } });
+  sim.tick(sim.time + TICK_MS);
+  sim.tick(sim.time + TICK_MS);
+  assert.equal(sim.player.light, PLAYER_LIGHT, 'apagou');
 });

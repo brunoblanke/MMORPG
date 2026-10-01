@@ -2,7 +2,7 @@
 
 import { getAsset, spriteFrame, splitType, objectIdType, displayName, objectUse } from '../../shared/assets.js';
 import { getLevel } from '../core/geometry.js';
-import { itemInfo, stackFrame } from '../../shared/items.js';
+import { itemInfo, fitsSlot, stackFrame } from '../../shared/items.js';
 import { PLAYER_SPRITES, DEFAULT_GENDER } from '../../shared/catalog.js';
 import { CORPSE_ROW } from './sprite-registry.js';
 import { describeItem, describeEntity } from './look.js';
@@ -249,7 +249,7 @@ export class InventoryUI {
     if (MAP_USES.includes(objectUse(objectIdType(obj.id)))) return obj;
     if (obj.movable !== true) return null;
     const info = itemInfo(objectIdType(obj.id));
-    return info.food || info.heal || objectUse(objectIdType(obj.id)) ? obj : null;
+    return info.food || info.heal || info.light || objectUse(objectIdType(obj.id)) ? obj : null;
   }
 
   // ================================================================================================================================================================================================================================================
@@ -944,7 +944,7 @@ export class InventoryUI {
     if (place.t === 'c') return true;
     const bag = this.view && this.view.equip.mochila;
     if (place.key === 'mochila' && bag && bag.items && bag.uid !== uid) return true;
-    return itemInfo(type).slot === place.key;
+    return fitsSlot(type, place.key);
   }
 
   endItemDrag(evt) {
@@ -1141,7 +1141,7 @@ export class InventoryUI {
         this.startAim(place);
         return true;
       }
-      if (item && !item.items && (itemInfo(item.type).food || objectUse(item.type) === 'livro')) {
+      if (item && !item.items && (itemInfo(item.type).food || itemInfo(item.type).light || objectUse(item.type) === 'livro')) {
         this.game.send({ type: 'useItem', from: place });
         return true;
       }
