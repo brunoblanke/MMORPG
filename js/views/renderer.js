@@ -7,6 +7,7 @@ import { getEntityLevel } from '../core/geometry.js';
 import { getAsset, objectIdType, openedAs } from '../../shared/assets.js';
 import { stackFrame } from '../../shared/items.js';
 import { drawTibiaText } from './tibia-text.js';
+import { LightingLayer } from './lighting-layer.js';
 
 // ================================================================================================================================================================================================================================================
 // isHumanoid
@@ -36,6 +37,7 @@ export class Renderer {
 
     this.frameTimestamp = 0;
     this.pendingOverlays = [];
+    this.lighting = new LightingLayer();
 
     this.showPaths = true;
     this.showDetectionAreas = true;
@@ -612,6 +614,8 @@ export class Renderer {
       }
     };
 
+    const isDark = this.lighting.prepare(gameState, drawables, playerLevel, Date.now());
+
     let start = 0;
     while (start < drawables.length) {
       const level = drawables[start].level;
@@ -627,9 +631,16 @@ export class Renderer {
         for (const obj of group) this.drawDrawableOutline(obj);
       }
       for (const obj of group) if (!obj.isFloor) drawDrawable(obj);
-      this.flushOverlays();
+      if (!isDark) this.flushOverlays();
 
       start = end;
+    }
+
+    // No escuro, nome e vida saem depois da escuridão, só de quem está no claro.
+    if (isDark) {
+      this.lighting.draw(this.ctx, this);
+      this.pendingOverlays = this.pendingOverlays.filter(o => this.lighting.isLit(o.entity));
+      this.flushOverlays();
     }
 
     ui.draw(this.ctx, gameState.player, this.devMode, gameState.world.isInSafeZone(gameState.player));

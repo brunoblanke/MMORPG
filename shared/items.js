@@ -58,7 +58,7 @@ const SLOT_BY_FOLDER = {
   calcas: 'pernas', botas: 'pes', aljavas: 'municao', 'extra-slot': 'municao', municao: 'municao',
   machados: 'arma', clavas: 'arma', espadas: 'arma', rods: 'arma', wands: 'arma',
   'wands-e-rods-antigas': 'arma', distancia: 'arma', 'replicas-de-armas': 'arma', punhos: 'arma',
-  'amuletos-e-colares': 'amuleto', aneis: 'anel', recipientes: 'mochila'
+  'amuletos-e-colares': 'amuleto', aneis: 'anel', recipientes: 'mochila', 'fontes-de-luz': 'escudo'
 };
 
 // ================================================================================================================================================================================================================================================
@@ -69,7 +69,8 @@ const SLOT_BY_FOLDER = {
 // marcados no gerador), size os espaços, se for container (0 = não é),
 // atk/def/ml/speed os bônus de quem usa o item (0 = não tem) e heal o que
 // ele recupera ao ser usado ({ hp: [min, max], mana: [min, max] }, ou null)
-// e food os segundos de regeneração, se for comida (0 = não é).
+// e food os segundos de regeneração, se for comida (0 = não é); light o raio
+// da luz (sqm) que ele dá equipado ou no chão (0 = não ilumina).
 
 export function itemInfo(type) {
   const asset = getAsset(splitType(type).asset);
@@ -91,6 +92,7 @@ export function itemInfo(type) {
     speed: bonusValue(props.speed),
     heal: healOf(props),
     food: bonusValue(props.alimento),
+    light: bonusValue(props.luz),
     weaponSkill: SKILL_BY_WEAPON_FOLDER[folder] || null
   };
 }

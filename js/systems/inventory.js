@@ -1,6 +1,7 @@
 // js/systems/inventory.js
 
 import { GameObject } from '../models/game-object.js';
+import { PLAYER_LIGHT } from '../../shared/lighting.js';
 import { getAdjacentPositions, isPositionAdjacentTo } from '../utils/helpers.js';
 import { objectIdType, objectProps, getAsset, splitType, creatureLoot, objectUse } from '../../shared/assets.js';
 import {
@@ -697,10 +698,12 @@ export class InventoryController {
 
   // ================================================================================================================================================================================================================================================
   // update
-  // A cada tick: faz o que estava esperando o player chegar e fecha as caixas
-  // do chão que ele não alcança mais.
+  // A cada tick: a luz do player (a própria ou a do item equipado que
+  // ilumina mais), faz o que estava esperando o player chegar e fecha as
+  // caixas do chão que ele não alcança mais.
 
   update(player) {
+    player.light = Math.max(PLAYER_LIGHT, ...EQUIP_SLOTS.map(key => (player.equip[key] ? itemInfo(player.equip[key].type).light : 0)));
     const pending = player.pendingInv;
     if (pending) {
       const obj = this.sim.getItem(pending.objId);
