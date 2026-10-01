@@ -53,12 +53,13 @@ const assets = new Map();
 // creatureBehavior
 // Comportamento da criatura (gerador → Criaturas): 'normal' persegue e ataca
 // colado; 'foge' igual, mas foge com a vida baixa; 'mago' ataca de longe e
-// mantém distância. Receita antiga com foge > 0 vale 'foge'.
+// mantém distância; 'npc' é um NPC (conversa, não luta: shared/npcs.js).
+// Receita antiga com foge > 0 vale 'foge'.
 
 export function creatureBehavior(type) {
   const asset = getAsset(type);
   const props = (asset && asset.propriedades) || {};
-  if (['normal', 'foge', 'mago', 'pacifico'].includes(props.comportamento)) return props.comportamento;
+  if (['normal', 'foge', 'mago', 'pacifico', 'npc'].includes(props.comportamento)) return props.comportamento;
   return Number(props.foge) > 0 ? 'foge' : 'normal';
 }
 

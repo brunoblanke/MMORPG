@@ -317,6 +317,11 @@ export class Renderer {
   // getOutlineSize
 
   getOutlineSize(entity, isPlayer, isEnemy, isCorpse, corpseData, size) {
+    if (isPlayer && entity && entity.isNpc) {
+      const npcSize = this.sprites.getCreatureSize(entity.creature);
+      return { w: npcSize, h: npcSize };
+    }
+
     if (isPlayer) {
       const sheet = this.sprites.getPlayerSheet(entity && entity.gender);
       const playerSize = sheet ? sheet.frameWidth : 32;
@@ -362,7 +367,7 @@ export class Renderer {
 
   getEntityFrame(entity, isPlayer, isEnemy) {
     if (isPlayer || isEnemy) {
-      const sheet = isPlayer ? this.sprites.getPlayerSheet(entity && entity.gender) : (entity ? this.sprites.getEnemySheet(entity.creature) : null);
+      const sheet = isPlayer && !(entity && entity.isNpc) ? this.sprites.getPlayerSheet(entity && entity.gender) : (entity ? this.sprites.getEnemySheet(entity.creature) : null);
       if (!isSheetReady(sheet)) return null;
 
       const isWalking = entity && (entity.isMoving || this.frameTimestamp < (entity.walkingUntil || 0));

@@ -115,3 +115,47 @@ test('o NPC vai pro navegador pelo estado e aparece no espelho', async () => {
   assert.equal(mirror.npcs[0].isNpc, true);
   assert.equal(mirror.npcs[0].name, 'Guia');
 });
+
+test('fora de conversa o guia passeia em volta do lugar dele; conversando, fica parado', () => {
+  const sim = game();
+  const guide = sim.npcs[0];
+  const seen = new Set();
+  for (let i = 0; i < 60; i++) {
+    run(sim, 1000);
+    seen.add(`${guide.x},${guide.y}`);
+    assert.ok(Math.max(Math.abs(guide.x - guide.home.x), Math.abs(guide.y - guide.home.y)) <= guide.radius);
+  }
+  assert.ok(seen.size >= 3, `andou por ${seen.size} sqms`);
+  moveTo(sim, guide.x + 1, guide.y);
+  say(sim, 'oi');
+  const at = [guide.x, guide.y];
+  run(sim, 10000);
+  assert.deepEqual([guide.x, guide.y], at);
+});
+
+test('NPC criado no gerador e posto pelo editor: lugar, folha, conversa e não vira inimigo', async () => {
+  const { setAssets } = await import('../shared/assets.js');
+  const { serializeMapFromLayers, buildLayersFromMapData } = await import('../shared/map-format.js');
+  const SMITH = 'criaturas/npcs/ferreiro';
+  setAssets([{ id: SMITH, ferramenta: 'criaturas', grupo: 'criaturas', pasta: 'npcs', nome: 'ferreiro', rotulo: 'criaturas › npcs', url: '/f.png', quadro: 32, quadros: 3, pecas: [], propriedades: {
+    comportamento: 'npc',
+    conversa: { boasVindas: 'Olá, viajante.', oi: 'Oi, {nome}! Pergunte sobre espadas.', tchau: '', raio: 0, topicos: [{ palavras: 'Espadas, ESPADA', resposta: 'Espada usa sword.' }, { palavras: '', resposta: 'vazio' }] }
+  } }]);
+  const mapData = buildMapData({ objects: floorRect(0, 30, 0, 30, 0), spawn: { x: 10, y: 10, z: 0 } });
+  mapData.npcData = [[SMITH, 20, 20, 0]];
+  mapData.enemyData = [[22, 22, 0, 1, 32, SMITH]];
+  const sim = new Simulation(mapData, { npcs: [] });
+  sim.time = 1000;
+  assert.equal(sim.enemies.length, 0);
+  const smith = sim.npcs[0];
+  assert.deepEqual([smith.name, smith.creature, smith.x, smith.y, smith.radius], ['Ferreiro', SMITH, 20, 20, 0]);
+  sim.player = sim.addPlayer('player1', { name: 'Bia' });
+  moveTo(sim, 21, 20);
+  assert.deepEqual(npcLines(run(sim, 1000)), ['Olá, viajante.']);
+  assert.deepEqual(npcLines(say(sim, 'oi')), ['Oi, Bia! Pergunte sobre espadas.']);
+  assert.deepEqual(npcLines(say(sim, 'e as espadas?')), ['Espada usa sword.']);
+  assert.deepEqual(npcLines(say(sim, 'tchau')), ['Até mais, Bia.']);
+  const { layers } = buildLayersFromMapData(mapData, 40);
+  assert.deepEqual(layers[0]['20,20'].npc, { type: SMITH });
+  assert.deepEqual(serializeMapFromLayers([0], layers, 40).npcData, [[SMITH, 20, 20, 0]]);
+});

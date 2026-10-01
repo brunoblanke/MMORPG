@@ -41,7 +41,8 @@ const creatures = {
   dirty: false,
   saving: false,
   loot: [],
-  lootItems: []
+  lootItems: [],
+  topics: []
 };
 
 const statusEl = document.getElementById('creatureStatus');
@@ -62,6 +63,15 @@ const walkCanvas = document.getElementById('walkPreview');
 const sheetCanvas = document.getElementById('creatureSheet');
 const slotsEl = document.getElementById('corpseSlots');
 const lootEl = document.getElementById('creatureLoot');
+const formEl = document.getElementById('creatureSaveForm');
+const npcFieldsEl = document.getElementById('npcFields');
+const npcTopicsEl = document.getElementById('npcTopics');
+const NPC_TEXT_FIELDS = [
+  ['boasVindas', document.getElementById('npcWelcome')],
+  ['oi', document.getElementById('npcGreet')],
+  ['tchau', document.getElementById('npcBye')]
+];
+const npcRadiusEl = document.getElementById('npcRadius');
 
 // ================================================================================================================================================================================================================================================
 // initCreatures
@@ -79,7 +89,17 @@ function initCreatures() {
     if (file) setCorpse(creatures.selectedStage, { png: await readPngFile(file) });
   });
   nameEl.addEventListener('input', () => { creatures.dirty = true; });
-  behaviorEl.addEventListener('change', () => { creatures.dirty = true; });
+  behaviorEl.addEventListener('change', () => {
+    creatures.dirty = true;
+    showNpcFields();
+  });
+  for (const [, el] of NPC_TEXT_FIELDS) el.addEventListener('input', () => { creatures.dirty = true; });
+  npcRadiusEl.addEventListener('input', () => { creatures.dirty = true; });
+  document.getElementById('npcTopicAdd').onclick = () => {
+    creatures.topics.push({ palavras: '', resposta: '' });
+    creatures.dirty = true;
+    renderTopics();
+  };
   for (const [, el] of STAT_FIELDS) el.addEventListener('input', () => { creatures.dirty = true; });
   fillFolderSelect(folderEl, CATEGORY);
   folderEl.addEventListener('change', () => { creatures.dirty = true; });
@@ -504,13 +524,60 @@ function lootValues() {
 }
 
 // ================================================================================================================================================================================================================================================
+// showNpcFields
+// Com comportamento NPC, a conversa aparece e vida, XP, ataque e loot somem.
+
+function showNpcFields() {
+  const isNpc = behaviorEl.value === 'npc';
+  npcFieldsEl.hidden = !isNpc;
+  formEl.classList.toggle('is-npc', isNpc);
+}
+
+// ================================================================================================================================================================================================================================================
+// renderTopics
+// Uma linha por tópico: palavras (separadas por vírgula) e a resposta.
+
+function renderTopics() {
+  npcTopicsEl.innerHTML = '';
+  creatures.topics.forEach((topic, index) => {
+    const row = document.createElement('div');
+    row.className = 'npc-topic';
+    const words = document.createElement('input');
+    Object.assign(words, { type: 'text', className: 'npc-words', placeholder: 'ex.: comida, comer', value: topic.palavras, maxLength: 120 });
+    words.oninput = () => { topic.palavras = words.value; creatures.dirty = true; };
+    const reply = document.createElement('input');
+    Object.assign(reply, { type: 'text', className: 'npc-reply', placeholder: 'Resposta do NPC', value: topic.resposta, maxLength: 240 });
+    reply.oninput = () => { topic.resposta = reply.value; creatures.dirty = true; };
+    const remove = document.createElement('button');
+    remove.type = 'button';
+    remove.className = 'ghost-btn';
+    remove.textContent = '×';
+    remove.onclick = () => { creatures.topics.splice(index, 1); creatures.dirty = true; renderTopics(); };
+    row.append(words, reply, remove);
+    npcTopicsEl.appendChild(row);
+  });
+}
+
+// ================================================================================================================================================================================================================================================
+// conversationValues
+// A conversa pra receita (propriedades.conversa), sem tópicos vazios.
+
+function conversationValues() {
+  const talk = Object.fromEntries(NPC_TEXT_FIELDS.map(([key, el]) => [key, el.value.trim()]));
+  talk.raio = Math.max(0, Math.min(10, Math.floor(Number(npcRadiusEl.value)) || 0));
+  talk.topicos = creatures.topics.map(t => ({ palavras: t.palavras.trim(), resposta: t.resposta.trim() })).filter(t => t.palavras && t.resposta);
+  return talk;
+}
+
+// ================================================================================================================================================================================================================================================
 // behaviorOf
 // Comportamento guardado na receita: normal, foge (com a vida baixa), mago
-// (ataca de longe) ou pacifico (nunca ataca, foge de quem chega perto).
+// (ataca de longe), pacifico (nunca ataca, foge de quem chega perto) ou npc
+// (conversa, não luta).
 // Receita antiga com foge > 0 vira "foge".
 
 function behaviorOf(props) {
-  if (['normal', 'foge', 'mago', 'pacifico'].includes(props.comportamento)) return props.comportamento;
+  if (['normal', 'foge', 'mago', 'pacifico', 'npc'].includes(props.comportamento)) return props.comportamento;
   return Number(props.foge) > 0 ? 'foge' : 'normal';
 }
 
@@ -553,7 +620,9 @@ async function save() {
     },
     criatura: { id: creatures.outfit.id, cores: creatures.colors, addons: creatures.addons },
     cadaver: creatures.corpse,
-    propriedades: { comportamento: behaviorEl.value, ...statValues(), loot: lootValues() }
+    propriedades: behaviorEl.value === 'npc'
+      ? { comportamento: 'npc', conversa: conversationValues() }
+      : { comportamento: behaviorEl.value, ...statValues(), loot: lootValues() }
   };
 
   try {
@@ -580,6 +649,12 @@ function openRecipe(recipe) {
   creatures.colors = Array.isArray(saved.cores) && saved.cores.length === 4 ? [...saved.cores] : [...DEFAULT_COLORS];
   creatures.addons = Array.isArray(saved.addons) ? [...saved.addons] : [];
   behaviorEl.value = behaviorOf(recipe.propriedades || {});
+  const talk = (recipe.propriedades || {}).conversa || {};
+  for (const [key, el] of NPC_TEXT_FIELDS) el.value = talk[key] || '';
+  npcRadiusEl.value = String(Number.isFinite(Number(talk.raio)) && talk.raio !== undefined ? talk.raio : 2);
+  creatures.topics = Array.isArray(talk.topicos) ? talk.topicos.map(t => ({ palavras: t.palavras || '', resposta: t.resposta || '' })) : [];
+  renderTopics();
+  showNpcFields();
   for (const [key, el] of STAT_FIELDS) el.value = String(Math.max(0, Math.floor(Number((recipe.propriedades || {})[key])) || 0));
   const loot = (recipe.propriedades || {}).loot;
   creatures.loot = Array.isArray(loot) ? loot.map(e => ({ tipo: e.tipo, chance: Number(e.chance) || 0, min: e.min || 1, max: e.max || e.min || 1 })) : [];
