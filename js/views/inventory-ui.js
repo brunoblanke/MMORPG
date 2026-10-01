@@ -2,9 +2,10 @@
 
 import { getAsset, spriteFrame, splitType, objectIdType, displayName, objectUse } from '../../shared/assets.js';
 import { getLevel } from '../core/geometry.js';
-import { itemInfo, weightOf, stackFrame } from '../../shared/items.js';
+import { itemInfo, stackFrame } from '../../shared/items.js';
 import { PLAYER_SPRITES, DEFAULT_GENDER } from '../../shared/catalog.js';
 import { CORPSE_ROW } from './sprite-registry.js';
+import { describeItem, describeEntity } from './look.js';
 
 // Janelas do inventário e dos containers, nas duas colunas ao lado da tela do
 // jogo. Só desenha e manda comandos (moveInv, openContainer, closeContainer,
@@ -19,6 +20,42 @@ const EQUIP_LAYOUT = [
   ['anel', 'Anel'], ['pernas', 'Pernas'], ['municao', 'Munição'],
   [null], ['pes', 'Pés'], [null]
 ];
+// ================================================================================================================================================================================================================================================
+// patchChildren
+// Deixa os filhos de target iguais aos de source reaproveitando os nós que
+// já existem: troca só atributos, textos e nós de outro tipo.
+
+function patchChildren(target, source) {
+  const next = [...source.childNodes];
+  while (target.childNodes.length > next.length) target.lastChild.remove();
+  next.forEach((node, i) => {
+    const current = target.childNodes[i];
+    if (!current) target.appendChild(node);
+    else patchNode(current, node);
+  });
+}
+
+// ================================================================================================================================================================================================================================================
+// patchNode
+
+function patchNode(current, node) {
+  if (current.nodeType !== node.nodeType || current.nodeName !== node.nodeName) {
+    current.replaceWith(node);
+    return;
+  }
+  if (current.nodeType !== Node.ELEMENT_NODE) {
+    if (current.nodeValue !== node.nodeValue) current.nodeValue = node.nodeValue;
+    return;
+  }
+  for (const attr of [...current.attributes]) {
+    if (!node.hasAttribute(attr.name) && attr.name !== 'data-fade-bound') current.removeAttribute(attr.name);
+  }
+  for (const attr of [...node.attributes]) {
+    if (current.getAttribute(attr.name) !== attr.value) current.setAttribute(attr.name, attr.value);
+  }
+  patchChildren(current, node);
+}
+
 // ================================================================================================================================================================================================================================================
 // svgIcon
 // Ícones de linha (a partir dos SVGs da pasta TRANSF): o traço segue a cor do
@@ -575,9 +612,7 @@ export class InventoryUI {
     const info = itemInfo(item.type);
     const count = item.count > 1 ? `<span class="inv-count">${item.count}</span>` : '';
     const open = item.items && this.isOpen(item.uid) ? '<span class="inv-open"></span>' : '';
-    const attrs = [info.atk && `Atk ${info.atk}`, info.def && `Def ${info.def}`, info.ml && `ML ${info.ml}`, info.speed && `Speed +${info.speed}`].filter(Boolean).join(' · ');
-    const title = `${info.name}${item.count > 1 ? ` (${item.count})` : ''}${attrs ? ` · ${attrs}` : ''} · ${weightOf(item)} oz${item.items ? ' · duplo clique abre' : info.food ? ' · duplo clique ou botão direito: comer' : info.heal ? ' · duplo clique ou botão direito: usar' : ''}`;
-    return `<div class="inv-slot filled" data-place="${key}" data-uid="${item.uid}" title="${title}">${this.spriteHtml(item.type, item.count)}${count}${open}</div>`;
+    return `<div class="inv-slot filled" data-place="${key}" data-uid="${item.uid}">${this.spriteHtml(item.type, item.count)}${count}${open}</div>`;
   }
 
   // ================================================================================================================================================================================================================================================
@@ -589,7 +624,7 @@ export class InventoryUI {
     if (win.kind === 'inventory') {
       const { equip, cap } = this.view;
       const free = Math.max(0, cap.max - cap.used);
-      const capBox = `<div class="inv-capbox${free < cap.max * 0.15 ? ' heavy' : ''}" title="Cap livre: ${Math.round(free * 10) / 10} oz">${Math.floor(free)}</div>`;
+      const capBox = `<div class="inv-capbox${free < cap.max * 0.15 ? ' heavy' : ''}">${Math.floor(free)}</div>`;
       const spare = '<div class="inv-capbox"></div>';
       const last = EQUIP_LAYOUT.length - 1;
       const cell = ([key], i) => key ? this.slotHtml(equip[key], { t: 'e', key }, key) : (i === last ? capBox : (i === last - 2 ? spare : ''));
@@ -606,12 +641,12 @@ export class InventoryUI {
     const box = this.findContainer(win.uid);
     if (!box) return '';
     const slots = box.items.map((item, i) => this.slotHtml(item, { t: 'c', uid: box.uid, i })).join('');
-    const up = this.parentOf(win.uid) ? '<button class="inv-btn" data-act="up" type="button" aria-label="Voltar pro container de fora" title="Voltar pro container de fora">↑</button>' : '';
+    const up = this.parentOf(win.uid) ? '<button class="inv-btn" data-act="up" type="button" aria-label="Voltar pro container de fora">↑</button>' : '';
     return `<section class="inv-win${win.min ? ' min' : ''}" data-win="${win.id}">
       <header class="inv-head"><span class="inv-icon">${this.spriteHtml(box.type)}</span>
         <span class="inv-title">${this.windowTitle(win, box)}</span>${up}${buttons(true)}</header>
       <div class="inv-body"><div class="inv-scroller" style="height:${Math.min(win.rows, Math.ceil(box.items.length / 4)) * PITCH + 8}px"><div class="inv-grid">${slots}</div></div></div>
-      <div class="inv-resize" title="Arraste pra mostrar mais ou menos linhas"></div>
+      <div class="inv-resize"></div>
     </section>`;
   }
 
@@ -639,10 +674,10 @@ export class InventoryUI {
     const fmt = (n) => Number(n).toLocaleString('pt-BR');
     const pctOf = (value, max) => (max > 0 ? Math.max(0, Math.min(100, Math.round(value / max * 100))) : 0);
     const open = new Set(win.bars || []);
-    const line = (key, label, value, pct, kind = '', title = `${pct}% até o próximo`) => {
+    const line = (key, label, value, pct, kind = '') => {
       const hasBar = pct !== undefined;
-      const bar = hasBar && open.has(key) ? `<div class="inv-skbar${kind ? ` ${kind}` : ''}" title="${title}"><i style="width:${pct}%"></i></div>` : '';
-      return `<div class="inv-skline${hasBar ? ' toggles' : ''}"${hasBar ? ` data-bar="${key}" title="Clique pra mostrar ou esconder a barra"` : ''}><div class="inv-skrow"><span>${label}</span><b>${value}</b></div>${bar}</div>`;
+      const bar = hasBar && open.has(key) ? `<div class="inv-skbar${kind ? ` ${kind}` : ''}"><i style="width:${pct}%"></i></div>` : '';
+      return `<div class="inv-skline${hasBar ? ' toggles' : ''}"${hasBar ? ` data-bar="${key}"` : ''}><div class="inv-skrow"><span>${label}</span><b>${value}</b></div>${bar}</div>`;
     };
     const skill = (key) => {
       const entry = stats.skills[key];
@@ -655,10 +690,10 @@ export class InventoryUI {
       line('level', 'Level', stats.level, stats.levelPct),
       line('xp', 'XP', fmt(stats.experience), stats.levelPct),
       '<div class="inv-sksep"></div>',
-      line('hp', 'Hit Points', fmt(stats.hp), hpPct, `hp${hpPct <= 25 ? ' low' : hpPct <= 50 ? ' mid' : ''}`, `${fmt(stats.hp)} de ${fmt(stats.maxHp)}`),
-      line('mana', 'Mana', fmt(stats.mana), pctOf(stats.mana, stats.maxMana), 'mp', `${fmt(stats.mana)} de ${fmt(stats.maxMana)}`),
-      line('cap', 'Capacity', Math.floor(free), pctOf(free, cap.max), 'cap', `${Math.floor(free)} de ${Math.floor(cap.max)} oz livres`),
-      line('speed', 'Speed', fmt(stats.speed || 0), pctOf(stats.speed || 0, SPEED_FULL), 'speed', `${stats.speed || 0} (passo mais rápido a partir de ${SPEED_FULL})`),
+      line('hp', 'Hit Points', fmt(stats.hp), hpPct, `hp${hpPct <= 25 ? ' low' : hpPct <= 50 ? ' mid' : ''}`),
+      line('mana', 'Mana', fmt(stats.mana), pctOf(stats.mana, stats.maxMana), 'mp'),
+      line('cap', 'Capacity', Math.floor(free), pctOf(free, cap.max), 'cap'),
+      line('speed', 'Speed', fmt(stats.speed || 0), pctOf(stats.speed || 0, SPEED_FULL), 'speed'),
       line('food', 'Food', stats.food ? `${Math.floor(stats.food / 60)}:${String(stats.food % 60).padStart(2, '0')}` : '—'),
       '<div class="inv-sksep"></div>',
       ...SKILL_ORDER.map(skill)
@@ -713,7 +748,7 @@ export class InventoryUI {
     const player = this.game.player;
     if (!player) return '';
     const follow = player.followMode !== false;
-    return `<button class="inv-follow ${follow ? 'on' : 'off'}" data-act="follow" type="button" title="${follow ? 'Seguindo o alvo (clique pra ficar parado)' : 'Parado (clique pra seguir o alvo)'}">${FOLLOW_ICONS[follow ? 'follow' : 'stand']}</button>`;
+    return `<button class="inv-follow ${follow ? 'on' : 'off'}" data-act="follow" type="button">${FOLLOW_ICONS[follow ? 'follow' : 'stand']}</button>`;
   }
 
   // ================================================================================================================================================================================================================================================
@@ -725,7 +760,7 @@ export class InventoryUI {
     const player = this.game.player;
     if (!player) return '';
     const attack = !!player.attackMode;
-    return `<button class="inv-follow ${attack ? 'on' : 'off'}" data-act="attackmode" type="button" title="${attack ? 'Auto ataque ligado: ataca quem se aproximar' : 'Auto ataque desligado: só ataca o alvo escolhido'}">${FOLLOW_ICONS.attack}</button>`;
+    return `<button class="inv-follow ${attack ? 'on' : 'off'}" data-act="attackmode" type="button">${FOLLOW_ICONS.attack}</button>`;
   }
 
   // ================================================================================================================================================================================================================================================
@@ -763,13 +798,22 @@ export class InventoryUI {
   // ================================================================================================================================================================================================================================================
   // render
 
+  // Só mexe no que mudou (patchChildren): o elemento sob o mouse continua o
+  // mesmo, então o hover não pisca quando o estado muda.
+
   render() {
     if (!this.view || !this.layout) return;
     document.querySelectorAll('.inv-scroller').forEach(sc => this.scrollMemory.set(sc.closest('.inv-win').dataset.win, sc.scrollTop));
-    for (const col of ['left', 'right']) this.columns[col].innerHTML = this.layout[col].map(w => this.windowHtml(w)).join('');
+    for (const col of ['left', 'right']) {
+      const next = document.createElement('div');
+      next.innerHTML = this.layout[col].map(w => this.windowHtml(w)).join('');
+      patchChildren(this.columns[col], next);
+    }
     document.querySelectorAll('.inv-scroller').forEach(sc => {
       sc.scrollTop = this.scrollMemory.get(sc.closest('.inv-win').dataset.win) || 0;
       this.updateFade(sc);
+      if (sc.dataset.fadeBound) return;
+      sc.dataset.fadeBound = '1';
       sc.addEventListener('scroll', () => this.updateFade(sc), { passive: true });
     });
   }
@@ -981,6 +1025,11 @@ export class InventoryUI {
       if (this.qty && !evt.target.closest('.inv-qty')) this.closeQty();
       if (evt.button !== 0 || !inPanels(evt.target) || evt.target.closest('.inv-btn')) return;
       const row = evt.target.closest('.inv-battle-row');
+      if (row && evt.shiftKey) {
+        const enemy = this.game.session && this.game.session.enemies.find(e => e.id === row.dataset.enemy);
+        if (enemy) this.game.look(describeEntity(enemy));
+        return;
+      }
       if (row) {
         const target = this.game.player && this.game.player.target;
         this.game.send({ type: 'attack', targetId: target && target.id === row.dataset.enemy ? null : row.dataset.enemy });
@@ -1032,6 +1081,10 @@ export class InventoryUI {
     document.addEventListener('pointerup', (evt) => {
       const clicked = this.pending && this.pending.kind === 'item' && !this.drag ? this.pending : null;
       this.pending = null;
+      if (clicked && evt.button === 0 && clicked.item && evt.shiftKey) {
+        this.game.look(describeItem(clicked.item));
+        return;
+      }
       if (clicked && evt.button === 0 && clicked.item && !clicked.item.items && aimsWith(clicked.item.type)) {
         this.startAim(clicked.from);
         return;

@@ -164,7 +164,7 @@ export class CombatController {
     if (!player.skills || key === 'magic') return;
     if (!addSkillTry(player.skills, key)) return;
     const names = { fist: 'Fist', club: 'Club', sword: 'Sword', axe: 'Axe', distance: 'Distance', shielding: 'Shielding', fishing: 'Fishing' };
-    this.sim.emit({ type: 'message', playerId: player.id, text: `Você avançou em ${names[key]} (${player.skills[key].lvl}).` });
+    this.sim.emit({ type: 'message', playerId: player.id, text: `Você avançou em ${names[key]} (${player.skills[key].lvl}).`, kind: 'info' });
   }
 
   // ================================================================================================================================================================================================================================================
@@ -207,7 +207,7 @@ export class CombatController {
 
     if (this.isTargetLost(player, target)) {
       player.target = null;
-      this.sim.emit({ type: 'message', playerId: player.id, text: 'Alvo perdido' });
+      this.sim.emit({ type: 'message', playerId: player.id, text: 'Alvo perdido', kind: 'warn' });
       return;
     }
 

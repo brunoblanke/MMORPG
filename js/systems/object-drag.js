@@ -216,7 +216,7 @@ export class ObjectDragController {
     const name = obj.isCorpse ? 'O corpo' : itemInfo(objectIdType(obj.id)).name;
     if (obj.isCorpse) this.sim.lifeCycle.removeCorpse(obj);
     else this.sim.inventory.removeGroundObject(obj);
-    if (player) this.sim.emit({ type: 'message', playerId: player.id, text: `${name} afundou.` });
+    if (player) this.sim.emit({ type: 'message', playerId: player.id, text: `${name} afundou.`, kind: 'info' });
   }
 
   // ================================================================================================================================================================================================================================================

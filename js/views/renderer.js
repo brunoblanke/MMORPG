@@ -2,11 +2,12 @@ import { CONFIG } from '../config.js';
 import { shadeColor, isInRadius } from '../utils/helpers.js';
 import { SpriteRegistry, isSheetReady } from './sprite-registry.js';
 import { drawEntityOverlay } from './entity-overlay.js';
-import { drawTileTooltip } from './tile-tooltip.js';
 import { prepareDrawables } from './draw-order.js';
 import { getEntityLevel } from '../core/geometry.js';
 import { getAsset, objectIdType, openedAs } from '../../shared/assets.js';
 import { stackFrame } from '../../shared/items.js';
+
+const MESSAGE_COLORS = { info: '#5fe35f', warn: '#ffd84a', danger: '#ff4a4a' };
 
 const TINT_HIT = { color: '#ff2a2a', alpha: 0.55 };
 const TINT_ENEMY_HOVER = { color: '#ff2a2a', alpha: 0.35 };
@@ -27,7 +28,6 @@ export class Renderer {
     this.frameTimestamp = 0;
     this.pendingOverlays = [];
 
-    this.showTooltip = true;
     this.showPaths = true;
     this.showDetectionAreas = true;
     this.showPatrolAreas = true;
@@ -39,7 +39,6 @@ export class Renderer {
 
   setDevMode(enabled) {
     this.devMode = enabled;
-    this.showTooltip = enabled;
     this.showPaths = enabled;
     this.showDetectionAreas = enabled;
     this.showPatrolAreas = enabled;
@@ -475,15 +474,27 @@ export class Renderer {
   // ================================================================================================================================================================================
   // drawStatusMessage
 
+  // Mensagem no centro da tela, na cor do tipo (MESSAGE_COLORS), com
+  // contorno escuro; quebra de linha com \n.
+
   drawStatusMessage(statusMessage) {
     if (!statusMessage) return;
-
+    const lines = String(statusMessage.text).split('\n');
+    const lineHeight = 12;
+    const top = this.canvas.height / 2 - (lines.length - 1) * lineHeight / 2;
     this.ctx.save();
-    this.ctx.textAlign = "center";
-    this.ctx.textBaseline = "middle";
-    this.ctx.font = "bold 10px Arial";
-    this.ctx.fillStyle = "#FFD700";
-    this.ctx.fillText(statusMessage.text, this.canvas.width / 2, this.canvas.height / 2);
+    this.ctx.textAlign = 'center';
+    this.ctx.textBaseline = 'middle';
+    this.ctx.font = 'bold 10px Arial';
+    this.ctx.lineWidth = 2.5;
+    this.ctx.lineJoin = 'round';
+    this.ctx.strokeStyle = 'rgba(0, 0, 0, 0.85)';
+    this.ctx.fillStyle = MESSAGE_COLORS[statusMessage.kind] || MESSAGE_COLORS.info;
+    lines.forEach((line, i) => {
+      const y = top + i * lineHeight;
+      this.ctx.strokeText(line, this.canvas.width / 2, y);
+      this.ctx.fillText(line, this.canvas.width / 2, y);
+    });
     this.ctx.restore();
   }
 
@@ -615,10 +626,6 @@ export class Renderer {
     }
 
     ui.draw(this.ctx, gameState.player, this.devMode, gameState.world.isInSafeZone(gameState.player));
-
-    if (this.showTooltip) {
-      drawTileTooltip(this.ctx, this.camera, gameState, gameState.inputController);
-    }
 
     this.drawStatusMessage(gameState.statusMessage);
   }

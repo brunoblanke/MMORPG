@@ -39,8 +39,8 @@ export class InteractionController {
   // ================================================================================================================================================================================================================================================
   // message
 
-  message(player, text) {
-    this.sim.emit({ type: 'message', playerId: player.id, text });
+  message(player, text, kind = 'warn') {
+    this.sim.emit({ type: 'message', playerId: player.id, text, kind });
   }
 
   // ================================================================================================================================================================================================================================================
@@ -57,7 +57,7 @@ export class InteractionController {
     }
     const use = objectUse(objectIdType(obj.id));
     if (use === 'placa') {
-      if (obj.data && obj.data.texto) this.message(player, obj.data.texto);
+      if (obj.data && obj.data.texto) this.message(player, obj.data.texto, 'info');
     }
     else if (use === 'livro') this.readBook(player, obj.itemData || { type: objectIdType(obj.id), texto: obj.data && obj.data.texto });
     else if (use === 'bau-quest') this.openQuestChest(player, obj);
@@ -168,7 +168,7 @@ export class InteractionController {
     const entries = ((chest.data && chest.data.itens) || []).filter(e => e && getAsset(splitType(e.tipo).asset));
     player.quests = player.quests || [];
     if (!entries.length || player.quests.includes(questId)) {
-      this.message(player, 'Está vazio.');
+      this.message(player, 'Está vazio.', 'info');
       return;
     }
     const rewards = entries.map(e => newItem(inventory.nextUid(), e.tipo, e.count || 1));
@@ -190,6 +190,6 @@ export class InteractionController {
     rewards.forEach((item, i) => { bag.items[free[i]] = item; });
     player.quests.push(questId);
     const names = rewards.map(item => (item.count > 1 ? `${item.count} ${itemInfo(item.type).name}` : itemInfo(item.type).name));
-    this.message(player, `Você encontrou ${names.join(', ')}.`);
+    this.message(player, `Você encontrou ${names.join(', ')}.`, 'info');
   }
 }

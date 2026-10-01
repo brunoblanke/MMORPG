@@ -90,9 +90,10 @@ export class InventoryController {
 
   // ================================================================================================================================================================================================================================================
   // message
+  // kind: 'info' (verde), 'warn' (amarelo) ou 'danger' (vermelho).
 
-  message(player, text) {
-    this.sim.emit({ type: 'message', playerId: player.id, text });
+  message(player, text, kind = 'warn') {
+    this.sim.emit({ type: 'message', playerId: player.id, text, kind });
   }
 
   // ================================================================================================================================================================================================================================================
@@ -646,7 +647,7 @@ export class InventoryController {
       return;
     }
     player.food = food + seconds * 1000;
-    this.message(player, 'Smack.');
+    this.message(player, 'Smack.', 'info');
     if ((src.item.count || 1) > 1) src.item.count--;
     else src.remove();
   }

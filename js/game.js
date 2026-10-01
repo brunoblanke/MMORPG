@@ -16,6 +16,7 @@ import { ParticleController } from './systems/particle-controller.js';
 import { InputController } from './input/input.js';
 import { NameModal } from './views/name-modal.js';
 import { InventoryUI } from './views/inventory-ui.js';
+import { describeEntity, describeGroundObject } from './views/look.js';
 
 // Tempo pra saber se o clique em caixa/cadáver é o começo de um duplo clique.
 const DOUBLE_CLICK_MS = 250;
@@ -100,7 +101,7 @@ export class GameController {
       try {
         const session = await RemoteSession.join(socket, mapData, name, gender);
         console.log(`🌐 Conectado ao servidor como ${name} (${session.playerId})`);
-        session.onDisconnect = () => this.showMessage('Conexão com o servidor perdida — recarregue a página', performance.now(), 600000);
+        session.onDisconnect = () => this.showMessage('Conexão com o servidor perdida — recarregue a página', performance.now(), 600000, 'danger');
         modal.close(name);
         return session;
       } catch (error) {
@@ -145,6 +146,11 @@ export class GameController {
         return;
       }
 
+      if (data.event && data.event.shiftKey) {
+        self.lookAtMouse();
+        return;
+      }
+
       const clickData = self.inputController.handleClick(data.event);
 
       if (clickData.type === 'click') {
@@ -181,8 +187,11 @@ export class GameController {
   // ================================================================================================================================================================================================================================================
   // showMessage
 
-  showMessage(text, timestamp, duration = 2000) {
-    this.statusMessage = { text, expiresAt: timestamp + duration };
+  // kind: 'info' (verde: positiva ou neutra), 'warn' (amarelo: alerta) ou
+  // 'danger' (vermelho: perigo).
+
+  showMessage(text, timestamp, duration = 2000, kind = 'info') {
+    this.statusMessage = { text, kind, expiresAt: timestamp + duration };
   }
 
   // ================================================================================================================================================================================================================================================
@@ -268,6 +277,33 @@ export class GameController {
   }
 
   // ================================================================================================================================================================================================================================================
+  // lookAtMouse
+  // Shift + clique na tela: mostra o que é o player, a criatura ou o item sob
+  // o mouse (mensagem verde no centro).
+
+  lookAtMouse() {
+    if (!this.player || !this.inputController) return;
+    const offset = this.camera.getOffset();
+    const { mouseX, mouseY } = this.inputController;
+    const entities = [...this.session.players, ...this.session.enemies.filter(e => e.isAlive())];
+    const hit = entities.find(e => this.renderer.isPointInCube(mouseX, mouseY, e.renderX, e.renderY, offset, e.z || 0, e.step || 0));
+    if (hit) {
+      this.look(describeEntity(hit, this.player));
+      return;
+    }
+    const obj = this.inputController.hoverCorpse || this.inputController.hoverObject;
+    const text = obj ? describeGroundObject(obj) : null;
+    if (text) this.look(text);
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // look
+
+  look(text) {
+    this.showMessage(text, performance.now(), 3000 + text.length * 30, 'info');
+  }
+
+  // ================================================================================================================================================================================================================================================
   // trySelectEnemyAtMouse
   // Clique em inimigo alterna a seleção de alvo. Retorna true se o clique acertou um inimigo.
 
@@ -315,7 +351,7 @@ export class GameController {
       } else if (event.type === 'book' && event.playerId === playerId) {
         this.showBook(event.title, event.text);
       } else if (event.type === 'message' && event.playerId === playerId) {
-        this.showMessage(event.text, timestamp);
+        this.showMessage(event.text, timestamp, 2000 + Math.min(4000, event.text.length * 40), event.kind || 'warn');
       }
     }
   }

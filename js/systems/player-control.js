@@ -378,7 +378,7 @@ export class PlayerControl {
     const world = this.sim.world;
     const open = !door.blocksMovement;
     if (open && world.getCreatureAt(door.x, door.y, door.z || 0) !== null) {
-      this.sim.emit({ type: 'message', playerId: player.id, text: 'Tem alguém no caminho.' });
+      this.sim.emit({ type: 'message', playerId: player.id, text: 'Tem alguém no caminho.', kind: 'warn' });
       return;
     }
     const oldId = world.setDoorOpen(door, !open);
