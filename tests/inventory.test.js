@@ -377,3 +377,15 @@ test('equipamento e container não empilham, mesmo marcados como empilháveis no
   assert.equal(itemInfo('itens/recipientes/marcada').stack, 0);
   assert.equal(itemInfo(COIN).stack, 100);
 });
+
+test('personagem novo nasce com a bag simples; quem volta fica com o que tinha', async () => {
+  const { STARTER_BAG } = await import('../shared/items.js');
+  setAssets([asset(STARTER_BAG, { move: true, peso: 8, espacos: 8 }), asset(SWORD, { move: true, peso: 30 })]);
+  const game = buildGame({ objects: floorRect(0, 10, 0, 10, 0), player: { x: 2, y: 2, z: 0 } });
+  const fresh = game.addPlayer('novo', { name: 'Novo' });
+  assert.equal(fresh.equip.mochila.type, STARTER_BAG);
+  assert.equal(fresh.equip.mochila.items.length, 8);
+  const back = game.addPlayer('volta', { name: 'Volta', saved: { equip: { arma: { type: SWORD } } } });
+  assert.equal(back.equip.mochila, null);
+  assert.equal(back.equip.arma.type, SWORD);
+});

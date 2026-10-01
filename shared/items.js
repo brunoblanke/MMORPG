@@ -13,6 +13,9 @@ export const THROW_RANGE = 25;
 export const DEFAULT_WEIGHT = 10;
 export const DEFAULT_CONTAINER_SIZE = 8;
 
+// Bag simples com que todo personagem novo nasce (no espaço da mochila).
+export const STARTER_BAG = 'itens/recipientes/bag';
+
 // Morte do player: a mochila vai sempre pro corpo; cada outro item do
 // inventário, com esta chance (provisório).
 export const DEATH_DROP_CHANCE = 0.3;
