@@ -46,7 +46,7 @@ export function describeEntity(entity, self = null) {
   if (entity === self) return `Você vê a si mesmo (Level ${entity.lvl}).`;
   if (entity.isPlayer) return `Você vê ${entity.name} (Level ${entity.lvl}).`;
   if (entity.isNpc) return `Você vê ${entity.name}.`;
-  return `Você vê ${displayName(entity.creature)}.`;
+  return `Você vê ${displayName(entity.creature)}${entity.lvl ? ` (Level ${entity.lvl})` : ''}.`;
 }
 
 // ================================================================================================================================================================================================================================================
