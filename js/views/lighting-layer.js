@@ -80,63 +80,27 @@ export class LightingLayer {
   // ================================================================================================================================================================================================================================================
   // draw
   // Um bloco de escuridão por sqm visível (mais escuro onde há menos luz) e,
-  // onde a tocha alcança, um tom quente: montado numa imagem pequena (1 pixel
-  // por sqm) e esticada na tela sem suavizar, de uma vez só.
+  // onde a tocha alcança, um tom quente.
 
   draw(ctx, renderer) {
     const size = CONFIG.tileSize;
     const visible = renderer.camera.getVisibleTiles();
-    const startX = visible.startX - 1;
-    const startY = visible.startY - 1;
-    const cols = visible.endX - startX + 1;
-    const rows = visible.endY - startY + 1;
-    if (cols <= 0 || rows <= 0) return;
-    const key = `${startX},${startY},${cols},${rows},${this.ambient},${this.sources.map(s => `${s.x}:${s.y}:${s.radius}:${s.warm ? 1 : 0}`).join('|')}`;
-    if (key !== this.key) {
-      this.key = key;
-      this.paint(startX, startY, cols, rows);
-    }
-    const base = renderer.gridToScreenWithOffset(startX, startY);
     ctx.save();
-    ctx.imageSmoothingEnabled = false;
-    ctx.drawImage(this.canvas, 0, 0, cols, rows, base.x, base.y, cols * size, rows * size);
-    ctx.restore();
-  }
-
-  // ================================================================================================================================================================================================================================================
-  // paint
-  // Cor de cada sqm já com a escuridão e o tom quente juntos (como se um
-  // fosse desenhado por cima do outro).
-
-  paint(startX, startY, cols, rows) {
-    if (!this.canvas) this.canvas = document.createElement('canvas');
-    if (this.canvas.width < cols || this.canvas.height < rows) {
-      this.canvas.width = Math.max(this.canvas.width, cols);
-      this.canvas.height = Math.max(this.canvas.height, rows);
-      this.image = null;
-    }
-    if (!this.image || this.image.width !== cols || this.image.height !== rows) this.image = new ImageData(cols, rows);
-    const dark = DARK_RGB.split(',').map(Number);
-    const warm = WARM_RGB.split(',').map(Number);
-    const data = this.image.data;
-    for (let row = 0; row < rows; row++) {
-      for (let col = 0; col < cols; col++) {
-        const x = startX + col;
-        const y = startY + row;
-        const a1 = Math.round((1 - Math.min(1, lightAt(x, y, this.ambient, this.sources))) * 1000) / 1000;
-        const a2 = Math.round(this.warmthAt(x, y) * WARM_ALPHA * 1000) / 1000;
-        const alpha = 1 - (1 - a1) * (1 - a2);
-        const i = (row * cols + col) * 4;
-        if (alpha <= 0) {
-          data[i + 3] = 0;
-          continue;
+    for (let y = visible.startY - 1; y <= visible.endY; y++) {
+      for (let x = visible.startX - 1; x <= visible.endX; x++) {
+        const light = lightAt(x, y, this.ambient, this.sources);
+        const base = renderer.gridToScreenWithOffset(x, y);
+        if (light < 1) {
+          ctx.fillStyle = `rgba(${DARK_RGB}, ${(1 - light).toFixed(3)})`;
+          ctx.fillRect(base.x, base.y, size, size);
         }
-        for (let c = 0; c < 3; c++) data[i + c] = Math.round((dark[c] * a1 * (1 - a2) + warm[c] * a2) / alpha);
-        data[i + 3] = Math.round(alpha * 255);
+        const warmth = this.warmthAt(x, y);
+        if (warmth > 0) {
+          ctx.fillStyle = `rgba(${WARM_RGB}, ${(warmth * WARM_ALPHA).toFixed(3)})`;
+          ctx.fillRect(base.x, base.y, size, size);
+        }
       }
     }
-    const ctx = this.canvas.getContext('2d');
-    ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    ctx.putImageData(this.image, 0, 0);
+    ctx.restore();
   }
 }

@@ -8,7 +8,6 @@ import { getAsset, objectIdType, openedAs, litAs } from '../../shared/assets.js'
 import { stackFrame } from '../../shared/items.js';
 import { drawTibiaText } from './tibia-text.js';
 import { LightingLayer } from './lighting-layer.js';
-import { FloorCache } from './floor-cache.js';
 
 // ================================================================================================================================================================================================================================================
 // isHumanoid
@@ -58,7 +57,6 @@ export class Renderer {
     this.frameTimestamp = 0;
     this.pendingOverlays = [];
     this.lighting = new LightingLayer();
-    this.floorCache = new FloorCache(this.sprites);
 
     this.showPaths = true;
     this.showDetectionAreas = true;
@@ -300,19 +298,6 @@ export class Renderer {
     this.ctx.globalAlpha = tint.alpha;
     this.ctx.fillStyle = tint.color;
     this.ctx.fillRect(fallbackX, fallbackY, size * 0.8, size * 0.8);
-    this.ctx.restore();
-  }
-
-  // ================================================================================================================================================================================
-  // drawFloorTint
-  // Tom azul do piso sob o mouse quando ele já saiu no bloco de chão pronto.
-
-  drawFloorTint(obj) {
-    const base = this.gridToScreenWithOffset(obj.x, obj.y);
-    this.ctx.save();
-    this.ctx.globalAlpha = TINT_HOVER.alpha;
-    this.ctx.fillStyle = TINT_HOVER.color;
-    this.ctx.fillRect(base.x, base.y, CONFIG.tileSize, CONFIG.tileSize);
     this.ctx.restore();
   }
 
@@ -638,7 +623,6 @@ export class Renderer {
       }
     };
 
-    this.floorCache.index(gameState.objects);
     const isDark = this.lighting.prepare(gameState, drawables, playerLevel, Date.now());
     let litOverlays = [];
 
@@ -651,12 +635,7 @@ export class Renderer {
 
       if (lastLevel !== null && level <= playerFloor) this.darkenBelow(level - lastLevel);
       lastLevel = level;
-      const chunks = this.floorCache.draw(this.ctx, this, level, visible);
-      for (const obj of group) {
-        if (!obj.isFloor) continue;
-        if (!this.floorCache.covers(chunks, level, obj)) drawDrawable(obj);
-        else if (hoverObject && obj.id === hoverObject.id) this.drawFloorTint(obj);
-      }
+      for (const obj of group) if (obj.isFloor) drawDrawable(obj);
       drawHighlights(level);
       if (this.showYellowOutline) {
         for (const obj of group) this.drawDrawableOutline(obj);

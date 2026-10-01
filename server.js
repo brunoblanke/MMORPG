@@ -159,8 +159,7 @@ function enderecosRede(porta) {
 
 async function iniciarJogo(servidorHttp) {
   const { Simulation, TICK_MS } = await import(pathToFileURL(path.join(PASTA_JOGO, 'js', 'simulation.js')).href);
-  const { serializeState, validateName, normalizeGender, VIEW_RANGE_X, VIEW_RANGE_Y } = await import(pathToFileURL(path.join(PASTA_JOGO, 'js', 'net', 'protocol.js')).href);
-  const { encodeDelta } = await import(pathToFileURL(path.join(PASTA_JOGO, 'js', 'net', 'delta.js')).href);
+  const { serializeState, validateName, normalizeGender } = await import(pathToFileURL(path.join(PASTA_JOGO, 'js', 'net', 'protocol.js')).href);
 
   const { setAssets } = await import(pathToFileURL(path.join(PASTA_JOGO, 'shared', 'assets.js')).href);
   setAssets(lerSprites());
@@ -190,7 +189,7 @@ async function iniciarJogo(servidorHttp) {
         proximoJogador++;
         const saved = personagens[erro.name.toLowerCase()];
         player = sim.addPlayer(playerId, { name: erro.name, gender: normalizeGender(mensagem.gender), saved });
-        conexoes.set(playerId, { socket, sent: null });
+        conexoes.set(playerId, socket);
         console.log(`🟢 ${player.name} entrou ${saved ? `(nível ${player.lvl}) ` : '(novo) '}(${conexoes.size} online)`);
         socket.send(JSON.stringify({ type: 'welcome', playerId }));
         return;
@@ -217,7 +216,7 @@ async function iniciarJogo(servidorHttp) {
     while (tempo + TICK_MS <= agora) {
       tempo += TICK_MS;
       sim.tick(tempo);
-      enviarEstado(sim, conexoes, tempo, { serializeState, encodeDelta, range: [VIEW_RANGE_X, VIEW_RANGE_Y] });
+      enviarEstado(sim, conexoes, tempo, serializeState);
     }
   }, TICK_MS);
 
@@ -292,21 +291,15 @@ function validarEntrada(sim, nome, validateName) {
 
 // ================================================================================================================================================================================================================================================
 // enviarEstado
-// Um estado por jogador (cada um recebe o próprio alvo/caminho), só com o
-// que está perto dele e só o que mudou desde o último (js/net/delta.js), e
-// os eventos do tick que acontecem por perto.
+// Um estado por jogador (cada um recebe o próprio alvo/caminho), com os
+// eventos do tick.
 
-function enviarEstado(sim, conexoes, tempo, { serializeState, encodeDelta, range }) {
+function enviarEstado(sim, conexoes, tempo, serializeState) {
   const events = sim.drainEvents();
-  for (const [playerId, conexao] of conexoes) {
-    const { socket } = conexao;
+  for (const [playerId, socket] of conexoes) {
     if (socket.readyState !== socket.OPEN) continue;
-    const player = sim.getPlayer(playerId);
-    const state = serializeState(sim, playerId, true);
-    const delta = encodeDelta(conexao.sent, state);
-    conexao.sent = state;
-    const perto = events.filter(e => !player || e.x === undefined || (Math.abs(e.x - player.x) <= range[0] && Math.abs(e.y - player.y) <= range[1]));
-    socket.send(JSON.stringify({ type: 'state', time: tempo, delta, events: perto }));
+    const state = serializeState(sim, playerId);
+    socket.send(JSON.stringify({ type: 'state', time: tempo, state, events }));
   }
 }
 
