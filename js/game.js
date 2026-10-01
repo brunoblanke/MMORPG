@@ -18,6 +18,8 @@ import { InputController } from './input/input.js';
 import { NameModal } from './views/name-modal.js';
 import { InventoryUI } from './views/inventory-ui.js';
 import { describeEntity, describeGroundObject } from './views/look.js';
+import { SpeechLayer } from './views/speech.js';
+import { ChatBox } from './views/chat-box.js';
 
 // Tempo pra saber se o clique em caixa/cadáver é o começo de um duplo clique.
 const DOUBLE_CLICK_MS = 250;
@@ -45,6 +47,8 @@ export class GameController {
     this.devMode = CONFIG.devMode !== undefined ? CONFIG.devMode : false;
     this.renderer.setDevMode(this.devMode);
     this.statusMessage = null;
+    this.speech = new SpeechLayer();
+    this.chatBox = new ChatBox(this);
 
     this.boot();
   }
@@ -287,7 +291,7 @@ export class GameController {
     const offset = this.camera.getOffset();
     const { mouseX, mouseY } = this.inputController;
     const level = getLevel(this.player);
-    const entities = [...this.session.players, ...this.session.enemies.filter(e => e.isAlive())].filter(e => getLevel(e) === level);
+    const entities = [...this.session.players, ...(this.session.npcs || []), ...this.session.enemies.filter(e => e.isAlive())].filter(e => getLevel(e) === level);
     const hit = entities.find(e => this.renderer.isPointInCube(mouseX, mouseY, e.renderX, e.renderY, offset, e.z || 0, e.step || 0));
     if (hit) {
       this.look(describeEntity(hit, this.player));
@@ -355,6 +359,8 @@ export class GameController {
         this.showMessage(`⭐ Você subiu para o nível ${event.lvl}!`, timestamp, 3000);
       } else if (event.type === 'book' && event.playerId === playerId) {
         this.showBook(event.title, event.text);
+      } else if (event.type === 'speech') {
+        this.speech.add(event, performance.now());
       } else if (event.type === 'message' && event.playerId === playerId) {
         this.showMessage(event.text, timestamp, 2000 + Math.min(4000, event.text.length * 40), event.kind || 'warn');
       }
@@ -390,6 +396,7 @@ export class GameController {
   updateAnimations(timestamp) {
     for (const player of this.session.players) player.updateAnimation(timestamp);
     for (const enemy of this.session.enemies) enemy.updateAnimation(timestamp);
+    for (const npc of this.session.npcs || []) npc.updateAnimation(timestamp);
   }
 
   // ================================================================================================================================================================================================================================================
@@ -425,6 +432,8 @@ export class GameController {
       player: this.player,
       players: this.session.players,
       enemies: this.session.enemies,
+      npcs: this.session.npcs || [],
+      speech: this.speech,
       objects: this.session.objects,
       world: this.session.world,
       deadBodies: this.session.deadBodies,

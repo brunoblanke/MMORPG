@@ -15,6 +15,7 @@ import { LifeCycleController } from './systems/life-cycle.js';
 import { PlayerControl } from './systems/player-control.js';
 import { InventoryController } from './systems/inventory.js';
 import { InteractionController } from './systems/interactions.js';
+import { NpcController } from './systems/npcs.js';
 import { objectIdType, doorState } from '../shared/assets.js';
 
 export { TICK_MS };
@@ -31,6 +32,7 @@ export class Simulation {
   // constructor
 
   // options.lootTable: o que cada criatura deixa cair (systems/inventory.js).
+  // options.npcs: os NPCs do jogo (shared/npcs.js; sem ele, nenhum).
 
   constructor(mapData, options = {}) {
     this.mapData = mapData;
@@ -60,6 +62,8 @@ export class Simulation {
     this.control = new PlayerControl(this);
     this.inventory = new InventoryController(this, options.lootTable || {});
     this.interactions = new InteractionController(this);
+    this.npcs = [];
+    this.talk = new NpcController(this, options.npcs || []);
   }
 
   // ================================================================================================================================================================================================================================================
@@ -238,6 +242,7 @@ export class Simulation {
     this.time = now;
     this.processCommands();
     this.runScheduled();
+    this.talk.update(now);
     this.lifeCycle.processCorpseDecay(now);
 
     for (const player of this.players) {

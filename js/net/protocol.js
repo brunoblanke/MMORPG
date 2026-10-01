@@ -2,6 +2,7 @@
 
 import { Player } from '../models/player.js';
 import { Enemy } from '../models/enemy.js';
+import { Npc } from '../models/npc.js';
 import { GameObject } from '../models/game-object.js';
 import { PLAYER_GENDERS, DEFAULT_GENDER } from '../../shared/catalog.js';
 import { TICK_MS } from '../../shared/constants.js';
@@ -12,19 +13,20 @@ import { objectIdType, doorState } from '../../shared/assets.js';
 //
 //   navegador → servidor
 //     { type: 'join', name, gender }               entrar com o nome e o gênero ('male' | 'female')
-//     { type: 'command', command }                 comando do jogador (player-control.js)
+//     { type: 'command', command }                 comando do jogador (player-control.js; say = falar)
 //   servidor → navegador
 //     { type: 'joinError', error }                 nome recusado (pode tentar de novo)
 //     { type: 'welcome', playerId }                entrou: quem você é
 //     { type: 'state', time, state, events }       a cada tick: estado + eventos
 //
-// O estado leva só o que muda: jogadores, inimigos, cadáveres e itens
+// O estado leva só o que muda: jogadores, inimigos, NPCs, cadáveres e itens
 // móveis (que aparecem e somem: jogados, pegos, loot). O mapa (pisos,
 // paredes…) cada lado gera do mesmo data/map.json. Cada jogador recebe o
 // próprio inventário (you.inventory: systems/inventory.js → viewFor).
 
 export const PLAYER_FIELDS = ['name', 'gender', 'x', 'y', 'z', 'step', 'direction', 'lvl', 'xp', 'nextLevelXp', 'hp', 'maxHp', 'currentHp', 'spd', 'atk', 'def', 'isTarget', 'spawnX', 'spawnY', 'spawnZ', 'stepDuration'];
 export const ENEMY_FIELDS = ['creature', 'color', 'lvl', 'x', 'y', 'z', 'step', 'direction', 'hp', 'maxHp', 'currentHp', 'spd', 'atk', 'def', 'patrolCenterX', 'patrolCenterY', 'patrolRadius', 'detectionRadius', 'stepDuration'];
+export const NPC_FIELDS = ['name', 'gender', 'x', 'y', 'z', 'step', 'direction', 'stepDuration'];
 export const CORPSE_FIELDS = ['id', 'ownerId', 'name', 'x', 'y', 'z', 'step', 'color', 'type', 'lvl', 'creature', 'isPlayer', 'deathTime', 'decayTime', 'hasVolume', 'blocksMovement', 'movable', 'isCorpse', 'corpseCreature', 'corpseIsPlayer'];
 
 // Campos que placeCreature cuida (posição e animação do passo).
@@ -88,6 +90,7 @@ export function serializeState(sim, playerId) {
   return {
     players: sim.players.map(p => ({ id: p.id, ...pick(p, PLAYER_FIELDS) })),
     enemies: sim.enemies.map(e => ({ id: e.id, ...pick(e, ENEMY_FIELDS), state: e.ai.state })),
+    npcs: (sim.npcs || []).map(n => ({ id: n.id, ...pick(n, NPC_FIELDS) })),
     corpses: sim.deadBodies.map(c => pick(c, CORPSE_FIELDS)),
     doors: sim.doors.map(d => ({ x: d.x, y: d.y, z: d.z || 0, id: d.id })),
     dug: sim.interactions ? [...sim.interactions.dugHoles.keys()] : [],
@@ -227,6 +230,9 @@ export function applyState(mirror, message, playerId, renderNow) {
   for (let i = 0; i < state.enemies.length; i++) {
     mirror.enemies[i].ai.state = state.enemies[i].state;
   }
+
+  mirror.npcs = syncCreatures(world, mirror.npcs || [], state.npcs || [], NPC_FIELDS,
+    (data) => new Npc({ id: data.id, x: data.x, y: data.y, z: data.z, step: data.step, name: data.name, gender: data.gender }), renderNow);
 
   mirror.deadBodies = syncCorpses(world, mirror.deadBodies, state.corpses, time, renderNow);
 

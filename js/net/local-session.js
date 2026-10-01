@@ -1,6 +1,7 @@
 // js/net/local-session.js
 
 import { Simulation, TICK_MS } from '../simulation.js';
+import { NPC_DEFS } from '../../shared/npcs.js';
 
 const MAX_TICKS_PER_FRAME = 10;
 const SAVE_INTERVAL_MS = 5000;
@@ -15,7 +16,7 @@ export class LocalSession {
   // constructor
 
   constructor(mapData, name = 'Player', gender, lootTable = {}) {
-    this.sim = new Simulation(mapData, { lootTable });
+    this.sim = new Simulation(mapData, { lootTable, npcs: NPC_DEFS });
     this.playerId = 'player1';
     this.storageKey = `character:${name.toLowerCase()}`;
     this.sim.addPlayer(this.playerId, { name, gender, saved: this.loadCharacter() });
@@ -53,6 +54,7 @@ export class LocalSession {
   get objects() { return this.sim.objects; }
   get players() { return this.sim.players; }
   get enemies() { return this.sim.enemies; }
+  get npcs() { return this.sim.npcs; }
   get deadBodies() { return this.sim.deadBodies; }
   get player() { return this.sim.getPlayer(this.playerId); }
   get inventoryView() { return this.player ? this.sim.inventory.viewFor(this.player) : null; }

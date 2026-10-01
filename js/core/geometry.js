@@ -15,7 +15,7 @@ export function levelOf(z, step) {
 // isCreature
 
 export function isCreature(entity) {
-  return !entity.isCorpse && (entity.isPlayer === true || entity.type === 'enemy');
+  return !entity.isCorpse && (entity.isPlayer === true || entity.type === 'enemy' || entity.isNpc === true);
 }
 
 // ================================================================================================================================================================================================================================================

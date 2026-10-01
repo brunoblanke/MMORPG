@@ -49,6 +49,7 @@ export class PlayerControl {
       case 'saveLayout': return this.sim.inventory.saveLayout(player, command.layout);
       case 'useStairs': return this.useStairs(player, command.x, command.y, command.z);
       case 'useDoor': return this.useDoor(player, command.x, command.y, command.z);
+      case 'say': return this.sim.talk.playerSays(player, command.text);
       default: console.warn('Comando desconhecido:', command);
     }
   }

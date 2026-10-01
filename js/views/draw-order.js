@@ -137,6 +137,22 @@ export function prepareDrawables(gameState) {
     }, other);
   }
 
+  for (const npc of gameState.npcs || []) {
+    push({
+      x: npc.renderX,
+      y: npc.renderY,
+      z: npc.renderZ ?? npc.z ?? 0,
+      step: npc.renderStep ?? npc.step ?? 0,
+      renderX: npc.renderX,
+      renderY: npc.renderY,
+      entity: npc,
+      isCreature: true,
+      hasVolume: false,
+      order: npc.order || 0,
+      isFloor: false
+    }, npc);
+  }
+
   for (const enemy of gameState.enemies) {
     push({
       x: enemy.renderX,

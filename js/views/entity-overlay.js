@@ -26,7 +26,7 @@ function roundRect(ctx, x, y, width, height, radius) {
 
 function getEntityName(entity, isPlayer, isEnemy, isCorpse) {
   if (isCorpse) return entity.name || displayName(entity.creature);
-  if (isPlayer) return entity.name || 'Player';
+  if (isPlayer || entity.isNpc) return entity.name || 'Player';
   if (isEnemy) return displayName(entity.creature);
   return '';
 }
@@ -41,8 +41,9 @@ export function drawEntityOverlay(ctx, entity, base, stackOffsetX, stackOffsetY,
   const isPlayer = entity && entity.isPlayer === true;
   const isEnemy = entity && entity.type === 'enemy';
   const isCorpse = entity && entity.isCorpse === true;
+  const isNpc = entity && entity.isNpc === true;
 
-  if (!isPlayer && !isEnemy && !isCorpse) return;
+  if (!isPlayer && !isEnemy && !isCorpse && !isNpc) return;
 
   const name = getEntityName(entity, isPlayer, isEnemy, isCorpse);
 

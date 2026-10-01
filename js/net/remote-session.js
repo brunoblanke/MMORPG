@@ -28,6 +28,7 @@ export class RemoteSession {
     this.objectsById = new Map(this.objects.map(obj => [obj.id, obj]));
     this.players = [];
     this.enemies = [];
+    this.npcs = [];
     this.deadBodies = [];
     this.inventoryView = null;
     this.inbox = [];

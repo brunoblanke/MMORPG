@@ -8,6 +8,14 @@ import { getAsset, objectIdType, openedAs } from '../../shared/assets.js';
 import { stackFrame } from '../../shared/items.js';
 import { drawTibiaText } from './tibia-text.js';
 
+// ================================================================================================================================================================================================================================================
+// isHumanoid
+// Player ou NPC: os dois usam a roupa de player (folha pelo gender).
+
+function isHumanoid(entity) {
+  return !!entity && (entity.isPlayer === true || entity.isNpc === true);
+}
+
 const MESSAGE_COLORS = { info: '#5fe35f', warn: '#ffd84a', danger: '#ff4a4a' };
 
 const TINT_HIT = { color: '#ff2a2a', alpha: 0.55 };
@@ -396,7 +404,7 @@ export class Renderer {
   // Deslocamento visual pela altura (step) — o mesmo pro sprite e pro contorno amarelo.
 
   getSpriteStackOffset(step, entity, hasVolume, movable, blocksMovement, isCorpse) {
-    const isPlayer = entity && entity.isPlayer === true;
+    const isPlayer = isHumanoid(entity);
     const isEnemy = entity && entity.type === 'enemy';
     const isVolumePiece = !isPlayer && !isEnemy && !isCorpse && hasVolume === true;
     const appliesStackOffset = isPlayer || isEnemy || isCorpse || hasVolume || blocksMovement || movable === true;
@@ -415,7 +423,7 @@ export class Renderer {
     const base = this.gridToScreenWithOffset(obj.x, obj.y);
     const size = CONFIG.tileSize;
     const offset = this.getSpriteStackOffset(obj.step || 0, entity, obj.hasVolume, obj.movable, obj.blocksMovement, obj.isCorpse);
-    const isPlayer = entity && entity.isPlayer === true;
+    const isPlayer = isHumanoid(entity);
     const isEnemy = entity && entity.type === 'enemy';
     const outline = this.getOutlineSize(entity, isPlayer, isEnemy, obj.isCorpse, this.getCorpseData(obj), size);
     this.drawYellowOutline(base, size, outline, offset.x, offset.y);
@@ -440,7 +448,7 @@ export class Renderer {
       return;
     }
 
-    const isPlayer = entity && entity.isPlayer === true;
+    const isPlayer = isHumanoid(entity);
     const isEnemy = entity && entity.type === 'enemy';
     const stackOffset = this.getSpriteStackOffset(step, entity, hasVolume, movable, blocksMovement, isCorpse);
     const stackOffsetX = stackOffset.x;
@@ -616,6 +624,7 @@ export class Renderer {
 
     ui.draw(this.ctx, gameState.player, this.devMode, gameState.world.isInSafeZone(gameState.player));
 
+    if (gameState.speech) gameState.speech.draw(this.ctx, this, getEntityLevel(gameState.player), this.frameTimestamp);
     this.drawStatusMessage(gameState.statusMessage);
   }
 }

@@ -6,6 +6,15 @@ import { getEntityLevel, getLevel } from '../core/geometry.js';
 import { objectUse, objectIdType } from '../../shared/assets.js';
 import { itemInfo } from '../../shared/items.js';
 
+// ================================================================================================================================================================================================================================================
+// isTextField
+// Tecla digitada num campo de texto (chat, nome): não anda.
+
+function isTextField(target) {
+  const tag = target && target.tagName;
+  return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
+}
+
 const KEY_DIRECTIONS = {
   w: [0, -1], s: [0, 1], a: [-1, 0], d: [1, 0],
   q: [-1, -1], e: [1, -1], z: [-1, 1], c: [1, 1]
@@ -84,6 +93,7 @@ export class InputController {
   // handleKeyDown
 
   handleKeyDown(e) {
+    if (isTextField(e.target)) return;
     const key = e.key.toLowerCase();
     if (!KEY_DIRECTIONS[key]) return;
     e.preventDefault();
@@ -96,6 +106,7 @@ export class InputController {
   // handleKeyUp
 
   handleKeyUp(e) {
+    if (isTextField(e.target)) return;
     const key = e.key.toLowerCase();
     if (!KEY_DIRECTIONS[key]) return;
     this.keysPressed[key] = false;
