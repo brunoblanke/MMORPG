@@ -4,7 +4,7 @@ import { SpriteRegistry, isSheetReady } from './sprite-registry.js';
 import { drawEntityOverlay } from './entity-overlay.js';
 import { prepareDrawables } from './draw-order.js';
 import { getEntityLevel } from '../core/geometry.js';
-import { getAsset, objectIdType, openedAs } from '../../shared/assets.js';
+import { getAsset, objectIdType, openedAs, litAs } from '../../shared/assets.js';
 import { stackFrame } from '../../shared/items.js';
 import { drawTibiaText } from './tibia-text.js';
 import { LightingLayer } from './lighting-layer.js';
@@ -386,7 +386,7 @@ export class Renderer {
     }
 
     if (entity && entity.id) {
-      const opened = entity.dug ? openedAs(objectIdType(entity.id)) : null;
+      const opened = entity.dug ? openedAs(objectIdType(entity.id)) : (entity.lit ? litAs(objectIdType(entity.id)) : null);
       const sheet = this.getObjectSpriteSheet(opened ? `${opened}_0` : entity.id);
       if (isSheetReady(sheet)) {
         const asset = getAsset(objectIdType(entity.id));

@@ -1,6 +1,6 @@
 // js/views/inventory-ui.js
 
-import { getAsset, spriteFrame, splitType, objectIdType, displayName, objectUse } from '../../shared/assets.js';
+import { getAsset, spriteFrame, splitType, objectIdType, displayName, objectUse, litAs } from '../../shared/assets.js';
 import { getLevel } from '../core/geometry.js';
 import { itemInfo, fitsSlot, stackFrame } from '../../shared/items.js';
 import { PLAYER_SPRITES, DEFAULT_GENDER } from '../../shared/catalog.js';
@@ -604,7 +604,8 @@ export class InventoryUI {
     }
     const info = itemInfo(item.type);
     const count = item.count > 1 ? `<span class="inv-count">${item.count}</span>` : '';
-    return `<div class="inv-slot filled" data-place="${key}" data-uid="${item.uid}">${this.spriteHtml(item.type, item.count)}${count}</div>`;
+    const look = (item.lit && litAs(item.type)) || item.type;
+    return `<div class="inv-slot filled" data-place="${key}" data-uid="${item.uid}">${this.spriteHtml(look, item.count)}${count}</div>`;
   }
 
   // ================================================================================================================================================================================================================================================

@@ -313,6 +313,16 @@ export function openedAs(type) {
 }
 
 // ================================================================================================================================================================================================================================================
+// litAs
+// Fonte de luz acesa: a folha do desenho aceso (gerador → Acesa como), ou null.
+
+export function litAs(type) {
+  const asset = getAsset(splitType(type).asset);
+  const target = asset && asset.propriedades && asset.propriedades.acesoComo;
+  return target && getAsset(target) ? target : null;
+}
+
+// ================================================================================================================================================================================================================================================
 // displayName
 // Nome pra mostrar: 'criaturas/elementais/fire-elemental' → 'Fire Elemental'.
 

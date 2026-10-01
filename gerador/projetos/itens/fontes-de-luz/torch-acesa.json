@@ -1,11 +1,11 @@
 {
   "formato": {
     "quadro": 32,
-    "quadros": 1
+    "quadros": 2
   },
   "objeto": {
     "tibia": {
-      "id": 2920,
+      "id": 2921,
       "variacao": 0
     }
   },
@@ -25,11 +25,10 @@
     "manaMin": 0,
     "manaMax": 0,
     "alimento": 0,
-    "luz": 6,
-    "acesoComo": "itens/fontes-de-luz/torch-acesa"
+    "luz": 6
   },
   "ferramenta": "objetos",
   "grupo": "itens",
   "pasta": "fontes-de-luz",
-  "nome": "torch"
+  "nome": "torch-acesa"
 }

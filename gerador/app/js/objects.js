@@ -32,7 +32,7 @@ const NUMBERS = [
   { key: 'alimento', label: 'Comida (segundos de regeneração)', min: 0, step: 1 },
   { key: 'luz', label: 'Luz (raio em sqm; 0 = não ilumina)', min: 0, step: 1 }
 ];
-const DEFAULT_PROPERTIES = { bloqueia: false, move: true, altura: false, empilhavel: false, peso: 10, espacos: 0, atk: 0, def: 0, ml: 0, speed: 0, vidaMin: 0, vidaMax: 0, manaMin: 0, manaMax: 0, alimento: 0, luz: 0, uso: '', abreComo: '' };
+const DEFAULT_PROPERTIES = { bloqueia: false, move: true, altura: false, empilhavel: false, peso: 10, espacos: 0, atk: 0, def: 0, ml: 0, speed: 0, vidaMin: 0, vidaMax: 0, manaMin: 0, manaMax: 0, alimento: 0, luz: 0, uso: '', abreComo: '', acesoComo: '' };
 const USES = [
   ['', 'Nenhum'],
   ['placa', 'Placa (mostra um texto, escrito no editor)'],
@@ -260,6 +260,28 @@ function renderProperties() {
     label.append(number.label, input);
     list.appendChild(label);
   }
+  const litLabel = document.createElement('label');
+  litLabel.className = 'numberline';
+  litLabel.hidden = !(Number(objects.properties.luz) > 0);
+  const litSelect = document.createElement('select');
+  litSelect.id = 'objectProp-acesoComo';
+  const fillLit = (paths) => {
+    const current = objects.properties.acesoComo || '';
+    const options = current && !paths.includes(current) ? [current, ...paths] : paths;
+    litSelect.innerHTML = '<option value="">— mesmo desenho —</option>' + options.map(p => `<option value="${p}">${p}</option>`).join('');
+    litSelect.value = current;
+  };
+  fillLit([]);
+  fetchProjects().then(projects => fillLit(projects.filter(p => p.ferramenta === 'objetos').map(p => p.caminho).sort())).catch(() => {});
+  litLabel.append('Acesa como (desenho quando acesa)', litSelect);
+  list.appendChild(litLabel);
+  litSelect.onchange = () => {
+    objects.properties.acesoComo = litSelect.value;
+    objects.dirty = true;
+  };
+  document.getElementById('objectProp-luz').addEventListener('change', () => {
+    litLabel.hidden = !(Number(objects.properties.luz) > 0);
+  });
 }
 
 // ================================================================================================================================================================================================================================================

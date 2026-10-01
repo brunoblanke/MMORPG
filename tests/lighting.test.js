@@ -46,3 +46,13 @@ test('tocha vai na mão ou no espaço de munição; botão direito acende e apag
   sim.tick(sim.time + TICK_MS);
   assert.equal(sim.player.light, PLAYER_LIGHT, 'apagou');
 });
+
+test('tocha acesa troca o desenho pelo "Acesa como" do gerador', async () => {
+  const { litAs } = await import('../shared/assets.js');
+  const TORCH = 'itens/fontes-de-luz/torch';
+  const LIT = 'itens/fontes-de-luz/torch-acesa';
+  const a = (id, propriedades) => ({ id, ferramenta: 'objetos', grupo: 'itens', pasta: 'fontes-de-luz', nome: id.split('/').pop(), rotulo: 'itens › fontes-de-luz', url: '/t.png', quadro: 32, quadros: 1, pecas: [], propriedades });
+  setAssets([a(TORCH, { move: true, luz: 6, acesoComo: LIT }), a(LIT, { move: true, luz: 6 })]);
+  assert.equal(litAs(TORCH), LIT);
+  assert.equal(litAs(LIT), null);
+});
