@@ -73,7 +73,8 @@ const SLOT_BY_FOLDER = {
 // atk/def/ml/speed os bônus de quem usa o item (0 = não tem) e heal o que
 // ele recupera ao ser usado ({ hp: [min, max], mana: [min, max] }, ou null)
 // e food os segundos de regeneração, se for comida (0 = não é); light o raio
-// da luz (sqm) que ele dá equipado ou no chão (0 = não ilumina).
+// da luz (sqm) que ele dá equipado ou no chão (0 = não ilumina) e burn os
+// segundos que ele queima aceso até acabar (0 = não gasta).
 
 export function itemInfo(type) {
   const asset = getAsset(splitType(type).asset);
@@ -96,6 +97,7 @@ export function itemInfo(type) {
     heal: healOf(props),
     food: bonusValue(props.alimento),
     light: bonusValue(props.luz),
+    burn: bonusValue(props.duracao),
     weaponSkill: SKILL_BY_WEAPON_FOLDER[folder] || null
   };
 }
@@ -257,6 +259,7 @@ export function toPlain(item) {
   if (item.items) plain.items = item.items.map(toPlain);
   if (item.texto) plain.texto = item.texto;
   if (item.lit) plain.lit = true;
+  if (item.fuel !== undefined) plain.fuel = item.fuel;
   return plain;
 }
 
@@ -273,5 +276,6 @@ export function fromPlain(plain, nextUid) {
   }
   if (typeof plain.texto === 'string' && plain.texto) item.texto = plain.texto.slice(0, 2000);
   if (plain.lit === true && itemInfo(item.type).light) item.lit = true;
+  if (Number.isFinite(plain.fuel) && plain.fuel > 0) item.fuel = plain.fuel;
   return item;
 }

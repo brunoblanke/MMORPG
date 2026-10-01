@@ -245,6 +245,7 @@ export class Simulation {
     this.talk.update(now);
     this.lifeCycle.processCorpseDecay(now);
 
+    this.inventory.burnLights(TICK_MS);
     for (const player of this.players) {
       this.control.update(player, now);
       this.inventory.update(player);

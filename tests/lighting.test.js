@@ -56,3 +56,25 @@ test('tocha acesa troca o desenho pelo "Acesa como" do gerador', async () => {
   assert.equal(litAs(TORCH), LIT);
   assert.equal(litAs(LIT), null);
 });
+
+test('tocha acesa gasta como no Tibia (20 min); apagada não gasta; acabou, some', () => {
+  const TORCH = 'itens/fontes-de-luz/torch';
+  setAssets([{ id: TORCH, ferramenta: 'objetos', grupo: 'itens', pasta: 'fontes-de-luz', nome: 'torch', rotulo: 'itens › fontes-de-luz', url: '/t.png', quadro: 32, quadros: 1, pecas: [], propriedades: { move: true, peso: 5, luz: 6, duracao: 1200 } }]);
+  assert.equal(itemInfo(TORCH).burn, 1200);
+  const sim = buildGame({ objects: floorRect(0, 10, 0, 10, 0), player: { x: 2, y: 2, z: 0 } });
+  const torch = sim.player.equip.escudo;
+  sim.inventory.burnLights(60000);
+  assert.equal(torch.fuel, undefined, 'apagada não gasta');
+  torch.lit = true;
+  sim.inventory.burnLights(600000);
+  assert.equal(torch.fuel, 600000);
+  assert.equal(sim.player.toSave().equip.escudo.fuel, 600000, 'o que sobrou fica salvo');
+  torch.lit = false;
+  sim.inventory.burnLights(600000);
+  assert.equal(torch.fuel, 600000);
+  torch.lit = true;
+  sim.inventory.burnLights(599000);
+  assert.equal(sim.player.equip.escudo, torch);
+  sim.inventory.burnLights(1000);
+  assert.equal(sim.player.equip.escudo, null, 'queimou até o fim');
+});
