@@ -26,7 +26,7 @@ import { objectIdType, doorState } from '../../shared/assets.js';
 
 export const PLAYER_FIELDS = ['name', 'gender', 'x', 'y', 'z', 'step', 'direction', 'lvl', 'xp', 'nextLevelXp', 'hp', 'maxHp', 'currentHp', 'spd', 'atk', 'def', 'isTarget', 'spawnX', 'spawnY', 'spawnZ', 'stepDuration'];
 export const ENEMY_FIELDS = ['creature', 'color', 'lvl', 'x', 'y', 'z', 'step', 'direction', 'hp', 'maxHp', 'currentHp', 'spd', 'atk', 'def', 'patrolCenterX', 'patrolCenterY', 'patrolRadius', 'detectionRadius', 'stepDuration'];
-export const NPC_FIELDS = ['name', 'gender', 'creature', 'x', 'y', 'z', 'step', 'direction', 'stepDuration'];
+export const NPC_FIELDS = ['name', 'gender', 'creature', 'x', 'y', 'z', 'step', 'direction', 'stepDuration', 'homeX', 'homeY', 'radius'];
 export const CORPSE_FIELDS = ['id', 'ownerId', 'name', 'x', 'y', 'z', 'step', 'color', 'type', 'lvl', 'creature', 'isPlayer', 'deathTime', 'decayTime', 'hasVolume', 'blocksMovement', 'movable', 'isCorpse', 'corpseCreature', 'corpseIsPlayer'];
 
 // Campos que placeCreature cuida (posição e animação do passo).

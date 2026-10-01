@@ -15,7 +15,7 @@ import { directionFromDelta } from '../utils/helpers.js';
 export const SPEECH_MAX_LENGTH = 120;
 export const HEAR_RANGE = 4;
 export const WELCOME_RANGE = 3;
-export const FOCUS_RANGE = 6;
+export const FOCUS_RANGE = HEAR_RANGE;
 export const FOCUS_IDLE_MS = 120000;
 export const WELCOME_COOLDOWN_MS = 60000;
 export const REPLY_DELAY_MS = 400;
@@ -45,6 +45,8 @@ export class NpcController {
       npc.nearby = new Set();
       npc.welcomed = new Map();
       npc.home = { x: spot.x, y: spot.y, z };
+      npc.homeX = spot.x;
+      npc.homeY = spot.y;
       npc.radius = def.radius ?? DEFAULT_RADIUS;
       npc.nextWalkAt = 0;
       sim.world.addCreature(npc);

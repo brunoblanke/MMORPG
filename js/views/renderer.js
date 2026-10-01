@@ -82,18 +82,19 @@ export class Renderer {
 
   // ================================================================================================================================================================================
   // drawTileHighlights
-  // Marcações de dev (patrulha, detecção, zona segura, caminho, alvo, hover, spawn). Desenhadas
+  // Marcações de dev (patrulha dos inimigos e área de passeio dos NPCs, detecção, zona segura, caminho, alvo, hover, spawn). Desenhadas
   // depois dos pisos e objetos, translúcidas, pra ficarem visíveis sobre eles.
   // Cada andar desenha só as suas: zonas dos inimigos daquele andar, zona
   // segura daquele andar e, no andar do player, caminho, alvo, hover e spawn.
 
-  drawTileHighlights(x, y, enemies, player, inputController, world, level, isPlayerLevel) {
+  drawTileHighlights(x, y, enemies, player, inputController, world, level, isPlayerLevel, npcs = []) {
     const walk = player.walk || { target: null, path: [] };
     const pos = this.gridToScreenWithOffset(x, y);
     const size = CONFIG.tileSize;
 
     let inPatrolZone = false;
     let inDetectionZone = false;
+    const inNpcArea = this.devMode && this.showPatrolAreas && npcs.some(npc => npc.isInWanderArea && npc.isInWanderArea(x, y));
 
     if (this.devMode) {
       if (this.showPatrolAreas || this.showDetectionAreas) {
@@ -113,7 +114,10 @@ export class Renderer {
     const isHover = this.devMode && isPlayerLevel && inputController.hoverTile && inputController.hoverTile.x === x && inputController.hoverTile.y === y;
     const isSpawn = this.devMode && isPlayerLevel && player && player.spawnX === x && player.spawnY === y;
 
-    if (inPatrolZone && this.devMode && this.showPatrolAreas) {
+    if (inNpcArea) {
+      this.ctx.fillStyle = "rgba(127, 212, 255, 0.16)";
+      this.ctx.fillRect(pos.x, pos.y, size, size);
+    } else if (inPatrolZone && this.devMode && this.showPatrolAreas) {
       this.ctx.fillStyle = "rgba(255, 220, 90, 0.14)";
       this.ctx.fillRect(pos.x, pos.y, size, size);
     } else if (inDetectionZone && this.devMode && this.showDetectionAreas) {
@@ -599,10 +603,11 @@ export class Renderer {
     const drawHighlights = (level) => {
       if (!this.devMode) return;
       const enemiesHere = gameState.enemies.filter(enemy => getEntityLevel(enemy) === level);
+      const npcsHere = (gameState.npcs || []).filter(npc => getEntityLevel(npc) === level);
       const isPlayerLevel = level === playerLevel;
       for (let y = visible.startY; y < visible.endY; y++) {
         for (let x = visible.startX; x < visible.endX; x++) {
-          this.drawTileHighlights(x, y, enemiesHere, gameState.player, gameState.inputController, gameState.world, level, isPlayerLevel);
+          this.drawTileHighlights(x, y, enemiesHere, gameState.player, gameState.inputController, gameState.world, level, isPlayerLevel, npcsHere);
         }
       }
     };
