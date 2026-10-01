@@ -6,7 +6,7 @@ import { STACK_OFFSET, ANIMATION_CYCLE_MS } from '../../../shared/constants.js';
 import { pickFrameRect } from '../../../shared/sprite-sheet.js';
 import { PLAYER_SPRITES, DEFAULT_GENDER } from '../../../shared/catalog.js';
 import { getAsset, spriteFrame, pieceType, interiorVariant, displayName, isItemType } from '../../../shared/assets.js';
-import { getStairTopKeys } from '../model/borders.js';
+import { getStairTopKeys, getRopeTopKeys } from '../model/borders.js';
 import { state } from '../model/state.js';
 import { restackItems } from '../../../shared/map-format.js';
 import { loadImage, setImageUpdateCallback } from './image-cache.js';
@@ -135,6 +135,7 @@ function drawLayer(layer, alpha, z) {
   ctx.globalAlpha = alpha;
   const labels = [];
   const stairTops = getStairTopKeys(z);
+  const ropeTops = getRopeTopKeys(z);
   // Topo de escada nunca tem piso (o jogo remove).
   const isVoid = (key) => stairTops.has(key) && !(layer[key] && layer[key].hole);
 
@@ -155,7 +156,7 @@ function drawLayer(layer, alpha, z) {
         for (const piece of cell.borders) drawBorderPiece(piece, px, py);
       }
 
-      if (stairTops.has(key)) drawStairTop(px, py);
+      if (stairTops.has(key) || ropeTops.has(key)) drawStairTop(px, py);
 
       if (cell.hole) drawPiece(cell.hole, px, py, '#000');
 

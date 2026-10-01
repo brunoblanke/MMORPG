@@ -3,18 +3,17 @@
 import { GameObject } from '../models/game-object.js';
 import { objectIdType, objectUse, openedAs, displayName, getAsset, splitType, isEntranceFolder } from '../../shared/assets.js';
 import { itemInfo, newItem, weightOf } from '../../shared/items.js';
-import { getHoleTarget, toLowerLevel } from '../../shared/stairs.js';
+import { getHoleTarget, toLowerLevel, toUpperLevel } from '../../shared/stairs.js';
 
 // Objetos do mapa que se usam (gerador → Objetos → Uso):
 //   placa     → o texto (editor) aparece no centro da tela;
 //   livro     → abre o texto numa janela (no chão ou carregado);
 //   bau-quest → dá os itens (editor) uma vez por player;
 //   corda     → marca de corda: com a corda, sobe pro andar de cima;
-//   pa        → monte que a pá abre em buraco (fecha depois de DUG_HOLE_MS);
+//   pa        → monte que a pá abre em buraco (fica aberto até o servidor reiniciar);
 //   descer    → bueiro: usar leva pro andar de baixo (pisar não).
 // Longe, o player anda até o lado e usa ao chegar.
 
-export const DUG_HOLE_MS = 60000;
 const MAP_USES = ['placa', 'livro', 'bau-quest', 'corda', 'pa', 'descer'];
 const CLIMB_OFFSETS = [[0, 1], [1, 1], [-1, 1], [1, 0], [-1, 0], [0, -1], [1, -1], [-1, -1]];
 
@@ -98,15 +97,17 @@ export class InteractionController {
 
   // ================================================================================================================================================================================================================================================
   // climb
-  // Da marca de corda pro andar de cima: o sqm ao sul do buraco (como no
-  // Tibia) ou, ocupado, outro em volta dele.
+  // Da marca de corda pro andar de cima: em volta do sqm acima dela
+  // (toUpperLevel: 1 ao norte e 1 a oeste, onde fica o buraco), o do sul
+  // primeiro, como no Tibia; ocupado, outro em volta.
 
   climb(player, spot) {
-    const upper = (spot.z || 0) + 1;
+    const above = toUpperLevel(spot.x, spot.y, spot.z || 0);
+    const upper = above.z;
     const { movement, world } = this.sim;
     for (const [dx, dy] of CLIMB_OFFSETS) {
-      const x = spot.x + dx;
-      const y = spot.y + dy;
+      const x = above.x + dx;
+      const y = above.y + dy;
       if (!movement.isInsideMap(x, y) || !world.hasFloorAt(x, y, upper)) continue;
       if (movement.isBlocked(x, y, upper) || world.getTransitionAt(x, y, upper)) continue;
       if (movement.useTransition(player, { id: 'corda', targetX: x, targetY: y, targetZ: upper })) {
@@ -171,7 +172,7 @@ export class InteractionController {
   // ================================================================================================================================================================================================================================================
   // dig
   // Abre o monte: vira buraco (desenho de "Abre como") que leva pro andar de
-  // baixo e fecha sozinho depois de DUG_HOLE_MS.
+  // baixo e fica aberto até o servidor reiniciar.
 
   dig(player, pile) {
     if (pile.dug || !openedAs(objectIdType(pile.id))) return false;
@@ -182,19 +183,7 @@ export class InteractionController {
     this.sim.world.registerTransition(hole);
     pile.dug = true;
     this.dugHoles.set(pile.id, hole);
-    this.sim.schedule((this.sim.time || 0) + DUG_HOLE_MS, () => this.closeHole(pile));
     return true;
-  }
-
-  // ================================================================================================================================================================================================================================================
-  // closeHole
-
-  closeHole(pile) {
-    const hole = this.dugHoles.get(pile.id);
-    if (!hole) return;
-    this.sim.world.unregisterTransition(hole);
-    this.dugHoles.delete(pile.id);
-    pile.dug = false;
   }
 
   // ================================================================================================================================================================================================================================================

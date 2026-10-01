@@ -98,7 +98,8 @@ export function serializeState(sim, playerId) {
       id: o.id, x: o.x, y: o.y, z: o.z, step: o.step, hasVolume: o.hasVolume, blocksMovement: o.blocksMovement,
       count: o.itemData ? o.itemData.count : o.count,
       splash: o.isSplash ? o.stage : undefined,
-      lit: o.itemData && o.itemData.lit ? true : undefined
+      lit: o.itemData && o.itemData.lit ? true : undefined,
+      fuel: o.itemData ? o.itemData.fuel : undefined
     })),
     you: me ? {
       target: me.target ? me.target.id : null,
@@ -311,6 +312,7 @@ function syncItems(mirror, incoming) {
     obj.step = data.step;
     obj.count = data.count;
     obj.lit = !!data.lit;
+    obj.fuel = data.fuel;
     if (obj.isSplash) obj.stage = data.splash;
   }
   for (const obj of [...mirror.objects]) {

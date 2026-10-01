@@ -20,7 +20,11 @@ export function describeItem(item) {
     info.speed && `Speed +${info.speed}`,
     info.size && `Vol ${info.size}`
   ].filter(Boolean);
-  const lines = [`Você vê ${name}${attrs.length ? ` (${attrs.join(', ')})` : ''}.`];
+  const lines = [`${name}${attrs.length ? ` (${attrs.join(', ')})` : ''}`];
+  if (info.burn) {
+    const left = Math.ceil((item.fuel ?? info.burn * 1000) / 60000);
+    lines.push(`${item.lit ? 'Acesa' : 'Apagada'}, queima por mais ${left} min.`);
+  }
   if (info.heal && info.heal.hp[1] > 0) lines.push(`Recupera ${info.heal.hp[0]}–${info.heal.hp[1]} de vida.`);
   if (info.heal && info.heal.mana[1] > 0) lines.push(`Recupera ${info.heal.mana[0]}–${info.heal.mana[1]} de mana.`);
   lines.push(`${item.count > 1 ? 'Pesam' : 'Pesa'} ${formatWeight(weightOf(item))} oz.`);
@@ -41,12 +45,11 @@ function formatWeight(oz) {
 export function describeEntity(entity, self = null) {
   if (entity.isCorpse) {
     const name = entity.isPlayer || entity.corpseIsPlayer ? entity.name : displayName(entity.creature || entity.corpseCreature);
-    return `Você vê o corpo de ${name || 'alguém'}.`;
+    return `Corpo de ${name || 'alguém'}`;
   }
-  if (entity === self) return `Você vê a si mesmo (Level ${entity.lvl}).`;
-  if (entity.isPlayer) return `Você vê ${entity.name} (Level ${entity.lvl}).`;
-  if (entity.isNpc) return `Você vê ${entity.name}.`;
-  return `Você vê ${displayName(entity.creature)}${entity.lvl ? ` (Level ${entity.lvl})` : ''}.`;
+  if (entity.isPlayer) return `${entity.name} (Level ${entity.lvl})`;
+  if (entity.isNpc) return entity.name;
+  return `${displayName(entity.creature)}${entity.lvl ? ` (Level ${entity.lvl})` : ''}`;
 }
 
 // ================================================================================================================================================================================================================================================
@@ -57,5 +60,5 @@ export function describeGroundObject(obj) {
   if (obj.isCorpse) return describeEntity(obj);
   const type = objectIdType(obj.id);
   if (!isItemType(type)) return null;
-  return describeItem(obj.itemData || { type, count: obj.count });
+  return describeItem(obj.itemData || { type, count: obj.count, lit: obj.lit, fuel: obj.fuel });
 }

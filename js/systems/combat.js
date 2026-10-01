@@ -194,7 +194,7 @@ export class CombatController {
   // ================================================================================================================================================================================================================================================
   // processPlayer
   // Com alvo, o player está sempre num destes estados:
-  //   perdeu o alvo (outro andar ou longe demais) → larga o alvo e avisa;
+  //   perdeu o alvo (outro andar ou longe demais) → larga o alvo;
   //   colado no alvo → ataca;
   //   seguir ligado → anda até ele (pausa enquanto o player faz um caminho
   //   próprio, como ir abrir uma caixa, e volta a seguir ao chegar);
@@ -211,7 +211,6 @@ export class CombatController {
 
     if (this.isTargetLost(player, target)) {
       player.target = null;
-      this.sim.emit({ type: 'message', playerId: player.id, text: 'Alvo perdido', kind: 'warn' });
       return;
     }
 

@@ -2,6 +2,7 @@
 
 import { state } from './state.js';
 import { getStairTop } from '../../../shared/stairs.js';
+import { objectUse } from '../../../shared/assets.js';
 import { refreshBordersAround, rebuildLayerBorders, getStairTopKeys as stairTopKeysBelow } from '../../../shared/floor-borders.js';
 
 // Bordas automáticas no estado do editor (regras em shared/floor-borders.js).
@@ -13,6 +14,24 @@ import { refreshBordersAround, rebuildLayerBorders, getStairTopKeys as stairTopK
 
 export function getStairTopKeys(z) {
   return stairTopKeysBelow(state.layers[z - 1], z - 1);
+}
+
+// ================================================================================================================================================================================================================================================
+// getRopeTopKeys
+// Sqms do andar z acima de uma marca de corda do andar z-1 (Uso corda): pra
+// onde a corda leva. Só marcação: o piso fica.
+
+export function getRopeTopKeys(z) {
+  const keys = new Set();
+  const below = state.layers[z - 1];
+  if (!below) return keys;
+  for (const [key, cell] of Object.entries(below)) {
+    if (!cell.objects.some(o => objectUse(o.type) === 'corda')) continue;
+    const [x, y] = key.split(',').map(Number);
+    const top = getStairTop(x, y, z - 1);
+    keys.add(`${top.x},${top.y}`);
+  }
+  return keys;
 }
 
 // ================================================================================================================================================================================================================================================

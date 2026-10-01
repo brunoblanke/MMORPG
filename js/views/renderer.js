@@ -209,8 +209,8 @@ export class Renderer {
   // Desenha o frame alinhado ao canto inferior direito do tile (sprites maiores que o tile crescem pra cima/esquerda).
 
   drawAnchoredSprite(image, frameRect, base, size, stackOffsetX, stackOffsetY, tint = null, outline = null) {
-    const drawX = base.x + size - frameRect.sw - stackOffsetX;
-    const drawY = base.y + size - frameRect.sh - stackOffsetY;
+    const drawX = Math.round(base.x + size - frameRect.sw - stackOffsetX);
+    const drawY = Math.round(base.y + size - frameRect.sh - stackOffsetY);
     if (outline) this.drawOutline(image, frameRect, drawX, drawY, outline);
     this.ctx.drawImage(
       image,
@@ -547,6 +547,7 @@ export class Renderer {
     this.frameTimestamp = performance.now();
     this.selectedTarget = gameState.player.target || null;
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.ctx.imageSmoothingEnabled = false;
     this.camera.update(gameState.player);
     const offset = this.camera.getOffset();
 
