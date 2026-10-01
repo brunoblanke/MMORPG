@@ -313,14 +313,15 @@ export class InventoryUI {
   // ================================================================================================================================================================================================================================================
   // withVitals
   // Vida e mana, skills e battle sempre existem (não fecham, só minimizam):
-  // a que falta no layout entra embaixo do inventário, nessa ordem.
+  // a que falta no layout entra embaixo do inventário, nessa ordem. Skills e
+  // battle entram minimizadas.
 
   withVitals(layout) {
     let after = 'inventory';
     for (const kind of ['vitals', 'skills', 'battle']) {
       if (![...layout.left, ...layout.right].some(w => w.kind === kind)) {
         const col = ['left', 'right'].find(c => layout[c].some(w => w.kind === after)) || 'right';
-        layout[col].splice(layout[col].findIndex(w => w.kind === after) + 1, 0, this.makeWindow(kind, null));
+        layout[col].splice(layout[col].findIndex(w => w.kind === after) + 1, 0, this.makeWindow(kind, null, { min: kind !== 'vitals' }));
       }
       after = kind;
     }

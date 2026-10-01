@@ -3,11 +3,25 @@
 import { displayName } from '../../shared/assets.js';
 import { drawTibiaText, healthColor } from './tibia-text.js';
 
-// Visual do Tibia: nome em negrito com contorno preto, na cor da vida, e
-// barra de HP_BAR_WIDTH × HP_BAR_HEIGHT com borda preta logo abaixo.
-const HP_BAR_WIDTH = 27;
-const HP_BAR_HEIGHT = 4;
+// Nome no estilo do Tibia (negrito, contorno preto, na cor da vida) e barra
+// com o mesmo visual da janela de battle (css/inventory.css): 3px, cantos
+// arredondados, verde/amarela/vermelha.
+const HP_BAR_HEIGHT = 3;
+const HP_BAR_BACK = '#12151b';
+const HP_HIGH = '#22c55e';
+const HP_MID = '#eab308';
+const HP_LOW = '#ef4444';
 const CORPSE_NAME_COLOR = '#a0a0a0';
+
+// ================================================================================================================================================================================================================================================
+// roundRect
+
+function roundRect(ctx, x, y, width, height, radius) {
+  ctx.beginPath();
+  if (ctx.roundRect) ctx.roundRect(x, y, width, height, radius);
+  else ctx.rect(x, y, width, height);
+  ctx.fill();
+}
 
 // ================================================================================================================================================================================================================================================
 // getEntityName
@@ -38,17 +52,19 @@ export function drawEntityOverlay(ctx, entity, base, stackOffsetX, stackOffsetY,
   const fraction = hasHp ? Math.max(0, Math.min(1, entity.currentHp / entity.maxHp)) : 1;
   const color = isCorpse || !hasHp ? CORPSE_NAME_COLOR : healthColor(fraction);
   const centerX = base.x + size / 2 - stackOffsetX;
-  const barX = Math.round(centerX - HP_BAR_WIDTH / 2);
-  const barY = Math.round(base.y - 14 - stackOffsetY);
+  const barX = base.x - stackOffsetX;
+  const barY = base.y - 15 - stackOffsetY;
 
-  drawTibiaText(ctx, name, centerX, barY - 2, color);
+  drawTibiaText(ctx, name, centerX, barY - 3, color);
 
   if (hasHp && !isCorpse) {
     ctx.save();
-    ctx.fillStyle = '#000000';
-    ctx.fillRect(barX - 1, barY - 1, HP_BAR_WIDTH + 2, HP_BAR_HEIGHT + 2);
-    ctx.fillStyle = color;
-    ctx.fillRect(barX, barY, Math.round(HP_BAR_WIDTH * fraction), HP_BAR_HEIGHT);
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+    roundRect(ctx, barX - 1, barY - 1, size + 2, HP_BAR_HEIGHT + 2, 2);
+    ctx.fillStyle = HP_BAR_BACK;
+    roundRect(ctx, barX, barY, size, HP_BAR_HEIGHT, 2);
+    ctx.fillStyle = fraction <= 0.25 ? HP_LOW : fraction <= 0.5 ? HP_MID : HP_HIGH;
+    if (fraction > 0) roundRect(ctx, barX, barY, Math.max(2, size * fraction), HP_BAR_HEIGHT, 2);
     ctx.restore();
   }
 
