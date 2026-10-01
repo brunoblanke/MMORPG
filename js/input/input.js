@@ -2,7 +2,7 @@
 
 import { CONFIG } from '../config.js';
 import { getRoofLevel } from '../views/draw-order.js';
-import { getEntityLevel } from '../core/geometry.js';
+import { getEntityLevel, getLevel } from '../core/geometry.js';
 import { objectUse, objectIdType } from '../../shared/assets.js';
 import { itemInfo } from '../../shared/items.js';
 
@@ -153,7 +153,8 @@ updateHoverEnemy(enemies, world, offset, player, deadBodies) {
   const stack = [...corpsesOnTile, ...objectsOnTile].sort(byTopmost);
   this.hoverMovable = stack.find(o => (o.isCorpse ? o.movable !== false : o.movable === true)) || null;
 
-  const enemiesSorted = enemies.filter(isVisible).sort(byTopmost);
+  const playerLevel = getLevel(player);
+  const enemiesSorted = enemies.filter(e => getLevel(e) === playerLevel).sort(byTopmost);
   for (const enemy of enemiesSorted) {
     if (this.renderer.isPointInCube(
       this.mouseX, this.mouseY,

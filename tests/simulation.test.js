@@ -279,7 +279,10 @@ test('alvo com seguir desligado: o player espera sem andar nem atacar e continua
 });
 
 test('alvo longe demais é perdido, com aviso', () => {
-  const { sim } = targetStill([4 + CONFIG.targetLoseRange + 2, 5, 0], { x: 4, y: 5, z: 0 });
+  const { sim, enemy } = targetStill([10, 5, 0], { x: 4, y: 5, z: 0 });
+  assert.equal(sim.player.target, enemy);
+  enemy.x = 4 + CONFIG.targetLoseRange + 2;
+  enemy.renderX = enemy.x;
   const events = runFor(sim, 200);
   assert.equal(sim.player.target, null);
   assert.ok(events.some(e => e.type === 'message' && e.text === 'Alvo perdido'));

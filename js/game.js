@@ -12,6 +12,7 @@ import { getSpritePaths } from './views/sprite-registry.js';
 import { loadAssets } from '../shared/assets.js';
 import { UI } from './views/ui.js';
 import { getRoofLevel } from './views/draw-order.js';
+import { getLevel } from './core/geometry.js';
 import { ParticleController } from './systems/particle-controller.js';
 import { InputController } from './input/input.js';
 import { NameModal } from './views/name-modal.js';
@@ -285,7 +286,8 @@ export class GameController {
     if (!this.player || !this.inputController) return;
     const offset = this.camera.getOffset();
     const { mouseX, mouseY } = this.inputController;
-    const entities = [...this.session.players, ...this.session.enemies.filter(e => e.isAlive())];
+    const level = getLevel(this.player);
+    const entities = [...this.session.players, ...this.session.enemies.filter(e => e.isAlive())].filter(e => getLevel(e) === level);
     const hit = entities.find(e => this.renderer.isPointInCube(mouseX, mouseY, e.renderX, e.renderY, offset, e.z || 0, e.step || 0));
     if (hit) {
       this.look(describeEntity(hit, this.player));
@@ -306,12 +308,15 @@ export class GameController {
   // ================================================================================================================================================================================================================================================
   // trySelectEnemyAtMouse
   // Clique em inimigo alterna a seleção de alvo. Retorna true se o clique acertou um inimigo.
+  // Só conta inimigo no andar do player (os de outros andares ficam na mesma
+  // posição de tela, mas não podem ser alvo).
 
   trySelectEnemyAtMouse() {
     const offset = this.camera.getOffset();
+    const level = getLevel(this.player);
 
     for (const enemy of this.session.enemies) {
-      if (!enemy.isAlive()) continue;
+      if (!enemy.isAlive() || getLevel(enemy) !== level) continue;
       const hit = this.renderer.isPointInCube(
         this.inputController.mouseX,
         this.inputController.mouseY,

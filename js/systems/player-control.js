@@ -208,7 +208,7 @@ export class PlayerControl {
   // ================================================================================================================================================================================================================================================
   // setAttackTarget
   // Escolher um inimigo segue ele se o modo seguir estiver ligado; null tira
-  // o alvo.
+  // o alvo. Inimigo em outro andar ou longe demais não vira alvo.
 
   setAttackTarget(player, targetId) {
     if (targetId === null || targetId === undefined) {
@@ -217,7 +217,7 @@ export class PlayerControl {
       return;
     }
     const enemy = this.sim.enemies.find(e => e.id === targetId && e.isAlive());
-    if (!enemy) return;
+    if (!enemy || this.sim.combat.isTargetLost(player, enemy)) return;
     player.target = enemy;
     player.autoFollow = player.followMode;
     console.log(`🎯 Alvo selecionado: ${enemy.id}`);
