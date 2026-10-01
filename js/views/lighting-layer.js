@@ -28,8 +28,9 @@ export class LightingLayer {
 
   // ================================================================================================================================================================================================================================================
   // prepare
-  // Luz geral e fontes de luz do andar level neste quadro. Devolve true se há
-  // escuridão a desenhar.
+  // Luz geral e fontes de luz do andar level neste quadro (e as de objetos
+  // em andares acima do chão que aparecem na tela, como uma fogueira no
+  // andar 1 vista da rua). Devolve true se há escuridão a desenhar.
 
   prepare(gameState, drawables, level, now) {
     this.ambient = ambientLight(now, level);
@@ -46,7 +47,7 @@ export class LightingLayer {
       if (radius > 0 && atLevel(creature)) this.sources.push({ x: Math.round(creature.renderX), y: Math.round(creature.renderY), radius, warm: true });
     }
     for (const obj of drawables) {
-      if (obj.level !== level || obj.isCreature || !obj.entity || !obj.entity.id) continue;
+      if ((obj.level !== level && !(obj.level > level && obj.level > 0)) || obj.isCreature || !obj.entity || !obj.entity.id) continue;
       const radius = itemInfo(objectIdType(obj.entity.id)).light;
       if (radius > 0 && (obj.entity.movable !== true || obj.entity.lit)) this.sources.push({ x: obj.x, y: obj.y, radius, warm: true });
     }
