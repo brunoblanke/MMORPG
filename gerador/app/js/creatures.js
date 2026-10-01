@@ -72,6 +72,9 @@ const NPC_TEXT_FIELDS = [
   ['tchau', document.getElementById('npcBye')]
 ];
 const npcRadiusEl = document.getElementById('npcRadius');
+const npcVocationEl = document.getElementById('npcVocation');
+const npcDestEl = document.getElementById('npcDest');
+const NPC_DEST_FIELDS = [['x', document.getElementById('npcDestX')], ['y', document.getElementById('npcDestY')], ['z', document.getElementById('npcDestZ')]];
 
 // ================================================================================================================================================================================================================================================
 // initCreatures
@@ -95,6 +98,11 @@ function initCreatures() {
   });
   for (const [, el] of NPC_TEXT_FIELDS) el.addEventListener('input', () => { creatures.dirty = true; });
   npcRadiusEl.addEventListener('input', () => { creatures.dirty = true; });
+  npcVocationEl.addEventListener('change', () => {
+    creatures.dirty = true;
+    showNpcFields();
+  });
+  for (const [, el] of NPC_DEST_FIELDS) el.addEventListener('input', () => { creatures.dirty = true; });
   document.getElementById('npcTopicAdd').onclick = () => {
     creatures.topics.push({ palavras: '', resposta: '' });
     creatures.dirty = true;
@@ -526,10 +534,12 @@ function lootValues() {
 // ================================================================================================================================================================================================================================================
 // showNpcFields
 // Com comportamento NPC, a conversa aparece e vida, XP, ataque e loot somem.
+// Escolhendo vocação, aparece o destino pra onde ele leva o player.
 
 function showNpcFields() {
   const isNpc = behaviorEl.value === 'npc';
   npcFieldsEl.hidden = !isNpc;
+  npcDestEl.hidden = !npcVocationEl.value;
   formEl.classList.toggle('is-npc', isNpc);
 }
 
@@ -566,6 +576,10 @@ function conversationValues() {
   const talk = Object.fromEntries(NPC_TEXT_FIELDS.map(([key, el]) => [key, el.value.trim()]));
   talk.raio = Math.max(0, Math.min(10, Math.floor(Number(npcRadiusEl.value)) || 0));
   talk.topicos = creatures.topics.map(t => ({ palavras: t.palavras.trim(), resposta: t.resposta.trim() })).filter(t => t.palavras && t.resposta);
+  if (npcVocationEl.value) {
+    const dest = Object.fromEntries(NPC_DEST_FIELDS.map(([key, el]) => [key, Math.floor(Number(el.value))]));
+    talk.vocacao = { destino: NPC_DEST_FIELDS.every(([key, el]) => el.value !== '' && Number.isFinite(dest[key])) ? dest : null };
+  }
   return talk;
 }
 
@@ -652,6 +666,9 @@ function openRecipe(recipe) {
   const talk = (recipe.propriedades || {}).conversa || {};
   for (const [key, el] of NPC_TEXT_FIELDS) el.value = talk[key] || '';
   npcRadiusEl.value = String(Number.isFinite(Number(talk.raio)) && talk.raio !== undefined ? talk.raio : 2);
+  npcVocationEl.value = talk.vocacao ? 'sim' : '';
+  const dest = (talk.vocacao && talk.vocacao.destino) || {};
+  for (const [key, el] of NPC_DEST_FIELDS) el.value = Number.isFinite(dest[key]) ? String(dest[key]) : (key === 'z' ? '0' : '');
   creatures.topics = Array.isArray(talk.topicos) ? talk.topicos.map(t => ({ palavras: t.palavras || '', resposta: t.resposta || '' })) : [];
   renderTopics();
   showNpcFields();

@@ -94,6 +94,19 @@ export class Simulation {
   }
 
   // ================================================================================================================================================================================================================================================
+  // teleportPlayer
+  // Leva o player pro sqm livre mais perto de (x, y, z), largando alvo e
+  // caminho. home: o lugar vira a casa dele (onde nasce ao morrer).
+
+  teleportPlayer(player, x, y, z, { home = false } = {}) {
+    const spot = this.findFreeSpot(x, y, z);
+    this.world.moveEntityTile(player, player.x, player.y, player.z || 0, spot.x, spot.y, z);
+    Object.assign(player, { x: spot.x, y: spot.y, z, step: spot.step, renderX: spot.x, renderY: spot.y, renderZ: z, renderStep: spot.step, isMoving: false, target: null });
+    this.control.clearWalk(player);
+    if (home) Object.assign(player, { spawnX: spot.x, spawnY: spot.y, spawnZ: z });
+  }
+
+  // ================================================================================================================================================================================================================================================
   // findFreeSpot
   // O sqm livre mais perto de (x, y, z) (findSpotNear). Sem nenhum até o
   // raio 10, devolve o próprio (x, y).

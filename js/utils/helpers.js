@@ -2,6 +2,7 @@
 
 import { CONFIG } from '../config.js';
 import { TICK_MS } from '../../shared/constants.js';
+import { vocationStats } from '../../shared/vocations.js';
 
 // ================================================================================================================================================================================================================================================
 // directionFromDelta
@@ -61,19 +62,12 @@ export function calculateStats(level) {
 
 // ================================================================================================================================================================================================================================================
 // playerStats
-// Progressão do Tibia (sem vocação): no nível 1, 150 de vida, 55 de mana e
-// 220 de velocidade; cada nível soma 5 de vida, 5 de mana e 2 de velocidade.
-// Ataque e defesa seguem a nossa regra.
+// Progressão do Tibia: vida, mana e cap pela vocação (shared/vocations.js) e
+// 220 de velocidade no nível 1, +2 por nível. Ataque e defesa vêm da arma, do
+// escudo, da armadura e dos skills (js/systems/combat.js), não do nível.
 
-export function playerStats(level) {
-  const gained = Math.max(0, level - 1);
-  return {
-    hp: 150 + gained * 5,
-    mana: 55 + gained * 5,
-    atk: 5 + level * 2,
-    def: 2 + level,
-    spd: 220 + gained * 2
-  };
+export function playerStats(level, vocation = 'none') {
+  return { ...vocationStats(level, vocation), spd: 220 + Math.max(0, level - 1) * 2 };
 }
 
 // ================================================================================================================================================================================================================================================

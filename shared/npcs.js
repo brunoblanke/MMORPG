@@ -10,12 +10,16 @@ import { getAsset, displayName, creatureBehavior } from './assets.js';
 // do gender), at ({ dx, dy, dz }) ou pos ({ x, y, z }), radius (até quantos
 // sqm ele passeia), welcome (o que diz a quem chega perto), greet e bye
 // ({ words, reply }: começam e encerram a conversa) e topics ([{ words,
-// reply }]: respondem durante a conversa). {nome} vira o nome do player. As
+// reply }]: respondem durante a conversa). vocation ({ destination }): ele
+// dá a vocação a quem tem o nível 8 e leva pro destino (js/systems/npcs.js →
+// talkVocation). {nome} vira o nome do player. As
 // palavras são comparadas sem acento e em minúsculas (normalizeSpeech).
 
 export const GREET_WORDS = ['oi', 'ola', 'oie', 'hi', 'hello', 'bom dia', 'boa tarde', 'boa noite'];
 export const BYE_WORDS = ['tchau', 'adeus', 'ate mais', 'bye'];
 export const DEFAULT_RADIUS = 2;
+export const YES_WORDS = ['sim', 'yes', 's'];
+export const NO_WORDS = ['nao', 'no', 'n'];
 
 // ================================================================================================================================================================================================================================================
 // normalizeSpeech
@@ -48,6 +52,16 @@ export function npcDefFromAsset(type, pos) {
     welcome: String(talk.boasVindas || '').trim(),
     greet: { words: GREET_WORDS, reply: String(talk.oi || '').trim() || 'Olá, {nome}!' },
     bye: { words: BYE_WORDS, reply: String(talk.tchau || '').trim() || 'Até mais, {nome}.' },
-    topics
+    topics,
+    vocation: talk.vocacao ? { destination: validDestination(talk.vocacao.destino) } : null
   };
+}
+
+// ================================================================================================================================================================================================================================================
+// validDestination
+// { x, y, z } inteiros, ou null.
+
+function validDestination(dest) {
+  if (!dest || ![dest.x, dest.y, dest.z].every(Number.isInteger)) return null;
+  return { x: dest.x, y: dest.y, z: dest.z };
 }

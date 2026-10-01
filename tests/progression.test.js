@@ -43,7 +43,7 @@ test('subir de nível guarda o XP que sobra e melhora os atributos', () => {
   assert.equal(player.lvl, 2);
   assert.equal(player.xp, 30);
   const stats = playerStats(2);
-  assert.deepEqual([player.maxHp, player.currentHp, player.atk, player.def, player.spd], [stats.hp, stats.hp, stats.atk, stats.def, stats.spd]);
+  assert.deepEqual([player.maxHp, player.currentHp, player.maxMana, player.spd], [stats.hp, stats.hp, stats.mana, stats.spd]);
 
   assert.equal(player.gainXp(500), 2);
   assert.equal(player.lvl, 4);
@@ -212,4 +212,20 @@ test('morrer tira dos skills a mesma fração da XP', () => {
   player.respawn({ x: 0, y: 0 });
   assert.deepEqual([player.skills.sword.lvl, player.skills.sword.tries], [10, 45]);
   assert.equal(player.skills.fist.lvl, 10);
+});
+
+test('vocação: vida, mana e cap do Tibia por nível e ritmo próprio dos skills', async () => {
+  const { vocationStats } = await import('../shared/vocations.js');
+  const { triesFor } = await import('../shared/skills.js');
+  assert.deepEqual(vocationStats(8, 'knight'), { hp: 185, mana: 90, cap: 470 });
+  assert.deepEqual(vocationStats(20, 'knight'), { hp: 365, mana: 150, cap: 770 });
+  assert.deepEqual(vocationStats(20, 'paladin'), { hp: 305, mana: 270, cap: 710 });
+  assert.deepEqual(vocationStats(20, 'sorcerer'), { hp: 245, mana: 450, cap: 590 });
+  assert.deepEqual(vocationStats(20, 'none'), { hp: 245, mana: 150, cap: 590 });
+  assert.equal(triesFor(11, 'sword', 'knight'), 55);
+  assert.equal(triesFor(11, 'distance', 'paladin'), 33);
+
+  const player = new Player({ x: 0, y: 0, lvl: 20 });
+  player.setVocation('knight');
+  assert.deepEqual([player.vocation, player.maxHp, player.maxMana], ['knight', 365, 150]);
 });

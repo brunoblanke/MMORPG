@@ -33,7 +33,6 @@ test('personagem volta com nível, XP, vida e lugar onde saiu', () => {
   assert.deepEqual([back.lvl, back.xp, back.currentHp, back.maxHp], [START + 1, 7, 40, playerStats(START + 1).hp]);
   assert.deepEqual([back.x, back.y, back.z], [15, 12, 0]);
   assert.deepEqual([back.spawnX, back.spawnY, back.spawnZ], [2, 2, 0]);
-  assert.equal(back.atk, playerStats(START + 1).atk);
 });
 
 test('lugar guardado ocupado: nasce no sqm livre mais perto', () => {

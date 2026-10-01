@@ -231,6 +231,8 @@ button:focus-visible, input:focus-visible, .slot:focus-visible{ outline:2px soli
 .npc-field{ min-width:100%; }
 .npc-grid{ display:flex; flex-wrap:wrap; gap:8px 12px; }
 .npc-topics{ display:flex; flex-direction:column; gap:4px; }
+.npc-dest-row{ display:flex; gap:4px; }
+.npc-dest-row input{ width:72px; }
 .npc-topic{ display:flex; align-items:center; gap:4px; }
 .npc-topic input{ width:auto; }
 .npc-topic .npc-words{ width:200px; }

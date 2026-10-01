@@ -6,20 +6,22 @@
 // ainda não sobem (magia e pesca vêm depois).
 // Progressão do Tibia: pra passar do nível n pro n+1 são A × B^(n − 10)
 // tentativas (magic level: mana gasta, 1600 × B^n). A é do skill; B é da
-// vocação — o player não tem vocação, então vale a "None" do Tibia (TFS).
+// vocação (shared/vocations.js → skillGrowth).
+
+import { skillGrowth } from './vocations.js';
 
 export const SKILL_KEYS = ['fist', 'club', 'sword', 'axe', 'distance', 'shielding', 'fishing'];
 export const SKILL_START = 10;
 export const MAGIC_START = 0;
 export const SKILL_PROGRESSION = {
-  magic: { base: 1600, growth: 4.0, offset: 0 },
-  fist: { base: 50, growth: 1.5, offset: 10 },
-  club: { base: 50, growth: 2.0, offset: 10 },
-  sword: { base: 50, growth: 2.0, offset: 10 },
-  axe: { base: 50, growth: 2.0, offset: 10 },
-  distance: { base: 30, growth: 2.0, offset: 10 },
-  shielding: { base: 100, growth: 1.5, offset: 10 },
-  fishing: { base: 20, growth: 1.1, offset: 10 }
+  magic: { base: 1600, offset: 0 },
+  fist: { base: 50, offset: 10 },
+  club: { base: 50, offset: 10 },
+  sword: { base: 50, offset: 10 },
+  axe: { base: 50, offset: 10 },
+  distance: { base: 30, offset: 10 },
+  shielding: { base: 100, offset: 10 },
+  fishing: { base: 20, offset: 10 }
 };
 
 // ================================================================================================================================================================================================================================================
@@ -34,11 +36,11 @@ export function newSkills() {
 
 // ================================================================================================================================================================================================================================================
 // triesFor
-// Quantos usos pra passar do nível lvl pro seguinte no skill key.
+// Quantos usos pra passar do nível lvl pro seguinte no skill key, na vocação.
 
-export function triesFor(lvl, key = 'sword') {
-  const { base, growth, offset } = SKILL_PROGRESSION[key] || SKILL_PROGRESSION.sword;
-  return Math.max(1, Math.round(base * Math.pow(growth, Math.max(0, lvl - offset))));
+export function triesFor(lvl, key = 'sword', vocation = 'none') {
+  const { base, offset } = SKILL_PROGRESSION[key] || SKILL_PROGRESSION.sword;
+  return Math.max(1, Math.round(base * Math.pow(skillGrowth(key, vocation), Math.max(0, lvl - offset))));
 }
 
 // ================================================================================================================================================================================================================================================
@@ -46,17 +48,17 @@ export function triesFor(lvl, key = 'sword') {
 // Um uso do skill: soma a tentativa, sobe de nível quando completa e acerta o
 // % até o próximo. Devolve true se subiu.
 
-export function addSkillTry(skills, key) {
+export function addSkillTry(skills, key, vocation = 'none') {
   const entry = skills[key];
   if (!entry) return false;
   entry.tries = (entry.tries || 0) + 1;
   let advanced = false;
-  while (entry.tries >= triesFor(entry.lvl, key)) {
-    entry.tries -= triesFor(entry.lvl, key);
+  while (entry.tries >= triesFor(entry.lvl, key, vocation)) {
+    entry.tries -= triesFor(entry.lvl, key, vocation);
     entry.lvl++;
     advanced = true;
   }
-  entry.pct = Math.min(99, Math.floor(entry.tries / triesFor(entry.lvl, key) * 100));
+  entry.pct = Math.min(99, Math.floor(entry.tries / triesFor(entry.lvl, key, vocation) * 100));
   return advanced;
 }
 
@@ -65,23 +67,23 @@ export function addSkillTry(skills, key) {
 // Na morte: cada skill perde a fração (0 a 1) de todos os usos que juntou
 // desde o começo; pode cair de nível.
 
-export function loseSkills(skills, fraction) {
+export function loseSkills(skills, fraction, vocation = 'none') {
   if (!(fraction > 0)) return;
   for (const key of ['magic', ...SKILL_KEYS]) {
     const entry = skills[key];
     if (!entry) continue;
     const start = key === 'magic' ? MAGIC_START : SKILL_START;
     let total = entry.tries || 0;
-    for (let lvl = start; lvl < entry.lvl; lvl++) total += triesFor(lvl, key);
+    for (let lvl = start; lvl < entry.lvl; lvl++) total += triesFor(lvl, key, vocation);
     let left = Math.floor(total * (1 - Math.min(1, fraction)));
     let lvl = start;
-    while (left >= triesFor(lvl, key)) {
-      left -= triesFor(lvl, key);
+    while (left >= triesFor(lvl, key, vocation)) {
+      left -= triesFor(lvl, key, vocation);
       lvl++;
     }
     entry.lvl = lvl;
     entry.tries = left;
-    entry.pct = Math.min(99, Math.floor(left / triesFor(lvl, key) * 100));
+    entry.pct = Math.min(99, Math.floor(left / triesFor(lvl, key, vocation) * 100));
   }
 }
 
@@ -89,14 +91,14 @@ export function loseSkills(skills, fraction) {
 // loadSkills
 // Skills guardados de volta; o que faltar ou vier fora do lugar volta ao começo.
 
-export function loadSkills(saved) {
+export function loadSkills(saved, vocation = 'none') {
   const skills = newSkills();
   if (!saved || typeof saved !== 'object') return skills;
   for (const key of ['magic', ...SKILL_KEYS]) {
     const entry = saved[key];
     if (!entry || !Number.isInteger(entry.lvl) || entry.lvl < 0) continue;
-    const tries = Number.isInteger(entry.tries) && entry.tries >= 0 ? Math.min(entry.tries, triesFor(entry.lvl, key) - 1) : 0;
-    skills[key] = { lvl: entry.lvl, tries, pct: Math.min(99, Math.floor(tries / triesFor(entry.lvl, key) * 100)) };
+    const tries = Number.isInteger(entry.tries) && entry.tries >= 0 ? Math.min(entry.tries, triesFor(entry.lvl, key, vocation) - 1) : 0;
+    skills[key] = { lvl: entry.lvl, tries, pct: Math.min(99, Math.floor(tries / triesFor(entry.lvl, key, vocation) * 100)) };
   }
   return skills;
 }
