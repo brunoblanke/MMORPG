@@ -37,9 +37,8 @@ export class Player extends Entity {
   // ================================================================================================================================================================================================================================================
   // gainXp
   // Soma o XP e sobe quantos níveis ele pagar; o que sobra continua contando.
-  // Cada nível novo recalcula vida, ataque, defesa e velocidade. Como no
-  // Tibia, a vida e a mana atuais só ganham o que o máximo aumentou (não
-  // enchem). Devolve quantos níveis subiu.
+  // Cada nível novo recalcula vida, ataque, defesa e velocidade e enche a
+  // vida; a mana só ganha o que o máximo aumentou. Devolve quantos níveis subiu.
 
   gainXp(amount) {
     this.xp += amount;
@@ -49,11 +48,10 @@ export class Player extends Entity {
       this.xp -= this.nextLevelXp;
       this.lvl++;
       levels++;
-      const oldHp = this.hp;
       const oldMana = this.maxMana;
       const mana = this.mana;
       this.applyLevelStats();
-      this.currentHp = Math.min(this.hp, this.currentHp + Math.max(0, this.hp - oldHp));
+      this.currentHp = this.hp;
       this.mana = Math.min(this.maxMana, mana + Math.max(0, this.maxMana - oldMana));
     }
     return levels;
