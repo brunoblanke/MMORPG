@@ -133,6 +133,7 @@ export function serializeMapFromLayers(layerOrder, layers, GRID) {
   const objetosData = [];
   const transicoesData = [];
   const enemyData = [];
+  const npcData = [];
   const safeZoneData = [];
   let spawn = null;
 
@@ -182,6 +183,10 @@ export function serializeMapFromLayers(layerOrder, layers, GRID) {
           enemyData.push([x, y, z, cell.enemy.lvl, cell.enemy.spriteSize, cell.enemy.type]);
         }
 
+        if (cell.npc) {
+          npcData.push([cell.npc.type, x, y, z]);
+        }
+
         if (cell.spawn && !spawn) {
           spawn = { x, y, z };
         }
@@ -193,7 +198,7 @@ export function serializeMapFromLayers(layerOrder, layers, GRID) {
     }
   });
 
-  return { version: MAP_FORMAT_VERSION, objetosData, transicoesData, enemyData, safeZoneData, spawn };
+  return { version: MAP_FORMAT_VERSION, objetosData, transicoesData, enemyData, npcData, safeZoneData, spawn };
 }
 
 // ================================================================================================================================================================================================================================================
@@ -203,7 +208,7 @@ function makeEmptyLayerCells(GRID) {
   const cells = {};
   for (let y = 0; y < GRID; y++) {
     for (let x = 0; x < GRID; x++) {
-      cells[`${x},${y}`] = { floor: null, floorTop: null, hole: null, borders: [], objects: [], enemy: null, spawn: false, safe: false };
+      cells[`${x},${y}`] = { floor: null, floorTop: null, hole: null, borders: [], objects: [], enemy: null, npc: null, spawn: false, safe: false };
     }
   }
   return cells;
@@ -215,7 +220,7 @@ function makeEmptyLayerCells(GRID) {
 export function buildLayersFromMapData(mapData, GRID) {
   const layers = {};
   const layerOrder = [];
-  const stats = { floor: 0, border: 0, wall: 0, stairs: 0, item: 0, enemy: 0, safe: 0, outOfRange: 0, spawnFound: false };
+  const stats = { floor: 0, border: 0, wall: 0, stairs: 0, item: 0, enemy: 0, npc: 0, safe: 0, outOfRange: 0, spawnFound: false };
 
   const ensureLayer = (z) => {
     if (!layers[z]) {
@@ -267,6 +272,13 @@ export function buildLayersFromMapData(mapData, GRID) {
     ensureLayer(z);
     layers[z][`${x},${y}`].enemy = { type, lvl, spriteSize };
     stats.enemy++;
+  });
+
+  (mapData.npcData || []).forEach(([type, x, y, z]) => {
+    if (!inRange(x, y)) { stats.outOfRange++; return; }
+    ensureLayer(z);
+    layers[z][`${x},${y}`].npc = { type };
+    stats.npc++;
   });
 
   (mapData.safeZoneData || []).forEach(([x, y, z]) => {

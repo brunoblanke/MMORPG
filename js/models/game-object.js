@@ -3,7 +3,7 @@
 import { randEnemyColor } from '../utils/helpers.js';
 import { Enemy } from './enemy.js';
 import { computeBorderPieces } from '../../shared/floor-variant.js';
-import { isFloorType, isHoleType, isEntranceFolder, objectUse, objectIdType, splitType, pieceType, interiorVariant, getAsset, floorHasPiece } from '../../shared/assets.js';
+import { isFloorType, isHoleType, isEntranceFolder, objectUse, objectIdType, splitType, pieceType, interiorVariant, getAsset, floorHasPiece, creatureBehavior } from '../../shared/assets.js';
 import { collectObjectDescriptors, collectEnemyDescriptors } from '../../shared/map-format.js';
 import { getStairTop, getStairTopTarget, getHoleTarget } from '../../shared/stairs.js';
 import { parseBorderType, hasSavedBorders, mergeSavedInnerCorners } from '../../shared/floor-borders.js';
@@ -307,7 +307,7 @@ export function generateOrganicFloorArea(minX, maxX, minY, maxY, iterations = 3,
 export function generateEnemies(mapData) {
   const enemies = [];
 
-  collectEnemyDescriptors(mapData).forEach((descriptor, i) => {
+  collectEnemyDescriptors(mapData).filter(descriptor => creatureBehavior(descriptor.type) !== 'npc').forEach((descriptor, i) => {
     const enemy = new Enemy({
       id: "ini" + (i + 1),
       type: "enemy",

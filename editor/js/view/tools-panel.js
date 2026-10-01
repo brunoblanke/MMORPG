@@ -4,7 +4,7 @@ import { state, TOOLS } from '../model/state.js';
 import { FLOOR_MIN, FLOOR_MAX, GROUND_FLOOR } from '../../../shared/constants.js';
 import { scheduleRender } from './canvas-renderer.js';
 import { BORDER_VARIANTS } from '../../../shared/floor-borders.js';
-import { listAssets, pieceType, splitType, displayName, isStairsFolder, isEntranceFolder, isItemType, isWallType, WALL_PIECES, WALL_PIECE_NAMES } from '../../../shared/assets.js';
+import { listAssets, creatureBehavior, pieceType, splitType, displayName, isStairsFolder, isEntranceFolder, isItemType, isWallType, WALL_PIECES, WALL_PIECE_NAMES } from '../../../shared/assets.js';
 import { setThumb } from './sprite-thumb.js';
 import { closeSelectPanel } from './forms.js';
 
@@ -58,7 +58,7 @@ function layerHasContent(z) {
   if (!layer) return false;
   for (const key in layer) {
     const cell = layer[key];
-    if (cell.floor || cell.floorTop || cell.hole || cell.borders.length || cell.objects.length || cell.enemy || cell.spawn || cell.safe) return true;
+    if (cell.floor || cell.floorTop || cell.hole || cell.borders.length || cell.objects.length || cell.enemy || cell.npc || cell.spawn || cell.safe) return true;
   }
   return false;
 }
@@ -87,7 +87,8 @@ export function choosePaintDefaults() {
   if (!state.stairsPaint) state.stairsPaint = first(listAssets('objetos', a => isStairsFolder(a.id)));
   if (!state.holePaint) state.holePaint = first(listAssets('objetos', a => isEntranceFolder(a.id)));
   if (!state.itemPaint) state.itemPaint = first(listAssets('objetos', a => isItemType(a.id)));
-  if (!state.enemyPaint) state.enemyPaint = first(listAssets('criaturas'));
+  if (!state.enemyPaint) state.enemyPaint = first(listAssets('criaturas', a => creatureBehavior(a.id) !== 'npc'));
+  if (!state.npcPaint) state.npcPaint = first(listAssets('criaturas', a => creatureBehavior(a.id) === 'npc'));
   if (!state.borderPaint && floors[0]) state.borderPaint = { type: floors[0].id, variant: 'n' };
 }
 
@@ -163,6 +164,7 @@ function accordionGroups(tool) {
   if (tool.id === 'stairs') return { empty: 'Nenhuma escada gerada (Estrutura › Escadas).', groups: byFolder(listAssets('objetos', a => isStairsFolder(a.id)), simple) };
   if (tool.id === 'hole') return { empty: 'Nenhuma entrada gerada (Estrutura › Entradas).', groups: byFolder(listAssets('objetos', a => isEntranceFolder(a.id)), simple) };
   if (tool.id === 'item') return { empty: 'Nenhum objeto gerado.', groups: byFolder(listAssets('objetos', a => isItemType(a.id)), simple) };
+  if (tool.id === 'npc') return { empty: 'Nenhum NPC gerado (Criaturas, comportamento NPC).', groups: byFolder(listAssets('criaturas', a => creatureBehavior(a.id) === 'npc'), simple) };
   return { empty: '', groups: [] };
 }
 

@@ -14,11 +14,12 @@ import { brushCells, MAX_BRUSH } from '../model/brush.js';
 // eraseTopmost
 //
 // A borracha tira só o que está mais em cima no sqm a cada passada (um traço
-// passa uma vez por célula): criatura, respawn, objetos do topo pra baixo,
+// passa uma vez por célula): NPC, criatura, respawn, objetos do topo pra baixo,
 // bordas (da mais nova pra mais antiga), buraco, piso de cima e, por último,
 // o piso de baixo. Devolve o que tirou.
 
 function eraseTopmost(cell) {
+  if (cell.npc) { cell.npc = null; return 'npc'; }
   if (cell.enemy) { cell.enemy = null; return 'enemy'; }
   if (cell.spawn) { cell.spawn = false; return 'spawn'; }
   if (cell.objects.length > 0) { return isStairsFolder(cell.objects.pop().type) ? 'stairs' : 'object'; }
@@ -59,6 +60,13 @@ export function applyTool(x, y, clientX, clientY) {
   }
   if (state.tool === 'enemy') {
     openEnemyForm(x, y, clientX, clientY);
+    return;
+  }
+  if (state.tool === 'npc') {
+    const cell = state.layers[state.activeZ][`${x},${y}`];
+    if (state.npcPaint) cell.npc = { type: state.npcPaint };
+    updateStats();
+    scheduleRender();
     return;
   }
   if (state.tool === 'spawn') {
@@ -151,7 +159,7 @@ canvas.addEventListener('mousemove', (evt) => {
     scheduleRender();
   }
   if (!state.painting) return;
-  if (state.tool === 'stairs' || state.tool === 'enemy' || state.tool === 'spawn' || state.tool === 'select') return;
+  if (state.tool === 'stairs' || state.tool === 'enemy' || state.tool === 'npc' || state.tool === 'spawn' || state.tool === 'select') return;
   const cell = cellFromEvent(evt);
   if (!cell) return;
   applyTool(cell.x, cell.y, evt.clientX, evt.clientY);

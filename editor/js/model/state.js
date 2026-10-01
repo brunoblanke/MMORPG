@@ -10,7 +10,7 @@ export function makeEmptyLayer() {
   const cells = {};
   for (let y = 0; y < GRID; y++) {
     for (let x = 0; x < GRID; x++) {
-      cells[`${x},${y}`] = { floor: null, floorTop: null, hole: null, borders: [], objects: [], enemy: null, spawn: false, safe: false };
+      cells[`${x},${y}`] = { floor: null, floorTop: null, hole: null, borders: [], objects: [], enemy: null, npc: null, spawn: false, safe: false };
     }
   }
   return cells;
@@ -43,6 +43,7 @@ export const state = {
   holePaint: null,
   itemPaint: null,
   enemyPaint: null,
+  npcPaint: null,
   borderPaint: null,
   openAccordion: null,
   showBorders: true,
@@ -65,6 +66,7 @@ export const TOOLS = [
   { id:'border-eraser', label:'Tirar bordas (a de cima)' },
   { id:'item', label:'Objeto', paint:'itemPaint' },
   { id:'enemy', label:'Criatura' },
+  { id:'npc', label:'NPC', paint:'npcPaint' },
   { id:'spawn', label:'Respawn do jogador' },
   { id:'safe', label:'Zona segura (liga/desliga)' },
   { id:'eraser', label:'Borracha (tira o do topo)' }

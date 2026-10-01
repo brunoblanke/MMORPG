@@ -2,6 +2,7 @@
 
 import { Npc } from '../models/npc.js';
 import { getMapSpawn } from '../../shared/map-format.js';
+import { DEFAULT_RADIUS, normalizeSpeech, npcDefFromAsset } from '../../shared/npcs.js';
 import { getLevel } from '../core/geometry.js';
 import { directionFromDelta } from '../utils/helpers.js';
 
@@ -18,7 +19,6 @@ export const FOCUS_RANGE = 6;
 export const FOCUS_IDLE_MS = 120000;
 export const WELCOME_COOLDOWN_MS = 60000;
 export const REPLY_DELAY_MS = 400;
-export const WANDER_RADIUS = 2;
 export const WANDER_PAUSE_MIN_MS = 1500;
 export const WANDER_PAUSE_MAX_MS = 4000;
 const DIRECTIONS = [[0, -1], [1, 0], [0, 1], [-1, 0], [1, -1], [1, 1], [-1, 1], [-1, -1]];
@@ -27,34 +27,30 @@ export class NpcController {
 
   // ================================================================================================================================================================================================================================================
   // constructor
-  // Põe cada NPC (defs: shared/npcs.js) no sqm livre mais perto do lugar
-  // dele (em relação ao spawn).
+  // Os NPCs fixos (defs: shared/npcs.js) e os postos no mapa pelo editor
+  // (npcData: [tipo, x, y, z], criados no gerador), cada um no sqm livre mais
+  // perto do lugar dele.
 
   constructor(sim, defs) {
     this.sim = sim;
-    this.defs = new Map(defs.map(def => [def.id, def]));
+    const placed = (sim.mapData.npcData || []).map(([type, x, y, z]) => npcDefFromAsset(type, { x, y, z: z || 0 })).filter(Boolean);
+    const all = [...defs, ...placed];
+    this.defs = new Map(all.map(def => [def.id, def]));
     const spawn = getMapSpawn(sim.mapData, { x: 132, y: 145, z: 0 });
-    sim.npcs = defs.map(def => {
-      const z = spawn.z + (def.at.dz || 0);
-      const spot = sim.findFreeSpot(spawn.x + def.at.dx, spawn.y + def.at.dy, z);
-      const npc = new Npc({ id: `npc-${def.id}`, defId: def.id, name: def.name, gender: def.gender, x: spot.x, y: spot.y, z, step: spot.step });
+    sim.npcs = all.map(def => {
+      const at = def.pos || { x: spawn.x + def.at.dx, y: spawn.y + def.at.dy, z: spawn.z + (def.at.dz || 0) };
+      const z = at.z;
+      const spot = sim.findFreeSpot(at.x, at.y, z);
+      const npc = new Npc({ id: `npc-${def.id}`, defId: def.id, name: def.name, gender: def.gender, creature: def.creature, x: spot.x, y: spot.y, z, step: spot.step });
       npc.focus = new Map();
       npc.nearby = new Set();
       npc.welcomed = new Map();
       npc.home = { x: spot.x, y: spot.y, z };
-      npc.radius = def.radius ?? WANDER_RADIUS;
+      npc.radius = def.radius ?? DEFAULT_RADIUS;
       npc.nextWalkAt = 0;
       sim.world.addCreature(npc);
       return npc;
     });
-  }
-
-  // ================================================================================================================================================================================================================================================
-  // normalize
-  // Minúsculas, sem acento nem pontuação, espaços simples.
-
-  normalize(text) {
-    return String(text).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9 ]+/g, ' ').replace(/\s+/g, ' ').trim();
   }
 
   // ================================================================================================================================================================================================================================================
@@ -99,7 +95,7 @@ export class NpcController {
     const text = String(raw ?? '').replace(/\s+/g, ' ').trim().slice(0, SPEECH_MAX_LENGTH);
     if (!text) return;
     this.speak(player, text);
-    const heard = this.normalize(text);
+    const heard = normalizeSpeech(text);
     for (const npc of this.sim.npcs) {
       if (this.distanceTo(npc, player) <= HEAR_RANGE) this.hear(npc, player, heard);
     }

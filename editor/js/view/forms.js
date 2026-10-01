@@ -1,6 +1,6 @@
 // js/view/forms.js
 
-import { getAsset, listAssets, displayName, objectUse } from '../../../shared/assets.js';
+import { getAsset, listAssets, displayName, objectUse, creatureBehavior } from '../../../shared/assets.js';
 import { state } from '../model/state.js';
 import { scheduleRender } from './canvas-renderer.js';
 import { updateStats } from './tools-panel.js';
@@ -53,7 +53,7 @@ export function refreshCreatureOptions() {
   const current = select.value;
   select.innerHTML = '';
   const groups = new Map();
-  for (const asset of listAssets('criaturas')) {
+  for (const asset of listAssets('criaturas', a => creatureBehavior(a.id) !== 'npc')) {
     const label = asset.rotulo.split(' › ').pop();
     if (!groups.has(label)) {
       const optgroup = document.createElement('optgroup');
