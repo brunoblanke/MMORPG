@@ -8,7 +8,7 @@ import { getAsset, objectIdType, openedAs } from '../../shared/assets.js';
 import { stackFrame } from '../../shared/items.js';
 import { drawTibiaText } from './tibia-text.js';
 
-const MESSAGE_COLORS = { info: '#00f000', warn: '#f0f000', danger: '#f83030' };
+const MESSAGE_COLORS = { info: '#5fe35f', warn: '#ffd84a', danger: '#ff4a4a' };
 
 const TINT_HIT = { color: '#ff2a2a', alpha: 0.55 };
 const TINT_ENEMY_HOVER = { color: '#ff2a2a', alpha: 0.35 };

@@ -3,14 +3,11 @@
 import { displayName } from '../../shared/assets.js';
 import { drawTibiaText, healthColor } from './tibia-text.js';
 
-// Nome no estilo do Tibia (negrito, contorno preto, na cor da vida) e barra
-// com o mesmo visual da janela de battle (css/inventory.css): 3px, cantos
-// arredondados, verde/amarela/vermelha.
+// Nome no estilo do Tibia (negrito, contorno preto) e barra com o mesmo
+// visual da janela de battle (css/inventory.css): 3px, cantos arredondados;
+// os dois na cor da vida (healthColor: verde/amarela/vermelha).
 const HP_BAR_HEIGHT = 3;
 const HP_BAR_BACK = '#12151b';
-const HP_HIGH = '#22c55e';
-const HP_MID = '#eab308';
-const HP_LOW = '#ef4444';
 const CORPSE_NAME_COLOR = '#a0a0a0';
 
 // ================================================================================================================================================================================================================================================
@@ -63,7 +60,7 @@ export function drawEntityOverlay(ctx, entity, base, stackOffsetX, stackOffsetY,
     roundRect(ctx, barX - 1, barY - 1, size + 2, HP_BAR_HEIGHT + 2, 2);
     ctx.fillStyle = HP_BAR_BACK;
     roundRect(ctx, barX, barY, size, HP_BAR_HEIGHT, 2);
-    ctx.fillStyle = fraction <= 0.25 ? HP_LOW : fraction <= 0.5 ? HP_MID : HP_HIGH;
+    ctx.fillStyle = color;
     if (fraction > 0) roundRect(ctx, barX, barY, Math.max(2, size * fraction), HP_BAR_HEIGHT, 2);
     ctx.restore();
   }

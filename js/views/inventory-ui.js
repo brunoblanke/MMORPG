@@ -286,7 +286,8 @@ export class InventoryUI {
 
   // ================================================================================================================================================================================================================================================
   // initialLayout
-  // O layout guardado no personagem ou, sem ele, o inventário e a mochila à direita.
+  // O layout guardado no personagem ou, sem ele, o inventário à direita (a
+  // mochila começa fechada).
 
   initialLayout(view) {
     const layout = { left: [], right: [] };
@@ -305,8 +306,6 @@ export class InventoryUI {
       if ([...layout.left, ...layout.right].some(w => w.kind === 'inventory')) return this.withVitals(layout);
     }
     layout.right.push(this.makeWindow('inventory', null));
-    const bag = view.equip.mochila;
-    if (bag && bag.items) layout.right.push(this.makeWindow('container', bag.uid, { rows: 3 }));
     return this.withVitals(layout);
   }
 
@@ -688,8 +687,8 @@ export class InventoryUI {
     const hpPct = pctOf(stats.hp, stats.maxHp);
     const free = Math.max(0, cap.max - cap.used);
     const body = [
+      line('xp', 'XP', fmt(stats.experience)),
       line('level', 'Level', stats.level, stats.levelPct),
-      line('xp', 'XP', fmt(stats.experience), stats.levelPct),
       '<div class="inv-sksep"></div>',
       line('hp', 'Hit Points', fmt(stats.hp), hpPct, `hp${hpPct <= 25 ? ' low' : hpPct <= 50 ? ' mid' : ''}`),
       line('mana', 'Mana', fmt(stats.mana), pctOf(stats.mana, stats.maxMana), 'mp'),

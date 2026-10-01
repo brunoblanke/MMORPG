@@ -27,13 +27,10 @@ export function drawTibiaText(ctx, text, x, y, color) {
 
 // ================================================================================================================================================================================================================================================
 // healthColor
-// Cor do nome e da barra pela vida, nas faixas do Tibia.
+// Cor do nome pela vida: a mesma da barra e da janela de battle.
 
 export function healthColor(fraction) {
-  if (fraction > 0.92) return '#00c000';
-  if (fraction > 0.6) return '#60c060';
-  if (fraction > 0.3) return '#c0c000';
-  if (fraction > 0.08) return '#c03030';
-  if (fraction > 0.03) return '#c00000';
-  return '#600000';
+  if (fraction <= 0.25) return '#ef4444';
+  if (fraction <= 0.5) return '#eab308';
+  return '#22c55e';
 }
