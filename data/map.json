@@ -41112,13 +41112,13 @@
       12451
     ],
     [
-      "estrutura/natureza/cama-palha-norte",
+      "estrutura/natureza/cama-acampamento-norte",
       186,
       217,
       -1,
       0,
       false,
-      false,
+      true,
       true
     ],
     [
@@ -41798,13 +41798,13 @@
       12452
     ],
     [
-      "estrutura/natureza/cama-palha-sul",
+      "estrutura/natureza/cama-acampamento-sul",
       186,
       218,
       -1,
       0,
       false,
-      false,
+      true,
       true
     ],
     [
@@ -42529,7 +42529,29 @@
       0,
       true,
       false,
-      false
+      false,
+      null,
+      null,
+      {
+        "itens": [
+          {
+            "tipo": "itens/comidas/bread",
+            "count": 3
+          },
+          {
+            "tipo": "itens/aneis/ring-of-healing",
+            "count": 1
+          },
+          {
+            "tipo": "itens/liquidos/health-potion",
+            "count": 3
+          },
+          {
+            "tipo": "itens/clavas/mace",
+            "count": 1
+          }
+        ]
+      }
     ],
     [
       "itens/liquidos/yellow-bottle",
@@ -42816,6 +42838,16 @@
       -1,
       0,
       false,
+      false,
+      false
+    ],
+    [
+      "itens/produtos-de-criaturas/spider-silk",
+      199,
+      219,
+      -1,
+      0,
+      true,
       false,
       false
     ],
@@ -43704,6 +43736,16 @@
       -1,
       0,
       false,
+      false,
+      false
+    ],
+    [
+      "itens/produtos-de-criaturas/spider-silk",
+      204,
+      220,
+      -1,
+      0,
+      true,
       false,
       false
     ],
@@ -47319,7 +47361,17 @@
       0,
       false,
       true,
-      false
+      false,
+      null,
+      null,
+      {
+        "itens": [
+          {
+            "tipo": "itens/espadas/serpent-sword",
+            "count": 1
+          }
+        ]
+      }
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -48151,6 +48203,16 @@
       false,
       false,
       12417
+    ],
+    [
+      "itens/produtos-de-criaturas/spider-silk",
+      197,
+      226,
+      -1,
+      0,
+      true,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -49398,6 +49460,16 @@
       false,
       false,
       12491
+    ],
+    [
+      "itens/itens-encantados/fire-field",
+      192,
+      228,
+      -1,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -164978,6 +165050,222 @@
   ],
   "enemyData": [
     [
+      212,
+      210,
+      -3,
+      15,
+      32,
+      "criaturas/humanoides/troll"
+    ],
+    [
+      210,
+      215,
+      -3,
+      15,
+      32,
+      "criaturas/humanoides/troll"
+    ],
+    [
+      206,
+      223,
+      -3,
+      15,
+      32,
+      "criaturas/humanoides/troll"
+    ],
+    [
+      193,
+      225,
+      -3,
+      15,
+      32,
+      "criaturas/humanoides/troll"
+    ],
+    [
+      196,
+      225,
+      -3,
+      15,
+      32,
+      "criaturas/humanoides/troll"
+    ],
+    [
+      211,
+      225,
+      -3,
+      15,
+      32,
+      "criaturas/humanoides/troll"
+    ],
+    [
+      194,
+      227,
+      -3,
+      15,
+      32,
+      "criaturas/humanoides/troll"
+    ],
+    [
+      187,
+      208,
+      -2,
+      15,
+      32,
+      "criaturas/humanoides/troll"
+    ],
+    [
+      207,
+      209,
+      -2,
+      15,
+      32,
+      "criaturas/humanoides/troll"
+    ],
+    [
+      185,
+      210,
+      -2,
+      15,
+      32,
+      "criaturas/humanoides/troll"
+    ],
+    [
+      210,
+      210,
+      -2,
+      15,
+      32,
+      "criaturas/humanoides/troll"
+    ],
+    [
+      208,
+      211,
+      -2,
+      15,
+      32,
+      "criaturas/humanoides/troll"
+    ],
+    [
+      196,
+      212,
+      -2,
+      5,
+      32,
+      "criaturas/repteis/snake"
+    ],
+    [
+      197,
+      213,
+      -2,
+      5,
+      32,
+      "criaturas/repteis/snake"
+    ],
+    [
+      186,
+      216,
+      -2,
+      5,
+      32,
+      "criaturas/mamiferos/rat"
+    ],
+    [
+      186,
+      220,
+      -2,
+      5,
+      32,
+      "criaturas/mamiferos/rat"
+    ],
+    [
+      202,
+      220,
+      -2,
+      5,
+      32,
+      "criaturas/mamiferos/rat"
+    ],
+    [
+      188,
+      222,
+      -2,
+      5,
+      32,
+      "criaturas/mamiferos/rat"
+    ],
+    [
+      204,
+      222,
+      -2,
+      5,
+      32,
+      "criaturas/mamiferos/rat"
+    ],
+    [
+      202,
+      223,
+      -2,
+      5,
+      32,
+      "criaturas/mamiferos/rat"
+    ],
+    [
+      197,
+      225,
+      -2,
+      5,
+      32,
+      "criaturas/mamiferos/rat"
+    ],
+    [
+      186,
+      226,
+      -2,
+      5,
+      32,
+      "criaturas/mamiferos/rat"
+    ],
+    [
+      189,
+      226,
+      -2,
+      10,
+      32,
+      "criaturas/vermes/spider"
+    ],
+    [
+      198,
+      227,
+      -2,
+      5,
+      32,
+      "criaturas/mamiferos/rat"
+    ],
+    [
+      187,
+      228,
+      -2,
+      5,
+      32,
+      "criaturas/mamiferos/rat"
+    ],
+    [
+      192,
+      228,
+      -2,
+      20,
+      32,
+      "criaturas/humanoides/orc"
+    ],
+    [
+      189,
+      230,
+      -2,
+      5,
+      32,
+      "criaturas/mamiferos/rat"
+    ],
+    [
       170,
       166,
       -1,
@@ -165032,6 +165320,94 @@
       15,
       32,
       "criaturas/mortos-vivos/skeleton"
+    ],
+    [
+      190,
+      208,
+      -1,
+      5,
+      32,
+      "criaturas/mamiferos/rat"
+    ],
+    [
+      182,
+      209,
+      -1,
+      10,
+      32,
+      "criaturas/vermes/spider"
+    ],
+    [
+      194,
+      209,
+      -1,
+      5,
+      32,
+      "criaturas/mamiferos/rat"
+    ],
+    [
+      181,
+      211,
+      -1,
+      10,
+      32,
+      "criaturas/vermes/spider"
+    ],
+    [
+      192,
+      213,
+      -1,
+      5,
+      32,
+      "criaturas/mamiferos/rat"
+    ],
+    [
+      182,
+      214,
+      -1,
+      10,
+      32,
+      "criaturas/vermes/spider"
+    ],
+    [
+      183,
+      219,
+      -1,
+      5,
+      32,
+      "criaturas/mamiferos/rat"
+    ],
+    [
+      200,
+      223,
+      -1,
+      10,
+      32,
+      "criaturas/vermes/spider"
+    ],
+    [
+      185,
+      225,
+      -1,
+      10,
+      32,
+      "criaturas/vermes/spider"
+    ],
+    [
+      199,
+      225,
+      -1,
+      10,
+      32,
+      "criaturas/vermes/spider"
+    ],
+    [
+      185,
+      227,
+      -1,
+      10,
+      32,
+      "criaturas/vermes/spider"
     ],
     [
       144,
