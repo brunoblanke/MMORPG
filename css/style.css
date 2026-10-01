@@ -133,16 +133,22 @@ canvas {
   cursor: default !important;
 }
 
-/* Caixa de fala: flutuante, centralizada na base da tela. */
+/* Caixa de fala: flutuante, centralizada na base da tela; 1 linha até
+   receber o foco, aí cresce pra cima. */
 .chat-box {
   position: fixed;
   left: 50%;
   bottom: 16px;
   transform: translateX(-50%);
   width: min(300px, calc(100vw - 32px));
-  height: 80px;
+  height: 34px;
   margin: 0;
   z-index: 2;
+  transition: height 0.15s ease-out;
+}
+
+.chat-box:focus-within {
+  height: 80px;
 }
 
 .chat-box textarea {
