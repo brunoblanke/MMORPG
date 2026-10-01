@@ -8,7 +8,8 @@ import { directionFromDelta } from '../utils/helpers.js';
 // Fala e NPCs: o que um player diz (comando say) vira o evento speech, que
 // todos veem em cima de quem falou. NPC perto escuta: dá boas-vindas a quem
 // chega, conversa por palavras-chave (shared/npcs.js) e esquece quem se
-// afastou ou ficou calado.
+// afastou ou ficou calado. Fora de conversa, ele passeia em volta do lugar
+// dele (radius), um passo de cada vez, com pausas.
 
 export const SPEECH_MAX_LENGTH = 120;
 export const HEAR_RANGE = 4;
@@ -17,6 +18,10 @@ export const FOCUS_RANGE = 6;
 export const FOCUS_IDLE_MS = 120000;
 export const WELCOME_COOLDOWN_MS = 60000;
 export const REPLY_DELAY_MS = 400;
+export const WANDER_RADIUS = 2;
+export const WANDER_PAUSE_MIN_MS = 1500;
+export const WANDER_PAUSE_MAX_MS = 4000;
+const DIRECTIONS = [[0, -1], [1, 0], [0, 1], [-1, 0], [1, -1], [1, 1], [-1, 1], [-1, -1]];
 
 export class NpcController {
 
@@ -36,6 +41,9 @@ export class NpcController {
       npc.focus = new Map();
       npc.nearby = new Set();
       npc.welcomed = new Map();
+      npc.home = { x: spot.x, y: spot.y, z };
+      npc.radius = def.radius ?? WANDER_RADIUS;
+      npc.nextWalkAt = 0;
       sim.world.addCreature(npc);
       return npc;
     });
@@ -161,6 +169,29 @@ export class NpcController {
         const player = this.sim.getPlayer(playerId);
         if (!player || this.distanceTo(npc, player) > FOCUS_RANGE || now - since > FOCUS_IDLE_MS) npc.focus.delete(playerId);
       }
+      this.wander(npc, now);
     }
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // wander
+  // Um passo pra um sqm vizinho livre, sem escada nem buraco, a até
+  // npc.radius do lugar dele; depois uma pausa sorteada. Em conversa, fica
+  // parado (virado pra quem fala com ele).
+
+  wander(npc, now) {
+    if (npc.radius <= 0 || npc.focus.size > 0 || now < npc.nextWalkAt) return;
+    const { movement, world } = this.sim;
+    const options = [...DIRECTIONS].sort(() => Math.random() - 0.5);
+    for (const [dx, dy] of options) {
+      const landing = movement.resolveStep(npc, dx, dy);
+      if (!landing || landing.z !== npc.home.z) continue;
+      if (Math.max(Math.abs(landing.x - npc.home.x), Math.abs(landing.y - npc.home.y)) > npc.radius) continue;
+      if (world.getTransitionAt(landing.x, landing.y, landing.z)) continue;
+      movement.applyStep(npc, landing, now);
+      npc.direction = npc.moveDirection || npc.direction;
+      break;
+    }
+    npc.nextWalkAt = now + npc.getStepInterval() + WANDER_PAUSE_MIN_MS + Math.random() * (WANDER_PAUSE_MAX_MS - WANDER_PAUSE_MIN_MS);
   }
 }

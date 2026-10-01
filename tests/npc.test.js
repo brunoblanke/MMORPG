@@ -115,3 +115,20 @@ test('o NPC vai pro navegador pelo estado e aparece no espelho', async () => {
   assert.equal(mirror.npcs[0].isNpc, true);
   assert.equal(mirror.npcs[0].name, 'Guia');
 });
+
+test('fora de conversa o guia passeia em volta do lugar dele; conversando, fica parado', () => {
+  const sim = game();
+  const guide = sim.npcs[0];
+  const seen = new Set();
+  for (let i = 0; i < 60; i++) {
+    run(sim, 1000);
+    seen.add(`${guide.x},${guide.y}`);
+    assert.ok(Math.max(Math.abs(guide.x - guide.home.x), Math.abs(guide.y - guide.home.y)) <= guide.radius);
+  }
+  assert.ok(seen.size >= 3, `andou por ${seen.size} sqms`);
+  moveTo(sim, guide.x + 1, guide.y);
+  say(sim, 'oi');
+  const at = [guide.x, guide.y];
+  run(sim, 10000);
+  assert.deepEqual([guide.x, guide.y], at);
+});

@@ -1,7 +1,7 @@
 // shared/npcs.js
 
 // NPCs do mapa. at: posição em relação ao spawn do mapa (sqm livre mais
-// perto dali). welcome: o que ele diz quando um player chega perto. Com o
+// perto dali); radius: até quantos sqm dali ele passeia. welcome: o que ele diz quando um player chega perto. Com o
 // player em conversa (disse uma das palavras de greet), cada tópico responde
 // quando a mensagem tem uma das palavras dele; bye encerra. {nome} vira o
 // nome do player.
@@ -12,6 +12,7 @@ export const NPC_DEFS = [
     name: 'Guia',
     gender: 'male',
     at: { dx: -1, dy: -1 },
+    radius: 2,
     welcome: 'Bem-vindo, aventureiro!',
     greet: {
       words: ['oi', 'ola', 'oie', 'hi', 'hello', 'bom dia', 'boa tarde', 'boa noite'],
