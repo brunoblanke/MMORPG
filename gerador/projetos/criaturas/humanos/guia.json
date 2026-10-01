@@ -1,0 +1,64 @@
+{
+  "formato": {
+    "quadro": 32,
+    "quadros": 3,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 138,
+    "cores": [
+      114,
+      101,
+      0,
+      87
+    ],
+    "addons": [
+      1
+    ]
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 4247,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4248,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 4245,
+        "variacao": 0
+      }
+    }
+  },
+  "propriedades": {
+    "comportamento": "npc",
+    "conversa": {
+      "boasVindas": "Bem-vindo, aventureiro!",
+      "oi": "Olá, {nome}. Posso tirar suas dúvidas",
+      "tchau": "Até mais, {nome}.",
+      "raio": 6,
+      "topicos": [
+        {
+          "palavras": "comida, comer",
+          "resposta": "Para se alimentar basta você usar a comida."
+        }
+      ]
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "humanos",
+  "nome": "guia"
+}
