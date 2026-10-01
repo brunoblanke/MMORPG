@@ -278,14 +278,14 @@ test('alvo com seguir desligado: o player espera sem andar nem atacar e continua
   assert.ok(runFor(sim, 8000).some(e => e.type === 'damage'), 'religar o seguir volta a seguir e atacar');
 });
 
-test('alvo longe demais é perdido, com aviso', () => {
+test('alvo longe demais é perdido, sem aviso', () => {
   const { sim, enemy } = targetStill([10, 5, 0], { x: 4, y: 5, z: 0 });
   assert.equal(sim.player.target, enemy);
   enemy.x = 4 + CONFIG.targetLoseRange + 2;
   enemy.renderX = enemy.x;
   const events = runFor(sim, 200);
   assert.equal(sim.player.target, null);
-  assert.ok(events.some(e => e.type === 'message' && e.text === 'Alvo perdido'));
+  assert.ok(!events.some(e => e.type === 'message'), 'sem mensagem');
 });
 
 test('alvo em outro andar é perdido', () => {
@@ -364,7 +364,7 @@ test('com alvo, mover o player (tecla ou clique no chão) troca o seguir pra par
   sim.enqueue('player1', { type: 'walkDir', dx: 0, dy: 1 });
   runFor(sim, 100);
   assert.equal(sim.player.followMode, false);
-  assert.equal(sim.player.attackMode, true);
+  assert.equal(sim.player.attackMode, false, 'escolher o alvo desliga o auto ataque');
 
   sim.enqueue('player1', { type: 'walkDir', dx: 0, dy: 0 });
   sim.enqueue('player1', { type: 'toggleFollow' });

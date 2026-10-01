@@ -5,7 +5,6 @@ import assert from 'node:assert/strict';
 import { buildGame, floorRect } from './helpers/fixture.js';
 import { TICK_MS } from '../js/simulation.js';
 import { setAssets } from '../shared/assets.js';
-import { DUG_HOLE_MS } from '../js/systems/interactions.js';
 
 const SIGN = 'estrutura/natureza/placa';
 const BOOK = 'itens/livros/livro';
@@ -107,7 +106,7 @@ test('baú de quest: dá os itens do editor uma vez por player (fica salvo)', ()
   assert.deepEqual(sim.player.toSave().quests, ['6,5,0']);
 });
 
-test('corda na marca de corda sobe pro andar de cima; a pá abre o monte em buraco, que fecha sozinho', () => {
+test('corda na marca de corda sobe pro andar de cima; a pá abre o monte em buraco, que fica aberto', () => {
   const sim = game([[SPOT, 6, 5, 0], [PILE, 5, 6, 1]]);
   const bag = sim.player.equip.mochila.items;
   bag[0] = { uid: 'r1', type: ROPE };
@@ -116,16 +115,16 @@ test('corda na marca de corda sobe pro andar de cima; a pá abre o monte em bura
   send(sim, { type: 'useItem', from: { t: 'c', uid: 'bag0', i: 0 }, target: { x: 9, y: 9, z: 0 } });
   assert.equal(sim.player.z, 0, 'sem marca de corda no sqm, nada acontece');
   send(sim, { type: 'useItem', from: { t: 'c', uid: 'bag0', i: 0 }, target: { x: 6, y: 5, z: 0 } });
-  assert.deepEqual([sim.player.x, sim.player.y, sim.player.z], [6, 6, 1]);
+  assert.deepEqual([sim.player.x, sim.player.y, sim.player.z], [5, 5, 1], 'ao sul do buraco de cima (1 ao norte e 1 a oeste da marca)');
 
   const pile = at(sim, PILE);
   assert.deepEqual(texts(send(sim, { type: 'useObject', id: pile.id })), []);
   send(sim, { type: 'useItem', from: { t: 'c', uid: 'bag0', i: 1 }, target: { x: 5, y: 6, z: 1 } });
   assert.equal(pile.dug, true);
   assert.ok(sim.world.getTransitionAt(5, 6, 1));
-  run(sim, DUG_HOLE_MS + 2 * TICK_MS);
-  assert.equal(pile.dug, false);
-  assert.equal(sim.world.getTransitionAt(5, 6, 1), null);
+  run(sim, 10 * 60000);
+  assert.equal(pile.dug, true, 'fica aberto até o servidor reiniciar');
+  assert.ok(sim.world.getTransitionAt(5, 6, 1));
 });
 
 test('corda e pá de longe: o player anda até o lado e usa ao chegar', () => {
@@ -136,7 +135,7 @@ test('corda e pá de longe: o player anda até o lado e usa ao chegar', () => {
   send(sim, { type: 'useItem', from: { t: 'c', uid: 'bag0', i: 0 }, target: { x: 12, y: 5, z: 0 } });
   assert.equal(sim.player.z, 0);
   for (let i = 0; i < 200 && sim.player.z === 0; i++) send(sim, { type: 'noop' });
-  assert.deepEqual([sim.player.x, sim.player.y, sim.player.z], [12, 6, 1]);
+  assert.deepEqual([sim.player.x, sim.player.y, sim.player.z], [11, 5, 1]);
   run(sim, 1000);
   send(sim, { type: 'useItem', from: { t: 'c', uid: 'bag0', i: 1 }, target: { x: 5, y: 12, z: 1 } });
   const pile = at(sim, PILE);

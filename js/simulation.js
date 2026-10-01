@@ -54,7 +54,6 @@ export class Simulation {
     this.scheduled = [];
 
     this.movement = new MovementController(this.world);
-    this.movement.onNoPath = (entity) => this.emit({ type: 'message', playerId: entity.id, text: 'Não há caminho', kind: 'warn' });
     this.enemyAI = new EnemyAI(this.movement);
     this.combat = new CombatController(this);
     this.objectDrag = new ObjectDragController(this);

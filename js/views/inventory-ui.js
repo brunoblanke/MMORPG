@@ -94,7 +94,7 @@ const SKILL_NAMES = {
   magic: 'Magic', fist: 'Fist', club: 'Club', sword: 'Sword', axe: 'Axe',
   distance: 'Distance', shielding: 'Shielding', fishing: 'Fishing'
 };
-const SKILL_ORDER = ['magic', 'fist', 'sword', 'axe', 'distance', 'shielding', 'fishing'];
+const SKILL_ORDER = ['magic', 'fist', 'club', 'sword', 'axe', 'distance', 'shielding', 'fishing'];
 const SPEED_FULL = 640;
 const PITCH = 40;
 const SAVE_DELAY_MS = 600;
