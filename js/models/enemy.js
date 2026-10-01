@@ -33,11 +33,11 @@ export class Enemy extends Entity {
     this.creature = data.creature || '';
     const stats = creatureStats(this.creature);
     if (stats.hp) this.hp = this.maxHp = this.currentHp = stats.hp;
-    if (stats.xp) this.xp = stats.xp;
+    if (stats.xp !== undefined) this.xp = stats.xp;
     if (stats.spd) this.spd = stats.spd;
-    if (stats.def) this.def = stats.def;
-    this.defense = stats.defense || this.def;
-    if (stats.atk) this.atk = stats.atk;
+    if (stats.def !== undefined) this.def = stats.def;
+    this.defense = stats.defense ?? this.def;
+    if (stats.atk !== undefined) this.atk = stats.atk;
   }
 
   isInPatrolZone(x, y) {

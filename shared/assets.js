@@ -67,8 +67,9 @@ export function creatureBehavior(type) {
 // creatureStats
 // Números da criatura no gerador (Criaturas): vida, XP dado ao morrer,
 // velocidade (escala do Tibia: rat 134, player nível 1 = 220), armadura,
-// defesa e ataque (o maior golpe). Só os preenchidos (> 0; XP pode ser 0 quando a vida
-// está preenchida); o que faltar vem do nível no mapa.
+// defesa e ataque (o maior golpe). Só os preenchidos (> 0; com a vida
+// preenchida, XP, armadura, defesa e ataque 0 valem 0 de verdade); o que
+// faltar vem do nível no mapa.
 
 export function creatureStats(type) {
   const asset = getAsset(type);
@@ -76,7 +77,7 @@ export function creatureStats(type) {
   const stats = {};
   for (const [key, field] of [['hp', 'vida'], ['xp', 'xp'], ['spd', 'velocidade'], ['def', 'armadura'], ['defense', 'defesa'], ['atk', 'ataque']]) {
     const value = Math.floor(Number(props[field]));
-    if (value > 0 || (key === 'xp' && value === 0 && props.vida > 0)) stats[key] = value;
+    if (value > 0 || (key !== 'hp' && key !== 'spd' && value === 0 && props.vida > 0)) stats[key] = value;
   }
   return stats;
 }

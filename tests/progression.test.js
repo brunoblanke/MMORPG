@@ -162,3 +162,13 @@ test('subir de nível enche a vida; a mana só ganha o que o máximo aumentou', 
   assert.deepEqual([player.hp, player.maxMana], [155, 60]);
   assert.deepEqual([player.currentHp, player.mana], [155, 15]);
 });
+
+test('criatura com a vida preenchida no gerador e armadura/defesa 0 fica com 0 (não usa as do nível)', async () => {
+  const { setAssets } = await import('../shared/assets.js');
+  const { Enemy } = await import('../js/models/enemy.js');
+  const SNAKE = 'criaturas/repteis/cobra-teste';
+  setAssets([{ id: SNAKE, ferramenta: 'criaturas', grupo: 'criaturas', pasta: 'repteis', nome: 'cobra-teste', rotulo: 'criaturas › repteis', url: '/c.png', quadro: 32, quadros: 3, pecas: [],
+    propriedades: { comportamento: 'normal', vida: 15, xp: 10, velocidade: 120, armadura: 0, defesa: 0, ataque: 8 } }]);
+  const snake = new Enemy({ x: 0, y: 0, lvl: 5, creature: SNAKE });
+  assert.deepEqual([snake.maxHp, snake.def, snake.defense, snake.atk, snake.xp], [15, 0, 0, 8, 10]);
+});
