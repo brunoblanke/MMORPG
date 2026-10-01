@@ -1,8 +1,10 @@
 // js/views/chat-box.js
 
-// Caixa de fala flutuante na base da tela (index.html #chatBox). Enter abre
-// a caixa; Enter dentro dela envia (comando say) e devolve o teclado pro
-// jogo; Esc fecha sem enviar. A seta no canto também envia.
+// Caixa de fala flutuante na base da tela (index.html #chatBox). Começar a
+// digitar (qualquer letra, número ou símbolo) ou Enter abre a caixa com o
+// que foi digitado; as setas continuam andando. Enter dentro dela envia
+// (comando say) e devolve o teclado pro jogo; Esc fecha sem enviar. A seta
+// no canto também envia.
 
 export class ChatBox {
 
@@ -28,9 +30,13 @@ export class ChatBox {
       }
     });
     window.addEventListener('keydown', (evt) => {
-      if (evt.key !== 'Enter' || this.isTyping(evt.target) || !this.game.session) return;
-      evt.preventDefault();
-      this.input.focus();
+      if (this.isTyping(evt.target) || !this.game.session || evt.ctrlKey || evt.metaKey || evt.altKey) return;
+      if (evt.key === 'Enter') {
+        evt.preventDefault();
+        this.input.focus();
+      } else if (evt.key.length === 1) {
+        this.input.focus();
+      }
     });
   }
 
