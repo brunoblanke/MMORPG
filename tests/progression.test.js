@@ -172,3 +172,19 @@ test('criatura com a vida preenchida no gerador e armadura/defesa 0 fica com 0 (
   const snake = new Enemy({ x: 0, y: 0, lvl: 5, creature: SNAKE });
   assert.deepEqual([snake.maxHp, snake.def, snake.defense, snake.atk, snake.xp], [15, 0, 0, 8, 10]);
 });
+
+test('a XP da criatura é dividida pelo dano que cada player causou', () => {
+  const sim = buildGame({ objects: GROUND, enemies: [[8, 5, 0, 30]], player: { x: 2, y: 5, z: 0 } });
+  const other = sim.addPlayer('player2');
+  const enemy = sim.enemies[0];
+  enemy.xp = 100;
+  sim.player.xp = 0;
+  other.xp = 0;
+  sim.combat.recordDamage(enemy, sim.player, 30);
+  sim.combat.recordDamage(enemy, other, 10);
+  enemy.currentHp = 0;
+  sim.tick(sim.time + TICK_MS);
+  const events = sim.drainEvents().filter(e => e.type === 'xp');
+
+  assert.deepEqual(events.map(e => [e.playerId, e.amount]).sort(), [['player1', 75], ['player2', 25]]);
+});

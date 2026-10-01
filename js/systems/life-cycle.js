@@ -75,25 +75,15 @@ export class LifeCycleController {
 
   // ================================================================================================================================================================================================================================================
   // handleEnemyDeath
-  // O XP do inimigo (enemy.xp, pelo lvl dele) vai inteiro pro player que o
-  // tinha como alvo (ou, sem ninguém, pro mais perto). Renasce no centro da
-  // patrulha depois de enemyRespawnTime.
+  // A XP do inimigo é dividida entre os players que bateram nele, cada um
+  // com a parte do dano que causou (shareXp). Renasce no lugar dele depois
+  // de enemyRespawnTime.
 
   handleEnemyDeath(enemy, now) {
     const sim = this.sim;
     const corpse = this.createCorpse(enemy, 'enemy_corpse', now);
     sim.inventory.fillCorpse(corpse, enemy);
-
-    const killer = sim.players.find(p => p.target === enemy) || sim.closestPlayer(enemy);
-    if (killer) {
-      const xpGain = enemy.xp;
-      const levels = killer.gainXp(xpGain);
-      sim.emit({ type: 'xp', playerId: killer.id, x: enemy.x, y: enemy.y, amount: xpGain });
-      if (levels > 0) {
-        sim.emit({ type: 'levelUp', playerId: killer.id, lvl: killer.lvl });
-        console.log(`⭐ ${killer.name} subiu para o nível ${killer.lvl}`);
-      }
-    }
+    this.shareXp(enemy);
 
     sim.world.removeCreature(enemy);
     const index = sim.enemies.indexOf(enemy);
@@ -104,6 +94,30 @@ export class LifeCycleController {
     }
 
     sim.schedule(now + CONFIG.enemyRespawnTime, () => this.respawnEnemy(enemy));
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // shareXp
+  // Como no Tibia: cada player ganha a XP da criatura vezes a fração do dano
+  // total que ele causou. Quem já saiu do jogo perde a parte dele.
+
+  shareXp(enemy) {
+    const sim = this.sim;
+    const damageBy = enemy.damageBy || new Map();
+    const total = [...damageBy.values()].reduce((sum, amount) => sum + amount, 0);
+    if (!total || !(enemy.xp > 0)) return;
+    for (const [playerId, amount] of damageBy) {
+      const player = sim.getPlayer(playerId);
+      if (!player || !player.isAlive()) continue;
+      const xpGain = Math.round(enemy.xp * amount / total);
+      if (xpGain <= 0) continue;
+      const levels = player.gainXp(xpGain);
+      sim.emit({ type: 'xp', playerId: player.id, x: enemy.x, y: enemy.y, amount: xpGain });
+      if (levels > 0) {
+        sim.emit({ type: 'levelUp', playerId: player.id, lvl: player.lvl });
+        console.log(`⭐ ${player.name} subiu para o nível ${player.lvl}`);
+      }
+    }
   }
 
   // ================================================================================================================================================================================================================================================
