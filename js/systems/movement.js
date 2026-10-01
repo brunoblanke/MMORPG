@@ -253,12 +253,13 @@ export class MovementController {
 
   // ================================================================================================================================================================================================================================================
   // moveTowardsPosition
+  // Um passo rumo a (targetX, targetY). Devolve false se não há caminho até lá.
 
   moveTowardsPosition(entity, targetX, targetY, timestamp, targetEntity = null, searchBounds = null, enemies = []) {
     const isAdjacent = isPositionAdjacentTo(entity.x, entity.y, targetX, targetY);
     if (isAdjacent) {
       entity.route.path = null;
-      return;
+      return true;
     }
 
     const targetPos = targetEntity
@@ -267,11 +268,12 @@ export class MovementController {
 
     if (!this.ensureRoute(entity, targetPos, searchBounds)) {
       if (this.onNoPath) this.onNoPath(entity, timestamp);
-      return;
+      return false;
     }
 
     const floor = entity.z || 0;
     this.followRoute(entity, timestamp, (nextStep) => this.isBlocked(nextStep.x, nextStep.y, floor, targetEntity));
+    return true;
   }
 
   // ================================================================================================================================================================================================================================================

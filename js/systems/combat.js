@@ -8,6 +8,10 @@ import { CONFIG } from '../config.js';
 import { equipBonus, itemInfo } from '../../shared/items.js';
 import { addSkillTry } from '../../shared/skills.js';
 
+// Auto ataque: alvo sem caminho por UNREACHABLE_MS é largado e ignorado por SKIP_TARGET_MS.
+export const UNREACHABLE_MS = 1500;
+export const SKIP_TARGET_MS = 5000;
+
 const FLOOR_DAMAGE_INTERVAL = 1000;
 
 // Fórmula do Tibia (TFS 1.4), modo "balanced" (o padrão do cliente):
@@ -212,11 +216,31 @@ export class CombatController {
     }
 
     if (isPositionAdjacentTo(player.x, player.y, target.x, target.y)) {
+      player.unreachableSince = null;
       this.attackTarget(player, target, now);
     } else if (player.autoFollow && !this.sim.control.isWalking(player)) {
       const searchBounds = this.sim.searchBoundsAround(player);
-      this.sim.movement.moveTowardsPosition(player, target.x, target.y, now, target, searchBounds, this.sim.enemies);
+      const reachable = this.sim.movement.moveTowardsPosition(player, target.x, target.y, now, target, searchBounds, this.sim.enemies);
+      this.checkUnreachable(player, target, reachable, now);
     }
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // checkUnreachable
+  // Com o auto ataque ligado, alvo sem caminho até ele por UNREACHABLE_MS
+  // (fugiu pra onde não dá pra chegar) é largado e ignorado por
+  // SKIP_TARGET_MS: o auto ataque passa pro próximo da fila.
+
+  checkUnreachable(player, target, reachable, now) {
+    if (reachable || !player.attackMode) {
+      player.unreachableSince = null;
+      return;
+    }
+    if (player.unreachableSince == null) player.unreachableSince = now;
+    if (now - player.unreachableSince < UNREACHABLE_MS) return;
+    player.unreachableSince = null;
+    player.skipTarget = { id: target.id, until: now + SKIP_TARGET_MS };
+    player.target = null;
   }
 
   // ================================================================================================================================================================================================================================================
@@ -239,7 +263,8 @@ export class CombatController {
       if (isNear(enemy) && !player.aggro.includes(enemy)) player.aggro.push(enemy);
     }
     if (!player.attackMode || player.target) return;
-    const next = player.aggro.find(enemy => !this.isTargetLost(player, enemy));
+    const skip = player.skipTarget && this.sim.time < player.skipTarget.until ? player.skipTarget.id : null;
+    const next = player.aggro.find(enemy => enemy.id !== skip && !this.isTargetLost(player, enemy));
     if (!next) return;
     player.target = next;
     player.autoFollow = player.followMode;

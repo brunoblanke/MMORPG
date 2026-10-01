@@ -14,3 +14,20 @@ test('alvo em outro andar não é aceito (e não gera "Alvo perdido")', () => {
   assert.equal(game.player.target, null);
   assert.deepEqual(game.drainEvents().filter(e => e.type === 'message').map(e => e.text), []);
 });
+
+test('auto ataque: alvo que ficou inacessível é largado e o próximo da fila vira alvo', async () => {
+  const { wall } = await import('./helpers/fixture.js');
+  const { UNREACHABLE_MS } = await import('../js/systems/combat.js');
+  const walls = [];
+  for (let x = 13; x <= 17; x++) for (let y = 3; y <= 7; y++) if (x === 13 || x === 17 || y === 3 || y === 7) walls.push(...wall(x, y));
+  const game = buildGame({ objects: [...floorRect(0, 24, 0, 24, 0), ...walls], enemies: [[15, 5, 0], [5, 9, 0]], player: { x: 10, y: 5, z: 0 } });
+  const [trapped, free] = game.enemies;
+  for (const e of game.enemies) { e.detectionRadius = 8; e.atk = 0; }
+  game.player.attackMode = true;
+  game.player.target = trapped;
+  game.player.autoFollow = true;
+  const end = game.time + UNREACHABLE_MS + 3000;
+  while (game.time < end) game.tick(game.time + TICK_MS);
+  assert.notEqual(game.player.target, trapped);
+  assert.equal(game.player.target, free);
+});
