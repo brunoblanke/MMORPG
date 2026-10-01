@@ -3,7 +3,7 @@
 import { test, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
 import { buildGame, floorRect, safeRect } from './helpers/fixture.js';
-import { Player } from '../js/models/player.js';
+import { Player, xpForLevel } from '../js/models/player.js';
 import { playerStats } from '../js/utils/helpers.js';
 import { TICK_MS } from '../js/simulation.js';
 
@@ -187,4 +187,29 @@ test('a XP da criatura é dividida pelo dano que cada player causou', () => {
   const events = sim.drainEvents().filter(e => e.type === 'xp');
 
   assert.deepEqual(events.map(e => [e.playerId, e.amount]).sort(), [['player1', 75], ['player2', 25]]);
+});
+
+test('morrer perde 10% da XP total abaixo do nível 24 e pode cair de nível', () => {
+  const player = new Player({ x: 0, y: 0, lvl: 1 });
+  player.gainXp(xpForLevel(10) + 50);
+  const total = player.totalXp();
+  player.respawn({ x: 0, y: 0 });
+  assert.equal(player.totalXp(), total - Math.floor(total * 0.1));
+  assert.equal(player.lvl, 9);
+});
+
+test('morrer do nível 24 pra cima segue a fórmula do Tibia atual', () => {
+  const player = new Player({ x: 0, y: 0, lvl: 1 });
+  player.gainXp(xpForLevel(30));
+  player.respawn({ x: 0, y: 0 });
+  assert.equal(player.totalXp(), xpForLevel(30) - Math.floor(80 / 100 * 50 * (900 - 150 + 8)));
+});
+
+test('morrer tira dos skills a mesma fração da XP', () => {
+  const player = new Player({ x: 0, y: 0, lvl: 1 });
+  player.gainXp(xpForLevel(10));
+  player.skills.sword = { lvl: 11, tries: 0, pct: 0 };
+  player.respawn({ x: 0, y: 0 });
+  assert.deepEqual([player.skills.sword.lvl, player.skills.sword.tries], [10, 45]);
+  assert.equal(player.skills.fist.lvl, 10);
 });

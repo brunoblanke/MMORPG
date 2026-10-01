@@ -61,6 +61,31 @@ export function addSkillTry(skills, key) {
 }
 
 // ================================================================================================================================================================================================================================================
+// loseSkills
+// Na morte: cada skill perde a fração (0 a 1) de todos os usos que juntou
+// desde o começo; pode cair de nível.
+
+export function loseSkills(skills, fraction) {
+  if (!(fraction > 0)) return;
+  for (const key of ['magic', ...SKILL_KEYS]) {
+    const entry = skills[key];
+    if (!entry) continue;
+    const start = key === 'magic' ? MAGIC_START : SKILL_START;
+    let total = entry.tries || 0;
+    for (let lvl = start; lvl < entry.lvl; lvl++) total += triesFor(lvl, key);
+    let left = Math.floor(total * (1 - Math.min(1, fraction)));
+    let lvl = start;
+    while (left >= triesFor(lvl, key)) {
+      left -= triesFor(lvl, key);
+      lvl++;
+    }
+    entry.lvl = lvl;
+    entry.tries = left;
+    entry.pct = Math.min(99, Math.floor(left / triesFor(lvl, key) * 100));
+  }
+}
+
+// ================================================================================================================================================================================================================================================
 // loadSkills
 // Skills guardados de volta; o que faltar ou vier fora do lugar volta ao começo.
 
