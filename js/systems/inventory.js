@@ -452,6 +452,30 @@ export class InventoryController {
   }
 
   // ================================================================================================================================================================================================================================================
+  // burnLights
+  // Fonte de luz acesa gasta como no Tibia: item.fuel (ms que ainda queima)
+  // começa em burn (gerador → Duração) e só desce acesa, onde quer que ela
+  // esteja (equipada, num container ou no chão). Acabou, o item some.
+
+  burnLights(ms) {
+    const burn = (item) => {
+      if (!item) return false;
+      if (item.items) item.items.forEach((child, i) => { if (burn(child)) item.items[i] = null; });
+      const total = item.lit ? itemInfo(item.type).burn * 1000 : 0;
+      if (!total) return false;
+      item.fuel = Math.max(0, (item.fuel ?? total) - ms);
+      return item.fuel === 0;
+    };
+    for (const player of this.sim.players) {
+      for (const key of EQUIP_SLOTS) if (burn(player.equip[key])) player.equip[key] = null;
+    }
+    for (const obj of [...this.sim.objects]) {
+      if (obj.itemData && burn(obj.itemData)) this.removeGroundObject(obj);
+    }
+    for (const corpse of this.sim.deadBodies) burn(corpse.itemData);
+  }
+
+  // ================================================================================================================================================================================================================================================
   // walkNextTo
   // Leva o player até um sqm colado no objeto e guarda o comando pra quando chegar.
 

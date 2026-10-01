@@ -387,3 +387,12 @@ test('com alvo e seguir ligado, um caminho interno (ir abrir uma caixa…) só p
   runFor(sim, 8000);
   assert.ok(Math.abs(sim.player.x - enemy.x) <= 1 && Math.abs(sim.player.y - enemy.y) <= 1, `player em (${sim.player.x}, ${sim.player.y}), inimigo em (${enemy.x}, ${enemy.y}), alvo ${sim.player.target && sim.player.target.id}`);
 });
+
+test('Ctrl + direção: o player vira pro lado sem sair do sqm', () => {
+  const sim = buildGame({ objects: GROUND, player: { x: 5, y: 5, z: 0 } });
+  for (const [dx, dy, dir] of [[1, 0, 'leste'], [0, -1, 'norte'], [-1, 0, 'oeste'], [0, 1, 'sul']]) {
+    sim.enqueue('player1', { type: 'turn', dx, dy });
+    sim.tick(sim.time + TICK_MS);
+    assert.deepEqual([sim.player.x, sim.player.y, sim.player.direction], [5, 5, dir]);
+  }
+});

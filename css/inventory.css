@@ -155,3 +155,6 @@
 .book-page header{ display:flex; align-items:center; justify-content:space-between; padding:8px 12px; border-bottom:1px solid #b39a6a; font-weight:700; }
 .book-close{ background:none; border:none; font-size:18px; cursor:pointer; color:#3a2a14; }
 .book-text{ padding:12px 14px; overflow-y:auto; white-space:pre-wrap; font:14px/1.5 Georgia, serif; }
+
+/* Item animado (tocha acesa, fogo…): passa pelos quadros da folha. */
+@keyframes inv-anim{ from{ background-position-x:var(--x0); } to{ background-position-x:var(--x1); } }

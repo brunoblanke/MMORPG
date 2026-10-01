@@ -25,7 +25,8 @@
     "manaMin": 0,
     "manaMax": 0,
     "alimento": 0,
-    "luz": 3
+    "luz": 3,
+    "duracao": 240
   },
   "ferramenta": "objetos",
   "grupo": "itens",
