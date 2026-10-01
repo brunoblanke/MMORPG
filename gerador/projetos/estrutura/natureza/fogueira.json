@@ -24,7 +24,8 @@
     "vidaMax": 0,
     "manaMin": 0,
     "manaMax": 0,
-    "alimento": 0
+    "alimento": 0,
+    "luz": 7
   },
   "ferramenta": "objetos",
   "grupo": "estrutura",
