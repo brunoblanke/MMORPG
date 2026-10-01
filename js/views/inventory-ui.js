@@ -95,7 +95,6 @@ const SKILL_NAMES = {
   distance: 'Distance', shielding: 'Shielding', fishing: 'Fishing'
 };
 const SKILL_ORDER = ['magic', 'fist', 'club', 'sword', 'axe', 'distance', 'shielding', 'fishing'];
-const SPEED_FULL = 640;
 const PITCH = 40;
 const SAVE_DELAY_MS = 600;
 
@@ -690,8 +689,8 @@ export class InventoryUI {
       '<div class="inv-sksep"></div>',
       line('hp', 'Hit Points', fmt(stats.hp), hpPct, `hp${hpPct <= 25 ? ' low' : hpPct <= 50 ? ' mid' : ''}`),
       line('mana', 'Mana', fmt(stats.mana), pctOf(stats.mana, stats.maxMana), 'mp'),
-      line('cap', 'Capacity', Math.floor(free), pctOf(free, cap.max), 'cap'),
-      line('speed', 'Speed', fmt(stats.speed || 0), pctOf(stats.speed || 0, SPEED_FULL), 'speed'),
+      line('cap', 'Capacity', Math.floor(free)),
+      line('speed', 'Speed', fmt(stats.speed || 0)),
       line('food', 'Food', stats.food ? `${Math.floor(stats.food / 60)}:${String(stats.food % 60).padStart(2, '0')}` : '—'),
       '<div class="inv-sksep"></div>',
       ...SKILL_ORDER.map(skill)
