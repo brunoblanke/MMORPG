@@ -4,15 +4,31 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { buildMapData, floorRect } from './helpers/fixture.js';
 import { Simulation, TICK_MS } from '../js/simulation.js';
-import { NPC_DEFS } from '../shared/npcs.js';
+import { GREET_WORDS, BYE_WORDS } from '../shared/npcs.js';
 import { WELCOME_COOLDOWN_MS, REPLY_DELAY_MS, SPEECH_MAX_LENGTH } from '../js/systems/npcs.js';
 
 // ================================================================================================================================================================================================================================================
 // game
 // Mapa com o guia (2 sqm a oeste e 1 ao norte do spawn) e o player longe dele.
 
+const GUIDE = {
+  id: 'guia',
+  name: 'Guia',
+  gender: 'male',
+  at: { dx: -2, dy: -1 },
+  radius: 2,
+  welcome: 'Bem-vindo, aventureiro!',
+  greet: { words: GREET_WORDS, reply: 'Olá, {nome}! Posso falar sobre combate e poções.' },
+  bye: { words: BYE_WORDS, reply: 'Até mais, {nome}. Boa aventura!' },
+  topics: [
+    { words: ['combate', 'atacar'], reply: 'Clique numa criatura pra atacar.' },
+    { words: ['pocoes', 'pocao'], reply: 'Clique na poção e depois em você.' },
+    { words: ['comida'], reply: 'Comer recupera vida.' }
+  ]
+};
+
 function game() {
-  const defs = NPC_DEFS.map(def => ({ ...def, at: { dx: -2, dy: -1 } }));
+  const defs = [GUIDE];
   const sim = new Simulation(buildMapData({ objects: floorRect(0, 30, 0, 30, 0), spawn: { x: 10, y: 10, z: 0 } }), { npcs: defs });
   sim.time = 1000;
   sim.player = sim.addPlayer('player1', { name: 'Ana' });

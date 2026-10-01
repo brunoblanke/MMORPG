@@ -27,9 +27,8 @@ export class NpcController {
 
   // ================================================================================================================================================================================================================================================
   // constructor
-  // Os NPCs fixos (defs: shared/npcs.js) e os postos no mapa pelo editor
-  // (npcData: [tipo, x, y, z], criados no gerador), cada um no sqm livre mais
-  // perto do lugar dele.
+  // Os NPCs postos no mapa pelo editor (npcData: [tipo, x, y, z], criados no
+  // gerador) e os de defs, cada um no sqm livre mais perto do lugar dele.
 
   constructor(sim, defs) {
     this.sim = sim;

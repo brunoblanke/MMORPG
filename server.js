@@ -165,8 +165,7 @@ async function iniciarJogo(servidorHttp) {
   setAssets(lerSprites());
 
   const mapData = JSON.parse(fs.readFileSync(MAP_DATA_PATH, 'utf8'));
-  const { NPC_DEFS } = await import(pathToFileURL(path.join(PASTA_JOGO, 'shared', 'npcs.js')).href);
-  const sim = new Simulation(mapData, { npcs: NPC_DEFS });
+  const sim = new Simulation(mapData);
   const personagens = carregarPersonagens();
   const conexoes = new Map();
   let proximoJogador = 1;

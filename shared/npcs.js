@@ -2,12 +2,11 @@
 
 import { getAsset, displayName, creatureBehavior } from './assets.js';
 
-// NPCs. Os do mapa são criados no gerador (Criaturas, comportamento NPC: a
-// conversa fica em propriedades.conversa) e postos pelo editor (npcData do
-// mapa); os de NPC_DEFS são fixos no código, com a posição em relação ao
-// spawn (at).
+// NPCs: criados no gerador (Criaturas, comportamento NPC: a conversa fica em
+// propriedades.conversa) e postos pelo editor (npcData do mapa).
 //
-// Uma definição: name, creature (folha do gerador; sem ela, a roupa de player
+// Uma definição (npcDefFromAsset; a simulação também aceita definições
+// prontas em options.npcs): name, creature (folha do gerador; sem ela, a roupa de player
 // do gender), at ({ dx, dy, dz }) ou pos ({ x, y, z }), radius (até quantos
 // sqm ele passeia), welcome (o que diz a quem chega perto), greet e bye
 // ({ words, reply }: começam e encerram a conversa) e topics ([{ words,
@@ -52,32 +51,3 @@ export function npcDefFromAsset(type, pos) {
     topics
   };
 }
-
-export const NPC_DEFS = [
-  {
-    id: 'guia',
-    name: 'Guia',
-    gender: 'male',
-    at: { dx: -1, dy: -1 },
-    radius: 2,
-    welcome: 'Bem-vindo, aventureiro!',
-    greet: {
-      words: GREET_WORDS,
-      reply: 'Olá, {nome}! Posso falar sobre andar, combate, itens, comida, poções, escadas e ferramentas.'
-    },
-    bye: {
-      words: BYE_WORDS,
-      reply: 'Até mais, {nome}. Boa aventura!'
-    },
-    topics: [
-      { words: ['andar', 'mover', 'movimento', 'caminhar'], reply: 'Clique no chão pra andar até lá, ou use W, A, S, D (Q, E, Z e C nas diagonais).' },
-      { words: ['combate', 'atacar', 'ataque', 'lutar', 'luta'], reply: 'Clique numa criatura pra atacar. No inventário, um ícone liga seguir o alvo e o outro o auto ataque.' },
-      { words: ['itens', 'item', 'loot', 'mochila', 'bag'], reply: 'Arraste os itens pro inventário. Duplo clique ou botão direito abre bolsas e corpos. Shift + clique mostra o que é.' },
-      { words: ['comida', 'comer', 'fome'], reply: 'Comer recupera vida e mana aos poucos. Duplo clique ou botão direito na comida.' },
-      { words: ['pocoes', 'pocao', 'potion', 'potions', 'curar'], reply: 'Clique na poção e depois em você ou em outro aventureiro. Errou o alvo, o líquido cai no chão.' },
-      { words: ['escadas', 'escada', 'subir', 'descer', 'bueiro'], reply: 'Escadas sobem e descem ao pisar. Bueiros e alçapões se usam com duplo clique ou botão direito.' },
-      { words: ['ferramentas', 'ferramenta', 'corda', 'pa'], reply: 'Use a corda nas marcas de corda pra subir e a pá nos montes de terra pra abrir um buraco.' },
-      { words: ['nome', 'quem', 'trabalho'], reply: 'Sou o Guia. Recebo os aventureiros que chegam por aqui.' }
-    ]
-  }
-];

@@ -32,7 +32,7 @@ export class Simulation {
   // constructor
 
   // options.lootTable: o que cada criatura deixa cair (systems/inventory.js).
-  // options.npcs: os NPCs do jogo (shared/npcs.js; sem ele, nenhum).
+  // options.npcs: NPCs além dos do mapa (definições de shared/npcs.js).
 
   constructor(mapData, options = {}) {
     this.mapData = mapData;
