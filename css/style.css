@@ -62,15 +62,16 @@ canvas {
 }
 
 .modal-error {
-  min-height: 18px;
-  margin: 8px 0 12px;
+  min-height: 0;
+  margin: 6px 0 10px;
   font-size: 13px;
   color: #ff6b6b;
 }
 
 .modal-box button {
-  width: 100%;
-  padding: 10px;
+  display: block;
+  margin: 0 auto;
+  padding: 8px 32px;
   border: none;
   border-radius: 6px;
   background: #ccff33;
@@ -83,16 +84,26 @@ canvas {
   opacity: 0.6;
 }
 
+.name-row {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.name-row input {
+  flex: 1;
+  min-width: 0;
+}
+
 .gender-picker {
   display: flex;
-  justify-content: center;
-  gap: 12px;
-  margin: 0 0 16px;
+  gap: 6px;
 }
 
 .modal-box .gender-option {
-  width: 52px;
-  height: 52px;
+  width: 41px;
+  height: auto;
+  margin: 0;
   padding: 0;
   display: flex;
   align-items: center;
@@ -104,19 +115,16 @@ canvas {
 }
 
 .modal-box .gender-option:hover:not(:disabled) {
-  border-color: #ccff33;
   color: #e8e8e8;
 }
 
 .modal-box .gender-option.selected {
-  border-color: #ccff33;
-  background: rgba(204, 255, 51, 0.12);
   color: #ccff33;
 }
 
 .modal-box .gender-option svg {
-  width: 26px;
-  height: 26px;
+  width: 20px;
+  height: 20px;
 }
 
 /* Seta tradicional em tudo: tela do jogo, janelas, botões e itens. */
