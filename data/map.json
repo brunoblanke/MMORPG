@@ -13648,15 +13648,44 @@
       13218
     ],
     [
-      "estrutura/pisos/piso-terra-2",
+      "Border:estrutura/pisos/piso-terra-2:int-no",
       184,
       209,
       -2,
       0,
       false,
       false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:int-nl",
+      184,
+      209,
+      -2,
+      0,
       false,
-      15273
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:int-so",
+      184,
+      209,
+      -2,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:int-sl",
+      184,
+      209,
+      -2,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/escadas/sombra-buraco",
@@ -165741,65 +165770,73 @@
   "enemyData": [
     [
       212,
+      209,
+      -3,
+      5,
+      32,
+      "criaturas/humanoides/troll"
+    ],
+    [
+      208,
       210,
       -3,
-      15,
-      32,
-      "criaturas/humanoides/troll"
-    ],
-    [
-      210,
-      215,
-      -3,
-      15,
-      32,
-      "criaturas/humanoides/troll"
-    ],
-    [
-      206,
-      223,
-      -3,
-      15,
-      32,
-      "criaturas/humanoides/troll"
-    ],
-    [
-      193,
-      225,
-      -3,
-      15,
-      32,
-      "criaturas/humanoides/troll"
-    ],
-    [
-      196,
-      225,
-      -3,
-      15,
+      5,
       32,
       "criaturas/humanoides/troll"
     ],
     [
       211,
-      225,
+      216,
       -3,
-      15,
+      5,
+      32,
+      "criaturas/humanoides/troll"
+    ],
+    [
+      213,
+      223,
+      -3,
+      5,
+      32,
+      "criaturas/humanoides/troll"
+    ],
+    [
+      205,
+      224,
+      -3,
+      5,
       32,
       "criaturas/humanoides/troll"
     ],
     [
       194,
-      227,
+      225,
       -3,
-      15,
+      5,
       32,
       "criaturas/humanoides/troll"
     ],
     [
-      187,
+      193,
+      227,
+      -3,
+      5,
+      32,
+      "criaturas/humanoides/troll"
+    ],
+    [
+      195,
+      206,
+      -2,
+      5,
+      32,
+      "criaturas/humanoides/troll"
+    ],
+    [
+      185,
       208,
       -2,
-      15,
+      5,
       32,
       "criaturas/humanoides/troll"
     ],
@@ -165807,23 +165844,15 @@
       207,
       209,
       -2,
-      15,
+      5,
       32,
       "criaturas/humanoides/troll"
     ],
     [
-      185,
+      188,
       210,
       -2,
-      15,
-      32,
-      "criaturas/humanoides/troll"
-    ],
-    [
-      210,
-      210,
-      -2,
-      15,
+      5,
       32,
       "criaturas/humanoides/troll"
     ],
@@ -165831,87 +165860,103 @@
       208,
       211,
       -2,
-      15,
+      5,
       32,
       "criaturas/humanoides/troll"
     ],
     [
-      196,
-      212,
+      210,
+      211,
       -2,
       5,
       32,
-      "criaturas/repteis/snake"
+      "criaturas/humanoides/troll"
     ],
     [
       197,
+      212,
+      -2,
+      1,
+      32,
+      "criaturas/mamiferos/rat"
+    ],
+    [
+      198,
       213,
       -2,
-      5,
+      2,
       32,
       "criaturas/repteis/snake"
     ],
     [
       186,
-      216,
+      215,
       -2,
-      5,
+      1,
       32,
       "criaturas/mamiferos/rat"
     ],
     [
-      186,
-      220,
+      207,
+      215,
       -2,
-      5,
+      1,
       32,
       "criaturas/mamiferos/rat"
     ],
     [
-      202,
+      194,
+      218,
+      -2,
+      1,
+      32,
+      "criaturas/mamiferos/rat"
+    ],
+    [
+      190,
       220,
       -2,
-      5,
+      1,
+      32,
+      "criaturas/mamiferos/rat"
+    ],
+    [
+      201,
+      220,
+      -2,
+      2,
+      32,
+      "criaturas/repteis/snake"
+    ],
+    [
+      208,
+      220,
+      -2,
+      1,
       32,
       "criaturas/mamiferos/rat"
     ],
     [
       188,
-      222,
+      221,
       -2,
-      5,
-      32,
-      "criaturas/mamiferos/rat"
-    ],
-    [
-      204,
-      222,
-      -2,
-      5,
+      1,
       32,
       "criaturas/mamiferos/rat"
     ],
     [
       202,
-      223,
+      222,
       -2,
-      5,
-      32,
-      "criaturas/mamiferos/rat"
-    ],
-    [
-      197,
-      225,
-      -2,
-      5,
+      1,
       32,
       "criaturas/mamiferos/rat"
     ],
     [
       186,
-      226,
+      225,
       -2,
-      5,
+      1,
       32,
       "criaturas/mamiferos/rat"
     ],
@@ -165919,23 +165964,31 @@
       189,
       226,
       -2,
-      10,
+      1,
       32,
-      "criaturas/vermes/spider"
+      "criaturas/mamiferos/rat"
     ],
     [
-      198,
-      227,
+      196,
+      226,
       -2,
-      5,
+      1,
       32,
       "criaturas/mamiferos/rat"
     ],
     [
       187,
+      227,
+      -2,
+      2,
+      32,
+      "criaturas/vermes/spider"
+    ],
+    [
+      187,
       228,
       -2,
-      5,
+      1,
       32,
       "criaturas/mamiferos/rat"
     ],
@@ -165943,17 +165996,25 @@
       192,
       228,
       -2,
-      20,
+      8,
       32,
       "criaturas/humanoides/orc"
     ],
     [
-      189,
-      230,
+      198,
+      228,
       -2,
-      5,
+      1,
       32,
       "criaturas/mamiferos/rat"
+    ],
+    [
+      189,
+      229,
+      -2,
+      2,
+      32,
+      "criaturas/vermes/spider"
     ],
     [
       170,
@@ -166012,50 +166073,50 @@
       "criaturas/mortos-vivos/skeleton"
     ],
     [
-      190,
-      208,
+      184,
+      207,
       -1,
-      5,
-      32,
-      "criaturas/mamiferos/rat"
-    ],
-    [
-      182,
-      209,
-      -1,
-      10,
-      32,
-      "criaturas/vermes/spider"
-    ],
-    [
-      194,
-      209,
-      -1,
-      5,
-      32,
-      "criaturas/mamiferos/rat"
-    ],
-    [
-      181,
-      211,
-      -1,
-      10,
+      2,
       32,
       "criaturas/vermes/spider"
     ],
     [
       192,
-      213,
+      207,
       -1,
-      5,
+      1,
       32,
       "criaturas/mamiferos/rat"
     ],
     [
-      182,
-      214,
+      183,
+      210,
       -1,
-      10,
+      2,
+      32,
+      "criaturas/vermes/spider"
+    ],
+    [
+      180,
+      211,
+      -1,
+      2,
+      32,
+      "criaturas/vermes/spider"
+    ],
+    [
+      192,
+      212,
+      -1,
+      1,
+      32,
+      "criaturas/mamiferos/rat"
+    ],
+    [
+      181,
+      215,
+      -1,
+      2,
       32,
       "criaturas/vermes/spider"
     ],
@@ -166063,39 +166124,63 @@
       183,
       219,
       -1,
-      5,
+      1,
       32,
       "criaturas/mamiferos/rat"
     ],
     [
-      200,
+      203,
+      221,
+      -1,
+      2,
+      32,
+      "criaturas/vermes/spider"
+    ],
+    [
+      178,
+      222,
+      -1,
+      2,
+      32,
+      "criaturas/vermes/spider"
+    ],
+    [
+      198,
       223,
       -1,
-      10,
+      2,
       32,
       "criaturas/vermes/spider"
     ],
     [
-      185,
+      200,
+      224,
+      -1,
+      2,
+      32,
+      "criaturas/vermes/spider"
+    ],
+    [
+      184,
       225,
       -1,
-      10,
+      2,
       32,
       "criaturas/vermes/spider"
     ],
     [
-      199,
-      225,
-      -1,
-      10,
-      32,
-      "criaturas/vermes/spider"
-    ],
-    [
-      185,
+      182,
       227,
       -1,
-      10,
+      2,
+      32,
+      "criaturas/vermes/spider"
+    ],
+    [
+      188,
+      227,
+      -1,
+      2,
       32,
       "criaturas/vermes/spider"
     ],
