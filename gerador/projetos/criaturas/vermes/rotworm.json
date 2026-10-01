@@ -1,0 +1,86 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 2,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 26,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 5967,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4266,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 4005,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "vermes",
+  "nome": "rotworm",
+  "propriedades": {
+    "comportamento": "normal",
+    "vida": 65,
+    "xp": 40,
+    "velocidade": 116,
+    "armadura": 8,
+    "defesa": 8,
+    "ataque": 40,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.7176,
+        "min": 1,
+        "max": 17
+      },
+      {
+        "tipo": "itens/comidas/ham",
+        "chance": 0.2012
+      },
+      {
+        "tipo": "itens/comidas/meet",
+        "chance": 0.2
+      },
+      {
+        "tipo": "itens/clavas/mace",
+        "chance": 0.045
+      },
+      {
+        "tipo": "itens/decoracoes/worm",
+        "chance": 0.03,
+        "min": 1,
+        "max": 3
+      },
+      {
+        "tipo": "itens/espadas/sword",
+        "chance": 0.03
+      }
+    ]
+  }
+}

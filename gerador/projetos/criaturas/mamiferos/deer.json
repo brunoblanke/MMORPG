@@ -1,0 +1,70 @@
+{
+  "formato": {
+    "quadro": 32,
+    "quadros": 3,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 31,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 4016,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4017,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 4018,
+        "variacao": 0
+      }
+    }
+  },
+  "propriedades": {
+    "comportamento": "pacifico",
+    "vida": 25,
+    "xp": 0,
+    "velocidade": 196,
+    "armadura": 2,
+    "defesa": 2,
+    "ataque": 1,
+    "loot": [
+      {
+        "tipo": "itens/comidas/meet",
+        "chance": 0.8,
+        "min": 1,
+        "max": 4
+      },
+      {
+        "tipo": "itens/comidas/ham",
+        "chance": 0.5,
+        "min": 1,
+        "max": 2
+      }
+    ]
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "mamiferos",
+  "nome": "deer"
+}

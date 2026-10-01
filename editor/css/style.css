@@ -211,3 +211,23 @@ textarea{
 
 
 .accordion-empty{ font-size:11px; color:var(--muted); line-height:1.5; padding:2px 4px 4px; }
+
+.float-panel.wide{ width:320px; }
+.float-panel textarea{
+  background:var(--bg); border:1px solid var(--line); border-radius:5px; color:var(--text);
+  padding:6px 7px; font-size:12px; font-family:'IBM Plex Mono',monospace; width:100%; resize:vertical;
+}
+.object-data-items{ display:flex; flex-direction:column; gap:4px; max-height:220px; overflow-y:auto; }
+.object-data-items .row{ align-items:center; }
+.object-data-items input[type=number]{ width:56px; flex:none; }
+.object-data-items button{ flex:none; width:28px; }
+.select-list{ display:flex; flex-direction:column; gap:3px; max-height:320px; overflow-y:auto; }
+.select-row{ display:flex; align-items:center; gap:6px; padding:3px 4px; border:1px solid var(--line); border-radius:5px; background:var(--bg); }
+.select-thumb{ flex:none; }
+.select-name{ flex:1; min-width:0; font-size:11.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.float-panel .select-row button{ flex:none; width:26px; padding:3px 0; }
+.float-panel .select-row button:disabled{ opacity:.3; cursor:default; }
+.select-empty{ font-size:11px; color:var(--muted); padding:4px; }
+#objectDataForm{ z-index:61; }
+.float-panel [hidden]{ display:none !important; }
+.float-panel, .float-panel *{ box-sizing:border-box; }

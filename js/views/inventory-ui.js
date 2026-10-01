@@ -1,10 +1,12 @@
 // js/views/inventory-ui.js
 
-import { getAsset, spriteFrame, splitType, objectIdType, displayName } from '../../shared/assets.js';
+import { getAsset, spriteFrame, splitType, objectIdType, displayName, objectUse, litAs } from '../../shared/assets.js';
 import { getLevel } from '../core/geometry.js';
-import { itemInfo, weightOf, stackFrame } from '../../shared/items.js';
+import { itemInfo, fitsSlot, stackFrame } from '../../shared/items.js';
 import { PLAYER_SPRITES, DEFAULT_GENDER } from '../../shared/catalog.js';
 import { CORPSE_ROW } from './sprite-registry.js';
+import { describeItem, describeEntity } from './look.js';
+import { ANIMATION_CYCLE_MS } from '../../shared/constants.js';
 
 // Janelas do inventário e dos containers, nas duas colunas ao lado da tela do
 // jogo. Só desenha e manda comandos (moveInv, openContainer, closeContainer,
@@ -19,6 +21,55 @@ const EQUIP_LAYOUT = [
   ['anel', 'Anel'], ['pernas', 'Pernas'], ['municao', 'Munição'],
   [null], ['pes', 'Pés'], [null]
 ];
+// ================================================================================================================================================================================================================================================
+// patchChildren
+// Deixa os filhos de target iguais aos de source reaproveitando os nós que
+// já existem: troca só atributos, textos e nós de outro tipo.
+
+function patchChildren(target, source) {
+  const next = [...source.childNodes];
+  while (target.childNodes.length > next.length) target.lastChild.remove();
+  next.forEach((node, i) => {
+    const current = target.childNodes[i];
+    if (!current) target.appendChild(node);
+    else patchNode(current, node);
+  });
+}
+
+// ================================================================================================================================================================================================================================================
+// patchNode
+
+function patchNode(current, node) {
+  if (current.nodeType !== node.nodeType || current.nodeName !== node.nodeName) {
+    current.replaceWith(node);
+    return;
+  }
+  if (current.nodeType !== Node.ELEMENT_NODE) {
+    if (current.nodeValue !== node.nodeValue) current.nodeValue = node.nodeValue;
+    return;
+  }
+  for (const attr of [...current.attributes]) {
+    if (!node.hasAttribute(attr.name) && attr.name !== 'data-fade-bound') current.removeAttribute(attr.name);
+  }
+  for (const attr of [...node.attributes]) {
+    const value = attr.name === 'class' ? keepTransientClasses(current, attr.value) : attr.value;
+    if (current.getAttribute(attr.name) !== value) current.setAttribute(attr.name, value);
+  }
+  patchChildren(current, node);
+}
+
+// ================================================================================================================================================================================================================================================
+// keepTransientClasses
+// As marcas do arrastar (onde o item pode ir, onde ele está por cima) vivem
+// só na tela: o redesenho não as tira, senão elas piscam a cada atualização.
+
+const TRANSIENT_CLASSES = ['can-drop', 'over', 'reject', 'source'];
+
+function keepTransientClasses(current, value) {
+  const kept = TRANSIENT_CLASSES.filter(name => current.classList.contains(name) && !value.split(' ').includes(name));
+  return kept.length ? `${value} ${kept.join(' ')}` : value;
+}
+
 // ================================================================================================================================================================================================================================================
 // svgIcon
 // Ícones de linha (a partir dos SVGs da pasta TRANSF): o traço segue a cor do
@@ -56,10 +107,20 @@ const SKILL_NAMES = {
   magic: 'Magic', fist: 'Fist', club: 'Club', sword: 'Sword', axe: 'Axe',
   distance: 'Distance', shielding: 'Shielding', fishing: 'Fishing'
 };
-const SKILL_ORDER = ['magic', 'fist', 'sword', 'axe', 'distance', 'shielding', 'fishing'];
-const SPEED_FULL = 640;
+const SKILL_ORDER = ['magic', 'fist', 'club', 'sword', 'axe', 'distance', 'shielding', 'fishing'];
 const PITCH = 40;
 const SAVE_DELAY_MS = 600;
+
+const MAP_USES = ['placa', 'livro', 'bau-quest', 'corda', 'pa', 'descer'];
+
+// ================================================================================================================================================================================================================================================
+// aimsWith
+// Item usado com a mira: potion (em player ou no chão), corda e pá.
+
+function aimsWith(type) {
+  const use = objectUse(type);
+  return !!itemInfo(type).heal || use === 'ferramenta-corda' || use === 'ferramenta-pa';
+}
 
 export class InventoryUI {
 
@@ -113,7 +174,7 @@ export class InventoryUI {
     if (!input) return null;
     if (input.hoverCorpse) return input.hoverCorpse;
     const obj = input.hoverObject;
-    if (!obj || obj.movable !== true || !itemInfo(objectIdType(obj.id)).size) return null;
+    if (!obj || objectUse(objectIdType(obj.id)) || !itemInfo(objectIdType(obj.id)).size) return null;
     return obj;
   }
 
@@ -197,9 +258,11 @@ export class InventoryUI {
   usableUnderMouse() {
     const input = this.game.inputController;
     const obj = input && !input.hoverCorpse ? input.hoverObject : null;
-    if (!obj || obj.movable !== true) return null;
+    if (!obj) return null;
+    if (MAP_USES.includes(objectUse(objectIdType(obj.id)))) return obj;
+    if (obj.movable !== true) return null;
     const info = itemInfo(objectIdType(obj.id));
-    return info.food || info.heal ? obj : null;
+    return info.food || info.heal || info.light || objectUse(objectIdType(obj.id)) ? obj : null;
   }
 
   // ================================================================================================================================================================================================================================================
@@ -236,7 +299,8 @@ export class InventoryUI {
 
   // ================================================================================================================================================================================================================================================
   // initialLayout
-  // O layout guardado no personagem ou, sem ele, o inventário e a mochila à direita.
+  // O layout guardado no personagem ou, sem ele, o inventário à direita (a
+  // mochila começa fechada).
 
   initialLayout(view) {
     const layout = { left: [], right: [] };
@@ -255,22 +319,21 @@ export class InventoryUI {
       if ([...layout.left, ...layout.right].some(w => w.kind === 'inventory')) return this.withVitals(layout);
     }
     layout.right.push(this.makeWindow('inventory', null));
-    const bag = view.equip.mochila;
-    if (bag && bag.items) layout.right.push(this.makeWindow('container', bag.uid, { rows: 3 }));
     return this.withVitals(layout);
   }
 
   // ================================================================================================================================================================================================================================================
   // withVitals
   // Vida e mana, skills e battle sempre existem (não fecham, só minimizam):
-  // a que falta no layout entra embaixo do inventário, nessa ordem.
+  // a que falta no layout entra embaixo do inventário, nessa ordem. Skills e
+  // battle entram minimizadas.
 
   withVitals(layout) {
     let after = 'inventory';
     for (const kind of ['vitals', 'skills', 'battle']) {
       if (![...layout.left, ...layout.right].some(w => w.kind === kind)) {
         const col = ['left', 'right'].find(c => layout[c].some(w => w.kind === after)) || 'right';
-        layout[col].splice(layout[col].findIndex(w => w.kind === after) + 1, 0, this.makeWindow(kind, null));
+        layout[col].splice(layout[col].findIndex(w => w.kind === after) + 1, 0, this.makeWindow(kind, null, { min: kind !== 'vitals' }));
       }
       after = kind;
     }
@@ -395,13 +458,6 @@ export class InventoryUI {
     this.scheduleSave();
     this.render();
     this.flash(found.win.id);
-  }
-
-  // ================================================================================================================================================================================================================================================
-  // isOpen
-
-  isOpen(uid) {
-    return [...this.layout.left, ...this.layout.right].some(w => w.uid === uid);
   }
 
   // ================================================================================================================================================================================================================================================
@@ -533,7 +589,11 @@ export class InventoryUI {
     const width = Math.max(1, asset.quadros || 1) * asset.quadro * scale;
     const height = asset.quadro * scale;
     const x = frame.x + (asset.pilha ? Math.min(stackFrame(count), (asset.quadros || 1) - 1) * asset.quadro : 0);
-    return `<i class="inv-spr" style="background-image:url(${frame.url});background-size:${width}px ${height}px;background-position:${-x * scale}px ${-frame.y * scale}px"></i>`;
+    const frames = asset.pilha ? 1 : frame.frames || 1;
+    const animation = frames > 1
+      ? `;--x0:${-x * scale}px;--x1:${-(x + frames * frame.size) * scale}px;animation:inv-anim ${ANIMATION_CYCLE_MS}ms steps(${frames}) infinite`
+      : '';
+    return `<i class="inv-spr" style="background-image:url(${frame.url});background-size:${width}px ${height}px;background-position:${-x * scale}px ${-frame.y * scale}px${animation}"></i>`;
   }
 
   // ================================================================================================================================================================================================================================================
@@ -561,10 +621,8 @@ export class InventoryUI {
     }
     const info = itemInfo(item.type);
     const count = item.count > 1 ? `<span class="inv-count">${item.count}</span>` : '';
-    const open = item.items && this.isOpen(item.uid) ? '<span class="inv-open"></span>' : '';
-    const attrs = [info.atk && `Atk ${info.atk}`, info.def && `Def ${info.def}`, info.ml && `ML ${info.ml}`, info.speed && `Speed +${info.speed}`].filter(Boolean).join(' · ');
-    const title = `${info.name}${item.count > 1 ? ` (${item.count})` : ''}${attrs ? ` · ${attrs}` : ''} · ${weightOf(item)} oz${item.items ? ' · duplo clique abre' : info.food ? ' · duplo clique ou botão direito: comer' : info.heal ? ' · duplo clique ou botão direito: usar' : ''}`;
-    return `<div class="inv-slot filled" data-place="${key}" data-uid="${item.uid}" title="${title}">${this.spriteHtml(item.type, item.count)}${count}${open}</div>`;
+    const look = (item.lit && litAs(item.type)) || item.type;
+    return `<div class="inv-slot filled" data-place="${key}" data-uid="${item.uid}">${this.spriteHtml(look, item.count)}${count}</div>`;
   }
 
   // ================================================================================================================================================================================================================================================
@@ -576,7 +634,7 @@ export class InventoryUI {
     if (win.kind === 'inventory') {
       const { equip, cap } = this.view;
       const free = Math.max(0, cap.max - cap.used);
-      const capBox = `<div class="inv-capbox${free < cap.max * 0.15 ? ' heavy' : ''}" title="Cap livre: ${Math.round(free * 10) / 10} oz">${Math.floor(free)}</div>`;
+      const capBox = `<div class="inv-capbox${free < cap.max * 0.15 ? ' heavy' : ''}">${Math.floor(free)}</div>`;
       const spare = '<div class="inv-capbox"></div>';
       const last = EQUIP_LAYOUT.length - 1;
       const cell = ([key], i) => key ? this.slotHtml(equip[key], { t: 'e', key }, key) : (i === last ? capBox : (i === last - 2 ? spare : ''));
@@ -593,12 +651,12 @@ export class InventoryUI {
     const box = this.findContainer(win.uid);
     if (!box) return '';
     const slots = box.items.map((item, i) => this.slotHtml(item, { t: 'c', uid: box.uid, i })).join('');
-    const up = this.parentOf(win.uid) ? '<button class="inv-btn" data-act="up" type="button" aria-label="Voltar pro container de fora" title="Voltar pro container de fora">↑</button>' : '';
+    const up = this.parentOf(win.uid) ? '<button class="inv-btn" data-act="up" type="button" aria-label="Voltar pro container de fora">↑</button>' : '';
     return `<section class="inv-win${win.min ? ' min' : ''}" data-win="${win.id}">
       <header class="inv-head"><span class="inv-icon">${this.spriteHtml(box.type)}</span>
         <span class="inv-title">${this.windowTitle(win, box)}</span>${up}${buttons(true)}</header>
       <div class="inv-body"><div class="inv-scroller" style="height:${Math.min(win.rows, Math.ceil(box.items.length / 4)) * PITCH + 8}px"><div class="inv-grid">${slots}</div></div></div>
-      <div class="inv-resize" title="Arraste pra mostrar mais ou menos linhas"></div>
+      <div class="inv-resize"></div>
     </section>`;
   }
 
@@ -626,10 +684,10 @@ export class InventoryUI {
     const fmt = (n) => Number(n).toLocaleString('pt-BR');
     const pctOf = (value, max) => (max > 0 ? Math.max(0, Math.min(100, Math.round(value / max * 100))) : 0);
     const open = new Set(win.bars || []);
-    const line = (key, label, value, pct, kind = '', title = `${pct}% até o próximo`) => {
+    const line = (key, label, value, pct, kind = '') => {
       const hasBar = pct !== undefined;
-      const bar = hasBar && open.has(key) ? `<div class="inv-skbar${kind ? ` ${kind}` : ''}" title="${title}"><i style="width:${pct}%"></i></div>` : '';
-      return `<div class="inv-skline${hasBar ? ' toggles' : ''}"${hasBar ? ` data-bar="${key}" title="Clique pra mostrar ou esconder a barra"` : ''}><div class="inv-skrow"><span>${label}</span><b>${value}</b></div>${bar}</div>`;
+      const bar = hasBar && open.has(key) ? `<div class="inv-skbar${kind ? ` ${kind}` : ''}"><i style="width:${pct}%"></i></div>` : '';
+      return `<div class="inv-skline${hasBar ? ' toggles' : ''}"${hasBar ? ` data-bar="${key}"` : ''}><div class="inv-skrow"><span>${label}</span><b>${value}</b></div>${bar}</div>`;
     };
     const skill = (key) => {
       const entry = stats.skills[key];
@@ -639,13 +697,13 @@ export class InventoryUI {
     const hpPct = pctOf(stats.hp, stats.maxHp);
     const free = Math.max(0, cap.max - cap.used);
     const body = [
+      line('xp', 'XP', fmt(stats.experience)),
       line('level', 'Level', stats.level, stats.levelPct),
-      line('xp', 'XP', fmt(stats.experience), stats.levelPct),
       '<div class="inv-sksep"></div>',
-      line('hp', 'Hit Points', fmt(stats.hp), hpPct, `hp${hpPct <= 25 ? ' low' : hpPct <= 50 ? ' mid' : ''}`, `${fmt(stats.hp)} de ${fmt(stats.maxHp)}`),
-      line('mana', 'Mana', fmt(stats.mana), pctOf(stats.mana, stats.maxMana), 'mp', `${fmt(stats.mana)} de ${fmt(stats.maxMana)}`),
-      line('cap', 'Capacity', Math.floor(free), pctOf(free, cap.max), 'cap', `${Math.floor(free)} de ${Math.floor(cap.max)} oz livres`),
-      line('speed', 'Speed', fmt(stats.speed || 0), pctOf(stats.speed || 0, SPEED_FULL), 'speed', `${stats.speed || 0} (passo mais rápido a partir de ${SPEED_FULL})`),
+      line('hp', 'Hit Points', fmt(stats.hp), hpPct, `hp${hpPct <= 25 ? ' low' : hpPct <= 50 ? ' mid' : ''}`),
+      line('mana', 'Mana', fmt(stats.mana), pctOf(stats.mana, stats.maxMana), 'mp'),
+      line('cap', 'Capacity', Math.floor(free)),
+      line('speed', 'Speed', fmt(stats.speed || 0)),
       line('food', 'Food', stats.food ? `${Math.floor(stats.food / 60)}:${String(stats.food % 60).padStart(2, '0')}` : '—'),
       '<div class="inv-sksep"></div>',
       ...SKILL_ORDER.map(skill)
@@ -700,7 +758,7 @@ export class InventoryUI {
     const player = this.game.player;
     if (!player) return '';
     const follow = player.followMode !== false;
-    return `<button class="inv-follow ${follow ? 'on' : 'off'}" data-act="follow" type="button" title="${follow ? 'Seguindo o alvo (clique pra ficar parado)' : 'Parado (clique pra seguir o alvo)'}">${FOLLOW_ICONS[follow ? 'follow' : 'stand']}</button>`;
+    return `<button class="inv-follow ${follow ? 'on' : 'off'}" data-act="follow" type="button">${FOLLOW_ICONS[follow ? 'follow' : 'stand']}</button>`;
   }
 
   // ================================================================================================================================================================================================================================================
@@ -712,7 +770,7 @@ export class InventoryUI {
     const player = this.game.player;
     if (!player) return '';
     const attack = !!player.attackMode;
-    return `<button class="inv-follow ${attack ? 'on' : 'off'}" data-act="attackmode" type="button" title="${attack ? 'Auto ataque ligado: ataca quem se aproximar' : 'Auto ataque desligado: só ataca o alvo escolhido'}">${FOLLOW_ICONS.attack}</button>`;
+    return `<button class="inv-follow ${attack ? 'on' : 'off'}" data-act="attackmode" type="button">${FOLLOW_ICONS.attack}</button>`;
   }
 
   // ================================================================================================================================================================================================================================================
@@ -750,13 +808,22 @@ export class InventoryUI {
   // ================================================================================================================================================================================================================================================
   // render
 
+  // Só mexe no que mudou (patchChildren): o elemento sob o mouse continua o
+  // mesmo, então o hover não pisca quando o estado muda.
+
   render() {
     if (!this.view || !this.layout) return;
     document.querySelectorAll('.inv-scroller').forEach(sc => this.scrollMemory.set(sc.closest('.inv-win').dataset.win, sc.scrollTop));
-    for (const col of ['left', 'right']) this.columns[col].innerHTML = this.layout[col].map(w => this.windowHtml(w)).join('');
+    for (const col of ['left', 'right']) {
+      const next = document.createElement('div');
+      next.innerHTML = this.layout[col].map(w => this.windowHtml(w)).join('');
+      patchChildren(this.columns[col], next);
+    }
     document.querySelectorAll('.inv-scroller').forEach(sc => {
       sc.scrollTop = this.scrollMemory.get(sc.closest('.inv-win').dataset.win) || 0;
       this.updateFade(sc);
+      if (sc.dataset.fadeBound) return;
+      sc.dataset.fadeBound = '1';
       sc.addEventListener('scroll', () => this.updateFade(sc), { passive: true });
     });
   }
@@ -895,7 +962,7 @@ export class InventoryUI {
     if (place.t === 'c') return true;
     const bag = this.view && this.view.equip.mochila;
     if (place.key === 'mochila' && bag && bag.items && bag.uid !== uid) return true;
-    return itemInfo(type).slot === place.key;
+    return fitsSlot(type, place.key);
   }
 
   endItemDrag(evt) {
@@ -968,6 +1035,11 @@ export class InventoryUI {
       if (this.qty && !evt.target.closest('.inv-qty')) this.closeQty();
       if (evt.button !== 0 || !inPanels(evt.target) || evt.target.closest('.inv-btn')) return;
       const row = evt.target.closest('.inv-battle-row');
+      if (row && evt.shiftKey) {
+        const enemy = this.game.session && this.game.session.enemies.find(e => e.id === row.dataset.enemy);
+        if (enemy) this.game.look(describeEntity(enemy));
+        return;
+      }
       if (row) {
         const target = this.game.player && this.game.player.target;
         this.game.send({ type: 'attack', targetId: target && target.id === row.dataset.enemy ? null : row.dataset.enemy });
@@ -1019,7 +1091,11 @@ export class InventoryUI {
     document.addEventListener('pointerup', (evt) => {
       const clicked = this.pending && this.pending.kind === 'item' && !this.drag ? this.pending : null;
       this.pending = null;
-      if (clicked && evt.button === 0 && clicked.item && !clicked.item.items && itemInfo(clicked.item.type).heal) {
+      if (clicked && evt.button === 0 && clicked.item && evt.shiftKey) {
+        this.game.look(describeItem(clicked.item));
+        return;
+      }
+      if (clicked && evt.button === 0 && clicked.item && !clicked.item.items && aimsWith(clicked.item.type)) {
         this.startAim(clicked.from);
         return;
       }
@@ -1079,11 +1155,11 @@ export class InventoryUI {
       if (!slot || !inPanels(slot)) return false;
       const place = this.placeOf(slot);
       const item = this.itemAt(place);
-      if (item && !item.items && itemInfo(item.type).heal) {
+      if (item && !item.items && aimsWith(item.type)) {
         this.startAim(place);
         return true;
       }
-      if (item && !item.items && itemInfo(item.type).food) {
+      if (item && !item.items && (itemInfo(item.type).food || itemInfo(item.type).light || objectUse(item.type) === 'livro')) {
         this.game.send({ type: 'useItem', from: place });
         return true;
       }
@@ -1111,7 +1187,9 @@ export class InventoryUI {
       const usable = this.usableUnderMouse();
       if (!usable) return false;
       this.game.cancelPendingWalk();
-      if (itemInfo(objectIdType(usable.id)).heal) this.startAim({ t: 'g', id: usable.id });
+      const type = objectIdType(usable.id);
+      if (MAP_USES.includes(objectUse(type))) this.game.send({ type: 'useObject', id: usable.id });
+      else if (aimsWith(type)) this.startAim({ t: 'g', id: usable.id });
       else this.game.send({ type: 'useItem', from: { t: 'g', id: usable.id } });
       return true;
     };

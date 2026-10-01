@@ -1,0 +1,100 @@
+{
+  "formato": {
+    "quadro": 32,
+    "quadros": 3,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 15,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 5960,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "humanoides",
+  "nome": "troll",
+  "propriedades": {
+    "comportamento": "foge",
+    "vida": 50,
+    "xp": 20,
+    "velocidade": 126,
+    "armadura": 6,
+    "defesa": 6,
+    "ataque": 15,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.653,
+        "min": 1,
+        "max": 12
+      },
+      {
+        "tipo": "itens/machados/hand-axe",
+        "chance": 0.2
+      },
+      {
+        "tipo": "itens/comidas/meet",
+        "chance": 0.15
+      },
+      {
+        "tipo": "itens/distancia/spear",
+        "chance": 0.13
+      },
+      {
+        "tipo": "itens/capacetes/leather-helmet",
+        "chance": 0.12
+      },
+      {
+        "tipo": "itens/botas/leather-boots",
+        "chance": 0.1
+      },
+      {
+        "tipo": "itens/ferramentas/rope",
+        "chance": 0.082
+      },
+      {
+        "tipo": "itens/escudos/wooden-shield",
+        "chance": 0.063
+      },
+      {
+        "tipo": "itens/clavas/studded-club",
+        "chance": 0.05
+      },
+      {
+        "tipo": "itens/amuletos-e-colares/silver-amulet",
+        "chance": 0.0008
+      }
+    ]
+  }
+}

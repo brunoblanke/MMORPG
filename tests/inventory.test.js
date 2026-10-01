@@ -303,26 +303,31 @@ test('skills começam no padrão do 7.6 e voltam com o personagem', () => {
   const player = new Simulation(mapData).addPlayer('p1', { name: 'Ana' });
   assert.deepEqual(player.skills.sword, { lvl: 10, pct: 0, tries: 0 });
   assert.deepEqual(player.skills.magic, { lvl: 0, pct: 0, tries: 0 });
-  player.skills.sword = { lvl: 11, pct: 50, tries: 28 };
+  player.skills.sword = { lvl: 11, pct: 50, tries: 50 };
   const saved = JSON.parse(JSON.stringify(player.toSave()));
   const again = new Simulation(mapData).addPlayer('p2', { name: 'Ana', saved });
-  assert.deepEqual(again.skills.sword, { lvl: 11, pct: 50, tries: 28 });
+  assert.deepEqual(again.skills.sword, { lvl: 11, pct: 50, tries: 50 });
   assert.equal(again.skills.fishing.lvl, 10);
 });
 
-test('atk, def e ml dos itens do inventário somam nos skills e no combate', () => {
+test('arma, escudo e armadura entram na fórmula do Tibia; só o ml soma no skill', () => {
   const sim = game();
   const player = sim.player;
-  const base = sim.combat.calculateDamage(player, { def: 0 });
+  const fist = sim.combat.maxDamage(player);
+  assert.equal(fist, Math.round(Math.floor(player.lvl / 5) + ((10 / 4 + 1) * (7 / 3) * 1.03) / 1.2));
   player.equip.arma = { uid: 's1', type: SWORD };
   player.equip.escudo = { uid: 's2', type: SHIELD };
   player.equip.mochila.items[0] = { uid: 's3', type: SWORD };
+  assert.equal(sim.combat.maxDamage(player), Math.round(Math.floor(player.lvl / 5) + ((10 / 4 + 1) * (12 / 3) * 1.03) / 1.2));
+  assert.equal(sim.combat.defenseOf(player, 100000), Math.floor((10 / 4 + 2.23) * 8 * 0.15));
+  assert.equal(sim.combat.defenseOf(player, 0), Math.floor((10 / 4 + 2.23) * 8 * 0.15 * 0.75), 'logo depois de atacar a defesa cai');
   const stats = sim.inventory.viewFor(player).stats;
-  assert.equal(stats.skills.sword.bonus, 14);
-  assert.equal(stats.skills.shielding.bonus, 8);
+  assert.equal(stats.skills.sword.bonus, 0);
   assert.equal(stats.skills.magic.bonus, 1);
-  assert.equal(stats.skills.axe.bonus, 0);
-  assert.ok(sim.combat.calculateDamage(player, { def: 0 }) > base);
+  for (let i = 0; i < 200; i++) {
+    const hit = sim.combat.calculateDamage(player, { atk: 0, def: 0, isPlayer: false }, 0);
+    assert.ok(hit >= 0 && hit <= sim.combat.maxDamage(player));
+  }
   assert.equal(stats.maxMana, player.maxMana);
 });
 
@@ -371,4 +376,39 @@ test('equipamento e container não empilham, mesmo marcados como empilháveis no
   assert.equal(itemInfo('itens/escudos/marcado').stack, 0);
   assert.equal(itemInfo('itens/recipientes/marcada').stack, 0);
   assert.equal(itemInfo(COIN).stack, 100);
+});
+
+test('personagem novo nasce com a bag simples e a tocha na mão; quem volta fica com o que tinha', async () => {
+  const { STARTER_BAG, STARTER_TORCH } = await import('../shared/items.js');
+  setAssets([asset(STARTER_BAG, { move: true, peso: 8, espacos: 8 }), asset(STARTER_TORCH, { move: true, peso: 5, luz: 6 }), asset(SWORD, { move: true, peso: 30 })]);
+  const game = buildGame({ objects: floorRect(0, 10, 0, 10, 0), player: { x: 2, y: 2, z: 0 } });
+  const fresh = game.addPlayer('novo', { name: 'Novo' });
+  assert.equal(fresh.equip.mochila.type, STARTER_BAG);
+  assert.equal(fresh.equip.mochila.items.length, 8);
+  assert.equal(fresh.equip.escudo.type, STARTER_TORCH);
+  const back = game.addPlayer('volta', { name: 'Volta', saved: { equip: { arma: { type: SWORD } } } });
+  assert.equal(back.equip.mochila, null);
+  assert.equal(back.equip.arma.type, SWORD);
+});
+
+test('ring of healing: no espaço do anel recupera 6 de vida e 24 de mana a cada 6 s e dura 7,5 min; fora dele, nada', () => {
+  const RING = 'itens/aneis/ring-of-healing';
+  setAssets([asset(RING, { move: true, peso: 0.8, duracao: 450, regenVida: 6, regenMana: 24 })]);
+  const game = buildGame({ objects: floorRect(0, 10, 0, 10, 0), player: { x: 2, y: 2, z: 0 } });
+  const player = game.player;
+  player.currentHp = 10;
+  player.mana = 0;
+  player.food = 0;
+  player.equip.anel = { uid: 'r1', type: RING };
+  const run = (ms) => { const end = game.time + ms; while (game.time < end) game.tick(game.time + TICK_MS); };
+  run(6000 + TICK_MS);
+  assert.equal(player.currentHp, 16);
+  assert.equal(player.mana, 24);
+  run(450000);
+  assert.equal(player.equip.anel, null, 'acabou');
+  player.equip.municao = { uid: 'r2', type: RING };
+  const hp = player.currentHp;
+  run(12000);
+  assert.equal(player.currentHp, hp, 'no espaço de munição não regenera');
+  assert.equal(player.equip.municao.fuel, undefined, 'nem gasta');
 });

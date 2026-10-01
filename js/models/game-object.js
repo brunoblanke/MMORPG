@@ -3,7 +3,7 @@
 import { randEnemyColor } from '../utils/helpers.js';
 import { Enemy } from './enemy.js';
 import { computeBorderPieces } from '../../shared/floor-variant.js';
-import { isFloorType, isHoleType, objectIdType, splitType, pieceType, interiorVariant, getAsset, floorHasPiece } from '../../shared/assets.js';
+import { isFloorType, isHoleType, isEntranceFolder, objectUse, objectIdType, splitType, pieceType, interiorVariant, getAsset, floorHasPiece, creatureBehavior } from '../../shared/assets.js';
 import { collectObjectDescriptors, collectEnemyDescriptors } from '../../shared/map-format.js';
 import { getStairTop, getStairTopTarget, getHoleTarget } from '../../shared/stairs.js';
 import { parseBorderType, hasSavedBorders, mergeSavedInnerCorners } from '../../shared/floor-borders.js';
@@ -63,6 +63,7 @@ export function generateObjects(mapData) {
     if (descriptor.color) obj.color = descriptor.color;
     obj.seq = descriptor.seq;
     if (descriptor.count) obj.count = descriptor.count;
+    if (descriptor.data) obj.data = descriptor.data;
     objs.push(obj);
   });
 
@@ -110,7 +111,9 @@ function createBorder(piece, position, counter) {
 //   - buraco comum é um item sobre o chão do sqm (em geral ord 1) e desce
 //     pro mesmo sqm do andar de baixo;
 //   - topo de escada com uma entrada desenhada por cima (alçapão) mantém o
-//     piso: o alçapão fica sobre ele e a descida continua sendo a da escada.
+//     piso: o alçapão fica sobre ele e a descida continua sendo a da escada;
+//   - entrada que se usa (bueiro: Uso descer; monte: Uso pá) tira o topo:
+//     pisar não desce, só usando (systems/interactions.js).
 // Nenhum dos dois impede borda do piso vizinho. Todos viram transição no
 // World (getTransitionAt) pra movimentação.
 
@@ -132,10 +135,11 @@ function applyTransitions(objs) {
     stairTops.push(stairTop);
   }
 
-  const holeKeys = new Set(objs.filter(obj => isHoleType(objectIdType(obj.id))).map(obj => `${obj.x},${obj.y},${obj.z}`));
+  const holeKeys = new Set(objs.filter(obj => isEntranceFolder(objectIdType(obj.id))).map(obj => `${obj.x},${obj.y},${obj.z}`));
   const topKeys = new Set(stairTops.map(t => `${t.x},${t.y},${t.z}`).filter(key => !holeKeys.has(key)));
+  const closedKeys = new Set(objs.filter(obj => ['descer', 'pa'].includes(objectUse(objectIdType(obj.id)))).map(obj => `${obj.x},${obj.y},${obj.z}`));
   const result = objs.filter(obj => !(obj.floorType && topKeys.has(`${obj.x},${obj.y},${obj.z}`)));
-  result.push(...stairTops);
+  result.push(...stairTops.filter(top => !closedKeys.has(`${top.x},${top.y},${top.z}`)));
 
   for (const obj of result) {
     if (isHoleType(objectIdType(obj.id))) {
@@ -303,7 +307,7 @@ export function generateOrganicFloorArea(minX, maxX, minY, maxY, iterations = 3,
 export function generateEnemies(mapData) {
   const enemies = [];
 
-  collectEnemyDescriptors(mapData).forEach((descriptor, i) => {
+  collectEnemyDescriptors(mapData).filter(descriptor => creatureBehavior(descriptor.type) !== 'npc').forEach((descriptor, i) => {
     const enemy = new Enemy({
       id: "ini" + (i + 1),
       type: "enemy",

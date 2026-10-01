@@ -17,8 +17,9 @@
     "peso": 62,
     "espacos": 0,
     "atk": 0,
-    "def": 50,
-    "ml": 0
+    "def": 32,
+    "ml": 0,
+    "speed": 0
   },
   "ferramenta": "objetos",
   "grupo": "itens",

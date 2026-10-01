@@ -53,6 +53,7 @@ export class LocalSession {
   get objects() { return this.sim.objects; }
   get players() { return this.sim.players; }
   get enemies() { return this.sim.enemies; }
+  get npcs() { return this.sim.npcs; }
   get deadBodies() { return this.sim.deadBodies; }
   get player() { return this.sim.getPlayer(this.playerId); }
   get inventoryView() { return this.player ? this.sim.inventory.viewFor(this.player) : null; }

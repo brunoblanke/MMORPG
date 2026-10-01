@@ -13,6 +13,12 @@ export const THROW_RANGE = 25;
 export const DEFAULT_WEIGHT = 10;
 export const DEFAULT_CONTAINER_SIZE = 8;
 
+// Bag simples com que todo personagem novo nasce (no espaço da mochila).
+export const STARTER_BAG = 'itens/recipientes/bag';
+
+// Tocha com que todo personagem novo nasce (na mão, espaço do escudo).
+export const STARTER_TORCH = 'itens/fontes-de-luz/torch';
+
 // Morte do player: a mochila vai sempre pro corpo; cada outro item do
 // inventário, com esta chance (provisório).
 export const DEATH_DROP_CHANCE = 0.3;
@@ -55,7 +61,7 @@ const SLOT_BY_FOLDER = {
   calcas: 'pernas', botas: 'pes', aljavas: 'municao', 'extra-slot': 'municao', municao: 'municao',
   machados: 'arma', clavas: 'arma', espadas: 'arma', rods: 'arma', wands: 'arma',
   'wands-e-rods-antigas': 'arma', distancia: 'arma', 'replicas-de-armas': 'arma', punhos: 'arma',
-  'amuletos-e-colares': 'amuleto', aneis: 'anel', recipientes: 'mochila'
+  'amuletos-e-colares': 'amuleto', aneis: 'anel', recipientes: 'mochila', 'fontes-de-luz': 'escudo'
 };
 
 // ================================================================================================================================================================================================================================================
@@ -66,7 +72,11 @@ const SLOT_BY_FOLDER = {
 // marcados no gerador), size os espaços, se for container (0 = não é),
 // atk/def/ml/speed os bônus de quem usa o item (0 = não tem) e heal o que
 // ele recupera ao ser usado ({ hp: [min, max], mana: [min, max] }, ou null)
-// e food os segundos de regeneração, se for comida (0 = não é).
+// e food os segundos de regeneração, se for comida (0 = não é); light o raio
+// da luz (sqm) que ele dá equipado ou no chão (0 = não ilumina), burn os
+// segundos que ele dura em uso (aceso, ou equipado se regenera) até acabar
+// (0 = não gasta) e regen o que ele recupera equipado a cada REGEN_MS
+// (anel de cura).
 
 export function itemInfo(type) {
   const asset = getAsset(splitType(type).asset);
@@ -88,8 +98,30 @@ export function itemInfo(type) {
     speed: bonusValue(props.speed),
     heal: healOf(props),
     food: bonusValue(props.alimento),
+    light: bonusValue(props.luz),
+    burn: bonusValue(props.duracao),
+    regen: { hp: bonusValue(props.regenVida), mana: bonusValue(props.regenMana) },
     weaponSkill: SKILL_BY_WEAPON_FOLDER[folder] || null
   };
+}
+
+// ================================================================================================================================================================================================================================================
+// fitsSlot
+// O item vai no espaço key do inventário: o espaço dele ou, no de munição,
+// qualquer item que não seja container (flechas, tocha, utilitários).
+
+export function fitsSlot(type, key) {
+  const info = itemInfo(type);
+  return info.slot === key || (key === 'municao' && !info.size);
+}
+
+// ================================================================================================================================================================================================================================================
+// itemLight
+// Raio da luz que o item dá agora: só aceso (item.lit, botão direito acende
+// e apaga).
+
+export function itemLight(item) {
+  return item && item.lit ? itemInfo(item.type).light : 0;
 }
 
 // ================================================================================================================================================================================================================================================
@@ -228,6 +260,9 @@ export function toPlain(item) {
   const plain = { type: item.type };
   if (item.count) plain.count = item.count;
   if (item.items) plain.items = item.items.map(toPlain);
+  if (item.texto) plain.texto = item.texto;
+  if (item.lit) plain.lit = true;
+  if (item.fuel !== undefined) plain.fuel = item.fuel;
   return plain;
 }
 
@@ -242,5 +277,8 @@ export function fromPlain(plain, nextUid) {
   if (item.items && Array.isArray(plain.items)) {
     plain.items.slice(0, item.items.length).forEach((child, i) => { item.items[i] = fromPlain(child, nextUid); });
   }
+  if (typeof plain.texto === 'string' && plain.texto) item.texto = plain.texto.slice(0, 2000);
+  if (plain.lit === true && itemInfo(item.type).light) item.lit = true;
+  if (Number.isFinite(plain.fuel) && plain.fuel > 0) item.fuel = plain.fuel;
   return item;
 }

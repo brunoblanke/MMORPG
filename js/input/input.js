@@ -2,11 +2,30 @@
 
 import { CONFIG } from '../config.js';
 import { getRoofLevel } from '../views/draw-order.js';
-import { getEntityLevel } from '../core/geometry.js';
+import { getEntityLevel, getLevel } from '../core/geometry.js';
+import { objectUse, objectIdType } from '../../shared/assets.js';
+import { itemInfo } from '../../shared/items.js';
+
+// ================================================================================================================================================================================================================================================
+// isTextField
+// Tecla digitada num campo de texto (chat, nome): não anda.
+
+function isTextField(target) {
+  const tag = target && target.tagName;
+  return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
+}
 
 const KEY_DIRECTIONS = {
   w: [0, -1], s: [0, 1], a: [-1, 0], d: [1, 0],
-  q: [-1, -1], e: [1, -1], z: [-1, 1], c: [1, 1]
+  q: [-1, -1], e: [1, -1], z: [-1, 1], c: [1, 1],
+  arrowup: [0, -1], arrowdown: [0, 1], arrowleft: [-1, 0], arrowright: [1, 0]
+};
+
+// Ctrl + direção: vira pro lado sem sair do sqm (setas também, já que o
+// navegador não deixa o jogo usar Ctrl+W).
+const TURN_KEYS = {
+  w: [0, -1], s: [0, 1], a: [-1, 0], d: [1, 0],
+  arrowup: [0, -1], arrowdown: [0, 1], arrowleft: [-1, 0], arrowright: [1, 0]
 };
 
 export class InputController {
@@ -82,7 +101,14 @@ export class InputController {
   // handleKeyDown
 
   handleKeyDown(e) {
+    if (isTextField(e.target)) return;
     const key = e.key.toLowerCase();
+    if (e.ctrlKey && TURN_KEYS[key]) {
+      e.preventDefault();
+      const [dx, dy] = TURN_KEYS[key];
+      this.game.send({ type: 'turn', dx, dy });
+      return;
+    }
     if (!KEY_DIRECTIONS[key]) return;
     e.preventDefault();
     if (this.keysPressed[key]) return;
@@ -94,6 +120,7 @@ export class InputController {
   // handleKeyUp
 
   handleKeyUp(e) {
+    if (isTextField(e.target)) return;
     const key = e.key.toLowerCase();
     if (!KEY_DIRECTIONS[key]) return;
     this.keysPressed[key] = false;
@@ -146,12 +173,13 @@ updateHoverEnemy(enemies, world, offset, player, deadBodies) {
   const corpsesOnTile = (deadBodies || []).filter(c => c.x === tileX && c.y === tileY && isVisible(c));
   const objectsOnTile = world.getObjectsAt(tileX, tileY).filter(o =>
     isVisible(o) && !o.isBorder &&
-    (o.hasVolume || o.blocksMovement || o.movable === true || o.floorType)
+    (o.hasVolume || o.blocksMovement || o.movable === true || o.floorType || objectUse(objectIdType(o.id)) || itemInfo(objectIdType(o.id)).size > 0)
   );
   const stack = [...corpsesOnTile, ...objectsOnTile].sort(byTopmost);
   this.hoverMovable = stack.find(o => (o.isCorpse ? o.movable !== false : o.movable === true)) || null;
 
-  const enemiesSorted = enemies.filter(isVisible).sort(byTopmost);
+  const playerLevel = getLevel(player);
+  const enemiesSorted = enemies.filter(e => getLevel(e) === playerLevel).sort(byTopmost);
   for (const enemy of enemiesSorted) {
     if (this.renderer.isPointInCube(
       this.mouseX, this.mouseY,

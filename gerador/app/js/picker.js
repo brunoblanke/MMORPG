@@ -72,7 +72,7 @@ export function initPicker(catalog, { onPick, onUseAll }) {
   });
   useAllEl.onclick = () => {
     const item = picker.itemsById.get(picker.selectedId);
-    if (item) picker.onUseAll(item[0], item[5]);
+    if (item) picker.onUseAll(item[0], item[6] || item[5]);
   };
 
   renderTabs();

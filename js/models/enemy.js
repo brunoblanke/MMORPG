@@ -13,6 +13,7 @@ export class Enemy extends Entity {
     this.patrolRadius = data.patrolRadius || CONFIG.patrolRadius || 3;
     this.detectionRadius = data.detectionRadius || CONFIG.detectionRadius || 6;
     this.avoidsSafeZones = true;   // não entra em zona segura (regra de passo e busca de caminho)
+    this.groundOnly = true;        // não sobe em caixa/pilha nem pisa em escada ou buraco
     this.ai = {
       state: AI_STATE.PATROL,
       slot: null,
@@ -32,10 +33,11 @@ export class Enemy extends Entity {
     this.creature = data.creature || '';
     const stats = creatureStats(this.creature);
     if (stats.hp) this.hp = this.maxHp = this.currentHp = stats.hp;
-    if (stats.xp) this.xp = stats.xp;
+    if (stats.xp !== undefined) this.xp = stats.xp;
     if (stats.spd) this.spd = stats.spd;
-    if (stats.def) this.def = stats.def;
-    if (stats.atk) this.atk = stats.atk;
+    if (stats.def !== undefined) this.def = stats.def;
+    this.defense = stats.defense ?? this.def;
+    if (stats.atk !== undefined) this.atk = stats.atk;
   }
 
   isInPatrolZone(x, y) {

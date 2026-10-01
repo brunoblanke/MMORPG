@@ -1,0 +1,100 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 3,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 22,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 5962,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4251,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3989,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "gigantes",
+  "nome": "cyclops",
+  "propriedades": {
+    "comportamento": "normal",
+    "vida": 260,
+    "xp": 150,
+    "velocidade": 190,
+    "armadura": 17,
+    "defesa": 17,
+    "ataque": 105,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.82,
+        "min": 1,
+        "max": 47
+      },
+      {
+        "tipo": "itens/comidas/meet",
+        "chance": 0.3007
+      },
+      {
+        "tipo": "itens/espadas/short-sword",
+        "chance": 0.08
+      },
+      {
+        "tipo": "itens/escudos/plate-shield",
+        "chance": 0.025
+      },
+      {
+        "tipo": "itens/escudos/battle-shield",
+        "chance": 0.014
+      },
+      {
+        "tipo": "itens/machados/halberd",
+        "chance": 0.0073
+      },
+      {
+        "tipo": "itens/amuletos-e-colares/wolf-tooth-chain",
+        "chance": 0.0036
+      },
+      {
+        "tipo": "itens/capacetes/dark-helmet",
+        "chance": 0.0023
+      },
+      {
+        "tipo": "itens/aneis/club-ring",
+        "chance": 0.0014
+      },
+      {
+        "tipo": "itens/liquidos/health-potion",
+        "chance": 0.0005
+      }
+    ]
+  }
+}

@@ -12,10 +12,14 @@ import { getSpritePaths } from './views/sprite-registry.js';
 import { loadAssets } from '../shared/assets.js';
 import { UI } from './views/ui.js';
 import { getRoofLevel } from './views/draw-order.js';
+import { getLevel } from './core/geometry.js';
 import { ParticleController } from './systems/particle-controller.js';
 import { InputController } from './input/input.js';
 import { NameModal } from './views/name-modal.js';
 import { InventoryUI } from './views/inventory-ui.js';
+import { describeEntity, describeGroundObject } from './views/look.js';
+import { SpeechLayer } from './views/speech.js';
+import { ChatBox } from './views/chat-box.js';
 
 // Tempo pra saber se o clique em caixa/cadáver é o começo de um duplo clique.
 const DOUBLE_CLICK_MS = 250;
@@ -43,6 +47,8 @@ export class GameController {
     this.devMode = CONFIG.devMode !== undefined ? CONFIG.devMode : false;
     this.renderer.setDevMode(this.devMode);
     this.statusMessage = null;
+    this.speech = new SpeechLayer();
+    this.chatBox = new ChatBox(this);
 
     this.boot();
   }
@@ -57,7 +63,6 @@ export class GameController {
       console.error('❌ Erro ao carregar mapa:', error);
       return {};
     });
-    this.lootReady = fetch(CONFIG.lootDataUrl).then(r => (r.ok ? r.json() : {})).catch(() => ({}));
     const socketReady = RemoteSession.openSocket().catch((error) => {
       console.log(`🕹️ Sem servidor de jogo (${error.message}): jogando sozinho`);
       return null;
@@ -92,17 +97,16 @@ export class GameController {
   // antes de entrar): joga sozinho no navegador com esse nome.
 
   async openSession(modal, mapData, socket) {
-    const lootTable = await this.lootReady;
     for (;;) {
       const { name, gender } = await modal.ask();
       if (!socket) {
         modal.close(name);
-        return new LocalSession(mapData, name, gender, lootTable);
+        return new LocalSession(mapData, name, gender);
       }
       try {
         const session = await RemoteSession.join(socket, mapData, name, gender);
         console.log(`🌐 Conectado ao servidor como ${name} (${session.playerId})`);
-        session.onDisconnect = () => this.showMessage('Conexão com o servidor perdida — recarregue a página', performance.now(), 600000);
+        session.onDisconnect = () => this.showMessage('Conexão com o servidor perdida — recarregue a página', performance.now(), 600000, 'danger');
         modal.close(name);
         return session;
       } catch (error) {
@@ -113,7 +117,7 @@ export class GameController {
         console.log(`🕹️ ${error.message}: jogando sozinho`);
         socket = null;
         modal.close(name);
-        return new LocalSession(mapData, name, gender, lootTable);
+        return new LocalSession(mapData, name, gender);
       }
     }
   }
@@ -144,6 +148,11 @@ export class GameController {
     this.eventManager.on('click', function(data) {
       if (self.ui.isDevButtonClicked(data.mouseX, data.mouseY)) {
         self.toggleDevMode();
+        return;
+      }
+
+      if (data.event && data.event.shiftKey) {
+        self.lookAtMouse();
         return;
       }
 
@@ -183,8 +192,11 @@ export class GameController {
   // ================================================================================================================================================================================================================================================
   // showMessage
 
-  showMessage(text, timestamp, duration = 2000) {
-    this.statusMessage = { text, expiresAt: timestamp + duration };
+  // kind: 'info' (verde: positiva ou neutra), 'warn' (amarelo: alerta) ou
+  // 'danger' (vermelho: perigo).
+
+  showMessage(text, timestamp, duration = 2000, kind = 'info') {
+    this.statusMessage = { text, kind, expiresAt: timestamp + duration };
   }
 
   // ================================================================================================================================================================================================================================================
@@ -270,14 +282,45 @@ export class GameController {
   }
 
   // ================================================================================================================================================================================================================================================
+  // lookAtMouse
+  // Shift + clique na tela: mostra o que é o player, a criatura ou o item sob
+  // o mouse (mensagem verde no centro).
+
+  lookAtMouse() {
+    if (!this.player || !this.inputController) return;
+    const offset = this.camera.getOffset();
+    const { mouseX, mouseY } = this.inputController;
+    const level = getLevel(this.player);
+    const entities = [...this.session.players, ...(this.session.npcs || []), ...this.session.enemies.filter(e => e.isAlive())].filter(e => getLevel(e) === level);
+    const hit = entities.find(e => this.renderer.isPointInCube(mouseX, mouseY, e.renderX, e.renderY, offset, e.z || 0, e.step || 0));
+    if (hit) {
+      this.look(describeEntity(hit, this.player));
+      return;
+    }
+    const obj = this.inputController.hoverCorpse || this.inputController.hoverObject;
+    const text = obj ? describeGroundObject(obj) : null;
+    if (text) this.look(text);
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // look
+
+  look(text) {
+    this.showMessage(text, performance.now(), 3000 + text.length * 30, 'info');
+  }
+
+  // ================================================================================================================================================================================================================================================
   // trySelectEnemyAtMouse
   // Clique em inimigo alterna a seleção de alvo. Retorna true se o clique acertou um inimigo.
+  // Só conta inimigo no andar do player (os de outros andares ficam na mesma
+  // posição de tela, mas não podem ser alvo).
 
   trySelectEnemyAtMouse() {
     const offset = this.camera.getOffset();
+    const level = getLevel(this.player);
 
     for (const enemy of this.session.enemies) {
-      if (!enemy.isAlive()) continue;
+      if (!enemy.isAlive() || getLevel(enemy) !== level) continue;
       const hit = this.renderer.isPointInCube(
         this.inputController.mouseX,
         this.inputController.mouseY,
@@ -314,10 +357,37 @@ export class GameController {
         this.particleController.spawnXP(event.x, event.y, event.amount, this.renderer);
       } else if (event.type === 'levelUp' && event.playerId === playerId) {
         this.showMessage(`⭐ Você subiu para o nível ${event.lvl}!`, timestamp, 3000);
+      } else if (event.type === 'book' && event.playerId === playerId) {
+        this.showBook(event.title, event.text);
+      } else if (event.type === 'speech') {
+        this.speech.add(event, performance.now());
       } else if (event.type === 'message' && event.playerId === playerId) {
-        this.showMessage(event.text, timestamp);
+        this.showMessage(event.text, timestamp, 2000 + Math.min(4000, event.text.length * 40), event.kind || 'warn');
       }
     }
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // showBook
+  // Janela do livro: título e o texto (escrito no editor). Fecha no X, no
+  // Esc ou clicando fora.
+
+  showBook(title, text) {
+    let modal = document.getElementById('bookModal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'bookModal';
+      modal.className = 'book-modal';
+      modal.innerHTML = '<div class="book-page" role="dialog"><header><span class="book-title"></span><button type="button" class="book-close" aria-label="Fechar">×</button></header><div class="book-text"></div></div>';
+      document.body.appendChild(modal);
+      const close = () => modal.classList.remove('show');
+      modal.addEventListener('pointerdown', (evt) => { if (evt.target === modal) close(); });
+      modal.querySelector('.book-close').onclick = close;
+      document.addEventListener('keydown', (evt) => { if (evt.key === 'Escape') close(); });
+    }
+    modal.querySelector('.book-title').textContent = title;
+    modal.querySelector('.book-text').textContent = text || 'O livro está em branco.';
+    modal.classList.add('show');
   }
 
   // ================================================================================================================================================================================================================================================
@@ -326,6 +396,7 @@ export class GameController {
   updateAnimations(timestamp) {
     for (const player of this.session.players) player.updateAnimation(timestamp);
     for (const enemy of this.session.enemies) enemy.updateAnimation(timestamp);
+    for (const npc of this.session.npcs || []) npc.updateAnimation(timestamp);
   }
 
   // ================================================================================================================================================================================================================================================
@@ -361,6 +432,8 @@ export class GameController {
       player: this.player,
       players: this.session.players,
       enemies: this.session.enemies,
+      npcs: this.session.npcs || [],
+      speech: this.speech,
       objects: this.session.objects,
       world: this.session.world,
       deadBodies: this.session.deadBodies,

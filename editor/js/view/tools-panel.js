@@ -4,8 +4,9 @@ import { state, TOOLS } from '../model/state.js';
 import { FLOOR_MIN, FLOOR_MAX, GROUND_FLOOR } from '../../../shared/constants.js';
 import { scheduleRender } from './canvas-renderer.js';
 import { BORDER_VARIANTS } from '../../../shared/floor-borders.js';
-import { listAssets, pieceType, splitType, displayName, isStairsType, isHoleType, isItemType, isWallType, WALL_PIECES, WALL_PIECE_NAMES } from '../../../shared/assets.js';
+import { listAssets, creatureBehavior, pieceType, splitType, displayName, isStairsFolder, isEntranceFolder, isItemType, isWallType, WALL_PIECES, WALL_PIECE_NAMES } from '../../../shared/assets.js';
 import { setThumb } from './sprite-thumb.js';
+import { closeSelectPanel } from './forms.js';
 
 // ================================================================================================================================================================================================================================================
 // renderLayerTabs
@@ -57,7 +58,7 @@ function layerHasContent(z) {
   if (!layer) return false;
   for (const key in layer) {
     const cell = layer[key];
-    if (cell.floor || cell.floorTop || cell.hole || cell.borders.length || cell.objects.length || cell.enemy || cell.spawn || cell.safe) return true;
+    if (cell.floor || cell.floorTop || cell.hole || cell.borders.length || cell.objects.length || cell.enemy || cell.npc || cell.spawn || cell.safe) return true;
   }
   return false;
 }
@@ -67,6 +68,7 @@ function layerHasContent(z) {
 
 export function onLayerChange() {
   document.getElementById('layerLabel').textContent = 'Andar ' + floorLabel(state.activeZ);
+  closeSelectPanel();
   renderLayerTabs();
   updateStats();
   scheduleRender();
@@ -82,10 +84,11 @@ export function choosePaintDefaults() {
   const first = (list) => (list[0] ? list[0].id : null);
   if (!state.floorPaint) state.floorPaint = first(floors);
   if (!state.wallPaint && walls[0]) state.wallPaint = pieceType(walls[0].id, wallPieces(walls[0])[0]);
-  if (!state.stairsPaint) state.stairsPaint = first(listAssets('objetos', a => isStairsType(a.id)));
-  if (!state.holePaint) state.holePaint = first(listAssets('objetos', a => isHoleType(a.id)));
+  if (!state.stairsPaint) state.stairsPaint = first(listAssets('objetos', a => isStairsFolder(a.id)));
+  if (!state.holePaint) state.holePaint = first(listAssets('objetos', a => isEntranceFolder(a.id)));
   if (!state.itemPaint) state.itemPaint = first(listAssets('objetos', a => isItemType(a.id)));
-  if (!state.enemyPaint) state.enemyPaint = first(listAssets('criaturas'));
+  if (!state.enemyPaint) state.enemyPaint = first(listAssets('criaturas', a => creatureBehavior(a.id) !== 'npc'));
+  if (!state.npcPaint) state.npcPaint = first(listAssets('criaturas', a => creatureBehavior(a.id) === 'npc'));
   if (!state.borderPaint && floors[0]) state.borderPaint = { type: floors[0].id, variant: 'n' };
 }
 
@@ -158,9 +161,10 @@ function accordionGroups(tool) {
       }))
     };
   }
-  if (tool.id === 'stairs') return { empty: 'Nenhuma escada gerada (Estrutura › Escadas).', groups: byFolder(listAssets('objetos', a => isStairsType(a.id)), simple) };
-  if (tool.id === 'hole') return { empty: 'Nenhuma entrada gerada (Estrutura › Entradas).', groups: byFolder(listAssets('objetos', a => isHoleType(a.id)), simple) };
+  if (tool.id === 'stairs') return { empty: 'Nenhuma escada gerada (Estrutura › Escadas).', groups: byFolder(listAssets('objetos', a => isStairsFolder(a.id)), simple) };
+  if (tool.id === 'hole') return { empty: 'Nenhuma entrada gerada (Estrutura › Entradas).', groups: byFolder(listAssets('objetos', a => isEntranceFolder(a.id)), simple) };
   if (tool.id === 'item') return { empty: 'Nenhum objeto gerado.', groups: byFolder(listAssets('objetos', a => isItemType(a.id)), simple) };
+  if (tool.id === 'npc') return { empty: 'Nenhum NPC gerado (Criaturas, comportamento NPC).', groups: byFolder(listAssets('criaturas', a => creatureBehavior(a.id) === 'npc'), simple) };
   return { empty: '', groups: [] };
 }
 
@@ -213,6 +217,9 @@ export function renderTools() {
       swatch.style.alignItems = 'center';
       swatch.style.justifyContent = 'center';
       swatch.style.fontSize = '14px';
+    } else if (t.id === 'select') {
+      swatch.style.background = 'transparent';
+      swatch.style.border = '2px solid #f5c518';
     } else if (t.id === 'safe') {
       swatch.style.background = 'rgba(46, 204, 113, 0.35)';
       swatch.style.border = '1px solid rgba(46, 204, 113, 0.9)';
@@ -235,6 +242,7 @@ export function renderTools() {
     btn.onclick = () => {
       state.openAccordion = t.paint && state.openAccordion !== t.id ? t.id : null;
       state.tool = t.id;
+      if (t.id !== 'select') closeSelectPanel();
       renderTools();
     };
     wrap.appendChild(btn);
@@ -310,7 +318,7 @@ export function updateStats() {
     if (c.hole) h++;
     if (c.enemy) cr++;
     c.objects.forEach(o => {
-      if (isStairsType(o.type)) s++;
+      if (isStairsFolder(o.type)) s++;
       else if (isWallType(o.type)) w++;
       else it++;
     });

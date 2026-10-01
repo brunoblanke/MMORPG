@@ -3,10 +3,10 @@
 import { canvas, cellFromEvent, scheduleRender } from '../view/canvas-renderer.js';
 import { state } from '../model/state.js';
 import { updateStats } from '../view/tools-panel.js';
-import { openEnemyForm } from '../view/forms.js';
+import { openEnemyForm, openSelectPanel } from '../view/forms.js';
 import { addFloorToCell, restackItems } from '../../../shared/map-format.js';
 import { refreshBordersAt } from '../model/borders.js';
-import { isStairsType } from '../../../shared/assets.js';
+import { isStairsFolder } from '../../../shared/assets.js';
 import { itemInfo } from '../../../shared/items.js';
 import { brushCells, MAX_BRUSH } from '../model/brush.js';
 
@@ -14,14 +14,15 @@ import { brushCells, MAX_BRUSH } from '../model/brush.js';
 // eraseTopmost
 //
 // A borracha tira só o que está mais em cima no sqm a cada passada (um traço
-// passa uma vez por célula): criatura, respawn, objetos do topo pra baixo,
+// passa uma vez por célula): NPC, criatura, respawn, objetos do topo pra baixo,
 // bordas (da mais nova pra mais antiga), buraco, piso de cima e, por último,
 // o piso de baixo. Devolve o que tirou.
 
 function eraseTopmost(cell) {
+  if (cell.npc) { cell.npc = null; return 'npc'; }
   if (cell.enemy) { cell.enemy = null; return 'enemy'; }
   if (cell.spawn) { cell.spawn = false; return 'spawn'; }
-  if (cell.objects.length > 0) { return isStairsType(cell.objects.pop().type) ? 'stairs' : 'object'; }
+  if (cell.objects.length > 0) { return isStairsFolder(cell.objects.pop().type) ? 'stairs' : 'object'; }
   if (cell.borders.length > 0) { cell.borders.pop(); return 'border'; }
   if (cell.hole) { cell.hole = null; return 'hole'; }
   if (cell.floorTop) { cell.floorTop = null; return 'floor'; }
@@ -45,7 +46,7 @@ export function applyTool(x, y, clientX, clientY) {
   if (state.tool === 'stairs') {
     // Destino é fixo pela posição (shared/stairs.js): só escolhe o desenho.
     const cell = state.layers[state.activeZ][`${x},${y}`];
-    if (state.stairsPaint && !cell.objects.some(o => isStairsType(o.type))) {
+    if (state.stairsPaint && !cell.objects.some(o => isStairsFolder(o.type))) {
       cell.objects.push({ type: state.stairsPaint });
       refreshBordersAt(state.activeZ, x, y, true);
     }
@@ -53,8 +54,19 @@ export function applyTool(x, y, clientX, clientY) {
     scheduleRender();
     return;
   }
+  if (state.tool === 'select') {
+    openSelectPanel(x, y, clientX, clientY);
+    return;
+  }
   if (state.tool === 'enemy') {
     openEnemyForm(x, y, clientX, clientY);
+    return;
+  }
+  if (state.tool === 'npc') {
+    const cell = state.layers[state.activeZ][`${x},${y}`];
+    if (state.npcPaint) cell.npc = { type: state.npcPaint };
+    updateStats();
+    scheduleRender();
     return;
   }
   if (state.tool === 'spawn') {
@@ -131,6 +143,7 @@ export function updateCoordDisplay(evt) {
 }
 
 canvas.addEventListener('mousedown', (evt) => {
+  if (evt.button !== 0) return;
   const cell = cellFromEvent(evt);
   if (!cell) return;
   state.painting = true;
@@ -146,7 +159,7 @@ canvas.addEventListener('mousemove', (evt) => {
     scheduleRender();
   }
   if (!state.painting) return;
-  if (state.tool === 'stairs' || state.tool === 'enemy' || state.tool === 'spawn') return;
+  if (state.tool === 'stairs' || state.tool === 'enemy' || state.tool === 'npc' || state.tool === 'spawn' || state.tool === 'select') return;
   const cell = cellFromEvent(evt);
   if (!cell) return;
   applyTool(cell.x, cell.y, evt.clientX, evt.clientY);

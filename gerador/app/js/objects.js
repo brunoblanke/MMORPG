@@ -1,6 +1,6 @@
 // gerador/app/js/objects.js
 
-import { spriteUrl, saveProject, fetchItemInfo } from './api.js';
+import { spriteUrl, saveProject, fetchItemInfo, fetchProjects } from './api.js';
 import { loadImage, isReady, drawAnchored, readPngFile, normalizeName, setStatus } from './common.js';
 import { refreshProjects } from './projects.js';
 import { fillFolderSelect, folderOf, setFolder, recipePath } from './folders.js';
@@ -29,9 +29,24 @@ const NUMBERS = [
   { key: 'vidaMax', label: 'Recupera vida (máx.)', min: 0, step: 1 },
   { key: 'manaMin', label: 'Recupera mana (mín.)', min: 0, step: 1 },
   { key: 'manaMax', label: 'Recupera mana (máx.)', min: 0, step: 1 },
-  { key: 'alimento', label: 'Comida (segundos de regeneração)', min: 0, step: 1 }
+  { key: 'alimento', label: 'Comida (segundos de regeneração)', min: 0, step: 1 },
+  { key: 'luz', label: 'Luz (raio em sqm; 0 = não ilumina)', min: 0, step: 1 },
+  { key: 'duracao', label: 'Duração em uso (segundos acesa, ou equipada se regenera; 0 = não gasta)', min: 0, step: 1 },
+  { key: 'regenVida', label: 'Equipado: recupera vida a cada 6 s', min: 0, step: 1 },
+  { key: 'regenMana', label: 'Equipado: recupera mana a cada 6 s', min: 0, step: 1 }
 ];
-const DEFAULT_PROPERTIES = { bloqueia: false, move: true, altura: false, empilhavel: false, peso: 10, espacos: 0, atk: 0, def: 0, ml: 0, speed: 0, vidaMin: 0, vidaMax: 0, manaMin: 0, manaMax: 0, alimento: 0 };
+const DEFAULT_PROPERTIES = { bloqueia: false, move: true, altura: false, empilhavel: false, peso: 10, espacos: 0, atk: 0, def: 0, ml: 0, speed: 0, vidaMin: 0, vidaMax: 0, manaMin: 0, manaMax: 0, alimento: 0, luz: 0, duracao: 0, regenVida: 0, regenMana: 0, uso: '', abreComo: '', acesoComo: '' };
+const USES = [
+  ['', 'Nenhum'],
+  ['placa', 'Placa (mostra um texto, escrito no editor)'],
+  ['livro', 'Livro (abre um texto, escrito no editor)'],
+  ['bau-quest', 'Baú de quest (itens no editor, uma vez por player)'],
+  ['corda', 'Marca de corda (sobe um andar usando a corda)'],
+  ['pa', 'Monte que a pá abre em buraco'],
+  ['descer', 'Bueiro (usar leva pro andar de baixo)'],
+  ['ferramenta-corda', 'Ferramenta: corda'],
+  ['ferramenta-pa', 'Ferramenta: pá']
+];
 const CONTAINER_SIZE = 8;
 const STACK_VARIATIONS = 8;
 const PROPERTIES = [
@@ -200,6 +215,38 @@ function renderProperties() {
     label.append(input, property.label);
     list.appendChild(label);
   }
+  const useLabel = document.createElement('label');
+  useLabel.className = 'numberline';
+  const useSelect = document.createElement('select');
+  useSelect.id = 'objectProp-uso';
+  useSelect.innerHTML = USES.map(([value, text]) => `<option value="${value}">${text}</option>`).join('');
+  useSelect.value = objects.properties.uso || '';
+  useLabel.append('Uso', useSelect);
+  list.appendChild(useLabel);
+  const openLabel = document.createElement('label');
+  openLabel.className = 'numberline';
+  openLabel.hidden = useSelect.value !== 'pa';
+  const openSelect = document.createElement('select');
+  openSelect.id = 'objectProp-abreComo';
+  const fillOpen = (paths) => {
+    const current = objects.properties.abreComo || '';
+    const options = current && !paths.includes(current) ? [current, ...paths] : paths;
+    openSelect.innerHTML = '<option value="">— buraco aberto —</option>' + options.map(p => `<option value="${p}">${p}</option>`).join('');
+    openSelect.value = current;
+  };
+  fillOpen([]);
+  fetchProjects().then(projects => fillOpen(projects.filter(p => p.ferramenta === 'objetos').map(p => p.caminho).sort())).catch(() => {});
+  openLabel.append('Abre como', openSelect);
+  list.appendChild(openLabel);
+  useSelect.onchange = () => {
+    objects.properties.uso = useSelect.value;
+    openLabel.hidden = useSelect.value !== 'pa';
+    objects.dirty = true;
+  };
+  openSelect.onchange = () => {
+    objects.properties.abreComo = openSelect.value;
+    objects.dirty = true;
+  };
   for (const number of NUMBERS) {
     const label = document.createElement('label');
     label.className = 'numberline';
@@ -216,6 +263,28 @@ function renderProperties() {
     label.append(number.label, input);
     list.appendChild(label);
   }
+  const litLabel = document.createElement('label');
+  litLabel.className = 'numberline';
+  litLabel.hidden = !(Number(objects.properties.luz) > 0);
+  const litSelect = document.createElement('select');
+  litSelect.id = 'objectProp-acesoComo';
+  const fillLit = (paths) => {
+    const current = objects.properties.acesoComo || '';
+    const options = current && !paths.includes(current) ? [current, ...paths] : paths;
+    litSelect.innerHTML = '<option value="">— mesmo desenho —</option>' + options.map(p => `<option value="${p}">${p}</option>`).join('');
+    litSelect.value = current;
+  };
+  fillLit([]);
+  fetchProjects().then(projects => fillLit(projects.filter(p => p.ferramenta === 'objetos').map(p => p.caminho).sort())).catch(() => {});
+  litLabel.append('Acesa como (desenho quando acesa)', litSelect);
+  list.appendChild(litLabel);
+  litSelect.onchange = () => {
+    objects.properties.acesoComo = litSelect.value;
+    objects.dirty = true;
+  };
+  document.getElementById('objectProp-luz').addEventListener('change', () => {
+    litLabel.hidden = !(Number(objects.properties.luz) > 0);
+  });
 }
 
 // ================================================================================================================================================================================================================================================

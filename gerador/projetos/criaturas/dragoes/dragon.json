@@ -1,0 +1,146 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 3,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 34,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 5973,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4286,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 4287,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "dragoes",
+  "nome": "dragon",
+  "propriedades": {
+    "comportamento": "foge",
+    "vida": 1000,
+    "xp": 700,
+    "velocidade": 172,
+    "armadura": 25,
+    "defesa": 25,
+    "ataque": 120,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.45,
+        "min": 1,
+        "max": 100
+      },
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.45,
+        "min": 1,
+        "max": 5
+      },
+      {
+        "tipo": "itens/comidas/dragon-ham",
+        "chance": 0.655,
+        "min": 1,
+        "max": 3
+      },
+      {
+        "tipo": "itens/escudos/steel-shield",
+        "chance": 0.15
+      },
+      {
+        "tipo": "itens/distancia/crossbow",
+        "chance": 0.1
+      },
+      {
+        "tipo": "itens/municao/burst-arrow",
+        "chance": 0.0806,
+        "min": 1,
+        "max": 10
+      },
+      {
+        "tipo": "itens/espadas/longsword",
+        "chance": 0.04
+      },
+      {
+        "tipo": "itens/capacetes/steel-helmet",
+        "chance": 0.03
+      },
+      {
+        "tipo": "itens/espadas/broadsword",
+        "chance": 0.0195
+      },
+      {
+        "tipo": "itens/calcas/plate-legs",
+        "chance": 0.019
+      },
+      {
+        "tipo": "itens/wands/wand-of-inferno",
+        "chance": 0.01
+      },
+      {
+        "tipo": "itens/liquidos/health-potion",
+        "chance": 0.01
+      },
+      {
+        "tipo": "itens/produtos-de-criaturas/green-dragon-scale",
+        "chance": 0.01
+      },
+      {
+        "tipo": "itens/decoracoes/green-dragon-leather",
+        "chance": 0.01
+      },
+      {
+        "tipo": "itens/machados/double-axe",
+        "chance": 0.01
+      },
+      {
+        "tipo": "itens/clavas/dragon-hammer",
+        "chance": 0.0056
+      },
+      {
+        "tipo": "itens/espadas/serpent-sword",
+        "chance": 0.0051
+      },
+      {
+        "tipo": "itens/valiosos/small-diamond",
+        "chance": 0.0038
+      },
+      {
+        "tipo": "itens/escudos/dragon-shield",
+        "chance": 0.0032
+      },
+      {
+        "tipo": "itens/valiosos/life-crystal",
+        "chance": 0.0012
+      }
+    ]
+  }
+}

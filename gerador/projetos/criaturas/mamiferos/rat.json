@@ -48,8 +48,21 @@
     "comportamento": "foge",
     "vida": 20,
     "xp": 5,
-    "velocidade": 67,
+    "velocidade": 134,
     "armadura": 1,
-    "ataque": 8
+    "defesa": 1,
+    "ataque": 8,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 1,
+        "min": 1,
+        "max": 4
+      },
+      {
+        "tipo": "itens/comidas/cheese",
+        "chance": 0.3941
+      }
+    ]
   }
 }

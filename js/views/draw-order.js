@@ -74,7 +74,10 @@ export function prepareDrawables(gameState) {
   const player = gameState.player;
   const roofLevel = getRoofLevel(player, gameState.world);
 
+  const area = gameState.visibleArea;
+  const isOnScreen = (x, y) => !area || (x >= area.startX && x < area.endX && y >= area.startY && y < area.endY);
   const push = (drawable, source) => {
+    if (!isOnScreen(drawable.x, drawable.y)) return;
     drawable.level = getEntityLevel(source);
     if (drawable.level > roofLevel) return;
     drawables.push(drawable);
@@ -135,6 +138,22 @@ export function prepareDrawables(gameState) {
       order: other.order || 0,
       isFloor: false
     }, other);
+  }
+
+  for (const npc of gameState.npcs || []) {
+    push({
+      x: npc.renderX,
+      y: npc.renderY,
+      z: npc.renderZ ?? npc.z ?? 0,
+      step: npc.renderStep ?? npc.step ?? 0,
+      renderX: npc.renderX,
+      renderY: npc.renderY,
+      entity: npc,
+      isCreature: true,
+      hasVolume: false,
+      order: npc.order || 0,
+      isFloor: false
+    }, npc);
   }
 
   for (const enemy of gameState.enemies) {

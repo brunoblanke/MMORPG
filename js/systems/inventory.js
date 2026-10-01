@@ -1,10 +1,11 @@
 // js/systems/inventory.js
 
 import { GameObject } from '../models/game-object.js';
+import { PLAYER_LIGHT } from '../../shared/lighting.js';
 import { getAdjacentPositions, isPositionAdjacentTo } from '../utils/helpers.js';
-import { objectIdType, objectProps, getAsset, splitType } from '../../shared/assets.js';
+import { objectIdType, objectProps, getAsset, splitType, creatureLoot, objectUse } from '../../shared/assets.js';
 import {
-  EQUIP_SLOTS, THROW_RANGE, DEATH_DROP_CHANCE, USE_COOLDOWN_MS, FOOD_MAX_SECONDS, POTION_RANGE, EMPTY_VIAL, SPLASH_HP, SPLASH_MANA, SPLASH_STAGES, SPLASH_STAGE_MS, REGEN_MS, REGEN_HP, REGEN_MANA, itemInfo, capacityFor, newItem, weightOf, contains, findInTree, fromPlain, equipBonus
+  EQUIP_SLOTS, STARTER_BAG, STARTER_TORCH, THROW_RANGE, DEATH_DROP_CHANCE, USE_COOLDOWN_MS, FOOD_MAX_SECONDS, POTION_RANGE, EMPTY_VIAL, SPLASH_HP, SPLASH_MANA, SPLASH_STAGES, SPLASH_STAGE_MS, REGEN_MS, REGEN_HP, REGEN_MANA, itemInfo, itemLight, fitsSlot, capacityFor, newItem, weightOf, contains, findInTree, fromPlain, equipBonus
 } from '../../shared/items.js';
 import { PLAYER_SPRITES, DEFAULT_GENDER } from '../../shared/catalog.js';
 import { SKILL_KEYS } from '../../shared/skills.js';
@@ -32,7 +33,8 @@ export class InventoryController {
 
   // ================================================================================================================================================================================================================================================
   // constructor
-  // lootTable: { '<criatura>': [{ tipo, chance, min, max }] } — o que cai ao morrer.
+  // lootTable: { '<criatura>': [{ tipo, chance, min, max }] } — troca o loot
+  // da criatura (o normal vem do gerador: creatureLoot).
 
   constructor(sim, lootTable = {}) {
     this.sim = sim;
@@ -51,8 +53,8 @@ export class InventoryController {
 
   // ================================================================================================================================================================================================================================================
   // setupPlayer
-  // O inventário guardado (saved.equip); quem é novo começa sem nada, nem
-  // mochila. O layout das janelas volta junto.
+  // O inventário guardado (saved.equip); quem é novo começa com a bag
+  // simples (STARTER_BAG) no espaço da mochila e a tocha (STARTER_TORCH) na mão. O layout das janelas volta junto.
 
   setupPlayer(player, saved) {
     player.equip = Object.fromEntries(EQUIP_SLOTS.map(key => [key, null]));
@@ -63,8 +65,11 @@ export class InventoryController {
     if (saved && saved.equip && typeof saved.equip === 'object') {
       for (const key of EQUIP_SLOTS) {
         const item = fromPlain(saved.equip[key], () => this.nextUid());
-        if (item && (itemInfo(item.type).slot === key)) player.equip[key] = item;
+        if (item && fitsSlot(item.type, key)) player.equip[key] = item;
       }
+    } else {
+      if (getAsset(splitType(STARTER_BAG).asset)) player.equip.mochila = newItem(this.nextUid(), STARTER_BAG);
+      if (getAsset(splitType(STARTER_TORCH).asset)) player.equip.escudo = newItem(this.nextUid(), STARTER_TORCH);
     }
   }
 
@@ -89,9 +94,10 @@ export class InventoryController {
 
   // ================================================================================================================================================================================================================================================
   // message
+  // kind: 'info' (verde), 'warn' (amarelo) ou 'danger' (vermelho).
 
-  message(player, text) {
-    this.sim.emit({ type: 'message', playerId: player.id, text });
+  message(player, text, kind = 'warn') {
+    this.sim.emit({ type: 'message', playerId: player.id, text, kind });
   }
 
   // ================================================================================================================================================================================================================================================
@@ -117,18 +123,29 @@ export class InventoryController {
   // O item de um objeto do chão (criado na primeira vez que alguém mexe nele).
 
   groundItem(obj) {
-    if (!obj.itemData) obj.itemData = newItem(this.nextUid(), objectIdType(obj.id), obj.count || 1);
+    if (!obj.itemData) {
+      obj.itemData = newItem(this.nextUid(), objectIdType(obj.id), obj.count || 1);
+      if (obj.data && obj.data.texto) obj.itemData.texto = obj.data.texto;
+      const inside = obj.itemData.items && obj.data && objectUse(objectIdType(obj.id)) !== 'bau-quest' ? obj.data.itens : null;
+      if (Array.isArray(inside)) {
+        inside.filter(e => e && getAsset(splitType(e.tipo).asset)).slice(0, obj.itemData.items.length)
+          .forEach((e, i) => { obj.itemData.items[i] = newItem(this.nextUid(), e.tipo, e.count || 1); });
+      }
+    }
     return obj.itemData;
   }
 
   // ================================================================================================================================================================================================================================================
   // isOpenable
-  // Dá pra abrir: caixa do chão ou cadáver com loot (ainda no mapa).
+  // Dá pra abrir: caixa do chão (solta ou fixa no mapa, sem Uso) ou cadáver
+  // com loot (ainda no mapa).
 
   isOpenable(obj) {
     if (!obj) return false;
     if (obj.isCorpse) return !!obj.itemData && this.sim.deadBodies.includes(obj);
-    return this.isPickable(obj) && !!this.groundItem(obj).items;
+    const fixed = !obj.floorType && !obj.isBorder && !obj.stairDirection && this.sim.world.objects.has(obj) &&
+      !!getAsset(splitType(objectIdType(obj.id)).asset) && !objectUse(objectIdType(obj.id)) && itemInfo(objectIdType(obj.id)).size > 0;
+    return (this.isPickable(obj) || fixed) && !!this.groundItem(obj).items;
   }
 
   // ================================================================================================================================================================================================================================================
@@ -200,7 +217,7 @@ export class InventoryController {
         if (free < 0) return { error: `Sem espaço em ${itemInfo(bag.type).name}.` };
         return { kind: 'slot', container: bag, index: free, carried: true };
       }
-      if (itemInfo(item.type).slot !== to.key) return { error: 'Esse item não vai nesse espaço.' };
+      if (!fitsSlot(item.type, to.key)) return { error: 'Esse item não vai nesse espaço.' };
       return { kind: 'equip', key: to.key, carried: true };
     }
     if (to.t === 'c') {
@@ -333,7 +350,7 @@ export class InventoryController {
       this.spawnGroundItem(item, src.obj.x, src.obj.y, src.obj.z || 0);
       return;
     }
-    if (whole && src.place.t === 'e' && itemInfo(item.type).slot === src.place.key && !player.equip[src.place.key]) {
+    if (whole && src.place.t === 'e' && fitsSlot(item.type, src.place.key) && !player.equip[src.place.key]) {
       player.equip[src.place.key] = item;
       return;
     }
@@ -435,6 +452,35 @@ export class InventoryController {
   }
 
   // ================================================================================================================================================================================================================================================
+  // burnLights
+  // Item com Duração gasta como no Tibia enquanto está em uso: item.fuel (ms
+  // que ainda resta) começa em burn (gerador → Duração) e só desce com a
+  // fonte de luz acesa (equipada, num container ou no chão) ou com o anel de
+  // cura no espaço dele. Acabou, o item some.
+
+  burnLights(ms) {
+    const burn = (item, worn = false) => {
+      if (!item) return false;
+      if (item.items) item.items.forEach((child, i) => { if (burn(child)) item.items[i] = null; });
+      const info = itemInfo(item.type);
+      const total = item.lit || (worn && (info.regen.hp || info.regen.mana)) ? info.burn * 1000 : 0;
+      if (!total) return false;
+      item.fuel = Math.max(0, (item.fuel ?? total) - ms);
+      return item.fuel === 0;
+    };
+    for (const player of this.sim.players) {
+      for (const key of EQUIP_SLOTS) {
+        const item = player.equip[key];
+        if (burn(item, !!item && itemInfo(item.type).slot === key)) player.equip[key] = null;
+      }
+    }
+    for (const obj of [...this.sim.objects]) {
+      if (obj.itemData && burn(obj.itemData)) this.removeGroundObject(obj);
+    }
+    for (const corpse of this.sim.deadBodies) burn(corpse.itemData);
+  }
+
+  // ================================================================================================================================================================================================================================================
   // walkNextTo
   // Leva o player até um sqm colado no objeto e guarda o comando pra quando chegar.
 
@@ -475,6 +521,7 @@ export class InventoryController {
   // Comando useItem: usa um item do inventário, de uma caixa aberta ou do
   // chão (longe, o player anda até o lado e usa ao chegar). Comida soma tempo
   // de regeneração (até FOOD_MAX_SECONDS; passou disso, "Você está cheio.").
+  // Fonte de luz (tocha) acende ou apaga.
   // Potion vai no sqm target (a mira; sem target, no próprio player): em
   // player, cura; no chão, o líquido vaza. Nos dois casos a potion vira um
   // vial vazio.
@@ -484,11 +531,26 @@ export class InventoryController {
     const src = this.source(player, from);
     if (src.error) return;
     const info = itemInfo(src.item.type);
-    if (!info.food && !info.heal) return;
+    const use = objectUse(src.item.type);
+    if (!info.food && !info.heal && !use && !info.light) return;
     if (src.obj && !this.isNear(player, src.obj)) {
       this.walkNextTo(player, src.obj, { type: 'useItem', from, target });
       return;
     }
+    if (info.light && !use && !info.food && !info.heal) {
+      src.item.lit = !src.item.lit;
+      if (src.obj) src.obj.lit = src.item.lit;
+      return;
+    }
+    if (use === 'livro') {
+      this.sim.interactions.readBook(player, src.item);
+      return;
+    }
+    if (use === 'ferramenta-corda' || use === 'ferramenta-pa') {
+      this.sim.interactions.useTool(player, use, target, from);
+      return;
+    }
+    if (!info.food && !info.heal) return;
     if (info.food) {
       this.eat(player, src, info.food);
       return;
@@ -624,7 +686,7 @@ export class InventoryController {
       return;
     }
     player.food = food + seconds * 1000;
-    this.message(player, 'Smack.');
+    this.message(player, 'Smack.', 'info');
     if ((src.item.count || 1) > 1) src.item.count--;
     else src.remove();
   }
@@ -638,6 +700,7 @@ export class InventoryController {
   digest(player, now) {
     const last = player.digestAt ?? now;
     player.digestAt = now;
+    this.wornRegen(player, now - last);
     if (!player.food || !player.isAlive()) {
       player.regenElapsed = 0;
       return;
@@ -649,6 +712,32 @@ export class InventoryController {
       player.regenElapsed -= REGEN_MS;
       player.currentHp = Math.min(player.hp, player.currentHp + REGEN_HP);
       player.mana = Math.min(player.maxMana, player.mana + REGEN_MANA);
+    }
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // wornRegen
+  // Item equipado no espaço dele que regenera (anel de cura): a cada REGEN_MS
+  // recupera a vida e a mana dele, com ou sem comida.
+
+  wornRegen(player, elapsed) {
+    let hp = 0;
+    let mana = 0;
+    for (const key of EQUIP_SLOTS) {
+      const item = player.equip[key];
+      if (!item || itemInfo(item.type).slot !== key) continue;
+      hp += itemInfo(item.type).regen.hp;
+      mana += itemInfo(item.type).regen.mana;
+    }
+    if ((!hp && !mana) || !player.isAlive()) {
+      player.wornRegenElapsed = 0;
+      return;
+    }
+    player.wornRegenElapsed = (player.wornRegenElapsed || 0) + elapsed;
+    while (player.wornRegenElapsed >= REGEN_MS) {
+      player.wornRegenElapsed -= REGEN_MS;
+      player.currentHp = Math.min(player.hp, player.currentHp + hp);
+      player.mana = Math.min(player.maxMana, player.mana + mana);
     }
   }
 
@@ -672,14 +761,16 @@ export class InventoryController {
 
   // ================================================================================================================================================================================================================================================
   // update
-  // A cada tick: faz o que estava esperando o player chegar e fecha as caixas
-  // do chão que ele não alcança mais.
+  // A cada tick: a luz do player (a própria ou a do item equipado que
+  // ilumina mais), faz o que estava esperando o player chegar e fecha as
+  // caixas do chão que ele não alcança mais.
 
   update(player) {
+    player.light = Math.max(PLAYER_LIGHT, ...EQUIP_SLOTS.map(key => itemLight(player.equip[key])));
     const pending = player.pendingInv;
     if (pending) {
       const obj = this.sim.getItem(pending.objId);
-      if (!obj || !(this.isPickable(obj) || this.isOpenable(obj))) {
+      if (!obj || !(this.isPickable(obj) || this.isOpenable(obj) || this.sim.interactions.isUsable(obj) || this.sim.interactions.isOpening(obj))) {
         player.pendingInv = null;
       } else if (this.isNear(player, obj)) {
         player.pendingInv = null;
@@ -702,7 +793,7 @@ export class InventoryController {
   fillCorpse(corpse, enemy) {
     const box = { uid: this.nextUid(), type: enemy.creature, items: new Array(CORPSE_SIZE).fill(null) };
     let slot = 0;
-    for (const entry of this.lootTable[enemy.creature] || []) {
+    for (const entry of this.lootTable[enemy.creature] || creatureLoot(enemy.creature)) {
       if (slot >= CORPSE_SIZE) break;
       if (!entry || !getAsset(splitType(entry.tipo).asset) || Math.random() >= (entry.chance ?? 1)) continue;
       const min = Math.max(1, entry.min || 1);
@@ -742,8 +833,7 @@ export class InventoryController {
 
   statsFor(player) {
     const bonus = equipBonus(player.equip);
-    const extra = { magic: bonus.ml, shielding: bonus.def };
-    extra[bonus.atkSkill] = (extra[bonus.atkSkill] || 0) + bonus.atk;
+    const extra = { magic: bonus.ml };
     const skills = {};
     for (const key of ['magic', ...SKILL_KEYS]) skills[key] = { ...player.skills[key], bonus: extra[key] || 0 };
     return {

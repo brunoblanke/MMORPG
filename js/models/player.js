@@ -37,9 +37,8 @@ export class Player extends Entity {
   // ================================================================================================================================================================================================================================================
   // gainXp
   // Soma o XP e sobe quantos níveis ele pagar; o que sobra continua contando.
-  // Cada nível novo recalcula vida, ataque, defesa e velocidade. Como no
-  // Tibia, a vida e a mana atuais só ganham o que o máximo aumentou (não
-  // enchem). Devolve quantos níveis subiu.
+  // Cada nível novo recalcula vida, ataque, defesa e velocidade e enche a
+  // vida; a mana só ganha o que o máximo aumentou. Devolve quantos níveis subiu.
 
   gainXp(amount) {
     this.xp += amount;
@@ -49,11 +48,10 @@ export class Player extends Entity {
       this.xp -= this.nextLevelXp;
       this.lvl++;
       levels++;
-      const oldHp = this.hp;
       const oldMana = this.maxMana;
       const mana = this.mana;
       this.applyLevelStats();
-      this.currentHp = Math.min(this.hp, this.currentHp + Math.max(0, this.hp - oldHp));
+      this.currentHp = this.hp;
       this.mana = Math.min(this.maxMana, mana + Math.max(0, this.maxMana - oldMana));
     }
     return levels;
@@ -109,7 +107,8 @@ export class Player extends Entity {
       layout: this.uiLayout || null,
       followMode: this.followMode,
       attackMode: this.attackMode,
-      food: this.food || 0
+      food: this.food || 0,
+      quests: this.quests || []
     };
   }
 
@@ -129,6 +128,7 @@ export class Player extends Entity {
     this.mana = Number.isInteger(saved.mana) && saved.mana >= 0 ? Math.min(saved.mana, this.maxMana) : this.maxMana;
     if (typeof saved.followMode === 'boolean') this.followMode = this.autoFollow = saved.followMode;
     if (typeof saved.attackMode === 'boolean') this.attackMode = saved.attackMode;
+    if (Array.isArray(saved.quests)) this.quests = saved.quests.filter(q => typeof q === 'string').slice(0, 1000);
     if (Number.isFinite(saved.food) && saved.food > 0) this.food = Math.min(saved.food, FOOD_MAX_SECONDS * 1000);
 
     const hasPosition = Number.isInteger(saved.x) && Number.isInteger(saved.y) && isValidFloor(saved.z);

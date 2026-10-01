@@ -12,19 +12,27 @@
   <aside class="inv-column" id="invLeft" aria-label="Janelas da esquerda"></aside>
   <canvas id="gameCanvas"></canvas>
   <aside class="inv-column" id="invRight" aria-label="Janelas da direita"></aside>
+  <form id="chatBox" class="chat-box" autocomplete="off">
+    <textarea id="chatInput" maxlength="120" placeholder="Fale algo… (Enter)" spellcheck="false"></textarea>
+    <button type="submit" class="chat-send" aria-label="Enviar">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+    </button>
+  </form>
 
   <div id="nameModal" class="modal">
     <form id="nameForm" class="modal-box" autocomplete="off">
-      <h1>Escolha o nome do personagem</h1>
-      <div class="gender-picker" role="radiogroup" aria-label="Gênero do personagem">
-        <button type="button" class="gender-option" data-gender="male" role="radio" aria-label="Masculino" title="Masculino">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5"/><path d="m21 3-6.75 6.75"/><circle cx="10" cy="14" r="6"/></svg>
-        </button>
-        <button type="button" class="gender-option" data-gender="female" role="radio" aria-label="Feminino" title="Feminino">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15v7"/><path d="M9 19h6"/><circle cx="12" cy="9" r="6"/></svg>
-        </button>
+      <h1>Seja bem-vindo, aventureiro!</h1>
+      <div class="name-row">
+        <input id="nameInput" type="text" placeholder="Nome do personagem" spellcheck="false" autofocus>
+        <div class="gender-picker" role="radiogroup" aria-label="Gênero do personagem">
+          <button type="button" class="gender-option" data-gender="male" role="radio" aria-label="Masculino">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5"/><path d="m21 3-6.75 6.75"/><circle cx="10" cy="14" r="6"/></svg>
+          </button>
+          <button type="button" class="gender-option" data-gender="female" role="radio" aria-label="Feminino">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15v7"/><path d="M9 19h6"/><circle cx="12" cy="9" r="6"/></svg>
+          </button>
+        </div>
       </div>
-      <input id="nameInput" type="text" placeholder="Nome do personagem" spellcheck="false" autofocus>
       <p id="nameError" class="modal-error" role="alert"></p>
       <button type="submit">Entrar</button>
     </form>

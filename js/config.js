@@ -7,18 +7,16 @@ export const CONFIG = {
   mapWidth: GRID_WIDTH,
   mapHeight: GRID_HEIGHT,
   mapDataUrl: 'data/map.json',
-  lootDataUrl: 'data/loot.json',
   playerStartLevel: 1,        // nível de quem entra pela primeira vez (personagem salvo mantém o dele)
   patrolRadius: 4,
   detectionRadius: 7,
   fleeHealth: 0.2,             // criatura "foge" foge com a vida em até 20%
   mageRange: 4,                // mago ataca de até 4 sqm (com linha livre de parede)
   mageKeepDistance: 3,         // mago se afasta se o player chega a menos de 3 sqm
-  attackCooldown: 1500,
+  attackCooldown: 2000,       // como no Tibia: um golpe a cada 2 s
   targetLoseRange: 25,         // alvo mais longe que isso (ou em outro andar) é perdido
   // Escalas globais (player e inimigos, sem mexer nos atributos por lvl):
   // 0.4 = 60% mais fraco / 60% mais lento.
-  damageScale: 0.4,   // multiplica o dano de cada golpe
   speedScale: 0.4,    // divide o tempo de passo e das animações de andar
   enemyRespawnTime: 60000,   // como no Tibia: 1 min depois de morrer
   corpseFrameDuration: 60000,

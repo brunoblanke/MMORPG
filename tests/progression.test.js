@@ -60,12 +60,12 @@ test('XP por nível segue a tabela do Tibia (total: 100, 200, 400, 800, 1500…)
   assert.deepEqual(totals, [0, 100, 200, 400, 800, 1500, 2600, 4200, 6400]);
 });
 
-test('skills seguem a progressão do Tibia (valores do Knight)', async () => {
+test('skills seguem a progressão do Tibia (vocação None, o player não tem vocação)', async () => {
   const { triesFor } = await import('../shared/skills.js');
   assert.equal(triesFor(10, 'sword'), 50);
-  assert.equal(triesFor(11, 'sword'), 55);
+  assert.equal(triesFor(11, 'sword'), 100);
   assert.equal(triesFor(10, 'distance'), 30);
-  assert.equal(triesFor(11, 'distance'), 42);
+  assert.equal(triesFor(11, 'distance'), 60);
   assert.equal(triesFor(10, 'shielding'), 100);
   assert.equal(triesFor(10, 'fist'), 50);
   assert.equal(triesFor(11, 'fist'), 75);
@@ -75,7 +75,7 @@ test('matar um inimigo dá o XP inteiro dele e pode subir o nível', () => {
   const sim = buildGame({ objects: GROUND, enemies: [[8, 5, 0, 30]], player: { x: 2, y: 5, z: 0 } });
   const enemy = sim.enemies[0];
   const reward = enemy.xp;
-  sim.player.atk = 999;
+  Object.assign(enemy, { currentHp: 1, def: 0, defense: 0 });
   sim.player.xp = sim.player.nextLevelXp - 1;
   const lvlBefore = sim.player.lvl;
 
@@ -152,7 +152,7 @@ test('inimigo colado na borda da zona segura não ataca quem está dentro', () =
   assert.equal(sim.player.currentHp, hp);
 });
 
-test('subir de nível não enche a vida nem a mana: só soma o que o máximo aumentou, como no Tibia', async () => {
+test('subir de nível enche a vida; a mana só ganha o que o máximo aumentou', async () => {
   const { Player } = await import('../js/models/player.js');
   const player = new Player({ x: 0, y: 0, lvl: 1 });
   player.currentHp = 40;
@@ -160,5 +160,15 @@ test('subir de nível não enche a vida nem a mana: só soma o que o máximo aum
   player.gainXp(player.nextLevelXp);
   assert.equal(player.lvl, 2);
   assert.deepEqual([player.hp, player.maxMana], [155, 60]);
-  assert.deepEqual([player.currentHp, player.mana], [45, 15]);
+  assert.deepEqual([player.currentHp, player.mana], [155, 15]);
+});
+
+test('criatura com a vida preenchida no gerador e armadura/defesa 0 fica com 0 (não usa as do nível)', async () => {
+  const { setAssets } = await import('../shared/assets.js');
+  const { Enemy } = await import('../js/models/enemy.js');
+  const SNAKE = 'criaturas/repteis/cobra-teste';
+  setAssets([{ id: SNAKE, ferramenta: 'criaturas', grupo: 'criaturas', pasta: 'repteis', nome: 'cobra-teste', rotulo: 'criaturas › repteis', url: '/c.png', quadro: 32, quadros: 3, pecas: [],
+    propriedades: { comportamento: 'normal', vida: 15, xp: 10, velocidade: 120, armadura: 0, defesa: 0, ataque: 8 } }]);
+  const snake = new Enemy({ x: 0, y: 0, lvl: 5, creature: SNAKE });
+  assert.deepEqual([snake.maxHp, snake.def, snake.defense, snake.atk, snake.xp], [15, 0, 0, 8, 10]);
 });

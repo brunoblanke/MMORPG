@@ -219,8 +219,12 @@ test('inimigo morto renasce no lugar original do mapa, mesmo tendo perseguido pr
   assert.ok(enemy.x !== 18 || enemy.y !== 18, 'o inimigo deveria ter saído do lugar perseguindo');
 
   sim.enqueue('player1', { type: 'walkTo', x: 2, y: 2, z: 0 });
-  runFor(sim, 8000);
-  assert.equal(enemy.ai.state, 'patrol');
+  let patrolled = false;
+  for (let t = 0; t < 8000 && !patrolled; t += TICK_MS) {
+    runFor(sim, TICK_MS);
+    patrolled = enemy.ai.state === 'patrol';
+  }
+  assert.ok(patrolled, 'perdeu o player de vista e voltou a patrulhar');
   assert.ok(enemy.patrolCenterX !== 18 || enemy.patrolCenterY !== 18, 'a patrulha deveria ter mudado de centro');
 
   enemy.currentHp = 0;
@@ -274,11 +278,14 @@ test('alvo com seguir desligado: o player espera sem andar nem atacar e continua
   assert.ok(runFor(sim, 8000).some(e => e.type === 'damage'), 'religar o seguir volta a seguir e atacar');
 });
 
-test('alvo longe demais é perdido, com aviso', () => {
-  const { sim } = targetStill([4 + CONFIG.targetLoseRange + 2, 5, 0], { x: 4, y: 5, z: 0 });
+test('alvo longe demais é perdido, sem aviso', () => {
+  const { sim, enemy } = targetStill([10, 5, 0], { x: 4, y: 5, z: 0 });
+  assert.equal(sim.player.target, enemy);
+  enemy.x = 4 + CONFIG.targetLoseRange + 2;
+  enemy.renderX = enemy.x;
   const events = runFor(sim, 200);
   assert.equal(sim.player.target, null);
-  assert.ok(events.some(e => e.type === 'message' && e.text === 'Alvo perdido'));
+  assert.ok(!events.some(e => e.type === 'message'), 'sem mensagem');
 });
 
 test('alvo em outro andar é perdido', () => {
@@ -357,7 +364,7 @@ test('com alvo, mover o player (tecla ou clique no chão) troca o seguir pra par
   sim.enqueue('player1', { type: 'walkDir', dx: 0, dy: 1 });
   runFor(sim, 100);
   assert.equal(sim.player.followMode, false);
-  assert.equal(sim.player.attackMode, true);
+  assert.equal(sim.player.attackMode, false, 'escolher o alvo desliga o auto ataque');
 
   sim.enqueue('player1', { type: 'walkDir', dx: 0, dy: 0 });
   sim.enqueue('player1', { type: 'toggleFollow' });
@@ -379,4 +386,13 @@ test('com alvo e seguir ligado, um caminho interno (ir abrir uma caixa…) só p
   assert.equal(sim.player.autoFollow, true);
   runFor(sim, 8000);
   assert.ok(Math.abs(sim.player.x - enemy.x) <= 1 && Math.abs(sim.player.y - enemy.y) <= 1, `player em (${sim.player.x}, ${sim.player.y}), inimigo em (${enemy.x}, ${enemy.y}), alvo ${sim.player.target && sim.player.target.id}`);
+});
+
+test('Ctrl + direção: o player vira pro lado sem sair do sqm', () => {
+  const sim = buildGame({ objects: GROUND, player: { x: 5, y: 5, z: 0 } });
+  for (const [dx, dy, dir] of [[1, 0, 'leste'], [0, -1, 'norte'], [-1, 0, 'oeste'], [0, 1, 'sul']]) {
+    sim.enqueue('player1', { type: 'turn', dx, dy });
+    sim.tick(sim.time + TICK_MS);
+    assert.deepEqual([sim.player.x, sim.player.y, sim.player.direction], [5, 5, dir]);
+  }
 });

@@ -106,13 +106,33 @@
           <option value="normal">Normal (persegue e ataca colado)</option>
           <option value="foge">Foge com a vida baixa</option>
           <option value="mago">Mago (ataca de longe e mantém distância)</option>
+          <option value="pacifico">Pacífico (nunca ataca, foge de quem chega perto)</option>
+          <option value="npc">NPC (conversa, não luta)</option>
         </select>
       </div>
       <div class="field stat"><label for="creatureHp">Vida</label><input type="number" id="creatureHp" min="0" step="1" value="0" /></div>
       <div class="field stat"><label for="creatureXp">XP</label><input type="number" id="creatureXp" min="0" step="1" value="0" /></div>
-      <div class="field stat"><label for="creatureSpeed">Velocidade</label><input type="number" id="creatureSpeed" min="0" step="1" value="0" /></div>
+      <div class="field stat"><label for="creatureSpeed" title="Escala do Tibia: rat 134, player nível 1 = 220">Velocidade</label><input type="number" id="creatureSpeed" min="0" step="1" value="0" /></div>
       <div class="field stat"><label for="creatureArmor">Armadura</label><input type="number" id="creatureArmor" min="0" step="1" value="0" /></div>
-      <div class="field stat"><label for="creatureAttack">Ataque</label><input type="number" id="creatureAttack" min="0" step="1" value="0" /></div>
+      <div class="field stat"><label for="creatureDefense">Defesa</label><input type="number" id="creatureDefense" min="0" step="1" value="0" /></div>
+      <div class="field stat"><label for="creatureAttack" title="O maior golpe (corpo a corpo; mago: o de longe)">Ataque</label><input type="number" id="creatureAttack" min="0" step="1" value="0" /></div>
+      <div class="field loot-field">
+        <label>Loot · chance de cair (%) e quantidade</label>
+        <div class="loot-list" id="creatureLoot"></div>
+        <button type="button" class="ghost-btn" id="creatureLootAdd">+ Item</button>
+      </div>
+      <div class="field npc-field" id="npcFields" hidden>
+        <label>Conversa do NPC · {nome} vira o nome do player</label>
+        <div class="npc-grid">
+          <div class="field"><label for="npcWelcome">Diz a quem chega perto</label><input type="text" id="npcWelcome" maxlength="160" placeholder="ex.: Bem-vindo, aventureiro!" /></div>
+          <div class="field"><label for="npcGreet">Resposta ao oi</label><input type="text" id="npcGreet" maxlength="200" placeholder="ex.: Olá, {nome}! Posso falar sobre…" /></div>
+          <div class="field"><label for="npcBye">Resposta ao tchau</label><input type="text" id="npcBye" maxlength="160" placeholder="ex.: Até mais, {nome}." /></div>
+          <div class="field stat"><label for="npcRadius">Raio do passeio (sqm)</label><input type="number" id="npcRadius" min="0" max="10" step="1" value="2" /></div>
+        </div>
+        <label>Tópicos · palavras separadas por vírgula e a resposta</label>
+        <div class="npc-topics" id="npcTopics"></div>
+        <button type="button" class="ghost-btn" id="npcTopicAdd">+ Tópico</button>
+      </div>
       <button type="submit" class="primary-btn" id="creatureSaveBtn">Salvar PNG</button>
       <p class="status" id="creatureStatus" role="status"></p>
     </form>

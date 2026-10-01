@@ -99,10 +99,13 @@ export function getTransitionTarget(world, x, y, z) {
 //   - transitions: aplica escada/buraco do sqm de chegada — o resultado leva
 //     `via`, o sqm pisado antes do teleporte;
 //   - enemiesPassable: inimigos não bloqueiam (o player continua bloqueando);
-//   - avoidSafe: não pisa em zona segura (inimigos).
+//   - avoidSafe: não pisa em zona segura (inimigos);
+//   - groundOnly: só anda no chão — não sobe em volume (caixa, pilha) nem
+//     pisa em escada ou buraco (criaturas e NPCs).
 
 export function resolveStep(world, from, dx, dy, options = {}) {
   const landing = resolveLanding(world, from, dx, dy, options);
+  if (landing && options.groundOnly && (landing.via || landing.z !== (from.z || 0) || landing.step > 0 || world.getTransitionAt(landing.x, landing.y, landing.z))) return null;
   if (!landing || !options.avoidSafe) return landing;
   const entered = landing.via || landing;
   if (world.isSafe(entered.x, entered.y, entered.z) || world.isSafe(landing.x, landing.y, landing.z)) return null;

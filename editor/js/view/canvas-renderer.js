@@ -6,7 +6,7 @@ import { STACK_OFFSET, ANIMATION_CYCLE_MS } from '../../../shared/constants.js';
 import { pickFrameRect } from '../../../shared/sprite-sheet.js';
 import { PLAYER_SPRITES, DEFAULT_GENDER } from '../../../shared/catalog.js';
 import { getAsset, spriteFrame, pieceType, interiorVariant, displayName, isItemType } from '../../../shared/assets.js';
-import { getStairTopKeys } from '../model/borders.js';
+import { getStairTopKeys, getRopeTopKeys } from '../model/borders.js';
 import { state } from '../model/state.js';
 import { restackItems } from '../../../shared/map-format.js';
 import { loadImage, setImageUpdateCallback } from './image-cache.js';
@@ -135,6 +135,7 @@ function drawLayer(layer, alpha, z) {
   ctx.globalAlpha = alpha;
   const labels = [];
   const stairTops = getStairTopKeys(z);
+  const ropeTops = getRopeTopKeys(z);
   // Topo de escada nunca tem piso (o jogo remove).
   const isVoid = (key) => stairTops.has(key) && !(layer[key] && layer[key].hole);
 
@@ -155,7 +156,7 @@ function drawLayer(layer, alpha, z) {
         for (const piece of cell.borders) drawBorderPiece(piece, px, py);
       }
 
-      if (stairTops.has(key)) drawStairTop(px, py);
+      if (stairTops.has(key) || ropeTops.has(key)) drawStairTop(px, py);
 
       if (cell.hole) drawPiece(cell.hole, px, py, '#000');
 
@@ -172,6 +173,12 @@ function drawLayer(layer, alpha, z) {
         const asset = getAsset(cell.enemy.type);
         const at = drawCharacter(asset ? asset.url : null, asset ? asset.quadro : TILE, '#c0392b', px, py);
         labels.push({ text: `${displayName(cell.enemy.type)} ${cell.enemy.lvl}`, ...at });
+      }
+
+      if (cell.npc) {
+        const asset = getAsset(cell.npc.type);
+        const at = drawCharacter(asset ? asset.url : null, asset ? asset.quadro : TILE, '#3fa9f5', px, py);
+        labels.push({ text: displayName(cell.npc.type), ...at });
       }
 
       if (cell.spawn) {
@@ -228,6 +235,7 @@ export function draw() {
     ctx.stroke();
   }
   drawBrush();
+  drawSelection();
 }
 
 // ================================================================================================================================================================================================================================================
@@ -237,7 +245,7 @@ export function draw() {
 function drawBrush() {
   const hover = state.hoverCell;
   if (!hover) return;
-  const cells = brushCells(hover.x, hover.y);
+  const cells = state.tool === 'select' ? [hover] : brushCells(hover.x, hover.y);
   if (!cells.length) return;
   const minX = Math.min(...cells.map(c => c.x));
   const minY = Math.min(...cells.map(c => c.y));
@@ -247,7 +255,7 @@ function drawBrush() {
   ctx.strokeStyle = 'rgba(94, 234, 212, 0.9)';
   ctx.lineWidth = 2;
   ctx.strokeRect(minX * TILE + 1, minY * TILE + 1, (maxX - minX + 1) * TILE - 2, (maxY - minY + 1) * TILE - 2);
-  const size = brushSize();
+  const size = state.tool === 'select' ? 1 : brushSize();
   if (size > 1) {
     const label = `${size}×${size}`;
     ctx.font = '600 11px sans-serif';
@@ -256,6 +264,21 @@ function drawBrush() {
     ctx.fillStyle = '#5eead4';
     ctx.fillText(label, minX * TILE + 6, minY * TILE + 13);
   }
+  ctx.restore();
+}
+
+// ================================================================================================================================================================================================================================================
+// drawSelection
+// Contorno amarelo no sqm escolhido com a ferramenta Selecionar (no andar dele).
+
+function drawSelection() {
+  const selected = state.selected;
+  if (!selected || selected.z !== state.activeZ) return;
+  ctx.save();
+  ctx.strokeStyle = '#f5c518';
+  ctx.lineWidth = 2;
+  ctx.setLineDash([4, 3]);
+  ctx.strokeRect(selected.x * TILE + 1, selected.y * TILE + 1, TILE - 2, TILE - 2);
   ctx.restore();
 }
 

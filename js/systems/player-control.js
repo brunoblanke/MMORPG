@@ -1,8 +1,8 @@
 // js/systems/player-control.js
 
-import { calculateMoveDelay, getAdjacentPositions } from '../utils/helpers.js';
+import { calculateMoveDelay, getAdjacentPositions, directionFromDelta } from '../utils/helpers.js';
 import { getStairTop } from '../../shared/stairs.js';
-import { isHoleType, objectIdType } from '../../shared/assets.js';
+import { isEntranceFolder, objectIdType } from '../../shared/assets.js';
 
 // Comandos que um jogador manda pra simulação (hoje pelo teclado/mouse; no
 // multiplayer, pela rede). Todos têm `type`:
@@ -43,13 +43,25 @@ export class PlayerControl {
       case 'moveItem': return this.moveItem(player, command.itemId, command.x, command.y, command.z);
       case 'moveInv': return this.sim.inventory.move(player, command.from, command.to, command.amount);
       case 'openContainer': return this.sim.inventory.open(player, command.itemId);
+      case 'useObject': return this.sim.interactions.useObject(player, command.id);
       case 'useItem': return this.sim.inventory.use(player, command.from, command.target || null);
       case 'closeContainer': return this.sim.inventory.close(player, command.itemId);
       case 'saveLayout': return this.sim.inventory.saveLayout(player, command.layout);
       case 'useStairs': return this.useStairs(player, command.x, command.y, command.z);
       case 'useDoor': return this.useDoor(player, command.x, command.y, command.z);
+      case 'say': return this.sim.talk.playerSays(player, command.text);
+      case 'turn': return this.turn(player, command.dx, command.dy);
       default: console.warn('Comando desconhecido:', command);
     }
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // turn
+  // Ctrl + direção: vira pro lado (dx, dy) sem sair do sqm.
+
+  turn(player, dx, dy) {
+    const direction = directionFromDelta(Math.sign(dx) || 0, Math.sign(dy) || 0);
+    if (direction) player.direction = direction;
   }
 
   // ================================================================================================================================================================================================================================================
@@ -131,7 +143,7 @@ export class PlayerControl {
     const world = this.sim.world;
     const transition = world.getTransitionAt(x, y, z);
     if (!transition || !transition.isStairTop) return false;
-    return !world.getObjectsAt(x, y).some(o => (o.z || 0) === z && isHoleType(objectIdType(o.id)));
+    return !world.getObjectsAt(x, y).some(o => (o.z || 0) === z && isEntranceFolder(objectIdType(o.id)));
   }
 
   // ================================================================================================================================================================================================================================================
@@ -206,8 +218,8 @@ export class PlayerControl {
 
   // ================================================================================================================================================================================================================================================
   // setAttackTarget
-  // Escolher um inimigo segue ele se o modo seguir estiver ligado; null tira
-  // o alvo.
+  // Escolher um inimigo segue ele se o modo seguir estiver ligado e desliga o
+  // auto ataque; null tira o alvo. Inimigo em outro andar ou longe demais não vira alvo.
 
   setAttackTarget(player, targetId) {
     if (targetId === null || targetId === undefined) {
@@ -216,9 +228,10 @@ export class PlayerControl {
       return;
     }
     const enemy = this.sim.enemies.find(e => e.id === targetId && e.isAlive());
-    if (!enemy) return;
+    if (!enemy || this.sim.combat.isTargetLost(player, enemy)) return;
     player.target = enemy;
     player.autoFollow = player.followMode;
+    player.attackMode = false;
     console.log(`🎯 Alvo selecionado: ${enemy.id}`);
   }
 
@@ -377,7 +390,7 @@ export class PlayerControl {
     const world = this.sim.world;
     const open = !door.blocksMovement;
     if (open && world.getCreatureAt(door.x, door.y, door.z || 0) !== null) {
-      this.sim.emit({ type: 'message', playerId: player.id, text: 'Tem alguém no caminho.' });
+      this.sim.emit({ type: 'message', playerId: player.id, text: 'Tem alguém no caminho.', kind: 'warn' });
       return;
     }
     const oldId = world.setDoorOpen(door, !open);

@@ -1,0 +1,64 @@
+{
+  "formato": {
+    "quadro": 32,
+    "quadros": 3,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 14,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 4086,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4087,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 4088,
+        "variacao": 0
+      }
+    }
+  },
+  "propriedades": {
+    "comportamento": "pacifico",
+    "vida": 20,
+    "xp": 0,
+    "velocidade": 116,
+    "armadura": 1,
+    "defesa": 1,
+    "ataque": 1,
+    "loot": [
+      {
+        "tipo": "itens/comidas/meet",
+        "chance": 0.7,
+        "min": 1,
+        "max": 4
+      }
+    ]
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "mamiferos",
+  "nome": "sheep"
+}

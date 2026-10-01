@@ -53,30 +53,50 @@ const assets = new Map();
 // creatureBehavior
 // Comportamento da criatura (gerador → Criaturas): 'normal' persegue e ataca
 // colado; 'foge' igual, mas foge com a vida baixa; 'mago' ataca de longe e
-// mantém distância. Receita antiga com foge > 0 vale 'foge'.
+// mantém distância; 'npc' é um NPC (conversa, não luta: shared/npcs.js).
+// Receita antiga com foge > 0 vale 'foge'.
 
 export function creatureBehavior(type) {
   const asset = getAsset(type);
   const props = (asset && asset.propriedades) || {};
-  if (['normal', 'foge', 'mago'].includes(props.comportamento)) return props.comportamento;
+  if (['normal', 'foge', 'mago', 'pacifico', 'npc'].includes(props.comportamento)) return props.comportamento;
   return Number(props.foge) > 0 ? 'foge' : 'normal';
 }
 
 // ================================================================================================================================================================================================================================================
 // creatureStats
 // Números da criatura no gerador (Criaturas): vida, XP dado ao morrer,
-// velocidade (escala do Tibia), armadura (defesa) e ataque. Só os
-// preenchidos (> 0); o que faltar vem do nível no mapa.
+// velocidade (escala do Tibia: rat 134, player nível 1 = 220), armadura,
+// defesa e ataque (o maior golpe). Só os preenchidos (> 0; com a vida
+// preenchida, XP, armadura, defesa e ataque 0 valem 0 de verdade); o que
+// faltar vem do nível no mapa.
 
 export function creatureStats(type) {
   const asset = getAsset(type);
   const props = (asset && asset.propriedades) || {};
   const stats = {};
-  for (const [key, field] of [['hp', 'vida'], ['xp', 'xp'], ['spd', 'velocidade'], ['def', 'armadura'], ['atk', 'ataque']]) {
+  for (const [key, field] of [['hp', 'vida'], ['xp', 'xp'], ['spd', 'velocidade'], ['def', 'armadura'], ['defense', 'defesa'], ['atk', 'ataque']]) {
     const value = Math.floor(Number(props[field]));
-    if (value > 0) stats[key] = value;
+    if (value > 0 || (key !== 'hp' && key !== 'spd' && value === 0 && props.vida > 0)) stats[key] = value;
   }
   return stats;
+}
+
+// ================================================================================================================================================================================================================================================
+// creatureLoot
+// O que a criatura pode deixar no corpo (gerador → Criaturas → Loot):
+// [{ tipo, chance (0–1), min, max }], só as entradas válidas.
+
+export function creatureLoot(type) {
+  const asset = getAsset(type);
+  const loot = asset && asset.propriedades && asset.propriedades.loot;
+  if (!Array.isArray(loot)) return [];
+  return loot.filter(e => e && typeof e.tipo === 'string' && e.tipo && Number(e.chance) > 0).map(e => ({
+    tipo: e.tipo,
+    chance: Math.min(1, Number(e.chance)),
+    min: Math.max(1, Math.floor(Number(e.min)) || 1),
+    max: Math.max(1, Math.floor(Number(e.max)) || 1)
+  }));
 }
 
 // ================================================================================================================================================================================================================================================
@@ -207,17 +227,32 @@ export function stairKind(type) {
 
 // ================================================================================================================================================================================================================================================
 // isFloorType / isStairsType / isHoleType
-// Pela pasta da folha (não precisa da lista: vale no servidor também).
+// Pela pasta da folha. Com Uso no gerador, o uso manda: marca de corda na
+// pasta de escadas não é escada; monte da pá e bueiro na pasta de entradas
+// não são buraco (o monte só vira quando a pá abre; o bueiro se usa).
 
 export function isFloorType(type) {
   return splitType(type).asset.startsWith(FLOOR_FOLDER);
 }
 
 export function isStairsType(type) {
-  return splitType(type).asset.startsWith(STAIRS_FOLDER);
+  return splitType(type).asset.startsWith(STAIRS_FOLDER) && objectUse(type) !== 'corda';
 }
 
 export function isHoleType(type) {
+  return splitType(type).asset.startsWith(HOLE_FOLDER) && !['pa', 'descer'].includes(objectUse(type));
+}
+
+// ================================================================================================================================================================================================================================================
+// isStairsFolder / isEntranceFolder
+// Só a pasta (Estrutura › Escadas / Entradas): é onde o editor lista e
+// guarda a peça, qualquer que seja o uso dela no jogo.
+
+export function isStairsFolder(type) {
+  return splitType(type).asset.startsWith(STAIRS_FOLDER);
+}
+
+export function isEntranceFolder(type) {
   return splitType(type).asset.startsWith(HOLE_FOLDER);
 }
 
@@ -233,7 +268,7 @@ export function isWallType(type) {
 
 export function isItemType(type) {
   const asset = getAsset(splitType(type).asset);
-  return !!asset && asset.ferramenta === 'objetos' && !isStairsType(type) && !isHoleType(type);
+  return !!asset && asset.ferramenta === 'objetos' && !isStairsFolder(type) && !isEntranceFolder(type);
 }
 
 // ================================================================================================================================================================================================================================================
@@ -249,6 +284,42 @@ export function objectProps(type) {
   }
   const props = (asset && asset.propriedades) || {};
   return { movable: !!props.move, hasVolume: !!props.altura, blocksMovement: !!props.bloqueia };
+}
+
+// ================================================================================================================================================================================================================================================
+// objectUse
+// Pra que serve o objeto (gerador → Objetos → Uso): 'placa' (mostra o texto),
+// 'livro' (abre o texto), 'bau-quest' (dá os itens uma vez por player),
+// 'corda' (marca de corda: sobe um andar com a corda), 'pa' (monte que a pá
+// abre em buraco), 'descer' (bueiro: usar leva pro andar de baixo),
+// 'ferramenta-corda' ou 'ferramenta-pa'; null se nenhum.
+
+export const OBJECT_USES = ['placa', 'livro', 'bau-quest', 'corda', 'pa', 'descer', 'ferramenta-corda', 'ferramenta-pa'];
+
+export function objectUse(type) {
+  const asset = getAsset(splitType(type).asset);
+  const use = asset && asset.propriedades && asset.propriedades.uso;
+  return OBJECT_USES.includes(use) ? use : null;
+}
+
+// ================================================================================================================================================================================================================================================
+// openedAs
+// Monte da pá: a folha do buraco aberto (gerador → Abre como), ou null.
+
+export function openedAs(type) {
+  const asset = getAsset(splitType(type).asset);
+  const target = asset && asset.propriedades && asset.propriedades.abreComo;
+  return target && getAsset(target) ? target : null;
+}
+
+// ================================================================================================================================================================================================================================================
+// litAs
+// Fonte de luz acesa: a folha do desenho aceso (gerador → Acesa como), ou null.
+
+export function litAs(type) {
+  const asset = getAsset(splitType(type).asset);
+  const target = asset && asset.propriedades && asset.propriedades.acesoComo;
+  return target && getAsset(target) ? target : null;
 }
 
 // ================================================================================================================================================================================================================================================

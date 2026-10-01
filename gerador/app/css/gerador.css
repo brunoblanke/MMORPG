@@ -220,3 +220,20 @@ button:focus-visible, input:focus-visible, .slot:focus-visible{ outline:2px soli
 }
 .tile-tag[hidden]{ display:none; }
 .classify-help{ margin:0; padding:6px 20px; color:var(--muted); font-size:11px; background:var(--panel); border-top:1px solid var(--line); }
+
+.loot-field{ min-width:100%; }
+.loot-list{ display:flex; flex-direction:column; gap:4px; max-height:240px; overflow-y:auto; padding-right:4px; }
+.loot-row{ display:flex; align-items:center; gap:4px; font-size:11px; color:var(--muted); }
+.loot-row select{ flex:1; min-width:0; }
+.loot-row input[type=number]{ width:58px; }
+.loot-row .ghost-btn{ padding:2px 8px; }
+
+.npc-field{ min-width:100%; }
+.npc-grid{ display:flex; flex-wrap:wrap; gap:8px 12px; }
+.npc-topics{ display:flex; flex-direction:column; gap:4px; }
+.npc-topic{ display:flex; align-items:center; gap:4px; }
+.npc-topic input{ width:auto; }
+.npc-topic .npc-words{ width:200px; }
+.npc-topic .npc-reply{ flex:1; min-width:0; }
+.npc-topic .ghost-btn{ padding:2px 8px; }
+#creatureSaveForm.is-npc .stat:not(#npcFields .stat), #creatureSaveForm.is-npc .loot-field{ display:none; }

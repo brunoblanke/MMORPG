@@ -1,0 +1,117 @@
+{
+  "formato": {
+    "quadro": 32,
+    "linhas": [
+      "meio: 4 variações",
+      "s o n l",
+      "sl so nl no",
+      "int-sl int-so int-nl int-no"
+    ]
+  },
+  "variacoesDoMeio": 4,
+  "slots": {
+    "meio-1": {
+      "tibia": {
+        "id": 870,
+        "variacao": 7
+      }
+    },
+    "meio-2": {
+      "tibia": {
+        "id": 870,
+        "variacao": 0
+      }
+    },
+    "meio-3": {
+      "tibia": {
+        "id": 870,
+        "variacao": 7
+      }
+    },
+    "meio-4": {
+      "tibia": {
+        "id": 870,
+        "variacao": 7
+      }
+    },
+    "s": {
+      "tibia": {
+        "id": 4445,
+        "variacao": 0
+      }
+    },
+    "o": {
+      "tibia": {
+        "id": 4446,
+        "variacao": 0
+      }
+    },
+    "n": {
+      "tibia": {
+        "id": 4447,
+        "variacao": 0
+      }
+    },
+    "l": {
+      "tibia": {
+        "id": 4448,
+        "variacao": 0
+      }
+    },
+    "sl": {
+      "tibia": {
+        "id": 4449,
+        "variacao": 0
+      }
+    },
+    "so": {
+      "tibia": {
+        "id": 4450,
+        "variacao": 0
+      }
+    },
+    "nl": {
+      "tibia": {
+        "id": 4452,
+        "variacao": 0
+      }
+    },
+    "no": {
+      "tibia": {
+        "id": 4451,
+        "variacao": 0
+      }
+    },
+    "int-sl": {
+      "tibia": {
+        "id": 4453,
+        "variacao": 0
+      }
+    },
+    "int-so": {
+      "tibia": {
+        "id": 4454,
+        "variacao": 0
+      }
+    },
+    "int-nl": {
+      "tibia": {
+        "id": 4456,
+        "variacao": 0
+      }
+    },
+    "int-no": {
+      "tibia": {
+        "id": 4455,
+        "variacao": 0
+      }
+    }
+  },
+  "propriedades": {
+    "comportamento": "normal"
+  },
+  "ferramenta": "pisos",
+  "grupo": "estrutura",
+  "pasta": "pisos",
+  "nome": "piso-paralelepipedo"
+}

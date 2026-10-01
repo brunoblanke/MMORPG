@@ -41,7 +41,14 @@
     }
   },
   "propriedades": {
-    "comportamento": "foge"
+    "comportamento": "foge",
+    "vida": 280,
+    "xp": 220,
+    "velocidade": 190,
+    "armadura": 18,
+    "defesa": 18,
+    "ataque": 100,
+    "loot": []
   },
   "ferramenta": "criaturas",
   "grupo": "criaturas",

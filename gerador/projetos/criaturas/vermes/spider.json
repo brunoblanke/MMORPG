@@ -41,7 +41,21 @@
     }
   },
   "propriedades": {
-    "comportamento": "foge"
+    "comportamento": "foge",
+    "vida": 20,
+    "xp": 12,
+    "velocidade": 152,
+    "armadura": 2,
+    "defesa": 2,
+    "ataque": 9,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.65,
+        "min": 1,
+        "max": 5
+      }
+    ]
   },
   "ferramenta": "criaturas",
   "grupo": "criaturas",

@@ -16,9 +16,10 @@
     "empilhavel": true,
     "peso": 99,
     "espacos": 0,
-    "atk": 30,
-    "def": 0,
-    "ml": 0
+    "atk": 0,
+    "def": 13,
+    "ml": 0,
+    "speed": 0
   },
   "ferramenta": "objetos",
   "grupo": "itens",

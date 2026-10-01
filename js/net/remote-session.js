@@ -3,6 +3,7 @@
 import { World } from '../core/world.js';
 import { generateObjects } from '../models/game-object.js';
 import { applyState } from './protocol.js';
+import { decodeDelta } from './delta.js';
 
 const CONNECT_TIMEOUT_MS = 2000;
 
@@ -28,8 +29,10 @@ export class RemoteSession {
     this.objectsById = new Map(this.objects.map(obj => [obj.id, obj]));
     this.players = [];
     this.enemies = [];
+    this.npcs = [];
     this.deadBodies = [];
     this.inventoryView = null;
+    this.lastState = null;
     this.inbox = [];
     this.onDisconnect = null;
 
@@ -138,7 +141,8 @@ export class RemoteSession {
 
     for (const { message, receivedAt } of received) {
       if (message.type !== 'state') continue;
-      applyState(this, message, this.playerId, Math.min(receivedAt, timestamp));
+      if (message.delta) this.lastState = decodeDelta(this.lastState, message.delta);
+      applyState(this, { time: message.time, state: message.delta ? this.lastState : message.state }, this.playerId, Math.min(receivedAt, timestamp));
       for (const event of message.events) {
         events.push(event);
         if (event.type === 'damage') this.flash(event.targetId, timestamp);

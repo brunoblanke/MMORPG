@@ -2,6 +2,7 @@
 
 import { Player } from '../models/player.js';
 import { Enemy } from '../models/enemy.js';
+import { Npc } from '../models/npc.js';
 import { GameObject } from '../models/game-object.js';
 import { PLAYER_GENDERS, DEFAULT_GENDER } from '../../shared/catalog.js';
 import { TICK_MS } from '../../shared/constants.js';
@@ -12,19 +13,20 @@ import { objectIdType, doorState } from '../../shared/assets.js';
 //
 //   navegador → servidor
 //     { type: 'join', name, gender }               entrar com o nome e o gênero ('male' | 'female')
-//     { type: 'command', command }                 comando do jogador (player-control.js)
+//     { type: 'command', command }                 comando do jogador (player-control.js; say = falar)
 //   servidor → navegador
 //     { type: 'joinError', error }                 nome recusado (pode tentar de novo)
 //     { type: 'welcome', playerId }                entrou: quem você é
-//     { type: 'state', time, state, events }       a cada tick: estado + eventos
+//     { type: 'state', time, delta, events }       a cada tick: o que mudou no estado (delta.js) + eventos
 //
-// O estado leva só o que muda: jogadores, inimigos, cadáveres e itens
+// O estado leva só o que muda: jogadores, inimigos, NPCs, cadáveres e itens
 // móveis (que aparecem e somem: jogados, pegos, loot). O mapa (pisos,
 // paredes…) cada lado gera do mesmo data/map.json. Cada jogador recebe o
 // próprio inventário (you.inventory: systems/inventory.js → viewFor).
 
-export const PLAYER_FIELDS = ['name', 'gender', 'x', 'y', 'z', 'step', 'direction', 'lvl', 'xp', 'nextLevelXp', 'hp', 'maxHp', 'currentHp', 'spd', 'atk', 'def', 'isTarget', 'spawnX', 'spawnY', 'spawnZ', 'stepDuration'];
+export const PLAYER_FIELDS = ['name', 'gender', 'x', 'y', 'z', 'step', 'direction', 'lvl', 'xp', 'nextLevelXp', 'hp', 'maxHp', 'currentHp', 'spd', 'atk', 'def', 'isTarget', 'spawnX', 'spawnY', 'spawnZ', 'stepDuration', 'light'];
 export const ENEMY_FIELDS = ['creature', 'color', 'lvl', 'x', 'y', 'z', 'step', 'direction', 'hp', 'maxHp', 'currentHp', 'spd', 'atk', 'def', 'patrolCenterX', 'patrolCenterY', 'patrolRadius', 'detectionRadius', 'stepDuration'];
+export const NPC_FIELDS = ['name', 'gender', 'creature', 'x', 'y', 'z', 'step', 'direction', 'stepDuration', 'homeX', 'homeY', 'radius'];
 export const CORPSE_FIELDS = ['id', 'ownerId', 'name', 'x', 'y', 'z', 'step', 'color', 'type', 'lvl', 'creature', 'isPlayer', 'deathTime', 'decayTime', 'hasVolume', 'blocksMovement', 'movable', 'isCorpse', 'corpseCreature', 'corpseIsPlayer'];
 
 // Campos que placeCreature cuida (posição e animação do passo).
@@ -78,22 +80,33 @@ export function isSyncedItem(obj) {
   return (obj.movable === true || obj.isSplash === true) && !obj.floorType && !obj.isBorder && !obj.stairDirection;
 }
 
+// Alcance do que o servidor manda pra cada jogador (sqm em volta dele).
+export const VIEW_RANGE_X = 40;
+export const VIEW_RANGE_Y = 30;
+
 // ================================================================================================================================================================================================================================================
 // serializeState
 // Estado da simulação pra um jogador: o que todos veem mais o que é só dele
-// (alvo, seguir, caminho do clique).
+// (alvo, seguir, caminho do clique). nearOnly: só criaturas, corpos e itens
+// até VIEW_RANGE_X/Y sqm do jogador (mais que uma tela grande), como o
+// servidor manda pela rede.
 
-export function serializeState(sim, playerId) {
+export function serializeState(sim, playerId, nearOnly = false) {
   const me = sim.getPlayer(playerId);
+  const near = (o) => !nearOnly || !me || (Math.abs(o.x - me.x) <= VIEW_RANGE_X && Math.abs(o.y - me.y) <= VIEW_RANGE_Y);
   return {
-    players: sim.players.map(p => ({ id: p.id, ...pick(p, PLAYER_FIELDS) })),
-    enemies: sim.enemies.map(e => ({ id: e.id, ...pick(e, ENEMY_FIELDS), state: e.ai.state })),
-    corpses: sim.deadBodies.map(c => pick(c, CORPSE_FIELDS)),
+    players: sim.players.filter(near).map(p => ({ id: p.id, ...pick(p, PLAYER_FIELDS) })),
+    enemies: sim.enemies.filter(near).map(e => ({ id: e.id, ...pick(e, ENEMY_FIELDS), state: e.ai.state })),
+    npcs: (sim.npcs || []).filter(near).map(n => ({ id: n.id, ...pick(n, NPC_FIELDS) })),
+    corpses: sim.deadBodies.filter(near).map(c => pick(c, CORPSE_FIELDS)),
     doors: sim.doors.map(d => ({ x: d.x, y: d.y, z: d.z || 0, id: d.id })),
-    items: sim.objects.filter(isSyncedItem).map(o => ({
+    dug: sim.interactions ? [...sim.interactions.dugHoles.keys()] : [],
+    items: sim.objects.filter(o => isSyncedItem(o) && near(o)).map(o => ({
       id: o.id, x: o.x, y: o.y, z: o.z, step: o.step, hasVolume: o.hasVolume, blocksMovement: o.blocksMovement,
       count: o.itemData ? o.itemData.count : o.count,
-      splash: o.isSplash ? o.stage : undefined
+      splash: o.isSplash ? o.stage : undefined,
+      lit: o.itemData && o.itemData.lit ? true : undefined,
+      fuel: o.itemData ? o.itemData.fuel : undefined
     })),
     you: me ? {
       target: me.target ? me.target.id : null,
@@ -227,10 +240,14 @@ export function applyState(mirror, message, playerId, renderNow) {
     mirror.enemies[i].ai.state = state.enemies[i].state;
   }
 
+  mirror.npcs = syncCreatures(world, mirror.npcs || [], state.npcs || [], NPC_FIELDS,
+    (data) => new Npc({ id: data.id, x: data.x, y: data.y, z: data.z, step: data.step, name: data.name, gender: data.gender, creature: data.creature }), renderNow);
+
   mirror.deadBodies = syncCorpses(world, mirror.deadBodies, state.corpses, time, renderNow);
 
   syncItems(mirror, state.items);
   syncDoors(world, state.doors || []);
+  syncDug(mirror, state.dug || []);
 
   const me = mirror.players.find(p => p.id === playerId);
   if (me && state.you) {
@@ -241,6 +258,25 @@ export function applyState(mirror, message, playerId, renderNow) {
     me.walk = state.you.walk;
     mirror.inventoryView = state.you.inventory;
   }
+}
+
+// ================================================================================================================================================================================================================================================
+// syncDug
+// Montes que a pá abriu: o navegador desenha o buraco no lugar deles.
+
+function syncDug(mirror, ids) {
+  const open = new Set(ids);
+  for (const id of open) {
+    const obj = mirror.objectsById.get(id);
+    if (obj) obj.dug = true;
+  }
+  if (!mirror.dugIds) mirror.dugIds = new Set();
+  for (const id of mirror.dugIds) {
+    if (open.has(id)) continue;
+    const obj = mirror.objectsById.get(id);
+    if (obj) obj.dug = false;
+  }
+  mirror.dugIds = open;
 }
 
 // ================================================================================================================================================================================================================================================
@@ -282,6 +318,8 @@ function syncItems(mirror, incoming) {
     }
     obj.step = data.step;
     obj.count = data.count;
+    obj.lit = !!data.lit;
+    obj.fuel = data.fuel;
     if (obj.isSplash) obj.stage = data.splash;
   }
   for (const obj of [...mirror.objects]) {

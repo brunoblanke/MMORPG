@@ -149,8 +149,14 @@ export class LifeCycleController {
 
   // ================================================================================================================================================================================================================================================
   // processCorpseDecay
+  // No último estágio (ossos), o corpo não é mais container: o que tinha
+  // dentro some, como no Tibia. No fim da decomposição, ele some.
 
   processCorpseDecay(now) {
+    const lastStage = CONFIG.corpseFrameDuration * (CONFIG.corpseFrameCount - 1);
+    for (const corpse of this.sim.deadBodies) {
+      if (corpse.itemData && now >= corpse.deathTime + lastStage) corpse.itemData = null;
+    }
     for (const corpse of this.sim.deadBodies.filter(c => now >= c.decayTime)) {
       this.removeCorpse(corpse);
     }
