@@ -179,3 +179,14 @@ test('container fixo no mapa começa com os itens do editor e abre sem ser pego'
   assert.equal(items[1].type, ROPE);
   assert.equal(items[2], null);
 });
+
+test('bueiro em cima do topo de uma escada: pisar não desce', () => {
+  setAssets([asset(GRATE, { uso: 'descer' })]);
+  const up = buildGame({ objects: [...floorRect(0, 20, 0, 20, 0), ...floorRect(0, 20, 0, 20, 1), [GRATE, 5, 6, 1, 0, false, false, false]], stairs: [[6, 7, 0]], player: { x: 4, y: 6, z: 1 } });
+  up.time = 1000;
+  assert.equal(up.world.getTransitionAt(5, 6, 1), null);
+  assert.equal(up.world.hasFloorAt(5, 6, 1), true);
+  up.enqueue('player1', { type: 'walkTo', x: 5, y: 6, z: 1 });
+  run(up, 2000);
+  assert.deepEqual([up.player.x, up.player.y, up.player.z], [5, 6, 1]);
+});
