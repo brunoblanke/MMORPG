@@ -35138,17 +35138,6 @@
       12369
     ],
     [
-      "estrutura/pisos/piso-terra-3",
-      183,
-      208,
-      -1,
-      0,
-      false,
-      false,
-      false,
-      11240
-    ],
-    [
       "estrutura/pisos/piso-terra-2",
       183,
       208,
@@ -35157,7 +35146,7 @@
       false,
       false,
       false,
-      12360
+      15273
     ],
     [
       "estrutura/entradas/buraco-pedra-fechado",
