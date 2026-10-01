@@ -143,7 +143,7 @@ export class NpcController {
   // update
   // A cada tick: boas-vindas a quem acabou de chegar perto (no máximo uma
   // vez por WELCOME_COOLDOWN_MS) e fim da conversa de quem se afastou ou
-  // ficou FOCUS_IDLE_MS calado.
+  // ficou FOCUS_IDLE_MS calado (ele se despede, como no tchau).
 
   update(now) {
     for (const npc of this.sim.npcs) {
@@ -164,7 +164,12 @@ export class NpcController {
       npc.nearby = near;
       for (const [playerId, since] of npc.focus) {
         const player = this.sim.getPlayer(playerId);
-        if (!player || this.distanceTo(npc, player) > FOCUS_RANGE || now - since > FOCUS_IDLE_MS) npc.focus.delete(playerId);
+        if (!player) {
+          npc.focus.delete(playerId);
+        } else if (this.distanceTo(npc, player) > FOCUS_RANGE || now - since > FOCUS_IDLE_MS) {
+          npc.focus.delete(playerId);
+          if (def) this.npcSays(npc, player, def.bye.reply);
+        }
       }
       this.wander(npc, now);
     }

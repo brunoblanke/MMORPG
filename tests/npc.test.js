@@ -196,5 +196,6 @@ test('conversando o NPC para; volta a passear com o tchau ou quando o player se 
   say(sim, 'oi');
   assert.equal(walksWithin(10000), false);
   moveTo(sim, 25, 25);
+  assert.deepEqual(npcLines(run(sim, 1000)), ['Até mais, Ana. Boa aventura!']);
   assert.equal(walksWithin(30000), true);
 });
