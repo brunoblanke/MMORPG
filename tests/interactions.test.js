@@ -81,6 +81,14 @@ test('placa: usar mostra o texto escrito no editor; longe, o player vai até ela
   assert.ok(Math.abs(sim.player.x - 12) <= 1);
 });
 
+test('placa: a mensagem sai na cor escolhida no editor (verde se não escolheu)', () => {
+  const sim = game([[SIGN, 6, 5, 0, { texto: 'Perigo!', cor: 'danger' }], [SIGN, 4, 5, 0, { texto: 'Oi' }]]);
+  const [red, green] = sim.objects.filter(o => o.id.startsWith(SIGN));
+  const kind = (events) => events.find(e => e.type === 'message').kind;
+  assert.equal(kind(send(sim, { type: 'useObject', id: red.id })), 'danger');
+  assert.equal(kind(send(sim, { type: 'useObject', id: green.id })), 'info');
+});
+
 test('livro: no chão ou carregado, abre o texto; o texto vai junto quando pega', () => {
   const sim = game([[BOOK, 6, 5, 0, { texto: 'Era uma vez...' }]]);
   const book = at(sim, BOOK);

@@ -6,7 +6,7 @@ import { itemInfo, newItem, weightOf } from '../../shared/items.js';
 import { getHoleTarget, toLowerLevel, toUpperLevel } from '../../shared/stairs.js';
 
 // Objetos do mapa que se usam (gerador → Objetos → Uso):
-//   placa     → o texto (editor) aparece no centro da tela;
+//   placa     → o texto (editor) aparece no centro da tela, na cor escolhida no editor;
 //   livro     → abre o texto numa janela (no chão ou carregado);
 //   bau-quest → dá os itens (editor) uma vez por player;
 //   corda     → marca de corda: com a corda, sobe pro andar de cima;
@@ -56,7 +56,7 @@ export class InteractionController {
     }
     const use = objectUse(objectIdType(obj.id));
     if (use === 'placa') {
-      if (obj.data && obj.data.texto) this.message(player, obj.data.texto, 'info');
+      if (obj.data && obj.data.texto) this.message(player, obj.data.texto, ['warn', 'danger'].includes(obj.data.cor) ? obj.data.cor : 'info');
     }
     else if (use === 'livro') this.readBook(player, obj.itemData || { type: objectIdType(obj.id), texto: obj.data && obj.data.texto });
     else if (use === 'bau-quest') this.openQuestChest(player, obj);

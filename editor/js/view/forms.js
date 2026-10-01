@@ -183,10 +183,12 @@ function moveInStack(index, delta) {
 
 // ================================================================================================================================================================================================================================================
 // openObjectDataForm
-// Texto (placa, livro) ou itens (baú de quest: cada player pega uma vez;
-// container: começa com eles dentro). Fica no objeto, no mapa.
+// Texto (placa, livro; a placa também tem a cor da mensagem: verde, amarelo
+// ou vermelho) ou itens (baú de quest: cada player pega uma vez; container:
+// começa com eles dentro). Fica no objeto, no mapa.
 
 const objectDataForm = document.getElementById('objectDataForm');
+const MESSAGE_KINDS = ['info', 'warn', 'danger'];
 let pendingObject = null;
 let pendingItems = [];
 
@@ -203,6 +205,8 @@ export function openObjectDataForm(obj, clientX, clientY) {
   document.getElementById('objectDataTextField').hidden = kind !== 'texto';
   document.getElementById('objectDataItemsField').hidden = kind !== 'itens';
   document.getElementById('objectDataText').value = data.texto || '';
+  document.getElementById('objectDataColorField').hidden = use !== 'placa';
+  document.getElementById('objectDataColor').value = MESSAGE_KINDS.includes(data.cor) ? data.cor : 'info';
   pendingItems = Array.isArray(data.itens) ? data.itens.map(it => ({ tipo: it.tipo, count: it.count || 1 })) : [];
   renderObjectDataItems();
   positionFloatPanel(objectDataForm, clientX, clientY);
@@ -255,7 +259,8 @@ document.getElementById('objectDataConfirm').onclick = () => {
     pendingObject.dados = itens.length ? { itens } : undefined;
   } else {
     const texto = document.getElementById('objectDataText').value.trim();
-    pendingObject.dados = texto ? { texto } : undefined;
+    const cor = document.getElementById('objectDataColor').value;
+    pendingObject.dados = texto ? (objectUse(pendingObject.type) === 'placa' && cor !== 'info' ? { texto, cor } : { texto }) : undefined;
   }
   if (!pendingObject.dados) delete pendingObject.dados;
   objectDataForm.classList.remove('show');
