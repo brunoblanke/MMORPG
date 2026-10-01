@@ -52,9 +52,22 @@ function patchNode(current, node) {
     if (!node.hasAttribute(attr.name) && attr.name !== 'data-fade-bound') current.removeAttribute(attr.name);
   }
   for (const attr of [...node.attributes]) {
-    if (current.getAttribute(attr.name) !== attr.value) current.setAttribute(attr.name, attr.value);
+    const value = attr.name === 'class' ? keepTransientClasses(current, attr.value) : attr.value;
+    if (current.getAttribute(attr.name) !== value) current.setAttribute(attr.name, value);
   }
   patchChildren(current, node);
+}
+
+// ================================================================================================================================================================================================================================================
+// keepTransientClasses
+// As marcas do arrastar (onde o item pode ir, onde ele está por cima) vivem
+// só na tela: o redesenho não as tira, senão elas piscam a cada atualização.
+
+const TRANSIENT_CLASSES = ['can-drop', 'over', 'reject', 'source'];
+
+function keepTransientClasses(current, value) {
+  const kept = TRANSIENT_CLASSES.filter(name => current.classList.contains(name) && !value.split(' ').includes(name));
+  return kept.length ? `${value} ${kept.join(' ')}` : value;
 }
 
 // ================================================================================================================================================================================================================================================

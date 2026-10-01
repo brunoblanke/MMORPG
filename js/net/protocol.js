@@ -17,7 +17,7 @@ import { objectIdType, doorState } from '../../shared/assets.js';
 //   servidor → navegador
 //     { type: 'joinError', error }                 nome recusado (pode tentar de novo)
 //     { type: 'welcome', playerId }                entrou: quem você é
-//     { type: 'state', time, state, events }       a cada tick: estado + eventos
+//     { type: 'state', time, delta, events }       a cada tick: o que mudou no estado (delta.js) + eventos
 //
 // O estado leva só o que muda: jogadores, inimigos, NPCs, cadáveres e itens
 // móveis (que aparecem e somem: jogados, pegos, loot). O mapa (pisos,
@@ -80,21 +80,28 @@ export function isSyncedItem(obj) {
   return (obj.movable === true || obj.isSplash === true) && !obj.floorType && !obj.isBorder && !obj.stairDirection;
 }
 
+// Alcance do que o servidor manda pra cada jogador (sqm em volta dele).
+export const VIEW_RANGE_X = 40;
+export const VIEW_RANGE_Y = 30;
+
 // ================================================================================================================================================================================================================================================
 // serializeState
 // Estado da simulação pra um jogador: o que todos veem mais o que é só dele
-// (alvo, seguir, caminho do clique).
+// (alvo, seguir, caminho do clique). nearOnly: só criaturas, corpos e itens
+// até VIEW_RANGE_X/Y sqm do jogador (mais que uma tela grande), como o
+// servidor manda pela rede.
 
-export function serializeState(sim, playerId) {
+export function serializeState(sim, playerId, nearOnly = false) {
   const me = sim.getPlayer(playerId);
+  const near = (o) => !nearOnly || !me || (Math.abs(o.x - me.x) <= VIEW_RANGE_X && Math.abs(o.y - me.y) <= VIEW_RANGE_Y);
   return {
-    players: sim.players.map(p => ({ id: p.id, ...pick(p, PLAYER_FIELDS) })),
-    enemies: sim.enemies.map(e => ({ id: e.id, ...pick(e, ENEMY_FIELDS), state: e.ai.state })),
-    npcs: (sim.npcs || []).map(n => ({ id: n.id, ...pick(n, NPC_FIELDS) })),
-    corpses: sim.deadBodies.map(c => pick(c, CORPSE_FIELDS)),
+    players: sim.players.filter(near).map(p => ({ id: p.id, ...pick(p, PLAYER_FIELDS) })),
+    enemies: sim.enemies.filter(near).map(e => ({ id: e.id, ...pick(e, ENEMY_FIELDS), state: e.ai.state })),
+    npcs: (sim.npcs || []).filter(near).map(n => ({ id: n.id, ...pick(n, NPC_FIELDS) })),
+    corpses: sim.deadBodies.filter(near).map(c => pick(c, CORPSE_FIELDS)),
     doors: sim.doors.map(d => ({ x: d.x, y: d.y, z: d.z || 0, id: d.id })),
     dug: sim.interactions ? [...sim.interactions.dugHoles.keys()] : [],
-    items: sim.objects.filter(isSyncedItem).map(o => ({
+    items: sim.objects.filter(o => isSyncedItem(o) && near(o)).map(o => ({
       id: o.id, x: o.x, y: o.y, z: o.z, step: o.step, hasVolume: o.hasVolume, blocksMovement: o.blocksMovement,
       count: o.itemData ? o.itemData.count : o.count,
       splash: o.isSplash ? o.stage : undefined,
