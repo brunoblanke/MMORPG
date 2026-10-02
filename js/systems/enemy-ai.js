@@ -6,6 +6,11 @@ import { AI_STATE } from '../models/enemy.js';
 import { CONFIG } from '../config.js';
 import { creatureBehavior } from '../../shared/assets.js';
 
+// Sem caminho até o player parado no mesmo sqm: tenta de novo só depois disso (ms).
+const CHASE_STUCK_RETRY_MS = 8000;
+// Espalha as novas tentativas no tempo, pra não caírem todas no mesmo instante.
+const CHASE_RETRY_JITTER_MS = 1000;
+
 // Máquina de estados de cada inimigo (enemy.ai):
 //
 //   patrol ──(vê o player e tem rota)──▶ chase
@@ -19,7 +24,8 @@ import { creatureBehavior } from '../../shared/assets.js';
 // patrol: parado (ai.resumeAt) → anda até um sqm sorteado da área → para.
 // chase: vai pra um sqm livre colado no player (ai.slot), ataca dali e de
 // tempos em tempos troca de lado (ai.sidestepAt). Sem rota até o player
-// (parede, casa fechada), volta a patrulhar e só tenta de novo em ai.retryAt.
+// (parede, casa fechada), volta a patrulhar na hora e só tenta de novo em
+// ai.retryAt (ou mais tarde, se o player não saiu do lugar: ai.blocked).
 // O caminho seguido, em qualquer estado, fica em enemy.route.
 
 export class EnemyAI {
@@ -132,7 +138,7 @@ export class EnemyAI {
   // updatePatrol
 
   updatePatrol(enemy, player, enemies, timestamp, searchBounds, seesPlayer) {
-    if (seesPlayer && timestamp >= enemy.ai.retryAt) {
+    if (seesPlayer && this.canRetryChase(enemy, player, timestamp)) {
       const patrolRoute = enemy.route;
       enemy.ai.state = AI_STATE.CHASE;
       enemy.route = { path: null, x: null, y: null };
@@ -142,7 +148,7 @@ export class EnemyAI {
       }
       enemy.ai.state = AI_STATE.PATROL;
       enemy.route = patrolRoute;
-      this.giveUpChase(enemy, timestamp);
+      this.giveUpChase(enemy, player, timestamp);
     }
     this.patrol(enemy, enemies, timestamp);
   }
@@ -153,31 +159,52 @@ export class EnemyAI {
   updateChase(enemy, player, enemies, timestamp, searchBounds, seesPlayer) {
     if (seesPlayer) {
       if (this.chasePlayer(enemy, player, enemies, timestamp, searchBounds)) return;
-      this.giveUpChase(enemy, timestamp);
+      this.giveUpChase(enemy, player, timestamp);
+      this.enterPatrol(enemy, timestamp, { pause: false });
+    } else {
+      this.enterPatrol(enemy, timestamp);
     }
-    this.enterPatrol(enemy, timestamp);
     this.patrol(enemy, enemies, timestamp);
   }
 
   // ================================================================================================================================================================================================================================================
   // giveUpChase
-  // Sem rota até o player: só tenta de novo depois de chaseRetryDelay.
+  // Sem rota até o player: só tenta de novo depois de chaseRetryDelay (mais um
+// tanto sorteado, CHASE_RETRY_JITTER_MS) — e,
+  // se o player continuar no mesmo sqm, só depois de CHASE_STUCK_RETRY_MS
+  // (canRetryChase).
 
-  giveUpChase(enemy, timestamp) {
-    enemy.ai.retryAt = timestamp + CONFIG.chaseRetryDelay;
+  giveUpChase(enemy, player, timestamp) {
+    enemy.ai.retryAt = timestamp + CONFIG.chaseRetryDelay + randFloat(0, CHASE_RETRY_JITTER_MS);
+    enemy.ai.blocked = { x: player.x, y: player.y, until: timestamp + CHASE_STUCK_RETRY_MS };
     console.log(`🚧 Inimigo ${enemy.id} não tem rota até o player: volta a patrulhar`);
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // canRetryChase
+
+  canRetryChase(enemy, player, timestamp) {
+    if (timestamp < enemy.ai.retryAt) return false;
+    const blocked = enemy.ai.blocked;
+    return !blocked || blocked.x !== player.x || blocked.y !== player.y || timestamp >= blocked.until;
   }
 
   // ================================================================================================================================================================================================================================================
   // enterPatrol
   // Sai da perseguição: a área de patrulha passa a ser em volta de onde parou.
+  // Perdeu o player de vista, para um pouco; sem caminho até ele (pause:
+  // false), já sai andando.
 
-  enterPatrol(enemy, timestamp) {
+  enterPatrol(enemy, timestamp, { pause = true } = {}) {
     enemy.ai.state = AI_STATE.PATROL;
     enemy.ai.slot = null;
     enemy.ai.sidestepAt = null;
     enemy.updatePatrolCenter();
-    this.pausePatrol(enemy, timestamp);
+    if (pause) this.pausePatrol(enemy, timestamp);
+    else {
+      enemy.route.path = null;
+      enemy.ai.resumeAt = timestamp;
+    }
   }
 
   // ================================================================================================================================================================================================================================================
@@ -317,7 +344,7 @@ export class EnemyAI {
 
     enemy.ai.rerouteAt = timestamp + CONFIG.chaseRerouteDelay;
     if (this.movement.getPassableStep(target.x, target.y, enemy.z || 0, enemy.step || 0) === null) return true;
-    const detour = this.movement.findPathWithFallback(enemy, target, searchBounds);
+    const detour = this.movement.findPathWithFallback(enemy, target, searchBounds, { chase: true });
     if (detour.length === 0) return true;
 
     enemy.route.path = detour;
@@ -369,17 +396,21 @@ export class EnemyAI {
       return takenByOthers;
     }
 
-    for (const target of candidates) {
-      if (this.movement.withEnemiesPassable(() => this.movement.ensureRoute(enemy, target, searchBounds))) {
-        enemy.ai.slot = { x: target.x, y: target.y };
-        this.movement.followRoute(enemy, timestamp, (nextStep) =>
-          this.isNextStepTaken(enemy, enemies, nextStep, target, timestamp, searchBounds));
-        return true;
-      }
+    const first = candidates[0];
+    const keepsRoute = this.movement.withEnemiesPassable(() => {
+      const route = enemy.route;
+      const onIt = route.path && route.path.length && route.x === first.x && route.y === first.y;
+      return onIt && this.movement.ensureRoute(enemy, first, searchBounds, { chase: true });
+    });
+    const target = keepsRoute ? first : this.movement.withEnemiesPassable(() => this.movement.routeToAny(enemy, candidates, searchBounds));
+    if (!target) {
+      enemy.ai.slot = null;
+      return false;
     }
-
-    enemy.ai.slot = null;
-    return false;
+    enemy.ai.slot = { x: target.x, y: target.y };
+    this.movement.followRoute(enemy, timestamp, (nextStep) =>
+      this.isNextStepTaken(enemy, enemies, nextStep, target, timestamp, searchBounds));
+    return true;
   }
 
   // ================================================================================================================================================================================================================================================

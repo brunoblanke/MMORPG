@@ -9,6 +9,11 @@ import { blocksThrow, objectIdType } from '../../shared/assets.js';
 // Sem caminho até o alvo: só procura de novo depois deste tempo (ms).
 const NO_PATH_RETRY_MS = 500;
 
+// Perseguição: a busca de caminho fica na área de busca e desiste depois de
+// tantos sqms (um caminho de perseguição maior que isso não vale a pena e,
+// sem caminho, a busca sem limite travava o servidor).
+const CHASE_MAX_NODES = 1000;
+
 export class MovementController {
 
   // ================================================================================================================================================================================================================================================
@@ -93,10 +98,12 @@ export class MovementController {
   // ================================================================================================================================================================================================================================================
   // findPathWithFallback
   // Caminho no mesmo andar; tenta primeiro dentro de searchBounds e, se não
-  // achar, sem limite.
+  // achar, sem limite. chase: só dentro de searchBounds e no máximo
+  // CHASE_MAX_NODES sqms (perseguição).
 
-  findPathWithFallback(entity, targetPos, searchBounds) {
+  findPathWithFallback(entity, targetPos, searchBounds, { chase = false } = {}) {
     const end = { x: targetPos.x, y: targetPos.y, z: entity.z || 0 };
+    if (chase) return this.findPath(entity, end, { sameFloor: true, bounds: searchBounds, maxNodes: CHASE_MAX_NODES });
     let path = this.findPath(entity, end, { sameFloor: true, bounds: searchBounds });
     if (path.length === 0 && searchBounds) {
       path = this.findPath(entity, end, { sameFloor: true });
@@ -178,9 +185,10 @@ export class MovementController {
   // ================================================================================================================================================================================================================================================
   // ensureRoute
   // entity.route = { path, x, y }: caminho no mesmo andar até (x, y).
-  // Recalcula se o alvo mudou ou o caminho acabou. false se não há caminho possível.
+  // Recalcula se o alvo mudou ou o caminho acabou. false se não há caminho
+  // possível. options.chase: busca curta de perseguição (findPathWithFallback).
 
-  ensureRoute(entity, targetPos, searchBounds) {
+  ensureRoute(entity, targetPos, searchBounds, options = {}) {
     const route = entity.route;
     const needsNewPath = !route.path || route.path.length === 0 || route.x !== targetPos.x || route.y !== targetPos.y;
     if (!needsNewPath) return true;
@@ -190,7 +198,7 @@ export class MovementController {
       return false;
     }
 
-    const newPath = this.findPathWithFallback(entity, targetPos, searchBounds);
+    const newPath = this.findPathWithFallback(entity, targetPos, searchBounds, options);
     if (newPath.length === 0) {
       route.path = null;
       return false;
@@ -198,6 +206,22 @@ export class MovementController {
 
     entity.route = { path: newPath, x: targetPos.x, y: targetPos.y };
     return true;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // routeToAny
+  // Perseguição: uma busca só até o mais perto (pelo caminho) dos sqms goals.
+  // Achou, entity.route vai até ele e devolve o sqm; senão, null.
+
+  routeToAny(entity, goals, searchBounds) {
+    const floor = entity.z || 0;
+    const reachable = goals.filter(goal => this.getPassableStep(goal.x, goal.y, floor, entity.step || 0) !== null);
+    if (!reachable.length) return null;
+    const path = this.findPath(entity, { x: reachable[0].x, y: reachable[0].y, z: floor }, { sameFloor: true, bounds: searchBounds, maxNodes: CHASE_MAX_NODES, goals: reachable });
+    if (!path.length) return null;
+    const last = path[path.length - 1];
+    entity.route = { path, x: last.x, y: last.y };
+    return { x: last.x, y: last.y };
   }
 
   // ================================================================================================================================================================================================================================================
@@ -276,8 +300,8 @@ export class MovementController {
     const key = `${targetX},${targetY}`;
     const recentlyFailed = route.failedKey === key && timestamp - route.failedAt < NO_PATH_RETRY_MS;
     const reached = current
-      ? this.ensureRoute(entity, current, searchBounds)
-      : !recentlyFailed && options.some(pos => this.ensureRoute(entity, pos, searchBounds));
+      ? this.ensureRoute(entity, current, searchBounds, { chase: !!targetEntity })
+      : !recentlyFailed && (targetEntity ? !!this.routeToAny(entity, options, searchBounds) : this.ensureRoute(entity, options[0], searchBounds));
     if (!reached) {
       if (!recentlyFailed) Object.assign(entity.route, { failedKey: key, failedAt: timestamp });
       if (this.onNoPath) this.onNoPath(entity, timestamp);
