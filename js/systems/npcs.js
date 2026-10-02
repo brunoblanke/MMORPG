@@ -2,8 +2,8 @@
 
 import { Npc } from '../models/npc.js';
 import { getMapSpawn } from '../../shared/map-format.js';
-import { DEFAULT_RADIUS, YES_WORDS, NO_WORDS, TRADE_WORDS, VOCATION_LINES, SHOP_LINES, normalizeSpeech, npcDefFromAsset, fillLine } from '../../shared/npcs.js';
-import { buy } from './trade.js';
+import { DEFAULT_RADIUS, YES_WORDS, NO_WORDS, TRADE_WORDS, SELL_WORDS, MAX_SELL, VOCATION_LINES, SHOP_LINES, normalizeSpeech, npcDefFromAsset, fillLine } from '../../shared/npcs.js';
+import { buy, sell } from './trade.js';
 import { VOCATIONS, VOCATION_LEVEL } from '../../shared/vocations.js';
 import { getLevel } from '../core/geometry.js';
 import { directionFromDelta } from '../utils/helpers.js';
@@ -132,7 +132,7 @@ export class NpcController {
       return;
     }
     if (def.vocation && this.talkVocation(npc, def, player, text)) return;
-    if (def.shop && def.shop.length && this.talkShop(npc, def, player, text)) return;
+    if (((def.shop && def.shop.length) || (def.buys && def.buys.length)) && this.talkShop(npc, def, player, text)) return;
     const topic = def.topics.find(t => this.hasWord(text, t.words));
     if (topic) this.npcSays(npc, player, topic.reply);
   }
@@ -178,16 +178,25 @@ export class NpcController {
 
   // ================================================================================================================================================================================================================================================
   // talkShop
-  // NPC que vende: oferta (trade, loja…) lista o que ele tem; o nome de um
-  // item (ou as palavras dele no gerador) pede a confirmação com o preço; sim
-  // compra (trade.js → buy), não desiste. Devolve true se a fala era dessa
-  // conversa.
+  // NPC que vende ou compra: oferta (trade, loja…) lista o que ele vende e o
+  // que compra; vender (ou sell) com o nome de um item que ele compra, e a
+  // quantidade se quiser (vender 5 queijos), pede a confirmação com o preço;
+  // o nome de um item que ele vende (ou as palavras dele no gerador) também;
+  // sim fecha (trade.js → buy, sell), não desiste. Devolve true se a fala
+  // era dessa conversa.
 
   talkShop(npc, def, player, text) {
     const lines = def.shopLines || Object.fromEntries(Object.entries(SHOP_LINES).map(([k, v]) => [k, v.text]));
+    const shop = def.shop || [];
+    const buys = def.buys || [];
     const pending = npc.offering.get(player.id);
     if (pending && this.hasWord(text, YES_WORDS)) {
       npc.offering.delete(player.id);
+      if (pending.amount) {
+        const result = sell(this.sim, player, pending.type, pending.price, pending.amount);
+        this.npcSays(npc, player, fillLine(result === 'ok' ? lines.comprado : lines.semItem, { item: pending.name, quantidade: pending.amount }));
+        return true;
+      }
       const result = buy(this.sim, player, pending.type, pending.price);
       const replies = { ok: lines.vendido, money: lines.semDinheiro, bag: lines.semMochila, space: lines.semEspaco, cap: lines.semCap };
       this.npcSays(npc, player, fillLine(replies[result], { item: pending.name, preco: pending.price }));
@@ -198,14 +207,26 @@ export class NpcController {
       this.npcSays(npc, player, lines.desistiu);
       return true;
     }
-    const item = def.shop.find(entry => this.hasWord(text, entry.words));
+    const selling = this.hasWord(text, SELL_WORDS) ? buys.find(entry => this.hasWord(text, entry.words)) : null;
+    if (selling) {
+      const number = Number((text.match(/\b\d+\b/) || [])[0]);
+      const amount = Number.isInteger(number) && number > 0 ? Math.min(number, MAX_SELL) : 1;
+      npc.offering.set(player.id, { ...selling, amount });
+      this.npcSays(npc, player, fillLine(lines.confirmarCompra, { item: selling.name, quantidade: amount, preco: selling.price * amount }));
+      return true;
+    }
+    const item = shop.find(entry => this.hasWord(text, entry.words));
     if (item) {
       npc.offering.set(player.id, item);
       this.npcSays(npc, player, fillLine(lines.confirmar, { item: item.name, preco: item.price }));
       return true;
     }
-    if (this.hasWord(text, TRADE_WORDS)) {
-      this.npcSays(npc, player, fillLine(lines.lista, { lista: def.shop.map(entry => `${entry.name} (${entry.price} moedas)`).join(', ') }));
+    if (this.hasWord(text, TRADE_WORDS) || this.hasWord(text, SELL_WORDS)) {
+      const list = (entries) => entries.map(entry => `${entry.name} (${entry.price} moedas)`).join(', ');
+      const replies = [];
+      if (shop.length) replies.push(fillLine(lines.lista, { lista: list(shop) }));
+      if (buys.length) replies.push(fillLine(lines.listaCompra, { lista: list(buys) }));
+      this.npcSays(npc, player, replies.join(' '));
       return true;
     }
     return false;
