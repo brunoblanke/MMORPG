@@ -93,7 +93,7 @@
 .inv-skills{ padding:6px 12px 8px; font-size:11px; font-variant-numeric:tabular-nums; }
 .inv-skrow{ display:flex; justify-content:space-between; gap:8px; line-height:14px; margin-top:3px; color:var(--inv-muted); }
 .inv-skrow b{ color:var(--inv-text); font-weight:500; }
-.inv-skbar{ height:5px; margin-top:2px; border-radius:2px; background:#030405; border:1px solid #000; overflow:hidden; }
+.inv-skbar{ height:3px; margin-top:2px; border-radius:2px; background:#030405; overflow:hidden; }
 .inv-skbar i{ display:block; height:100%; background:#3fb68b; }
 .inv-skbar.hp i{ background:#22c55e; }
 .inv-skbar.hp.mid i{ background:#eab308; }
@@ -142,7 +142,7 @@
 .inv-battle-row:hover{ border-color:var(--inv-accent-dim); }
 .inv-battle-row.target{ border-color:#ef4444; background:rgba(239, 68, 68, .1); }
 .inv-battle-name{ display:block; font-size:11px; line-height:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.inv-battle-hp{ height:5px; margin-top:2px; border-radius:2px; background:#030405; border:1px solid #000; overflow:hidden; }
+.inv-battle-hp{ height:3px; margin-top:2px; border-radius:2px; background:var(--inv-slot); overflow:hidden; }
 .inv-battle-hp i{ display:block; height:100%; background:#22c55e; }
 .inv-battle-hp.mid i{ background:#eab308; }
 .inv-battle-hp.low i{ background:#ef4444; }
