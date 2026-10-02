@@ -6,6 +6,9 @@ import { findPath } from '../core/pathfinding.js';
 import { isValidFloor } from '../../shared/constants.js';
 import { blocksThrow, objectIdType } from '../../shared/assets.js';
 
+// Sem caminho até o alvo: só procura de novo depois deste tempo (ms).
+const NO_PATH_RETRY_MS = 500;
+
 export class MovementController {
 
   // ================================================================================================================================================================================================================================================
@@ -253,7 +256,11 @@ export class MovementController {
 
   // ================================================================================================================================================================================================================================================
   // moveTowardsPosition
-  // Um passo rumo a (targetX, targetY). Devolve false se não há caminho até lá.
+  // Um passo rumo a (targetX, targetY). Com uma criatura lá (targetEntity),
+  // vai pro lado livre dela mais perto que tenha caminho (um lado preso atrás
+  // de parede ou quina não conta); segue o lado escolhido enquanto ele
+  // continuar livre. Sem lado livre, vai rumo à própria criatura. Devolve
+  // false se não há caminho (e só procura de novo depois de NO_PATH_RETRY_MS).
 
   moveTowardsPosition(entity, targetX, targetY, timestamp, targetEntity = null, searchBounds = null, enemies = []) {
     const isAdjacent = isPositionAdjacentTo(entity.x, entity.y, targetX, targetY);
@@ -262,11 +269,17 @@ export class MovementController {
       return true;
     }
 
-    const targetPos = targetEntity
-      ? (this.findBestSurroundPosition(entity, targetX, targetY, enemies) || { x: targetX, y: targetY })
-      : { x: targetX, y: targetY };
-
-    if (!this.ensureRoute(entity, targetPos, searchBounds)) {
+    const around = targetEntity ? this.surroundPositions(entity, targetX, targetY, enemies) : [];
+    const options = around.length ? around : [{ x: targetX, y: targetY }];
+    const route = entity.route;
+    const current = route.path && route.path.length ? options.find(pos => pos.x === route.x && pos.y === route.y) : null;
+    const key = `${targetX},${targetY}`;
+    const recentlyFailed = route.failedKey === key && timestamp - route.failedAt < NO_PATH_RETRY_MS;
+    const reached = current
+      ? this.ensureRoute(entity, current, searchBounds)
+      : !recentlyFailed && options.some(pos => this.ensureRoute(entity, pos, searchBounds));
+    if (!reached) {
+      if (!recentlyFailed) Object.assign(entity.route, { failedKey: key, failedAt: timestamp });
       if (this.onNoPath) this.onNoPath(entity, timestamp);
       return false;
     }
@@ -277,29 +290,15 @@ export class MovementController {
   }
 
   // ================================================================================================================================================================================================================================================
-  // findBestSurroundPosition
+  // surroundPositions
+  // Os sqms livres em volta de (x, y), do mais perto da entidade pro mais
+  // longe (sem ninguém de enemies neles).
 
-  findBestSurroundPosition(enemy, playerX, playerY, enemies) {
-    const freePositions = [];
-    for (const pos of getAdjacentPositions(playerX, playerY)) {
-      if (!this.isInsideMap(pos.x, pos.y)) continue;
-      if (this.isBlocked(pos.x, pos.y, enemy.z || 0)) continue;
-      const occupied = enemies.some(e => e !== enemy && e.x === pos.x && e.y === pos.y);
-      if (occupied) continue;
-      freePositions.push(pos);
-    }
-    if (freePositions.length === 0) return null;
-
-    let bestPos = null;
-    let minDist = Infinity;
-    for (const pos of freePositions) {
-      const dist = distance(enemy.x, enemy.y, pos.x, pos.y);
-      if (dist < minDist) {
-        minDist = dist;
-        bestPos = pos;
-      }
-    }
-    return bestPos;
+  surroundPositions(entity, x, y, enemies) {
+    return getAdjacentPositions(x, y)
+      .filter(pos => this.isInsideMap(pos.x, pos.y) && !this.isBlocked(pos.x, pos.y, entity.z || 0))
+      .filter(pos => !enemies.some(e => e !== entity && e.x === pos.x && e.y === pos.y))
+      .sort((a, b) => distance(entity.x, entity.y, a.x, a.y) - distance(entity.x, entity.y, b.x, b.y));
   }
 
   // ================================================================================================================================================================================================================================================

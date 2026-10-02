@@ -2,7 +2,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { buildGame, floorRect } from './helpers/fixture.js';
+import { buildGame, floorRect, wall } from './helpers/fixture.js';
 import { TICK_MS } from '../js/simulation.js';
 
 test('alvo em outro andar não é aceito (e não gera "Alvo perdido")', () => {
@@ -16,7 +16,7 @@ test('alvo em outro andar não é aceito (e não gera "Alvo perdido")', () => {
 });
 
 test('auto ataque: alvo que ficou inacessível é largado e o próximo da fila vira alvo', async () => {
-  const { wall } = await import('./helpers/fixture.js');
+
   const { UNREACHABLE_MS } = await import('../js/systems/combat.js');
   const walls = [];
   for (let x = 13; x <= 17; x++) for (let y = 3; y <= 7; y++) if (x === 13 || x === 17 || y === 3 || y === 7) walls.push(...wall(x, y));
@@ -50,4 +50,14 @@ test('auto ataque: sem seguir, o alvo é o inimigo mais perto; seguindo, mantém
   a.x = 6;
   game.combat.updateAutoAttack(game.player);
   assert.equal(game.player.target, b, 'seguindo o alvo (com caminho), não troca por proximidade');
+});
+
+test('perseguir: o lado do alvo mais perto não tem caminho, mas outro tem — segue pelo outro e não larga o alvo', () => {
+  const walls = [];
+  for (let y = 0; y <= 12; y++) if (y !== 10) walls.push(...wall(4, y));
+  for (const [x, y] of [[5, 1], [6, 1], [6, 2], [6, 3]]) walls.push(...wall(x, y));
+  const game = buildGame({ objects: [...floorRect(0, 12, 0, 12, 0), ...walls], enemies: [[5, 3, 0]], player: { x: 3, y: 2, z: 0 } });
+  const [enemy] = game.enemies;
+  const reachable = game.movement.moveTowardsPosition(game.player, enemy.x, enemy.y, game.time, enemy, game.searchBoundsAround(game.player), game.enemies);
+  assert.equal(reachable, true);
 });
