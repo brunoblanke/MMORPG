@@ -41121,7 +41121,12 @@
       0,
       true,
       false,
-      false
+      false,
+      null,
+      null,
+      {
+        "texto": "Dia 12 - Desci mais fundo do que qualquer mapa da vila mostra. A tocha já está no fim, mas valeu a pena.\n\nEntre as frestas das rochas, vi um baú. Parece ser bem antigo.\n\nDia 15 — Rodei a caverna inteira e não achei nenhuma passagem. Parece que alguém quis esconder esse baú de propósito.\n\nDia 18 — Ninguém protege um baú comum desse jeito. Deve haver algo muito importante lá dentro.\n\nDia 19 — Os ratos roeram parte das minhas provisões. Preciso descansar um pouco antes de tentar de novo."
+      }
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -120573,7 +120578,7 @@
       null,
       {
         "texto": "Sua aventura começa aqui, prepare-se!",
-        "cor": "warn"
+        "cor": "blue"
       }
     ],
     [
@@ -166608,12 +166613,12 @@
       "criaturas/humanoides/troll"
     ],
     [
-      198,
+      201,
       213,
       -2,
-      2,
+      1,
       32,
-      "criaturas/repteis/snake"
+      "criaturas/mamiferos/rat"
     ],
     [
       186,
@@ -166624,20 +166629,28 @@
       "criaturas/mamiferos/rat"
     ],
     [
-      207,
-      215,
+      189,
+      217,
       -2,
       1,
       32,
       "criaturas/mamiferos/rat"
     ],
     [
-      194,
-      218,
+      208,
+      217,
       -2,
-      1,
+      2,
       32,
-      "criaturas/mamiferos/rat"
+      "criaturas/repteis/snake"
+    ],
+    [
+      187,
+      220,
+      -2,
+      2,
+      32,
+      "criaturas/repteis/snake"
     ],
     [
       201,
@@ -166664,28 +166677,20 @@
       "criaturas/mamiferos/rat"
     ],
     [
-      189,
-      226,
+      186,
+      225,
       -2,
-      1,
+      5,
       32,
-      "criaturas/mamiferos/rat"
+      "criaturas/humanoides/troll"
     ],
     [
-      187,
-      227,
+      196,
+      225,
       -2,
       2,
       32,
-      "criaturas/vermes/spider"
-    ],
-    [
-      187,
-      228,
-      -2,
-      1,
-      32,
-      "criaturas/mamiferos/rat"
+      "criaturas/repteis/snake"
     ],
     [
       192,
@@ -166696,8 +166701,8 @@
       "criaturas/humanoides/orc"
     ],
     [
-      198,
-      228,
+      197,
+      231,
       -2,
       1,
       32,
@@ -166782,14 +166787,6 @@
       2,
       32,
       "criaturas/vermes/spider"
-    ],
-    [
-      192,
-      212,
-      -1,
-      1,
-      32,
-      "criaturas/mamiferos/rat"
     ],
     [
       183,
