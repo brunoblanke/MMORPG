@@ -2,20 +2,23 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { DAY_MS, NIGHT_AMBIENT, PLAYER_LIGHT, ambientLight, dayPhase, lightAt } from '../shared/lighting.js';
+import { DAY_MS, NIGHT_AMBIENT, PLAYER_LIGHT, ambientLight, worldTime, lightAt } from '../shared/lighting.js';
 import { buildGame, floorRect } from './helpers/fixture.js';
 import { TICK_MS } from '../js/simulation.js';
 import { setAssets } from '../shared/assets.js';
 import { itemInfo } from '../shared/items.js';
 
-test('dia de 10 minutos: meio-dia claro, meia-noite escura, amanhecer no meio; subsolo sempre breu', () => {
-  assert.equal(DAY_MS, 600000);
-  assert.equal(dayPhase(DAY_MS * 3 + DAY_MS / 2), 0.5);
-  assert.equal(ambientLight(DAY_MS / 2, 0), 1);
-  assert.equal(ambientLight(0, 0), NIGHT_AMBIENT);
-  const dawn = ambientLight(DAY_MS / 4, 0);
-  assert.ok(dawn > NIGHT_AMBIENT && dawn < 1);
-  assert.equal(ambientLight(DAY_MS / 2, -1), 0);
+test('dia do Tibia: 1 hora real (2,5 s por minuto do jogo); amanhece 6h–8h, anoitece 18h–20h; subsolo sempre breu', () => {
+  const at = (hour) => hour * 60 * 2500;
+  assert.equal(DAY_MS, 3600000);
+  assert.equal(worldTime(DAY_MS * 3 + at(12)), 720);
+  assert.equal(ambientLight(at(12), 0), 1);
+  assert.equal(ambientLight(at(3), 0), NIGHT_AMBIENT);
+  assert.equal(ambientLight(at(21), 0), NIGHT_AMBIENT);
+  assert.equal(ambientLight(at(7), 0), (40 + 105) / 250);
+  assert.equal(ambientLight(at(19), 0), (250 - 105) / 250);
+  assert.equal(ambientLight(at(10), 0), 1);
+  assert.equal(ambientLight(at(12), -1), 0);
 });
 
 test('luz no sqm: a geral ou a da fonte, caindo até o raio', () => {

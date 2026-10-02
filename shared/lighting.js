@@ -5,32 +5,44 @@
 // de luz (player, tocha, objetos com Luz no gerador) clareiam em volta, com
 // queda suave até o raio.
 
-export const DAY_MS = 10 * 60 * 1000;
-export const NIGHT_AMBIENT = 0.08;
+// Dia e noite do Tibia (TFS, game.cpp): um dia do jogo dura 1 hora real,
+// acompanhando os minutos do relógio (cada minuto do jogo são 2,5 s). A luz
+// vai de LIGHT_NIGHT (noite) a LIGHT_DAY (dia): amanhece das 6h às 8h e
+// anoitece das 18h às 20h, em linha reta; o resto é dia ou noite cheia.
+export const DAY_MS = 60 * 60 * 1000;
+export const LIGHT_DAY = 250;
+export const LIGHT_NIGHT = 40;
+export const SUNRISE = 360;
+export const DAYTIME = 480;
+export const SUNSET = 1080;
+export const NIGHTTIME = 1200;
+export const NIGHT_AMBIENT = LIGHT_NIGHT / LIGHT_DAY;
 export const UNDERGROUND_AMBIENT = 0;
 export const PLAYER_LIGHT = 2;
 export const VISIBLE_LIGHT = 0.35;
 
 // ================================================================================================================================================================================================================================================
-// dayPhase
-// Momento do dia (0 = meia-noite, 0,5 = meio-dia) no relógio timeMs. Todos
-// os jogadores usam o relógio real, então veem a mesma hora.
+// worldTime
+// A hora do jogo em minutos (0 = meia-noite, 720 = meio-dia) no relógio
+// timeMs. Todos os jogadores usam o relógio real, então veem a mesma hora.
 
-export function dayPhase(timeMs) {
-  return ((timeMs % DAY_MS) + DAY_MS) % DAY_MS / DAY_MS;
+export function worldTime(timeMs) {
+  return (((timeMs % DAY_MS) + DAY_MS) % DAY_MS) / DAY_MS * 1440;
 }
 
 // ================================================================================================================================================================================================================================================
 // ambientLight
-// Luz geral no andar z: no subsolo, UNDERGROUND_AMBIENT; no chão, de
-// NIGHT_AMBIENT (noite) a 1 (dia), passando pelo amanhecer e o entardecer.
+// Luz geral no andar z: no subsolo, UNDERGROUND_AMBIENT; no chão, a luz do
+// Tibia na hora do jogo, de NIGHT_AMBIENT a 1.
 
 export function ambientLight(timeMs, z) {
   if (z < 0) return UNDERGROUND_AMBIENT;
-  const sun = -Math.cos(2 * Math.PI * dayPhase(timeMs));
-  const t = Math.max(0, Math.min(1, (sun + 0.2) / 0.45));
-  const smooth = t * t * (3 - 2 * t);
-  return NIGHT_AMBIENT + (1 - NIGHT_AMBIENT) * smooth;
+  const time = worldTime(timeMs);
+  let level = LIGHT_DAY;
+  if (time >= SUNRISE && time <= DAYTIME) level = LIGHT_NIGHT + (time - SUNRISE) / (DAYTIME - SUNRISE) * (LIGHT_DAY - LIGHT_NIGHT);
+  else if (time >= SUNSET && time <= NIGHTTIME) level = LIGHT_DAY - (time - SUNSET) / (NIGHTTIME - SUNSET) * (LIGHT_DAY - LIGHT_NIGHT);
+  else if (time > NIGHTTIME || time < SUNRISE) level = LIGHT_NIGHT;
+  return level / LIGHT_DAY;
 }
 
 // ================================================================================================================================================================================================================================================
