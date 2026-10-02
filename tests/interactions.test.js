@@ -229,3 +229,21 @@ test('conferência do mundo: avisa placa sem texto, baú sem itens e objeto sem 
   assert.ok(warnings.some(w => w.startsWith('Baú de quest sem itens') && w.includes('8,5,0')));
   assert.ok(warnings.some(w => w.includes('itens/sumiu/nada') && w.includes('9,5,0')));
 });
+
+test('corda no buraco sem ninguém embaixo: sobe o item de cima do sqm de baixo (a pilha inteira)', async () => {
+  const { hole, buildGame: build, floorRect: floors } = await import('./helpers/fixture.js');
+  setAssets([asset(ROPE, { move: true, peso: 18, uso: 'ferramenta-corda' }), asset(BAG, { move: true, peso: 8, espacos: 4 }), asset(COIN, { move: true, peso: 0.1, empilhavel: true }), asset(BOOK, { move: true, peso: 13 })]);
+  const sim = build({ objects: [...floors(0, 20, 0, 20, 0), ...floors(0, 20, 0, 20, 1), ...hole(10, 10, 1), [BOOK, 11, 11, 0, 0, true, false, false], [COIN, 11, 11, 0, 1, true, false, false]], player: { x: 9, y: 10, z: 1 } });
+  const coin = sim.objects.find(o => o.id.startsWith(COIN));
+  sim.inventory.groundItem(coin).count = 7;
+  sim.player.equip.mochila = { uid: 'bag0', type: BAG, items: [{ uid: 'r1', type: ROPE }, null, null, null] };
+  sim.time = 1000;
+  sim.enqueue('player1', { type: 'useItem', from: { t: 'c', uid: 'bag0', i: 0 }, target: { x: 10, y: 10, z: 1 } });
+  sim.tick(sim.time + TICK_MS);
+  const up = sim.objects.filter(o => (o.z || 0) === 1 && o.itemData && o.itemData.type === COIN);
+  assert.equal(up.length, 1, 'as moedas subiram');
+  assert.equal(up[0].itemData.count, 7);
+  assert.ok(Math.max(Math.abs(up[0].x - 10), Math.abs(up[0].y - 10)) <= 1);
+  assert.ok(sim.objects.some(o => (o.z || 0) === 0 && o.id.startsWith(BOOK)), 'o livro, que estava embaixo, ficou');
+});
+

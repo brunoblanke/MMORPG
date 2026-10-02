@@ -147,14 +147,16 @@ export class InteractionController {
   // Corda na abertura: quem está no sqm embaixo dela (1 ao sul e 1 ao leste,
   // no andar de baixo: toLowerLevel), player ou criatura, sobe pro sqm livre
   // em volta da abertura (o do sul primeiro). É o único jeito de uma criatura
-  // trocar de andar.
+  // trocar de andar. Sem ninguém embaixo, sobe o item de cima do sqm (a
+  // pilha inteira), como no Tibia.
 
   pullUp(hole) {
     const { movement, world } = this.sim;
     const z = hole.z || 0;
     const below = toLowerLevel(hole.x, hole.y, z);
     const pulled = world.getCreatureAt(below.x, below.y, below.z);
-    if (!pulled || pulled.isNpc) return false;
+    if (pulled && pulled.isNpc) return false;
+    if (!pulled) return this.pullItemUp(hole, below);
     for (const [dx, dy] of CLIMB_OFFSETS) {
       const x = hole.x + dx;
       const y = hole.y + dy;
@@ -163,6 +165,31 @@ export class InteractionController {
       if (!movement.useTransition(pulled, { id: 'corda', targetX: x, targetY: y, targetZ: z })) continue;
       if (pulled.isPlayer) this.sim.control.clearWalk(pulled);
       else if (pulled.updatePatrolCenter) pulled.updatePatrolCenter();
+      return true;
+    }
+    return false;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // pullItemUp
+  // O item de cima do sqm embaixo da abertura (below) sobe pro primeiro sqm
+  // livre em volta dela, com o que estiver dentro. Devolve true se subiu.
+
+  pullItemUp(hole, below) {
+    const { movement, world, inventory } = this.sim;
+    const z = hole.z || 0;
+    const item = world.getObjectsAt(below.x, below.y)
+      .filter(obj => (obj.z || 0) === below.z && inventory.isPickable(obj))
+      .sort((a, b) => (b.order || 0) - (a.order || 0))[0];
+    if (!item) return false;
+    for (const [dx, dy] of CLIMB_OFFSETS) {
+      const x = hole.x + dx;
+      const y = hole.y + dy;
+      if (!movement.isInsideMap(x, y) || !world.hasFloorAt(x, y, z)) continue;
+      if (movement.isBlocked(x, y, z) || world.getTransitionAt(x, y, z)) continue;
+      const data = inventory.groundItem(item);
+      inventory.removeGroundObject(item);
+      inventory.mergeGroundStack(inventory.spawnGroundItem(data, x, y, z));
       return true;
     }
     return false;
