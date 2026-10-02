@@ -58,21 +58,29 @@ function isInsideBounds(bounds, x, y) {
 //   - enemiesPassable: inimigos não bloqueiam (uma hora eles saem do lugar);
 //   - avoidSafe: não passa por zona segura (inimigos);
 //   - groundOnly: só chão, sem volume, escada nem buraco (criaturas, NPCs);
-//   - maxNodes: desiste depois de expandir tantos nós.
+//   - maxNodes: desiste depois de expandir tantos nós;
+//   - goals: [{ x, y }] — chegar em qualquer um deles (no andar de end) serve;
+//     vai pro que der o caminho mais curto.
 // Devolve [] se não houver caminho.
 
 export function findPath(world, start, end, options = {}) {
-  const { sameFloor = false, bounds = null, enemiesPassable = false, avoidSafe = false, groundOnly = false, maxNodes = 20000 } = options;
+  const { sameFloor = false, bounds = null, enemiesPassable = false, avoidSafe = false, groundOnly = false, maxNodes = 20000, goals = null } = options;
+  const targets = goals && goals.length ? goals : [end];
+  const goalKeys = new Set(targets.map(goal => `${goal.x},${goal.y}`));
   const stepOptions = { sameFloor, transitions: !sameFloor, enemiesPassable, avoidSafe, groundOnly };
   const origin = { x: start.x, y: start.y, z: start.z || 0, step: start.step || 0 };
-  if (origin.x === end.x && origin.y === end.y && origin.z === end.z) return [];
+  if (origin.z === end.z && goalKeys.has(`${origin.x},${origin.y}`)) return [];
 
   const keyOf = (s, reached) => `${s.x},${s.y},${s.z},${s.step}${reached ? '!' : ''}`;
-  const isEnd = (s) => s.x === end.x && s.y === end.y && s.z === end.z;
+  const isEnd = (s) => s.z === end.z && goalKeys.has(`${s.x},${s.y}`);
   const heuristic = (s) => {
-    const ax = Math.abs(s.x - end.x);
-    const ay = Math.abs(s.y - end.y);
-    return Math.max(ax, ay) + 0.4 * Math.min(ax, ay) + Math.abs(s.z - end.z);
+    let best = Infinity;
+    for (const goal of targets) {
+      const ax = Math.abs(s.x - goal.x);
+      const ay = Math.abs(s.y - goal.y);
+      best = Math.min(best, Math.max(ax, ay) + 0.4 * Math.min(ax, ay));
+    }
+    return best + Math.abs(s.z - end.z);
   };
 
   const open = [];

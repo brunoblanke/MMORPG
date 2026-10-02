@@ -97,6 +97,7 @@ const folderEl = document.getElementById('floorFolder');
 const behaviorEl = document.getElementById('floorBehavior');
 const damageEl = document.getElementById('floorDamage');
 const damageFieldEl = document.getElementById('floorDamageField');
+const edgeBlocksEl = document.getElementById('floorEdgeBlocks');
 const groundCanvas = document.getElementById('groundPreview');
 const sheetCanvas = document.getElementById('sheetPreview');
 
@@ -118,6 +119,10 @@ export function initFloors() {
   nameEl.addEventListener('input', () => { floors.dirty = true; });
   fillFolderSelect(folderEl, CATEGORY);
   folderEl.addEventListener('change', () => { floors.dirty = true; });
+  edgeBlocksEl.addEventListener('change', () => {
+    floors.edgeBlocks = edgeBlocksEl.checked;
+    floors.dirty = true;
+  });
   behaviorEl.addEventListener('change', () => {
     floors.behavior = behaviorEl.value;
     floors.dirty = true;
@@ -479,9 +484,10 @@ async function save() {
     },
     variacoesDoMeio: middleKeysInUse().length,
     slots: floors.slots,
-    propriedades: floors.behavior === 'dano'
-      ? { comportamento: 'dano', dano: floors.damage }
-      : { comportamento: floors.behavior }
+    propriedades: {
+      ...(floors.behavior === 'dano' ? { comportamento: 'dano', dano: floors.damage } : { comportamento: floors.behavior }),
+      ...(floors.edgeBlocks ? { bordaBloqueia: true } : {})
+    }
   };
 
   try {
@@ -515,6 +521,7 @@ function openRecipe(recipe) {
   const props = recipe.propriedades || {};
   floors.behavior = ['bloqueia', 'dano'].includes(props.comportamento) ? props.comportamento : 'normal';
   floors.damage = Math.max(1, Math.floor(Number(props.dano)) || 10);
+  floors.edgeBlocks = props.bordaBloqueia === true;
   showBehavior();
   floors.path = recipePath(recipe, CATEGORY);
   setFolder(folderEl, recipe);
@@ -533,6 +540,7 @@ function showBehavior() {
   behaviorEl.value = floors.behavior;
   damageEl.value = floors.damage;
   damageFieldEl.hidden = floors.behavior !== 'dano';
+  edgeBlocksEl.checked = !!floors.edgeBlocks;
 }
 
 // ================================================================================================================================================================================================================================================

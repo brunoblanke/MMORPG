@@ -2,12 +2,13 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { buildGame, floorRect } from './helpers/fixture.js';
+import { buildGame, buildMapData, floorRect } from './helpers/fixture.js';
 import { Simulation, TICK_MS } from '../js/simulation.js';
 import { setAssets } from '../shared/assets.js';
 
 const WATER = 'estrutura/pisos/agua';
 const POISON = 'estrutura/pisos/veneno';
+const LAKE = 'estrutura/pisos/lago';
 const SWORD = 'itens/espadas/espada';
 const STAIRS_STRAIGHT = 'estrutura/escadas/reta';
 
@@ -17,6 +18,7 @@ setAssets([
   floor('estrutura/pisos/teste', null),
   floor(WATER, { comportamento: 'bloqueia' }),
   floor(POISON, { comportamento: 'dano', dano: 7 }),
+  floor(LAKE, { comportamento: 'bloqueia', bordaBloqueia: true }),
   { id: STAIRS_STRAIGHT, ferramenta: 'objetos', grupo: 'estrutura', pasta: 'escadas', nome: 'reta', url: '/r.png', quadro: 64, quadros: 1, pecas: [], propriedades: { altura: false } },
   { id: SWORD, ferramenta: 'objetos', grupo: 'itens', pasta: 'espadas', nome: 'espada', url: '/e.png', quadro: 32, quadros: 1, pecas: [], propriedades: { move: true, peso: 30 } }
 ]);
@@ -153,4 +155,16 @@ test('entrada desenhada no topo da escada mantém o piso; descer por ali leva ao
   sim.enqueue('p1', { type: 'walkTo', x: 6, y: 6, z: 1 });
   run(sim, 2000);
   assert.deepEqual([player.x, player.y, player.z], [7, 7, 0]);
+});
+
+test('borda de piso com "Borda bloqueia": o sqm de grama com a borda da água não deixa passar; a da água comum deixa', () => {
+  const objects = [
+    ...floorRect(0, 9, 0, 9),
+    [`Border:${LAKE}:n`, 4, 4, 0, 0, false, false, false],
+    [`Border:${WATER}:n`, 6, 6, 0, 0, false, false, false]
+  ];
+  const sim = new Simulation({ ...buildMapData({ objects, spawn: { x: 1, y: 1, z: 0 } }), version: 2 });
+  assert.equal(sim.world.isBlocked(4, 4, 0), true);
+  assert.equal(sim.world.isBlocked(6, 6, 0), false);
+  assert.equal(sim.world.isBlocked(5, 4, 0), false);
 });
