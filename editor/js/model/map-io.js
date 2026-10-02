@@ -17,7 +17,9 @@ let lastSavedJson = null;
 // buildMapData
 
 function buildMapData() {
-  return serializeMapFromLayers(state.layerOrder, state.layers, GRID);
+  const mapData = serializeMapFromLayers(state.layerOrder, state.layers, GRID);
+  if (state.kit) mapData.kitInicial = state.kit;
+  return mapData;
 }
 
 // ================================================================================================================================================================================================================================================
@@ -35,6 +37,7 @@ export async function loadMapIntoState() {
   state.layers = makeAllLayers(layers);
   state.layerOrder = getAllFloors();
   state.activeZ = GROUND_FLOOR;
+  state.kit = mapData.kitInicial && typeof mapData.kitInicial === 'object' ? mapData.kitInicial : null;
 
   // Mapa de antes das bordas gravadas: gera todas (igual ao que o jogo fazia).
   if (!hasSavedBorders(mapData)) rebuildAllBorders();

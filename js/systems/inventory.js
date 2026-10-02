@@ -4,7 +4,7 @@ import { PLAYER_LIGHT } from '../../shared/lighting.js';
 import { isPositionAdjacentTo } from '../utils/helpers.js';
 import { getAsset, splitType } from '../../shared/assets.js';
 import {
-  EQUIP_SLOTS, STARTER_BAG, STARTER_TORCH, STARTER_WEAPON, STARTER_ARMOR, STARTER_FOOD, THROW_RANGE, itemInfo, itemLight, fitsSlot, capacityFor, newItem, weightOf, contains, findInTree, fromPlain, equipBonus
+  EQUIP_SLOTS, THROW_RANGE, starterKit, itemInfo, itemLight, fitsSlot, capacityFor, newItem, weightOf, contains, findInTree, fromPlain, equipBonus
 } from '../../shared/items.js';
 import { SKILL_KEYS } from '../../shared/skills.js';
 import { consumableMethods } from './inventory/consumables.js';
@@ -52,9 +52,9 @@ export class InventoryController {
 
   // ================================================================================================================================================================================================================================================
   // setupPlayer
-  // O inventário guardado (saved.equip); quem é novo começa com o kit do
-  // Tibia antigo: bag (STARTER_BAG) com uma maçã, tocha (STARTER_TORCH) e club
-  // nas mãos e jacket no corpo. O layout das janelas volta junto.
+  // O inventário guardado (saved.equip); quem é novo começa com o kit
+  // inicial (editor → Kit inicial; sem ele, o do Tibia antigo: bag com uma
+  // maçã, tocha e club nas mãos e jacket no corpo). O layout das janelas volta junto.
 
   setupPlayer(player, saved) {
     player.equip = Object.fromEntries(EQUIP_SLOTS.map(key => [key, null]));
@@ -68,13 +68,12 @@ export class InventoryController {
         if (item && fitsSlot(item.type, key)) player.equip[key] = item;
       }
     } else {
-      const starter = (type) => (getAsset(splitType(type).asset) ? newItem(this.nextUid(), type) : null);
-      player.equip.mochila = starter(STARTER_BAG);
-      player.equip.escudo = starter(STARTER_TORCH);
-      player.equip.arma = starter(STARTER_WEAPON);
-      player.equip.corpo = starter(STARTER_ARMOR);
-      const food = starter(STARTER_FOOD);
-      if (player.equip.mochila && player.equip.mochila.items && food) player.equip.mochila.items[0] = food;
+      const kit = starterKit(this.sim.mapData && this.sim.mapData.kitInicial);
+      const starter = (type, count = 1) => (getAsset(splitType(type).asset) ? newItem(this.nextUid(), type, count) : null);
+      for (const key of EQUIP_SLOTS) player.equip[key] = kit.equip[key] ? starter(kit.equip[key]) : null;
+      const bag = player.equip.mochila;
+      const inside = kit.mochila.map(e => starter(e.tipo, e.count)).filter(Boolean);
+      if (bag && bag.items) inside.slice(0, bag.items.length).forEach((item, i) => { bag.items[i] = item; });
     }
   }
 

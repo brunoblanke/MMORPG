@@ -33,6 +33,7 @@
       Mostrar andar abaixo (fantasma)
     </label>
 
+    <button class="side-btn" id="kitBtn" title="O que todo personagem novo ganha ao nascer">Kit inicial</button>
     <button class="danger-btn" id="rebuildBordersBtn" title="Gera de novo todas as bordas do andar pelos pisos (desfaz o que foi mexido à mão)">Refazer bordas do andar</button>
     <button class="danger-btn" id="clearLayerBtn">Limpar andar atual</button>
     <button class="export-btn" id="saveBtn" title="Salva em data/map.json (Ctrl+S)">Salvar</button>
@@ -93,6 +94,22 @@
   <div id="selectList" class="select-list"></div>
   <div class="actions">
     <button id="selectClose">Fechar</button>
+  </div>
+</div>
+
+<div class="float-panel wide" id="kitForm">
+  <div class="field">
+    <label>Kit inicial · o que todo personagem novo ganha</label>
+  </div>
+  <div class="kit-slots" id="kitSlots"></div>
+  <div class="field">
+    <label>Dentro da mochila</label>
+    <div id="kitBagItems" class="object-data-items"></div>
+    <button type="button" id="kitAddItem">+ Item</button>
+  </div>
+  <div class="actions">
+    <button id="kitCancel">Cancelar</button>
+    <button class="primary" id="kitConfirm">Aplicar</button>
   </div>
 </div>
 
