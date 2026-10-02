@@ -183,12 +183,12 @@ function moveInStack(index, delta) {
 
 // ================================================================================================================================================================================================================================================
 // openObjectDataForm
-// Texto (placa, livro; a placa também tem a cor da mensagem: verde, amarelo
-// ou vermelho) ou itens (baú de quest: cada player pega uma vez; container:
+// Texto (placa, livro; a placa também tem a cor da mensagem: verde, amarelo,
+// vermelho ou azul) ou itens (baú de quest: cada player pega uma vez; container:
 // começa com eles dentro). Fica no objeto, no mapa.
 
 const objectDataForm = document.getElementById('objectDataForm');
-const MESSAGE_KINDS = ['info', 'warn', 'danger'];
+const MESSAGE_KINDS = ['info', 'warn', 'danger', 'blue'];
 let pendingObject = null;
 let pendingItems = [];
 

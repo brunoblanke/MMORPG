@@ -7,7 +7,7 @@ import { loadMapDataFromURL } from '../shared/map-format.js';
 import { Camera } from './services/camera.js';
 import { EventManager } from './input/event-manager.js';
 import { SpriteLoader } from './services/sprite-loader.js';
-import { Renderer } from './views/renderer.js';
+import { Renderer, MESSAGE_COLORS } from './views/renderer.js';
 import { getSpritePaths } from './views/sprite-registry.js';
 import { loadAssets } from '../shared/assets.js';
 import { UI } from './views/ui.js';
@@ -361,6 +361,8 @@ export class GameController {
         this.showBook(event.title, event.text);
       } else if (event.type === 'speech') {
         this.speech.add(event, performance.now());
+      } else if (event.type === 'signText' && event.playerId === playerId) {
+        this.speech.add({ ...event, name: null, color: MESSAGE_COLORS[event.kind] || MESSAGE_COLORS.info }, performance.now());
       } else if (event.type === 'message' && event.playerId === playerId) {
         this.showMessage(event.text, timestamp, 2000 + Math.min(4000, event.text.length * 40), event.kind || 'warn');
       }
