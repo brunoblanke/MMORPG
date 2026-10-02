@@ -10,6 +10,7 @@ import { SKILL_KEYS } from '../../shared/skills.js';
 import { consumableMethods } from './inventory/consumables.js';
 import { groundMethods } from './inventory/ground.js';
 import { corpseMethods } from './inventory/corpses.js';
+import { depotMethods } from './inventory/depot.js';
 
 // Inventário e containers dos jogadores. Lugares (from/to nos comandos):
 //   { t: 'e', key }        espaço do inventário (EQUIP_SLOTS)
@@ -52,7 +53,8 @@ export class InventoryController {
 
   // ================================================================================================================================================================================================================================================
   // setupPlayer
-  // O inventário guardado (saved.equip); quem é novo começa com o kit do
+  // O inventário e o depósito guardados (saved.equip, saved.depot); quem é
+  // novo começa com o kit do
   // Tibia antigo (STARTER_KIT: bag com uma maçã, tocha e club nas mãos e
   // jacket no corpo). O layout das janelas volta junto.
 
@@ -61,6 +63,7 @@ export class InventoryController {
     player.openGround = new Set();
     player.pendingInv = null;
     player.uiLayout = saved && saved.layout && typeof saved.layout === 'object' ? saved.layout : null;
+    this.setupDepot(player, saved && saved.depot);
 
     if (saved && saved.equip && typeof saved.equip === 'object') {
       for (const key of EQUIP_SLOTS) {
@@ -122,6 +125,10 @@ export class InventoryController {
     if (carried) return carried.item.items ? { container: carried.item, carried: true } : null;
     for (const obj of this.openGroundObjects(player)) {
       const found = findInTree([this.groundItem(obj)], uid);
+      if (found && found.item.items) return { container: found.item, carried: false };
+    }
+    if (this.depotObject(player)) {
+      const found = findInTree([player.depot], uid);
       if (found && found.item.items) return { container: found.item, carried: false };
     }
     return null;
@@ -222,6 +229,7 @@ export class InventoryController {
 
   compactAll(player) {
     const ground = this.openGroundObjects(player).map(obj => this.groundItem(obj));
+    if (this.depotObject(player)) ground.push(player.depot);
     for (const root of [...this.roots(player), ...ground]) this.compactTree(root);
   }
 
@@ -340,7 +348,7 @@ export class InventoryController {
   // update
   // A cada tick: a luz do player (a própria, a da magia utevo lux ou a do
   // item equipado que ilumina mais), faz o que estava esperando o player chegar e fecha as
-  // caixas do chão que ele não alcança mais.
+  // caixas do chão (e o depósito) que ele não alcança mais.
 
   update(player) {
     const spellLight = player.spellLight && (this.sim.time || 0) < player.spellLight.until ? player.spellLight.light : 0;
@@ -361,6 +369,7 @@ export class InventoryController {
       const obj = this.sim.getItem(id);
       if (!this.isOpenable(obj) || !this.isNear(player, obj)) player.openGround.delete(id);
     }
+    this.depotObject(player);
   }
 
   // ================================================================================================================================================================================================================================================
@@ -390,17 +399,21 @@ export class InventoryController {
 
   // ================================================================================================================================================================================================================================================
   // viewFor
-  // O que a tela do jogador precisa: inventário, cap e caixas do chão abertas.
+  // O que a tela do jogador precisa: inventário, cap, caixas do chão e
+  // depósito abertos.
 
   viewFor(player) {
     return {
       equip: player.equip,
       cap: { used: this.capUsed(player), max: this.capMax(player) },
-      opened: this.openGroundObjects(player).map(obj => ({ id: obj.id, item: this.groundItem(obj), corpse: !!obj.isCorpse, name: obj.isCorpse ? obj.name : null })),
+      opened: [
+        ...this.openGroundObjects(player).map(obj => ({ id: obj.id, item: this.groundItem(obj), corpse: !!obj.isCorpse, name: obj.isCorpse ? obj.name : null })),
+        ...(this.depotObject(player) ? [{ id: player.openDepot, item: player.depot, corpse: false, depot: true, name: null }] : [])
+      ],
       stats: this.statsFor(player),
       layout: player.uiLayout
     };
   }
 }
 
-Object.assign(InventoryController.prototype, groundMethods, consumableMethods, corpseMethods);
+Object.assign(InventoryController.prototype, groundMethods, consumableMethods, corpseMethods, depotMethods);

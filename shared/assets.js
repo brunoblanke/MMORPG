@@ -302,9 +302,10 @@ export function objectProps(type) {
 // 'livro' (abre o texto), 'bau-quest' (dá os itens uma vez por player),
 // 'corda' (marca de corda: sobe um andar com a corda), 'pa' (monte que a pá
 // abre em buraco), 'descer' (bueiro: usar leva pro andar de baixo),
-// 'ferramenta-corda' ou 'ferramenta-pa'; null se nenhum.
+// 'ferramenta-corda', 'ferramenta-pa' ou 'deposito' (abre o depósito do
+// player); null se nenhum.
 
-export const OBJECT_USES = ['placa', 'livro', 'bau-quest', 'corda', 'pa', 'descer', 'ferramenta-corda', 'ferramenta-pa'];
+export const OBJECT_USES = ['placa', 'livro', 'bau-quest', 'corda', 'pa', 'descer', 'ferramenta-corda', 'ferramenta-pa', 'deposito'];
 
 export function objectUse(type) {
   const asset = getAsset(splitType(type).asset);

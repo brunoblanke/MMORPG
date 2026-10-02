@@ -44,6 +44,7 @@ const USES = [
   ['corda', 'Marca de corda (sobe um andar usando a corda)'],
   ['pa', 'Monte que a pá abre em buraco'],
   ['descer', 'Bueiro (usar leva pro andar de baixo)'],
+  ['deposito', 'Depósito (cada player guarda os itens dele)'],
   ['ferramenta-corda', 'Ferramenta: corda'],
   ['ferramenta-pa', 'Ferramenta: pá']
 ];

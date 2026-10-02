@@ -11,10 +11,11 @@ import { getHoleTarget, toLowerLevel, toUpperLevel } from '../../shared/stairs.j
 //   bau-quest → dá os itens (editor) uma vez por player;
 //   corda     → marca de corda: com a corda, sobe pro andar de cima;
 //   pa        → monte que a pá abre em buraco (fica aberto até o servidor reiniciar);
-//   descer    → bueiro: usar leva pro andar de baixo (pisar não).
+//   descer    → bueiro: usar leva pro andar de baixo (pisar não);
+//   deposito  → abre o depósito do player (inventory/depot.js).
 // Longe, o player anda até o lado e usa ao chegar.
 
-const MAP_USES = ['placa', 'livro', 'bau-quest', 'corda', 'pa', 'descer'];
+const MAP_USES = ['placa', 'livro', 'bau-quest', 'corda', 'pa', 'descer', 'deposito'];
 const SIGN_KINDS = ['info', 'warn', 'danger', 'blue'];
 const CLIMB_OFFSETS = [[0, 1], [1, 1], [-1, 1], [1, 0], [-1, 0], [0, -1], [1, -1], [-1, -1]];
 
@@ -72,6 +73,7 @@ export class InteractionController {
     else if (use === 'livro') this.readBook(player, obj.itemData || { type: objectIdType(obj.id), texto: obj.data && obj.data.texto });
     else if (use === 'bau-quest') this.openQuestChest(player, obj);
     else if (use === 'descer') this.goDown(player, obj);
+    else if (use === 'deposito') inventory.openDepotAt(player, obj);
   }
 
   // ================================================================================================================================================================================================================================================
