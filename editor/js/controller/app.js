@@ -8,7 +8,6 @@ import { loadAssets } from '../../../shared/assets.js';
 import { loadMapIntoState, saveMap, hasUnsavedChanges } from '../model/map-io.js';
 import { resetHistory, commitHistory, undo, redo } from '../model/history.js';
 import './canvas-input.js';
-import { refreshCreatureOptions } from '../view/forms.js';
 import '../view/goto-field.js';
 
 document.getElementById('ghostToggle').onchange = (evt) => { state.ghost = evt.target.checked; scheduleRender(); };
@@ -75,8 +74,6 @@ try {
   alert(`Não deu pra ler os sprites do gerador.\n\n${error.message}\n\nO servidor (start-server.bat) está rodando?`);
 }
 choosePaintDefaults();
-
-refreshCreatureOptions();
 
 try {
   await loadMapIntoState();

@@ -68,7 +68,7 @@ export const TOOLS = [
   { id:'border-eraser', label:'Tirar borda', quick:true },
   { id:'deco', label:'Decoração', paint:'decoPaint' },
   { id:'item', label:'Item', paint:'itemPaint' },
-  { id:'enemy', label:'Criatura' },
+  { id:'enemy', label:'Criatura', paint:'enemyPaint' },
   { id:'npc', label:'NPC', paint:'npcPaint' },
   { id:'spawn', label:'Respawn', quick:true },
   { id:'safe', label:'Zona segura (liga/desliga)' },

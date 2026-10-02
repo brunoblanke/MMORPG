@@ -73,7 +73,7 @@ export function choosePaintDefaults() {
   if (!state.holePaint) state.holePaint = first(listAssets('objetos', a => isEntranceFolder(a.id)));
   if (!state.itemPaint) state.itemPaint = first(listAssets('objetos', isCarried));
   if (!state.decoPaint) state.decoPaint = first(listAssets('objetos', isDecoration));
-  if (!state.enemyPaint) state.enemyPaint = first(listAssets('criaturas', a => creatureBehavior(a.id) !== 'npc'));
+  if (!state.enemyPaint) state.enemyPaint = first(listAssets('criaturas', isMonster));
   if (!state.npcPaint) state.npcPaint = first(listAssets('criaturas', a => creatureBehavior(a.id) === 'npc'));
   if (!state.borderPaint && floors[0]) state.borderPaint = { type: floors[0].id, variant: 'n' };
 }
@@ -151,14 +151,16 @@ function accordionGroups(tool) {
   if (tool.id === 'hole') return { empty: 'Nenhuma entrada gerada (Estrutura › Entradas).', groups: byFolder(listAssets('objetos', a => isEntranceFolder(a.id)), simple) };
   if (tool.id === 'item') return { empty: 'Nenhum item gerado (Itens).', groups: byFolder(listAssets('objetos', isCarried), simple) };
   if (tool.id === 'deco') return { empty: 'Nenhuma decoração gerada (Decoração ou Estrutura › Natureza).', groups: byFolder(listAssets('objetos', isDecoration), simple) };
+  if (tool.id === 'enemy') return { empty: 'Nenhuma criatura gerada (Criaturas).', groups: byFolder(listAssets('criaturas', isMonster), simple) };
   if (tool.id === 'npc') return { empty: 'Nenhum NPC gerado (Personagens › NPCs, comportamento NPC).', groups: byFolder(listAssets('criaturas', a => creatureBehavior(a.id) === 'npc'), simple) };
   return { empty: '', groups: [] };
 }
 
 // ================================================================================================================================================================================================================================================
-// isCarried / isDecoration
+// isCarried / isDecoration / isMonster
 // Ferramenta Item: o que fica no grupo Itens. Decoração: os outros objetos
-// soltos no mapa (Decoração e a natureza da Estrutura).
+// soltos no mapa (Decoração e a natureza da Estrutura). Criatura: as do
+// grupo Criaturas que não são NPC.
 
 function isCarried(asset) {
   return isItemType(asset.id) && asset.grupo === 'itens';
@@ -166,6 +168,10 @@ function isCarried(asset) {
 
 function isDecoration(asset) {
   return isItemType(asset.id) && asset.grupo !== 'itens';
+}
+
+function isMonster(asset) {
+  return asset.grupo !== 'personagens' && creatureBehavior(asset.id) !== 'npc';
 }
 
 // ================================================================================================================================================================================================================================================
@@ -246,9 +252,6 @@ function toolSwatch(t) {
   const thumbType = paintThumbType(t);
   if (thumbType) {
     setThumb(swatch, thumbType, 20);
-  } else if (t.id === 'enemy') {
-    swatch.style.background = '#c0392b';
-    swatch.style.borderRadius = '50%';
   } else if (t.id === 'safe') {
     swatch.style.background = 'rgba(46, 204, 113, 0.35)';
     swatch.style.border = '1px solid rgba(46, 204, 113, 0.9)';

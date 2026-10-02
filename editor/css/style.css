@@ -31,20 +31,22 @@ body{
 ::-webkit-scrollbar{ width:8px; height:8px; }
 ::-webkit-scrollbar-thumb{ background:var(--line); border-radius:4px; }
 
-.app{ display:flex; width:100%; }
+.app{ display:flex; width:100%; position:relative; }
 
-/* Coluna da esquerda: janelas como as do jogo (fundo levemente
-   transparente, borda fina, cabeçalho com o título). */
+/* Janelas flutuantes sobre o mapa, à esquerda, como as do jogo (fundo
+   levemente transparente, borda fina, cabeçalho com o título). */
 .side-col{
-  width:280px; flex-shrink:0; padding:8px; display:flex; flex-direction:column; gap:8px; overflow-y:auto;
+  position:absolute; top:0; left:0; bottom:36px; z-index:30; width:280px; padding:8px;
+  display:flex; flex-direction:column; gap:8px; overflow-y:auto; pointer-events:none; scrollbar-width:none;
 }
+.side-col::-webkit-scrollbar{ display:none; }
+.side-col > *{ pointer-events:auto; }
 .ed-win{ flex-shrink:0; background:rgba(22, 25, 32, .82); border:1px solid var(--line); border-radius:8px; overflow:hidden; }
 .ed-head{
   display:flex; align-items:center; gap:6px; padding:6px 8px; background:rgba(28, 32, 40, .82);
   border-bottom:1px solid var(--line); user-select:none; font-size:12px;
 }
 .ed-title{ flex:1; font-weight:500; }
-.ed-note{ font:500 10px 'IBM Plex Mono', monospace; color:var(--muted); }
 .ed-body{ padding:8px; }
 .ed-options{ display:flex; flex-direction:column; gap:8px; }
 
