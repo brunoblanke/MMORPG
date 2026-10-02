@@ -55,7 +55,7 @@ export class InventoryController {
   // setupPlayer
   // O inventário guardado (saved.equip); quem é novo começa com o kit do
   // Tibia antigo: bag (STARTER_BAG) com uma maçã, tocha (STARTER_TORCH) e club
-  // nas mãos e jacket ou coat (pelo gênero) no corpo. O layout das janelas volta junto.
+  // nas mãos e jacket no corpo. O layout das janelas volta junto.
 
   setupPlayer(player, saved) {
     player.equip = Object.fromEntries(EQUIP_SLOTS.map(key => [key, null]));
@@ -73,7 +73,7 @@ export class InventoryController {
       player.equip.mochila = starter(STARTER_BAG);
       player.equip.escudo = starter(STARTER_TORCH);
       player.equip.arma = starter(STARTER_WEAPON);
-      player.equip.corpo = starter(STARTER_ARMOR[player.gender] || STARTER_ARMOR.male);
+      player.equip.corpo = starter(STARTER_ARMOR);
       const food = starter(STARTER_FOOD);
       if (player.equip.mochila && player.equip.mochila.items && food) player.equip.mochila.items[0] = food;
     }
