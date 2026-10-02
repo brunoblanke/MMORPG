@@ -464,8 +464,10 @@ export class EnemyAI {
 
   // ================================================================================================================================================================================================================================================
   // pickPatrolPath
-  // Sorteia um destino dentro da área de patrulha (sem escada/buraco, fora da
-  // zona segura, livre, com chão) e põe o caminho até ele em enemy.route. false se nenhum sorteio servir.
+  // Sorteia um destino entre os sqms da área de patrulha onde dá pra parar
+  // (sem escada/buraco, fora da zona segura, livre, com chão) e põe o caminho
+  // até ele em enemy.route. Num corredor estreito, só os sqms do corredor
+  // entram no sorteio. false se nenhum deles tiver caminho.
 
   pickPatrolPath(enemy, enemies) {
     const floor = enemy.z || 0;
@@ -474,16 +476,20 @@ export class EnemyAI {
       minX: enemy.patrolCenterX - radius - 1, maxX: enemy.patrolCenterX + radius + 2,
       minY: enemy.patrolCenterY - radius - 1, maxY: enemy.patrolCenterY + radius + 2
     };
+    const spots = [];
+    for (let x = enemy.patrolCenterX - radius; x <= enemy.patrolCenterX + radius; x++) {
+      for (let y = enemy.patrolCenterY - radius; y <= enemy.patrolCenterY + radius; y++) {
+        if (x === enemy.x && y === enemy.y) continue;
+        if (!this.movement.isInsideMap(x, y) || !enemy.isInPatrolZone(x, y)) continue;
+        if (this.movement.isBlocked(x, y, floor, enemy) || this.isOccupiedByOther(enemy, enemies, x, y)) continue;
+        if (this.movement.world.getTransitionAt(x, y, floor) || this.movement.world.isSafe(x, y, floor)) continue;
+        if (this.movement.getPassableStep(x, y, floor, enemy.step || 0) === null) continue;
+        spots.push({ x, y });
+      }
+    }
 
-    for (let attempt = 0; attempt < 8; attempt++) {
-      const x = enemy.patrolCenterX + Math.round(randFloat(-radius, radius));
-      const y = enemy.patrolCenterY + Math.round(randFloat(-radius, radius));
-      if (x === enemy.x && y === enemy.y) continue;
-      if (!this.movement.isInsideMap(x, y) || !enemy.isInPatrolZone(x, y)) continue;
-      if (this.movement.isBlocked(x, y, floor, enemy) || this.isOccupiedByOther(enemy, enemies, x, y)) continue;
-      if (this.movement.world.getTransitionAt(x, y, floor) || this.movement.world.isSafe(x, y, floor)) continue;
-      if (this.movement.getPassableStep(x, y, floor, enemy.step || 0) === null) continue;
-
+    for (let attempt = 0; attempt < 8 && spots.length; attempt++) {
+      const { x, y } = spots.splice(Math.floor(Math.random() * spots.length), 1)[0];
       const path = this.movement.findPath(enemy, { x, y, z: floor }, { sameFloor: true, bounds });
       if (path.length > 0) {
         enemy.route = { path, x, y };
