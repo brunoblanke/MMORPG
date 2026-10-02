@@ -5,7 +5,7 @@ import { PLAYER_LIGHT } from '../../shared/lighting.js';
 import { getAdjacentPositions, isPositionAdjacentTo } from '../utils/helpers.js';
 import { objectIdType, objectProps, getAsset, splitType, creatureLoot, objectUse } from '../../shared/assets.js';
 import {
-  EQUIP_SLOTS, STARTER_BAG, STARTER_TORCH, THROW_RANGE, DEATH_DROP_CHANCE, USE_COOLDOWN_MS, FOOD_MAX_SECONDS, POTION_RANGE, EMPTY_VIAL, SPLASH_HP, SPLASH_MANA, SPLASH_STAGES, SPLASH_STAGE_MS, REGEN_MS, REGEN_HP, REGEN_MANA, itemInfo, itemLight, fitsSlot, capacityFor, newItem, weightOf, contains, findInTree, fromPlain, equipBonus
+  EQUIP_SLOTS, STARTER_BAG, STARTER_TORCH, STARTER_WEAPON, STARTER_ARMOR, STARTER_FOOD, THROW_RANGE, DEATH_DROP_CHANCE, USE_COOLDOWN_MS, FOOD_MAX_SECONDS, POTION_RANGE, EMPTY_VIAL, SPLASH_HP, SPLASH_MANA, SPLASH_STAGES, SPLASH_STAGE_MS, REGEN_MS, REGEN_HP, REGEN_MANA, itemInfo, itemLight, fitsSlot, capacityFor, newItem, weightOf, contains, findInTree, fromPlain, equipBonus
 } from '../../shared/items.js';
 import { PLAYER_SPRITES, DEFAULT_GENDER } from '../../shared/catalog.js';
 import { SKILL_KEYS } from '../../shared/skills.js';
@@ -53,8 +53,9 @@ export class InventoryController {
 
   // ================================================================================================================================================================================================================================================
   // setupPlayer
-  // O inventário guardado (saved.equip); quem é novo começa com a bag
-  // simples (STARTER_BAG) no espaço da mochila e a tocha (STARTER_TORCH) na mão. O layout das janelas volta junto.
+  // O inventário guardado (saved.equip); quem é novo começa com o kit do
+  // Tibia antigo: bag (STARTER_BAG) com uma maçã, tocha (STARTER_TORCH) e club
+  // nas mãos e jacket ou coat (pelo gênero) no corpo. O layout das janelas volta junto.
 
   setupPlayer(player, saved) {
     player.equip = Object.fromEntries(EQUIP_SLOTS.map(key => [key, null]));
@@ -68,8 +69,13 @@ export class InventoryController {
         if (item && fitsSlot(item.type, key)) player.equip[key] = item;
       }
     } else {
-      if (getAsset(splitType(STARTER_BAG).asset)) player.equip.mochila = newItem(this.nextUid(), STARTER_BAG);
-      if (getAsset(splitType(STARTER_TORCH).asset)) player.equip.escudo = newItem(this.nextUid(), STARTER_TORCH);
+      const starter = (type) => (getAsset(splitType(type).asset) ? newItem(this.nextUid(), type) : null);
+      player.equip.mochila = starter(STARTER_BAG);
+      player.equip.escudo = starter(STARTER_TORCH);
+      player.equip.arma = starter(STARTER_WEAPON);
+      player.equip.corpo = starter(STARTER_ARMOR[player.gender] || STARTER_ARMOR.male);
+      const food = starter(STARTER_FOOD);
+      if (player.equip.mochila && player.equip.mochila.items && food) player.equip.mochila.items[0] = food;
     }
   }
 

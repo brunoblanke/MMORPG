@@ -20,6 +20,13 @@ export const STARTER_BAG = 'itens/recipientes/bag';
 // Tocha com que todo personagem novo nasce (na mão, espaço do escudo).
 export const STARTER_TORCH = 'itens/fontes-de-luz/torch';
 
+// O resto do kit do Tibia antigo: club na mão, jacket (masculino) ou coat
+// (feminino) no corpo e uma maçã dentro da bag. Item que não existe no
+// gerador fica de fora.
+export const STARTER_WEAPON = 'itens/clavas/club';
+export const STARTER_ARMOR = { male: 'itens/armaduras/jacket', female: 'itens/armaduras/coat' };
+export const STARTER_FOOD = 'itens/comidas/maca';
+
 // Morte do player: a mochila vai sempre pro corpo; cada outro item do
 // inventário, com esta chance (provisório).
 export const DEATH_DROP_CHANCE = 0.3;
