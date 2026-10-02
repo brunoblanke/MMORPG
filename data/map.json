@@ -120572,7 +120572,8 @@
       null,
       null,
       {
-        "texto": "Sua aventura começa aqui, prepare-se!"
+        "texto": "Sua aventura começa aqui, prepare-se!",
+        "cor": "warn"
       }
     ],
     [
@@ -146932,6 +146933,16 @@
       false,
       false,
       10879
+    ],
+    [
+      "itens/recipientes/caixa-madeira",
+      180,
+      232,
+      0,
+      0,
+      true,
+      true,
+      false
     ],
     [
       "estrutura/pisos/piso-paralelepipedo",
