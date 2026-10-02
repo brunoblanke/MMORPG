@@ -33,7 +33,7 @@ export class LifeCycleController {
       creature: entity.creature,
       isPlayer: type === 'player_corpse',
       deathTime: now,
-      decayTime: now + CONFIG.corpseFrameDuration * CONFIG.corpseFrameCount,
+      decayTime: now + (type === 'player_corpse' ? CONFIG.playerCorpseFrameDuration : CONFIG.corpseFrameDuration) * CONFIG.corpseFrameCount,
       hasVolume: false,
       blocksMovement: false,
       movable: true,
@@ -167,9 +167,9 @@ export class LifeCycleController {
   // dentro some, como no Tibia. No fim da decomposição, ele some.
 
   processCorpseDecay(now) {
-    const lastStage = CONFIG.corpseFrameDuration * (CONFIG.corpseFrameCount - 1);
     for (const corpse of this.sim.deadBodies) {
-      if (corpse.itemData && now >= corpse.deathTime + lastStage) corpse.itemData = null;
+      const stage = (corpse.decayTime - corpse.deathTime) / CONFIG.corpseFrameCount;
+      if (corpse.itemData && now >= corpse.deathTime + stage * (CONFIG.corpseFrameCount - 1)) corpse.itemData = null;
     }
     for (const corpse of this.sim.deadBodies.filter(c => now >= c.decayTime)) {
       this.removeCorpse(corpse);

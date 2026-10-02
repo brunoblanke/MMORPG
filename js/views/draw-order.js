@@ -119,6 +119,7 @@ export function prepareDrawables(gameState) {
       corpseIsPlayer: corpse.isPlayer || false,
       corpseCreature: corpse.creature,
       deathTime: corpse.deathTime || 0,
+      decayTime: corpse.decayTime || 0,
       order: corpse.order || 0,
       isFloor: false
     }, corpse);

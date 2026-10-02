@@ -466,7 +466,7 @@ export class Renderer {
   // getCorpseData
 
   getCorpseData(obj) {
-    return obj.isCorpse ? { isPlayer: obj.corpseIsPlayer, creature: obj.corpseCreature, deathTime: obj.deathTime } : null;
+    return obj.isCorpse ? { isPlayer: obj.corpseIsPlayer, creature: obj.corpseCreature, deathTime: obj.deathTime, decayTime: obj.decayTime } : null;
   }
 
   // ================================================================================================================================================================================
@@ -493,7 +493,8 @@ export class Renderer {
       const sheet = this.sprites.getCorpseSheet(corpseData);
       if (isSheetReady(sheet)) {
         const elapsed = Math.max(0, this.frameTimestamp - (corpseData.deathTime || 0));
-        const frameRect = sheet.getFrameRect('idle', elapsed, CONFIG.corpseFrameDuration);
+        const stage = corpseData.decayTime > corpseData.deathTime ? (corpseData.decayTime - corpseData.deathTime) / CONFIG.corpseFrameCount : CONFIG.corpseFrameDuration;
+        const frameRect = sheet.getFrameRect('idle', elapsed, stage);
         this.drawAnchoredSprite(sheet.image, frameRect, base, size, stackOffsetX, stackOffsetY, tint);
       } else {
         this.drawFallbackSquare(base, size, stackOffsetX, stackOffsetY, "#888888", tint);

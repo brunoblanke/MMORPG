@@ -121,12 +121,16 @@ test('player morto deixa cadáver e volta pro spawn com vida cheia', () => {
   assert.deepEqual(sim.world.getTileEntities(3, 3, 0), [sim.player]);
 });
 
-test('cadáver some depois do tempo de decomposição', () => {
+test('cadáver do player some depois do tempo de decomposição (20 min por estágio, como no Tibia)', () => {
   const sim = buildGame({ objects: GROUND, player: { x: 3, y: 3, z: 0 } });
   sim.player.currentHp = 0;
   runFor(sim, TICK_MS);
   assert.equal(sim.deadBodies.length, 1);
-  runFor(sim, CONFIG.corpseFrameDuration * CONFIG.corpseFrameCount + TICK_MS);
+  const corpse = sim.deadBodies[0];
+  assert.equal(corpse.decayTime - corpse.deathTime, CONFIG.playerCorpseFrameDuration * CONFIG.corpseFrameCount);
+  sim.lifeCycle.processCorpseDecay(corpse.decayTime - 1);
+  assert.equal(sim.deadBodies.length, 1);
+  sim.lifeCycle.processCorpseDecay(corpse.decayTime);
   assert.equal(sim.deadBodies.length, 0);
 });
 

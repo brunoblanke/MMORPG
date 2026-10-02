@@ -19,7 +19,10 @@ export const CONFIG = {
   // 0.4 = 60% mais fraco / 60% mais lento.
   speedScale: 0.4,    // divide o tempo de passo e das animações de andar
   enemyRespawnTime: 60000,   // como no Tibia: 1 min depois de morrer
-  corpseFrameDuration: 60000,
+  // Corpo, como no Tibia (items.xml): cada estágio (fresco, apodrecendo,
+  // ossos) dura 10 min no de criatura e 20 min no de player.
+  corpseFrameDuration: 600000,
+  playerCorpseFrameDuration: 1200000,
   corpseFrameCount: 3,
   stackOffsetX: STACK_OFFSET,
   stackOffsetY: STACK_OFFSET,
