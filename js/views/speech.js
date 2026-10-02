@@ -6,9 +6,11 @@ import { drawTibiaText, TIBIA_FONT } from './tibia-text.js';
 // Falas na tela, como no Tibia antigo: "Nome diz:" e o texto em cima do sqm
 // onde a fala foi dita. Ficam paradas ali (não seguem quem falou), em
 // amarelo (player e NPC) e, no fim, sobem esmaecendo. O texto de placa
-// (sem name) aparece igual, sem o "diz:", na cor dele (color).
+// (sem name) aparece igual, sem o "diz:", na cor dele (color); a fala de
+// criatura (monster), sem o "diz:", em laranja.
 
 const SPEECH_COLOR = '#ffd84a';
+const MONSTER_COLOR = '#f5822a';
 const BASE_MS = 3000;
 const PER_CHAR_MS = 50;
 const MAX_MS = 9000;
@@ -85,7 +87,7 @@ export class SpeechLayer {
         const rise = fade * FADE_RISE;
         ctx.save();
         ctx.globalAlpha = 1 - fade;
-        lines.forEach((line, i) => drawTibiaText(ctx, line, base.x + size / 2, bottom - rise - (lines.length - 1 - i) * LINE_HEIGHT, item.color || SPEECH_COLOR));
+        lines.forEach((line, i) => drawTibiaText(ctx, line, base.x + size / 2, bottom - rise - (lines.length - 1 - i) * LINE_HEIGHT, item.color || (item.monster ? MONSTER_COLOR : SPEECH_COLOR)));
         ctx.restore();
         bottom -= lines.length * LINE_HEIGHT + GAP;
       }

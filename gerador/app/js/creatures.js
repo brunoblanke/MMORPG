@@ -51,6 +51,7 @@ const statusEl = document.getElementById('creatureStatus');
 const nameEl = document.getElementById('creatureName');
 const folderEl = document.getElementById('creatureFolder');
 const behaviorEl = document.getElementById('creatureBehavior');
+const voicesEl = document.getElementById('creatureVoices');
 const STAT_FIELDS = [
   ['vida', document.getElementById('creatureHp')],
   ['xp', document.getElementById('creatureXp')],
@@ -123,6 +124,7 @@ function initCreatures() {
     renderTopics();
   };
   for (const [, el] of STAT_FIELDS) el.addEventListener('input', () => { creatures.dirty = true; });
+  voicesEl.addEventListener('input', () => { creatures.dirty = true; });
   fillFolderSelect(folderEl, CATEGORY);
   folderEl.addEventListener('change', () => { creatures.dirty = true; });
   document.getElementById('creatureLootAdd').onclick = () => {
@@ -734,7 +736,7 @@ async function save() {
     cadaver: creatures.corpse,
     propriedades: behaviorEl.value === 'npc'
       ? { comportamento: 'npc', conversa: conversationValues() }
-      : { comportamento: behaviorEl.value, ...statValues(), loot: lootValues() }
+      : { comportamento: behaviorEl.value, ...statValues(), loot: lootValues(), falas: voicesEl.value.split('\n').map(line => line.trim()).filter(Boolean) }
   };
 
   try {
@@ -774,6 +776,8 @@ function openRecipe(recipe) {
   renderShop();
   showNpcFields();
   for (const [key, el] of STAT_FIELDS) el.value = String(Math.max(0, Math.floor(Number((recipe.propriedades || {})[key])) || 0));
+  const voices = (recipe.propriedades || {}).falas;
+  voicesEl.value = Array.isArray(voices) ? voices.join('\n') : '';
   const loot = (recipe.propriedades || {}).loot;
   creatures.loot = Array.isArray(loot) ? loot.map(e => ({ tipo: e.tipo, chance: Number(e.chance) || 0, min: e.min || 1, max: e.max || e.min || 1 })) : [];
   loadLootItems();

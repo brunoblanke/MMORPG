@@ -100,6 +100,16 @@ export function creatureLoot(type) {
 }
 
 // ================================================================================================================================================================================================================================================
+// creatureVoices
+// O que a criatura diz de vez em quando (gerador → Criaturas → Falas).
+
+export function creatureVoices(type) {
+  const asset = getAsset(type);
+  const lines = asset && asset.propriedades && asset.propriedades.falas;
+  return Array.isArray(lines) ? lines.filter(line => typeof line === 'string' && line.trim()) : [];
+}
+
+// ================================================================================================================================================================================================================================================
 // doorState / doorType
 // Porta de parede ('<folha>#porta-x', '<folha>#porta-y-aberta'…): { open,
 // hasVolume, blocksMovement } do tipo, ou null se não é porta. doorType dá o

@@ -91,7 +91,7 @@ button:focus-visible, input:focus-visible, .slot:focus-visible{ outline:2px soli
 .field{ display:flex; flex-direction:column; gap:4px; }
 .field[hidden]{ display:none; }
 .field label{ font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; }
-.field input, .field select, input[type=search]{
+.field input, .field select, .field textarea, input[type=search]{
   background:var(--panel-2); border:1px solid var(--line); border-radius:6px; color:var(--text);
   padding:7px 9px; font-family:'IBM Plex Mono', monospace; font-size:12.5px; min-width:0;
 }
@@ -222,6 +222,8 @@ button:focus-visible, input:focus-visible, .slot:focus-visible{ outline:2px soli
 .classify-help{ margin:0; padding:6px 20px; color:var(--muted); font-size:11px; background:var(--panel); border-top:1px solid var(--line); }
 
 .loot-field{ min-width:100%; }
+.voices-field{ min-width:100%; }
+.voices-field textarea{ resize:vertical; }
 .loot-list{ display:flex; flex-direction:column; gap:4px; max-height:240px; overflow-y:auto; padding-right:4px; }
 .loot-row{ display:flex; align-items:center; gap:4px; font-size:11px; color:var(--muted); }
 .loot-row select{ flex:1; min-width:0; }
@@ -245,4 +247,4 @@ button:focus-visible, input:focus-visible, .slot:focus-visible{ outline:2px soli
 .npc-lines-grid span{ font-size:11px; color:var(--muted); }
 .npc-lines-grid input{ width:100%; }
 .npc-topic .npc-price{ width:70px; }
-#creatureSaveForm.is-npc .stat:not(#npcFields .stat), #creatureSaveForm.is-npc .loot-field{ display:none; }
+#creatureSaveForm.is-npc .stat:not(#npcFields .stat), #creatureSaveForm.is-npc .loot-field, #creatureSaveForm.is-npc .voices-field{ display:none; }
