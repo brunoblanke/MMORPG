@@ -5,6 +5,7 @@ import { creatureInfo, itemCategory } from './picker.js';
 import { sourceUrl, sourceLabel, loadImage, isReady, drawAnchored, readPngFile, normalizeName, setStatus } from './common.js';
 import { refreshProjects } from './projects.js';
 import { fillFolderSelect, folderOf, setFolder, recipePath } from './folders.js';
+import { VOCATION_LINES, SHOP_LINES } from '/shared/npcs.js';
 
 // Folha de criatura (quadros de 32 ou 64 px, o maior entre criatura e cadáver):
 //   linhas 1–4  sul, norte, leste, oeste — 1º quadro parado, depois andando
@@ -68,6 +69,10 @@ const formEl = document.getElementById('creatureSaveForm');
 const npcFieldsEl = document.getElementById('npcFields');
 const npcTopicsEl = document.getElementById('npcTopics');
 const npcShopEl = document.getElementById('npcShop');
+const LINE_GROUPS = [
+  { key: 'falasVocacao', defaults: VOCATION_LINES, box: document.getElementById('npcVocationLines'), grid: document.getElementById('npcVocationLinesGrid') },
+  { key: 'falasVenda', defaults: SHOP_LINES, box: document.getElementById('npcShopLines'), grid: document.getElementById('npcShopLinesGrid') }
+];
 const NPC_TEXT_FIELDS = [
   ['boasVindas', document.getElementById('npcWelcome')],
   ['oi', document.getElementById('npcGreet')],
@@ -124,6 +129,7 @@ function initCreatures() {
     renderLoot();
   };
   loadLootItems();
+  renderLines();
   fetch('/api/paleta').then(r => r.json()).then(data => {
     creatures.palette = data.cores || [];
     renderColors();
@@ -519,6 +525,39 @@ function renderShop() {
     row.append(select, price, words, remove);
     npcShopEl.appendChild(row);
   });
+  showNpcFields();
+}
+
+// ================================================================================================================================================================================================================================================
+// renderLines
+// Um campo por fala da vocação e da venda; o padrão aparece apagado no campo.
+
+function renderLines(talk = {}) {
+  for (const group of LINE_GROUPS) {
+    group.grid.innerHTML = '';
+    const saved = talk[group.key] || {};
+    for (const [key, { label, text }] of Object.entries(group.defaults)) {
+      const name = document.createElement('span');
+      name.textContent = label;
+      const input = document.createElement('input');
+      Object.assign(input, { type: 'text', placeholder: text, value: saved[key] || '', maxLength: 200 });
+      input.dataset.line = key;
+      input.oninput = () => { creatures.dirty = true; };
+      group.grid.append(name, input);
+    }
+  }
+}
+
+// ================================================================================================================================================================================================================================================
+// lineValues
+// As falas escritas (só as que não estão vazias) de um grupo.
+
+function lineValues(group) {
+  const values = {};
+  for (const input of group.grid.querySelectorAll('input')) {
+    if (input.value.trim()) values[input.dataset.line] = input.value.trim();
+  }
+  return values;
 }
 
 // ================================================================================================================================================================================================================================================
@@ -579,6 +618,8 @@ function showNpcFields() {
   const isNpc = behaviorEl.value === 'npc';
   npcFieldsEl.hidden = !isNpc;
   npcDestEl.hidden = !npcVocationEl.value;
+  LINE_GROUPS[0].box.hidden = !npcVocationEl.value;
+  LINE_GROUPS[1].box.hidden = !creatures.shop.length;
   formEl.classList.toggle('is-npc', isNpc);
 }
 
@@ -616,6 +657,10 @@ function conversationValues() {
   talk.raio = Math.max(0, Math.min(10, Math.floor(Number(npcRadiusEl.value)) || 0));
   talk.topicos = creatures.topics.map(t => ({ palavras: t.palavras.trim(), resposta: t.resposta.trim() })).filter(t => t.palavras && t.resposta);
   talk.vende = creatures.shop.filter(e => e.tipo).map(e => ({ tipo: e.tipo, preco: e.preco || 0, palavras: (e.palavras || '').trim() }));
+  for (const group of LINE_GROUPS) {
+    const values = lineValues(group);
+    if (Object.keys(values).length) talk[group.key] = values;
+  }
   if (npcVocationEl.value) {
     const dest = Object.fromEntries(NPC_DEST_FIELDS.map(([key, el]) => [key, Math.floor(Number(el.value))]));
     talk.vocacao = { destino: NPC_DEST_FIELDS.every(([key, el]) => el.value !== '' && Number.isFinite(dest[key])) ? dest : null };
@@ -712,6 +757,7 @@ function openRecipe(recipe) {
   creatures.topics = Array.isArray(talk.topicos) ? talk.topicos.map(t => ({ palavras: t.palavras || '', resposta: t.resposta || '' })) : [];
   creatures.shop = Array.isArray(talk.vende) ? talk.vende.map(e => ({ tipo: e.tipo || '', preco: Number(e.preco) || 0, palavras: e.palavras || '' })) : [];
   renderTopics();
+  renderLines(talk);
   renderShop();
   showNpcFields();
   for (const [key, el] of STAT_FIELDS) el.value = String(Math.max(0, Math.floor(Number((recipe.propriedades || {})[key])) || 0));

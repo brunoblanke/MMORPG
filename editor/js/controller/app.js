@@ -9,6 +9,7 @@ import { loadMapIntoState, saveMap, hasUnsavedChanges } from '../model/map-io.js
 import { resetHistory, commitHistory, undo, redo } from '../model/history.js';
 import './canvas-input.js';
 import { refreshCreatureOptions } from '../view/forms.js';
+import '../view/kit-form.js';
 import { rebuildBorders } from '../model/borders.js';
 
 document.getElementById('clearLayerBtn').onclick = () => {

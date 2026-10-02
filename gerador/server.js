@@ -42,6 +42,7 @@ app.get('/api/classificacao', (req, res) => res.json({ success: true, classifica
 app.post('/api/classificacao', classificar);
 app.post('/api/salvar', salvar);
 app.use('/saida', express.static(PASTA_SAIDA));
+app.use('/shared', express.static(path.join(__dirname, '..', 'shared')));
 app.use(express.static(PASTA_APP));
 
 let tibia = null;

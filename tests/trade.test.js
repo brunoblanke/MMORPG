@@ -73,3 +73,15 @@ test('vendedor: sem dinheiro não vende; não desiste', () => {
   assert.equal(moneyOf(sim.player), 20);
   assert.ok(!sim.player.equip.mochila.items.some(item => item && item.type === ROPE));
 });
+
+test('falas do gerador substituem as padrão; vazias ficam com a padrão', async () => {
+  const { npcDefFromAsset, SHOP_LINES, fillLine } = await import('../shared/npcs.js');
+  setAssets([
+    asset(ROPE, { move: true, peso: 18 }),
+    { ...asset('criaturas/humanos/lojista', { comportamento: 'npc', conversa: { vende: [{ tipo: ROPE, preco: 50 }], falasVenda: { vendido: 'Boa compra, {nome}!' } } }), ferramenta: 'criaturas' }
+  ]);
+  const def = npcDefFromAsset('criaturas/humanos/lojista', { x: 1, y: 1, z: 0 });
+  assert.equal(def.shopLines.vendido, 'Boa compra, {nome}!');
+  assert.equal(def.shopLines.semDinheiro, SHOP_LINES.semDinheiro.text);
+  assert.equal(fillLine(def.shopLines.confirmar, { item: 'Rope', preco: 50 }), 'Quer comprar Rope por 50 moedas de ouro? (sim / não)');
+});

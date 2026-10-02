@@ -406,6 +406,17 @@ test('kit do Tibia antigo: club, jacket e maçã na bag', async () => {
   assert.equal(male.equip.mochila.items[0].type, STARTER_FOOD);
 });
 
+test('kit inicial do editor (kitInicial no mapa) substitui o padrão', async () => {
+  const { STARTER_BAG, STARTER_FOOD } = await import('../shared/items.js');
+  setAssets([asset(STARTER_BAG, { move: true, peso: 8, espacos: 8 }), asset(SWORD, { move: true, peso: 30 }), asset(STARTER_FOOD, { move: true, peso: 1.5, alimento: 72, empilhavel: true })]);
+  const game = buildGame({ objects: floorRect(0, 10, 0, 10, 0), player: { x: 2, y: 2, z: 0 } });
+  game.mapData.kitInicial = { equip: { mochila: STARTER_BAG, arma: SWORD }, mochila: [{ tipo: STARTER_FOOD, count: 3 }] };
+  const fresh = game.addPlayer('novo', { name: 'Novo' });
+  assert.equal(fresh.equip.arma.type, SWORD);
+  assert.equal(fresh.equip.escudo, null);
+  assert.deepEqual([fresh.equip.mochila.items[0].type, fresh.equip.mochila.items[0].count], [STARTER_FOOD, 3]);
+});
+
 test('ring of healing: no espaço do anel recupera 6 de vida e 24 de mana a cada 6 s e dura 7,5 min; fora dele, nada', () => {
   const RING = 'itens/aneis/ring-of-healing';
   setAssets([asset(RING, { move: true, peso: 0.8, duracao: 450, regenVida: 6, regenMana: 24 })]);

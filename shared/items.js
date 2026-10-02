@@ -25,6 +25,10 @@ export const STARTER_TORCH = 'itens/fontes-de-luz/torch';
 export const STARTER_WEAPON = 'itens/clavas/club';
 export const STARTER_ARMOR = 'itens/armaduras/jacket';
 export const STARTER_FOOD = 'itens/comidas/maca';
+export const DEFAULT_KIT = {
+  equip: { mochila: STARTER_BAG, escudo: STARTER_TORCH, arma: STARTER_WEAPON, corpo: STARTER_ARMOR },
+  mochila: [{ tipo: STARTER_FOOD, count: 1 }]
+};
 
 // Morte do player: a mochila vai sempre pro corpo; cada outro item do
 // inventário, com esta chance (provisório).
@@ -183,6 +187,24 @@ export function equipBonus(equip) {
     if (key === 'arma' && info.weaponSkill) bonus.atkSkill = info.weaponSkill;
   }
   return bonus;
+}
+
+// ================================================================================================================================================================================================================================================
+// starterKit
+// O kit de quem nasce: o do editor (mapa → kitInicial: { equip: { espaço:
+// tipo }, mochila: [{ tipo, count }] }) ou, sem ele, DEFAULT_KIT.
+
+export function starterKit(saved) {
+  if (!saved || typeof saved !== 'object') return DEFAULT_KIT;
+  const equip = {};
+  for (const key of EQUIP_SLOTS) {
+    const type = saved.equip && saved.equip[key];
+    if (typeof type === 'string' && type) equip[key] = type;
+  }
+  const mochila = (Array.isArray(saved.mochila) ? saved.mochila : [])
+    .filter(e => e && typeof e.tipo === 'string' && e.tipo)
+    .map(e => ({ tipo: e.tipo, count: Math.max(1, Math.floor(Number(e.count)) || 1) }));
+  return { equip, mochila };
 }
 
 // ================================================================================================================================================================================================================================================

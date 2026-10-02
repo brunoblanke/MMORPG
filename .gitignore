@@ -3,3 +3,4 @@ sftp-config.json
 .claude/settings.local.json
 data/characters.json
 data/characters.json.tmp
+data/backups/
