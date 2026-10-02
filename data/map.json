@@ -133064,7 +133064,8 @@
       null,
       null,
       {
-        "texto": "Proibido pescar!"
+        "texto": "Proibido pescar!",
+        "cor": "danger"
       }
     ],
     [
@@ -144694,7 +144695,8 @@
       null,
       null,
       {
-        "texto": "ASSUNTOS\n\n• Movimentacao\n• Selecao e ataque\n• Alimentacao\n• Ferramentas"
+        "texto": "ASSUNTOS\n\n• Movimentacao\n• Selecao e ataque\n• Alimentacao\n• Ferramentas",
+        "cor": "warn"
       }
     ],
     [
