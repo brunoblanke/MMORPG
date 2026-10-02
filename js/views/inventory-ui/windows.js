@@ -1,23 +1,26 @@
 // js/views/inventory-ui/windows.js
 
-import { PITCH, SAVE_DELAY_MS } from './common.js';
+import { PITCH, SAVE_DELAY_MS, LAYOUT_COLS, LAYOUT_VERSION } from './common.js';
 
 // Métodos do InventoryUI (js/views/inventory-ui.js). As janelas: layout guardado, abrir, fechar, trocar o container
-// mostrado, mudar de lugar e de tamanho.
+// mostrado, mudar de lugar e de tamanho. Ficam nas colunas da esquerda e da
+// direita ou soltas em qualquer lugar da tela (free, com x e y); arrastada
+// até a lateral, gruda na coluna.
 
 export const windowMethods = {
 
   // ================================================================================================================================================================================================================================================
   // initialLayout
-  // O layout guardado no personagem ou, sem ele, o inventário à direita (a
-  // mochila começa fechada).
+  // O layout guardado no personagem (da versão LAYOUT_VERSION) ou, sem ele,
+  // vida e mana, skills e battle na esquerda e o inventário na direita; só o
+  // inventário e a vida e mana começam abertos.
 
   initialLayout(view) {
-    const layout = { left: [], right: [] };
+    const layout = { left: [], right: [], free: [] };
     const saved = view.layout;
-    if (saved && Array.isArray(saved.left) && Array.isArray(saved.right)) {
-      for (const col of ['left', 'right']) {
-        for (const entry of saved[col]) {
+    if (saved && saved.v === LAYOUT_VERSION && Array.isArray(saved.left) && Array.isArray(saved.right)) {
+      for (const col of LAYOUT_COLS) {
+        for (const entry of Array.isArray(saved[col]) ? saved[col] : []) {
           if (entry && ['inventory', 'skills', 'vitals', 'battle'].includes(entry.ref)) {
             layout[col].push(this.makeWindow(entry.ref, null, entry));
             continue;
@@ -26,10 +29,11 @@ export const windowMethods = {
           if (item && item.items) layout[col].push(this.makeWindow('container', item.uid, entry));
         }
       }
-      if ([...layout.left, ...layout.right].some(w => w.kind === 'inventory')) return this.withVitals(layout);
+      if (LAYOUT_COLS.some(col => layout[col].some(w => w.kind === 'inventory'))) return this.withVitals(layout);
     }
+    layout.left.push(this.makeWindow('vitals', null), this.makeWindow('skills', null, { min: true }), this.makeWindow('battle', null, { min: true }));
     layout.right.push(this.makeWindow('inventory', null));
-    return this.withVitals(layout);
+    return layout;
   },
 
   // ================================================================================================================================================================================================================================================
@@ -41,8 +45,8 @@ export const windowMethods = {
   withVitals(layout) {
     let after = 'inventory';
     for (const kind of ['vitals', 'skills', 'battle']) {
-      if (![...layout.left, ...layout.right].some(w => w.kind === kind)) {
-        const col = ['left', 'right'].find(c => layout[c].some(w => w.kind === after)) || 'right';
+      if (!LAYOUT_COLS.some(c => layout[c].some(w => w.kind === kind))) {
+        const col = LAYOUT_COLS.find(c => layout[c].some(w => w.kind === after)) || 'right';
         layout[col].splice(layout[col].findIndex(w => w.kind === after) + 1, 0, this.makeWindow(kind, null, { min: kind !== 'vitals' }));
       }
       after = kind;
@@ -61,8 +65,30 @@ export const windowMethods = {
       ground: saved.ground || null,
       rows: Number.isInteger(saved.rows) && saved.rows > 0 ? saved.rows : 2,
       min: !!saved.min,
-      bars: Array.isArray(saved.bars) ? saved.bars.filter(b => typeof b === 'string') : []
+      bars: Array.isArray(saved.bars) ? saved.bars.filter(b => typeof b === 'string') : [],
+      x: Number.isFinite(saved.x) ? saved.x : null,
+      y: Number.isFinite(saved.y) ? saved.y : null
     };
+  },
+
+  // ================================================================================================================================================================================================================================================
+  // allWindows
+
+  allWindows() {
+    return LAYOUT_COLS.flatMap(col => this.layout[col]);
+  },
+
+  // ================================================================================================================================================================================================================================================
+  // openBook
+  // Janela do livro (título e texto), solta no meio da tela; um livro por vez.
+
+  openBook(title, text) {
+    if (!this.layout) return;
+    this.removeWindows(w => w.kind === 'book');
+    const width = 300;
+    this.layout.free.push({ id: 'book', kind: 'book', title, text: text || 'O livro está em branco.', x: Math.max(8, (window.innerWidth - width) / 2), y: Math.max(8, window.innerHeight * 0.18) });
+    this.lastKey = '';
+    this.render();
   },
 
   // ================================================================================================================================================================================================================================================
@@ -153,7 +179,7 @@ export const windowMethods = {
   // fora). Se ele já está aberto em outra janela, esta fecha e aquela pisca.
 
   showInWindow(found, uid) {
-    const other = [...this.layout.left, ...this.layout.right].find(w => w.uid === uid);
+    const other = this.allWindows().find(w => w.uid === uid);
     if (other && other !== found.win) {
       this.layout[found.col].splice(found.i, 1);
       other.min = false;
@@ -200,7 +226,7 @@ export const windowMethods = {
 
   removeWindows(match) {
     let changed = false;
-    for (const col of ['left', 'right']) {
+    for (const col of LAYOUT_COLS) {
       const kept = this.layout[col].filter(w => !match(w));
       if (kept.length !== this.layout[col].length) changed = true;
       this.layout[col] = kept;
@@ -212,7 +238,7 @@ export const windowMethods = {
   // findWindow
 
   findWindow(id) {
-    for (const col of ['left', 'right']) {
+    for (const col of LAYOUT_COLS) {
       const i = this.layout[col].findIndex(w => w.id === id);
       if (i >= 0) return { col, i, win: this.layout[col][i] };
     }
@@ -225,7 +251,7 @@ export const windowMethods = {
   // coluna; senão, no fim da outra coluna. Já aberta: só pisca.
 
   openWindow(uid, besideId = null, groundId = null) {
-    const existing = [...this.layout.left, ...this.layout.right].find(w => w.uid === uid);
+    const existing = this.allWindows().find(w => w.uid === uid);
     if (existing) {
       existing.min = false;
       this.render();
@@ -234,7 +260,7 @@ export const windowMethods = {
     }
     const win = this.makeWindow('container', uid, { ground: groundId });
     const at = besideId ? this.findWindow(besideId) : null;
-    const origin = at ? at.col : 'right';
+    const origin = at && at.col !== 'free' ? at.col : 'right';
     const other = origin === 'left' ? 'right' : 'left';
     const index = at ? at.i + 1 : this.layout[origin].length;
     if (this.fitsIn(origin, win)) this.layout[origin].splice(index, 0, win);
@@ -272,39 +298,57 @@ export const windowMethods = {
     clearTimeout(this.saveTimer);
     this.saveTimer = setTimeout(() => {
       if (!this.view || !this.layout) return;
+      const place = (w) => (w.x !== null ? { x: Math.round(w.x), y: Math.round(w.y) } : {});
       const entry = (w) => {
-        if (w.kind !== 'container') return { ref: w.kind, rows: w.rows, min: w.min, bars: w.bars };
+        if (w.kind === 'book') return null;
+        if (w.kind !== 'container') return { ref: w.kind, rows: w.rows, min: w.min, bars: w.bars, ...place(w) };
         if (w.ground) return null;
         const path = this.pathOf(this.view, w.uid);
-        return path ? { path, rows: w.rows, min: w.min } : null;
+        return path ? { path, rows: w.rows, min: w.min, ...place(w) } : null;
       };
-      const layout = {
-        left: this.layout.left.map(entry).filter(Boolean),
-        right: this.layout.right.map(entry).filter(Boolean)
-      };
+      const layout = { v: LAYOUT_VERSION };
+      for (const col of LAYOUT_COLS) layout[col] = this.layout[col].map(entry).filter(Boolean);
       this.game.send({ type: 'saveLayout', layout });
     }, SAVE_DELAY_MS);
   },
 
   // ================================================================================================================================================================================================================================================
-  // window drag / resize
+  // window drag
+  // A janela vai junto com o mouse (uma cópia dela). Perto de uma coluna
+  // (lateral da tela), a linha mostra onde ela entra; fora delas, fica solta
+  // onde for solta.
 
   startWinDrag(evt, winId) {
+    const el = document.querySelector(`.inv-win[data-win="${winId}"]`);
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const ghost = /** @type {HTMLElement} */ (el.cloneNode(true));
+    ghost.classList.add('inv-ghostwin');
+    ghost.style.width = `${rect.width}px`;
+    document.body.appendChild(ghost);
     const line = document.createElement('div');
     line.className = 'inv-dropline';
-    document.querySelector(`.inv-win[data-win="${winId}"]`)?.classList.add('dragging');
-    this.drag = { kind: 'win', winId, line, target: null };
+    el.classList.add('dragging');
+    this.drag = { kind: 'win', winId, line, ghost, target: null, dx: evt.clientX - rect.left, dy: evt.clientY - rect.top, width: rect.width, height: rect.height };
     this.moveWinDrag(evt);
   },
 
   moveWinDrag(evt) {
-    const { line } = this.drag;
+    const { line, ghost } = this.drag;
+    const x = Math.max(0, Math.min(window.innerWidth - this.drag.width, evt.clientX - this.drag.dx));
+    const y = Math.max(0, Math.min(window.innerHeight - 30, evt.clientY - this.drag.dy));
+    ghost.style.left = `${x}px`;
+    ghost.style.top = `${y}px`;
     let col = null;
-    for (const [name, el] of Object.entries(this.columns)) {
-      const r = el.getBoundingClientRect();
+    for (const name of ['left', 'right']) {
+      const r = this.columns[name].getBoundingClientRect();
       if (evt.clientX >= r.left - 20 && evt.clientX <= r.right + 20) col = name;
     }
-    if (!col) { line.remove(); this.drag.target = null; return; }
+    if (!col) {
+      line.remove();
+      this.drag.target = { col: 'free', x, y };
+      return;
+    }
     const colEl = this.columns[col];
     const wins = [...colEl.querySelectorAll('.inv-win')];
     let index = wins.length;
@@ -318,14 +362,22 @@ export const windowMethods = {
   },
 
   endWinDrag() {
-    const { line, target, winId } = this.drag;
+    const { line, ghost, target, winId } = this.drag;
     line.remove();
+    ghost.remove();
     this.drag = null;
     const found = this.findWindow(winId);
     if (target && found) {
       this.layout[found.col].splice(found.i, 1);
-      const index = target.col === found.col && target.index > found.i ? target.index - 1 : target.index;
-      this.layout[target.col].splice(index, 0, found.win);
+      if (target.col === 'free') {
+        found.win.x = target.x;
+        found.win.y = target.y;
+        this.layout.free.push(found.win);
+      } else {
+        found.win.x = found.win.y = null;
+        const index = target.col === found.col && target.index > found.i ? target.index - 1 : target.index;
+        this.layout[target.col].splice(index, 0, found.win);
+      }
       this.scheduleSave();
     }
     this.lastKey = '';

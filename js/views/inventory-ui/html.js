@@ -6,7 +6,7 @@ import { itemInfo, stackFrame } from '../../../shared/items.js';
 import { PLAYER_SPRITES, DEFAULT_GENDER } from '../../../shared/catalog.js';
 import { CORPSE_ROW } from '../sprite-registry.js';
 import { ANIMATION_CYCLE_MS } from '../../../shared/constants.js';
-import { EQUIP_LAYOUT, SKILL_NAMES, SKILL_ORDER, PITCH } from './common.js';
+import { EQUIP_LAYOUT, SKILL_NAMES, SKILL_ORDER, PITCH, BATTLE_RANGE } from './common.js';
 import { ICONS, FOLLOW_ICONS } from './icons.js';
 
 // Métodos do InventoryUI (js/views/inventory-ui.js). O HTML de cada parte das janelas: espaços, containers, skills, vida e
@@ -86,6 +86,7 @@ export const htmlMethods = {
     if (win.kind === 'skills') return this.skillsHtml(win, buttons(false));
     if (win.kind === 'battle') return this.battleHtml(win, buttons(false));
     if (win.kind === 'vitals') return this.vitalsHtml(win);
+    if (win.kind === 'book') return this.bookHtml(win, buttons(true));
     const box = this.findContainer(win.uid);
     if (!box) return '';
     const slots = box.items.map((item, i) => this.slotHtml(item, { t: 'c', uid: box.uid, i })).join('');
@@ -155,6 +156,18 @@ export const htmlMethods = {
   },
 
   // ================================================================================================================================================================================================================================================
+  // bookHtml
+  // Janela do livro: título e o texto (escrito no editor), rolando se for longo.
+
+  bookHtml(win, buttons) {
+    const esc = (text) => String(text).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+    return `<section class="inv-win inv-book${win.min ? ' min' : ''}" data-win="${win.id}">
+      <header class="inv-head"><span class="inv-title">${esc(win.title)}</span>${buttons}</header>
+      <div class="inv-body"><div class="inv-book-text">${esc(win.text)}</div></div>
+    </section>`;
+  },
+
+  // ================================================================================================================================================================================================================================================
   // vitalsHtml
   // Barras de vida e mana com o valor atual/máximo dentro. A janela toda é a
   // alça: dá pra arrastar, mas não minimizar nem fechar.
@@ -199,18 +212,16 @@ export const htmlMethods = {
 
   // ================================================================================================================================================================================================================================================
   // battleList
-  // Inimigos vivos que aparecem na tela, no andar do player: nome, vida e se
-  // é o alvo.
+  // Inimigos vivos ao alcance do player (até BATTLE_RANGE sqm, no andar
+  // dele): nome, vida e se é o alvo.
 
   battleList() {
-    const { player, session, camera } = this.game;
-    if (!player || !session || !camera) return [];
-    const visible = camera.getVisibleTiles();
+    const { player, session } = this.game;
+    if (!player || !session) return [];
     const level = getLevel(player);
     const targetId = player.target ? player.target.id : null;
     return session.enemies
-      .filter(e => e.isAlive() && getLevel(e) === level &&
-        e.x >= visible.startX && e.x < visible.endX && e.y >= visible.startY && e.y < visible.endY)
+      .filter(e => e.isAlive() && getLevel(e) === level && Math.max(Math.abs(e.x - player.x), Math.abs(e.y - player.y)) <= BATTLE_RANGE)
       .map(e => ({ id: e.id, name: displayName(e.creature), hp: Math.max(0, Math.round(e.currentHp / e.maxHp * 100)), target: e.id === targetId }));
   },
 

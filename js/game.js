@@ -462,25 +462,11 @@ export class GameController {
 
   // ================================================================================================================================================================================================================================================
   // showBook
-  // Janela do livro: título e o texto (escrito no editor). Fecha no X, no
-  // Esc ou clicando fora.
+  // Janela do livro: título e o texto (escrito no editor), solta na tela
+  // como as outras (fecha no X ou no Esc).
 
   showBook(title, text) {
-    let modal = document.getElementById('bookModal');
-    if (!modal) {
-      modal = document.createElement('div');
-      modal.id = 'bookModal';
-      modal.className = 'book-modal';
-      modal.innerHTML = '<div class="book-page" role="dialog"><header><span class="book-title"></span><button type="button" class="book-close" aria-label="Fechar">×</button></header><div class="book-text"></div></div>';
-      document.body.appendChild(modal);
-      const close = () => modal.classList.remove('show');
-      modal.addEventListener('pointerdown', (evt) => { if (evt.target === modal) close(); });
-      modal.querySelector('.book-close').onclick = close;
-      document.addEventListener('keydown', (evt) => { if (evt.key === 'Escape') close(); });
-    }
-    modal.querySelector('.book-title').textContent = title;
-    modal.querySelector('.book-text').textContent = text || 'O livro está em branco.';
-    modal.classList.add('show');
+    if (this.inventoryUI) this.inventoryUI.openBook(title, text);
   }
 
   // ================================================================================================================================================================================================================================================
