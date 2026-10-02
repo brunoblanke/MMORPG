@@ -2,7 +2,7 @@
 
 import { state, TOOLS } from '../model/state.js';
 import { FLOOR_MIN, FLOOR_MAX, GROUND_FLOOR } from '../../../shared/constants.js';
-import { scheduleRender } from './canvas-renderer.js';
+import { canvas, scheduleRender } from './canvas-renderer.js';
 import { BORDER_VARIANTS } from '../../../shared/floor-borders.js';
 import { listAssets, creatureBehavior, pieceType, splitType, displayName, isStairsFolder, isEntranceFolder, isItemType, isWallType, WALL_PIECES, WALL_PIECE_NAMES } from '../../../shared/assets.js';
 import { setThumb } from './sprite-thumb.js';
@@ -202,6 +202,7 @@ export function renderTools() {
   const quick = document.getElementById('quickTools');
   wrap.innerHTML = '';
   quick.innerHTML = '';
+  canvas.classList.toggle('select-mode', state.tool === 'select');
   TOOLS.forEach(t => {
     const btn = document.createElement('div');
     btn.className = (t.quick ? 'quick-btn' : 'tool-btn') + (t.id === state.tool ? ' active' : '');

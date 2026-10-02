@@ -167,7 +167,8 @@ body{
   box-shadow:0 20px 50px rgba(0,0,0,.35); position:relative;
 }
 
-canvas{ display:block; background:var(--grid); border-radius:4px; image-rendering:pixelated; }
+canvas{ display:block; background:var(--grid); border-radius:4px; cursor:crosshair; image-rendering:pixelated; }
+canvas.select-mode{ cursor:default; }
 
 .bottom-bar{
   display:flex; align-items:center; justify-content:space-between; gap:16px; padding:12px 22px;
