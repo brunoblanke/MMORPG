@@ -37,7 +37,7 @@ function hideCovered(drawables) {
   });
 }
 
-const MESSAGE_COLORS = { info: '#5fe35f', warn: '#ffd84a', danger: '#ff4a4a' };
+export const MESSAGE_COLORS = { info: '#5fe35f', warn: '#ffd84a', danger: '#ff4a4a', blue: '#6cb6ff' };
 
 const TINT_HIT = { color: '#ff2a2a', alpha: 0.55 };
 const TINT_ENEMY_HOVER = { color: '#ff2a2a', alpha: 0.35 };

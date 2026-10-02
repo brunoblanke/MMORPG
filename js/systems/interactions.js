@@ -6,7 +6,7 @@ import { itemInfo, newItem, weightOf } from '../../shared/items.js';
 import { getHoleTarget, toLowerLevel, toUpperLevel } from '../../shared/stairs.js';
 
 // Objetos do mapa que se usam (gerador → Objetos → Uso):
-//   placa     → o texto (editor) aparece no centro da tela, na cor escolhida no editor;
+//   placa     → o texto (editor) aparece em cima dela, na cor escolhida no editor;
 //   livro     → abre o texto numa janela (no chão ou carregado);
 //   bau-quest → dá os itens (editor) uma vez por player;
 //   corda     → marca de corda: com a corda, sobe pro andar de cima;
@@ -15,6 +15,7 @@ import { getHoleTarget, toLowerLevel, toUpperLevel } from '../../shared/stairs.j
 // Longe, o player anda até o lado e usa ao chegar.
 
 const MAP_USES = ['placa', 'livro', 'bau-quest', 'corda', 'pa', 'descer'];
+const SIGN_KINDS = ['info', 'warn', 'danger', 'blue'];
 const CLIMB_OFFSETS = [[0, 1], [1, 1], [-1, 1], [1, 0], [-1, 0], [0, -1], [1, -1], [-1, -1]];
 
 export class InteractionController {
@@ -33,6 +34,16 @@ export class InteractionController {
 
   isUsable(obj) {
     return !!obj && !obj.isCorpse && this.sim.world.objects.has(obj) && MAP_USES.includes(objectUse(objectIdType(obj.id)));
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // signText
+  // Texto da placa pro player que a usou: aparece em cima da placa, parado no
+  // lugar (como as falas), na cor escolhida no editor (verde se nenhuma).
+
+  signText(player, obj) {
+    const kind = SIGN_KINDS.includes(obj.data.cor) ? obj.data.cor : 'info';
+    this.sim.emit({ type: 'signText', playerId: player.id, text: obj.data.texto, kind, x: obj.x, y: obj.y, z: obj.z || 0 });
   }
 
   // ================================================================================================================================================================================================================================================
@@ -56,7 +67,7 @@ export class InteractionController {
     }
     const use = objectUse(objectIdType(obj.id));
     if (use === 'placa') {
-      if (obj.data && obj.data.texto) this.message(player, obj.data.texto, ['warn', 'danger'].includes(obj.data.cor) ? obj.data.cor : 'info');
+      if (obj.data && obj.data.texto) this.signText(player, obj);
     }
     else if (use === 'livro') this.readBook(player, obj.itemData || { type: objectIdType(obj.id), texto: obj.data && obj.data.texto });
     else if (use === 'bau-quest') this.openQuestChest(player, obj);

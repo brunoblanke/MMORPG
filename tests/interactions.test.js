@@ -73,20 +73,22 @@ const texts = (events) => events.filter(e => e.type === 'message').map(e => e.te
 test('placa: usar mostra o texto escrito no editor; longe, o player vai até ela; sem texto, nada', () => {
   const sim = game([[SIGN, 6, 5, 0, { texto: 'Bem-vindo à vila!' }], [SIGN, 12, 5, 0]]);
   const [near, far] = sim.objects.filter(o => o.id.startsWith(SIGN));
-  assert.deepEqual(texts(send(sim, { type: 'useObject', id: near.id })), ['Bem-vindo à vila!']);
+  const sign = send(sim, { type: 'useObject', id: near.id }).find(e => e.type === 'signText');
+  assert.deepEqual([sign.text, sign.x, sign.y, sign.z], ['Bem-vindo à vila!', 6, 5, 0]);
   send(sim, { type: 'useObject', id: far.id });
   const events = [];
   for (let i = 0; i < 60; i++) events.push(...send(sim, { type: 'noop' }));
-  assert.deepEqual(texts(events), []);
+  assert.deepEqual(events.filter(e => e.type === 'signText'), []);
   assert.ok(Math.abs(sim.player.x - 12) <= 1);
 });
 
-test('placa: a mensagem sai na cor escolhida no editor (verde se não escolheu)', () => {
-  const sim = game([[SIGN, 6, 5, 0, { texto: 'Perigo!', cor: 'danger' }], [SIGN, 4, 5, 0, { texto: 'Oi' }]]);
-  const [red, green] = sim.objects.filter(o => o.id.startsWith(SIGN));
-  const kind = (events) => events.find(e => e.type === 'message').kind;
+test('placa: o texto sai na cor escolhida no editor (verde se não escolheu)', () => {
+  const sim = game([[SIGN, 6, 5, 0, { texto: 'Perigo!', cor: 'danger' }], [SIGN, 4, 5, 0, { texto: 'Oi' }], [SIGN, 5, 6, 0, { texto: 'Lago', cor: 'blue' }]]);
+  const [red, green, blue] = sim.objects.filter(o => o.id.startsWith(SIGN));
+  const kind = (events) => events.find(e => e.type === 'signText').kind;
   assert.equal(kind(send(sim, { type: 'useObject', id: red.id })), 'danger');
   assert.equal(kind(send(sim, { type: 'useObject', id: green.id })), 'info');
+  assert.equal(kind(send(sim, { type: 'useObject', id: blue.id })), 'blue');
 });
 
 test('livro: no chão ou carregado, abre o texto; o texto vai junto quando pega', () => {

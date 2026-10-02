@@ -5,7 +5,8 @@ import { drawTibiaText, TIBIA_FONT } from './tibia-text.js';
 
 // Falas na tela, como no Tibia antigo: "Nome diz:" e o texto em cima do sqm
 // onde a fala foi dita. Ficam paradas ali (não seguem quem falou), em
-// amarelo (player e NPC) e, no fim, sobem esmaecendo.
+// amarelo (player e NPC) e, no fim, sobem esmaecendo. O texto de placa
+// (sem name) aparece igual, sem o "diz:", na cor dele (color).
 
 const SPEECH_COLOR = '#ffd84a';
 const BASE_MS = 3000;
@@ -43,17 +44,19 @@ export class SpeechLayer {
     ctx.save();
     ctx.font = TIBIA_FONT;
     const lines = [];
-    let line = '';
-    for (const word of text.split(' ')) {
-      const next = line ? `${line} ${word}` : word;
-      if (line && ctx.measureText(next).width > MAX_WIDTH) {
-        lines.push(line);
-        line = word;
-      } else {
-        line = next;
+    for (const paragraph of text.split('\n')) {
+      let line = '';
+      for (const word of paragraph.split(' ')) {
+        const next = line ? `${line} ${word}` : word;
+        if (line && ctx.measureText(next).width > MAX_WIDTH) {
+          lines.push(line);
+          line = word;
+        } else {
+          line = next;
+        }
       }
+      lines.push(line);
     }
-    if (line) lines.push(line);
     ctx.restore();
     return lines;
   }
@@ -77,12 +80,12 @@ export class SpeechLayer {
       const base = renderer.gridToScreenWithOffset(group[0].x, group[0].y);
       let bottom = base.y - 33;
       for (const item of [...group].reverse()) {
-        const lines = [`${item.name} diz:`, ...this.wrap(ctx, item.text)];
+        const lines = item.name ? [`${item.name} diz:`, ...this.wrap(ctx, item.text)] : this.wrap(ctx, item.text);
         const fade = Math.max(0, Math.min(1, 1 - (item.expiresAt - now) / FADE_MS));
         const rise = fade * FADE_RISE;
         ctx.save();
         ctx.globalAlpha = 1 - fade;
-        lines.forEach((line, i) => drawTibiaText(ctx, line, base.x + size / 2, bottom - rise - (lines.length - 1 - i) * LINE_HEIGHT, SPEECH_COLOR));
+        lines.forEach((line, i) => drawTibiaText(ctx, line, base.x + size / 2, bottom - rise - (lines.length - 1 - i) * LINE_HEIGHT, item.color || SPEECH_COLOR));
         ctx.restore();
         bottom -= lines.length * LINE_HEIGHT + GAP;
       }
