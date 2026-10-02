@@ -44,7 +44,7 @@
     "comportamento": "npc",
     "conversa": {
       "boasVindas": "Ferramentas pra sua aventura!",
-      "oi": "Olá, {nome}! Vendo corda e pá. Diga oferta pra ver os preços.",
+      "oi": "Olá, {nome}! compro e vendo itens.",
       "tchau": "Volte sempre, {nome}.",
       "raio": 2,
       "topicos": [],
@@ -63,8 +63,62 @@
           "tipo": "itens/fontes-de-luz/torch",
           "preco": 10,
           "palavras": "tocha, torch"
+        },
+        {
+          "tipo": "itens/liquidos/health-potion",
+          "preco": 50,
+          "palavras": "potion, pocao, poção"
         }
-      ]
+      ],
+      "compra": [
+        {
+          "tipo": "itens/ferramentas/rope",
+          "preco": 30,
+          "palavras": "corda, rope"
+        },
+        {
+          "tipo": "itens/ferramentas/shovel",
+          "preco": 30,
+          "palavras": "pa, shovel"
+        },
+        {
+          "tipo": "itens/fontes-de-luz/torch",
+          "preco": 5,
+          "palavras": "tocha, torch"
+        },
+        {
+          "tipo": "itens/clavas/mace",
+          "preco": 50,
+          "palavras": "mace"
+        },
+        {
+          "tipo": "itens/botas/leather-boots",
+          "preco": 10,
+          "palavras": "boots, botas"
+        },
+        {
+          "tipo": "itens/capacetes/leather-helmet",
+          "preco": 10,
+          "palavras": "helmet, capacete"
+        },
+        {
+          "tipo": "itens/escudos/wooden-shield",
+          "preco": 15,
+          "palavras": "shield, escudo"
+        },
+        {
+          "tipo": "itens/machados/hand-axe",
+          "preco": 15,
+          "palavras": "axe, machado"
+        }
+      ],
+      "falasVenda": {
+        "lista": "O que você deseja comprar?",
+        "confirmar": "Quer comprar {item} por {preco}?",
+        "listaCompra": "O que você deseja vender?",
+        "queVender": "O que você deseja vender?",
+        "confirmarCompra": "Quer me vender {quantidade} {item} por {preco}?"
+      }
     }
   },
   "ferramenta": "criaturas",
