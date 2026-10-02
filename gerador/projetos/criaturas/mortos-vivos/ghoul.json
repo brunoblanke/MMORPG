@@ -60,7 +60,7 @@
         "max": 30
       },
       {
-        "tipo": "itens/decoracoes/worm",
+        "tipo": "itens/produtos-de-criaturas/worm",
         "chance": 0.1,
         "min": 1,
         "max": 2
@@ -74,7 +74,7 @@
         "chance": 0.01
       },
       {
-        "tipo": "itens/decoracoes/brown-piece-of-cloth",
+        "tipo": "itens/valiosos/brown-piece-of-cloth",
         "chance": 0.01
       },
       {

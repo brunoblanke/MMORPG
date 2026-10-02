@@ -24163,7 +24163,7 @@
       15115
     ],
     [
-      "estrutura/natureza/placa-baixa",
+      "decoracao/sinalizacao/placa-baixa",
       188,
       226,
       -2,
@@ -41082,7 +41082,7 @@
       12451
     ],
     [
-      "estrutura/natureza/cama-acampamento-norte",
+      "decoracao/moveis/cama-acampamento-norte",
       186,
       217,
       -1,
@@ -41114,7 +41114,7 @@
       12450
     ],
     [
-      "itens/ferramentas/livro-1",
+      "itens/livros/livro-1",
       187,
       217,
       -1,
@@ -41768,7 +41768,7 @@
       12452
     ],
     [
-      "estrutura/natureza/cama-acampamento-sul",
+      "decoracao/moveis/cama-acampamento-sul",
       186,
       218,
       -1,
@@ -43250,7 +43250,7 @@
       12456
     ],
     [
-      "estrutura/natureza/fogueira",
+      "decoracao/iluminacao/fogueira",
       185,
       220,
       -1,
@@ -44149,7 +44149,7 @@
       12461
     ],
     [
-      "itens/decoracoes/balde",
+      "itens/ferramentas/balde",
       189,
       221,
       -1,
@@ -47276,7 +47276,7 @@
       12484
     ],
     [
-      "estrutura/natureza/placa-baixa-leste",
+      "decoracao/sinalizacao/placa-baixa-leste",
       192,
       225,
       -1,
@@ -47313,7 +47313,7 @@
       12483
     ],
     [
-      "itens/recipientes/bau-quest-sul",
+      "decoracao/baus/bau-quest-sul",
       193,
       225,
       -1,
@@ -120561,7 +120561,7 @@
       10685
     ],
     [
-      "estrutura/natureza/placa-baixa",
+      "decoracao/sinalizacao/placa-baixa",
       191,
       208,
       0,
@@ -133054,7 +133054,7 @@
       false
     ],
     [
-      "estrutura/natureza/placa-baixa-oeste",
+      "decoracao/sinalizacao/placa-baixa-oeste",
       189,
       219,
       0,
@@ -144685,7 +144685,7 @@
       true
     ],
     [
-      "decoracao/adornos/quadro-negro-x",
+      "decoracao/sinalizacao/quadro-negro-x",
       180,
       230,
       0,
@@ -145819,7 +145819,7 @@
       10877
     ],
     [
-      "estrutura/natureza/balcao-y-b",
+      "decoracao/moveis/balcao-y-b",
       179,
       231,
       0,
@@ -146903,7 +146903,7 @@
       10880
     ],
     [
-      "estrutura/natureza/balcao-y-b",
+      "decoracao/moveis/balcao-y-b",
       179,
       232,
       0,
@@ -149538,7 +149538,7 @@
       15322
     ],
     [
-      "estrutura/natureza/balcao-x-b",
+      "decoracao/moveis/balcao-x-b",
       187,
       234,
       0,
@@ -149570,7 +149570,7 @@
       15323
     ],
     [
-      "estrutura/natureza/balcao-x-b",
+      "decoracao/moveis/balcao-x-b",
       188,
       234,
       0,
@@ -164467,7 +164467,7 @@
       15329
     ],
     [
-      "estrutura/natureza/balcao-x-b",
+      "decoracao/moveis/balcao-x-b",
       186,
       233,
       1,
@@ -164488,7 +164488,7 @@
       15339
     ],
     [
-      "estrutura/natureza/balcao-x-b",
+      "decoracao/moveis/balcao-x-b",
       187,
       233,
       1,
@@ -167170,19 +167170,19 @@
   ],
   "npcData": [
     [
-      "criaturas/humanos/oraculo",
+      "personagens/npcs/oraculo",
       202,
       229,
       0
     ],
     [
-      "criaturas/humanos/guia",
+      "personagens/npcs/guia",
       178,
       231,
       0
     ],
     [
-      "criaturas/humanos/vendedor",
+      "personagens/npcs/vendedor",
       188,
       235,
       0

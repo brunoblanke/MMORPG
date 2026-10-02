@@ -1,0 +1,92 @@
+{
+  "formato": {
+    "quadro": 32,
+    "quadros": 3,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 138,
+    "cores": [
+      114,
+      101,
+      0,
+      87
+    ],
+    "addons": [
+      1
+    ]
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 4247,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4248,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 4245,
+        "variacao": 0
+      }
+    }
+  },
+  "propriedades": {
+    "comportamento": "npc",
+    "conversa": {
+      "boasVindas": "Bem-vindo, aventureiro!",
+      "oi": "Olá, {nome}. Posso tirar suas dúvidas sobre andar, combate, itens, comida, poções, escadas e ferramentas.",
+      "tchau": "Até mais, {nome}.",
+      "raio": 3,
+      "topicos": [
+        {
+          "palavras": "andar, mover, movimento, caminhar",
+          "resposta": "Clique no chão pra andar até lá, ou use as setas do teclado."
+        },
+        {
+          "palavras": "combate, atacar, ataque, lutar, luta",
+          "resposta": "Clique numa criatura pra atacar. No inventário, um ícone liga seguir o alvo e o outro o auto ataque."
+        },
+        {
+          "palavras": "itens, item, loot, mochila, bag",
+          "resposta": "Arraste os itens pro inventário. Duplo clique ou botão direito abre bolsas e corpos. Shift + clique mostra o que é."
+        },
+        {
+          "palavras": "comida, comer, fome",
+          "resposta": "Para se alimentar basta você usar a comida."
+        },
+        {
+          "palavras": "poções, poção, potion, potions, curar",
+          "resposta": "Clique na poção e depois em você ou em outro aventureiro. Errou o alvo, o líquido cai no chão."
+        },
+        {
+          "palavras": "escadas, escada, subir, descer, bueiro",
+          "resposta": "Escadas sobem e descem ao pisar. Bueiros e alçapões se usam com duplo clique ou botão direito."
+        },
+        {
+          "palavras": "ferramentas, ferramenta, corda, pá",
+          "resposta": "Use a corda nas marcas de corda pra subir e a pá nos montes de terra pra abrir um buraco."
+        },
+        {
+          "palavras": "nome, quem, trabalho",
+          "resposta": "Sou o Guia. Recebo os aventureiros que chegam por aqui."
+        }
+      ]
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "personagens",
+  "pasta": "npcs",
+  "nome": "guia"
+}

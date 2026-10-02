@@ -12,7 +12,7 @@
             { "id": "cercas", "nome": "Cercas e parapeitos", "ferramenta": "paredes" },
             { "id": "escadas", "nome": "Escadas", "ferramenta": "objetos" },
             { "id": "entradas", "nome": "Entradas", "ferramenta": "objetos" },
-            { "id": "natureza", "nome": "Natureza (bloqueia)", "ferramenta": "objetos" }
+            { "id": "natureza", "nome": "Natureza", "ferramenta": "objetos" }
           ]
         }
       ]
@@ -24,10 +24,13 @@
         {
           "nome": null,
           "pastas": [
-            { "id": "estatuas", "nome": "Estátuas", "ferramenta": "objetos" },
             { "id": "moveis", "nome": "Móveis", "ferramenta": "objetos" },
-            { "id": "adornos", "nome": "Adornos", "ferramenta": "objetos" },
-            { "id": "natureza", "nome": "Natureza (não bloqueia)", "ferramenta": "objetos" }
+            { "id": "sinalizacao", "nome": "Placas e quadros", "ferramenta": "objetos" },
+            { "id": "iluminacao", "nome": "Iluminação", "ferramenta": "objetos" },
+            { "id": "baus", "nome": "Baús", "ferramenta": "objetos" },
+            { "id": "plantas", "nome": "Plantas", "ferramenta": "objetos" },
+            { "id": "estatuas", "nome": "Estátuas", "ferramenta": "objetos" },
+            { "id": "adornos", "nome": "Adornos", "ferramenta": "objetos" }
           ]
         }
       ]
@@ -72,7 +75,6 @@
             { "id": "runas-de-decoracao", "nome": "Runas de decoração", "ferramenta": "objetos" },
             { "id": "documentos-e-papeis", "nome": "Documentos e papéis", "ferramenta": "objetos" },
             { "id": "dolls-e-bears", "nome": "Dolls e bears", "ferramenta": "objetos" },
-            { "id": "decoracoes", "nome": "Decorações", "ferramenta": "objetos" },
             { "id": "instrumentos-musicais", "nome": "Instrumentos musicais", "ferramenta": "objetos" },
             { "id": "trofeus", "nome": "Troféus", "ferramenta": "objetos" },
             { "id": "itens-de-fansites", "nome": "Itens de fansites", "ferramenta": "objetos" },
@@ -150,6 +152,19 @@
             { "id": "the-ruthless-seven", "nome": "The Ruthless Seven", "ferramenta": "criaturas" },
             { "id": "triangle-of-terror", "nome": "Triangle of Terror", "ferramenta": "criaturas" },
             { "id": "vermes", "nome": "Vermes", "ferramenta": "criaturas" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "personagens",
+      "nome": "Personagens",
+      "secoes": [
+        {
+          "nome": null,
+          "pastas": [
+            { "id": "npcs", "nome": "NPCs", "ferramenta": "criaturas" },
+            { "id": "players", "nome": "Players", "ferramenta": "criaturas" }
           ]
         }
       ]

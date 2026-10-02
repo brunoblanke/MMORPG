@@ -11,7 +11,7 @@
     ]
   },
   "criatura": {
-    "id": 27,
+    "id": 128,
     "cores": [
       78,
       69,
@@ -23,46 +23,25 @@
   "cadaver": {
     "fresco": {
       "tibia": {
-        "id": 5968,
+        "id": 4240,
         "variacao": 0
       }
     },
     "apodrecendo": {
       "tibia": {
-        "id": 4268,
+        "id": 4241,
         "variacao": 0
       }
     },
     "ossos": {
       "tibia": {
-        "id": 4269,
+        "id": 4242,
         "variacao": 0
       }
     }
   },
   "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "mamiferos",
-  "nome": "wolf",
-  "propriedades": {
-    "comportamento": "foge",
-    "vida": 25,
-    "xp": 18,
-    "velocidade": 164,
-    "armadura": 1,
-    "defesa": 1,
-    "ataque": 17,
-    "loot": [
-      {
-        "tipo": "itens/comidas/meet",
-        "chance": 0.7,
-        "min": 1,
-        "max": 2
-      },
-      {
-        "tipo": "itens/produtos-de-criaturas/wolf-paw",
-        "chance": 0.01
-      }
-    ]
-  }
+  "grupo": "personagens",
+  "pasta": "players",
+  "nome": "player-masculino"
 }

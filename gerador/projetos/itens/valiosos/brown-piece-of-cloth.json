@@ -1,0 +1,33 @@
+{
+  "formato": {
+    "quadro": 32,
+    "quadros": 1
+  },
+  "objeto": {
+    "tibia": {
+      "id": 5913,
+      "variacao": 0
+    }
+  },
+  "propriedades": {
+    "bloqueia": false,
+    "move": true,
+    "altura": false,
+    "empilhavel": true,
+    "peso": 5,
+    "espacos": 0,
+    "atk": 0,
+    "def": 0,
+    "ml": 0,
+    "speed": 0,
+    "vidaMin": 0,
+    "vidaMax": 0,
+    "manaMin": 0,
+    "manaMax": 0,
+    "alimento": 0
+  },
+  "ferramenta": "objetos",
+  "grupo": "itens",
+  "pasta": "valiosos",
+  "nome": "brown-piece-of-cloth"
+}

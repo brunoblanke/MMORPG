@@ -66,11 +66,11 @@
         "max": 3
       },
       {
-        "tipo": "itens/decoracoes/bear-paw",
+        "tipo": "itens/produtos-de-criaturas/bear-paw",
         "chance": 0.02
       },
       {
-        "tipo": "itens/decoracoes/honeycomb",
+        "tipo": "itens/produtos-de-criaturas/honeycomb",
         "chance": 0.0046
       }
     ]
