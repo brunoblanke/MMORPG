@@ -1,0 +1,93 @@
+<!-- index.html -->
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<title>Editor de Estrutura — 25x25</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="app">
+
+  <div class="sidebar">
+    <div class="brand">
+      <div class="dot"></div>
+      <h1>Editor de Estrutura</h1>
+    </div>
+    <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--muted);margin-top:-10px;">grade 25×25 · sprites do servidor</span>
+
+    <div>
+      <div class="section-label">Andar</div>
+      <div class="layer-tabs" id="layerTabs"></div>
+    </div>
+
+    <div>
+      <div class="section-label">Ferramenta</div>
+      <div class="tools" id="tools"></div>
+    </div>
+
+    <label class="checkline">
+      <input type="checkbox" id="ghostToggle" checked />
+      Mostrar andar abaixo (fantasma)
+    </label>
+
+    <button class="danger-btn" id="clearLayerBtn">Limpar andar atual</button>
+    <button class="export-btn" id="saveBtn" title="Salva em data/map.json (Ctrl+S)">Salvar</button>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <h2>Editando <b id="layerLabel">Andar 0</b></h2>
+      <div class="status-list">
+        <div>Piso: <b id="statFloor">0</b></div>
+        <div>Parede: <b id="statWall">0</b></div>
+        <div>Escada: <b id="statStairs">0</b></div>
+        <div>Buraco: <b id="statHole">0</b></div>
+        <div>Item: <b id="statItem">0</b></div>
+        <div>Criatura: <b id="statCreature">0</b></div>
+      </div>
+      <div class="border-toggle" id="borderToggle">
+        <div class="led"></div>
+        <span>Exibir bordas</span>
+      </div>
+    </div>
+
+    <div class="canvas-wrap">
+      <div class="board">
+        <canvas id="canvas" width="800" height="800"></canvas>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="float-panel" id="enemyForm">
+  <div class="row">
+    <div class="field">
+      <label>Tipo</label>
+      <select id="enemyType">
+        <option value="Cave Rat">Cave Rat</option>
+        <option value="Dragon">Dragon</option>
+        <option value="Demon">Demon</option>
+      </select>
+    </div>
+  </div>
+  <div class="row">
+    <div class="field">
+      <label>Level</label>
+      <input type="number" id="enemyLvl" value="5" min="1" />
+    </div>
+  </div>
+  <div class="actions">
+    <button id="enemyCancel">Cancelar</button>
+    <button class="primary" id="enemyConfirm">Colocar criatura</button>
+  </div>
+</div>
+
+
+<script type="module" src="js/controller/app.js"></script>
+
+</body>
+</html>
