@@ -21,17 +21,13 @@
       "png": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAABqUlEQVR4nO2WPY7CMBCFX1aWKEDiANSWSE3DCagQxSKxDbkJp6CFjipt2o3EBVzRWIiCiltYeltAgvHmx8BK2SITpYhn7Pny3khJYGDQZHw02r0FaAFagBbgPwAIvyJB+9nABG7eXfszAAHB3W6HMAyhtb6uRfeGAoJxHEN8vQZRaYGAoFIKYRhiNBqh3+/jeDxCKfWgyna7hdb6l1I+UauA1hrL5RLdbhedTgeTySRXArjaIb7vjTMIXzVqh/B8PgMAer0exuMxptMpoij61WA4HOZASZL4q2EqLgCcz+dUSpEkARAA3Zo4jrlarfK81ppSSladne+vLbgd6ja280mS5PkMoKzevWotMDBBdgNXj215DUwwm80AAIvPBUliv997qV9rQZESZW8HoNQme//TFtiHbzabSmmL5sO2JpuTlwDSNPX2tWyPrdLTAL7NXatcAFcFr4+RsYbQjmwg7ZskSOJwOOR77T2n08k5481I0xSDwQCXywUAEAT3fkXQUsrHBV9Py+Rer9eUUlJKWWsTCqwMbomX49lPsVv/NsC70fgfUQvQOMAP0O4eXRTymXAAAAAASUVORK5CYII="
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "mamiferos",
-  "nome": "gato",
   "propriedades": {
-    "comportamento": "pacifico",
-    "vida": 20,
+    "comportamento": "normal",
+    "vida": 999,
     "xp": 0,
     "velocidade": 160,
-    "armadura": 0,
-    "defesa": 0,
+    "armadura": 999,
+    "defesa": 999,
     "ataque": 0,
     "loot": [],
     "falas": [
@@ -39,5 +35,9 @@
       "Miu miu",
       "Miaaaaauuu!"
     ]
-  }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "mamiferos",
+  "nome": "cat"
 }
