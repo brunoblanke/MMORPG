@@ -25,14 +25,13 @@
     "comportamento": "normal",
     "vida": 999,
     "xp": 0,
-    "velocidade": 160,
+    "velocidade": 100,
     "armadura": 999,
     "defesa": 999,
     "ataque": 0,
     "loot": [],
     "falas": [
-      "Miau",
-      "Miu miu",
+      "Miau!",
       "Miaaaaauuu!"
     ]
   },
