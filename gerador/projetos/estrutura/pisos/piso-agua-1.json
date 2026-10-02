@@ -108,7 +108,8 @@
     }
   },
   "propriedades": {
-    "comportamento": "bloqueia"
+    "comportamento": "bloqueia",
+    "bordaBloqueia": true
   },
   "ferramenta": "pisos",
   "grupo": "estrutura",
