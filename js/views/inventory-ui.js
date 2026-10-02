@@ -10,8 +10,8 @@ import { windowMethods } from './inventory-ui/windows.js';
 import { aimMethods } from './inventory-ui/aim.js';
 import { dragMethods } from './inventory-ui/drag.js';
 
-// Janelas do inventário e dos containers, nas duas colunas ao lado da tela do
-// jogo. Só desenha e manda comandos (moveInv, openContainer, closeContainer,
+// Janelas do inventário, dos containers, skills, battle e livro: nas duas
+// colunas ao lado da tela do jogo ou soltas por cima dela. Só desenha e manda comandos (moveInv, openContainer, closeContainer,
 // saveLayout); quem decide se o movimento vale é o servidor (systems/inventory.js).
 // O layout (coluna, ordem, linhas, minimizada) vai pro personagem guardado:
 // as janelas são lembradas pelo caminho do container ('mochila/3' = espaço 3
@@ -24,6 +24,7 @@ export class InventoryUI {
   constructor(game) {
     this.game = game;
     this.columns = { left: document.getElementById('invLeft'), right: document.getElementById('invRight') };
+    this.freeLayer = document.getElementById('invFree');
     this.layout = null;
     this.view = null;
     this.lastKey = '';
@@ -89,6 +90,9 @@ export class InventoryUI {
       next.innerHTML = this.layout[col].map(w => this.windowHtml(w)).join('');
       patchChildren(this.columns[col], next);
     }
+    const free = document.createElement('div');
+    free.innerHTML = this.layout.free.map(w => this.windowHtml(w).replace('<section ', `<section style="left:${Math.round(w.x)}px;top:${Math.round(w.y)}px" `)).join('');
+    patchChildren(this.freeLayer, free);
     document.querySelectorAll('.inv-scroller').forEach(sc => {
       sc.scrollTop = this.scrollMemory.get(sc.closest('.inv-win').dataset.win) || 0;
       this.updateFade(sc);
@@ -150,9 +154,15 @@ export class InventoryUI {
   // bindEvents
 
   bindEvents() {
-    const panels = Object.values(this.columns);
+    const panels = [...Object.values(this.columns), this.freeLayer];
     const inPanels = (el) => panels.some(p => p.contains(el));
     this.bindAim();
+
+    document.addEventListener('keydown', (evt) => {
+      if (evt.key !== 'Escape' || !this.layout || !this.findWindow('book')) return;
+      this.removeWindows(w => w.kind === 'book');
+      this.lastKey = '';
+    });
 
     document.addEventListener('pointerdown', (evt) => {
       if (this.qty && !evt.target.closest('.inv-qty')) this.closeQty();
