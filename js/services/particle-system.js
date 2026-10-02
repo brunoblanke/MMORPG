@@ -51,15 +51,6 @@ export class ParticleSystem {
   }
 
   // ================================================================================================================================================================================================================================================
-  // spawnPuff
-  // Golpe bloqueado: uma fumacinha cinza que se abre e some no sqm.
-
-  spawnPuff(x, y, renderer) {
-    this.puffs = this.puffs || [];
-    this.puffs.push({ x, y, renderer, createdAt: performance.now(), duration: 450 });
-  }
-
-  // ================================================================================================================================================================================================================================================
   // update
 
   update(timestamp) {
@@ -75,7 +66,6 @@ export class ParticleSystem {
       return true;
     });
     this.missiles = (this.missiles || []).filter(m => timestamp - m.createdAt < m.duration);
-    this.puffs = (this.puffs || []).filter(p => timestamp - p.createdAt < p.duration);
   }
 
   // ================================================================================================================================================================================================================================================
@@ -96,22 +86,6 @@ export class ParticleSystem {
       ctx.beginPath();
       ctx.arc(x, y, 4, 0, Math.PI * 2);
       ctx.fill();
-      ctx.restore();
-    }
-    for (const puff of this.puffs || []) {
-      const t = Math.max(0, Math.min(1, (performance.now() - puff.createdAt) / puff.duration));
-      const size = puff.renderer.camera.tileSize;
-      const at = puff.renderer.gridToScreenWithOffset(puff.x, puff.y);
-      ctx.save();
-      ctx.globalAlpha = 0.8 * (1 - t);
-      ctx.fillStyle = '#d4d4d8';
-      for (let i = 0; i < 5; i++) {
-        const angle = i / 5 * Math.PI * 2;
-        const spread = size * (0.08 + 0.22 * t);
-        ctx.beginPath();
-        ctx.arc(at.x + size / 2 + Math.cos(angle) * spread, at.y + size / 2 + Math.sin(angle) * spread, size * (0.1 + 0.06 * t), 0, Math.PI * 2);
-        ctx.fill();
-      }
       ctx.restore();
     }
     for (const p of this.particles) {
@@ -135,6 +109,5 @@ export class ParticleSystem {
   clear() {
     this.particles = [];
     this.missiles = [];
-    this.puffs = [];
   }
 }

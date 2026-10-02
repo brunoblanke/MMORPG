@@ -442,8 +442,6 @@ export class GameController {
         this.particleController.spawnMissile(event, this.renderer);
       } else if (event.type === 'damage') {
         this.particleController.spawnDamage(event.x, event.y, event.amount, this.renderer);
-      } else if (event.type === 'block') {
-        this.particleController.spawnBlock(event, this.renderer);
       } else if (event.type === 'heal') {
         this.particleController.spawnHeal(event, this.renderer);
       } else if (event.type === 'xp' && event.playerId === playerId) {
