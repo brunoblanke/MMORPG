@@ -1,0 +1,57 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 3,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 211,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 4360,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4361,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 4362,
+        "variacao": 0
+      }
+    }
+  },
+  "propriedades": {
+    "comportamento": "normal",
+    "vida": 99999,
+    "xp": 0,
+    "velocidade": 50,
+    "armadura": 999,
+    "defesa": 999,
+    "ataque": 0,
+    "loot": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "mamiferos",
+  "nome": "elefante-bonzinho"
+}

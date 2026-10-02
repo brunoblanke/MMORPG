@@ -58,6 +58,11 @@
           "tipo": "itens/ferramentas/shovel",
           "preco": 50,
           "palavras": "pa, shovel"
+        },
+        {
+          "tipo": "itens/fontes-de-luz/torch",
+          "preco": 10,
+          "palavras": "tocha, torch"
         }
       ]
     }
