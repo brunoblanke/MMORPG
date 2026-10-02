@@ -17,7 +17,7 @@
 
 /* A tela do jogo ocupa tudo; as colunas de janelas ficam por cima dela, sem
    fundo: o mapa aparece atrás e o clique fora das janelas vai pro mapa. */
-#gameCanvas{ position:fixed; top:0; left:0; width:100%; height:100%; }
+#gameCanvas{ position:fixed; top:0; left:0; width:100%; height:100%; touch-action:none; }
 
 .inv-column{
   position:fixed; top:0; bottom:0; width:var(--inv-side); box-sizing:border-box; padding:8px;

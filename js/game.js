@@ -36,6 +36,7 @@ const DOUBLE_CLICK_MS = 250;
 // sozinha com o mesmo nome e gênero (guardados só pra essa recarga).
 
 const REJOIN_KEY = 'jogo-reentrar';
+const LONG_PRESS_MS = 500;
 
 function saveRejoin(data) {
   try {
@@ -216,6 +217,67 @@ export class GameController {
     window.addEventListener('resize', function() {
       self.camera.resize();
     });
+
+    this.setupTouch();
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // setupTouch
+  // Celular: o dedo na tela do jogo faz o que o mouse faz pra arrastar
+  // (pegar o item do chão, levar pra outro sqm ou pra uma janela) e, segurado
+  // parado por LONG_PRESS_MS, olha o que está embaixo (como Shift + clique).
+  // O menu do navegador do toque longo fica desligado.
+
+  setupTouch() {
+    const input = this.inputController;
+    let press = null;
+    const cancel = () => {
+      if (press) clearTimeout(press.timer);
+      press = null;
+    };
+    this.canvas.addEventListener('pointerdown', (evt) => {
+      if (evt.pointerType !== 'touch') return;
+      input.handleMouseMove(evt);
+      this.refreshHover();
+      input.handleMouseDown(evt);
+      press = { x: evt.clientX, y: evt.clientY, timer: setTimeout(() => {
+        press = null;
+        input.draggingCandidate = null;
+        input.dragOccurred = false;
+        this.lookAtMouse();
+        input.suppressNextClick = true;
+        setTimeout(() => { input.suppressNextClick = false; }, 600);
+      }, LONG_PRESS_MS) };
+    });
+    this.canvas.addEventListener('pointermove', (evt) => {
+      if (evt.pointerType !== 'touch') return;
+      input.handleMouseMove(evt);
+      if (press && Math.hypot(evt.clientX - press.x, evt.clientY - press.y) > 6) cancel();
+    });
+    this.canvas.addEventListener('pointerup', (evt) => {
+      if (evt.pointerType !== 'touch') return;
+      cancel();
+      const under = document.elementFromPoint(evt.clientX, evt.clientY);
+      const slot = under && under.closest('.inv-slot');
+      if (slot && input.dragOccurred) this.inventoryUI.dropGroundOn(slot, evt);
+      else input.handleMouseUp(evt);
+    });
+    this.canvas.addEventListener('pointercancel', cancel);
+    window.addEventListener('pointerdown', (evt) => { this.lastPointerType = evt.pointerType; }, true);
+    window.addEventListener('contextmenu', (evt) => {
+      if (this.lastPointerType !== 'touch') return;
+      evt.preventDefault();
+      evt.stopImmediatePropagation();
+    }, true);
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // refreshHover
+  // O que está sob o mouse (ou o dedo) agora, sem esperar o próximo quadro.
+
+  refreshHover() {
+    if (!this.session || !this.player) return;
+    this.inputController.updateHoverEnemy(this.session.enemies, this.session.world, this.camera.getOffset(), this.player, this.session.deadBodies);
   }
 
   // ================================================================================================================================================================================================================================================
@@ -445,13 +507,7 @@ export class GameController {
       this.statusMessage = null;
     }
 
-    this.inputController.updateHoverEnemy(
-      this.session.enemies,
-      this.session.world,
-      this.camera.getOffset(),
-      this.player,
-      this.session.deadBodies
-    );
+    this.refreshHover();
   }
 
   // ================================================================================================================================================================================================================================================

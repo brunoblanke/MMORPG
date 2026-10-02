@@ -20,6 +20,7 @@ export const SKILL_NAMES = {
 export const SKILL_ORDER = ['magic', 'fist', 'club', 'sword', 'axe', 'distance', 'shielding', 'fishing'];
 export const PITCH = 40;
 export const SAVE_DELAY_MS = 600;
+export const LONG_PRESS_MS = 500;
 
 export const MAP_USES = ['placa', 'livro', 'bau-quest', 'corda', 'pa', 'descer'];
 

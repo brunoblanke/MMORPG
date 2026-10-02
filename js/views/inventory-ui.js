@@ -3,7 +3,7 @@
 import { objectIdType, objectUse } from '../../shared/assets.js';
 import { itemInfo } from '../../shared/items.js';
 import { describeItem, describeEntity } from './look.js';
-import { PITCH, MAP_USES, aimsWith } from './inventory-ui/common.js';
+import { PITCH, MAP_USES, LONG_PRESS_MS, aimsWith } from './inventory-ui/common.js';
 import { patchChildren } from './inventory-ui/dom-patch.js';
 import { htmlMethods } from './inventory-ui/html.js';
 import { windowMethods } from './inventory-ui/windows.js';
@@ -109,6 +109,44 @@ export class InventoryUI {
   }
 
   // ================================================================================================================================================================================================================================================
+  // startLongPress / stopLongPress
+  // Celular: segurar o dedo parado num item ou numa criatura da battle por
+  // LONG_PRESS_MS olha (como Shift + clique) e não arrasta nem usa.
+
+  startLongPress(evt) {
+    this.stopLongPress();
+    const slot = evt.target.closest('.inv-slot.filled');
+    const row = evt.target.closest('.inv-battle-row');
+    if (!slot && !row) return;
+    const timer = setTimeout(() => {
+      this.press = null;
+      this.pending = null;
+      if (slot) {
+        const item = this.itemAt(this.placeOf(slot));
+        if (item) this.game.look(describeItem(item));
+      } else {
+        const enemy = this.game.session && this.game.session.enemies.find(e => e.id === row.dataset.enemy);
+        if (enemy) this.game.look(describeEntity(enemy));
+      }
+    }, LONG_PRESS_MS);
+    this.press = { x: evt.clientX, y: evt.clientY, timer, row: row ? row.dataset.enemy : null };
+  }
+
+  stopLongPress() {
+    if (this.press) clearTimeout(this.press.timer);
+    this.press = null;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // toggleTarget
+  // Clique na criatura da battle: vira o alvo (ou deixa de ser).
+
+  toggleTarget(enemyId) {
+    const target = this.game.player && this.game.player.target;
+    this.game.send({ type: 'attack', targetId: target && target.id === enemyId ? null : enemyId });
+  }
+
+  // ================================================================================================================================================================================================================================================
   // bindEvents
 
   bindEvents() {
@@ -119,15 +157,16 @@ export class InventoryUI {
     document.addEventListener('pointerdown', (evt) => {
       if (this.qty && !evt.target.closest('.inv-qty')) this.closeQty();
       if (evt.button !== 0 || !inPanels(evt.target) || evt.target.closest('.inv-btn')) return;
+      if (evt.pointerType === 'touch') this.startLongPress(evt);
       const row = evt.target.closest('.inv-battle-row');
+      if (row && evt.pointerType === 'touch') return;
       if (row && evt.shiftKey) {
         const enemy = this.game.session && this.game.session.enemies.find(e => e.id === row.dataset.enemy);
         if (enemy) this.game.look(describeEntity(enemy));
         return;
       }
       if (row) {
-        const target = this.game.player && this.game.player.target;
-        this.game.send({ type: 'attack', targetId: target && target.id === row.dataset.enemy ? null : row.dataset.enemy });
+        this.toggleTarget(row.dataset.enemy);
         return;
       }
       const slot = evt.target.closest('.inv-slot.filled');
@@ -154,6 +193,7 @@ export class InventoryUI {
     document.addEventListener('pointermove', (evt) => {
       this.mouse.x = evt.clientX;
       this.mouse.y = evt.clientY;
+      if (this.press && Math.hypot(evt.clientX - this.press.x, evt.clientY - this.press.y) > 5) this.stopLongPress();
       if (this.pending && !this.drag) {
         if (Math.hypot(evt.clientX - this.pending.x, evt.clientY - this.pending.y) < 5) return;
         const p = this.pending;
@@ -174,6 +214,8 @@ export class InventoryUI {
     });
 
     document.addEventListener('pointerup', (evt) => {
+      if (this.press && this.press.row) this.toggleTarget(this.press.row);
+      this.stopLongPress();
       const clicked = this.pending && this.pending.kind === 'item' && !this.drag ? this.pending : null;
       this.pending = null;
       if (clicked && evt.button === 0 && clicked.item && evt.shiftKey) {
@@ -192,15 +234,8 @@ export class InventoryUI {
 
     // Item arrastado da tela do jogo e solto numa janela (a tela não recebe o mouseup).
     document.addEventListener('mouseup', (evt) => {
-      const input = this.game.inputController;
-      if (!input || !input.draggingCandidate || !input.dragOccurred) return;
       const slot = evt.target.closest && evt.target.closest('.inv-slot');
-      const obj = input.draggingCandidate;
-      input.draggingCandidate = null;
-      input.dragOccurred = false;
-      input.dragStartMouse = null;
-      if (!slot || obj.isCorpse || !this.canDropOn(objectIdType(obj.id), null, this.placeOf(slot))) return;
-      this.sendMove({ t: 'g', id: obj.id }, this.placeOf(slot), obj.count || 1, evt);
+      this.dropGroundOn(slot, evt);
     });
 
     document.addEventListener('click', (evt) => {

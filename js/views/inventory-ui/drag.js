@@ -1,11 +1,28 @@
 // js/views/inventory-ui/drag.js
 
+import { objectIdType } from '../../../shared/assets.js';
 import { fitsSlot } from '../../../shared/items.js';
 
-// Métodos do InventoryUI (js/views/inventory-ui.js). Arrastar itens entre os espaços, as janelas e o chão: onde o item
-// pode ir, quanto da pilha e o comando moveInv.
+// Métodos do InventoryUI (js/views/inventory-ui.js). Arrastar itens entre os
+// espaços, as janelas e o chão: onde o item pode ir, quanto da pilha e o
+// comando moveInv.
 
 export const dragMethods = {
+
+  // ================================================================================================================================================================================================================================================
+  // dropGroundOn
+  // Item arrastado da tela do jogo (mouse ou dedo) solto no espaço slot.
+
+  dropGroundOn(slot, evt) {
+    const input = this.game.inputController;
+    if (!input || !input.draggingCandidate || !input.dragOccurred) return;
+    const obj = input.draggingCandidate;
+    input.draggingCandidate = null;
+    input.dragOccurred = false;
+    input.dragStartMouse = null;
+    if (!slot || obj.isCorpse || !this.canDropOn(objectIdType(obj.id), null, this.placeOf(slot))) return;
+    this.sendMove({ t: 'g', id: obj.id }, this.placeOf(slot), obj.count || 1, evt);
+  },
 
   // ================================================================================================================================================================================================================================================
   // placeOf
