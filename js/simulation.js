@@ -9,6 +9,7 @@ import { getMapSpawn } from '../shared/map-format.js';
 import { distance } from './utils/helpers.js';
 import { MovementController } from './systems/movement.js';
 import { EnemyAI } from './systems/enemy-ai.js';
+import { updateVoice } from './systems/voices.js';
 import { CombatController } from './systems/combat.js';
 import { ObjectDragController } from './systems/object-drag.js';
 import { LifeCycleController } from './systems/life-cycle.js';
@@ -268,6 +269,7 @@ export class Simulation {
       const player = this.closestPlayer(enemy);
       const bounds = player ? this.searchBoundsAround(player) : null;
       this.enemyAI.update(enemy, player, this.enemies, now, bounds);
+      updateVoice(this, enemy, player, now);
     }
 
     for (const player of this.players) {
