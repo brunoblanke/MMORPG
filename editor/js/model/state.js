@@ -52,9 +52,9 @@ export const state = {
   brushSize: 1,
   hoverCell: null,
   selected: null,
+  focus: null,
   strokeTouched: new Set(),
-  ghost: true,
-  kit: null
+  ghost: true
 };
 
 // paint: campo do state com o que a ferramenta pinta (as que têm lista).

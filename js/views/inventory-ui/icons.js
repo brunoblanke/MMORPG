@@ -10,7 +10,7 @@
 // mantêm a proporção e o tamanho relativo de quando foram desenhados;
 // shrink diminui um ícone sem afinar o traço.
 
-function svgIcon(viewBox, shapes, scale, cls = '', shrink = 1) {
+export function svgIcon(viewBox, shapes, scale, cls = '', shrink = 1) {
   const [, , w, h] = viewBox.split(' ').map(Number);
   const size = scale * shrink;
   return `<svg${cls ? ` class="${cls}"` : ''} width="${(w * size).toFixed(1)}" height="${(h * size).toFixed(1)}" viewBox="${viewBox}" fill="none" stroke="currentColor" stroke-width="${(1.91 / shrink).toFixed(2)}" stroke-linecap="round" stroke-linejoin="round">${shapes}</svg>`;

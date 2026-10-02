@@ -1,7 +1,7 @@
 // js/core/validate.js
 
 import { getAsset, splitType, objectIdType, objectUse, creatureBehavior } from '../../shared/assets.js';
-import { itemInfo, starterKit } from '../../shared/items.js';
+import { STARTER_KIT } from '../../shared/items.js';
 import { npcDefFromAsset } from '../../shared/npcs.js';
 
 // Conferência do mundo ao subir o servidor: o que está no mapa e no gerador
@@ -106,12 +106,9 @@ export function validateWorld(sim) {
     }
   }
 
-  const kit = starterKit(mapData.kitInicial);
-  const kitTypes = [...Object.values(kit.equip), ...kit.mochila.map(e => e.tipo)];
+  const kitTypes = [...Object.values(STARTER_KIT.equip), ...STARTER_KIT.mochila.map(e => e.tipo)];
   const missingKit = kitTypes.filter(type => !hasAsset(type));
   if (missingKit.length) warnings.push(`Kit inicial: falta criar no gerador ${missingKit.join(', ')}`);
-  const bag = kit.equip.mochila;
-  if (kit.mochila.length && (!bag || (hasAsset(bag) && !itemInfo(bag).size))) warnings.push('Kit inicial: tem itens pra mochila, mas o espaço da mochila não tem um container');
 
   return warnings;
 }

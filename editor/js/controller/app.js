@@ -1,6 +1,6 @@
 // js/controller/app.js
 
-import { state, makeEmptyLayer } from '../model/state.js';
+import { state } from '../model/state.js';
 import { preloadAll } from '../view/image-cache.js';
 import { scheduleRender } from '../view/canvas-renderer.js';
 import { renderLayerTabs, renderTools, onLayerChange, updateStats, choosePaintDefaults } from '../view/tools-panel.js';
@@ -9,20 +9,7 @@ import { loadMapIntoState, saveMap, hasUnsavedChanges } from '../model/map-io.js
 import { resetHistory, commitHistory, undo, redo } from '../model/history.js';
 import './canvas-input.js';
 import { refreshCreatureOptions } from '../view/forms.js';
-import '../view/kit-form.js';
-import { rebuildBorders } from '../model/borders.js';
-
-document.getElementById('clearLayerBtn').onclick = () => {
-  state.layers[state.activeZ] = makeEmptyLayer();
-  updateStats();
-  scheduleRender();
-};
-
-document.getElementById('rebuildBordersBtn').onclick = () => {
-  rebuildBorders(state.activeZ);
-  updateStats();
-  scheduleRender();
-};
+import '../view/goto-field.js';
 
 document.getElementById('ghostToggle').onchange = (evt) => { state.ghost = evt.target.checked; scheduleRender(); };
 

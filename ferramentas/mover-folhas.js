@@ -3,7 +3,7 @@
 // Muda folhas do gerador de pasta sem quebrar nada: move a receita
 // (gerador/projetos) e o PNG (gerador/saida), acerta grupo/pasta/nome dentro
 // da receita e troca o caminho antigo pelo novo em tudo que aponta pra ele —
-// mapa (objetos, NPCs, criaturas, kit inicial), outras receitas (vendas, loot,
+// mapa (objetos, NPCs, criaturas), outras receitas (vendas, loot,
 // "abre como", "aceso como") e o código (shared, js, editor).
 //
 // Uso: node ferramentas/mover-folhas.js de para [de para …]

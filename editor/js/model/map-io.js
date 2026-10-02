@@ -4,8 +4,6 @@ import { GRID } from '../config.js';
 import { state, makeAllLayers } from './state.js';
 import { getAllFloors, isValidFloor, GROUND_FLOOR } from '../../../shared/constants.js';
 import { serializeMapFromLayers, buildLayersFromMapData, loadMapDataFromURL } from '../../../shared/map-format.js';
-import { hasSavedBorders } from '../../../shared/floor-borders.js';
-import { rebuildAllBorders } from './borders.js';
 
 // Mesmo arquivo que o jogo carrega (js/config.js → mapDataUrl).
 const MAP_URL = '../data/map.json';
@@ -17,9 +15,7 @@ let lastSavedJson = null;
 // buildMapData
 
 function buildMapData() {
-  const mapData = serializeMapFromLayers(state.layerOrder, state.layers, GRID);
-  if (state.kit) mapData.kitInicial = state.kit;
-  return mapData;
+  return serializeMapFromLayers(state.layerOrder, state.layers, GRID);
 }
 
 // ================================================================================================================================================================================================================================================
@@ -37,10 +33,6 @@ export async function loadMapIntoState() {
   state.layers = makeAllLayers(layers);
   state.layerOrder = getAllFloors();
   state.activeZ = GROUND_FLOOR;
-  state.kit = mapData.kitInicial && typeof mapData.kitInicial === 'object' ? mapData.kitInicial : null;
-
-  // Mapa de antes das bordas gravadas: gera todas (igual ao que o jogo fazia).
-  if (!hasSavedBorders(mapData)) rebuildAllBorders();
 
   lastSavedJson = JSON.stringify(buildMapData());
 }

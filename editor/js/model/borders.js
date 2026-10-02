@@ -3,7 +3,7 @@
 import { state } from './state.js';
 import { getStairTop } from '../../../shared/stairs.js';
 import { objectUse } from '../../../shared/assets.js';
-import { refreshBordersAround, rebuildLayerBorders, getStairTopKeys as stairTopKeysBelow } from '../../../shared/floor-borders.js';
+import { refreshBordersAround, getStairTopKeys as stairTopKeysBelow } from '../../../shared/floor-borders.js';
 
 // Bordas automáticas no estado do editor (regras em shared/floor-borders.js).
 // Topo de escada fica sem piso (o jogo remove), então conta como vazio.
@@ -45,20 +45,4 @@ export function refreshBordersAt(z, x, y, stairsChanged = false) {
   if (!stairsChanged || !state.layers[z + 1]) return;
   const top = getStairTop(x, y, z);
   refreshBordersAround(state.layers[z + 1], top.x, top.y, getStairTopKeys(z + 1));
-}
-
-// ================================================================================================================================================================================================================================================
-// rebuildBorders
-// Refaz todas as bordas do andar z (descarta o que foi mexido à mão).
-
-export function rebuildBorders(z) {
-  if (state.layers[z]) rebuildLayerBorders(state.layers[z], getStairTopKeys(z));
-}
-
-// ================================================================================================================================================================================================================================================
-// rebuildAllBorders
-// Mapa antigo (sem bordas gravadas): gera as bordas de todos os andares.
-
-export function rebuildAllBorders() {
-  for (const z of state.layerOrder) rebuildBorders(z);
 }

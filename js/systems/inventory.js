@@ -4,7 +4,7 @@ import { PLAYER_LIGHT } from '../../shared/lighting.js';
 import { isPositionAdjacentTo } from '../utils/helpers.js';
 import { getAsset, splitType } from '../../shared/assets.js';
 import {
-  EQUIP_SLOTS, THROW_RANGE, starterKit, itemInfo, itemLight, fitsSlot, capacityFor, newItem, weightOf, contains, findInTree, fromPlain, equipBonus
+  EQUIP_SLOTS, THROW_RANGE, STARTER_KIT, itemInfo, itemLight, fitsSlot, capacityFor, newItem, weightOf, contains, findInTree, fromPlain, equipBonus
 } from '../../shared/items.js';
 import { SKILL_KEYS } from '../../shared/skills.js';
 import { consumableMethods } from './inventory/consumables.js';
@@ -52,9 +52,9 @@ export class InventoryController {
 
   // ================================================================================================================================================================================================================================================
   // setupPlayer
-  // O inventário guardado (saved.equip); quem é novo começa com o kit
-  // inicial (editor → Kit inicial; sem ele, o do Tibia antigo: bag com uma
-  // maçã, tocha e club nas mãos e jacket no corpo). O layout das janelas volta junto.
+  // O inventário guardado (saved.equip); quem é novo começa com o kit do
+  // Tibia antigo (STARTER_KIT: bag com uma maçã, tocha e club nas mãos e
+  // jacket no corpo). O layout das janelas volta junto.
 
   setupPlayer(player, saved) {
     player.equip = Object.fromEntries(EQUIP_SLOTS.map(key => [key, null]));
@@ -68,7 +68,7 @@ export class InventoryController {
         if (item && fitsSlot(item.type, key)) player.equip[key] = item;
       }
     } else {
-      const kit = starterKit(this.sim.mapData && this.sim.mapData.kitInicial);
+      const kit = STARTER_KIT;
       const starter = (type, count = 1) => (getAsset(splitType(type).asset) ? newItem(this.nextUid(), type, count) : null);
       for (const key of EQUIP_SLOTS) player.equip[key] = kit.equip[key] ? starter(kit.equip[key]) : null;
       const bag = player.equip.mochila;
