@@ -1,22 +1,22 @@
 {
   "formato": {
-    "quadro": 64,
+    "quadro": 32,
     "quadros": 1
   },
   "objeto": {
     "tibia": {
-      "id": 2321,
+      "id": 3561,
       "variacao": 0
     }
   },
   "propriedades": {
-    "bloqueia": true,
-    "move": false,
-    "altura": true,
+    "bloqueia": false,
+    "move": true,
+    "altura": false,
     "empilhavel": false,
-    "peso": 10,
+    "peso": 24,
     "espacos": 0,
-    "atk": 0,
+    "atk": 1,
     "def": 0,
     "ml": 0,
     "speed": 0,
@@ -34,7 +34,7 @@
     "acesoComo": ""
   },
   "ferramenta": "objetos",
-  "grupo": "estrutura",
-  "pasta": "natureza",
-  "nome": "balcao-y"
+  "grupo": "itens",
+  "pasta": "armaduras",
+  "nome": "jacket"
 }

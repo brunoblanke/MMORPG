@@ -12,7 +12,7 @@
   "propriedades": {
     "bloqueia": true,
     "move": false,
-    "altura": false,
+    "altura": true,
     "empilhavel": false,
     "peso": 10,
     "espacos": 0,
@@ -25,8 +25,13 @@
     "manaMin": 0,
     "manaMax": 0,
     "alimento": 0,
+    "luz": 0,
+    "duracao": 0,
+    "regenVida": 0,
+    "regenMana": 0,
     "uso": "",
-    "abreComo": ""
+    "abreComo": "",
+    "acesoComo": ""
   },
   "ferramenta": "objetos",
   "grupo": "estrutura",
