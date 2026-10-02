@@ -239,5 +239,10 @@ button:focus-visible, input:focus-visible, .slot:focus-visible{ outline:2px soli
 .npc-topic .npc-reply{ flex:1; min-width:0; }
 .npc-topic .ghost-btn{ padding:2px 8px; }
 .npc-topic select{ width:200px; }
+.npc-lines{ display:flex; flex-direction:column; gap:4px; margin-top:6px; }
+.npc-lines[hidden]{ display:none; }
+.npc-lines-grid{ display:grid; grid-template-columns:120px 1fr; gap:4px 8px; align-items:center; }
+.npc-lines-grid span{ font-size:11px; color:var(--muted); }
+.npc-lines-grid input{ width:100%; }
 .npc-topic .npc-price{ width:70px; }
 #creatureSaveForm.is-npc .stat:not(#npcFields .stat), #creatureSaveForm.is-npc .loot-field{ display:none; }

@@ -23,6 +23,27 @@ export const YES_WORDS = ['sim', 'yes', 's'];
 export const NO_WORDS = ['nao', 'no', 'n'];
 export const TRADE_WORDS = ['oferta', 'ofertas', 'trade', 'loja', 'vende', 'vendas', 'comprar', 'compra'];
 
+// Falas da escolha de vocação e da venda (gerador → Falas; vazio = estas).
+// {nome} vira o nome do player, {vocacao} a vocação, {nivel} o nível
+// mínimo, {item} o item, {preco} o preço e {lista} o que ele vende.
+export const VOCATION_LINES = {
+  nivel: { label: 'Sem o nível', text: 'Você precisa chegar ao nível {nivel} pra escolher sua vocação.' },
+  jaTem: { label: 'Já tem vocação', text: 'Você já é {vocacao}.' },
+  confirmar: { label: 'Pergunta', text: 'Quer mesmo ser {vocacao}? Essa escolha não tem volta. (sim / não)' },
+  aceito: { label: 'Ao dizer sim', text: 'Que assim seja, {vocacao} {nome}!' },
+  desistiu: { label: 'Ao dizer não', text: 'Pense bem e volte quando decidir.' }
+};
+export const SHOP_LINES = {
+  lista: { label: 'Oferta', text: 'Eu vendo: {lista}.' },
+  confirmar: { label: 'Pergunta', text: 'Quer comprar {item} por {preco} moedas de ouro? (sim / não)' },
+  vendido: { label: 'Vendido', text: 'Aqui está. Obrigado!' },
+  semDinheiro: { label: 'Sem dinheiro', text: 'Você não tem dinheiro suficiente.' },
+  semMochila: { label: 'Sem mochila', text: 'Você precisa de uma mochila pra levar isso.' },
+  semEspaco: { label: 'Sem espaço', text: 'Você não tem espaço na mochila.' },
+  semCap: { label: 'Sem cap', text: 'Você não tem capacidade pra carregar isso.' },
+  desistiu: { label: 'Ao dizer não', text: 'Tudo bem.' }
+};
+
 // ================================================================================================================================================================================================================================================
 // normalizeSpeech
 // Minúsculas, sem acento nem pontuação, espaços simples.
@@ -56,8 +77,31 @@ export function npcDefFromAsset(type, pos) {
     bye: { words: BYE_WORDS, reply: String(talk.tchau || '').trim() || 'Até mais, {nome}.' },
     topics,
     vocation: talk.vocacao ? { destination: validDestination(talk.vocacao.destino) } : null,
-    shop: shopFrom(talk.vende)
+    vocationLines: linesFrom(VOCATION_LINES, talk.falasVocacao),
+    shop: shopFrom(talk.vende),
+    shopLines: linesFrom(SHOP_LINES, talk.falasVenda)
   };
+}
+
+// ================================================================================================================================================================================================================================================
+// linesFrom
+// As falas do gerador por cima das padrão (defaults): { chave: texto }.
+
+function linesFrom(defaults, saved) {
+  const lines = {};
+  for (const [key, { text }] of Object.entries(defaults)) {
+    const own = saved && typeof saved[key] === 'string' ? saved[key].trim() : '';
+    lines[key] = own || text;
+  }
+  return lines;
+}
+
+// ================================================================================================================================================================================================================================================
+// fillLine
+// Troca {chave} pelos valores (o {nome} fica pro npcSays).
+
+export function fillLine(text, values) {
+  return text.replace(/\{(\w+)\}/g, (all, key) => (key in values ? String(values[key]) : all));
 }
 
 // ================================================================================================================================================================================================================================================

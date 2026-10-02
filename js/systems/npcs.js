@@ -2,7 +2,7 @@
 
 import { Npc } from '../models/npc.js';
 import { getMapSpawn } from '../../shared/map-format.js';
-import { DEFAULT_RADIUS, YES_WORDS, NO_WORDS, TRADE_WORDS, normalizeSpeech, npcDefFromAsset } from '../../shared/npcs.js';
+import { DEFAULT_RADIUS, YES_WORDS, NO_WORDS, TRADE_WORDS, VOCATION_LINES, SHOP_LINES, normalizeSpeech, npcDefFromAsset, fillLine } from '../../shared/npcs.js';
 import { buy } from './trade.js';
 import { VOCATIONS, VOCATION_LEVEL } from '../../shared/vocations.js';
 import { getLevel } from '../core/geometry.js';
@@ -145,10 +145,11 @@ export class NpcController {
   // pra lá; não desiste. Devolve true se a fala era dessa conversa.
 
   talkVocation(npc, def, player, text) {
+    const lines = def.vocationLines || Object.fromEntries(Object.entries(VOCATION_LINES).map(([k, v]) => [k, v.text]));
     const pending = npc.choosing.get(player.id);
     if (pending && this.hasWord(text, YES_WORDS)) {
       npc.choosing.delete(player.id);
-      this.npcSays(npc, player, `Que assim seja, ${VOCATIONS[pending].name} {nome}!`);
+      this.npcSays(npc, player, fillLine(lines.aceito, { vocacao: VOCATIONS[pending].name }));
       player.setVocation(pending);
       const dest = def.vocation.destination;
       if (dest) this.sim.schedule((this.sim.time || 0) + REPLY_DELAY_MS * 2, () => {
@@ -159,18 +160,18 @@ export class NpcController {
     }
     if (pending && this.hasWord(text, NO_WORDS)) {
       npc.choosing.delete(player.id);
-      this.npcSays(npc, player, 'Pense bem e volte quando decidir.');
+      this.npcSays(npc, player, lines.desistiu);
       return true;
     }
     const key = Object.keys(VOCATIONS).find(k => this.hasWord(text, VOCATIONS[k].words));
     if (!key) return false;
     if (player.vocation !== 'none') {
-      this.npcSays(npc, player, `Você já é ${VOCATIONS[player.vocation].name}.`);
+      this.npcSays(npc, player, fillLine(lines.jaTem, { vocacao: VOCATIONS[player.vocation].name }));
     } else if (player.lvl < VOCATION_LEVEL) {
-      this.npcSays(npc, player, `Você precisa chegar ao nível ${VOCATION_LEVEL} pra escolher sua vocação.`);
+      this.npcSays(npc, player, fillLine(lines.nivel, { nivel: VOCATION_LEVEL }));
     } else {
       npc.choosing.set(player.id, key);
-      this.npcSays(npc, player, `Quer mesmo ser ${VOCATIONS[key].name}? Essa escolha não tem volta. (sim / não)`);
+      this.npcSays(npc, player, fillLine(lines.confirmar, { vocacao: VOCATIONS[key].name }));
     }
     return true;
   }
@@ -183,33 +184,28 @@ export class NpcController {
   // conversa.
 
   talkShop(npc, def, player, text) {
+    const lines = def.shopLines || Object.fromEntries(Object.entries(SHOP_LINES).map(([k, v]) => [k, v.text]));
     const pending = npc.offering.get(player.id);
     if (pending && this.hasWord(text, YES_WORDS)) {
       npc.offering.delete(player.id);
       const result = buy(this.sim, player, pending.type, pending.price);
-      const replies = {
-        ok: 'Aqui está. Obrigado!',
-        money: 'Você não tem dinheiro suficiente.',
-        bag: 'Você precisa de uma mochila pra levar isso.',
-        space: 'Você não tem espaço na mochila.',
-        cap: 'Você não tem capacidade pra carregar isso.'
-      };
-      this.npcSays(npc, player, replies[result]);
+      const replies = { ok: lines.vendido, money: lines.semDinheiro, bag: lines.semMochila, space: lines.semEspaco, cap: lines.semCap };
+      this.npcSays(npc, player, fillLine(replies[result], { item: pending.name, preco: pending.price }));
       return true;
     }
     if (pending && this.hasWord(text, NO_WORDS)) {
       npc.offering.delete(player.id);
-      this.npcSays(npc, player, 'Tudo bem.');
+      this.npcSays(npc, player, lines.desistiu);
       return true;
     }
     const item = def.shop.find(entry => this.hasWord(text, entry.words));
     if (item) {
       npc.offering.set(player.id, item);
-      this.npcSays(npc, player, `Quer comprar ${item.name} por ${item.price} moedas de ouro? (sim / não)`);
+      this.npcSays(npc, player, fillLine(lines.confirmar, { item: item.name, preco: item.price }));
       return true;
     }
     if (this.hasWord(text, TRADE_WORDS)) {
-      this.npcSays(npc, player, `Eu vendo: ${def.shop.map(entry => `${entry.name} (${entry.price} moedas)`).join(', ')}.`);
+      this.npcSays(npc, player, fillLine(lines.lista, { lista: def.shop.map(entry => `${entry.name} (${entry.price} moedas)`).join(', ') }));
       return true;
     }
     return false;
