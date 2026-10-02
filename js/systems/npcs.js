@@ -2,7 +2,8 @@
 
 import { Npc } from '../models/npc.js';
 import { getMapSpawn } from '../../shared/map-format.js';
-import { DEFAULT_RADIUS, YES_WORDS, NO_WORDS, normalizeSpeech, npcDefFromAsset } from '../../shared/npcs.js';
+import { DEFAULT_RADIUS, YES_WORDS, NO_WORDS, TRADE_WORDS, normalizeSpeech, npcDefFromAsset } from '../../shared/npcs.js';
+import { buy } from './trade.js';
 import { VOCATIONS, VOCATION_LEVEL } from '../../shared/vocations.js';
 import { getLevel } from '../core/geometry.js';
 import { directionFromDelta } from '../utils/helpers.js';
@@ -46,6 +47,7 @@ export class NpcController {
       npc.nearby = new Set();
       npc.welcomed = new Map();
       npc.choosing = new Map();
+      npc.offering = new Map();
       npc.home = { x: spot.x, y: spot.y, z };
       npc.homeX = spot.x;
       npc.homeY = spot.y;
@@ -125,10 +127,12 @@ export class NpcController {
     if (this.hasWord(text, def.bye.words)) {
       npc.focus.delete(player.id);
       npc.choosing.delete(player.id);
+      npc.offering.delete(player.id);
       this.npcSays(npc, player, def.bye.reply);
       return;
     }
     if (def.vocation && this.talkVocation(npc, def, player, text)) return;
+    if (def.shop && def.shop.length && this.talkShop(npc, def, player, text)) return;
     const topic = def.topics.find(t => this.hasWord(text, t.words));
     if (topic) this.npcSays(npc, player, topic.reply);
   }
@@ -172,6 +176,46 @@ export class NpcController {
   }
 
   // ================================================================================================================================================================================================================================================
+  // talkShop
+  // NPC que vende: oferta (trade, loja…) lista o que ele tem; o nome de um
+  // item (ou as palavras dele no gerador) pede a confirmação com o preço; sim
+  // compra (trade.js → buy), não desiste. Devolve true se a fala era dessa
+  // conversa.
+
+  talkShop(npc, def, player, text) {
+    const pending = npc.offering.get(player.id);
+    if (pending && this.hasWord(text, YES_WORDS)) {
+      npc.offering.delete(player.id);
+      const result = buy(this.sim, player, pending.type, pending.price);
+      const replies = {
+        ok: 'Aqui está. Obrigado!',
+        money: 'Você não tem dinheiro suficiente.',
+        bag: 'Você precisa de uma mochila pra levar isso.',
+        space: 'Você não tem espaço na mochila.',
+        cap: 'Você não tem capacidade pra carregar isso.'
+      };
+      this.npcSays(npc, player, replies[result]);
+      return true;
+    }
+    if (pending && this.hasWord(text, NO_WORDS)) {
+      npc.offering.delete(player.id);
+      this.npcSays(npc, player, 'Tudo bem.');
+      return true;
+    }
+    const item = def.shop.find(entry => this.hasWord(text, entry.words));
+    if (item) {
+      npc.offering.set(player.id, item);
+      this.npcSays(npc, player, `Quer comprar ${item.name} por ${item.price} moedas de ouro? (sim / não)`);
+      return true;
+    }
+    if (this.hasWord(text, TRADE_WORDS)) {
+      this.npcSays(npc, player, `Eu vendo: ${def.shop.map(entry => `${entry.name} (${entry.price} moedas)`).join(', ')}.`);
+      return true;
+    }
+    return false;
+  }
+
+  // ================================================================================================================================================================================================================================================
   // face
   // O NPC vira pro player com quem fala.
 
@@ -209,9 +253,11 @@ export class NpcController {
         if (!player) {
           npc.focus.delete(playerId);
           npc.choosing.delete(playerId);
+          npc.offering.delete(playerId);
         } else if (this.distanceTo(npc, player) > FOCUS_RANGE || now - since > FOCUS_IDLE_MS) {
           npc.focus.delete(playerId);
           npc.choosing.delete(playerId);
+          npc.offering.delete(playerId);
           if (def) this.npcSays(npc, player, def.bye.reply);
         }
       }

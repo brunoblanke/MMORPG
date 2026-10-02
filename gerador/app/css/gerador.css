@@ -238,4 +238,6 @@ button:focus-visible, input:focus-visible, .slot:focus-visible{ outline:2px soli
 .npc-topic .npc-words{ width:200px; }
 .npc-topic .npc-reply{ flex:1; min-width:0; }
 .npc-topic .ghost-btn{ padding:2px 8px; }
+.npc-topic select{ width:200px; }
+.npc-topic .npc-price{ width:70px; }
 #creatureSaveForm.is-npc .stat:not(#npcFields .stat), #creatureSaveForm.is-npc .loot-field{ display:none; }

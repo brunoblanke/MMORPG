@@ -1,6 +1,6 @@
 // shared/npcs.js
 
-import { getAsset, displayName, creatureBehavior } from './assets.js';
+import { getAsset, displayName, creatureBehavior, splitType } from './assets.js';
 
 // NPCs: criados no gerador (Criaturas, comportamento NPC: a conversa fica em
 // propriedades.conversa) e postos pelo editor (npcData do mapa).
@@ -12,7 +12,8 @@ import { getAsset, displayName, creatureBehavior } from './assets.js';
 // ({ words, reply }: começam e encerram a conversa) e topics ([{ words,
 // reply }]: respondem durante a conversa). vocation ({ destination }): ele
 // dá a vocação a quem tem o nível 8 e leva pro destino (js/systems/npcs.js →
-// talkVocation). {nome} vira o nome do player. As
+// talkVocation). shop ([{ type, price, name, words }]): o que ele vende
+// (talkShop). {nome} vira o nome do player. As
 // palavras são comparadas sem acento e em minúsculas (normalizeSpeech).
 
 export const GREET_WORDS = ['oi', 'ola', 'oie', 'hi', 'hello', 'bom dia', 'boa tarde', 'boa noite'];
@@ -20,6 +21,7 @@ export const BYE_WORDS = ['tchau', 'adeus', 'ate mais', 'bye'];
 export const DEFAULT_RADIUS = 2;
 export const YES_WORDS = ['sim', 'yes', 's'];
 export const NO_WORDS = ['nao', 'no', 'n'];
+export const TRADE_WORDS = ['oferta', 'ofertas', 'trade', 'loja', 'vende', 'vendas', 'comprar', 'compra'];
 
 // ================================================================================================================================================================================================================================================
 // normalizeSpeech
@@ -53,8 +55,23 @@ export function npcDefFromAsset(type, pos) {
     greet: { words: GREET_WORDS, reply: String(talk.oi || '').trim() || 'Olá, {nome}!' },
     bye: { words: BYE_WORDS, reply: String(talk.tchau || '').trim() || 'Até mais, {nome}.' },
     topics,
-    vocation: talk.vocacao ? { destination: validDestination(talk.vocacao.destino) } : null
+    vocation: talk.vocacao ? { destination: validDestination(talk.vocacao.destino) } : null,
+    shop: shopFrom(talk.vende)
   };
+}
+
+// ================================================================================================================================================================================================================================================
+// shopFrom
+// O que o NPC vende (gerador → Vende): [{ type, price, name, words }]; as
+// palavras são as do gerador mais o nome do item. Só itens que existem.
+
+function shopFrom(list) {
+  if (!Array.isArray(list)) return [];
+  return list.filter(e => e && typeof e.tipo === 'string' && getAsset(splitType(e.tipo).asset) && Number(e.preco) >= 0).map(e => {
+    const name = displayName(e.tipo);
+    const words = String(e.palavras || '').split(',').map(normalizeSpeech).filter(Boolean);
+    return { type: e.tipo, price: Math.floor(Number(e.preco)), name, words: [...new Set([...words, normalizeSpeech(name)])].filter(Boolean) };
+  });
 }
 
 // ================================================================================================================================================================================================================================================
