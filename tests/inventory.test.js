@@ -391,18 +391,18 @@ test('personagem novo nasce com a bag simples e a tocha na mão; quem volta fica
   assert.equal(back.equip.arma.type, SWORD);
 });
 
-test('kit do Tibia antigo: club, jacket (masculino) ou coat (feminino) e maçã na bag', async () => {
+test('kit do Tibia antigo: club, jacket e maçã na bag', async () => {
   const { STARTER_BAG, STARTER_TORCH, STARTER_WEAPON, STARTER_ARMOR, STARTER_FOOD } = await import('../shared/items.js');
   setAssets([
     asset(STARTER_BAG, { move: true, peso: 8, espacos: 8 }), asset(STARTER_TORCH, { move: true, peso: 5, luz: 6 }),
-    asset(STARTER_WEAPON, { move: true, peso: 25, atk: 7, def: 7 }), asset(STARTER_ARMOR.male, { move: true, peso: 24, def: 1 }),
-    asset(STARTER_ARMOR.female, { move: true, peso: 27, def: 1 }), asset(STARTER_FOOD, { move: true, peso: 1.5, alimento: 72 })
+    asset(STARTER_WEAPON, { move: true, peso: 25, atk: 7, def: 7 }), asset(STARTER_ARMOR, { move: true, peso: 24, def: 1 }),
+    asset(STARTER_FOOD, { move: true, peso: 1.5, alimento: 72 })
   ]);
   const game = buildGame({ objects: floorRect(0, 10, 0, 10, 0), player: { x: 2, y: 2, z: 0 } });
   const male = game.addPlayer('m', { name: 'Marco', gender: 'male' });
   const female = game.addPlayer('f', { name: 'Fabi', gender: 'female' });
-  assert.deepEqual([male.equip.arma.type, male.equip.corpo.type, male.equip.escudo.type], [STARTER_WEAPON, STARTER_ARMOR.male, STARTER_TORCH]);
-  assert.equal(female.equip.corpo.type, STARTER_ARMOR.female);
+  assert.deepEqual([male.equip.arma.type, male.equip.corpo.type, male.equip.escudo.type], [STARTER_WEAPON, STARTER_ARMOR, STARTER_TORCH]);
+  assert.equal(female.equip.corpo.type, STARTER_ARMOR);
   assert.equal(male.equip.mochila.items[0].type, STARTER_FOOD);
 });
 
