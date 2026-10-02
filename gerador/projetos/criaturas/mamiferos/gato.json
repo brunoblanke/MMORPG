@@ -1,0 +1,43 @@
+{
+  "formato": {
+    "quadro": 32,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "cadaver": {
+    "fresco": {
+      "png": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAADuElEQVR4nO2WXUxbZRjHf6c9tIfarjmUglvZSHF8bWwxy/wApN544bIRF6MBmcqCHyF6Axp2ZeKliUu4MgF1EvBiFy6zJriYucSsGnXeMBk0BqGFoK4FNspneyiHc7wgZYyPcnAz3PA/OTk579fze5/3eZ/3FVRUdlKmHbW+C7ALsAuwCwCI6StFffW/iirIkk3fqG1MiQsPFUDEovsvB5DlBNHxKWpra5Elm/52YyOHD5Xi9ebh+uoy2eVPEc4vQD65DLZdEGGzsyA1e19VJc3NTRQWHsRszmDvPg9zM1NMvPEmIyaNAzMz7NdMaP6LDP0R5sTJ6m1BpI2BmpqXaWmqofpUNYfLHsfrzUfTlhBMZmSrleCCwpDPS3emhaXnT/CYR+S7K91stkwbTzSNtISCx5NNeOgGmVImsakIk1MZ/PzTL0yOjTOhzJOvunFVPUpfIEZJ9xWyKn1GbacHUFEF57eifjcSJifHxZmGlwAoKXuGvr4gUtFBhFu99IeiTCYUFs0mPvBfRT92iHffeg35c2MxsWkMAHhcLn0uNs2piqN4C738rajs2+vmlboGfJXPUff0E1gts3x9Y5A9JjOtxfsp/KiJseQepGwvz1b5HgwA1m/FXHc2DlsmL/oq+OTiJTJMAvZMCw6LhU7fUdzvvcPNwTEOlBwnEonwat2ZtBBbJiIVVVBRBYdkwZoh4nJlEx0bp+2SH7MoYnfYEcwiLcWFBMcSmHKPMa89wsz0DHl5eVsNbywTypJNz83NoeX9ZmbnZhHEDIpLS8lxuZhPLLAYXyA5PY37+JMAdHR08vrZBkaGR7j+YwBZsumb7Yy0uyAlHScvnD697BEljlt2MhwKkUwm+fj8eTxDAwC4jhyhtbWV29EImrrI2fp6ADq7uogn4siN6wNzyxhIeaCsrIyRkWH+ujMhpMpu9fUBcDvwA1d//Y1gKETg5u+YRTP/3L0jrO7f2dXF6OgoPT09fOP3r0AY8kBMiQty/z0XpowP/DnAZ+2fEo1GCYVCKAtJrJIVk0lY379+uf/3164xHA4j99r0mBIXUA0+Dsmip77DgwP6lx0XdKdNWilb/W41Tn9vz0o7w8fx6nVrb28nGAyiadpK/YWOL3A6nUaHW5GhJVir9rY2NE27D6qgoADDB8AqbftCElPiwlrjAIFAALvdnrZvKhi1pXue+08eWGs8psQF+cP0J6As2fSWc+coKirC4XA8GIARqI2UlZVFRXn5fe0N5YGHpVQ23HYi+j+147fifwGjsbLWY7tcagAAAABJRU5ErkJggg=="
+    },
+    "apodrecendo": {
+      "png": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAADsklEQVR4nO2Wb2wTZRzHv9e7Xm9tb82t/1bZJF3VaIkvWMQ5/xEj2JhlKsFlbeIwISo1LixhKgooEiJvSDCEJVumKGrEYVhG+KPRF5qFRRYlE+I2wopzijELFQrLXMt6u68vlKUw2rWGZG/6vdyLu3t+v+eT3/O95/kJOnQspEwLOnsRoAhQBCgCAJByf5SY+axDFzTFypuNTaSmhFsKIEFmT3cvNC2J8QuXEQ6HoSlWvhSNYknwHvj9FXC6nHC5nBgdGYNW9y9YoSA5lsDAqtXL8fbW7bDIIgZ//gk/DAzgrXe2IX4pAcvJHvw93I+aBx+HvcyB2OgQvjp2BNkqlE1CtsNIgsTGxgasDS1Bpazgtj/68N3gGL4/N45QOfHE4QQ+W/sQ1nzcj+jzYbRs3Ay7TcS5M6N4sq4+70rk9ICRTAFMwzNzBYEd3wJ6Go8utiOgyjAMA6d+v4T9727Amq270VSRQsOhs9j/6d5CCpAdQIcuOI5KNKcnUBl9DiUWCUG3jFDAgejRMUSCGkS7huFffsP0dBqLkcBfFy9i5s8RvNLcDK3NyryqoOe4vE4H767y80j3F7yaSlIQBAJg36srWWoWuXn1IxRFkV1dXdxQW06Hw8Fnnn6KJ473cuDHfqqKzFz5dei5Af7zBzNvj1bKgM/N7dFG2s0iAfDgri0EwOE966lpGr/56D2+ufF19uxrnxciqwlvlKZYOT1jwICAdDoNVZZgMplQKos4P5GEIAioD3qwr6kGB417cWZ8AuHHqrEisi6nIfMC0BQrvV4PwpEI4okr6Ox8H9V3+TGZTOFCPA61RMH5xCTi6+/E0u4plFgsmJy4jD1tbaiQU1gRWYfJq9Mg/dARux5mviXQocOuuNna0swtb7xGn0tjVeUiOkvtVGWJu1+o48ihTp56MUhZlvnyyqW84/ZFLC/TqCoyFbPEAzs3UVXtbG1tnbMkeQGoisza+6rpc2nMfBf7+nMObnuWp1tquSMUYGRZFZ02Cz0OG2+MP7BzE202G5sijddB5AVwLcm1QFWR+WvsLI/t3cX6oJf3+6z0WM102KxUbVb63GVzjKfKEk2CwBPHe/lwzbLZXAUBZE7+yYcfsEQ2E/BTACgANIumeV2vKjIHTw/Mjsv7OM50ckdHB4aGhiCZBOiICWnogl2R0RBanm+6WeXcirOpo70dhmHM+b2+7DtZcK6CG5JEakq42eQA4HW78oqvrXlgNj7vjWg+ZR7DhfQEtwzg/2rBe8IiwD+mKEqM/VTfhgAAAABJRU5ErkJggg=="
+    },
+    "ossos": {
+      "png": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAABqUlEQVR4nO2WPY7CMBCFX1aWKEDiANSWSE3DCagQxSKxDbkJp6CFjipt2o3EBVzRWIiCiltYeltAgvHmx8BK2SITpYhn7Pny3khJYGDQZHw02r0FaAFagBbgPwAIvyJB+9nABG7eXfszAAHB3W6HMAyhtb6uRfeGAoJxHEN8vQZRaYGAoFIKYRhiNBqh3+/jeDxCKfWgyna7hdb6l1I+UauA1hrL5RLdbhedTgeTySRXArjaIb7vjTMIXzVqh/B8PgMAer0exuMxptMpoij61WA4HOZASZL4q2EqLgCcz+dUSpEkARAA3Zo4jrlarfK81ppSSladne+vLbgd6ja280mS5PkMoKzevWotMDBBdgNXj215DUwwm80AAIvPBUliv997qV9rQZESZW8HoNQme//TFtiHbzabSmmL5sO2JpuTlwDSNPX2tWyPrdLTAL7NXatcAFcFr4+RsYbQjmwg7ZskSOJwOOR77T2n08k5481I0xSDwQCXywUAEAT3fkXQUsrHBV9Py+Rer9eUUlJKWWsTCqwMbomX49lPsVv/NsC70fgfUQvQOMAP0O4eXRTymXAAAAAASUVORK5CYII="
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "mamiferos",
+  "nome": "gato",
+  "propriedades": {
+    "comportamento": "pacifico",
+    "vida": 20,
+    "xp": 0,
+    "velocidade": 160,
+    "armadura": 0,
+    "defesa": 0,
+    "ataque": 0,
+    "loot": [],
+    "falas": [
+      "Miau",
+      "Miu miu",
+      "Miaaaaauuu!"
+    ]
+  }
+}
