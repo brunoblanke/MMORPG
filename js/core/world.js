@@ -25,6 +25,7 @@ export class World {
     this.columns = new Map();
     this.blockers = new Map();
     this.topFloors = new Map();
+    this.blockingEdges = new Map();
     this.objects = new Set();
     this.safeTiles = new Set();
   }
@@ -97,6 +98,10 @@ export class World {
     if (obj.floorType && !obj.isBorder) {
       this.registerFloor(obj.x, obj.y, obj.z || 0);
       this.topFloors.set(this.getTileKey(obj.x, obj.y, obj.z || 0), obj);
+    }
+    if (obj.isBorder && obj.floorType && floorBehavior(obj.floorType).edgeBlocks) {
+      const key = this.getTileKey(obj.x, obj.y, obj.z || 0);
+      this.blockingEdges.set(key, (this.blockingEdges.get(key) || 0) + 1);
     }
     if (obj.inStack) this.addToTile(obj, obj.x, obj.y, obj.z || 0);
   }
@@ -263,12 +268,14 @@ export class World {
 
   // ================================================================================================================================================================================================================================================
   // isFloorBlocked / floorDamageAt
-  // Pelo piso de cima do sqm (gerador → Pisos → Comportamento). Piso que
-  // bloqueia não segura item nem impede arremesso por cima dele.
+  // Pelo piso de cima do sqm (gerador → Pisos → Comportamento) ou por uma
+  // borda de piso marcado com "Borda bloqueia" (a da água por cima da grama).
+  // Piso que bloqueia não segura item nem impede arremesso por cima dele.
 
   isFloorBlocked(x, y, z) {
-    const top = this.topFloors.get(this.getTileKey(x, y, z));
-    return !!top && floorBehavior(top.floorType).blocks;
+    const key = this.getTileKey(x, y, z);
+    const top = this.topFloors.get(key);
+    return (!!top && floorBehavior(top.floorType).blocks) || this.blockingEdges.has(key);
   }
 
   floorDamageAt(x, y, z) {
