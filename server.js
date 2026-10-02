@@ -294,7 +294,8 @@ function validarEntrada(sim, nome, validateName) {
 // enviarEstado
 // Um estado por jogador (cada um recebe o próprio alvo/caminho), só com o
 // que está perto dele e só o que mudou desde o último (js/net/delta.js), e
-// os eventos do tick que acontecem por perto.
+// os eventos do tick que acontecem por perto. O último fica guardado como
+// cópia: o estado aponta pra objetos vivos (o inventário), que mudam depois.
 
 function enviarEstado(sim, conexoes, tempo, { serializeState, encodeDelta, range }) {
   const events = sim.drainEvents();
@@ -304,7 +305,7 @@ function enviarEstado(sim, conexoes, tempo, { serializeState, encodeDelta, range
     const player = sim.getPlayer(playerId);
     const state = serializeState(sim, playerId, true);
     const delta = encodeDelta(conexao.sent, state);
-    conexao.sent = state;
+    conexao.sent = JSON.parse(JSON.stringify(state));
     const perto = events.filter(e => !player || e.x === undefined || (Math.abs(e.x - player.x) <= range[0] && Math.abs(e.y - player.y) <= range[1]));
     socket.send(JSON.stringify({ type: 'state', time: tempo, delta, events: perto }));
   }
