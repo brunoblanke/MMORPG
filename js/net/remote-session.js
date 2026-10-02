@@ -35,11 +35,21 @@ export class RemoteSession {
     this.lastState = null;
     this.inbox = [];
     this.onDisconnect = null;
+    this.onReload = null;
+    this.reloading = false;
 
-    socket.addEventListener('message', (e) => this.inbox.push({ message: JSON.parse(e.data), receivedAt: performance.now() }));
+    socket.addEventListener('message', (e) => {
+      const message = JSON.parse(e.data);
+      if (message.type === 'reload') {
+        this.reloading = true;
+        if (this.onReload) this.onReload();
+        return;
+      }
+      this.inbox.push({ message, receivedAt: performance.now() });
+    });
     socket.addEventListener('close', () => {
       this.isOnline = false;
-      if (this.onDisconnect) this.onDisconnect();
+      if (this.onDisconnect && !this.reloading) this.onDisconnect();
     });
   }
 

@@ -30,6 +30,29 @@ const DOUBLE_CLICK_MS = 250;
 // teclado/mouse em comandos (send) e desenha. Não mexe no estado do jogo:
 // só lê o que a sessão expõe.
 
+// ================================================================================================================================================================================================================================================
+// saveRejoin / takeRejoin
+// Mapa ou gerador mudou no servidor: a página recarrega e entra de novo
+// sozinha com o mesmo nome e gênero (guardados só pra essa recarga).
+
+const REJOIN_KEY = 'jogo-reentrar';
+
+function saveRejoin(data) {
+  try {
+    sessionStorage.setItem(REJOIN_KEY, JSON.stringify(data));
+  } catch {}
+}
+
+function takeRejoin() {
+  try {
+    const data = JSON.parse(sessionStorage.getItem(REJOIN_KEY) || 'null');
+    sessionStorage.removeItem(REJOIN_KEY);
+    return data && typeof data.name === 'string' ? data : null;
+  } catch {
+    return null;
+  }
+}
+
 export class GameController {
   constructor() {
     this.canvas = document.getElementById('gameCanvas');
@@ -97,8 +120,10 @@ export class GameController {
   // antes de entrar): joga sozinho no navegador com esse nome.
 
   async openSession(modal, mapData, socket) {
+    let again = takeRejoin();
     for (;;) {
-      const { name, gender } = await modal.ask();
+      const { name, gender } = again || await modal.ask();
+      again = null;
       if (!socket) {
         modal.close(name);
         return new LocalSession(mapData, name, gender);
@@ -107,6 +132,10 @@ export class GameController {
         const session = await RemoteSession.join(socket, mapData, name, gender);
         console.log(`🌐 Conectado ao servidor como ${name} (${session.playerId})`);
         session.onDisconnect = () => this.showMessage('Conexão com o servidor perdida — recarregue a página', performance.now(), 600000, 'danger');
+        session.onReload = () => {
+          saveRejoin({ name, gender });
+          location.reload();
+        };
         modal.close(name);
         return session;
       } catch (error) {
