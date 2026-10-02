@@ -5,7 +5,7 @@
 
 // ================================================================================================================================================================================================================================================
 // svgIcon
-// Ícones de linha (a partir dos SVGs da pasta TRANSF): o traço segue a cor do
+// Ícones de linha (copiados de SVGs desenhados à parte): o traço segue a cor do
 // texto (currentColor). Todos do mesmo grupo usam a mesma escala, então
 // mantêm a proporção e o tamanho relativo de quando foram desenhados;
 // shrink diminui um ícone sem afinar o traço.
