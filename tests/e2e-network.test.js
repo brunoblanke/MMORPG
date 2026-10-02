@@ -47,9 +47,13 @@ before(async () => {
   });
 });
 
-after(() => {
-  if (server) server.kill('SIGTERM');
-  if (tempDir) rmSync(tempDir, { recursive: true, force: true });
+after(async () => {
+  if (server && server.exitCode === null) {
+    const exited = new Promise(resolve => server.once('exit', resolve));
+    server.kill('SIGTERM');
+    await exited;
+  }
+  if (tempDir) rmSync(tempDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
 });
 
 // ================================================================================================================================================================================================================================================
