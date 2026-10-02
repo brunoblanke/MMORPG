@@ -11,8 +11,9 @@ import { VOCATION_LINES, SHOP_LINES } from '/shared/npcs.js';
 //   linhas 1–4  sul, norte, leste, oeste — 1º quadro parado, depois andando
 //   linha 5     cadáver: fresco, apodrecendo, ossos
 // A criatura vem do Tibia (roupa de humano com as cores e addons escolhidos,
-// já no lugar certo do sqm); cada estágio do cadáver vem de um item do Tibia
-// ou de um PNG enviado.
+// já no lugar certo do sqm) ou, na receita sem criatura do Tibia (folha
+// montada fora do gerador), da própria folha salva; cada estágio do cadáver
+// vem de um item do Tibia ou de um PNG enviado.
 
 const CATEGORY = 'criaturas';
 const DIRECTIONS = ['Sul', 'Norte', 'Leste', 'Oeste'];
@@ -203,6 +204,11 @@ function reloadSheet() {
     creatures.sheetImage = null;
     return;
   }
+  if (creatures.outfit.own) {
+    const own = loadImage(`/saida/${creatures.path}.png?v=${Date.now()}`, () => { if (creatures.sheetImage === own) render(); });
+    creatures.sheetImage = own;
+    return;
+  }
   const params = new URLSearchParams();
   if (creatures.outfit.colors) params.set('cores', creatures.colors.join(','));
   if (creatures.addons.length) params.set('addons', creatures.addons.join(','));
@@ -368,6 +374,7 @@ function corpseImage(key) {
 
 function outfitSize() {
   if (!creatures.outfit) return 32;
+  if (creatures.outfit.own) return creatures.outfit.size;
   const img = creatures.sheetImage;
   if (!isReady(img)) return creatures.outfit.size;
   return img.contentSize || img.naturalHeight / 4;
@@ -393,7 +400,7 @@ function frameSize() {
 function drawCreatureFrame(ctx, direction, frame, x, y, size) {
   const img = creatures.sheetImage;
   if (!isReady(img) || !creatures.outfit) return;
-  const full = img.naturalHeight / 4;
+  const full = creatures.outfit.own ? creatures.outfit.size : img.naturalHeight / 4;
   const own = outfitSize();
   ctx.drawImage(img, frame * full + full - own, direction * full + full - own, own, own, x + size - own, y + size - own, own, own);
 }
@@ -413,7 +420,9 @@ function render() {
   }
 
   const outfit = creatures.outfit;
-  infoEl.innerHTML = outfit
+  infoEl.innerHTML = outfit && outfit.own
+    ? `<b>Folha própria</b><br>${outfit.size} px · ${outfit.frames} quadros por direção`
+    : outfit
     ? `<b>Criatura ${outfit.id}</b><br>${outfitSize()} px · ${outfit.frames} quadros por direção${outfit.colors ? ' · roupa com cores' : ''}${outfit.addons ? ` · ${outfit.addons} addons` : ''}`
     : 'Nenhuma criatura escolhida. Abra a aba Criaturas à direita.';
   const thumb = thumbCanvas.getContext('2d');
@@ -732,7 +741,7 @@ async function save() {
       quadros: creatures.outfit.frames,
       linhas: ['sul', 'norte', 'leste', 'oeste', 'cadáver: fresco, apodrecendo, ossos']
     },
-    criatura: { id: creatures.outfit.id, cores: creatures.colors, addons: creatures.addons },
+    ...(creatures.outfit.own ? {} : { criatura: { id: creatures.outfit.id, cores: creatures.colors, addons: creatures.addons } }),
     cadaver: creatures.corpse,
     propriedades: behaviorEl.value === 'npc'
       ? { comportamento: 'npc', conversa: conversationValues() }
@@ -755,11 +764,21 @@ async function save() {
 }
 
 // ================================================================================================================================================================================================================================================
+// ownSheet
+// Receita sem criatura do Tibia: a folha salva é a criatura (tamanho e
+// quadros do formato).
+
+function ownSheet(recipe) {
+  const format = recipe.formato || {};
+  return format.quadro && format.quadros ? { own: true, size: format.quadro, frames: format.quadros } : null;
+}
+
+// ================================================================================================================================================================================================================================================
 // openRecipe
 
 function openRecipe(recipe) {
   const saved = recipe.criatura || {};
-  creatures.outfit = saved.id ? creatureInfo(saved.id) : null;
+  creatures.outfit = saved.id ? creatureInfo(saved.id) : ownSheet(recipe);
   creatures.colors = Array.isArray(saved.cores) && saved.cores.length === 4 ? [...saved.cores] : [...DEFAULT_COLORS];
   creatures.addons = Array.isArray(saved.addons) ? [...saved.addons] : [];
   behaviorEl.value = behaviorOf(recipe.propriedades || {});
