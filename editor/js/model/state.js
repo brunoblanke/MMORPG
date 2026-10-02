@@ -52,9 +52,9 @@ export const state = {
   brushSize: 1,
   hoverCell: null,
   selected: null,
+  focus: null,
   strokeTouched: new Set(),
-  ghost: true,
-  kit: null
+  ghost: true
 };
 
 // paint: campo do state com o que a ferramenta pinta (as que têm lista).
@@ -68,7 +68,7 @@ export const TOOLS = [
   { id:'border-eraser', label:'Tirar borda', quick:true },
   { id:'deco', label:'Decoração', paint:'decoPaint' },
   { id:'item', label:'Item', paint:'itemPaint' },
-  { id:'enemy', label:'Criatura' },
+  { id:'enemy', label:'Criatura', paint:'enemyPaint' },
   { id:'npc', label:'NPC', paint:'npcPaint' },
   { id:'spawn', label:'Respawn', quick:true },
   { id:'safe', label:'Zona segura (liga/desliga)' },

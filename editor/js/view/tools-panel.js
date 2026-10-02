@@ -6,6 +6,7 @@ import { scheduleRender } from './canvas-renderer.js';
 import { BORDER_VARIANTS } from '../../../shared/floor-borders.js';
 import { listAssets, creatureBehavior, pieceType, splitType, displayName, isStairsFolder, isEntranceFolder, isItemType, isWallType, WALL_PIECES, WALL_PIECE_NAMES } from '../../../shared/assets.js';
 import { setThumb } from './sprite-thumb.js';
+import { svgIcon } from '../../../js/views/inventory-ui/icons.js';
 import { closeSelectPanel } from './forms.js';
 
 // ================================================================================================================================================================================================================================================
@@ -72,7 +73,7 @@ export function choosePaintDefaults() {
   if (!state.holePaint) state.holePaint = first(listAssets('objetos', a => isEntranceFolder(a.id)));
   if (!state.itemPaint) state.itemPaint = first(listAssets('objetos', isCarried));
   if (!state.decoPaint) state.decoPaint = first(listAssets('objetos', isDecoration));
-  if (!state.enemyPaint) state.enemyPaint = first(listAssets('criaturas', a => creatureBehavior(a.id) !== 'npc'));
+  if (!state.enemyPaint) state.enemyPaint = first(listAssets('criaturas', isMonster));
   if (!state.npcPaint) state.npcPaint = first(listAssets('criaturas', a => creatureBehavior(a.id) === 'npc'));
   if (!state.borderPaint && floors[0]) state.borderPaint = { type: floors[0].id, variant: 'n' };
 }
@@ -91,7 +92,7 @@ function wallPieces(asset) {
 
 function paintThumbType(tool) {
   if (tool.id === 'floor') return state.floorPaint && pieceType(state.floorPaint, 'meio-1');
-  if (tool.id === 'border' || tool.id === 'border-eraser') return state.borderPaint && pieceType(state.borderPaint.type, state.borderPaint.variant);
+  if (tool.id === 'border') return state.borderPaint && pieceType(state.borderPaint.type, state.borderPaint.variant);
   return tool.paint ? state[tool.paint] : null;
 }
 
@@ -150,14 +151,16 @@ function accordionGroups(tool) {
   if (tool.id === 'hole') return { empty: 'Nenhuma entrada gerada (Estrutura › Entradas).', groups: byFolder(listAssets('objetos', a => isEntranceFolder(a.id)), simple) };
   if (tool.id === 'item') return { empty: 'Nenhum item gerado (Itens).', groups: byFolder(listAssets('objetos', isCarried), simple) };
   if (tool.id === 'deco') return { empty: 'Nenhuma decoração gerada (Decoração ou Estrutura › Natureza).', groups: byFolder(listAssets('objetos', isDecoration), simple) };
+  if (tool.id === 'enemy') return { empty: 'Nenhuma criatura gerada (Criaturas).', groups: byFolder(listAssets('criaturas', isMonster), simple) };
   if (tool.id === 'npc') return { empty: 'Nenhum NPC gerado (Personagens › NPCs, comportamento NPC).', groups: byFolder(listAssets('criaturas', a => creatureBehavior(a.id) === 'npc'), simple) };
   return { empty: '', groups: [] };
 }
 
 // ================================================================================================================================================================================================================================================
-// isCarried / isDecoration
+// isCarried / isDecoration / isMonster
 // Ferramenta Item: o que fica no grupo Itens. Decoração: os outros objetos
-// soltos no mapa (Decoração e a natureza da Estrutura).
+// soltos no mapa (Decoração e a natureza da Estrutura). Criatura: as do
+// grupo Criaturas que não são NPC.
 
 function isCarried(asset) {
   return isItemType(asset.id) && asset.grupo === 'itens';
@@ -165,6 +168,10 @@ function isCarried(asset) {
 
 function isDecoration(asset) {
   return isItemType(asset.id) && asset.grupo !== 'itens';
+}
+
+function isMonster(asset) {
+  return asset.grupo !== 'personagens' && creatureBehavior(asset.id) !== 'npc';
 }
 
 // ================================================================================================================================================================================================================================================
@@ -222,6 +229,14 @@ export function renderTools() {
   });
 }
 
+const QUICK_ICON_SCALE = 16 / 22;
+const QUICK_ICONS = {
+  select: svgIcon('0 0 16 22', '<path d="M.95.95v16.7l4.4-4.1 3.2 7.2 3-1.3-3.2-7h6.7L.95.95Z"/>', QUICK_ICON_SCALE),
+  'border-eraser': svgIcon('0 0 22 22', '<path d="M.95 6.5V.95H6.5M15.5.95h5.55V6.5M21.05 15.5v5.55H15.5M6.5 21.05H.95V15.5"/><path d="M7.5 7.5l7 7M14.5 7.5l-7 7"/>', QUICK_ICON_SCALE),
+  spawn: svgIcon('0 0 22 22', '<path d="M18.6 7.2A8.6 8.6 0 1 0 19.6 13"/><path d="M19.2 1.9v5.6h-5.6"/><circle cx="11" cy="11" r="2.4"/>', QUICK_ICON_SCALE),
+  eraser: svgIcon('0 0 22 22', '<path d="M8.2 20.05L1.95 13.8 13.1 2.65l7.25 7.25-10.15 10.15H8.2Z"/><path d="M6.4 9.3l7.25 7.25M8.2 20.05h12.85"/>', QUICK_ICON_SCALE)
+};
+
 // ================================================================================================================================================================================================================================================
 // toolSwatch
 // O desenho pequeno de cada ferramenta (a folha escolhida ou um símbolo).
@@ -229,23 +244,14 @@ export function renderTools() {
 function toolSwatch(t) {
   const swatch = document.createElement('div');
   swatch.className = 'tool-swatch';
+  if (QUICK_ICONS[t.id]) {
+    swatch.classList.add('icon');
+    swatch.innerHTML = QUICK_ICONS[t.id];
+    return swatch;
+  }
   const thumbType = paintThumbType(t);
   if (thumbType) {
     setThumb(swatch, thumbType, 20);
-    if (t.id === 'border-eraser') {
-      swatch.style.opacity = '0.45';
-      swatch.style.outline = '1px dashed #e2574c';
-    }
-  } else if (t.id === 'enemy') {
-    swatch.style.background = '#c0392b';
-    swatch.style.borderRadius = '50%';
-  } else if (t.id === 'spawn') {
-    swatch.classList.add('symbol');
-    swatch.textContent = '★';
-    swatch.style.color = '#f5c518';
-  } else if (t.id === 'select') {
-    swatch.style.background = 'transparent';
-    swatch.style.border = '2px solid #f5c518';
   } else if (t.id === 'safe') {
     swatch.style.background = 'rgba(46, 204, 113, 0.35)';
     swatch.style.border = '1px solid rgba(46, 204, 113, 0.9)';

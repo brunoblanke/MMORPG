@@ -269,16 +269,17 @@ function drawBrush() {
 
 // ================================================================================================================================================================================================================================================
 // drawSelection
-// Contorno amarelo no sqm escolhido com a ferramenta Selecionar (no andar dele).
+// Contorno amarelo no sqm escolhido com a ferramenta Selecionar e no sqm do
+// campo x, y, z (no andar deles).
 
 function drawSelection() {
-  const selected = state.selected;
-  if (!selected || selected.z !== state.activeZ) return;
   ctx.save();
   ctx.strokeStyle = '#f5c518';
   ctx.lineWidth = 2;
   ctx.setLineDash([4, 3]);
-  ctx.strokeRect(selected.x * TILE + 1, selected.y * TILE + 1, TILE - 2, TILE - 2);
+  for (const cell of [state.selected, state.focus]) {
+    if (cell && cell.z === state.activeZ) ctx.strokeRect(cell.x * TILE + 1, cell.y * TILE + 1, TILE - 2, TILE - 2);
+  }
   ctx.restore();
 }
 

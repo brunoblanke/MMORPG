@@ -1,6 +1,6 @@
 // js/view/forms.js
 
-import { getAsset, listAssets, displayName, objectUse, creatureBehavior } from '../../../shared/assets.js';
+import { getAsset, listAssets, displayName, objectUse } from '../../../shared/assets.js';
 import { state } from '../model/state.js';
 import { scheduleRender } from './canvas-renderer.js';
 import { updateStats } from './tools-panel.js';
@@ -23,48 +23,20 @@ let pendingEnemy = null;
 
 // ================================================================================================================================================================================================================================================
 // openEnemyForm
+// Coloca a criatura escolhida na lista (Criatura): só falta o level.
 
 export function openEnemyForm(x, y, clientX, clientY) {
-  pendingEnemy = { x, y };
-  const layer = state.layers[state.activeZ];
-  const existing = layer[`${x},${y}`].enemy;
-  refreshCreatureOptions();
-  const select = document.getElementById('enemyType');
-  if (!select.options.length) {
-    window.alert('Nenhuma criatura gerada ainda. Gere no gerador de sprites (Criaturas).');
-    pendingEnemy = null;
+  if (!getAsset(state.enemyPaint)) {
     state.painting = false;
     return;
   }
-  const type = existing && getAsset(existing.type) ? existing.type : (getAsset(state.enemyPaint) ? state.enemyPaint : select.options[0].value);
-  select.value = type;
-  if (existing) document.getElementById('enemyLvl').value = existing.lvl;
-
+  pendingEnemy = { x, y };
+  const existing = state.layers[state.activeZ][`${x},${y}`].enemy;
+  document.getElementById('enemyName').textContent = displayName(state.enemyPaint);
+  if (existing && existing.type === state.enemyPaint) document.getElementById('enemyLvl').value = existing.lvl;
   positionFloatPanel(enemyForm, clientX, clientY);
   enemyForm.classList.add('show');
-}
-
-// ================================================================================================================================================================================================================================================
-// refreshCreatureOptions
-// As criaturas geradas (sem os personagens: NPCs e roupas de player),
-// agrupadas pela pasta (Criaturas › Demônios…).
-
-export function refreshCreatureOptions() {
-  const select = document.getElementById('enemyType');
-  const current = select.value;
-  select.innerHTML = '';
-  const groups = new Map();
-  for (const asset of listAssets('criaturas', a => a.grupo !== 'personagens' && creatureBehavior(a.id) !== 'npc')) {
-    const label = asset.rotulo.split(' › ').pop();
-    if (!groups.has(label)) {
-      const optgroup = document.createElement('optgroup');
-      optgroup.label = label;
-      groups.set(label, optgroup);
-      select.appendChild(optgroup);
-    }
-    groups.get(label).appendChild(new Option(displayName(asset.id), asset.id));
-  }
-  if (getAsset(current)) select.value = current;
+  document.getElementById('enemyLvl').select();
 }
 
 // ================================================================================================================================================================================================================================================
@@ -272,10 +244,6 @@ document.getElementById('objectDataConfirm').onclick = () => {
 
 document.getElementById('selectClose').onclick = () => closeSelectPanel();
 
-document.getElementById('enemyType').onchange = (evt) => {
-  state.enemyPaint = evt.target.value;
-};
-
 document.getElementById('enemyCancel').onclick = () => {
   enemyForm.classList.remove('show');
   pendingEnemy = null;
@@ -286,7 +254,7 @@ document.getElementById('enemyConfirm').onclick = () => {
   if (!pendingEnemy) return;
   const layer = state.layers[state.activeZ];
   const key = `${pendingEnemy.x},${pendingEnemy.y}`;
-  const type = document.getElementById('enemyType').value;
+  const type = state.enemyPaint;
   layer[key].enemy = {
     type,
     lvl: parseInt(document.getElementById('enemyLvl').value || '1', 10),
@@ -299,3 +267,7 @@ document.getElementById('enemyConfirm').onclick = () => {
   updateStats();
   scheduleRender();
 };
+
+document.getElementById('enemyLvl').addEventListener('keydown', (evt) => {
+  if (evt.key === 'Enter') document.getElementById('enemyConfirm').click();
+});

@@ -4,7 +4,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8" />
-<title>Editor de Estrutura — 25x25</title>
+<title>Editor de mapa</title>
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -13,7 +13,7 @@
 
   <div class="side-col">
     <div class="ed-win">
-      <div class="ed-head"><span class="ed-title">Editor de mapa</span><span class="ed-note">grade 25×25</span></div>
+      <div class="ed-head"><span class="ed-title">Editor de mapa</span></div>
       <div class="ed-body">
         <div class="tools" id="tools"></div>
       </div>
@@ -30,9 +30,6 @@
           <div class="led"></div>
           <span>Exibir bordas</span>
         </div>
-        <button class="side-btn" id="kitBtn" title="O que todo personagem novo ganha ao nascer">Kit inicial</button>
-        <button class="danger-btn" id="rebuildBordersBtn" title="Gera de novo todas as bordas do andar pelos pisos (desfaz o que foi mexido à mão)">Refazer bordas do andar</button>
-        <button class="danger-btn" id="clearLayerBtn">Limpar andar atual</button>
       </div>
     </div>
 
@@ -44,6 +41,8 @@
       <div class="layer-tabs" id="layerTabs"></div>
       <div class="quick-sep"></div>
       <div class="quick-tools" id="quickTools"></div>
+      <div class="quick-sep"></div>
+      <input class="goto-input" id="gotoInput" placeholder="x, y, z" title="Vai pro sqm (Enter): x, y, z" autocomplete="off" />
     </div>
 
     <div class="canvas-wrap">
@@ -70,11 +69,8 @@
 </div>
 
 <div class="float-panel" id="enemyForm">
-  <div class="row">
-    <div class="field">
-      <label>Tipo</label>
-      <select id="enemyType"></select>
-    </div>
+  <div class="field">
+    <label id="enemyName">Criatura</label>
   </div>
   <div class="row">
     <div class="field">
@@ -96,22 +92,6 @@
   <div id="selectList" class="select-list"></div>
   <div class="actions">
     <button id="selectClose">Fechar</button>
-  </div>
-</div>
-
-<div class="float-panel wide" id="kitForm">
-  <div class="field">
-    <label>Kit inicial · o que todo personagem novo ganha</label>
-  </div>
-  <div class="kit-slots" id="kitSlots"></div>
-  <div class="field">
-    <label>Dentro da mochila</label>
-    <div id="kitBagItems" class="object-data-items"></div>
-    <button type="button" id="kitAddItem">+ Item</button>
-  </div>
-  <div class="actions">
-    <button id="kitCancel">Cancelar</button>
-    <button class="primary" id="kitConfirm">Aplicar</button>
   </div>
 </div>
 
