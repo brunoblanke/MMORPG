@@ -2,11 +2,12 @@
 
 import { getAsset, spriteFrame, splitType, displayName, litAs } from '../../../shared/assets.js';
 import { getLevel } from '../../core/geometry.js';
+import { findPath } from '../../core/pathfinding.js';
 import { itemInfo, stackFrame } from '../../../shared/items.js';
 import { PLAYER_SPRITES, DEFAULT_GENDER } from '../../../shared/catalog.js';
 import { CORPSE_ROW } from '../sprite-registry.js';
 import { ANIMATION_CYCLE_MS } from '../../../shared/constants.js';
-import { EQUIP_LAYOUT, SKILL_NAMES, SKILL_ORDER, PITCH, BATTLE_RANGE } from './common.js';
+import { EQUIP_LAYOUT, SKILL_NAMES, SKILL_ORDER, PITCH, BATTLE_RANGE, REACH_CHECK_MS } from './common.js';
 import { ICONS, FOLLOW_ICONS } from './icons.js';
 
 // Métodos do InventoryUI (js/views/inventory-ui.js). O HTML de cada parte das janelas: espaços, containers, skills, vida e
@@ -213,7 +214,7 @@ export const htmlMethods = {
   // ================================================================================================================================================================================================================================================
   // battleList
   // Inimigos vivos ao alcance do player (até BATTLE_RANGE sqm, no andar
-  // dele): nome, vida e se é o alvo.
+  // dele) e com caminho até eles (canReach): nome, vida e se é o alvo.
 
   battleList() {
     const { player, session } = this.game;
@@ -221,8 +222,30 @@ export const htmlMethods = {
     const level = getLevel(player);
     const targetId = player.target ? player.target.id : null;
     return session.enemies
-      .filter(e => e.isAlive() && getLevel(e) === level && Math.max(Math.abs(e.x - player.x), Math.abs(e.y - player.y)) <= BATTLE_RANGE)
+      .filter(e => e.isAlive() && getLevel(e) === level && Math.max(Math.abs(e.x - player.x), Math.abs(e.y - player.y)) <= BATTLE_RANGE && this.canReach(e))
       .map(e => ({ id: e.id, name: displayName(e.creature), hp: Math.max(0, Math.round(e.currentHp / e.maxHp * 100)), target: e.id === targetId }));
+  },
+
+  // ================================================================================================================================================================================================================================================
+  // canReach
+  // O player consegue chegar até a criatura (colado nela ou com caminho no
+  // mesmo andar, sem contar as outras criaturas no caminho)? A resposta fica
+  // guardada por REACH_CHECK_MS enquanto os dois não saem do lugar.
+
+  canReach(enemy) {
+    const { player, session } = this.game;
+    if (Math.max(Math.abs(enemy.x - player.x), Math.abs(enemy.y - player.y)) <= 1) return true;
+    this.reachCache = this.reachCache || new Map();
+    const key = `${player.x},${player.y},${player.z},${enemy.x},${enemy.y},${enemy.z}`;
+    const now = performance.now();
+    const cached = this.reachCache.get(enemy.id);
+    if (cached && cached.key === key && now - cached.at < REACH_CHECK_MS) return cached.ok;
+    const reach = BATTLE_RANGE + 3;
+    const bounds = { minX: player.x - reach, maxX: player.x + reach + 1, minY: player.y - reach, maxY: player.y + reach + 1 };
+    const path = findPath(session.world, player, { x: enemy.x, y: enemy.y, z: player.z || 0 }, { sameFloor: true, enemiesPassable: true, bounds, maxNodes: 800 });
+    const ok = path.length > 0;
+    this.reachCache.set(enemy.id, { key, at: now, ok });
+    return ok;
   },
 
   // ================================================================================================================================================================================================================================================
