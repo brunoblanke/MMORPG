@@ -2,6 +2,7 @@
 
 import { objectUse } from '../../../shared/assets.js';
 import { itemInfo } from '../../../shared/items.js';
+import { RUNES } from '../../../shared/spells.js';
 
 // Constantes e ajudantes que as partes da janela do inventário
 // (js/views/inventory-ui.js e inventory-ui/) usam juntas.
@@ -26,9 +27,9 @@ export const MAP_USES = ['placa', 'livro', 'bau-quest', 'corda', 'pa', 'descer']
 
 // ================================================================================================================================================================================================================================================
 // aimsWith
-// Item usado com a mira: potion (em player ou no chão), corda e pá.
+// Item usado com a mira: potion (em player ou no chão), runa, corda e pá.
 
 export function aimsWith(type) {
   const use = objectUse(type);
-  return !!itemInfo(type).heal || use === 'ferramenta-corda' || use === 'ferramenta-pa';
+  return !!itemInfo(type).heal || !!RUNES[type] || use === 'ferramenta-corda' || use === 'ferramenta-pa';
 }

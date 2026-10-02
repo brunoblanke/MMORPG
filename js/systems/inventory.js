@@ -338,12 +338,13 @@ export class InventoryController {
 
   // ================================================================================================================================================================================================================================================
   // update
-  // A cada tick: a luz do player (a própria ou a do item equipado que
-  // ilumina mais), faz o que estava esperando o player chegar e fecha as
+  // A cada tick: a luz do player (a própria, a da magia utevo lux ou a do
+  // item equipado que ilumina mais), faz o que estava esperando o player chegar e fecha as
   // caixas do chão que ele não alcança mais.
 
   update(player) {
-    player.light = Math.max(PLAYER_LIGHT, ...EQUIP_SLOTS.map(key => itemLight(player.equip[key])));
+    const spellLight = player.spellLight && (this.sim.time || 0) < player.spellLight.until ? player.spellLight.light : 0;
+    player.light = Math.max(PLAYER_LIGHT, spellLight, ...EQUIP_SLOTS.map(key => itemLight(player.equip[key])));
     const pending = player.pendingInv;
     if (pending) {
       const obj = this.sim.getItem(pending.objId);

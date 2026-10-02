@@ -172,8 +172,8 @@ export class CombatController {
 
   // ================================================================================================================================================================================================================================================
   // trainSkill
-  // Um uso do skill (golpe com a arma, ataque recebido com escudo). Magic
-  // level só sobe com magia (ainda não existe). Avisa quando sobe de nível.
+  // Um uso do skill (golpe com a arma, ataque recebido com escudo; o magic
+  // level sobe com magia, em spells.js). Avisa quando sobe de nível.
 
   trainSkill(player, key) {
     if (!player.skills || key === 'magic') return;
