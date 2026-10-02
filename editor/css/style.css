@@ -93,6 +93,12 @@ body{
   background:var(--panel-2); border:1px solid var(--line); border-radius:8px;
 }
 .tool-accordion.show{ display:flex; }
+.tool-accordion [hidden]{ display:none !important; }
+.accordion-search{
+  width:100%; background:var(--bg); border:1px solid var(--line); border-radius:5px; color:var(--text);
+  padding:5px 7px; font-size:12px; font-family:'IBM Plex Sans',sans-serif; margin-bottom:2px;
+}
+.accordion-search:focus{ outline:none; border-color:var(--accent); }
 .floor-opt{
   width:56px; display:flex; flex-direction:column; align-items:center; gap:5px; cursor:pointer;
   padding:5px; border-radius:6px; border:1px solid transparent;

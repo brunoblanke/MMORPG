@@ -70,7 +70,8 @@ export function choosePaintDefaults() {
   if (!state.wallPaint && walls[0]) state.wallPaint = pieceType(walls[0].id, wallPieces(walls[0])[0]);
   if (!state.stairsPaint) state.stairsPaint = first(listAssets('objetos', a => isStairsFolder(a.id)));
   if (!state.holePaint) state.holePaint = first(listAssets('objetos', a => isEntranceFolder(a.id)));
-  if (!state.itemPaint) state.itemPaint = first(listAssets('objetos', a => isItemType(a.id)));
+  if (!state.itemPaint) state.itemPaint = first(listAssets('objetos', isCarried));
+  if (!state.decoPaint) state.decoPaint = first(listAssets('objetos', isDecoration));
   if (!state.enemyPaint) state.enemyPaint = first(listAssets('criaturas', a => creatureBehavior(a.id) !== 'npc'));
   if (!state.npcPaint) state.npcPaint = first(listAssets('criaturas', a => creatureBehavior(a.id) === 'npc'));
   if (!state.borderPaint && floors[0]) state.borderPaint = { type: floors[0].id, variant: 'n' };
@@ -147,9 +148,23 @@ function accordionGroups(tool) {
   }
   if (tool.id === 'stairs') return { empty: 'Nenhuma escada gerada (Estrutura › Escadas).', groups: byFolder(listAssets('objetos', a => isStairsFolder(a.id)), simple) };
   if (tool.id === 'hole') return { empty: 'Nenhuma entrada gerada (Estrutura › Entradas).', groups: byFolder(listAssets('objetos', a => isEntranceFolder(a.id)), simple) };
-  if (tool.id === 'item') return { empty: 'Nenhum objeto gerado.', groups: byFolder(listAssets('objetos', a => isItemType(a.id)), simple) };
-  if (tool.id === 'npc') return { empty: 'Nenhum NPC gerado (Criaturas, comportamento NPC).', groups: byFolder(listAssets('criaturas', a => creatureBehavior(a.id) === 'npc'), simple) };
+  if (tool.id === 'item') return { empty: 'Nenhum item gerado (Itens).', groups: byFolder(listAssets('objetos', isCarried), simple) };
+  if (tool.id === 'deco') return { empty: 'Nenhuma decoração gerada (Decoração ou Estrutura › Natureza).', groups: byFolder(listAssets('objetos', isDecoration), simple) };
+  if (tool.id === 'npc') return { empty: 'Nenhum NPC gerado (Personagens › NPCs, comportamento NPC).', groups: byFolder(listAssets('criaturas', a => creatureBehavior(a.id) === 'npc'), simple) };
   return { empty: '', groups: [] };
+}
+
+// ================================================================================================================================================================================================================================================
+// isCarried / isDecoration
+// Ferramenta Item: o que fica no grupo Itens. Decoração: os outros objetos
+// soltos no mapa (Decoração e a natureza da Estrutura).
+
+function isCarried(asset) {
+  return isItemType(asset.id) && asset.grupo === 'itens';
+}
+
+function isDecoration(asset) {
+  return isItemType(asset.id) && asset.grupo !== 'itens';
 }
 
 // ================================================================================================================================================================================================================================================
@@ -257,6 +272,13 @@ function buildAccordion(tool) {
     return acc;
   }
   const selected = currentValue(tool);
+  const search = document.createElement('input');
+  Object.assign(search, { type: 'search', className: 'accordion-search', placeholder: 'Buscar…', value: searchTerms[tool.id] || '' });
+  search.oninput = () => {
+    searchTerms[tool.id] = search.value;
+    filterAccordion(acc, search.value);
+  };
+  acc.appendChild(search);
   for (const group of groups) {
     const title = document.createElement('div');
     title.className = 'border-accordion-title';
@@ -265,6 +287,8 @@ function buildAccordion(tool) {
     for (const option of group.options) {
       const opt = document.createElement('div');
       opt.title = option.label;
+      opt.dataset.search = normalizeSearch(`${option.label} ${group.title}`);
+      opt.dataset.group = group.title;
       opt.onclick = () => {
         setValue(tool, option.value);
         state.tool = tool.id;
@@ -285,7 +309,30 @@ function buildAccordion(tool) {
       acc.appendChild(opt);
     }
   }
+  filterAccordion(acc, searchTerms[tool.id] || '');
   return acc;
+}
+
+// ================================================================================================================================================================================================================================================
+// filterAccordion / normalizeSearch
+// A busca da lista: mostra só as opções cujo nome (ou o da pasta) tem o que
+// foi digitado, sem diferenciar acento e maiúscula; pasta sem nada some.
+
+const searchTerms = {};
+
+function filterAccordion(acc, term) {
+  const wanted = normalizeSearch(term);
+  const visible = new Set();
+  for (const opt of acc.querySelectorAll('[data-search]')) {
+    const show = !wanted || opt.dataset.search.includes(wanted);
+    opt.hidden = !show;
+    if (show) visible.add(opt.dataset.group);
+  }
+  for (const title of acc.querySelectorAll('.border-accordion-title')) title.hidden = !visible.has(title.textContent);
+}
+
+function normalizeSearch(text) {
+  return String(text || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
 }
 
 const borderToggle = document.getElementById('borderToggle');

@@ -46,14 +46,15 @@ export function openEnemyForm(x, y, clientX, clientY) {
 
 // ================================================================================================================================================================================================================================================
 // refreshCreatureOptions
-// As criaturas geradas, agrupadas pela pasta (Criaturas › Demônios…).
+// As criaturas geradas (sem os personagens: NPCs e roupas de player),
+// agrupadas pela pasta (Criaturas › Demônios…).
 
 export function refreshCreatureOptions() {
   const select = document.getElementById('enemyType');
   const current = select.value;
   select.innerHTML = '';
   const groups = new Map();
-  for (const asset of listAssets('criaturas', a => creatureBehavior(a.id) !== 'npc')) {
+  for (const asset of listAssets('criaturas', a => a.grupo !== 'personagens' && creatureBehavior(a.id) !== 'npc')) {
     const label = asset.rotulo.split(' › ').pop();
     if (!groups.has(label)) {
       const optgroup = document.createElement('optgroup');

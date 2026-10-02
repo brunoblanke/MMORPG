@@ -113,14 +113,15 @@ function paintCell(x, y) {
   } else if (state.tool === 'safe') {
     if (state.strokeTouched.size === 1) state.safePaintValue = !cell.safe;
     cell.safe = state.safePaintValue;
-  } else if (state.tool === 'item') {
-    if (state.itemPaint) {
+  } else if (state.tool === 'item' || state.tool === 'deco') {
+    const paint = state.tool === 'deco' ? state.decoPaint : state.itemPaint;
+    if (paint) {
       const top = cell.objects[cell.objects.length - 1];
-      const stack = itemInfo(state.itemPaint).stack;
-      if (stack && top && top.type === state.itemPaint && (top.count || 1) < stack) {
+      const stack = itemInfo(paint).stack;
+      if (stack && top && top.type === paint && (top.count || 1) < stack) {
         top.count = (top.count || 1) + 1;
       } else {
-        cell.objects.push({ type: state.itemPaint, step: 0 });
+        cell.objects.push({ type: paint, step: 0 });
       }
       restackItems(cell.objects);
     }

@@ -69,6 +69,7 @@ const formEl = document.getElementById('creatureSaveForm');
 const npcFieldsEl = document.getElementById('npcFields');
 const npcTopicsEl = document.getElementById('npcTopics');
 const npcShopEl = document.getElementById('npcShop');
+const NPC_FOLDER = 'personagens/npcs';
 const LINE_GROUPS = [
   { key: 'falasVocacao', defaults: VOCATION_LINES, box: document.getElementById('npcVocationLines'), grid: document.getElementById('npcVocationLinesGrid') },
   { key: 'falasVenda', defaults: SHOP_LINES, box: document.getElementById('npcShopLines'), grid: document.getElementById('npcShopLinesGrid') }
@@ -101,6 +102,7 @@ function initCreatures() {
   nameEl.addEventListener('input', () => { creatures.dirty = true; });
   behaviorEl.addEventListener('change', () => {
     creatures.dirty = true;
+    suggestFolder();
     showNpcFields();
   });
   for (const [, el] of NPC_TEXT_FIELDS) el.addEventListener('input', () => { creatures.dirty = true; });
@@ -607,6 +609,17 @@ function lootValues() {
     if (max > 1) Object.assign(entry, { min: Math.min(e.min || 1, max), max });
     return entry;
   });
+}
+
+// ================================================================================================================================================================================================================================================
+// suggestFolder
+// NPC fica em Personagens › NPCs; criatura de combate, fora de Personagens.
+
+function suggestFolder() {
+  const isNpc = behaviorEl.value === 'npc';
+  const inCharacters = folderEl.value.startsWith('personagens/');
+  if (isNpc && !inCharacters) folderEl.value = NPC_FOLDER;
+  else if (!isNpc && folderEl.value === NPC_FOLDER) folderEl.value = '';
 }
 
 // ================================================================================================================================================================================================================================================
