@@ -58,17 +58,17 @@ export const state = {
 
 // paint: campo do state com o que a ferramenta pinta (as que têm lista).
 export const TOOLS = [
-  { id:'select', label:'Selecionar' },
+  { id:'select', label:'Selecionar', quick:true },
   { id:'floor', label:'Piso', paint:'floorPaint' },
   { id:'wall', label:'Parede', paint:'wallPaint' },
   { id:'stairs', label:'Escada', paint:'stairsPaint' },
   { id:'hole', label:'Buraco / entrada', paint:'holePaint' },
   { id:'border', label:'Borda', paint:'borderPaint' },
-  { id:'border-eraser', label:'Tirar bordas (a de cima)' },
+  { id:'border-eraser', label:'Tirar borda', quick:true },
   { id:'item', label:'Objeto', paint:'itemPaint' },
   { id:'enemy', label:'Criatura' },
   { id:'npc', label:'NPC', paint:'npcPaint' },
-  { id:'spawn', label:'Respawn do jogador' },
+  { id:'spawn', label:'Respawn', quick:true },
   { id:'safe', label:'Zona segura (liga/desliga)' },
-  { id:'eraser', label:'Borracha (tira o do topo)' }
+  { id:'eraser', label:'Borracha', quick:true }
 ];

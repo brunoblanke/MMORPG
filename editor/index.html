@@ -11,37 +11,49 @@
 
 <div class="app">
 
-  <div class="sidebar">
-    <div class="brand">
-      <div class="dot"></div>
-      <h1>Editor de Estrutura</h1>
-    </div>
-    <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--muted);margin-top:-10px;">grade 25×25 · sprites do servidor</span>
-
-    <div>
-      <div class="section-label">Andar</div>
-      <div class="layer-tabs" id="layerTabs"></div>
+  <div class="side-col">
+    <div class="ed-win">
+      <div class="ed-head"><span class="ed-title">Editor de mapa</span><span class="ed-note">grade 25×25</span></div>
+      <div class="ed-body">
+        <div class="tools" id="tools"></div>
+      </div>
     </div>
 
-    <div>
-      <div class="section-label">Ferramenta</div>
-      <div class="tools" id="tools"></div>
+    <div class="ed-win">
+      <div class="ed-head"><span class="ed-title">Opções</span></div>
+      <div class="ed-body ed-options">
+        <label class="checkline">
+          <input type="checkbox" id="ghostToggle" checked />
+          Mostrar andar abaixo (fantasma)
+        </label>
+        <div class="border-toggle on" id="borderToggle">
+          <div class="led"></div>
+          <span>Exibir bordas</span>
+        </div>
+        <button class="side-btn" id="kitBtn" title="O que todo personagem novo ganha ao nascer">Kit inicial</button>
+        <button class="danger-btn" id="rebuildBordersBtn" title="Gera de novo todas as bordas do andar pelos pisos (desfaz o que foi mexido à mão)">Refazer bordas do andar</button>
+        <button class="danger-btn" id="clearLayerBtn">Limpar andar atual</button>
+      </div>
     </div>
 
-    <label class="checkline">
-      <input type="checkbox" id="ghostToggle" checked />
-      Mostrar andar abaixo (fantasma)
-    </label>
-
-    <button class="side-btn" id="kitBtn" title="O que todo personagem novo ganha ao nascer">Kit inicial</button>
-    <button class="danger-btn" id="rebuildBordersBtn" title="Gera de novo todas as bordas do andar pelos pisos (desfaz o que foi mexido à mão)">Refazer bordas do andar</button>
-    <button class="danger-btn" id="clearLayerBtn">Limpar andar atual</button>
     <button class="export-btn" id="saveBtn" title="Salva em data/map.json (Ctrl+S)">Salvar</button>
   </div>
 
   <div class="main">
-    <div class="topbar">
-      <h2>Editando <b id="layerLabel">Andar 0</b></h2>
+    <div class="quickbar" id="quickbar">
+      <div class="layer-tabs" id="layerTabs"></div>
+      <div class="quick-sep"></div>
+      <div class="quick-tools" id="quickTools"></div>
+    </div>
+
+    <div class="canvas-wrap">
+      <div class="board">
+        <canvas id="canvas" width="800" height="800"></canvas>
+      </div>
+    </div>
+
+    <div class="statusbar">
+      <span>Editando <b id="layerLabel">Andar 0</b></span>
       <div class="status-list">
         <div>Piso: <b id="statFloor">0</b></div>
         <div>Borda: <b id="statBorder">0</b></div>
@@ -51,16 +63,6 @@
         <div>Item: <b id="statItem">0</b></div>
         <div>Criatura: <b id="statCreature">0</b></div>
         <div>Zona segura: <b id="statSafe">0</b></div>
-      </div>
-      <div class="border-toggle on" id="borderToggle">
-        <div class="led"></div>
-        <span>Exibir bordas</span>
-      </div>
-    </div>
-
-    <div class="canvas-wrap">
-      <div class="board">
-        <canvas id="canvas" width="800" height="800"></canvas>
       </div>
     </div>
   </div>

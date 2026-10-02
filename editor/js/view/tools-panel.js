@@ -11,36 +11,20 @@ import { closeSelectPanel } from './forms.js';
 // ================================================================================================================================================================================================================================================
 // renderLayerTabs
 
-// Andares fixos, como num prédio: acima do térreo em cima (+5 … +1), o
-// térreo no meio e abaixo dele embaixo (-1 … -5).
+// Andares numa linha só, na barra do topo: do mais fundo (-5) ao mais alto
+// (+5), com o térreo (0) no meio.
 
 export function renderLayerTabs() {
   const wrap = document.getElementById('layerTabs');
   wrap.innerHTML = '';
-
-  const row = (floors, className) => {
-    const line = document.createElement('div');
-    line.className = 'layer-row' + (className ? ' ' + className : '');
-    for (const z of floors) {
-      const btn = document.createElement('div');
-      const hasContent = layerHasContent(z);
-      btn.className = 'layer-tab' + (z === state.activeZ ? ' active' : '') + (hasContent ? ' has-content' : '');
-      btn.textContent = z === GROUND_FLOOR ? 'Térreo (0)' : floorLabel(z);
-      btn.title = `Andar ${floorLabel(z)}${hasContent ? '' : ' (vazio)'}`;
-      btn.onclick = () => { state.activeZ = z; onLayerChange(); };
-      line.appendChild(btn);
-    }
-    wrap.appendChild(line);
-  };
-
-  const above = [];
-  for (let z = FLOOR_MAX; z > GROUND_FLOOR; z--) above.push(z);
-  const below = [];
-  for (let z = GROUND_FLOOR - 1; z >= FLOOR_MIN; z--) below.push(z);
-
-  row(above);
-  row([GROUND_FLOOR], 'ground');
-  row(below);
+  for (let z = FLOOR_MIN; z <= FLOOR_MAX; z++) {
+    const btn = document.createElement('div');
+    const hasContent = layerHasContent(z);
+    btn.className = 'layer-tab' + (z === state.activeZ ? ' active' : '') + (hasContent ? ' has-content' : '') + (z === GROUND_FLOOR ? ' ground' : '');
+    btn.textContent = floorLabel(z);
+    btn.onclick = () => { state.activeZ = z; onLayerChange(); };
+    wrap.appendChild(btn);
+  }
 }
 
 // ================================================================================================================================================================================================================================================
@@ -193,43 +177,15 @@ function setValue(tool, value) {
 
 export function renderTools() {
   const wrap = document.getElementById('tools');
+  const quick = document.getElementById('quickTools');
   wrap.innerHTML = '';
+  quick.innerHTML = '';
   TOOLS.forEach(t => {
     const btn = document.createElement('div');
-    btn.className = 'tool-btn' + (t.id === state.tool ? ' active' : '');
-    const swatch = document.createElement('div');
-    swatch.className = 'tool-swatch';
-    const thumbType = paintThumbType(t);
-    if (thumbType) {
-      setThumb(swatch, thumbType, 20);
-      if (t.id === 'border-eraser') {
-        swatch.style.opacity = '0.45';
-        swatch.style.outline = '1px dashed #e2574c';
-      }
-    } else if (t.id === 'enemy') {
-      swatch.style.background = '#c0392b';
-      swatch.style.borderRadius = '50%';
-    } else if (t.id === 'spawn') {
-      swatch.style.background = 'transparent';
-      swatch.textContent = '★';
-      swatch.style.color = '#f5c518';
-      swatch.style.display = 'flex';
-      swatch.style.alignItems = 'center';
-      swatch.style.justifyContent = 'center';
-      swatch.style.fontSize = '14px';
-    } else if (t.id === 'select') {
-      swatch.style.background = 'transparent';
-      swatch.style.border = '2px solid #f5c518';
-    } else if (t.id === 'safe') {
-      swatch.style.background = 'rgba(46, 204, 113, 0.35)';
-      swatch.style.border = '1px solid rgba(46, 204, 113, 0.9)';
-    } else {
-      swatch.style.background = '#2a2f3a';
-      swatch.style.border = '1px dashed #555';
-    }
+    btn.className = (t.quick ? 'quick-btn' : 'tool-btn') + (t.id === state.tool ? ' active' : '');
+    btn.appendChild(toolSwatch(t));
     const label = document.createElement('span');
     label.textContent = t.label;
-    btn.appendChild(swatch);
     btn.appendChild(label);
 
     if (t.paint) {
@@ -245,10 +201,44 @@ export function renderTools() {
       if (t.id !== 'select') closeSelectPanel();
       renderTools();
     };
-    wrap.appendChild(btn);
+    (t.quick ? quick : wrap).appendChild(btn);
 
     if (t.paint && state.openAccordion === t.id) wrap.appendChild(buildAccordion(t));
   });
+}
+
+// ================================================================================================================================================================================================================================================
+// toolSwatch
+// O desenho pequeno de cada ferramenta (a folha escolhida ou um símbolo).
+
+function toolSwatch(t) {
+  const swatch = document.createElement('div');
+  swatch.className = 'tool-swatch';
+  const thumbType = paintThumbType(t);
+  if (thumbType) {
+    setThumb(swatch, thumbType, 20);
+    if (t.id === 'border-eraser') {
+      swatch.style.opacity = '0.45';
+      swatch.style.outline = '1px dashed #e2574c';
+    }
+  } else if (t.id === 'enemy') {
+    swatch.style.background = '#c0392b';
+    swatch.style.borderRadius = '50%';
+  } else if (t.id === 'spawn') {
+    swatch.classList.add('symbol');
+    swatch.textContent = '★';
+    swatch.style.color = '#f5c518';
+  } else if (t.id === 'select') {
+    swatch.style.background = 'transparent';
+    swatch.style.border = '2px solid #f5c518';
+  } else if (t.id === 'safe') {
+    swatch.style.background = 'rgba(46, 204, 113, 0.35)';
+    swatch.style.border = '1px solid rgba(46, 204, 113, 0.9)';
+  } else {
+    swatch.style.background = '#2a2f3a';
+    swatch.style.border = '1px dashed #555';
+  }
+  return swatch;
 }
 
 // ================================================================================================================================================================================================================================================
