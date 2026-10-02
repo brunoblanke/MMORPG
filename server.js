@@ -11,7 +11,7 @@ const app = express();
 
 const PASTA_JOGO = __dirname;
 const MAP_DATA_PATH = path.join(PASTA_JOGO, 'data', 'map.json');
-const CHARACTERS_PATH = path.join(PASTA_JOGO, 'data', 'characters.json');
+const CHARACTERS_PATH = process.env.JOGO_PERSONAGENS || path.join(PASTA_JOGO, 'data', 'characters.json');
 const PASTA_PROJETOS = path.join(PASTA_JOGO, 'gerador', 'projetos');
 const PASTA_SAIDA = path.join(PASTA_JOGO, 'gerador', 'saida');
 const TAXONOMIA_PATH = path.join(PASTA_JOGO, 'gerador', 'taxonomia.json');
