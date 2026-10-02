@@ -2,8 +2,8 @@
 
 // Skills do Tibia 7.6: magic level e os sete de combate/pesca, com o % até o
 // próximo. Sobem com o uso (tries): cada golpe treina o skill da arma na mão,
-// cada ataque recebido com escudo treina shielding. Magic level e fishing
-// ainda não sobem (magia e pesca vêm depois).
+// cada ataque recebido com escudo treina shielding, cada ponto de mana gasto
+// em magia treina o magic level. Fishing ainda não sobe (pesca vem depois).
 // Progressão do Tibia: pra passar do nível n pro n+1 são A × B^(n − 10)
 // tentativas (magic level: mana gasta, 1600 × B^n). A é do skill; B é da
 // vocação (shared/vocations.js → skillGrowth).
@@ -45,13 +45,14 @@ export function triesFor(lvl, key = 'sword', vocation = 'none') {
 
 // ================================================================================================================================================================================================================================================
 // addSkillTry
-// Um uso do skill: soma a tentativa, sobe de nível quando completa e acerta o
-// % até o próximo. Devolve true se subiu.
+// Um uso do skill (amount usos; no magic level, a mana gasta): soma as
+// tentativas, sobe de nível quando completa e acerta o % até o próximo.
+// Devolve true se subiu.
 
-export function addSkillTry(skills, key, vocation = 'none') {
+export function addSkillTry(skills, key, vocation = 'none', amount = 1) {
   const entry = skills[key];
   if (!entry) return false;
-  entry.tries = (entry.tries || 0) + 1;
+  entry.tries = (entry.tries || 0) + amount;
   let advanced = false;
   while (entry.tries >= triesFor(entry.lvl, key, vocation)) {
     entry.tries -= triesFor(entry.lvl, key, vocation);

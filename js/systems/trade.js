@@ -3,10 +3,12 @@
 import { getAsset, splitType } from '../../shared/assets.js';
 import { itemInfo, newItem, weightOf, EQUIP_SLOTS } from '../../shared/items.js';
 
-// Compra com NPC: o dinheiro é o que o player carrega em moedas (gold vale
-// 1, platinum vale 100), em qualquer lugar do inventário. Ao pagar, todas
-// as moedas saem e o troco volta nos mesmos lugares, nas moedas maiores
-// primeiro. O item comprado vai pra mochila.
+// Compra e venda com NPC: o dinheiro é o que o player carrega em moedas
+// (gold vale 1, platinum vale 100), em qualquer lugar do inventário. Ao
+// pagar, todas as moedas saem e o troco volta nos mesmos lugares, nas
+// moedas maiores primeiro. O item comprado vai pra mochila. Na venda, o
+// item sai da mochila (o que está vestido não entra) e as moedas entram
+// nela; o que não couber cai aos pés do player.
 
 export const COINS = [
   { type: 'itens/valiosos/platinum-coin', value: 100 },
@@ -91,4 +93,89 @@ export function buy(sim, player, type, price) {
 
 export function itemName(type) {
   return itemInfo(type).name;
+}
+
+// ================================================================================================================================================================================================================================================
+// bagSlots
+// Os espaços de dentro da mochila (e dos containers dentro dela): [{ list, key }].
+
+function bagSlots(player) {
+  const slots = [];
+  const visit = (container) => {
+    container.items.forEach((item, i) => {
+      slots.push({ list: container.items, key: i });
+      if (item && Array.isArray(item.items)) visit(item);
+    });
+  };
+  const bag = player.equip && player.equip.mochila;
+  if (bag && Array.isArray(bag.items)) visit(bag);
+  return slots;
+}
+
+// ================================================================================================================================================================================================================================================
+// countInBag
+// Quantos do item o player tem na mochila (container com coisa dentro não
+// conta: não dá pra vender).
+
+export function countInBag(player, type) {
+  return bagSlots(player).reduce((sum, { list, key }) => sum + (sellable(list[key], type) ? list[key].count || 1 : 0), 0);
+}
+
+// ================================================================================================================================================================================================================================================
+// sellable
+
+function sellable(item, type) {
+  return !!item && item.type === type && !(Array.isArray(item.items) && item.items.some(Boolean));
+}
+
+// ================================================================================================================================================================================================================================================
+// give
+// Põe value em moedas na mochila: junta nas pilhas iguais, depois nos
+// espaços vazios; o resto cai aos pés do player.
+
+export function give(sim, player, value) {
+  const inventory = sim.inventory;
+  let left = value;
+  for (const coin of COINS) {
+    if (!getAsset(splitType(coin.type).asset)) continue;
+    let count = Math.floor(left / coin.value);
+    left -= count * coin.value;
+    const stack = itemInfo(coin.type).stack || 1;
+    for (const { list, key } of bagSlots(player)) {
+      const item = list[key];
+      if (count <= 0) break;
+      if (!item || item.type !== coin.type || (item.count || 1) >= stack) continue;
+      const add = Math.min(count, stack - (item.count || 1));
+      item.count = (item.count || 1) + add;
+      count -= add;
+    }
+    while (count > 0) {
+      const item = newItem(inventory.nextUid(), coin.type, count);
+      count -= item.count || 1;
+      const free = bagSlots(player).find(({ list, key }) => !list[key]);
+      if (free) free.list[free.key] = item;
+      else inventory.mergeGroundStack(inventory.spawnGroundItem(item, player.x, player.y, player.z || 0));
+    }
+  }
+}
+
+// ================================================================================================================================================================================================================================================
+// sell
+// O player vende amount do item (type) por price cada: precisa ter na
+// mochila. Devolve 'ok' ou 'item'.
+
+export function sell(sim, player, type, price, amount) {
+  if (countInBag(player, type) < amount) return 'item';
+  let left = amount;
+  for (const { list, key } of bagSlots(player).reverse()) {
+    const item = list[key];
+    if (left <= 0) break;
+    if (!sellable(item, type)) continue;
+    const taken = Math.min(left, item.count || 1);
+    left -= taken;
+    if (taken >= (item.count || 1)) list[key] = null;
+    else item.count -= taken;
+  }
+  give(sim, player, price * amount);
+  return 'ok';
 }

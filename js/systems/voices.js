@@ -23,5 +23,5 @@ export function updateVoice(sim, enemy, player, now) {
   if (!player || getLevel(player) !== getLevel(enemy)) return;
   if (Math.max(Math.abs(player.x - enemy.x), Math.abs(player.y - enemy.y)) > VOICE_RANGE) return;
   const text = lines[Math.floor(Math.random() * lines.length)];
-  sim.emit({ type: 'speech', speakerId: enemy.id, name: null, text, x: enemy.x, y: enemy.y, z: enemy.z || 0, monster: true });
+  sim.emit({ type: 'speech', speakerId: enemy.id, name: null, text, x: enemy.x, y: enemy.y, z: enemy.z || 0, orange: true });
 }

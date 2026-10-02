@@ -12,8 +12,8 @@ import { getAsset, displayName, creatureBehavior, splitType } from './assets.js'
 // ({ words, reply }: começam e encerram a conversa) e topics ([{ words,
 // reply }]: respondem durante a conversa). vocation ({ destination }): ele
 // dá a vocação a quem tem o nível 8 e leva pro destino (js/systems/npcs.js →
-// talkVocation). shop ([{ type, price, name, words }]): o que ele vende
-// (talkShop). {nome} vira o nome do player. As
+// talkVocation). shop ([{ type, price, name, words }]): o que ele vende;
+// buys (igual): o que ele compra (talkShop). {nome} vira o nome do player. As
 // palavras são comparadas sem acento e em minúsculas (normalizeSpeech).
 
 export const GREET_WORDS = ['oi', 'ola', 'oie', 'hi', 'hello', 'bom dia', 'boa tarde', 'boa noite'];
@@ -22,10 +22,13 @@ export const DEFAULT_RADIUS = 2;
 export const YES_WORDS = ['sim', 'yes', 's'];
 export const NO_WORDS = ['nao', 'no', 'n'];
 export const TRADE_WORDS = ['oferta', 'ofertas', 'trade', 'loja', 'vende', 'vendas', 'comprar', 'compra'];
+export const SELL_WORDS = ['vender', 'vendo', 'sell'];
+export const MAX_SELL = 100;
 
 // Falas da escolha de vocação e da venda (gerador → Falas; vazio = estas).
 // {nome} vira o nome do player, {vocacao} a vocação, {nivel} o nível
-// mínimo, {item} o item, {preco} o preço e {lista} o que ele vende.
+// mínimo, {item} o item, {preco} o preço, {quantidade} quantos e {lista} o
+// que ele vende ou compra.
 export const VOCATION_LINES = {
   nivel: { label: 'Sem o nível', text: 'Você precisa chegar ao nível {nivel} pra escolher sua vocação.' },
   jaTem: { label: 'Já tem vocação', text: 'Você já é {vocacao}.' },
@@ -41,7 +44,11 @@ export const SHOP_LINES = {
   semMochila: { label: 'Sem mochila', text: 'Você precisa de uma mochila pra levar isso.' },
   semEspaco: { label: 'Sem espaço', text: 'Você não tem espaço na mochila.' },
   semCap: { label: 'Sem cap', text: 'Você não tem capacidade pra carregar isso.' },
-  desistiu: { label: 'Ao dizer não', text: 'Tudo bem.' }
+  desistiu: { label: 'Ao dizer não', text: 'Tudo bem.' },
+  listaCompra: { label: 'O que compra', text: 'Eu compro: {lista}.' },
+  confirmarCompra: { label: 'Pergunta (venda do player)', text: 'Quer me vender {quantidade} {item} por {preco} moedas de ouro? (sim / não)' },
+  comprado: { label: 'Comprado', text: 'Negócio fechado!' },
+  semItem: { label: 'Player sem o item', text: 'Você não tem {quantidade} {item}.' }
 };
 
 // ================================================================================================================================================================================================================================================
@@ -79,6 +86,7 @@ export function npcDefFromAsset(type, pos) {
     vocation: talk.vocacao ? { destination: validDestination(talk.vocacao.destino) } : null,
     vocationLines: linesFrom(VOCATION_LINES, talk.falasVocacao),
     shop: shopFrom(talk.vende),
+    buys: shopFrom(talk.compra),
     shopLines: linesFrom(SHOP_LINES, talk.falasVenda)
   };
 }
@@ -106,8 +114,9 @@ export function fillLine(text, values) {
 
 // ================================================================================================================================================================================================================================================
 // shopFrom
-// O que o NPC vende (gerador → Vende): [{ type, price, name, words }]; as
-// palavras são as do gerador mais o nome do item. Só itens que existem.
+// O que o NPC vende ou compra (gerador → Vende, Compra): [{ type, price,
+// name, words }]; as palavras são as do gerador mais o nome do item. Só
+// itens que existem.
 
 function shopFrom(list) {
   if (!Array.isArray(list)) return [];

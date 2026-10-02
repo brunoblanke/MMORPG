@@ -17,6 +17,7 @@ import { PlayerControl } from './systems/player-control.js';
 import { InventoryController } from './systems/inventory.js';
 import { InteractionController } from './systems/interactions.js';
 import { NpcController } from './systems/npcs.js';
+import { SpellController } from './systems/spells.js';
 import { objectIdType, doorState } from '../shared/assets.js';
 
 export { TICK_MS };
@@ -62,6 +63,7 @@ export class Simulation {
     this.control = new PlayerControl(this);
     this.inventory = new InventoryController(this, options.lootTable || {});
     this.interactions = new InteractionController(this);
+    this.spells = new SpellController(this);
     this.npcs = [];
     this.talk = new NpcController(this, options.npcs || []);
   }

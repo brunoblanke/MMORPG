@@ -107,6 +107,7 @@ export class Player extends Entity {
       skills: this.skills,
       mana: this.mana,
       equip: this.equip ? Object.fromEntries(EQUIP_SLOTS.map(key => [key, toPlain(this.equip[key])])) : null,
+      depot: this.depot ? this.depot.items.map(toPlain) : null,
       layout: this.uiLayout || null,
       followMode: this.followMode,
       attackMode: this.attackMode,

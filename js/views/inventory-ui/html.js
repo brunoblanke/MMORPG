@@ -100,11 +100,13 @@ export const htmlMethods = {
 
   // ================================================================================================================================================================================================================================================
   // windowTitle
-  // Nome do container; do chão, com (chão); cadáver, com (morto).
+  // Nome do container; do chão, com (chão); cadáver, com (morto); o
+  // depósito do player, Depósito.
 
   windowTitle(win, box) {
     if (!win.ground) return itemInfo(box.type).name;
     const opened = this.view.opened.find(o => o.id === win.ground);
+    if (opened && opened.depot && opened.item.uid === box.uid) return 'Depósito';
     const corpse = opened && opened.corpse;
     const name = corpse && opened.name && opened.item.uid === box.uid ? opened.name : itemInfo(box.type).name;
     return `${name} <em>${corpse ? '(morto)' : '(chão)'}</em>`;

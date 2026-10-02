@@ -26,6 +26,7 @@ export function describeItem(item) {
     lines.push(info.light ? `${item.lit ? 'Acesa' : 'Apagada'}, queima por mais ${left} min.` : `Dura mais ${left} min em uso.`);
   }
   if (info.regen.hp || info.regen.mana) lines.push(`Equipado: +${info.regen.hp} de vida e +${info.regen.mana} de mana a cada 6 s.`);
+  if (item.charges) lines.push(`${item.charges} ${item.charges > 1 ? 'cargas' : 'carga'}.`);
   if (info.heal && info.heal.hp[1] > 0) lines.push(`Recupera ${info.heal.hp[0]}–${info.heal.hp[1]} de vida.`);
   if (info.heal && info.heal.mana[1] > 0) lines.push(`Recupera ${info.heal.mana[0]}–${info.heal.mana[1]} de mana.`);
   lines.push(`${item.count > 1 ? 'Pesam' : 'Pesa'} ${formatWeight(weightOf(item))} oz.`);

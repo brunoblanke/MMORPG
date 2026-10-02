@@ -21,9 +21,9 @@ const asset = (id, propriedades) => {
 
 // ================================================================================================================================================================================================================================================
 // game
-// Vendedor colado no player, que vende corda por 50.
+// Vendedor colado no player, que vende corda por 50 (e compra o que estiver em buys).
 
-function game(coins) {
+function game(coins, buys = []) {
   setAssets([
     asset(BAG, { move: true, peso: 8, espacos: 8 }), asset(ROPE, { move: true, peso: 18 }),
     asset(GOLD, { move: true, peso: 0.1, empilhavel: true }), asset(PLATINUM, { move: true, peso: 0.1, empilhavel: true })
@@ -31,7 +31,8 @@ function game(coins) {
   const seller = {
     id: 'vendedor', name: 'Vendedor', gender: 'male', pos: { x: 10, y: 9, z: 0 }, radius: 0, welcome: '',
     greet: { words: GREET_WORDS, reply: 'Olá!' }, bye: { words: BYE_WORDS, reply: 'Até mais.' }, topics: [],
-    shop: [{ type: ROPE, price: 50, name: 'Rope', words: ['corda', 'rope'] }]
+    shop: [{ type: ROPE, price: 50, name: 'Rope', words: ['corda', 'rope'] }],
+    buys
   };
   const sim = new Simulation(buildMapData({ objects: floorRect(0, 20, 0, 20, 0), spawn: { x: 10, y: 10, z: 0 } }), { npcs: [seller] });
   sim.time = 1000;
@@ -84,4 +85,30 @@ test('falas do gerador substituem as padrão; vazias ficam com a padrão', async
   assert.equal(def.shopLines.vendido, 'Boa compra, {nome}!');
   assert.equal(def.shopLines.semDinheiro, SHOP_LINES.semDinheiro.text);
   assert.equal(fillLine(def.shopLines.confirmar, { item: 'Rope', preco: 50 }), 'Quer comprar Rope por 50 moedas de ouro? (sim / não)');
+});
+
+test('NPC que compra: vender com quantidade pede a confirmação; sim tira da mochila e paga em moedas, juntando nas pilhas', () => {
+  const sim = game([{ uid: 'c2', type: GOLD, count: 20 }, { uid: 'r1', type: ROPE }, { uid: 'r2', type: ROPE }, { uid: 'r3', type: ROPE }], [{ type: ROPE, price: 40, name: 'Rope', words: ['corda', 'rope'] }]);
+  say(sim, 'oi');
+  assert.match(say(sim, 'trade').join(), /Eu compro: Rope \(40 moedas\)/);
+  assert.match(say(sim, 'vender 2 corda').join(), /vender 2 Rope por 80/);
+  assert.deepEqual(say(sim, 'sim'), ['Negócio fechado!']);
+  const bag = sim.player.equip.mochila.items;
+  assert.equal(bag.filter(item => item && item.type === ROPE).length, 1);
+  assert.equal(moneyOf(sim.player), 100);
+  assert.equal(bag.filter(item => item && item.type === GOLD).length, 1);
+});
+
+test('NPC que compra: sem o item na mochila não paga nada; mais de 100 de ouro vira platinum', () => {
+  const sim = game([{ uid: 'r1', type: ROPE }], [{ type: ROPE, price: 150, name: 'Rope', words: ['rope'] }]);
+  say(sim, 'oi');
+  say(sim, 'sell 3 rope');
+  assert.deepEqual(say(sim, 'sim'), ['Você não tem 3 Rope.']);
+  assert.equal(moneyOf(sim.player), 0);
+  say(sim, 'sell rope');
+  say(sim, 'sim');
+  const bag = sim.player.equip.mochila.items;
+  assert.ok(bag.some(item => item && item.type === PLATINUM && item.count === 1));
+  assert.ok(bag.some(item => item && item.type === GOLD && item.count === 50));
+  assert.ok(!bag.some(item => item && item.type === ROPE));
 });

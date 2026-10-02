@@ -19,7 +19,7 @@ function voicesIn(game, ms) {
   const end = game.time + ms;
   while (game.time < end) {
     game.tick(game.time + TICK_MS);
-    lines.push(...game.drainEvents().filter(e => e.type === 'speech' && e.monster).map(e => e.text));
+    lines.push(...game.drainEvents().filter(e => e.type === 'speech' && e.orange).map(e => e.text));
   }
   return lines;
 }

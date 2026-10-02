@@ -269,6 +269,7 @@ export function toPlain(item) {
   if (item.texto) plain.texto = item.texto;
   if (item.lit) plain.lit = true;
   if (item.fuel !== undefined) plain.fuel = item.fuel;
+  if (item.charges !== undefined) plain.charges = item.charges;
   return plain;
 }
 
@@ -286,5 +287,6 @@ export function fromPlain(plain, nextUid) {
   if (typeof plain.texto === 'string' && plain.texto) item.texto = plain.texto.slice(0, 2000);
   if (plain.lit === true && itemInfo(item.type).light) item.lit = true;
   if (Number.isFinite(plain.fuel) && plain.fuel > 0) item.fuel = plain.fuel;
+  if (Number.isInteger(plain.charges) && plain.charges > 0) item.charges = plain.charges;
   return item;
 }

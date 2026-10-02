@@ -3,12 +3,13 @@
 import { getAsset, splitType, objectIdType, objectUse, creatureBehavior } from '../../shared/assets.js';
 import { STARTER_KIT } from '../../shared/items.js';
 import { npcDefFromAsset } from '../../shared/npcs.js';
+import { RUNES, BLANK_RUNE } from '../../shared/spells.js';
 
 // Conferência do mundo ao subir o servidor: o que está no mapa e no gerador
 // e não vai funcionar no jogo (objeto ou criatura sem folha no gerador,
 // escada ou buraco sem piso no destino, placa sem texto, baú sem itens, NPC
 // que não é NPC ou que leva pra lugar sem piso, item vendido ou do loot que
-// não existe, item do kit inicial que falta). Devolve os avisos, um por
+// não existe, item do kit inicial ou runa que falta). Devolve os avisos, um por
 // linha; não muda nada.
 
 const MAX_PLACES = 5;
@@ -109,6 +110,9 @@ export function validateWorld(sim) {
   const kitTypes = [...Object.values(STARTER_KIT.equip), ...STARTER_KIT.mochila.map(e => e.tipo)];
   const missingKit = kitTypes.filter(type => !hasAsset(type));
   if (missingKit.length) warnings.push(`Kit inicial: falta criar no gerador ${missingKit.join(', ')}`);
+
+  const missingRunes = [BLANK_RUNE, ...Object.keys(RUNES)].filter(type => !hasAsset(type));
+  if (missingRunes.length) warnings.push(`Runas: falta criar no gerador ${missingRunes.join(', ')}`);
 
   return warnings;
 }

@@ -178,9 +178,11 @@ export const groundMethods = {
 
   // ================================================================================================================================================================================================================================================
   // close
-  // Comando closeContainer: fecha a caixa do chão (a janela sumiu na tela).
+  // Comando closeContainer: fecha a caixa do chão ou o depósito (a janela
+  // sumiu na tela).
 
   close(player, itemId) {
     player.openGround.delete(itemId);
+    if (player.openDepot === itemId) player.openDepot = null;
   },
 };

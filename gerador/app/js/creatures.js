@@ -45,7 +45,8 @@ const creatures = {
   loot: [],
   lootItems: [],
   topics: [],
-  shop: []
+  shop: [],
+  buys: []
 };
 
 const statusEl = document.getElementById('creatureStatus');
@@ -71,6 +72,7 @@ const formEl = document.getElementById('creatureSaveForm');
 const npcFieldsEl = document.getElementById('npcFields');
 const npcTopicsEl = document.getElementById('npcTopics');
 const npcShopEl = document.getElementById('npcShop');
+const npcBuyEl = document.getElementById('npcBuy');
 const NPC_FOLDER = 'personagens/npcs';
 const LINE_GROUPS = [
   { key: 'falasVocacao', defaults: VOCATION_LINES, box: document.getElementById('npcVocationLines'), grid: document.getElementById('npcVocationLinesGrid') },
@@ -114,6 +116,11 @@ function initCreatures() {
     showNpcFields();
   });
   for (const [, el] of NPC_DEST_FIELDS) el.addEventListener('input', () => { creatures.dirty = true; });
+  document.getElementById('npcBuyAdd').onclick = () => {
+    creatures.buys.push({ tipo: '', preco: 0, palavras: '' });
+    creatures.dirty = true;
+    renderShop();
+  };
   document.getElementById('npcShopAdd').onclick = () => {
     creatures.shop.push({ tipo: '', preco: 0, palavras: '' });
     creatures.dirty = true;
@@ -511,12 +518,22 @@ async function loadLootItems() {
 
 // ================================================================================================================================================================================================================================================
 // renderShop
-// Uma linha por item que o NPC vende: item, preço e palavras pra pedir.
+// As duas listas da loja do NPC: o que ele vende e o que ele compra.
 
 function renderShop() {
-  npcShopEl.innerHTML = '';
+  renderTradeList(creatures.shop, npcShopEl, 'ex.: corda');
+  renderTradeList(creatures.buys, npcBuyEl, 'ex.: queijo');
+  showNpcFields();
+}
+
+// ================================================================================================================================================================================================================================================
+// renderTradeList
+// Uma linha por item da lista: item, preço e palavras.
+
+function renderTradeList(list, box, example) {
+  box.innerHTML = '';
   const items = creatures.lootItems || [];
-  creatures.shop.forEach((entry, index) => {
+  list.forEach((entry, index) => {
     const row = document.createElement('div');
     row.className = 'npc-topic';
     const select = document.createElement('select');
@@ -528,17 +545,16 @@ function renderShop() {
     Object.assign(price, { type: 'number', className: 'npc-price', min: 0, step: 1, title: 'Preço (moedas de ouro)', value: entry.preco });
     price.oninput = () => { entry.preco = Math.max(0, Math.floor(Number(price.value)) || 0); creatures.dirty = true; };
     const words = document.createElement('input');
-    Object.assign(words, { type: 'text', className: 'npc-reply', placeholder: 'ex.: corda', value: entry.palavras, maxLength: 120 });
+    Object.assign(words, { type: 'text', className: 'npc-reply', placeholder: example, value: entry.palavras, maxLength: 120 });
     words.oninput = () => { entry.palavras = words.value; creatures.dirty = true; };
     const remove = document.createElement('button');
     remove.type = 'button';
     remove.className = 'ghost-btn';
     remove.textContent = '×';
-    remove.onclick = () => { creatures.shop.splice(index, 1); creatures.dirty = true; renderShop(); };
+    remove.onclick = () => { list.splice(index, 1); creatures.dirty = true; renderShop(); };
     row.append(select, price, words, remove);
-    npcShopEl.appendChild(row);
+    box.appendChild(row);
   });
-  showNpcFields();
 }
 
 // ================================================================================================================================================================================================================================================
@@ -643,7 +659,7 @@ function showNpcFields() {
   npcFieldsEl.hidden = !isNpc;
   npcDestEl.hidden = !npcVocationEl.value;
   LINE_GROUPS[0].box.hidden = !npcVocationEl.value;
-  LINE_GROUPS[1].box.hidden = !creatures.shop.length;
+  LINE_GROUPS[1].box.hidden = !creatures.shop.length && !creatures.buys.length;
   formEl.classList.toggle('is-npc', isNpc);
 }
 
@@ -681,6 +697,7 @@ function conversationValues() {
   talk.raio = Math.max(0, Math.min(10, Math.floor(Number(npcRadiusEl.value)) || 0));
   talk.topicos = creatures.topics.map(t => ({ palavras: t.palavras.trim(), resposta: t.resposta.trim() })).filter(t => t.palavras && t.resposta);
   talk.vende = creatures.shop.filter(e => e.tipo).map(e => ({ tipo: e.tipo, preco: e.preco || 0, palavras: (e.palavras || '').trim() }));
+  talk.compra = creatures.buys.filter(e => e.tipo).map(e => ({ tipo: e.tipo, preco: e.preco || 0, palavras: (e.palavras || '').trim() }));
   for (const group of LINE_GROUPS) {
     const values = lineValues(group);
     if (Object.keys(values).length) talk[group.key] = values;
@@ -790,6 +807,7 @@ function openRecipe(recipe) {
   for (const [key, el] of NPC_DEST_FIELDS) el.value = Number.isFinite(dest[key]) ? String(dest[key]) : (key === 'z' ? '0' : '');
   creatures.topics = Array.isArray(talk.topicos) ? talk.topicos.map(t => ({ palavras: t.palavras || '', resposta: t.resposta || '' })) : [];
   creatures.shop = Array.isArray(talk.vende) ? talk.vende.map(e => ({ tipo: e.tipo || '', preco: Number(e.preco) || 0, palavras: e.palavras || '' })) : [];
+  creatures.buys = Array.isArray(talk.compra) ? talk.compra.map(e => ({ tipo: e.tipo || '', preco: Number(e.preco) || 0, palavras: e.palavras || '' })) : [];
   renderTopics();
   renderLines(talk);
   renderShop();

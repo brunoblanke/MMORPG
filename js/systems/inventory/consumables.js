@@ -2,6 +2,7 @@
 
 import { GameObject } from '../../models/game-object.js';
 import { objectUse } from '../../../shared/assets.js';
+import { RUNES } from '../../../shared/spells.js';
 import {
   EQUIP_SLOTS, USE_COOLDOWN_MS, FOOD_MAX_SECONDS, POTION_RANGE, EMPTY_VIAL, SPLASH_HP, SPLASH_MANA, SPLASH_STAGES, SPLASH_STAGE_MS, REGEN_MS, REGEN_HP, REGEN_MANA, itemInfo, newItem
 } from '../../../shared/items.js';
@@ -49,7 +50,7 @@ export const consumableMethods = {
   // Fonte de luz (tocha) acende ou apaga.
   // Potion vai no sqm target (a mira; sem target, no próprio player): em
   // player, cura; no chão, o líquido vaza. Nos dois casos a potion vira um
-  // vial vazio.
+  // vial vazio. Runa também vai com a mira (spells.js → useRune).
 
   use(player, from, target = null) {
     if (!from || !['e', 'c', 'g'].includes(from.t)) return;
@@ -57,7 +58,8 @@ export const consumableMethods = {
     if (src.error) return;
     const info = itemInfo(src.item.type);
     const use = objectUse(src.item.type);
-    if (!info.food && !info.heal && !use && !info.light) return;
+    const rune = RUNES[src.item.type];
+    if (!info.food && !info.heal && !use && !info.light && !rune) return;
     if (src.obj && !this.isNear(player, src.obj)) {
       this.walkNextTo(player, src.obj, { type: 'useItem', from, target });
       return;
@@ -65,6 +67,10 @@ export const consumableMethods = {
     if (info.light && !use && !info.food && !info.heal) {
       src.item.lit = !src.item.lit;
       if (src.obj) src.obj.lit = src.item.lit;
+      return;
+    }
+    if (rune) {
+      this.sim.spells.useRune(player, src, rune, target || { x: player.x, y: player.y, z: player.z || 0 });
       return;
     }
     if (use === 'livro') {
