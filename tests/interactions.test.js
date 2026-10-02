@@ -218,3 +218,14 @@ test('criatura não sobe em caixa nem pisa em escada ou buraco; só sobe puxada 
   assert.ok(Math.max(Math.abs(enemy.x - 10), Math.abs(enemy.y - 10)) <= 1);
   assert.equal(enemy.creature, CREATURE);
 });
+
+test('conferência do mundo: avisa placa sem texto, baú sem itens e objeto sem folha no gerador', async () => {
+  const { validateWorld } = await import('../js/core/validate.js');
+  setAssets([asset(SIGN, { bloqueia: true, uso: 'placa' }), asset(CHEST, { bloqueia: true, uso: 'bau-quest' })]);
+  const sim = game([[SIGN, 6, 5, 0], [SIGN, 7, 5, 0, { texto: 'ok' }], [CHEST, 8, 5, 0], ['itens/sumiu/nada', 9, 5, 0]]);
+  const warnings = validateWorld(sim);
+  assert.ok(warnings.some(w => w.startsWith('Placa sem texto') && w.includes('6,5,0')));
+  assert.ok(!warnings.some(w => w.includes('7,5,0')));
+  assert.ok(warnings.some(w => w.startsWith('Baú de quest sem itens') && w.includes('8,5,0')));
+  assert.ok(warnings.some(w => w.includes('itens/sumiu/nada') && w.includes('9,5,0')));
+});

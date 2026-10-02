@@ -167,6 +167,9 @@ async function iniciarJogo(servidorHttp) {
 
   const mapData = JSON.parse(fs.readFileSync(MAP_DATA_PATH, 'utf8'));
   const sim = new Simulation(mapData);
+  const { validateWorld } = await import(pathToFileURL(path.join(PASTA_JOGO, 'js', 'core', 'validate.js')).href);
+  const avisos = validateWorld(sim);
+  if (avisos.length) console.log(`\n⚠️  Conferência do mapa e do gerador (${avisos.length}):\n${avisos.map(a => `   • ${a}`).join('\n')}`);
   const personagens = carregarPersonagens();
   const conexoes = new Map();
   let proximoJogador = 1;
