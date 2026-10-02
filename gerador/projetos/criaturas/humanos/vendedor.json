@@ -11,27 +11,25 @@
     ]
   },
   "criatura": {
-    "id": 138,
+    "id": 160,
     "cores": [
-      115,
+      78,
       58,
-      116,
+      21,
       114
     ],
-    "addons": [
-      1
-    ]
+    "addons": []
   },
   "cadaver": {
     "fresco": {
       "tibia": {
-        "id": 4247,
+        "id": 4240,
         "variacao": 0
       }
     },
     "apodrecendo": {
       "tibia": {
-        "id": 4248,
+        "id": 4241,
         "variacao": 0
       }
     },
