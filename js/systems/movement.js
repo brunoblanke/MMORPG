@@ -316,11 +316,13 @@ export class MovementController {
   // ================================================================================================================================================================================================================================================
   // surroundPositions
   // Os sqms livres em volta de (x, y), do mais perto da entidade pro mais
-  // longe (sem ninguém de enemies neles).
+  // longe (sem ninguém de enemies neles, sem escada nem buraco: perseguindo,
+  // ninguém troca de andar sem querer).
 
   surroundPositions(entity, x, y, enemies) {
+    const floor = entity.z || 0;
     return getAdjacentPositions(x, y)
-      .filter(pos => this.isInsideMap(pos.x, pos.y) && !this.isBlocked(pos.x, pos.y, entity.z || 0))
+      .filter(pos => this.isInsideMap(pos.x, pos.y) && !this.isBlocked(pos.x, pos.y, floor) && !this.world.getTransitionAt(pos.x, pos.y, floor))
       .filter(pos => !enemies.some(e => e !== entity && e.x === pos.x && e.y === pos.y))
       .sort((a, b) => distance(entity.x, entity.y, a.x, a.y) - distance(entity.x, entity.y, b.x, b.y));
   }
