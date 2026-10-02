@@ -10,13 +10,14 @@ const { WebSocketServer } = require('ws');
 const app = express();
 
 const PASTA_JOGO = __dirname;
-const MAP_DATA_PATH = path.join(PASTA_JOGO, 'data', 'map.json');
+const MAP_DATA_PATH = process.env.JOGO_MAPA || path.join(PASTA_JOGO, 'data', 'map.json');
 const CHARACTERS_PATH = process.env.JOGO_PERSONAGENS || path.join(PASTA_JOGO, 'data', 'characters.json');
 const PASTA_PROJETOS = path.join(PASTA_JOGO, 'gerador', 'projetos');
 const PASTA_SAIDA = path.join(PASTA_JOGO, 'gerador', 'saida');
 const TAXONOMIA_PATH = path.join(PASTA_JOGO, 'gerador', 'taxonomia.json');
 const SAVE_INTERVAL_MS = 10000;
 const BACKUP_DIAS = 7;
+const RECARREGAR_ESPERA_MS = 500;
 const PORT = process.env.PORT || 8000;
 
 app.use(express.text({ type: 'text/plain', limit: '50mb' }));
@@ -166,25 +167,51 @@ async function iniciarJogo(servidorHttp) {
   const { setAssets } = await import(pathToFileURL(path.join(PASTA_JOGO, 'shared', 'assets.js')).href);
   setAssets(lerSprites());
 
-  const mapData = JSON.parse(fs.readFileSync(MAP_DATA_PATH, 'utf8'));
-  const sim = new Simulation(mapData);
   const { validateWorld } = await import(pathToFileURL(path.join(PASTA_JOGO, 'js', 'core', 'validate.js')).href);
-  const avisos = validateWorld(sim);
-  if (avisos.length) console.log(`\n⚠️  Conferência do mapa e do gerador (${avisos.length}):\n${avisos.map(a => `   • ${a}`).join('\n')}`);
+  const criarMundo = () => {
+    const mundo = new Simulation(JSON.parse(fs.readFileSync(MAP_DATA_PATH, 'utf8')));
+    const avisos = validateWorld(mundo);
+    if (avisos.length) console.log(`\n⚠️  Conferência do mapa e do gerador (${avisos.length}):\n${avisos.map(a => `   • ${a}`).join('\n')}`);
+    return mundo;
+  };
+  let sim = criarMundo();
+  let geracao = 0;
   fazerBackup();
   const personagens = carregarPersonagens();
   const conexoes = new Map();
   let proximoJogador = 1;
 
+  observarMudancas(() => {
+    let novo;
+    try {
+      setAssets(lerSprites());
+      novo = criarMundo();
+    } catch (err) {
+      console.error('❌ Não deu pra recarregar (arquivo ainda sendo gravado?):', err.message);
+      return;
+    }
+    guardarPersonagens(personagens, sim.players);
+    for (const { socket } of conexoes.values()) {
+      if (socket.readyState === socket.OPEN) socket.send(JSON.stringify({ type: 'reload' }));
+    }
+    conexoes.clear();
+    geracao++;
+    sim = novo;
+    console.log('🔄 Mapa e gerador recarregados: os navegadores recarregam sozinhos');
+  });
+
   const wss = new WebSocketServer({ server: servidorHttp, path: '/ws' });
   wss.on('connection', (socket) => {
     let player = null;
+    let minhaGeracao = geracao;
 
     socket.on('message', (dados) => {
       const mensagem = lerMensagem(dados);
       if (!mensagem) return;
+      if (player && minhaGeracao !== geracao) return;
 
       if (!player) {
+        minhaGeracao = geracao;
         if (mensagem.type !== 'join') return;
         const erro = validarEntrada(sim, mensagem.name, validateName);
         if (erro.error) {
@@ -207,7 +234,7 @@ async function iniciarJogo(servidorHttp) {
     });
 
     socket.on('close', () => {
-      if (!player) return;
+      if (!player || minhaGeracao !== geracao) return;
       guardarPersonagens(personagens, [player]);
       sim.removePlayer(player.id);
       conexoes.delete(player.id);
@@ -234,6 +261,31 @@ async function iniciarJogo(servidorHttp) {
       process.exit(0);
     });
   }
+}
+
+// ================================================================================================================================================================================================================================================
+// observarMudancas
+// Chama recarregar quando o gerador (folhas, receitas, taxonomia) ou o mapa
+// mudam no disco, uma vez por leva de mudanças (RECARREGAR_ESPERA_MS sem
+// nada novo). Assim, salvar no gerador ou no editor já vale no jogo.
+
+function observarMudancas(recarregar) {
+  let espera = null;
+  const mudou = () => {
+    clearTimeout(espera);
+    espera = setTimeout(recarregar, RECARREGAR_ESPERA_MS);
+  };
+  const observar = (alvo, opcoes, filtro = () => true) => {
+    try {
+      fs.watch(alvo, opcoes, (evento, nome) => { if (filtro(nome)) mudou(); });
+    } catch (err) {
+      console.error(`❌ Não deu pra observar ${alvo}:`, err.message);
+    }
+  };
+  observar(PASTA_PROJETOS, { recursive: true });
+  observar(PASTA_SAIDA, { recursive: true });
+  observar(path.dirname(TAXONOMIA_PATH), {}, nome => nome === path.basename(TAXONOMIA_PATH));
+  observar(path.dirname(MAP_DATA_PATH), {}, nome => nome === path.basename(MAP_DATA_PATH));
 }
 
 // ================================================================================================================================================================================================================================================

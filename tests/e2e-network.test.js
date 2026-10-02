@@ -3,7 +3,7 @@
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
-import { mkdtempSync, rmSync, mkdirSync, writeFileSync, readdirSync } from 'node:fs';
+import { mkdtempSync, rmSync, mkdirSync, writeFileSync, readdirSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -27,11 +27,12 @@ let tempDir = null;
 before(async () => {
   tempDir = mkdtempSync(path.join(tmpdir(), 'jogo-e2e-'));
   writeFileSync(path.join(tempDir, 'characters.json'), '{}');
+  writeFileSync(path.join(tempDir, 'map.json'), readFileSync(path.join(ROOT, 'data', 'map.json')));
   mkdirSync(path.join(tempDir, 'backups'));
   for (let day = 1; day <= 8; day++) writeFileSync(path.join(tempDir, 'backups', `characters-2020-01-0${day}.json`), '{}');
   server = spawn(process.execPath, ['server.js'], {
     cwd: ROOT,
-    env: { ...process.env, PORT: String(PORT), JOGO_PERSONAGENS: path.join(tempDir, 'characters.json') },
+    env: { ...process.env, PORT: String(PORT), JOGO_PERSONAGENS: path.join(tempDir, 'characters.json'), JOGO_MAPA: path.join(tempDir, 'map.json') },
     stdio: ['ignore', 'pipe', 'pipe']
   });
   await new Promise((resolve, reject) => {
@@ -58,7 +59,7 @@ after(() => {
 function connect(name) {
   return new Promise((resolve, reject) => {
     const socket = new WebSocket(`ws://localhost:${PORT}/ws`);
-    const client = { socket, state: null, events: [], playerId: null };
+    const client = { socket, state: null, events: [], playerId: null, reloaded: false };
     socket.on('error', reject);
     socket.on('open', () => socket.send(JSON.stringify({ type: 'join', name, gender: 'male' })));
     socket.on('message', (data) => {
@@ -69,6 +70,8 @@ function connect(name) {
       } else if (message.type === 'state') {
         client.state = decodeDelta(client.state, message.delta);
         client.events.push(...(message.events || []));
+      } else if (message.type === 'reload') {
+        client.reloaded = true;
       } else if (message.type === 'joinError') {
         reject(new Error(message.error));
       }
@@ -127,4 +130,22 @@ test('ao subir, o servidor faz o backup do dia dos personagens e guarda só os 7
   assert.equal(copies.length, 7);
   assert.ok(copies.includes(today));
   assert.ok(!copies.includes('characters-2020-01-01.json'));
+});
+
+test('mapa salvo: o servidor recarrega sozinho, avisa o navegador e o personagem volta onde estava', async () => {
+  const first = await connect('Recarga');
+  await until(first, c => c.state.players.some(p => p.name === 'Recarga'), 'Recarga no jogo');
+  const before = first.state.players.find(p => p.name === 'Recarga');
+  const mapPath = path.join(tempDir, 'map.json');
+  writeFileSync(mapPath, readFileSync(mapPath));
+  await until(first, c => c.reloaded, 'aviso de recarregar');
+  first.socket.close();
+  const again = await connect('Recarga');
+  try {
+    await until(again, c => c.state.players.some(p => p.name === 'Recarga'), 'Recarga de volta');
+    const after = again.state.players.find(p => p.name === 'Recarga');
+    assert.deepEqual([after.x, after.y, after.z], [before.x, before.y, before.z]);
+  } finally {
+    again.socket.close();
+  }
 });
