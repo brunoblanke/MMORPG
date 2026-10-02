@@ -24,7 +24,6 @@ export const SAVE_DELAY_MS = 600;
 export const LONG_PRESS_MS = 500;
 export const LAYOUT_COLS = ['left', 'right', 'free'];
 export const LAYOUT_VERSION = 2;
-export const BATTLE_RANGE = 7;
 export const REACH_CHECK_MS = 500;
 
 export const MAP_USES = ['placa', 'livro', 'bau-quest', 'corda', 'pa', 'descer', 'deposito'];
