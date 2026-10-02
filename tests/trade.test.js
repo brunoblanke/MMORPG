@@ -91,7 +91,8 @@ test('NPC que compra: vender com quantidade pede a confirmação; sim tira da mo
   const sim = game([{ uid: 'c2', type: GOLD, count: 20 }, { uid: 'r1', type: ROPE }, { uid: 'r2', type: ROPE }, { uid: 'r3', type: ROPE }], [{ type: ROPE, price: 40, name: 'Rope', words: ['corda', 'rope'] }]);
   say(sim, 'oi');
   assert.match(say(sim, 'trade').join(), /Eu compro: Rope \(40 moedas\)/);
-  assert.match(say(sim, 'vender 2 corda').join(), /vender 2 Rope por 80/);
+  assert.match(say(sim, 'vender').join(), /O que você quer me vender\? Eu compro: Rope/);
+  assert.match(say(sim, '2 corda').join(), /vender 2 Rope por 80/);
   assert.deepEqual(say(sim, 'sim'), ['Negócio fechado!']);
   const bag = sim.player.equip.mochila.items;
   assert.equal(bag.filter(item => item && item.type === ROPE).length, 1);
@@ -102,7 +103,8 @@ test('NPC que compra: vender com quantidade pede a confirmação; sim tira da mo
 test('NPC que compra: sem o item na mochila não paga nada; mais de 100 de ouro vira platinum', () => {
   const sim = game([{ uid: 'r1', type: ROPE }], [{ type: ROPE, price: 150, name: 'Rope', words: ['rope'] }]);
   say(sim, 'oi');
-  say(sim, 'sell 3 rope');
+  say(sim, 'sell');
+  say(sim, '3 rope');
   assert.deepEqual(say(sim, 'sim'), ['Você não tem 3 Rope.']);
   assert.equal(moneyOf(sim.player), 0);
   say(sim, 'sell rope');

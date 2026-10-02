@@ -46,6 +46,7 @@ export const SHOP_LINES = {
   semCap: { label: 'Sem cap', text: 'Você não tem capacidade pra carregar isso.' },
   desistiu: { label: 'Ao dizer não', text: 'Tudo bem.' },
   listaCompra: { label: 'O que compra', text: 'Eu compro: {lista}.' },
+  queVender: { label: 'Ao dizer vender', text: 'O que você quer me vender? Eu compro: {lista}.' },
   confirmarCompra: { label: 'Pergunta (venda do player)', text: 'Quer me vender {quantidade} {item} por {preco} moedas de ouro? (sim / não)' },
   comprado: { label: 'Comprado', text: 'Negócio fechado!' },
   semItem: { label: 'Player sem o item', text: 'Você não tem {quantidade} {item}.' }

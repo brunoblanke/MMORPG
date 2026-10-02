@@ -48,6 +48,7 @@ export class NpcController {
       npc.welcomed = new Map();
       npc.choosing = new Map();
       npc.offering = new Map();
+      npc.selling = new Set();
       npc.home = { x: spot.x, y: spot.y, z };
       npc.homeX = spot.x;
       npc.homeY = spot.y;
@@ -128,6 +129,7 @@ export class NpcController {
       npc.focus.delete(player.id);
       npc.choosing.delete(player.id);
       npc.offering.delete(player.id);
+      npc.selling.delete(player.id);
       this.npcSays(npc, player, def.bye.reply);
       return;
     }
@@ -179,11 +181,11 @@ export class NpcController {
   // ================================================================================================================================================================================================================================================
   // talkShop
   // NPC que vende ou compra: oferta (trade, loja…) lista o que ele vende e o
-  // que compra; vender (ou sell) com o nome de um item que ele compra, e a
-  // quantidade se quiser (vender 5 queijos), pede a confirmação com o preço;
-  // o nome de um item que ele vende (ou as palavras dele no gerador) também;
-  // sim fecha (trade.js → buy, sell), não desiste. Devolve true se a fala
-  // era dessa conversa.
+  // que compra. vender (ou sell) pergunta o que o player quer vender; aí o
+  // nome de um item que ele compra, com a quantidade se quiser (3 corda),
+  // pede a confirmação com o preço (vender 3 corda, tudo junto, também). Fora da venda, o nome de um item que ele
+  // vende (ou as palavras dele no gerador) também. sim fecha (trade.js →
+  // buy, sell), não desiste. Devolve true se a fala era dessa conversa.
 
   talkShop(npc, def, player, text) {
     const lines = def.shopLines || Object.fromEntries(Object.entries(SHOP_LINES).map(([k, v]) => [k, v.text]));
@@ -192,6 +194,7 @@ export class NpcController {
     const pending = npc.offering.get(player.id);
     if (pending && this.hasWord(text, YES_WORDS)) {
       npc.offering.delete(player.id);
+      npc.selling.delete(player.id);
       if (pending.amount) {
         const result = sell(this.sim, player, pending.type, pending.price, pending.amount);
         this.npcSays(npc, player, fillLine(result === 'ok' ? lines.comprado : lines.semItem, { item: pending.name, quantidade: pending.amount }));
@@ -202,12 +205,21 @@ export class NpcController {
       this.npcSays(npc, player, fillLine(replies[result], { item: pending.name, preco: pending.price }));
       return true;
     }
-    if (pending && this.hasWord(text, NO_WORDS)) {
+    if ((pending || npc.selling.has(player.id)) && this.hasWord(text, NO_WORDS)) {
       npc.offering.delete(player.id);
+      npc.selling.delete(player.id);
       this.npcSays(npc, player, lines.desistiu);
       return true;
     }
-    const selling = this.hasWord(text, SELL_WORDS) ? buys.find(entry => this.hasWord(text, entry.words)) : null;
+    const list = (entries) => entries.map(entry => `${entry.name} (${entry.price} moedas)`).join(', ');
+    const saysSell = buys.length && this.hasWord(text, SELL_WORDS);
+    const selling = saysSell || npc.selling.has(player.id) ? buys.find(entry => this.hasWord(text, entry.words)) : null;
+    if (saysSell && !selling) {
+      npc.selling.add(player.id);
+      npc.offering.delete(player.id);
+      this.npcSays(npc, player, fillLine(lines.queVender, { lista: list(buys) }));
+      return true;
+    }
     if (selling) {
       const number = Number((text.match(/\b\d+\b/) || [])[0]);
       const amount = Number.isInteger(number) && number > 0 ? Math.min(number, MAX_SELL) : 1;
@@ -221,8 +233,7 @@ export class NpcController {
       this.npcSays(npc, player, fillLine(lines.confirmar, { item: item.name, preco: item.price }));
       return true;
     }
-    if (this.hasWord(text, TRADE_WORDS) || this.hasWord(text, SELL_WORDS)) {
-      const list = (entries) => entries.map(entry => `${entry.name} (${entry.price} moedas)`).join(', ');
+    if (this.hasWord(text, TRADE_WORDS)) {
       const replies = [];
       if (shop.length) replies.push(fillLine(lines.lista, { lista: list(shop) }));
       if (buys.length) replies.push(fillLine(lines.listaCompra, { lista: list(buys) }));
@@ -271,10 +282,12 @@ export class NpcController {
           npc.focus.delete(playerId);
           npc.choosing.delete(playerId);
           npc.offering.delete(playerId);
+          npc.selling.delete(playerId);
         } else if (this.distanceTo(npc, player) > FOCUS_RANGE || now - since > FOCUS_IDLE_MS) {
           npc.focus.delete(playerId);
           npc.choosing.delete(playerId);
           npc.offering.delete(playerId);
+          npc.selling.delete(playerId);
           if (def) this.npcSays(npc, player, def.bye.reply);
         }
       }
