@@ -16,6 +16,7 @@ const PASTA_PROJETOS = path.join(PASTA_JOGO, 'gerador', 'projetos');
 const PASTA_SAIDA = path.join(PASTA_JOGO, 'gerador', 'saida');
 const TAXONOMIA_PATH = path.join(PASTA_JOGO, 'gerador', 'taxonomia.json');
 const SAVE_INTERVAL_MS = 10000;
+const BACKUP_DIAS = 7;
 const PORT = process.env.PORT || 8000;
 
 app.use(express.text({ type: 'text/plain', limit: '50mb' }));
@@ -170,6 +171,7 @@ async function iniciarJogo(servidorHttp) {
   const { validateWorld } = await import(pathToFileURL(path.join(PASTA_JOGO, 'js', 'core', 'validate.js')).href);
   const avisos = validateWorld(sim);
   if (avisos.length) console.log(`\n⚠️  Conferência do mapa e do gerador (${avisos.length}):\n${avisos.map(a => `   • ${a}`).join('\n')}`);
+  fazerBackup();
   const personagens = carregarPersonagens();
   const conexoes = new Map();
   let proximoJogador = 1;
@@ -246,6 +248,27 @@ function carregarPersonagens() {
   } catch (err) {
     if (err.code !== 'ENOENT') console.error('❌ Erro ao ler personagens:', err.message);
     return {};
+  }
+}
+
+// ================================================================================================================================================================================================================================================
+// fazerBackup
+// Ao subir o servidor, uma cópia dos personagens do dia em backups/ (ao lado
+// do arquivo, fora do git: characters-AAAA-MM-DD.json). Ficam as
+// BACKUP_DIAS mais novas.
+
+function fazerBackup() {
+  if (!fs.existsSync(CHARACTERS_PATH)) return;
+  try {
+    const pasta = path.join(path.dirname(CHARACTERS_PATH), 'backups');
+    fs.mkdirSync(pasta, { recursive: true });
+    const dia = new Date().toISOString().slice(0, 10);
+    const destino = path.join(pasta, `characters-${dia}.json`);
+    if (!fs.existsSync(destino)) fs.copyFileSync(CHARACTERS_PATH, destino);
+    const copias = fs.readdirSync(pasta).filter(nome => /^characters-\d{4}-\d{2}-\d{2}\.json$/.test(nome)).sort();
+    for (const velha of copias.slice(0, Math.max(0, copias.length - BACKUP_DIAS))) fs.unlinkSync(path.join(pasta, velha));
+  } catch (err) {
+    console.error('❌ Erro no backup dos personagens:', err.message);
   }
 }
 

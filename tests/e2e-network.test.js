@@ -3,7 +3,7 @@
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
-import { mkdtempSync, rmSync } from 'node:fs';
+import { mkdtempSync, rmSync, mkdirSync, writeFileSync, readdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -26,6 +26,9 @@ let tempDir = null;
 
 before(async () => {
   tempDir = mkdtempSync(path.join(tmpdir(), 'jogo-e2e-'));
+  writeFileSync(path.join(tempDir, 'characters.json'), '{}');
+  mkdirSync(path.join(tempDir, 'backups'));
+  for (let day = 1; day <= 8; day++) writeFileSync(path.join(tempDir, 'backups', `characters-2020-01-0${day}.json`), '{}');
   server = spawn(process.execPath, ['server.js'], {
     cwd: ROOT,
     env: { ...process.env, PORT: String(PORT), JOGO_PERSONAGENS: path.join(tempDir, 'characters.json') },
@@ -116,4 +119,12 @@ test('um player vê o outro chegar e ouve o que ele fala', async () => {
     ana.socket.close();
     beto.socket.close();
   }
+});
+
+test('ao subir, o servidor faz o backup do dia dos personagens e guarda só os 7 mais novos', () => {
+  const today = `characters-${new Date().toISOString().slice(0, 10)}.json`;
+  const copies = readdirSync(path.join(tempDir, 'backups')).sort();
+  assert.equal(copies.length, 7);
+  assert.ok(copies.includes(today));
+  assert.ok(!copies.includes('characters-2020-01-01.json'));
 });
