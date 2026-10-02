@@ -61,3 +61,16 @@ test('perseguir: o lado do alvo mais perto não tem caminho, mas outro tem — s
   const reachable = game.movement.moveTowardsPosition(game.player, enemy.x, enemy.y, game.time, enemy, game.searchBoundsAround(game.player), game.enemies);
   assert.equal(reachable, true);
 });
+
+test('sqm reservado por quem ficou preso atrás de outro inimigo não segura quem tem caminho livre até ele', () => {
+  const open = new Set([...Array.from({ length: 8 }, (_, i) => `${3 + i},10`), ...Array.from({ length: 6 }, (_, i) => `10,${4 + i}`)]);
+  const walls = [];
+  for (let x = 0; x <= 14; x++) for (let y = 0; y <= 14; y++) if (!open.has(`${x},${y}`)) walls.push(...wall(x, y));
+  const game = buildGame({ objects: [...floorRect(0, 14, 0, 14, 0), ...walls], enemies: [[9, 10, 0], [8, 10, 0], [10, 4, 0]], player: { x: 10, y: 10, z: 0 } });
+  for (const e of game.enemies) { e.detectionRadius = 10; e.atk = 0; e.patrolRadius = 0; }
+  const north = game.enemies[2];
+  const end = game.time + 8000;
+  while (game.time < end && !(north.x === 10 && north.y === 9)) game.tick(game.time + TICK_MS);
+  assert.deepEqual([north.x, north.y], [10, 9]);
+});
+

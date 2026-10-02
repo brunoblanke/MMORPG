@@ -10,6 +10,9 @@ import { creatureBehavior } from '../../shared/assets.js';
 const CHASE_STUCK_RETRY_MS = 8000;
 // Espalha as novas tentativas no tempo, pra não caírem todas no mesmo instante.
 const CHASE_RETRY_JITTER_MS = 1000;
+// Sqm reservado por quem está parado há mais que isso (preso atrás de outro)
+// deixa de valer pros outros.
+const SLOT_STALE_MS = 1500;
 
 // Máquina de estados de cada inimigo (enemy.ai):
 //
@@ -35,6 +38,7 @@ export class EnemyAI {
 
   constructor(movementController) {
     this.movement = movementController;
+    this.now = 0;
   }
 
   // ================================================================================================================================================================================================================================================
@@ -43,6 +47,7 @@ export class EnemyAI {
   // persegue; senão patrulha.
 
   update(enemy, player, enemies, timestamp, searchBounds = null) {
+    this.now = timestamp;
     const seesPlayer = !!player && !this.movement.world.isInSafeZone(player) &&
       getLevel(enemy) === getLevel(player) && enemy.isInDetectionRange(player.x, player.y);
 
@@ -216,10 +221,23 @@ export class EnemyAI {
 
   // ================================================================================================================================================================================================================================================
   // otherSlots
-  // Sqms colados no player que os outros inimigos em perseguição escolheram.
+  // Sqms colados no player que os outros inimigos em perseguição escolheram
+  // e ainda valem: o outro já está nele, ou andou (ou escolheu o sqm) há
+  // menos de SLOT_STALE_MS e está tão perto do sqm quanto este inimigo
+  // (empate: o de id menor). Quem ficou preso no caminho, ou está mais
+  // longe, não segura o sqm.
 
   otherSlots(enemy, enemies) {
-    return enemies.filter(e => e !== enemy && e.ai.state === AI_STATE.CHASE && e.ai.slot).map(e => e.ai.slot);
+    const gap = (e, slot) => Math.max(Math.abs(e.x - slot.x), Math.abs(e.y - slot.y));
+    return enemies.filter(e => {
+      const slot = e.ai.slot;
+      if (e === enemy || e.ai.state !== AI_STATE.CHASE || !slot) return false;
+      if (e.x === slot.x && e.y === slot.y) return true;
+      if (this.now - Math.max(e.lastMoveTime || 0, e.ai.slotAt || 0) > SLOT_STALE_MS) return false;
+      const mine = gap(enemy, slot);
+      const theirs = gap(e, slot);
+      return theirs < mine || (theirs === mine && e.id < enemy.id);
+    }).map(e => e.ai.slot);
   }
 
   // ================================================================================================================================================================================================================================================
@@ -407,6 +425,8 @@ export class EnemyAI {
       enemy.ai.slot = null;
       return false;
     }
+    const slot = enemy.ai.slot;
+    if (!slot || slot.x !== target.x || slot.y !== target.y) enemy.ai.slotAt = timestamp;
     enemy.ai.slot = { x: target.x, y: target.y };
     this.movement.followRoute(enemy, timestamp, (nextStep) =>
       this.isNextStepTaken(enemy, enemies, nextStep, target, timestamp, searchBounds));
