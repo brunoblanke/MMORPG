@@ -2,6 +2,7 @@ import { CONFIG } from '../config.js';
 import { shadeColor, isInRadius } from '../utils/helpers.js';
 import { SpriteRegistry, isSheetReady } from './sprite-registry.js';
 import { drawEntityOverlay } from './entity-overlay.js';
+import { drawTileTooltip } from './tile-tooltip.js';
 import { prepareDrawables } from './draw-order.js';
 import { getEntityLevel } from '../core/geometry.js';
 import { getAsset, objectIdType, openedAs, litAs } from '../../shared/assets.js';
@@ -64,6 +65,7 @@ export class Renderer {
     this.showDetectionAreas = true;
     this.showPatrolAreas = true;
     this.showYellowOutline = true;
+    this.showTooltip = true;
   }
 
   // ================================================================================================================================================================================
@@ -75,6 +77,7 @@ export class Renderer {
     this.showDetectionAreas = enabled;
     this.showPatrolAreas = enabled;
     this.showYellowOutline = enabled;
+    this.showTooltip = enabled;
   }
 
   // ================================================================================================================================================================================
@@ -683,6 +686,7 @@ export class Renderer {
     }
 
     ui.draw(this.ctx, gameState.player, this.devMode, gameState.world.isInSafeZone(gameState.player));
+    if (this.showTooltip) drawTileTooltip(this.ctx, this.camera, gameState, gameState.inputController);
 
     if (gameState.speech) gameState.speech.draw(this.ctx, this, getEntityLevel(gameState.player), this.frameTimestamp);
     this.drawStatusMessage(gameState.statusMessage);
