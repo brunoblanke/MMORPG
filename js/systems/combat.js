@@ -304,7 +304,8 @@ export class CombatController {
   // Inimigo que vê o player e está colado nele, no mesmo andar, ataca — a não
   // ser que o player esteja na zona segura ou o inimigo esteja fugindo. O
   // mago ataca de longe (rangedAttack); o pacífico nunca ataca.
-  // player.isTarget: algum inimigo (não pacífico) o vê (marca vermelha no player).
+  // player.isTarget: algum inimigo está atacando ele (perseguindo, no mesmo
+  // andar): a borda vermelha em volta do player.
 
   processEnemies(player, now) {
     if (this.sim.world.isInSafeZone(player)) {
@@ -312,17 +313,17 @@ export class CombatController {
       return;
     }
 
-    let anyEnemyInRange = false;
+    let attacked = false;
 
     for (const enemy of this.sim.enemies) {
       if (!enemy.isAlive() || creatureBehavior(enemy.creature) === 'pacifico') continue;
       if (!enemy.isInDetectionRange(player.x, player.y)) continue;
-      anyEnemyInRange = true;
 
       const isAdjacent = isPositionAdjacentTo(enemy.x, enemy.y, player.x, player.y);
       const canReach = getLevel(enemy) === getLevel(player);
       const fleeing = enemy.ai && enemy.ai.state === AI_STATE.FLEE;
       if (!canReach || fleeing || !player.isAlive()) continue;
+      if (enemy.ai.state === AI_STATE.CHASE && this.sim.closestPlayer(enemy) === player) attacked = true;
       if (creatureBehavior(enemy.creature) === 'mago') {
         this.rangedAttack(enemy, player, now);
       } else if (isAdjacent) {
@@ -330,6 +331,6 @@ export class CombatController {
       }
     }
 
-    player.isTarget = anyEnemyInRange;
+    player.isTarget = attacked;
   }
 }

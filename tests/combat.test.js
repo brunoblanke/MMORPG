@@ -2,7 +2,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { buildGame, floorRect, wall, HOLE } from './helpers/fixture.js';
+import { buildGame, floorRect, wall, HOLE, placeAt } from './helpers/fixture.js';
 import { TICK_MS } from '../js/simulation.js';
 
 test('alvo em outro andar não é aceito (e não gera "Alvo perdido")', () => {
@@ -84,5 +84,18 @@ test('perseguindo, o player não vai pro buraco colado na criatura (vai pra outr
   while (game.time < end) game.tick(game.time + TICK_MS);
   assert.equal(game.player.z, 0);
   assert.ok(Math.max(Math.abs(game.player.x - enemy.x), Math.abs(game.player.y - enemy.y)) <= 1);
+});
+
+test('player com criatura atacando fica marcado (borda vermelha); longe dela, não', () => {
+  const game = buildGame({ objects: floorRect(0, 30, 0, 30, 0), enemies: [[8, 5, 0]], player: { x: 5, y: 5, z: 0 } });
+  const enemy = game.enemies[0];
+  Object.assign(enemy, { atk: 0, detectionRadius: 7, patrolRadius: 0 });
+  game.tick(game.time + TICK_MS);
+  game.tick(game.time + TICK_MS);
+  assert.equal(game.player.isTarget, true);
+  placeAt(game, game.player, 25, 25, 0);
+  game.tick(game.time + TICK_MS);
+  game.tick(game.time + TICK_MS);
+  assert.equal(game.player.isTarget, false);
 });
 

@@ -278,7 +278,8 @@ export class Renderer {
   // getTint
   // Vermelho: dano recebido (player ou inimigo) e inimigo sob o mouse. Azul:
   // item, parede ou cadáver sob o mouse. Nada fica transparente. O alvo do
-  // player ganha a borda vermelha (drawOutline), não um tom.
+  // player, e o player que alguma criatura está atacando, ganham a borda
+  // vermelha (drawOutline), não um tom.
 
   getTint(entity, isHovered, isPlayer, isEnemy) {
     if (entity && entity.hitFlash) return TINT_HIT;
@@ -505,7 +506,7 @@ export class Renderer {
     } else {
       const frame = this.getEntityFrame(entity, isPlayer, isEnemy);
       if (frame) {
-        const outline = entity && entity === this.selectedTarget ? TARGET_OUTLINE : null;
+        const outline = entity && (entity === this.selectedTarget || (isPlayer && entity.isTarget)) ? TARGET_OUTLINE : null;
         this.drawAnchoredSprite(frame.image, frame.frameRect, base, size, stackOffsetX, stackOffsetY, tint, outline);
       } else {
         const color = entity && entity.color ? entity.color : "#888888";
