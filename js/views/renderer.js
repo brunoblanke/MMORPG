@@ -41,6 +41,7 @@ function hideCovered(drawables) {
 export const MESSAGE_COLORS = { info: '#5fe35f', warn: '#ffd84a', danger: '#ff4a4a', blue: '#6cb6ff' };
 
 const TINT_HIT = { color: '#ff2a2a', alpha: 0.55 };
+const TINT_BLOCK = { color: '#ff2a2a', alpha: 0.25 };
 const TINT_ENEMY_HOVER = { color: '#ff2a2a', alpha: 0.35 };
 const TARGET_OUTLINE = '#ff2a2a';
 const TINT_HOVER = { color: '#3b82f6', alpha: 0.35 };
@@ -276,12 +277,13 @@ export class Renderer {
 
   // ================================================================================================================================================================================
   // getTint
-  // Vermelho: dano recebido (player ou inimigo) e inimigo sob o mouse. Azul:
+  // Vermelho: dano recebido (player ou inimigo; golpe bloqueado, mais fraco)
+  // e inimigo sob o mouse. Azul:
   // item, parede ou cadáver sob o mouse. Nada fica transparente. O alvo do
   // player ganha a borda vermelha (drawOutline), não um tom.
 
   getTint(entity, isHovered, isPlayer, isEnemy) {
-    if (entity && entity.hitFlash) return TINT_HIT;
+    if (entity && entity.hitFlash) return entity.flashWeak ? TINT_BLOCK : TINT_HIT;
     if (isEnemy && isHovered) return TINT_ENEMY_HOVER;
     if (isHovered && !isPlayer && !isEnemy) return TINT_HOVER;
     return null;

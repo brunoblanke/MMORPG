@@ -129,6 +129,7 @@ export class CombatController {
 
   // ================================================================================================================================================================================================================================================
   // attackTarget
+  // Um golpe; bloqueado (0 de dano) vira o evento block (o alvo pisca fraco).
 
   attackTarget(attacker, defender, now, { melee = true } = {}) {
     if (now - attacker.lastAttackTime < CONFIG.attackCooldown) return false;
@@ -140,7 +141,10 @@ export class CombatController {
     if (defender.isPlayer && defender.equip && defender.equip.escudo && itemInfo(defender.equip.escudo.type).slot === 'escudo') {
       this.trainSkill(defender, 'shielding');
     }
-    if (damage <= 0) return defender.currentHp;
+    if (damage <= 0) {
+      this.sim.emit({ type: 'block', targetId: defender.id, x: defender.x, y: defender.y });
+      return defender.currentHp;
+    }
     if (attacker.isPlayer && !defender.isPlayer) this.recordDamage(defender, attacker, Math.min(damage, defender.currentHp));
     const hpLeft = defender.takeDamage(damage, now);
     this.sim.emit({ type: 'damage', targetId: defender.id, x: defender.x, y: defender.y, amount: damage });
