@@ -86,17 +86,3 @@ test('perseguindo, o player não vai pro buraco colado na criatura (vai pra outr
   assert.ok(Math.max(Math.abs(game.player.x - enemy.x), Math.abs(game.player.y - enemy.y)) <= 1);
 });
 
-test('golpe bloqueado (0 de dano) avisa a tela com o evento block, pra o alvo piscar fraco', () => {
-  const game = buildGame({ objects: floorRect(0, 14, 0, 14, 0), enemies: [[6, 5, 0]], player: { x: 5, y: 5, z: 0 } });
-  const enemy = game.enemies[0];
-  Object.assign(enemy, { atk: 0, detectionRadius: 8, patrolRadius: 0 });
-  const end = game.time + 5000;
-  const events = [];
-  while (game.time < end) {
-    game.tick(game.time + TICK_MS);
-    events.push(...game.drainEvents());
-  }
-  assert.ok(events.some(e => e.type === 'block' && e.targetId === game.player.id));
-  assert.ok(!events.some(e => e.type === 'damage' && e.targetId === game.player.id));
-});
-

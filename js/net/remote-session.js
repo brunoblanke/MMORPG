@@ -155,7 +155,7 @@ export class RemoteSession {
       applyState(this, { time: message.time, state: message.delta ? this.lastState : message.state }, this.playerId, Math.min(receivedAt, timestamp));
       for (const event of message.events) {
         events.push(event);
-        if (event.type === 'damage' || event.type === 'block') this.flash(event.targetId, timestamp, event.type === 'block');
+        if (event.type === 'damage') this.flash(event.targetId, timestamp);
       }
     }
     return events;
@@ -163,13 +163,10 @@ export class RemoteSession {
 
   // ================================================================================================================================================================================================================================================
   // flash
-  // Pisca a criatura que tomou dano (no jogo local isso vem da simulação);
-  // golpe bloqueado (weak) pisca mais fraco.
+  // Pisca a criatura que tomou dano (no jogo local isso vem da simulação).
 
-  flash(entityId, timestamp, weak = false) {
+  flash(entityId, timestamp) {
     const entity = this.players.find(p => p.id === entityId) || this.enemies.find(e => e.id === entityId);
-    if (!entity) return;
-    entity.flashUntil = timestamp + 150;
-    entity.flashWeak = weak;
+    if (entity) entity.flashUntil = timestamp + 150;
   }
 }
