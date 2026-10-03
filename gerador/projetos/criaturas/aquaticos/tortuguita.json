@@ -1,0 +1,62 @@
+{
+  "formato": {
+    "quadro": 32,
+    "quadros": 3,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 197,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 5624,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 5625,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 5626,
+        "variacao": 0
+      }
+    }
+  },
+  "propriedades": {
+    "comportamento": "foge",
+    "vida": 9999999999,
+    "xp": 0,
+    "velocidade": 50,
+    "armadura": 0,
+    "defesa": 0,
+    "ataque": 10,
+    "loot": [],
+    "falas": [
+      "Ta fraco hein!",
+      "Continua tentando...",
+      "zZzZzZz"
+    ]
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "aquaticos",
+  "nome": "tortuguita"
+}
