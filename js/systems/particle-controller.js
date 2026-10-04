@@ -34,7 +34,7 @@ export class ParticleController {
   // spawnMissile
 
   spawnMissile(event, renderer) {
-    this.particleSystem.spawnMissile(event.fromX, event.fromY, event.toX, event.toY, renderer);
+    this.particleSystem.spawnMissile(event.fromX, event.fromY, event.toX, event.toY, renderer, event.kind);
   }
 
   // ================================================================================================================================================================================================================================================

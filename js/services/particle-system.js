@@ -1,5 +1,21 @@
 // js/services/particle-system.js
 
+// Projéteis: flecha e lança (risco e ponta) e as bolinhas de magia ([cor,
+// brilho]) de cada tipo.
+const MISSILE_SHAFTS = {
+  arrow: { length: 12, color: '#c8a46a', tip: '#d8d8d8' },
+  spear: { length: 18, color: '#9a7446', tip: '#e0e0e0' }
+};
+const MISSILE_COLORS = {
+  energy: ['#c084fc', '#a855f7'],
+  fire: ['#ffb347', '#ff5a1f'],
+  poison: ['#8ef070', '#2fbf3a'],
+  ice: ['#bfefff', '#4fb8ff'],
+  earth: ['#9fd36a', '#4a8a2a'],
+  death: ['#555', '#111'],
+  holy: ['#fff6b0', '#ffd84a']
+};
+
 export class ParticleSystem {
   constructor() {
     this.particles = [];
@@ -43,11 +59,12 @@ export class ParticleSystem {
 
   // ================================================================================================================================================================================================================================================
   // spawnMissile
-  // Projétil de magia: uma bolinha que voa do sqm de origem até o de destino.
+  // Projétil que voa do sqm de origem até o de destino: flecha e lança são um
+  // risco apontado pra onde vão; o resto, uma bolinha da cor do tipo.
 
-  spawnMissile(fromX, fromY, toX, toY, renderer) {
+  spawnMissile(fromX, fromY, toX, toY, renderer, kind = 'energy') {
     this.missiles = this.missiles || [];
-    this.missiles.push({ fromX, fromY, toX, toY, renderer, createdAt: performance.now(), duration: 280 });
+    this.missiles.push({ fromX, fromY, toX, toY, renderer, kind, createdAt: performance.now(), duration: 280 });
   }
 
   // ================================================================================================================================================================================================================================================
@@ -80,12 +97,28 @@ export class ParticleSystem {
       const x = from.x + (to.x - from.x) * t + size / 2;
       const y = from.y + (to.y - from.y) * t + size / 2;
       ctx.save();
-      ctx.fillStyle = '#c084fc';
-      ctx.shadowColor = '#a855f7';
-      ctx.shadowBlur = 10;
-      ctx.beginPath();
-      ctx.arc(x, y, 4, 0, Math.PI * 2);
-      ctx.fill();
+      const shaft = MISSILE_SHAFTS[m.kind];
+      if (shaft) {
+        const angle = Math.atan2(to.y - from.y, to.x - from.x);
+        ctx.translate(x, y);
+        ctx.rotate(angle);
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = shaft.color;
+        ctx.beginPath();
+        ctx.moveTo(-shaft.length / 2, 0);
+        ctx.lineTo(shaft.length / 2, 0);
+        ctx.stroke();
+        ctx.fillStyle = shaft.tip;
+        ctx.fillRect(shaft.length / 2 - 2, -2, 4, 4);
+      } else {
+        const color = MISSILE_COLORS[m.kind] || MISSILE_COLORS.energy;
+        ctx.fillStyle = color[0];
+        ctx.shadowColor = color[1];
+        ctx.shadowBlur = 10;
+        ctx.beginPath();
+        ctx.arc(x, y, m.kind === 'energy' ? 4 : 5, 0, Math.PI * 2);
+        ctx.fill();
+      }
       ctx.restore();
     }
     for (const p of this.particles) {

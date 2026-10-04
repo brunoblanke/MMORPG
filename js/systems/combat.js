@@ -5,7 +5,7 @@ import { getLevel } from '../core/geometry.js';
 import { AI_STATE } from '../models/enemy.js';
 import { creatureBehavior } from '../../shared/assets.js';
 import { CONFIG } from '../config.js';
-import { equipBonus, itemInfo } from '../../shared/items.js';
+import { equipBonus, itemInfo, newItem } from '../../shared/items.js';
 import { addSkillTry } from '../../shared/skills.js';
 
 // Auto ataque: alvo sem caminho por UNREACHABLE_MS é largado e ignorado por SKIP_TARGET_MS.
@@ -26,6 +26,17 @@ const DEFENSE_FACTOR_AFTER_ATTACK = 0.75;
 const FIST_ATTACK = 7;
 const FIST_DEFENSE = 7;
 const ARMOR_SLOTS = ['cabeca', 'amuleto', 'corpo', 'pernas', 'pes', 'anel'];
+
+// Distância: arma de disparo (arco, besta) atira a munição do espaço de
+// munição até LAUNCHER_RANGE sqm; arma de arremesso (lança, de pilha) é
+// jogada até THROWN_RANGE e cai no sqm do alvo. Cada tiro gasta uma
+// unidade; acerta com DISTANCE_HIT_BASE + skill de distância (%), até
+// DISTANCE_HIT_MAX. Não passa pela defesa, só pela armadura.
+export const LAUNCHER_RANGE = 6;
+export const THROWN_RANGE = 4;
+const DISTANCE_HIT_BASE = 40;
+const DISTANCE_HIT_MAX = 90;
+const NO_AMMO_WARN_MS = 5000;
 
 // ================================================================================================================================================================================================================================================
 // normalRandom
@@ -63,13 +74,13 @@ export class CombatController {
   // O maior golpe possível: do player pela fórmula do Tibia (nível, skill da
   // arma na mão e ataque dela); da criatura, o ataque dela.
 
-  maxDamage(attacker) {
+  maxDamage(attacker, attackValue = null) {
     if (!attacker.isPlayer) return Math.max(0, attacker.atk || 0);
     const weapon = attacker.equip && attacker.equip.arma;
     const info = weapon ? itemInfo(weapon.type) : null;
     const skillKey = (info && info.weaponSkill) || 'fist';
     const skill = (attacker.skills && attacker.skills[skillKey] ? attacker.skills[skillKey].lvl : 10);
-    const attack = info && info.weaponSkill ? info.atk : FIST_ATTACK;
+    const attack = attackValue ?? (info && info.weaponSkill ? info.atk : FIST_ATTACK);
     return Math.round(Math.floor(attacker.lvl / 5) + (((skill / 4) + 1) * (attack / 3) * 1.03) / ATTACK_FACTOR);
   }
 
@@ -113,8 +124,8 @@ export class CombatController {
   // Um golpe: sorteio de 0 ao máximo, menos a defesa (se o golpe é corpo a
   // corpo) e a armadura. Pode dar 0 (bloqueado).
 
-  calculateDamage(attacker, defender, now = this.sim.time || 0, { melee = true } = {}) {
-    let damage = normalRandom(0, this.maxDamage(attacker));
+  calculateDamage(attacker, defender, now = this.sim.time || 0, { melee = true, attack = null } = {}) {
+    let damage = normalRandom(0, this.maxDamage(attacker, attack));
     if (melee && damage > 0) {
       const defense = this.defenseOf(defender, now);
       damage -= uniformRandom(Math.floor(defense / 2), defense);
@@ -130,11 +141,11 @@ export class CombatController {
   // ================================================================================================================================================================================================================================================
   // attackTarget
 
-  attackTarget(attacker, defender, now, { melee = true } = {}) {
+  attackTarget(attacker, defender, now, { melee = true, attack = null } = {}) {
     if (now - attacker.lastAttackTime < CONFIG.attackCooldown) return false;
     if (!defender.isAlive()) return false;
 
-    const damage = this.calculateDamage(attacker, defender, now, { melee });
+    const damage = this.calculateDamage(attacker, defender, now, { melee, attack });
     attacker.lastAttackTime = now;
     if (attacker.isPlayer) this.trainSkill(attacker, equipBonus(attacker.equip).atkSkill);
     if (defender.isPlayer && defender.equip && defender.equip.escudo && itemInfo(defender.equip.escudo.type).slot === 'escudo') {
@@ -168,6 +179,56 @@ export class CombatController {
     if (now - enemy.lastAttackTime < CONFIG.attackCooldown) return;
     this.sim.emit({ type: 'missile', fromX: enemy.x, fromY: enemy.y, toX: player.x, toY: player.y });
     this.attackTarget(enemy, player, now, { melee: false });
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // rangedWeapon
+  // A arma de distância do player: { range, attack, ammoKey, thrown }, ou
+  // { error } (sem munição), ou null (não é de distância).
+
+  rangedWeapon(player) {
+    const weapon = player.equip && player.equip.arma;
+    const info = weapon ? itemInfo(weapon.type) : null;
+    if (!info || info.weaponSkill !== 'distance') return null;
+    if (info.stack) return { range: THROWN_RANGE, attack: info.atk, ammoKey: 'arma', thrown: true };
+    const ammo = player.equip.municao;
+    const ammoInfo = ammo ? itemInfo(ammo.type) : null;
+    if (!ammoInfo || ammoInfo.weaponSkill !== 'distance' || ammoInfo.slot !== 'municao') return { error: 'Você está sem munição.' };
+    return { range: LAUNCHER_RANGE, attack: info.atk + ammoInfo.atk, ammoKey: 'municao', thrown: false };
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // canShoot
+  // O alvo está no alcance da arma de distância, com linha livre de parede.
+
+  canShoot(player, target, ranged) {
+    if (!ranged || ranged.error) return false;
+    const gap = Math.max(Math.abs(target.x - player.x), Math.abs(target.y - player.y));
+    return gap <= ranged.range && this.sim.movement.hasLineOfSight(player, target);
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // shoot
+  // Um tiro de distância: gasta uma unidade da munição (ou a lança, que cai
+  // no sqm do alvo), treina distance e acerta pela chance do skill.
+
+  shoot(player, target, ranged, now) {
+    if (now - player.lastAttackTime < CONFIG.attackCooldown || !target.isAlive()) return;
+    const ammo = player.equip[ranged.ammoKey];
+    ammo.count = (ammo.count || 1) - 1;
+    if (ammo.count <= 0) player.equip[ranged.ammoKey] = null;
+    this.sim.emit({ type: 'missile', fromX: player.x, fromY: player.y, toX: target.x, toY: target.y, kind: ranged.thrown ? 'spear' : 'arrow' });
+    if (ranged.thrown) {
+      const inventory = this.sim.inventory;
+      inventory.mergeGroundStack(inventory.spawnGroundItem(newItem(inventory.nextUid(), ammo.type, 1), target.x, target.y, target.z || 0));
+    }
+    const skill = player.skills && player.skills.distance ? player.skills.distance.lvl : 10;
+    if (Math.random() * 100 < Math.min(DISTANCE_HIT_MAX, DISTANCE_HIT_BASE + skill)) {
+      this.attackTarget(player, target, now, { melee: false, attack: ranged.attack });
+      return;
+    }
+    player.lastAttackTime = now;
+    this.trainSkill(player, 'distance');
   }
 
   // ================================================================================================================================================================================================================================================
@@ -206,7 +267,8 @@ export class CombatController {
   // processPlayer
   // Com alvo, o player está sempre num destes estados:
   //   perdeu o alvo (outro andar ou longe demais) → larga o alvo;
-  //   colado no alvo → ataca;
+  //   colado no alvo → ataca (com arma de distância: no alcance dela, com
+  //   linha livre; sem munição, avisa e não ataca);
   //   seguir ligado → anda até ele (pausa enquanto o player faz um caminho
   //   próprio, como ir abrir uma caixa, e volta a seguir ao chegar);
   //   seguir desligado (andou pelas teclas) → só espera: ataca se o alvo
@@ -225,10 +287,21 @@ export class CombatController {
       return;
     }
 
-    if (isPositionAdjacentTo(player.x, player.y, target.x, target.y)) {
+    const ranged = this.rangedWeapon(player);
+    const adjacent = isPositionAdjacentTo(player.x, player.y, target.x, target.y);
+    if (ranged && ranged.error) {
+      if (this.canShoot(player, target, { range: LAUNCHER_RANGE }) && now >= (player.noAmmoWarnAt || 0)) {
+        player.noAmmoWarnAt = now + NO_AMMO_WARN_MS;
+        this.sim.emit({ type: 'message', playerId: player.id, text: ranged.error, kind: 'warn' });
+      }
+    } else if (ranged && this.canShoot(player, target, ranged)) {
+      player.unreachableSince = null;
+      this.shoot(player, target, ranged, now);
+    } else if (!ranged && adjacent) {
       player.unreachableSince = null;
       this.attackTarget(player, target, now);
-    } else if (player.autoFollow && !this.sim.control.isWalking(player)) {
+    }
+    if (!adjacent && player.autoFollow && !this.sim.control.isWalking(player)) {
       const searchBounds = this.sim.searchBoundsAround(player);
       const reachable = this.sim.movement.moveTowardsPosition(player, target.x, target.y, now, target, searchBounds, this.sim.enemies);
       this.checkUnreachable(player, target, reachable, now);

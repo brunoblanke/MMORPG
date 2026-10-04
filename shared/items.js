@@ -74,8 +74,8 @@ const SLOT_BY_FOLDER = {
 // itemInfo
 // { name, slot, weight, stack, size, atk, def, ml, speed, heal } do tipo: slot é o espaço
 // do inventário (ou null), weight o peso de uma unidade (oz), stack o máximo
-// da pilha (0 = não empilha; equipamento e container nunca empilham, mesmo
-// marcados no gerador), size os espaços, se for container (0 = não é),
+// da pilha (0 = não empilha; container e equipamento nunca empilham, mesmo
+// marcados no gerador, menos munição e arma de arremesso), size os espaços, se for container (0 = não é),
 // atk/def/ml/speed os bônus de quem usa o item (0 = não tem) e heal o que
 // ele recupera ao ser usado ({ hp: [min, max], mana: [min, max] }, ou null)
 // e food os segundos de regeneração, se for comida (0 = não é); light o raio
@@ -96,7 +96,7 @@ export function itemInfo(type) {
     name: displayName(type),
     slot,
     weight: weight > 0 ? weight : DEFAULT_WEIGHT,
-    stack: props.empilhavel && !slot && !containerSize ? STACK_MAX : 0,
+    stack: props.empilhavel && !containerSize && (!slot || slot === 'municao' || folder === 'distancia') ? STACK_MAX : 0,
     size: containerSize,
     atk: bonusValue(props.atk),
     def: bonusValue(props.def),

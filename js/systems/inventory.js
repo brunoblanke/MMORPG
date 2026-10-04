@@ -182,6 +182,12 @@ export class InventoryController {
         return { kind: 'slot', container: bag, index: free, carried: true };
       }
       if (!fitsSlot(item.type, to.key)) return { error: 'Esse item não vai nesse espaço.' };
+      const worn = player.equip[to.key];
+      const stack = itemInfo(item.type).stack;
+      if (stack && worn && worn.type === item.type && worn.uid !== item.uid) {
+        if (worn.count >= stack) return { error: 'Essa pilha já está cheia.' };
+        return { kind: 'merge', target: worn, carried: true };
+      }
       return { kind: 'equip', key: to.key, carried: true };
     }
     if (to.t === 'c') {
