@@ -1,0 +1,94 @@
+{
+  "formato": {
+    "quadro": 32,
+    "quadros": 3,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 128,
+    "cores": [
+      114,
+      114,
+      114,
+      114
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 4247,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4248,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 4245,
+        "variacao": 0
+      }
+    }
+  },
+  "propriedades": {
+    "comportamento": "npc",
+    "conversa": {
+      "boasVindas": "Os mortos não descansam em paz...",
+      "oi": "Ah, {nome}... Os esqueletos voltaram a andar. Preciso de ajuda com ossos e esqueletos.",
+      "tchau": "Que os mortos te deixem em paz, {nome}.",
+      "raio": 1,
+      "topicos": [
+        {
+          "palavras": "missao, missoes, tarefa, ajuda",
+          "resposta": "Tenho duas missões: ossos e esqueletos. Diga o nome de uma."
+        }
+      ],
+      "vende": [],
+      "compra": [],
+      "missoes": [
+        {
+          "nome": "Ossos",
+          "palavras": "osso, ossos",
+          "tipo": "item",
+          "alvo": "itens/produtos-de-criaturas/bone",
+          "quantidade": 5,
+          "pedido": "Me traz 5 ossos dos esqueletos pra eu enterrar direito? (sim / não)",
+          "recompensa": {
+            "tipo": "itens/capacetes/viking-helmet",
+            "count": 1
+          },
+          "xp": 800,
+          "moedas": 0
+        },
+        {
+          "nome": "Esqueletos",
+          "palavras": "esqueleto, esqueletos",
+          "tipo": "matar",
+          "alvo": "criaturas/mortos-vivos/skeleton",
+          "quantidade": 8,
+          "pedido": "Destrói 8 esqueletos pra mim? (sim / não)",
+          "recompensa": {
+            "tipo": "itens/aneis/ring-of-healing",
+            "count": 1
+          },
+          "xp": 1000,
+          "moedas": 150
+        }
+      ]
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "personagens",
+  "pasta": "npcs",
+  "nome": "coveiro"
+}

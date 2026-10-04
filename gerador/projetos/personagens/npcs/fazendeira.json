@@ -1,0 +1,91 @@
+{
+  "formato": {
+    "quadro": 32,
+    "quadros": 3,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 136,
+    "cores": [
+      78,
+      86,
+      57,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 4247,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4248,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 4245,
+        "variacao": 0
+      }
+    }
+  },
+  "propriedades": {
+    "comportamento": "npc",
+    "conversa": {
+      "boasVindas": "Ei, você aí! Preciso de ajuda com a fazenda.",
+      "oi": "Olá, {nome}! Os ratos estão acabando com a minha fazenda. Tenho duas missões: queijos e ratos.",
+      "tchau": "Volte sempre, {nome}!",
+      "raio": 2,
+      "topicos": [
+        {
+          "palavras": "missao, missoes, tarefa, ajuda, trabalho",
+          "resposta": "Tenho duas missões: queijos e ratos. Diga o nome de uma."
+        }
+      ],
+      "vende": [],
+      "compra": [],
+      "missoes": [
+        {
+          "nome": "Queijos",
+          "palavras": "queijo, queijos",
+          "tipo": "item",
+          "alvo": "itens/comidas/cheese",
+          "quantidade": 5,
+          "pedido": "Os ratos roubaram meus queijos! Me traz 5 queijos de volta? (sim / não)",
+          "recompensa": {
+            "tipo": "itens/liquidos/health-potion",
+            "count": 2
+          },
+          "xp": 150,
+          "moedas": 30
+        },
+        {
+          "nome": "Ratos",
+          "palavras": "rato, ratos",
+          "tipo": "matar",
+          "alvo": "criaturas/mamiferos/rat",
+          "quantidade": 10,
+          "pedido": "Pode matar 10 ratos pra mim? (sim / não)",
+          "recompensa": null,
+          "xp": 300,
+          "moedas": 50
+        }
+      ]
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "personagens",
+  "pasta": "npcs",
+  "nome": "fazendeira"
+}
