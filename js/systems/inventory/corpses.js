@@ -33,15 +33,17 @@ export const corpseMethods = {
   // ================================================================================================================================================================================================================================================
   // fillPlayerCorpse
   // Morte do player: a mochila vai sempre pro corpo; cada outro item do
-  // inventário, com DEATH_DROP_CHANCE. O que cai sai do inventário.
+  // inventário, com DEATH_DROP_CHANCE (com caveira, tudo). O que cai sai do
+  // inventário.
 
   fillPlayerCorpse(corpse, player) {
     const box = { uid: this.nextUid(), type: PLAYER_SPRITES[player.gender] || PLAYER_SPRITES[DEFAULT_GENDER], items: new Array(EQUIP_SLOTS.length).fill(null) };
     let slot = 0;
+    const skulled = this.sim.social.hasSkull(player);
     for (const key of EQUIP_SLOTS) {
       const item = player.equip[key];
       if (!item) continue;
-      if (key !== 'mochila' && Math.random() >= DEATH_DROP_CHANCE) continue;
+      if (key !== 'mochila' && !skulled && Math.random() >= DEATH_DROP_CHANCE) continue;
       box.items[slot++] = item;
       player.equip[key] = null;
     }

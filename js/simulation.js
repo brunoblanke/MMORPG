@@ -20,6 +20,7 @@ import { NpcController } from './systems/npcs.js';
 import { SpellController } from './systems/spells.js';
 import { ConditionController } from './systems/conditions.js';
 import { CreaturePowers } from './systems/creature-powers.js';
+import { SocialController } from './systems/social.js';
 import { objectIdType, doorState } from '../shared/assets.js';
 
 export { TICK_MS };
@@ -68,6 +69,7 @@ export class Simulation {
     this.spells = new SpellController(this);
     this.conditions = new ConditionController(this);
     this.powers = new CreaturePowers(this);
+    this.social = new SocialController(this);
     this.npcs = [];
     this.talk = new NpcController(this, options.npcs || []);
   }
@@ -97,6 +99,7 @@ export class Simulation {
     player.renderStep = spot.step;
     this.players.push(player);
     this.world.addCreature(player);
+    this.social.onLogin(player);
     return player;
   }
 
@@ -151,6 +154,7 @@ export class Simulation {
   removePlayer(id) {
     const player = this.getPlayer(id);
     if (!player) return;
+    this.social.onLogout(player);
     this.world.removeCreature(player);
     this.players = this.players.filter(p => p !== player);
   }
@@ -286,6 +290,7 @@ export class Simulation {
       this.combat.processFloorDamage(player, now);
     }
     this.conditions.update(now);
+    this.social.update(now);
 
     this.movement.checkFloorTransitions([...this.players, ...this.enemies]);
     this.lifeCycle.processDeaths(now);

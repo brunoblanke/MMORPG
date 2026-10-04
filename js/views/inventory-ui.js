@@ -50,11 +50,12 @@ export class InventoryUI {
     this.view = view;
     if (!this.layout) this.layout = this.initialLayout(view);
     this.syncGroundWindows(view);
+    this.syncTradeWindow(view);
     this.dropMissingWindows();
     const player = this.game.player;
     this.battle = this.findWindow('battle') ? this.battleList() : [];
     const modes = player ? [player.followMode, player.attackMode] : null;
-    const key = JSON.stringify([view.equip, view.cap, view.opened, view.stats, this.layout, modes, this.battle]);
+    const key = JSON.stringify([view.equip, view.cap, view.opened, view.stats, view.social, this.layout, modes, this.battle]);
     if (key === this.lastKey || this.drag) return;
     this.lastKey = key;
     this.render();
@@ -260,6 +261,20 @@ export class InventoryUI {
       if (!found) return;
       if (btn.dataset.act === 'follow') {
         this.game.send({ type: 'toggleFollow' });
+        return;
+      }
+      if (btn.dataset.act === 'send') {
+        this.game.send(JSON.parse(btn.dataset.send));
+        return;
+      }
+      if (btn.dataset.act === 'pm') {
+        this.game.chatBox.writeTo(btn.dataset.name);
+        return;
+      }
+      if (btn.dataset.act === 'vipadd') {
+        const input = btn.closest('.inv-win').querySelector('.inv-vip-input');
+        if (input && input.value.trim()) this.game.send({ type: 'vipAdd', name: input.value.trim() });
+        if (input) input.value = '';
         return;
       }
       if (btn.dataset.act === 'attackmode') {

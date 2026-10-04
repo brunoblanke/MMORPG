@@ -89,6 +89,8 @@ export const htmlMethods = {
     if (win.kind === 'battle') return this.battleHtml(win, buttons(false));
     if (win.kind === 'vitals') return this.vitalsHtml(win);
     if (win.kind === 'book') return this.bookHtml(win, buttons(true));
+    if (win.kind === 'social') return this.socialHtml(win, buttons(false));
+    if (win.kind === 'trade') return this.tradeHtml(win);
     const box = this.findContainer(win.uid);
     if (!box) return '';
     const slots = box.items.map((item, i) => this.slotHtml(item, { t: 'c', uid: box.uid, i })).join('');
@@ -266,6 +268,60 @@ export const htmlMethods = {
     return `<section class="inv-win${win.min ? ' min' : ''}" data-win="${win.id}">
       <header class="inv-head"><span class="inv-title">Battle</span>${buttons}</header>
       <div class="inv-body"><div class="inv-battle">${rows || '<div class="inv-battle-empty">Nenhum inimigo à vista</div>'}</div></div>
+    </section>`;
+  },
+
+  // ================================================================================================================================================================================================================================================
+  // socialHtml
+  // Party (membros com vida e mana; sair), convites de party (entrar) e a
+  // lista VIP (verde online, cinza offline; × tira; campo pra pôr um nome).
+
+  socialHtml(win, buttons) {
+    const social = this.view.social || { party: [], invites: [], vip: [] };
+    const esc = (text) => String(text).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+    const send = (command, label, title = '') => `<button class="inv-btn inv-social-btn" data-act="send" data-send="${esc(JSON.stringify(command))}" type="button" title="${title}">${label}</button>`;
+    const party = social.party.map(m => `<div class="inv-battle-row">
+        <span class="inv-battle-name">${m.leader ? '★ ' : ''}${esc(m.name)}</span>
+        <div class="inv-battle-hp${m.hp <= 25 ? ' low' : m.hp <= 50 ? ' mid' : ''}"><i style="width:${m.hp}%"></i></div>
+        <div class="inv-battle-hp mana"><i style="width:${m.mana}%"></i></div>
+      </div>`).join('');
+    const invites = social.invites.map(i => `<div class="inv-social-line"><span>${esc(i.name)} te convidou</span>${send({ type: 'partyJoin', leaderId: i.id }, 'Entrar')}</div>`).join('');
+    const vip = social.vip.map(v => `<div class="inv-social-line"><span class="inv-vip ${v.online ? 'on' : 'off'}">${esc(v.name)}</span>
+        <span class="inv-social-acts">${v.online ? `<button class="inv-btn inv-social-btn" data-act="pm" data-name="${esc(v.name)}" type="button" title="Mensagem privada">✉</button>` : ''}${send({ type: 'vipRemove', name: v.name }, '×', 'Tirar da VIP')}</span></div>`).join('');
+    return `<section class="inv-win${win.min ? ' min' : ''}" data-win="${win.id}">
+      <header class="inv-head"><span class="inv-title">Social</span>${buttons}</header>
+      <div class="inv-body"><div class="inv-battle">
+        <div class="inv-social-head">Party${social.party.length ? send({ type: 'partyLeave' }, 'Sair') : ''}</div>
+        ${party || '<div class="inv-battle-empty">Botão direito num player pra convidar</div>'}${invites}
+        <div class="inv-social-head">VIP</div>
+        ${vip || '<div class="inv-battle-empty">Ninguém na lista</div>'}
+        <div class="inv-social-line"><input class="inv-vip-input" type="text" maxlength="30" placeholder="Nome" aria-label="Nome pra VIP"><button class="inv-btn inv-social-btn" data-act="vipadd" type="button">+</button></div>
+      </div></div>
+    </section>`;
+  },
+
+  // ================================================================================================================================================================================================================================================
+  // tradeHtml
+  // Troca com outro player: a minha oferta (arrastar um item pra cá), a dele,
+  // quem já aceitou, e os botões aceitar e cancelar.
+
+  tradeHtml(win) {
+    const trade = this.view.social && this.view.social.trade;
+    if (!trade) return '';
+    const esc = (text) => String(text).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+    const offer = (side, mine, accepted) => `<div class="inv-trade-side">
+        <span class="inv-trade-who">${mine ? 'Você' : esc(trade.with)}${accepted ? ' ✓' : ''}</span>
+        <div class="inv-tslot${mine ? ' mine' : ''}" ${mine ? 'data-trade-drop="1"' : ''}>${side ? `${this.spriteHtml(side.item.type, side.item.count)}${side.item.count > 1 ? `<span class="inv-count">${side.item.count}</span>` : ''}` : ''}</div>
+        <span class="inv-trade-name">${side ? esc(side.name) + (side.item.items ? ' (com o que tem dentro)' : '') : (mine ? 'Arraste um item' : 'Nada ainda')}</span>
+      </div>`;
+    return `<section class="inv-win inv-trade" data-win="${win.id}">
+      <header class="inv-head"><span class="inv-title">Troca com ${esc(trade.with)}</span></header>
+      <div class="inv-body"><div class="inv-trade-row">${offer(trade.mine, true, trade.myAccept)}${offer(trade.theirs, false, trade.theirAccept)}</div>
+        <div class="inv-trade-btns">
+          <button class="inv-btn inv-social-btn" data-act="send" data-send="${esc(JSON.stringify({ type: 'tradeCancel' }))}" type="button">Cancelar</button>
+          <button class="inv-btn inv-social-btn primary" data-act="send" data-send="${esc(JSON.stringify({ type: 'tradeAccept' }))}" type="button"${trade.myAccept ? ' disabled' : ''}>Aceitar</button>
+        </div>
+      </div>
     </section>`;
   },
 };

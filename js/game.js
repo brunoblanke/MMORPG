@@ -21,6 +21,7 @@ import { InventoryUI } from './views/inventory-ui.js';
 import { describeEntity, describeGroundObject } from './views/look.js';
 import { SpeechLayer } from './views/speech.js';
 import { ChatBox } from './views/chat-box.js';
+import { PlayerMenu } from './views/player-menu.js';
 
 // Tempo pra saber se o clique em caixa/cadáver é o começo de um duplo clique.
 const DOUBLE_CLICK_MS = 250;
@@ -74,6 +75,7 @@ export class GameController {
     this.statusMessage = null;
     this.speech = new SpeechLayer();
     this.chatBox = new ChatBox(this);
+    this.playerMenu = new PlayerMenu(this);
 
     this.boot();
   }
@@ -212,6 +214,10 @@ export class GameController {
 
     this.canvas.addEventListener('contextmenu', function(evt) {
       evt.preventDefault();
+      if (self.playerMenu.openAt(evt)) {
+        evt.stopImmediatePropagation();
+        return;
+      }
       self.useStairsAtMouse();
     });
 

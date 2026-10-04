@@ -157,6 +157,11 @@ export const dragMethods = {
     document.querySelectorAll('.inv-slot').forEach(el => el.classList.remove('can-drop', 'over', 'reject', 'source'));
     this.drag = null;
     const target = document.elementFromPoint(evt.clientX, evt.clientY);
+    if (target && target.closest('[data-trade-drop]')) {
+      if (from.t === 'e' || from.t === 'c') this.game.send({ type: 'tradeOffer', from });
+      this.lastKey = '';
+      return;
+    }
     const slot = target && target.closest('.inv-slot');
     if (slot && !this.canDropOn(item.type, item.uid, this.placeOf(slot))) return;
     const to = slot ? this.placeOf(slot) : this.worldDrop({ target, clientX: evt.clientX, clientY: evt.clientY });

@@ -4,7 +4,7 @@
 // digitar (qualquer letra, número ou símbolo) ou Enter abre a caixa com o
 // que foi digitado; as setas continuam andando. Enter dentro dela envia
 // (comando say) e devolve o teclado pro jogo; Esc fecha sem enviar. A seta
-// no canto também envia.
+// no canto também envia. *nome* texto manda a mensagem só pra esse player.
 
 export class ChatBox {
 
@@ -56,6 +56,19 @@ export class ChatBox {
     const text = this.input.value.replace(/\s+/g, ' ').trim();
     this.input.value = '';
     if (!text || !this.game.session) return;
-    this.game.send({ type: 'say', text });
+    const privateTo = text.match(/^\*([^*]+)\*\s*(.+)$/);
+    if (privateTo) this.game.send({ type: 'privateMessage', to: privateTo[1].trim(), text: privateTo[2] });
+    else this.game.send({ type: 'say', text });
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // writeTo
+  // Abre a caixa já com *nome* (mensagem privada pra ele).
+
+  writeTo(name) {
+    const input = /** @type {HTMLInputElement} */ (this.input);
+    if (!input) return;
+    input.value = `*${name}* `;
+    input.focus();
   }
 }

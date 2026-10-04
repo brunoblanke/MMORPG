@@ -418,6 +418,7 @@ export class InventoryController {
         ...(this.depotObject(player) ? [{ id: player.openDepot, item: player.depot, corpse: false, depot: true, name: null }] : [])
       ],
       stats: this.statsFor(player),
+      social: this.sim.social.viewFor(player),
       layout: player.uiLayout
     };
   }

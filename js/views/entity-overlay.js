@@ -3,13 +3,15 @@
 import { displayName } from '../../shared/assets.js';
 import { drawTibiaText, healthColor } from './tibia-text.js';
 
-// Nome no estilo do Tibia (negrito, contorno preto), sempre verde, e barra
+// Nome no estilo do Tibia (negrito, contorno preto), sempre verde (player
+// com caveira: a caveira branca em cima do nome), e barra
 // com o mesmo visual da janela de battle (css/inventory.css): 3px, cantos
 // arredondados, na cor da vida (healthColor: verde/amarela/vermelha).
 const HP_BAR_HEIGHT = 3;
 const HP_BAR_BACK = '#12151b';
 const NAME_COLOR = '#5fe35f';
 const CORPSE_NAME_COLOR = '#a0a0a0';
+const SKULL_COLOR = '#ffffff';
 
 // ================================================================================================================================================================================================================================================
 // roundRect
@@ -55,6 +57,7 @@ export function drawEntityOverlay(ctx, entity, base, stackOffsetX, stackOffsetY,
   const barY = base.y - 15 - stackOffsetY;
 
   drawTibiaText(ctx, name, centerX, barY - 3, isCorpse ? CORPSE_NAME_COLOR : NAME_COLOR);
+  if (isPlayer && entity.skull) drawTibiaText(ctx, '☠', centerX, barY - 16, SKULL_COLOR);
 
   if (hasHp && !isCorpse) {
     ctx.save();

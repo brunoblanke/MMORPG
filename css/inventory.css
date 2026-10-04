@@ -167,3 +167,28 @@
 
 /* Item animado (tocha acesa, fogo…): passa pelos quadros da folha. */
 @keyframes inv-anim{ from{ background-position-x:var(--x0); } to{ background-position-x:var(--x1); } }
+
+.player-menu{ position:fixed; z-index:60; min-width:150px; padding:4px; border-radius:6px; background:var(--inv-panel); border:1px solid var(--inv-line); box-shadow:0 6px 18px rgba(0,0,0,.5); display:flex; flex-direction:column; font-family:'IBM Plex Sans', system-ui, sans-serif; font-size:12px; }
+.player-menu-title{ padding:4px 8px 6px; font-weight:700; color:var(--inv-text); border-bottom:1px solid var(--inv-line-soft); margin-bottom:2px; }
+.player-menu button{ all:unset; padding:5px 8px; border-radius:4px; color:var(--inv-text); cursor:pointer; }
+.player-menu button:hover{ background:var(--inv-panel-2); color:var(--inv-accent); }
+
+.inv-social-head{ display:flex; align-items:center; justify-content:space-between; margin-top:4px; font-size:10px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--inv-muted); }
+.inv-social-line{ display:flex; align-items:center; justify-content:space-between; gap:4px; padding:2px 6px; font-size:11px; }
+.inv-social-acts{ display:flex; gap:2px; }
+.inv-social-btn{ width:auto; min-width:18px; padding:0 6px; font-size:11px; }
+.inv-vip{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.inv-vip::before{ content:''; display:inline-block; width:6px; height:6px; margin-right:5px; border-radius:50%; background:var(--inv-muted); vertical-align:middle; }
+.inv-vip.on::before{ background:#22c55e; }
+.inv-vip.off{ color:var(--inv-muted); }
+.inv-vip-input{ flex:1; min-width:0; height:20px; padding:0 6px; border-radius:4px; border:1px solid var(--inv-line); background:var(--inv-slot); color:var(--inv-text); font:inherit; font-size:11px; }
+.inv-battle-hp.mana i{ background:#4c8dff; }
+.inv-trade{ width:260px; }
+.inv-trade-row{ display:flex; gap:8px; padding:8px; }
+.inv-trade-side{ flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; text-align:center; }
+.inv-trade-who{ font-size:11px; font-weight:700; }
+.inv-tslot{ position:relative; width:36px; height:36px; border-radius:4px; background:var(--inv-slot); border:1px solid var(--inv-line); display:flex; align-items:center; justify-content:center; }
+.inv-tslot.mine{ border-style:dashed; border-color:var(--inv-accent-dim); }
+.inv-trade-name{ font-size:10px; color:var(--inv-muted); }
+.inv-trade-btns{ display:flex; justify-content:flex-end; gap:6px; padding:0 8px 8px; }
+.inv-social-btn.primary{ background:var(--inv-accent-dim); color:var(--inv-text); }

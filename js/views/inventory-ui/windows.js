@@ -21,7 +21,7 @@ export const windowMethods = {
     if (saved && saved.v === LAYOUT_VERSION && Array.isArray(saved.left) && Array.isArray(saved.right)) {
       for (const col of LAYOUT_COLS) {
         for (const entry of Array.isArray(saved[col]) ? saved[col] : []) {
-          if (entry && ['inventory', 'skills', 'vitals', 'battle'].includes(entry.ref)) {
+          if (entry && ['inventory', 'skills', 'vitals', 'battle', 'social'].includes(entry.ref)) {
             layout[col].push(this.makeWindow(entry.ref, null, entry));
             continue;
           }
@@ -31,20 +31,20 @@ export const windowMethods = {
       }
       if (LAYOUT_COLS.some(col => layout[col].some(w => w.kind === 'inventory'))) return this.withVitals(layout);
     }
-    layout.left.push(this.makeWindow('vitals', null), this.makeWindow('skills', null, { min: true }), this.makeWindow('battle', null, { min: true }));
+    layout.left.push(this.makeWindow('vitals', null), this.makeWindow('skills', null, { min: true }), this.makeWindow('battle', null, { min: true }), this.makeWindow('social', null, { min: true }));
     layout.right.push(this.makeWindow('inventory', null));
     return layout;
   },
 
   // ================================================================================================================================================================================================================================================
   // withVitals
-  // Vida e mana, skills e battle sempre existem (não fecham, só minimizam):
-  // a que falta no layout entra embaixo do inventário, nessa ordem. Skills e
-  // battle entram minimizadas.
+  // Vida e mana, skills, battle e social sempre existem (não fecham, só
+  // minimizam): a que falta no layout entra embaixo do inventário, nessa
+  // ordem. Skills, battle e social entram minimizadas.
 
   withVitals(layout) {
     let after = 'inventory';
-    for (const kind of ['vitals', 'skills', 'battle']) {
+    for (const kind of ['vitals', 'skills', 'battle', 'social']) {
       if (!LAYOUT_COLS.some(c => layout[c].some(w => w.kind === kind))) {
         const col = LAYOUT_COLS.find(c => layout[c].some(w => w.kind === after)) || 'right';
         layout[col].splice(layout[col].findIndex(w => w.kind === after) + 1, 0, this.makeWindow(kind, null, { min: kind !== 'vitals' }));
@@ -89,6 +89,22 @@ export const windowMethods = {
     this.layout.free.push({ id: 'book', kind: 'book', title, text: text || 'O livro está em branco.', x: Math.max(8, (window.innerWidth - width) / 2), y: Math.max(8, window.innerHeight * 0.18) });
     this.lastKey = '';
     this.render();
+  },
+
+  // ================================================================================================================================================================================================================================================
+  // syncTradeWindow
+  // A janela da troca aparece solta no meio da tela enquanto o servidor diz
+  // que há uma troca, e some quando ela acaba.
+
+  syncTradeWindow(view) {
+    const trading = !!(view.social && view.social.trade);
+    const open = this.allWindows().some(w => w.kind === 'trade');
+    if (trading && !open) {
+      const width = 260;
+      this.layout.free.push({ id: 'trade', kind: 'trade', x: Math.max(8, (window.innerWidth - width) / 2), y: Math.max(8, window.innerHeight * 0.25) });
+    } else if (!trading && open) {
+      this.removeWindows(w => w.kind === 'trade');
+    }
   },
 
   // ================================================================================================================================================================================================================================================
@@ -300,7 +316,7 @@ export const windowMethods = {
       if (!this.view || !this.layout) return;
       const place = (w) => (w.x !== null ? { x: Math.round(w.x), y: Math.round(w.y) } : {});
       const entry = (w) => {
-        if (w.kind === 'book') return null;
+        if (w.kind === 'book' || w.kind === 'trade') return null;
         if (w.kind !== 'container') return { ref: w.kind, rows: w.rows, min: w.min, bars: w.bars, ...place(w) };
         if (w.ground) return null;
         const path = this.pathOf(this.view, w.uid);

@@ -51,6 +51,16 @@ export class PlayerControl {
       case 'useDoor': return this.useDoor(player, command.x, command.y, command.z);
       case 'say': return this.sim.spells.cast(player, command.text) || this.sim.talk.playerSays(player, command.text);
       case 'turn': return this.turn(player, command.dx, command.dy);
+      case 'partyInvite': return this.sim.social.invite(player, command.targetId);
+      case 'partyJoin': return this.sim.social.join(player, command.leaderId);
+      case 'partyLeave': return this.sim.social.leave(player);
+      case 'privateMessage': return this.sim.social.privateMessage(player, command.to, command.text);
+      case 'vipAdd': return this.sim.social.vipAdd(player, command.name);
+      case 'vipRemove': return this.sim.social.vipRemove(player, command.name);
+      case 'tradeOpen': return this.sim.social.tradeOpen(player, command.targetId);
+      case 'tradeOffer': return this.sim.social.tradeOffer(player, command.from);
+      case 'tradeAccept': return this.sim.social.tradeAccept(player);
+      case 'tradeCancel': return this.sim.social.cancelTrade(player);
       default: console.warn('Comando desconhecido:', command);
     }
   }
@@ -227,7 +237,12 @@ export class PlayerControl {
       player.target = null;
       return;
     }
-    const enemy = this.sim.enemies.find(e => e.id === targetId && e.isAlive());
+    const other = this.sim.players.find(p => p.id === targetId);
+    if (other && !this.sim.social.canAttack(player, other)) {
+      this.sim.emit({ type: 'message', playerId: player.id, text: 'Você não pode atacar esse player (zona segura, mesma party ou nível abaixo de 8).', kind: 'warn' });
+      return;
+    }
+    const enemy = other || this.sim.enemies.find(e => e.id === targetId && e.isAlive());
     if (!enemy || this.sim.combat.isTargetLost(player, enemy)) return;
     player.target = enemy;
     player.autoFollow = player.followMode;

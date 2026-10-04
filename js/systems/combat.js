@@ -156,6 +156,7 @@ export class CombatController {
     if (defender.isPlayer && defender.equip && defender.equip.escudo && itemInfo(defender.equip.escudo.type).slot === 'escudo') {
       this.trainSkill(defender, 'shielding');
     }
+    if (attacker.isPlayer && defender.isPlayer) this.sim.social.onPlayerAttack(attacker, defender, now);
     if (damage <= 0) return defender.currentHp;
     if (attacker.isPlayer && !defender.isPlayer) this.recordDamage(defender, attacker, Math.min(damage, defender.currentHp));
     const hpLeft = defender.takeDamage(damage, now);
@@ -375,9 +376,11 @@ export class CombatController {
 
   // ================================================================================================================================================================================================================================================
   // isTargetLost
-  // Alvo em outro andar ou a mais de targetLoseRange sqms.
+  // Alvo em outro andar ou a mais de targetLoseRange sqms; player que não dá
+  // mais pra atacar (saiu, entrou na zona segura, na mesma party).
 
   isTargetLost(player, target) {
+    if (target.isPlayer && !this.sim.social.canAttack(player, target)) return true;
     if (getLevel(player) !== getLevel(target)) return true;
     return distance(player.x, player.y, target.x, target.y) > CONFIG.targetLoseRange;
   }

@@ -105,17 +105,21 @@ export class LifeCycleController {
   // ================================================================================================================================================================================================================================================
   // shareXp
   // Como no Tibia: cada player ganha a XP da criatura vezes a fração do dano
-  // total que ele causou. Quem já saiu do jogo perde a parte dele.
+  // total que ele causou (em party, a da party é dividida entre os membros
+  // perto: social.js). Quem já saiu do jogo perde a parte dele.
 
   shareXp(enemy) {
     const sim = this.sim;
     const damageBy = enemy.damageBy || new Map();
     const total = [...damageBy.values()].reduce((sum, amount) => sum + amount, 0);
     if (!total || !(enemy.xp > 0)) return;
+    const gains = new Map();
     for (const [playerId, amount] of damageBy) {
       const player = sim.getPlayer(playerId);
-      if (!player || !player.isAlive()) continue;
-      const xpGain = Math.round(enemy.xp * amount / total);
+      if (player && player.isAlive()) gains.set(player, enemy.xp * amount / total);
+    }
+    for (const [player, share] of sim.social.shareXp(gains, enemy)) {
+      const xpGain = Math.round(share);
       if (xpGain <= 0) continue;
       const levels = player.gainXp(xpGain);
       sim.emit({ type: 'xp', playerId: player.id, x: enemy.x, y: enemy.y, amount: xpGain });
