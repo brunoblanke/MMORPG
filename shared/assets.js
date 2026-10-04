@@ -83,6 +83,28 @@ export function creatureStats(type) {
 }
 
 // ================================================================================================================================================================================================================================================
+// creaturePowers
+// O que a criatura faz além do golpe (gerador → Criaturas): spell, a magia
+// de longe ({ kind, damage, chance %, a cada tentativa }); poison, o veneno
+// que o golpe deixa (dano por vez); summon, a criatura que ela invoca ({
+// type, max }); respawn, o tempo pra renascer (ms; 0 = o padrão).
+
+export const SPELL_ELEMENTS = ['fire', 'energy', 'poison', 'ice', 'earth', 'death', 'holy'];
+
+export function creaturePowers(type) {
+  const asset = getAsset(type);
+  const props = (asset && asset.propriedades) || {};
+  const int = (value) => Math.max(0, Math.floor(Number(value)) || 0);
+  const magic = props.magia || {};
+  const spell = SPELL_ELEMENTS.includes(magic.tipo) && int(magic.dano) > 0
+    ? { kind: magic.tipo, damage: int(magic.dano), chance: Math.min(100, Math.max(1, int(magic.chance) || 20)) }
+    : null;
+  const call = props.invoca || {};
+  const summon = typeof call.tipo === 'string' && call.tipo && int(call.max) > 0 ? { type: call.tipo, max: Math.min(5, int(call.max)) } : null;
+  return { spell, poison: int(props.veneno), summon, respawn: int(props.respawn) * 1000 };
+}
+
+// ================================================================================================================================================================================================================================================
 // creatureLoot
 // O que a criatura pode deixar no corpo (gerador → Criaturas → Loot):
 // [{ tipo, chance (0–1), min, max }], só as entradas válidas.

@@ -120,6 +120,16 @@
       <div class="field stat"><label for="creatureArmor">Armadura</label><input type="number" id="creatureArmor" min="0" step="1" value="0" /></div>
       <div class="field stat"><label for="creatureDefense">Defesa</label><input type="number" id="creatureDefense" min="0" step="1" value="0" /></div>
       <div class="field stat"><label for="creatureAttack" title="O maior golpe (corpo a corpo; mago: o de longe)">Ataque</label><input type="number" id="creatureAttack" min="0" step="1" value="0" /></div>
+      <div class="field stat"><label for="creatureSpell" title="Lançada no player perseguido, de até 4 sqm">Magia de longe</label><select id="creatureSpell">
+        <option value="">Nenhuma</option><option value="fire">Fogo</option><option value="energy">Energia</option><option value="poison">Veneno</option>
+        <option value="ice">Gelo</option><option value="earth">Terra</option><option value="death">Morte</option><option value="holy">Sagrada</option>
+      </select></div>
+      <div class="field stat"><label for="creatureSpellDamage" title="O maior dano da magia">Dano da magia</label><input type="number" id="creatureSpellDamage" min="0" step="1" value="0" /></div>
+      <div class="field stat"><label for="creatureSpellChance" title="Chance a cada 2 segundos perseguindo">Chance da magia (%)</label><input type="number" id="creatureSpellChance" min="0" max="100" step="1" value="20" /></div>
+      <div class="field stat"><label for="creaturePoison" title="O golpe que acerta envenena: dano por vez (0 = não envenena)">Veneno no golpe</label><input type="number" id="creaturePoison" min="0" step="1" value="0" /></div>
+      <div class="field stat"><label for="creatureSummon" title="Chama essa criatura ao lado enquanto persegue (sem XP nem loot)">Invoca</label><select id="creatureSummon"><option value="">Ninguém</option></select></div>
+      <div class="field stat"><label for="creatureSummonMax">Invocadas no máximo</label><input type="number" id="creatureSummonMax" min="0" max="5" step="1" value="0" /></div>
+      <div class="field stat"><label for="creatureRespawn" title="Segundos pra renascer depois de morrer (0 = o padrão); chefe: um tempo grande">Respawn (s)</label><input type="number" id="creatureRespawn" min="0" step="1" value="0" /></div>
       <div class="field loot-field">
         <label>Loot · chance de cair (%) e quantidade</label>
         <div class="loot-list" id="creatureLoot"></div>

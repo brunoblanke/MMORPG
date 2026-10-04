@@ -19,6 +19,7 @@ import { InteractionController } from './systems/interactions.js';
 import { NpcController } from './systems/npcs.js';
 import { SpellController } from './systems/spells.js';
 import { ConditionController } from './systems/conditions.js';
+import { CreaturePowers } from './systems/creature-powers.js';
 import { objectIdType, doorState } from '../shared/assets.js';
 
 export { TICK_MS };
@@ -66,6 +67,7 @@ export class Simulation {
     this.interactions = new InteractionController(this);
     this.spells = new SpellController(this);
     this.conditions = new ConditionController(this);
+    this.powers = new CreaturePowers(this);
     this.npcs = [];
     this.talk = new NpcController(this, options.npcs || []);
   }
@@ -269,11 +271,12 @@ export class Simulation {
       this.inventory.digest(player, now);
     }
 
-    for (const enemy of this.enemies) {
+    for (const enemy of [...this.enemies]) {
       const player = this.closestPlayer(enemy);
       const bounds = player ? this.searchBoundsAround(player) : null;
       this.enemyAI.update(enemy, player, this.enemies, now, bounds);
       updateVoice(this, enemy, player, now);
+      this.powers.update(enemy, player, now);
     }
 
     for (const player of this.players) {

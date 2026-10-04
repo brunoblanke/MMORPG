@@ -3,7 +3,7 @@
 import { isPositionAdjacentTo, distance } from '../utils/helpers.js';
 import { getLevel } from '../core/geometry.js';
 import { AI_STATE } from '../models/enemy.js';
-import { creatureBehavior } from '../../shared/assets.js';
+import { creatureBehavior, creaturePowers } from '../../shared/assets.js';
 import { CONFIG } from '../config.js';
 import { equipBonus, itemInfo, newItem } from '../../shared/items.js';
 import { addSkillTry } from '../../shared/skills.js';
@@ -38,6 +38,10 @@ export const THROWN_RANGE = 4;
 const DISTANCE_HIT_BASE = 40;
 const DISTANCE_HIT_MAX = 90;
 const NO_AMMO_WARN_MS = 5000;
+
+// Criatura com veneno no gerador: o golpe que acerta deixa envenenado
+// (o veneno dela por vez, POISON_HIT_TICKS vezes).
+const POISON_HIT_TICKS = 6;
 
 // ================================================================================================================================================================================================================================================
 // normalRandom
@@ -156,6 +160,8 @@ export class CombatController {
     if (attacker.isPlayer && !defender.isPlayer) this.recordDamage(defender, attacker, Math.min(damage, defender.currentHp));
     const hpLeft = defender.takeDamage(damage, now);
     this.sim.emit({ type: 'damage', targetId: defender.id, x: defender.x, y: defender.y, amount: damage });
+    const poison = attacker.isPlayer ? 0 : creaturePowers(attacker.creature).poison;
+    if (poison && melee) this.sim.conditions.add(defender, 'poison', { damage: poison, ticks: POISON_HIT_TICKS });
     return hpLeft;
   }
 

@@ -46,7 +46,8 @@ const creatures = {
   lootItems: [],
   topics: [],
   shop: [],
-  buys: []
+  buys: [],
+  creatureTypes: []
 };
 
 const statusEl = document.getElementById('creatureStatus');
@@ -62,6 +63,15 @@ const STAT_FIELDS = [
   ['defesa', document.getElementById('creatureDefense')],
   ['ataque', document.getElementById('creatureAttack')]
 ];
+const POWER_FIELDS = {
+  spell: document.getElementById('creatureSpell'),
+  spellDamage: document.getElementById('creatureSpellDamage'),
+  spellChance: document.getElementById('creatureSpellChance'),
+  poison: document.getElementById('creaturePoison'),
+  summon: document.getElementById('creatureSummon'),
+  summonMax: document.getElementById('creatureSummonMax'),
+  respawn: document.getElementById('creatureRespawn')
+};
 const infoEl = document.getElementById('creatureInfo');
 const thumbCanvas = document.getElementById('creatureThumb');
 const walkCanvas = document.getElementById('walkPreview');
@@ -132,6 +142,7 @@ function initCreatures() {
     renderTopics();
   };
   for (const [, el] of STAT_FIELDS) el.addEventListener('input', () => { creatures.dirty = true; });
+  for (const el of Object.values(POWER_FIELDS)) el.addEventListener('input', () => { creatures.dirty = true; });
   voicesEl.addEventListener('input', () => { creatures.dirty = true; });
   fillFolderSelect(folderEl, CATEGORY);
   folderEl.addEventListener('change', () => { creatures.dirty = true; });
@@ -501,6 +512,48 @@ function statValues() {
 }
 
 // ================================================================================================================================================================================================================================================
+// powerValues
+// O que a criatura faz além do golpe: magia de longe, veneno no golpe,
+// criatura que invoca e tempo de respawn (s).
+
+function powerValues() {
+  const int = (el) => Math.max(0, Math.floor(Number(el.value)) || 0);
+  const f = POWER_FIELDS;
+  return {
+    magia: f.spell.value && int(f.spellDamage) ? { tipo: f.spell.value, dano: int(f.spellDamage), chance: Math.min(100, int(f.spellChance)) } : null,
+    veneno: int(f.poison),
+    invoca: f.summon.value && int(f.summonMax) ? { tipo: f.summon.value, max: Math.min(5, int(f.summonMax)) } : null,
+    respawn: int(f.respawn)
+  };
+}
+
+// ================================================================================================================================================================================================================================================
+// loadPowers
+
+function loadPowers(props) {
+  const f = POWER_FIELDS;
+  const magic = props.magia || {};
+  const call = props.invoca || {};
+  f.spell.value = magic.tipo || '';
+  f.spellDamage.value = String(Number(magic.dano) || 0);
+  f.spellChance.value = String(Number(magic.chance) || 20);
+  f.poison.value = String(Number(props.veneno) || 0);
+  f.summonMax.value = String(Number(call.max) || 0);
+  f.respawn.value = String(Number(props.respawn) || 0);
+  fillSummonOptions(call.tipo || '');
+}
+
+// ================================================================================================================================================================================================================================================
+// fillSummonOptions
+// As criaturas salvas no gerador, pra escolher quem ela invoca.
+
+function fillSummonOptions(selected = POWER_FIELDS.summon.value) {
+  const options = creatures.creatureTypes.includes(selected) || !selected ? creatures.creatureTypes : [...creatures.creatureTypes, selected];
+  POWER_FIELDS.summon.innerHTML = '<option value="">Ninguém</option>' + options.map(type => `<option value="${type}">${type.split('/').pop()}</option>`).join('');
+  POWER_FIELDS.summon.value = selected;
+}
+
+// ================================================================================================================================================================================================================================================
 // loadLootItems
 // Os itens salvos no gerador (grupo Itens), pra escolher no loot.
 
@@ -509,9 +562,12 @@ async function loadLootItems() {
     const projects = await fetchProjects();
     creatures.lootItems = projects.filter(p => p.grupo === 'itens' && !p.nome.startsWith('respingo'))
       .map(p => p.caminho).sort((a, b) => a.localeCompare(b, 'pt'));
+    creatures.creatureTypes = projects.filter(p => p.grupo === 'criaturas').map(p => p.caminho).sort((a, b) => a.localeCompare(b, 'pt'));
   } catch {
     creatures.lootItems = [];
+    creatures.creatureTypes = [];
   }
+  fillSummonOptions();
   renderLoot();
   renderShop();
 }
@@ -762,7 +818,7 @@ async function save() {
     cadaver: creatures.corpse,
     propriedades: behaviorEl.value === 'npc'
       ? { comportamento: 'npc', conversa: conversationValues() }
-      : { comportamento: behaviorEl.value, ...statValues(), loot: lootValues(), falas: voicesEl.value.split('\n').map(line => line.trim()).filter(Boolean) }
+      : { comportamento: behaviorEl.value, ...statValues(), ...powerValues(), loot: lootValues(), falas: voicesEl.value.split('\n').map(line => line.trim()).filter(Boolean) }
   };
 
   try {
@@ -813,6 +869,7 @@ function openRecipe(recipe) {
   renderShop();
   showNpcFields();
   for (const [key, el] of STAT_FIELDS) el.value = String(Math.max(0, Math.floor(Number((recipe.propriedades || {})[key])) || 0));
+  loadPowers(recipe.propriedades || {});
   const voices = (recipe.propriedades || {}).falas;
   voicesEl.value = Array.isArray(voices) ? voices.join('\n') : '';
   const loot = (recipe.propriedades || {}).loot;

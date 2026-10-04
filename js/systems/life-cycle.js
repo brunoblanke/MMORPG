@@ -2,7 +2,7 @@
 
 import { CONFIG } from '../config.js';
 import { Enemy } from '../models/enemy.js';
-import { displayName } from '../../shared/assets.js';
+import { displayName, creaturePowers } from '../../shared/assets.js';
 
 export class LifeCycleController {
 
@@ -77,13 +77,17 @@ export class LifeCycleController {
   // handleEnemyDeath
   // A XP do inimigo é dividida entre os players que bateram nele, cada um
   // com a parte do dano que causou (shareXp). Renasce no lugar dele depois
-  // de enemyRespawnTime.
+  // do tempo de respawn dele no gerador (ou enemyRespawnTime); as que ele
+  // invocou morrem junto. Invocada não tem loot, XP nem respawn.
 
   handleEnemyDeath(enemy, now) {
     const sim = this.sim;
     const corpse = this.createCorpse(enemy, 'enemy_corpse', now);
-    sim.inventory.fillCorpse(corpse, enemy);
-    this.shareXp(enemy);
+    if (!enemy.summonedBy) {
+      sim.inventory.fillCorpse(corpse, enemy);
+      this.shareXp(enemy);
+      sim.powers.dismissSummons(enemy);
+    }
 
     sim.world.removeCreature(enemy);
     const index = sim.enemies.indexOf(enemy);
@@ -93,7 +97,7 @@ export class LifeCycleController {
       if (player.target === enemy) player.target = null;
     }
 
-    sim.schedule(now + CONFIG.enemyRespawnTime, () => this.respawnEnemy(enemy));
+    if (!enemy.summonedBy) sim.schedule(now + (creaturePowers(enemy.creature).respawn || CONFIG.enemyRespawnTime), () => this.respawnEnemy(enemy));
   }
 
   // ================================================================================================================================================================================================================================================

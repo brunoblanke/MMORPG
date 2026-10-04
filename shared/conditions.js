@@ -27,10 +27,13 @@ export const AMMO_CONDITIONS = {
   'itens/municao/poison-arrow': { kind: 'poison', damage: 3, ticks: 6 }
 };
 
+// Cor do dano das magias que não são estado.
+const ELEMENT_COLORS = { ice: '#7dd3fc', earth: '#a3e635', death: '#a1a1aa', holy: '#fde68a' };
+
 // ================================================================================================================================================================================================================================================
 // damageColor
 // Cor do número de dano do tipo (vermelho sem tipo).
 
 export function damageColor(kind) {
-  return (CONDITIONS[kind] && CONDITIONS[kind].color) || null;
+  return (CONDITIONS[kind] && CONDITIONS[kind].color) || ELEMENT_COLORS[kind] || null;
 }

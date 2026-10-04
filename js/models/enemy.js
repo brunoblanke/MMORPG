@@ -25,6 +25,7 @@ export class Enemy extends Entity {
     this.spawnX = data.spawnX ?? data.x;
     this.spawnY = data.spawnY ?? data.y;
     this.spawnZ = data.spawnZ ?? (data.z || 0);
+    this.summonedBy = data.summonedBy || null;
     this.patrolCenterX = this.spawnX;
     this.patrolCenterY = this.spawnY;
     // Tipo da criatura (a folha do gerador, ex.: 'criaturas/mamiferos/rat'):
