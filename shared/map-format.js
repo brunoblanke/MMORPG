@@ -135,6 +135,7 @@ export function serializeMapFromLayers(layerOrder, layers, GRID) {
   const enemyData = [];
   const npcData = [];
   const safeZoneData = [];
+  const houseData = [];
   let spawn = null;
 
   layerOrder.forEach((z) => {
@@ -194,11 +195,15 @@ export function serializeMapFromLayers(layerOrder, layers, GRID) {
         if (cell.safe) {
           safeZoneData.push([x, y, z]);
         }
+
+        if (cell.house) {
+          houseData.push([x, y, z, cell.house.name, cell.house.price]);
+        }
       }
     }
   });
 
-  return { version: MAP_FORMAT_VERSION, objetosData, transicoesData, enemyData, npcData, safeZoneData, spawn };
+  return { version: MAP_FORMAT_VERSION, objetosData, transicoesData, enemyData, npcData, safeZoneData, houseData, spawn };
 }
 
 // ================================================================================================================================================================================================================================================
@@ -208,7 +213,7 @@ function makeEmptyLayerCells(GRID) {
   const cells = {};
   for (let y = 0; y < GRID; y++) {
     for (let x = 0; x < GRID; x++) {
-      cells[`${x},${y}`] = { floor: null, floorTop: null, hole: null, borders: [], objects: [], enemy: null, npc: null, spawn: false, safe: false };
+      cells[`${x},${y}`] = { floor: null, floorTop: null, hole: null, borders: [], objects: [], enemy: null, npc: null, spawn: false, safe: false, house: null };
     }
   }
   return cells;
@@ -286,6 +291,12 @@ export function buildLayersFromMapData(mapData, GRID) {
     ensureLayer(z);
     layers[z][`${x},${y}`].safe = true;
     stats.safe++;
+  });
+
+  (mapData.houseData || []).forEach(([x, y, z, name, price]) => {
+    if (!inRange(x, y) || typeof name !== 'string') { stats.outOfRange++; return; }
+    ensureLayer(z);
+    layers[z][`${x},${y}`].house = { name, price: Math.max(0, Math.floor(Number(price)) || 0) };
   });
 
   if (mapData.spawn && inRange(mapData.spawn.x, mapData.spawn.y)) {

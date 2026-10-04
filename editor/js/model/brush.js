@@ -6,7 +6,7 @@ import { GRID } from '../config.js';
 // Pincel: ferramentas de pintar área usam um quadrado de brushSize × brushSize
 // sqm (setas ↑/↓, de 1 a MAX_BRUSH); as de pôr uma coisa só, 1 sqm.
 export const MAX_BRUSH = 6;
-const BRUSH_TOOLS = new Set(['floor', 'eraser', 'hole', 'border-eraser', 'safe']);
+const BRUSH_TOOLS = new Set(['floor', 'eraser', 'hole', 'border-eraser', 'safe', 'house']);
 
 // ================================================================================================================================================================================================================================================
 // brushSize

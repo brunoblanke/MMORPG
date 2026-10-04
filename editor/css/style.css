@@ -250,3 +250,8 @@ textarea{
 #objectDataForm{ z-index:61; }
 .float-panel [hidden]{ display:none !important; }
 .float-panel, .float-panel *{ box-sizing:border-box; }
+
+.house-form{ gap:6px; }
+.house-form input{ width:100%; box-sizing:border-box; }
+.house-opt{ padding:4px 6px; border-radius:4px; cursor:pointer; font-size:12px; }
+.house-opt:hover, .house-opt.selected{ background:rgba(245, 158, 11, .18); }

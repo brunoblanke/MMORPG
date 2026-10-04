@@ -64,10 +64,10 @@ function isInsideBounds(bounds, x, y) {
 // Devolve [] se não houver caminho.
 
 export function findPath(world, start, end, options = {}) {
-  const { sameFloor = false, bounds = null, enemiesPassable = false, avoidSafe = false, groundOnly = false, maxNodes = 20000, goals = null } = options;
+  const { sameFloor = false, bounds = null, enemiesPassable = false, avoidSafe = false, groundOnly = false, entering = null, maxNodes = 20000, goals = null } = options;
   const targets = goals && goals.length ? goals : [end];
   const goalKeys = new Set(targets.map(goal => `${goal.x},${goal.y}`));
-  const stepOptions = { sameFloor, transitions: !sameFloor, enemiesPassable, avoidSafe, groundOnly };
+  const stepOptions = { sameFloor, transitions: !sameFloor, enemiesPassable, avoidSafe, groundOnly, entering };
   const origin = { x: start.x, y: start.y, z: start.z || 0, step: start.step || 0 };
   if (origin.z === end.z && goalKeys.has(`${origin.x},${origin.y}`)) return [];
 

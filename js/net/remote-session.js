@@ -26,6 +26,7 @@ export class RemoteSession {
     this.objects = generateObjects(mapData);
     this.world.load(this.objects);
     this.world.loadSafeZones(mapData.safeZoneData);
+    this.world.loadHouses(mapData.houseData);
     this.objectsById = new Map(this.objects.map(obj => [obj.id, obj]));
     this.players = [];
     this.enemies = [];

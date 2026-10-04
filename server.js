@@ -12,6 +12,7 @@ const app = express();
 const PASTA_JOGO = __dirname;
 const MAP_DATA_PATH = process.env.JOGO_MAPA || path.join(PASTA_JOGO, 'data', 'map.json');
 const CHARACTERS_PATH = process.env.JOGO_PERSONAGENS || path.join(PASTA_JOGO, 'data', 'characters.json');
+const HOUSES_PATH = process.env.JOGO_CASAS || path.join(path.dirname(CHARACTERS_PATH), 'houses.json');
 const PASTA_PROJETOS = path.join(PASTA_JOGO, 'gerador', 'projetos');
 const PASTA_SAIDA = path.join(PASTA_JOGO, 'gerador', 'saida');
 const TAXONOMIA_PATH = path.join(PASTA_JOGO, 'gerador', 'taxonomia.json');
@@ -168,8 +169,8 @@ async function iniciarJogo(servidorHttp) {
   setAssets(lerSprites());
 
   const { validateWorld } = await import(pathToFileURL(path.join(PASTA_JOGO, 'js', 'core', 'validate.js')).href);
-  const criarMundo = () => {
-    const mundo = new Simulation(JSON.parse(fs.readFileSync(MAP_DATA_PATH, 'utf8')));
+  const criarMundo = (casas = carregarCasas()) => {
+    const mundo = new Simulation(JSON.parse(fs.readFileSync(MAP_DATA_PATH, 'utf8')), { houses: casas });
     const avisos = validateWorld(mundo);
     if (avisos.length) console.log(`\n⚠️  Conferência do mapa e do gerador (${avisos.length}):\n${avisos.map(a => `   • ${a}`).join('\n')}`);
     return mundo;
@@ -185,12 +186,13 @@ async function iniciarJogo(servidorHttp) {
     let novo;
     try {
       setAssets(lerSprites());
-      novo = criarMundo();
+      novo = criarMundo(sim.houses.toSave());
     } catch (err) {
       console.error('❌ Não deu pra recarregar (arquivo ainda sendo gravado?):', err.message);
       return;
     }
     guardarPersonagens(personagens, sim.players);
+    guardarCasas(sim);
     for (const { socket } of conexoes.values()) {
       if (socket.readyState === socket.OPEN) socket.send(JSON.stringify({ type: 'reload' }));
     }
@@ -253,10 +255,14 @@ async function iniciarJogo(servidorHttp) {
     }
   }, TICK_MS);
 
-  setInterval(() => guardarPersonagens(personagens, sim.players), SAVE_INTERVAL_MS);
+  setInterval(() => {
+    guardarPersonagens(personagens, sim.players);
+    guardarCasas(sim);
+  }, SAVE_INTERVAL_MS);
   for (const sinal of ['SIGINT', 'SIGTERM', 'SIGHUP']) {
     process.on(sinal, () => {
       guardarPersonagens(personagens, sim.players);
+      guardarCasas(sim);
       console.log('💾 Personagens salvos');
       process.exit(0);
     });
@@ -321,6 +327,30 @@ function fazerBackup() {
     for (const velha of copias.slice(0, Math.max(0, copias.length - BACKUP_DIAS))) fs.unlinkSync(path.join(pasta, velha));
   } catch (err) {
     console.error('❌ Erro no backup dos personagens:', err.message);
+  }
+}
+
+// ================================================================================================================================================================================================================================================
+// carregarCasas / guardarCasas
+// Dono, convidados e itens das casas (data/houses.json). Sem arquivo (ou
+// com ele estragado), as casas começam sem dono.
+
+function carregarCasas() {
+  try {
+    const casas = JSON.parse(fs.readFileSync(HOUSES_PATH, 'utf8'));
+    return casas && typeof casas === 'object' ? casas : {};
+  } catch {
+    return {};
+  }
+}
+
+function guardarCasas(sim) {
+  try {
+    const temporario = HOUSES_PATH + '.tmp';
+    fs.writeFileSync(temporario, JSON.stringify(sim.houses.toSave(), null, 2), 'utf8');
+    fs.renameSync(temporario, HOUSES_PATH);
+  } catch (err) {
+    console.error('❌ Erro ao salvar casas:', err.message);
   }
 }
 

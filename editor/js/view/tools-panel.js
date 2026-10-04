@@ -43,7 +43,7 @@ function layerHasContent(z) {
   if (!layer) return false;
   for (const key in layer) {
     const cell = layer[key];
-    if (cell.floor || cell.floorTop || cell.hole || cell.borders.length || cell.objects.length || cell.enemy || cell.npc || cell.spawn || cell.safe) return true;
+    if (cell.floor || cell.floorTop || cell.hole || cell.borders.length || cell.objects.length || cell.enemy || cell.npc || cell.spawn || cell.safe || cell.house) return true;
   }
   return false;
 }
@@ -227,7 +227,40 @@ export function renderTools() {
     (t.quick ? quick : wrap).appendChild(btn);
 
     if (t.paint && state.openAccordion === t.id) wrap.appendChild(buildAccordion(t));
+    if (t.id === 'house' && state.tool === 'house') wrap.appendChild(buildHouseForm());
   });
+}
+
+// ================================================================================================================================================================================================================================================
+// buildHouseForm
+// A casa que o pincel pinta: nome e preço (moedas de ouro); as casas que já
+// existem no mapa aparecem pra escolher. Pintar um sqm da mesma casa tira.
+
+function buildHouseForm() {
+  const form = document.createElement('div');
+  form.className = 'tool-accordion show house-form';
+  const name = document.createElement('input');
+  Object.assign(name, { type: 'text', className: 'accordion-search', placeholder: 'Nome da casa', value: state.housePaint.name, maxLength: 40 });
+  name.oninput = () => { state.housePaint.name = name.value.trim(); };
+  const price = document.createElement('input');
+  Object.assign(price, { type: 'number', className: 'accordion-search', min: 0, step: 1, placeholder: 'Preço', title: 'Preço (moedas de ouro)', value: state.housePaint.price });
+  price.oninput = () => { state.housePaint.price = Math.max(0, Math.floor(Number(price.value)) || 0); };
+  form.append(name, price);
+  const known = new Map();
+  for (const layer of Object.values(state.layers)) {
+    for (const cell of Object.values(layer)) if (cell.house) known.set(cell.house.name, cell.house.price);
+  }
+  for (const [houseName, housePrice] of known) {
+    const opt = document.createElement('div');
+    opt.className = 'house-opt' + (houseName === state.housePaint.name ? ' selected' : '');
+    opt.textContent = `${houseName} · ${housePrice}`;
+    opt.onclick = () => {
+      state.housePaint = { name: houseName, price: housePrice };
+      renderTools();
+    };
+    form.appendChild(opt);
+  }
+  return form;
 }
 
 const QUICK_ICON_SCALE = 16 / 22;
@@ -256,6 +289,9 @@ function toolSwatch(t) {
   } else if (t.id === 'safe') {
     swatch.style.background = 'rgba(46, 204, 113, 0.35)';
     swatch.style.border = '1px solid rgba(46, 204, 113, 0.9)';
+  } else if (t.id === 'house') {
+    swatch.style.background = 'rgba(245, 158, 11, 0.35)';
+    swatch.style.border = '1px solid rgba(245, 158, 11, 0.9)';
   } else {
     swatch.style.background = '#2a2f3a';
     swatch.style.border = '1px dashed #555';

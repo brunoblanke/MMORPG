@@ -72,10 +72,11 @@ export class MovementController {
   // ================================================================================================================================================================================================================================================
   // resolveStep
   // A regra de passo (core/movement.js) sobre este mundo. Quem tem
-  // avoidsSafeZones (inimigos) não pisa em zona segura.
+  // avoidsSafeZones (inimigos) não pisa em zona segura; player não entra em
+  // casa de outro dono.
 
   resolveStep(from, dx, dy, options = {}) {
-    return resolveStep(this.world, from, dx, dy, { enemiesPassable: this.enemiesPassable, avoidSafe: !!from.avoidsSafeZones, groundOnly: !!from.groundOnly, ...options });
+    return resolveStep(this.world, from, dx, dy, { enemiesPassable: this.enemiesPassable, avoidSafe: !!from.avoidsSafeZones, groundOnly: !!from.groundOnly, entering: from.isPlayer ? from : null, ...options });
   }
 
   // ================================================================================================================================================================================================================================================
@@ -92,7 +93,7 @@ export class MovementController {
   // Caminho de start até end = { x, y, z } (core/pathfinding.js).
 
   findPath(start, end, options = {}) {
-    return findPath(this.world, start, end, { enemiesPassable: this.enemiesPassable, avoidSafe: !!start.avoidsSafeZones, groundOnly: !!start.groundOnly, ...options });
+    return findPath(this.world, start, end, { enemiesPassable: this.enemiesPassable, avoidSafe: !!start.avoidsSafeZones, groundOnly: !!start.groundOnly, entering: start.isPlayer ? start : null, ...options });
   }
 
   // ================================================================================================================================================================================================================================================

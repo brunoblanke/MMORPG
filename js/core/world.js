@@ -28,6 +28,8 @@ export class World {
     this.blockingEdges = new Map();
     this.objects = new Set();
     this.safeTiles = new Set();
+    this.houses = new Map();
+    this.houseTiles = new Map();
   }
 
   // ================================================================================================================================================================================================================================================
@@ -49,10 +51,49 @@ export class World {
   }
 
   // ================================================================================================================================================================================================================================================
+  // loadHouses
+  // Casas: [[x, y, z, nome, preço], ...] (houseData do map.json, pintada no
+  // editor). Cada uma: { name, price, owner, guests, tiles }; dono e
+  // convidados vêm do que o servidor guardou (systems/houses.js).
+
+  loadHouses(houseData = []) {
+    for (const [x, y, z, name, price] of houseData) {
+      if (typeof name !== 'string' || !name) continue;
+      let house = this.houses.get(name);
+      if (!house) {
+        house = { name, price: Math.max(0, Math.floor(Number(price)) || 0), owner: null, guests: [], tiles: [] };
+        this.houses.set(name, house);
+      }
+      house.tiles.push({ x, y, z });
+      this.houseTiles.set(this.getTileKey(x, y, z), house);
+    }
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // houseAt
+
+  houseAt(x, y, z) {
+    return this.houseTiles.get(this.getTileKey(x, y, z)) || null;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // mayEnter
+  // Casa com dono: só ele e os convidados dele entram (pelo nome).
+
+  mayEnter(entity, x, y, z) {
+    const house = this.houseAt(x, y, z);
+    if (!house || !house.owner) return true;
+    const name = String(entity.name || '').toLowerCase();
+    return !!entity.isPlayer && (house.owner.toLowerCase() === name || house.guests.some(g => g.toLowerCase() === name));
+  }
+
+  // ================================================================================================================================================================================================================================================
   // isSafe
+  // Zona segura pintada ou sqm de casa.
 
   isSafe(x, y, z) {
-    return this.safeTiles.has(this.getTileKey(x, y, z));
+    const key = this.getTileKey(x, y, z);
+    return this.safeTiles.has(key) || this.houseTiles.has(key);
   }
 
   // ================================================================================================================================================================================================================================================

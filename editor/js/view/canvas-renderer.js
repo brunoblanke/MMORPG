@@ -161,6 +161,7 @@ function drawLayer(layer, alpha, z) {
       if (cell.hole) drawPiece(cell.hole, px, py, '#000');
 
       if (cell.safe) drawSafeTile(px, py);
+      if (cell.house) drawHouseTile(px, py, cell.house.name === state.housePaint.name);
 
       // Mantém os steps coerentes com a pilha atual (reordenar/remover no painel).
       restackItems(cell.objects);
@@ -203,6 +204,20 @@ function drawSafeTile(px, py) {
   ctx.fillStyle = 'rgba(46, 204, 113, 0.28)';
   ctx.fillRect(px, py, TILE, TILE);
   ctx.strokeStyle = 'rgba(46, 204, 113, 0.85)';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(px + 1.5, py + 1.5, TILE - 3, TILE - 3);
+  ctx.restore();
+}
+
+// ================================================================================================================================================================================================================================================
+// drawHouseTile
+// Casa: laranja translúcido (mais forte na casa escolhida no pincel).
+
+function drawHouseTile(px, py, current) {
+  ctx.save();
+  ctx.fillStyle = current ? 'rgba(245, 158, 11, 0.38)' : 'rgba(245, 158, 11, 0.2)';
+  ctx.fillRect(px, py, TILE, TILE);
+  ctx.strokeStyle = 'rgba(245, 158, 11, 0.85)';
   ctx.lineWidth = 1;
   ctx.strokeRect(px + 1.5, py + 1.5, TILE - 3, TILE - 3);
   ctx.restore();

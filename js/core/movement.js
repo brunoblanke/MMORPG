@@ -101,11 +101,16 @@ export function getTransitionTarget(world, x, y, z) {
 //   - enemiesPassable: inimigos não bloqueiam (o player continua bloqueando);
 //   - avoidSafe: não pisa em zona segura (inimigos);
 //   - groundOnly: só anda no chão — não sobe em volume (caixa, pilha) nem
-//     pisa em escada ou buraco (criaturas e NPCs).
+//     pisa em escada ou buraco (criaturas e NPCs);
+//   - entering: o player que anda — não entra em casa de outro dono.
 
 export function resolveStep(world, from, dx, dy, options = {}) {
   const landing = resolveLanding(world, from, dx, dy, options);
   if (landing && options.groundOnly && (landing.via || landing.z !== (from.z || 0) || landing.step > 0 || world.getTransitionAt(landing.x, landing.y, landing.z))) return null;
+  if (landing && options.entering) {
+    const passed = landing.via || landing;
+    if (!world.mayEnter(options.entering, passed.x, passed.y, passed.z) || !world.mayEnter(options.entering, landing.x, landing.y, landing.z)) return null;
+  }
   if (!landing || !options.avoidSafe) return landing;
   const entered = landing.via || landing;
   if (world.isSafe(entered.x, entered.y, entered.z) || world.isSafe(landing.x, landing.y, landing.z)) return null;

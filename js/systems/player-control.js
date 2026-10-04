@@ -49,7 +49,7 @@ export class PlayerControl {
       case 'saveLayout': return this.sim.inventory.saveLayout(player, command.layout);
       case 'useStairs': return this.useStairs(player, command.x, command.y, command.z);
       case 'useDoor': return this.useDoor(player, command.x, command.y, command.z);
-      case 'say': return this.sim.spells.cast(player, command.text) || this.sim.talk.playerSays(player, command.text);
+      case 'say': return this.sim.spells.cast(player, command.text) || this.sim.houses.command(player, command.text) || this.sim.talk.playerSays(player, command.text);
       case 'turn': return this.turn(player, command.dx, command.dy);
       case 'partyInvite': return this.sim.social.invite(player, command.targetId);
       case 'partyJoin': return this.sim.social.join(player, command.leaderId);
@@ -280,6 +280,11 @@ export class PlayerControl {
     const item = this.sim.getItem(itemId);
     if (!item || item.movable === false) return;
     if (!this.sim.movement.isInsideMap(x, y)) return;
+    const world = this.sim.world;
+    if (!world.mayEnter(player, item.x, item.y, item.z || 0) || !world.mayEnter(player, x, y, z)) {
+      this.sim.emit({ type: 'message', playerId: player.id, text: 'Essa casa não é sua.', kind: 'warn' });
+      return;
+    }
 
     if (this.sim.objectDrag.isPlayerNear(player, item)) {
       this.sim.objectDrag.moveObject(player, item, x, y, z);

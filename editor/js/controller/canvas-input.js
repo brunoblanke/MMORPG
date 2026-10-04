@@ -113,6 +113,11 @@ function paintCell(x, y) {
   } else if (state.tool === 'safe') {
     if (state.strokeTouched.size === 1) state.safePaintValue = !cell.safe;
     cell.safe = state.safePaintValue;
+  } else if (state.tool === 'house') {
+    const house = state.housePaint;
+    if (!house.name) return;
+    if (state.strokeTouched.size === 1) state.safePaintValue = !(cell.house && cell.house.name === house.name);
+    cell.house = state.safePaintValue ? { name: house.name, price: house.price } : null;
   } else if (state.tool === 'item' || state.tool === 'deco') {
     const paint = state.tool === 'deco' ? state.decoPaint : state.itemPaint;
     if (paint) {

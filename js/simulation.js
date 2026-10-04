@@ -21,6 +21,7 @@ import { SpellController } from './systems/spells.js';
 import { ConditionController } from './systems/conditions.js';
 import { CreaturePowers } from './systems/creature-powers.js';
 import { SocialController } from './systems/social.js';
+import { HouseController } from './systems/houses.js';
 import { objectIdType, doorState } from '../shared/assets.js';
 
 export { TICK_MS };
@@ -38,6 +39,7 @@ export class Simulation {
 
   // options.lootTable: o que cada criatura deixa cair (systems/inventory.js).
   // options.npcs: NPCs além dos do mapa (definições de shared/npcs.js).
+  // options.houses: dono, convidados e itens guardados das casas (houses.js).
 
   constructor(mapData, options = {}) {
     this.mapData = mapData;
@@ -49,6 +51,7 @@ export class Simulation {
 
     this.world.load(this.objects);
     this.world.loadSafeZones(mapData.safeZoneData);
+    this.world.loadHouses(mapData.houseData);
     for (const enemy of this.enemies) this.world.addCreature(enemy);
     this.objectsById = new Map(this.objects.map(obj => [obj.id, obj]));
     this.doors = this.objects.filter(obj => doorState(objectIdType(obj.id)));
@@ -70,6 +73,7 @@ export class Simulation {
     this.conditions = new ConditionController(this);
     this.powers = new CreaturePowers(this);
     this.social = new SocialController(this);
+    this.houses = new HouseController(this, options.houses || {});
     this.npcs = [];
     this.talk = new NpcController(this, options.npcs || []);
   }
@@ -291,6 +295,7 @@ export class Simulation {
     }
     this.conditions.update(now);
     this.social.update(now);
+    this.houses.update();
 
     this.movement.checkFloorTransitions([...this.players, ...this.enemies]);
     this.lifeCycle.processDeaths(now);

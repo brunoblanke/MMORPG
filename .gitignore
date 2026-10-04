@@ -4,3 +4,5 @@ sftp-config.json
 data/characters.json
 data/characters.json.tmp
 data/backups/
+data/houses.json
+data/houses.json.tmp

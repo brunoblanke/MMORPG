@@ -101,6 +101,7 @@ export function serializeState(sim, playerId, nearOnly = false) {
     corpses: sim.deadBodies.filter(near).map(c => pick(c, CORPSE_FIELDS)),
     doors: sim.doors.map(d => ({ x: d.x, y: d.y, z: d.z || 0, id: d.id })),
     dug: sim.interactions ? [...sim.interactions.dugHoles.keys()] : [],
+    houses: sim.houses ? sim.houses.viewOf() : [],
     items: sim.objects.filter(o => isSyncedItem(o) && near(o)).map(o => ({
       id: o.id, x: o.x, y: o.y, z: o.z, step: o.step, hasVolume: o.hasVolume, blocksMovement: o.blocksMovement,
       count: o.itemData ? o.itemData.count : o.count,
@@ -117,6 +118,21 @@ export function serializeState(sim, playerId, nearOnly = false) {
       inventory: sim.inventory.viewFor(me)
     } : null
   };
+}
+
+// ================================================================================================================================================================================================================================================
+// syncHouses
+// Dono e convidados das casas (pro passo previsto no navegador respeitar).
+
+function syncHouses(world, houses) {
+  for (const house of world.houses.values()) {
+    house.owner = null;
+    house.guests = [];
+  }
+  for (const [name, owner, guests] of houses) {
+    const house = world.houses.get(name);
+    if (house) Object.assign(house, { owner, guests: guests || [] });
+  }
 }
 
 // ================================================================================================================================================================================================================================================
@@ -248,6 +264,7 @@ export function applyState(mirror, message, playerId, renderNow) {
   syncItems(mirror, state.items);
   syncDoors(world, state.doors || []);
   syncDug(mirror, state.dug || []);
+  syncHouses(world, state.houses || []);
 
   const me = mirror.players.find(p => p.id === playerId);
   if (me && state.you) {

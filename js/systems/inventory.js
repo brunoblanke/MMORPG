@@ -154,6 +154,7 @@ export class InventoryController {
     if (from.t === 'g') {
       const obj = this.sim.getItem(from.id);
       if (!this.isPickable(obj)) return { error: 'Não dá pra pegar isso.' };
+      if (!this.sim.world.mayEnter(player, obj.x, obj.y, obj.z || 0)) return { error: 'Essa casa não é sua.' };
       return { item: this.groundItem(obj), carried: false, obj, place: from, remove: () => this.removeGroundObject(obj) };
     }
     return { error: 'Item não encontrado.' };
@@ -169,6 +170,7 @@ export class InventoryController {
       if (!this.sim.movement.isInsideMap(to.x, to.y)) return { error: 'Destino inválido.' };
       const reach = Math.max(Math.abs(player.x - to.x), Math.abs(player.y - to.y));
       if (reach > THROW_RANGE) return { error: `Longe demais: dá pra jogar até ${THROW_RANGE} sqm.` };
+      if (!this.sim.world.mayEnter(player, to.x, to.y, Number.isInteger(to.z) ? to.z : (player.z || 0))) return { error: 'Essa casa não é sua.' };
       return { kind: 'ground', x: to.x, y: to.y, z: Number.isInteger(to.z) ? to.z : (player.z || 0) };
     }
     if (to.t === 'e') {
