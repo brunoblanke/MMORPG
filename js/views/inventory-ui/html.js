@@ -9,6 +9,7 @@ import { CORPSE_ROW } from '../sprite-registry.js';
 import { ANIMATION_CYCLE_MS } from '../../../shared/constants.js';
 import { EQUIP_LAYOUT, SKILL_NAMES, SKILL_ORDER, PITCH, REACH_CHECK_MS } from './common.js';
 import { ICONS, FOLLOW_ICONS } from './icons.js';
+import { CONDITIONS } from '../../../shared/conditions.js';
 
 // Métodos do InventoryUI (js/views/inventory-ui.js). O HTML de cada parte das janelas: espaços, containers, skills, vida e
 // mana, seguir, auto ataque e battle.
@@ -170,7 +171,8 @@ export const htmlMethods = {
 
   // ================================================================================================================================================================================================================================================
   // vitalsHtml
-  // Barras de vida e mana com o valor atual/máximo dentro. A janela toda é a
+  // Barras de vida e mana com o valor atual/máximo dentro e, embaixo, os
+  // estados do player (envenenado, queimando…). A janela toda é a
   // alça: dá pra arrastar, mas não minimizar nem fechar.
 
   vitalsHtml(win) {
@@ -179,10 +181,13 @@ export const htmlMethods = {
     const pct = (value, max) => (max > 0 ? Math.max(0, Math.min(100, value / max * 100)) : 0);
     const fmt = (n) => Number(n).toLocaleString('pt-BR');
     const bar = (kind, value, max) => `<div class="inv-vbar ${kind}"><i style="width:${pct(value, max)}%"></i><span>${fmt(value)} / ${fmt(max)}</span></div>`;
+    const states = (stats.conditions || []).filter(kind => CONDITIONS[kind]).map(kind =>
+      `<i class="inv-cond" style="color:${CONDITIONS[kind].color}" title="${CONDITIONS[kind].name}">${CONDITIONS[kind].icon}</i>`).join('');
     return `<section class="inv-win" data-win="${win.id}">
       <header class="inv-head inv-vitals" aria-label="Vida e mana">
         ${bar('hp', stats.hp, stats.maxHp)}
         ${bar('mana', stats.mana, stats.maxMana)}
+        ${states ? `<div class="inv-conds">${states}</div>` : ''}
       </header>
     </section>`;
   },

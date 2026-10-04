@@ -18,6 +18,7 @@ import { InventoryController } from './systems/inventory.js';
 import { InteractionController } from './systems/interactions.js';
 import { NpcController } from './systems/npcs.js';
 import { SpellController } from './systems/spells.js';
+import { ConditionController } from './systems/conditions.js';
 import { objectIdType, doorState } from '../shared/assets.js';
 
 export { TICK_MS };
@@ -64,6 +65,7 @@ export class Simulation {
     this.inventory = new InventoryController(this, options.lootTable || {});
     this.interactions = new InteractionController(this);
     this.spells = new SpellController(this);
+    this.conditions = new ConditionController(this);
     this.npcs = [];
     this.talk = new NpcController(this, options.npcs || []);
   }
@@ -280,6 +282,7 @@ export class Simulation {
       this.combat.processEnemies(player, now);
       this.combat.processFloorDamage(player, now);
     }
+    this.conditions.update(now);
 
     this.movement.checkFloorTransitions([...this.players, ...this.enemies]);
     this.lifeCycle.processDeaths(now);

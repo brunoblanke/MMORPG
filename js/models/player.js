@@ -62,11 +62,11 @@ export class Player extends Entity {
   // ================================================================================================================================================================================================================================================
   // spd
   // Velocidade do nível (baseSpd) mais o que os itens do inventário somam
-  // (bota de haste…). No cliente o player não tem equip: vale o que o
+  // (bota de haste…) e os estados (lento, rápido: speedMod). No cliente o player não tem equip: vale o que o
   // servidor mandou.
 
   get spd() {
-    return this.baseSpd + (this.equip ? equipBonus(this.equip).speed : 0);
+    return Math.max(1, this.baseSpd + (this.equip ? equipBonus(this.equip).speed : 0) + (this.speedMod || 0));
   }
 
   set spd(value) {
@@ -214,6 +214,8 @@ export class Player extends Entity {
     this.currentHp = this.hp;
     this.mana = this.maxMana;
     this.isTarget = false;
+    this.conditions = {};
+    this.speedMod = 0;
   }
 }
 

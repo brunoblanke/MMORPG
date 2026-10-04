@@ -399,6 +399,7 @@ export class InventoryController {
       maxMana: player.maxMana,
       speed: player.spd,
       food: Math.ceil((player.food || 0) / 1000),
+      conditions: this.sim.conditions.kinds(player),
       skills
     };
   }

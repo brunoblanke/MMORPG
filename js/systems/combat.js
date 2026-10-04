@@ -7,6 +7,7 @@ import { creatureBehavior } from '../../shared/assets.js';
 import { CONFIG } from '../config.js';
 import { equipBonus, itemInfo, newItem } from '../../shared/items.js';
 import { addSkillTry } from '../../shared/skills.js';
+import { AMMO_CONDITIONS } from '../../shared/conditions.js';
 
 // Auto ataque: alvo sem caminho por UNREACHABLE_MS é largado e ignorado por SKIP_TARGET_MS.
 export const UNREACHABLE_MS = 1500;
@@ -210,7 +211,8 @@ export class CombatController {
   // ================================================================================================================================================================================================================================================
   // shoot
   // Um tiro de distância: gasta uma unidade da munição (ou a lança, que cai
-  // no sqm do alvo), treina distance e acerta pela chance do skill.
+  // no sqm do alvo), treina distance e acerta pela chance do skill (a
+  // flecha envenenada deixa o alvo envenenado).
 
   shoot(player, target, ranged, now) {
     if (now - player.lastAttackTime < CONFIG.attackCooldown || !target.isAlive()) return;
@@ -225,6 +227,8 @@ export class CombatController {
     const skill = player.skills && player.skills.distance ? player.skills.distance.lvl : 10;
     if (Math.random() * 100 < Math.min(DISTANCE_HIT_MAX, DISTANCE_HIT_BASE + skill)) {
       this.attackTarget(player, target, now, { melee: false, attack: ranged.attack });
+      const effect = AMMO_CONDITIONS[ammo.type];
+      if (effect) this.sim.conditions.add(target, effect.kind, { ...effect, source: player });
       return;
     }
     player.lastAttackTime = now;

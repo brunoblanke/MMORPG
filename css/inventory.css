@@ -122,6 +122,8 @@
 .inv-vbar i{ display:block; height:100%; transition:width .2s; }
 .inv-vbar span{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; color:#fff; text-shadow:0 0 2px #000, 0 1px 1px #000; white-space:nowrap; pointer-events:none; font-variant-numeric:tabular-nums; }
 .inv-vbar.hp i{ background:linear-gradient(180deg, #4fcf9f, #3fb68b); }
+.inv-conds{ display:flex; align-items:center; gap:2px; }
+.inv-cond{ width:16px; font-style:normal; font-size:13px; font-weight:700; line-height:16px; text-align:center; text-shadow:0 0 2px #000; cursor:default; }
 .inv-vbar.mana i{ background:linear-gradient(180deg, #6fa3ff, #4c8dff); }
 .inv-sksep{ height:1px; margin:7px -12px 4px; background:var(--inv-line-soft); }
 

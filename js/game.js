@@ -10,6 +10,7 @@ import { SpriteLoader } from './services/sprite-loader.js';
 import { Renderer, MESSAGE_COLORS } from './views/renderer.js';
 import { getSpritePaths } from './views/sprite-registry.js';
 import { loadAssets } from '../shared/assets.js';
+import { damageColor } from '../shared/conditions.js';
 import { UI } from './views/ui.js';
 import { getRoofLevel } from './views/draw-order.js';
 import { getLevel } from './core/geometry.js';
@@ -441,7 +442,7 @@ export class GameController {
       if (event.type === 'missile') {
         this.particleController.spawnMissile(event, this.renderer);
       } else if (event.type === 'damage') {
-        this.particleController.spawnDamage(event.x, event.y, event.amount, this.renderer);
+        this.particleController.spawnDamage(event.x, event.y, event.amount, this.renderer, damageColor(event.element));
       } else if (event.type === 'heal') {
         this.particleController.spawnHeal(event, this.renderer);
       } else if (event.type === 'xp' && event.playerId === playerId) {

@@ -25,13 +25,14 @@ export class ParticleSystem {
   // ================================================================================================================================================================================================================================================
   // spawnDamageNumber
 
-  spawnDamageNumber(x, y, value, isXP, renderer) {
+  spawnDamageNumber(x, y, value, isXP, renderer, color = null) {
     const pos = renderer.gridToScreenWithOffset(x, y);
     this.particles.push({
       x: pos.x,
       y: pos.y - 30,
       value: value,
       isXP: isXP,
+      color,
       maxLife: 1.5,
       velocityY: -1.2,
       opacity: 1.0,

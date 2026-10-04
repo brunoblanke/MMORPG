@@ -9,6 +9,7 @@ import { TICK_MS } from '../js/simulation.js';
 const CROSSBOW = 'itens/distancia/crossbow';
 const SPEAR = 'itens/distancia/spear';
 const ARROW = 'itens/municao/arrow';
+const POISON_ARROW = 'itens/municao/poison-arrow';
 const asset = (id, propriedades) => {
   const [grupo, pasta, nome] = id.split('/');
   return { id, ferramenta: id.startsWith('criaturas') ? 'criaturas' : 'objetos', grupo, pasta, nome, url: `/${nome}.png`, quadro: 32, quadros: 1, pecas: [], propriedades };
@@ -18,6 +19,7 @@ setAssets([
   asset(CROSSBOW, { move: true, peso: 40 }),
   asset(SPEAR, { move: true, peso: 20, empilhavel: true, atk: 25 }),
   asset(ARROW, { move: true, peso: 0.7, empilhavel: true, atk: 25 }),
+  asset(POISON_ARROW, { move: true, peso: 0.8, empilhavel: true, atk: 23 }),
   asset(CREATURE, { vida: 5000 })
 ]);
 
@@ -55,7 +57,10 @@ test('besta: atira a flecha do espaço de munição de longe, gasta uma por tiro
   player.equip.arma = { uid: 'w1', type: CROSSBOW };
   player.equip.municao = { uid: 'a1', type: ARROW, count: 3 };
   const tries = player.skills.distance.tries;
+  const random = Math.random;
+  Math.random = () => 0.5;
   const events = runFor(game, 100);
+  Math.random = random;
   assert.ok(events.some(e => e.type === 'missile' && e.kind === 'arrow'));
   assert.ok(enemy.currentHp < enemy.hp);
   assert.equal(player.equip.municao.count, 2);
@@ -103,4 +108,15 @@ test('flechas empilham e juntam na pilha do espaço de munição', () => {
   game.enqueue('player1', { type: 'moveInv', from: { t: 'c', uid: 'b1', i: 0 }, to: { t: 'e', key: 'municao' }, amount: 10 });
   game.tick(game.time + TICK_MS);
   assert.equal(player.equip.municao.count, 15);
+});
+
+test('flecha envenenada deixa o alvo envenenado', () => {
+  const { game, enemy } = archer();
+  game.player.equip.arma = { uid: 'w1', type: CROSSBOW };
+  game.player.equip.municao = { uid: 'a1', type: POISON_ARROW, count: 3 };
+  const random = Math.random;
+  Math.random = () => 0.5;
+  runFor(game, 100);
+  Math.random = random;
+  assert.equal(enemy.conditions.poison.source, game.player.id);
 });

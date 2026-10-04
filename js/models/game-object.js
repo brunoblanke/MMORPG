@@ -18,6 +18,8 @@ export class GameObject {
     this.movable = data.movable !== undefined ? data.movable : true;
     this.hasVolume = data.hasVolume || false;
     this.blocksMovement = data.blocksMovement || false;
+    this.temporary = !!data.temporary;
+    this.ownerId = data.ownerId || null;
 
     if (data.stairDirection) {
       this.stairDirection = data.stairDirection;
