@@ -441,6 +441,8 @@ export class GameController {
     for (const event of events) {
       if (event.type === 'missile') {
         this.particleController.spawnMissile(event, this.renderer);
+      } else if (event.type === 'burst') {
+        this.particleController.spawnBurst(event, this.renderer);
       } else if (event.type === 'damage') {
         this.particleController.spawnDamage(event.x, event.y, event.amount, this.renderer, damageColor(event.element));
       } else if (event.type === 'heal') {

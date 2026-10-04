@@ -136,7 +136,7 @@ export class ConditionController {
     const key = found ? `${found.obj.id}@${entity.x},${entity.y},${z}` : null;
     if (key === entity.fieldKey) return;
     entity.fieldKey = key;
-    if (!found) return;
+    if (!found || !found.field.kind) return;
     const { field, obj } = found;
     this.hurt(entity, field.hit, field.kind, obj.ownerId || null);
     this.add(entity, field.kind, { damage: field.damage, ticks: field.ticks, source: obj.ownerId ? { id: obj.ownerId } : null });
@@ -151,13 +151,14 @@ export class ConditionController {
     const field = FIELDS[type];
     const world = this.sim.world;
     if (!field || world.hasBlockerAt(x, y, z) || world.isFloorBlocked(x, y, z) || world.getPassableStep(x, y, z) === null) return null;
+    if (field.blocks && (world.getCreatureAt(x, y, z) || world.getTransitionAt(x, y, z))) return null;
     const inventory = this.sim.inventory;
     const old = this.fieldAt(x, y, z);
     if (old && old.obj.temporary) inventory.removeGroundObject(old.obj);
     else if (old) return null;
     const props = objectProps(type);
     inventory.objectCounter++;
-    const obj = new GameObject({ id: `${type}_${inventory.objectCounter}`, x, y, z, step: this.sim.movement.getStepHeight(x, y, z), movable: false, hasVolume: props.hasVolume, blocksMovement: false, temporary: true, ownerId: owner ? owner.id : null });
+    const obj = new GameObject({ id: `${type}_${inventory.objectCounter}`, x, y, z, step: this.sim.movement.getStepHeight(x, y, z), movable: false, hasVolume: props.hasVolume, blocksMovement: !!field.blocks, temporary: true, ownerId: owner ? owner.id : null });
     this.sim.objects.push(obj);
     this.sim.objectsById.set(obj.id, obj);
     this.sim.world.addObject(obj);

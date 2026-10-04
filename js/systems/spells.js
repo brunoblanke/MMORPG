@@ -5,14 +5,14 @@ import { isPositionAdjacentTo } from '../utils/helpers.js';
 import { getAsset, splitType } from '../../shared/assets.js';
 import { EQUIP_SLOTS, newItem, equipBonus } from '../../shared/items.js';
 import { addSkillTry } from '../../shared/skills.js';
-import { RUNES, BLANK_RUNE, SPELL_COOLDOWN_MS, SPELL_RANGE, RUNE_RANGE, LIGHT_SPELL, findSpell, spellRange } from '../../shared/spells.js';
+import { RUNES, AREAS, BLANK_RUNE, SPELL_COOLDOWN_MS, SPELL_RANGE, RUNE_RANGE, LIGHT_SPELL, findSpell, spellRange } from '../../shared/spells.js';
 
 // Magias e runas (shared/spells.js). A magia é dita no chat: se as palavras
 // são de uma magia, ela sai (ou o motivo de não sair) e ninguém mais ouve.
 // Precisa da vocação, do nível e da mana; depois espera SPELL_COOLDOWN_MS.
 // A mana gasta treina o magic level. As palavras aparecem em laranja em
-// cima do player, como no Tibia. A runa é usada com a mira: cura o player
-// ou fere a criatura no sqm, gastando uma carga.
+// cima do player, como no Tibia. A runa é usada com a mira no sqm, gastando
+// uma carga: cura o player, fere a criatura (ou as da área) ou cria campos.
 
 export class SpellController {
 
@@ -87,6 +87,15 @@ export class SpellController {
       this.heal(player, this.roll(spell.formula, player));
       return null;
     }
+    if (spell.kind === 'cure') {
+      if (player.conditions) delete player.conditions.poison;
+      return null;
+    }
+    if (spell.kind === 'haste') {
+      const [factor, base] = spell.speed;
+      this.sim.conditions.add(player, 'haste', { speed: Math.max(1, Math.floor(player.baseSpd * factor + base)), ms: spell.ms });
+      return null;
+    }
     if (spell.kind === 'conjure') return this.conjure(player, spell);
     if (this.sim.world.isInSafeZone(player)) return 'Você não pode atacar na zona segura.';
     if (spell.kind === 'strike') {
@@ -94,8 +103,8 @@ export class SpellController {
       if (!target || !target.isAlive() || getLevel(target) !== getLevel(player)) return 'Você precisa de um alvo.';
       if (Math.max(Math.abs(target.x - player.x), Math.abs(target.y - player.y)) > SPELL_RANGE) return 'Longe demais.';
       if (!this.sim.movement.hasLineOfSight(player, target)) return 'Tem algo no caminho.';
-      this.sim.emit({ type: 'missile', fromX: player.x, fromY: player.y, toX: target.x, toY: target.y });
-      this.hurt(player, target, this.roll(spell.formula, player), now);
+      this.sim.emit({ type: 'missile', fromX: player.x, fromY: player.y, toX: target.x, toY: target.y, kind: spell.element });
+      this.hurt(player, target, this.roll(spell.formula, player), now, spell.element);
       return null;
     }
     const level = getLevel(player);
@@ -120,11 +129,11 @@ export class SpellController {
   // hurt
   // Dano de magia na criatura (sem defesa nem armadura); conta pra XP.
 
-  hurt(player, enemy, amount, now) {
+  hurt(player, enemy, amount, now, element = null) {
     if (amount <= 0) return;
     this.sim.combat.recordDamage(enemy, player, Math.min(amount, enemy.currentHp));
     enemy.takeDamage(amount, now);
-    this.sim.emit({ type: 'damage', targetId: enemy.id, x: enemy.x, y: enemy.y, amount });
+    this.sim.emit({ type: 'damage', targetId: enemy.id, x: enemy.x, y: enemy.y, amount, element });
   }
 
   // ================================================================================================================================================================================================================================================
@@ -167,8 +176,8 @@ export class SpellController {
   // ================================================================================================================================================================================================================================================
   // useRune
   // Runa usada com a mira no sqm target (até RUNE_RANGE, com linha de
-  // visão): a de cura no player de lá, a de ataque na criatura. Gasta uma
-  // carga; sem cargas, a runa some.
+  // visão). Gasta uma carga; sem cargas, a runa some. Se não dá pra usar
+  // ali, avisa e não gasta.
 
   useRune(player, src, rune, target) {
     const z = player.z || 0;
@@ -176,19 +185,47 @@ export class SpellController {
     if (this.magicLevel(player) < rune.ml) return this.message(player, `Você precisa de magic level ${rune.ml} pra usar essa runa.`);
     if (Math.max(Math.abs(target.x - player.x), Math.abs(target.y - player.y)) > RUNE_RANGE) return this.message(player, 'Longe demais.');
     if (!this.sim.movement.hasLineOfSight(player, target)) return this.message(player, 'Tem algo no caminho.');
-    const at = (e) => e.x === target.x && e.y === target.y && (e.z || 0) === z && e.isAlive();
-    const who = rune.kind === 'heal' ? this.sim.players.find(at) : this.sim.enemies.find(at);
-    if (!who) return this.message(player, rune.kind === 'heal' ? 'Só dá pra usar em players.' : 'Só dá pra usar em criaturas.');
-    if (rune.kind === 'attack' && this.sim.world.isInSafeZone(player)) return this.message(player, 'Você não pode atacar na zona segura.');
+    const hostile = !['heal', 'cure'].includes(rune.kind);
+    if (hostile && this.sim.world.isInSafeZone(player)) return this.message(player, 'Você não pode atacar na zona segura.');
     const now = this.sim.time || 0;
     if (now < (player.useReadyAt || 0)) return this.message(player, 'Você está exausto.');
+    const problem = this.runeEffect(player, rune, { x: target.x, y: target.y, z }, now);
+    if (problem) return this.message(player, problem);
     player.useReadyAt = now + SPELL_COOLDOWN_MS;
-    if (rune.kind === 'heal') this.heal(who, this.roll(rune.formula, player));
-    else {
-      this.sim.emit({ type: 'missile', fromX: player.x, fromY: player.y, toX: who.x, toY: who.y });
-      this.hurt(player, who, this.roll(rune.formula, player), now);
-    }
     src.item.charges = (src.item.charges ?? rune.charges) - 1;
     if (src.item.charges <= 0) src.remove();
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // runeEffect
+  // O que a runa faz no sqm; devolve o motivo se não deu (sem gastar carga).
+
+  runeEffect(player, rune, target, now) {
+    const at = (x, y) => (e) => e.x === x && e.y === y && (e.z || 0) === target.z && e.isAlive();
+    if (rune.kind === 'heal' || rune.kind === 'cure') {
+      const who = this.sim.players.find(at(target.x, target.y));
+      if (!who) return 'Só dá pra usar em players.';
+      if (rune.kind === 'heal') this.heal(who, this.roll(rune.formula, player));
+      else if (who.conditions) delete who.conditions.poison;
+      return null;
+    }
+    const tiles = AREAS[rune.area || 'single'].map(([dx, dy]) => [target.x + dx, target.y + dy]);
+    if (rune.kind === 'attack') {
+      const who = this.sim.enemies.find(at(target.x, target.y));
+      if (!who) return 'Só dá pra usar em criaturas.';
+      this.sim.emit({ type: 'missile', fromX: player.x, fromY: player.y, toX: who.x, toY: who.y, kind: rune.element });
+      this.hurt(player, who, this.roll(rune.formula, player), now, rune.element);
+      return null;
+    }
+    if (rune.kind === 'area') {
+      this.sim.emit({ type: 'missile', fromX: player.x, fromY: player.y, toX: target.x, toY: target.y, kind: rune.element });
+      this.sim.emit({ type: 'burst', x: target.x, y: target.y, tiles, kind: rune.element });
+      for (const [x, y] of tiles) {
+        for (const enemy of this.sim.enemies.filter(at(x, y))) this.hurt(player, enemy, this.roll(rune.formula, player), now, rune.element);
+      }
+      return null;
+    }
+    const placed = tiles.filter(([x, y]) => this.sim.conditions.placeField(rune.field, x, y, target.z, player));
+    return placed.length ? null : 'Não dá pra usar aí.';
   }
 }

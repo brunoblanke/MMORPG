@@ -3,7 +3,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { buildGame, floorRect, safeRect, CREATURE } from './helpers/fixture.js';
-import { setAssets } from '../shared/assets.js';
+import { setAssets, MAGIC_WALL } from '../shared/assets.js';
 import { TICK_MS } from '../js/simulation.js';
 import { BLANK_RUNE, SPELL_COOLDOWN_MS } from '../shared/spells.js';
 import { toPlain, fromPlain } from '../shared/items.js';
@@ -11,6 +11,11 @@ import { toPlain, fromPlain } from '../shared/items.js';
 const BAG = 'itens/recipientes/bag';
 const LMM = 'itens/runas/light-magic-missile-rune';
 const IH = 'itens/runas/intense-healing-rune';
+const GFB = 'itens/runas/great-fireball-rune';
+const FIRE_BOMB = 'itens/runas/fire-bomb-rune';
+const MW_RUNE = 'itens/runas/magic-wall-rune';
+const CURE = 'itens/runas/cure-poison-rune';
+const FIRE_FIELD = 'itens/itens-encantados/fire-field';
 const asset = (id, propriedades) => {
   const [grupo, pasta, nome] = id.split('/');
   return { id, ferramenta: id.startsWith('criaturas') ? 'criaturas' : 'objetos', grupo, pasta, nome, url: `/${nome}.png`, quadro: 32, quadros: 1, pecas: [], propriedades };
@@ -21,6 +26,12 @@ setAssets([
   asset(BLANK_RUNE, { move: true, peso: 2.1 }),
   asset(LMM, { move: true, peso: 1.2 }),
   asset(IH, { move: true, peso: 1.2 }),
+  asset(GFB, { move: true, peso: 1.2 }),
+  asset(FIRE_BOMB, { move: true, peso: 1.2 }),
+  asset(MW_RUNE, { move: true, peso: 1.2 }),
+  asset(CURE, { move: true, peso: 1.2 }),
+  asset(FIRE_FIELD, { move: false }),
+  asset(MAGIC_WALL, { move: false, bloqueia: true }),
   asset(CREATURE, { vida: 500 })
 ]);
 
@@ -146,4 +157,72 @@ test('runa: a de ataque fere a criatura na mira e gasta uma carga; a de cura cur
   game.tick(game.time + TICK_MS);
   assert.ok(game.player.currentHp > 10);
   assert.equal(game.player.equip.mochila.items[1], null);
+});
+
+// ================================================================================================================================================================================================================================================
+// rune
+// Usa a runa type (no 1º espaço da mochila) mirando em (x, y); devolve os eventos.
+
+function rune(game, type, x, y, charges = 3) {
+  game.player.equip.mochila.items[0] = { uid: 'r9', type, charges };
+  game.player.useReadyAt = 0;
+  game.enqueue('player1', { type: 'useItem', from: { t: 'c', uid: 'b1', i: 0 }, target: { x, y, z: 0 } });
+  game.tick(game.time + TICK_MS);
+  return game.drainEvents();
+}
+
+test('utani hur deixa o player mais rápido; exana pox tira o veneno', () => {
+  const game = mage();
+  const speed = game.player.spd;
+  say(game, 'utani hur');
+  assert.ok(game.player.spd > speed);
+  game.conditions.add(game.player, 'poison', { damage: 5, ticks: 5 });
+  game.player.spellReadyAt = 0;
+  say(game, 'exana pox');
+  assert.equal(game.player.conditions.poison, undefined);
+});
+
+test('exori flam: o golpe e o número saem como fogo', () => {
+  const game = mage('sorcerer', { enemies: [[7, 5, 0]] });
+  game.enemies[0].atk = 0;
+  game.player.target = game.enemies[0];
+  const events = say(game, 'exori flam');
+  assert.ok(events.some(e => e.type === 'missile' && e.kind === 'fire'));
+  assert.ok(events.some(e => e.type === 'damage' && e.element === 'fire'));
+});
+
+test('great fireball fere todas as criaturas da área; fire bomb põe fogo nos 9 sqms', () => {
+  const game = mage('sorcerer', { enemies: [[9, 5, 0], [9, 6, 0], [12, 12, 0]] });
+  game.player.skills.magic.lvl = 10;
+  for (const enemy of game.enemies) enemy.atk = 0;
+  const hp = game.enemies.map(e => e.currentHp);
+  const events = rune(game, GFB, 9, 5);
+  assert.ok(game.enemies[0].currentHp < hp[0] && game.enemies[1].currentHp < hp[1]);
+  assert.equal(game.enemies[2].currentHp, hp[2]);
+  assert.ok(events.some(e => e.type === 'burst' && e.tiles.length === 13));
+
+  rune(game, FIRE_BOMB, 6, 9);
+  const fires = game.objects.filter(o => o.id.startsWith(FIRE_FIELD) && Math.abs(o.x - 6) <= 1 && Math.abs(o.y - 9) <= 1);
+  assert.equal(fires.length, 9);
+});
+
+test('magic wall bloqueia o sqm e a linha de tiro e some sozinho; não vai em cima de criatura', () => {
+  const game = mage('sorcerer', { enemies: [[9, 9, 0]] });
+  game.player.skills.magic.lvl = 10;
+  rune(game, MW_RUNE, 7, 5);
+  assert.ok(game.world.isBlocked(7, 5, 0));
+  assert.equal(game.movement.hasLineOfSight(game.player, { x: 9, y: 5 }), false);
+  const events = rune(game, MW_RUNE, 9, 9);
+  assert.ok(events.some(e => e.type === 'message' && /Não dá/.test(e.text)));
+  const end = game.time + 20000;
+  while (game.time < end) game.tick(game.time + TICK_MS);
+  assert.equal(game.world.isBlocked(7, 5, 0), false);
+});
+
+test('cure poison rune tira o veneno do player mirado', () => {
+  const game = mage();
+  game.conditions.add(game.player, 'poison', { damage: 5, ticks: 5 });
+  rune(game, CURE, 5, 5, 1);
+  assert.equal(game.player.conditions.poison, undefined);
+  assert.equal(game.player.equip.mochila.items[0], null);
 });

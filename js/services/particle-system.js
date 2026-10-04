@@ -13,7 +13,8 @@ const MISSILE_COLORS = {
   ice: ['#bfefff', '#4fb8ff'],
   earth: ['#9fd36a', '#4a8a2a'],
   death: ['#555', '#111'],
-  holy: ['#fff6b0', '#ffd84a']
+  holy: ['#fff6b0', '#ffd84a'],
+  physical: ['#f1f1f1', '#9a9a9a']
 };
 
 export class ParticleSystem {
@@ -69,6 +70,15 @@ export class ParticleSystem {
   }
 
   // ================================================================================================================================================================================================================================================
+  // spawnBurst
+  // Área de runa: cada sqm acende na cor do tipo e apaga rápido.
+
+  spawnBurst(tiles, kind, renderer) {
+    this.bursts = this.bursts || [];
+    this.bursts.push({ tiles, kind, renderer, createdAt: performance.now(), duration: 400 });
+  }
+
+  // ================================================================================================================================================================================================================================================
   // update
 
   update(timestamp) {
@@ -84,12 +94,25 @@ export class ParticleSystem {
       return true;
     });
     this.missiles = (this.missiles || []).filter(m => timestamp - m.createdAt < m.duration);
+    this.bursts = (this.bursts || []).filter(b => timestamp - b.createdAt < b.duration);
   }
 
   // ================================================================================================================================================================================================================================================
   // render
 
   render(ctx) {
+    for (const b of this.bursts || []) {
+      const t = Math.max(0, Math.min(1, (performance.now() - b.createdAt) / b.duration));
+      const size = b.renderer.camera.tileSize;
+      ctx.save();
+      ctx.globalAlpha = 0.55 * (1 - t);
+      ctx.fillStyle = (MISSILE_COLORS[b.kind] || MISSILE_COLORS.energy)[1];
+      for (const [x, y] of b.tiles) {
+        const pos = b.renderer.gridToScreenWithOffset(x, y);
+        ctx.fillRect(pos.x, pos.y, size, size);
+      }
+      ctx.restore();
+    }
     for (const m of this.missiles || []) {
       const t = Math.max(0, Math.min(1, (performance.now() - m.createdAt) / m.duration));
       const size = m.renderer.camera.tileSize;
@@ -143,5 +166,6 @@ export class ParticleSystem {
   clear() {
     this.particles = [];
     this.missiles = [];
+    this.bursts = [];
   }
 }

@@ -64,7 +64,7 @@ test('invocar: chama até o máximo; a invocada não dá XP nem renasce e morre 
   assert.equal(sim.enemies.filter(e => e.summonedBy).length, 0);
   assert.ok(sim.player.xp > xp || sim.player.lvl > lvl);
   runFor(sim, CONFIG.enemyRespawnTime + 1000);
-  assert.equal(sim.enemies.length, 1);
+  assert.deepEqual(sim.enemies.filter(e => !e.summonedBy).map(e => e.creature), [CREATURE]);
 });
 
 test('respawn do gerador: o chefe demora o tempo dele pra renascer', () => {

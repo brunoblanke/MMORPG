@@ -1,5 +1,7 @@
 // shared/conditions.js
 
+import { MAGIC_WALL } from './assets.js';
+
 // Estados (condições) de player e criatura, como no Tibia: os de dano tiram
 // `damage` de vida a cada `interval`, `ticks` vezes (envenenado, queimando,
 // eletrificado); os de velocidade somam `speed` até acabar o tempo (lento,
@@ -15,8 +17,10 @@ export const CONDITIONS = {
 
 // Campos no chão: pisar dá `hit` de dano na hora e o estado do campo
 // (`damage` × `ticks`). Os criados por runa ou criatura somem em `ms`; os
-// postos no mapa pelo editor ficam.
+// postos no mapa pelo editor ficam. O magic wall não deixa ninguém passar
+// nem nada ser jogado por cima (blocks).
 export const FIELDS = {
+  [MAGIC_WALL]: { kind: null, blocks: true, ms: 20000 },
   'itens/itens-encantados/fire-field': { kind: 'fire', hit: 20, damage: 10, ticks: 7, ms: 45000 },
   'itens/itens-encantados/poison-field': { kind: 'poison', hit: 5, damage: 5, ticks: 8, ms: 45000 },
   'itens/itens-encantados/energy-field': { kind: 'energy', hit: 30, damage: 25, ticks: 3, ms: 30000 }

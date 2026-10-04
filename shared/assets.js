@@ -240,8 +240,11 @@ export function floorHasPiece(type, piece) {
 // aberta. Árvore, pedra e outros objetos que bloqueiam a passagem de player e
 // inimigos deixam o item passar por cima.
 
+export const MAGIC_WALL = 'itens/itens-encantados/magic-wall';
+
 export function blocksThrow(type) {
   const { asset, piece } = splitType(type);
+  if (asset === MAGIC_WALL) return true;
   if (!asset.startsWith(WALL_FOLDER)) return false;
   return !/^janela|^porta-.*-aberta$/.test(piece || '');
 }
