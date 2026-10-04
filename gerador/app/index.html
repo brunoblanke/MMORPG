@@ -158,9 +158,16 @@
         <label>Compra · item, preço que paga (moedas de ouro) e palavras pra oferecer (opcional, separadas por vírgula)</label>
         <div class="npc-topics" id="npcBuy"></div>
         <button type="button" class="ghost-btn" id="npcBuyAdd">+ Item que compra</button>
+        <label>Missões · o player diz o nome (ou as palavras) pra pedir; trazer itens ou matar criaturas, com a recompensa</label>
+        <div class="npc-topics" id="npcQuests"></div>
+        <button type="button" class="ghost-btn" id="npcQuestAdd">+ Missão</button>
         <div class="npc-lines" id="npcVocationLines" hidden>
           <label>Falas da vocação · vazio = a padrão · {vocacao}, {nivel} e {nome}</label>
           <div class="npc-lines-grid" id="npcVocationLinesGrid"></div>
+        </div>
+        <div class="npc-lines" id="npcQuestLines" hidden>
+          <label>Falas das missões · vazio = a padrão · {missao}, {progresso} e {nome}</label>
+          <div class="npc-lines-grid" id="npcQuestLinesGrid"></div>
         </div>
         <div class="npc-lines" id="npcShopLines" hidden>
           <label>Falas da loja · vazio = a padrão · {item}, {preco}, {quantidade}, {lista} e {nome}</label>

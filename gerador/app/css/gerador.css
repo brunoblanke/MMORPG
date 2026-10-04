@@ -247,4 +247,8 @@ button:focus-visible, input:focus-visible, .slot:focus-visible{ outline:2px soli
 .npc-lines-grid span{ font-size:11px; color:var(--muted); }
 .npc-lines-grid input{ width:100%; }
 .npc-topic .npc-price{ width:70px; }
+.npc-quest{ display:flex; flex-direction:column; gap:4px; padding:6px; border:1px solid var(--line, #2a2f3a); border-radius:6px; }
+.npc-quest .npc-topic select{ width:170px; }
+.npc-quest .npc-num{ width:64px; }
+.npc-quest .npc-tag{ font-size:11px; color:var(--muted); margin-left:4px; }
 #creatureSaveForm.is-npc .stat:not(#npcFields .stat), #creatureSaveForm.is-npc .loot-field, #creatureSaveForm.is-npc .voices-field{ display:none; }

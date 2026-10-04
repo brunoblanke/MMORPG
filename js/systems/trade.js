@@ -179,3 +179,19 @@ export function sell(sim, player, type, price, amount) {
   give(sim, player, price * amount);
   return 'ok';
 }
+
+// ================================================================================================================================================================================================================================================
+// giveItem
+// Põe count do item na mochila (espaço vazio); sem espaço, aos pés do player.
+
+export function giveItem(sim, player, type, count = 1) {
+  const inventory = sim.inventory;
+  let left = count;
+  while (left > 0) {
+    const item = newItem(inventory.nextUid(), type, left);
+    left -= item.count || 1;
+    const free = bagSlots(player).find(({ list, key }) => !list[key]);
+    if (free) free.list[free.key] = item;
+    else inventory.mergeGroundStack(inventory.spawnGroundItem(item, player.x, player.y, player.z || 0));
+  }
+}

@@ -34,6 +34,7 @@ export class Player extends Entity {
     this.walk = { target: null, path: [] };
     this.walkDir = null;
     this.pendingDrag = null;
+    this.missions = {};
   }
 
   // ================================================================================================================================================================================================================================================
@@ -112,7 +113,8 @@ export class Player extends Entity {
       followMode: this.followMode,
       attackMode: this.attackMode,
       food: this.food || 0,
-      quests: this.quests || []
+      quests: this.quests || [],
+      missions: this.missions || {}
     };
   }
 
@@ -136,6 +138,7 @@ export class Player extends Entity {
     if (typeof saved.followMode === 'boolean') this.followMode = this.autoFollow = saved.followMode;
     if (typeof saved.attackMode === 'boolean') this.attackMode = saved.attackMode;
     if (Array.isArray(saved.quests)) this.quests = saved.quests.filter(q => typeof q === 'string').slice(0, 1000);
+    if (saved.missions && typeof saved.missions === 'object') this.missions = savedMissions(saved.missions);
     if (Number.isFinite(saved.food) && saved.food > 0) this.food = Math.min(saved.food, FOOD_MAX_SECONDS * 1000);
 
     const hasPosition = Number.isInteger(saved.x) && Number.isInteger(saved.y) && isValidFloor(saved.z);
@@ -225,4 +228,17 @@ export class Player extends Entity {
 
 export function xpForLevel(L) {
   return Math.round(50 / 3 * (L * L * L - 6 * L * L + 17 * L - 12));
+}
+
+// ================================================================================================================================================================================================================================================
+// savedMissions
+// As missões guardadas, só as entradas no formato certo.
+
+function savedMissions(saved) {
+  const missions = {};
+  for (const [id, m] of Object.entries(saved).slice(0, 500)) {
+    if (!m || !['active', 'done'].includes(m.state) || !['item', 'kill'].includes(m.kind) || typeof m.target !== 'string') continue;
+    missions[id] = { state: m.state, name: String(m.name || id).slice(0, 60), kind: m.kind, target: m.target, need: Math.max(1, Math.floor(Number(m.need)) || 1), count: Math.max(0, Math.floor(Number(m.count)) || 0) };
+  }
+  return missions;
 }

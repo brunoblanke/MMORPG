@@ -3,6 +3,7 @@
 import { CONFIG } from '../config.js';
 import { Enemy } from '../models/enemy.js';
 import { displayName, creaturePowers } from '../../shared/assets.js';
+import { countKill } from './quests.js';
 
 export class LifeCycleController {
 
@@ -86,6 +87,7 @@ export class LifeCycleController {
     if (!enemy.summonedBy) {
       sim.inventory.fillCorpse(corpse, enemy);
       this.shareXp(enemy);
+      countKill(sim, enemy);
       sim.powers.dismissSummons(enemy);
     }
 

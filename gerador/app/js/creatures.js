@@ -5,7 +5,7 @@ import { creatureInfo, itemCategory } from './picker.js';
 import { sourceUrl, sourceLabel, loadImage, isReady, drawAnchored, readPngFile, normalizeName, setStatus } from './common.js';
 import { refreshProjects } from './projects.js';
 import { fillFolderSelect, folderOf, setFolder, recipePath } from './folders.js';
-import { VOCATION_LINES, SHOP_LINES } from '/shared/npcs.js';
+import { VOCATION_LINES, SHOP_LINES, QUEST_LINES } from '/shared/npcs.js';
 
 // Folha de criatura (quadros de 32 ou 64 px, o maior entre criatura e cadáver):
 //   linhas 1–4  sul, norte, leste, oeste — 1º quadro parado, depois andando
@@ -47,6 +47,7 @@ const creatures = {
   topics: [],
   shop: [],
   buys: [],
+  quests: [],
   creatureTypes: []
 };
 
@@ -86,8 +87,10 @@ const npcBuyEl = document.getElementById('npcBuy');
 const NPC_FOLDER = 'personagens/npcs';
 const LINE_GROUPS = [
   { key: 'falasVocacao', defaults: VOCATION_LINES, box: document.getElementById('npcVocationLines'), grid: document.getElementById('npcVocationLinesGrid') },
-  { key: 'falasVenda', defaults: SHOP_LINES, box: document.getElementById('npcShopLines'), grid: document.getElementById('npcShopLinesGrid') }
+  { key: 'falasVenda', defaults: SHOP_LINES, box: document.getElementById('npcShopLines'), grid: document.getElementById('npcShopLinesGrid') },
+  { key: 'falasMissao', defaults: QUEST_LINES, box: document.getElementById('npcQuestLines'), grid: document.getElementById('npcQuestLinesGrid') }
 ];
+const npcQuestsEl = document.getElementById('npcQuests');
 const NPC_TEXT_FIELDS = [
   ['boasVindas', document.getElementById('npcWelcome')],
   ['oi', document.getElementById('npcGreet')],
@@ -135,6 +138,11 @@ function initCreatures() {
     creatures.shop.push({ tipo: '', preco: 0, palavras: '' });
     creatures.dirty = true;
     renderShop();
+  };
+  document.getElementById('npcQuestAdd').onclick = () => {
+    creatures.quests.push({ nome: '', palavras: '', tipo: 'item', alvo: '', quantidade: 1, pedido: '', recompensa: { tipo: '', count: 1 }, xp: 0, moedas: 0 });
+    creatures.dirty = true;
+    renderQuests();
   };
   document.getElementById('npcTopicAdd').onclick = () => {
     creatures.topics.push({ palavras: '', resposta: '' });
@@ -579,6 +587,67 @@ async function loadLootItems() {
 function renderShop() {
   renderTradeList(creatures.shop, npcShopEl, 'ex.: corda');
   renderTradeList(creatures.buys, npcBuyEl, 'ex.: queijo');
+  renderQuests();
+}
+
+// ================================================================================================================================================================================================================================================
+// renderQuests
+// Um quadro por missão: nome, palavras, o que pede (trazer item ou matar
+// criatura, qual e quantos), a fala do pedido e a recompensa (item, XP e
+// moedas).
+
+function renderQuests() {
+  npcQuestsEl.innerHTML = '';
+  const changed = () => { creatures.dirty = true; };
+  const input = (props, onInput) => {
+    const el = document.createElement('input');
+    Object.assign(el, props);
+    el.oninput = () => { onInput(el.value); changed(); };
+    return el;
+  };
+  const select = (list, value, empty, onChange) => {
+    const el = document.createElement('select');
+    const options = value && !list.includes(value) ? [value, ...list] : list;
+    el.innerHTML = `<option value="">${empty}</option>` + options.map(type => `<option value="${type}">${type.split('/').slice(1).join('/')}</option>`).join('');
+    el.value = value;
+    el.onchange = () => { onChange(el.value); changed(); };
+    return el;
+  };
+  const number = (value, title, onInput) => {
+    const tag = document.createElement('span');
+    tag.className = 'npc-tag';
+    tag.textContent = title;
+    return [tag, input({ type: 'number', className: 'npc-num', min: 0, step: 1, title, value }, v => onInput(Math.max(0, Math.floor(Number(v)) || 0)))];
+  };
+  creatures.quests.forEach((quest, index) => {
+    const box = document.createElement('div');
+    box.className = 'npc-quest';
+    const row = (...children) => {
+      const el = document.createElement('div');
+      el.className = 'npc-topic';
+      el.append(...children);
+      return el;
+    };
+    const kind = document.createElement('select');
+    kind.innerHTML = '<option value="item">Trazer item</option><option value="matar">Matar criatura</option>';
+    kind.value = quest.tipo;
+    kind.onchange = () => { quest.tipo = kind.value; quest.alvo = ''; changed(); renderQuests(); };
+    const targets = quest.tipo === 'matar' ? creatures.creatureTypes : (creatures.lootItems || []);
+    const remove = document.createElement('button');
+    Object.assign(remove, { type: 'button', className: 'ghost-btn', textContent: '×' });
+    remove.onclick = () => { creatures.quests.splice(index, 1); changed(); renderShop(); };
+    box.append(
+      row(input({ type: 'text', className: 'npc-words', placeholder: 'Nome (ex.: Queijos)', value: quest.nome, maxLength: 60 }, v => { quest.nome = v; }),
+        input({ type: 'text', className: 'npc-reply', placeholder: 'Palavras (ex.: queijo, missão)', value: quest.palavras, maxLength: 120 }, v => { quest.palavras = v; }), remove),
+      row(kind, select(targets, quest.alvo, quest.tipo === 'matar' ? '— criatura —' : '— item —', v => { quest.alvo = v; }),
+        ...number(quest.quantidade, 'quantos', v => { quest.quantidade = Math.max(1, v); })),
+      row(input({ type: 'text', className: 'npc-reply', placeholder: 'Pedido do NPC (ex.: Me traz 3 queijos? (sim / não))', value: quest.pedido, maxLength: 240 }, v => { quest.pedido = v; })),
+      row(select(creatures.lootItems || [], quest.recompensa.tipo, '— recompensa —', v => { quest.recompensa.tipo = v; }),
+        ...number(quest.recompensa.count, 'quantos', v => { quest.recompensa.count = Math.max(1, v); }),
+        ...number(quest.xp, 'XP', v => { quest.xp = v; }), ...number(quest.moedas, 'moedas', v => { quest.moedas = v; }))
+    );
+    npcQuestsEl.appendChild(box);
+  });
   showNpcFields();
 }
 
@@ -716,6 +785,7 @@ function showNpcFields() {
   npcDestEl.hidden = !npcVocationEl.value;
   LINE_GROUPS[0].box.hidden = !npcVocationEl.value;
   LINE_GROUPS[1].box.hidden = !creatures.shop.length && !creatures.buys.length;
+  LINE_GROUPS[2].box.hidden = !creatures.quests.length;
   formEl.classList.toggle('is-npc', isNpc);
 }
 
@@ -754,6 +824,10 @@ function conversationValues() {
   talk.topicos = creatures.topics.map(t => ({ palavras: t.palavras.trim(), resposta: t.resposta.trim() })).filter(t => t.palavras && t.resposta);
   talk.vende = creatures.shop.filter(e => e.tipo).map(e => ({ tipo: e.tipo, preco: e.preco || 0, palavras: (e.palavras || '').trim() }));
   talk.compra = creatures.buys.filter(e => e.tipo).map(e => ({ tipo: e.tipo, preco: e.preco || 0, palavras: (e.palavras || '').trim() }));
+  talk.missoes = creatures.quests.filter(q => q.nome.trim() && q.alvo).map(q => ({
+    ...q, nome: q.nome.trim(), palavras: q.palavras.trim(), pedido: q.pedido.trim(),
+    recompensa: q.recompensa.tipo ? { tipo: q.recompensa.tipo, count: Math.max(1, q.recompensa.count || 1) } : null
+  }));
   for (const group of LINE_GROUPS) {
     const values = lineValues(group);
     if (Object.keys(values).length) talk[group.key] = values;
@@ -864,6 +938,11 @@ function openRecipe(recipe) {
   creatures.topics = Array.isArray(talk.topicos) ? talk.topicos.map(t => ({ palavras: t.palavras || '', resposta: t.resposta || '' })) : [];
   creatures.shop = Array.isArray(talk.vende) ? talk.vende.map(e => ({ tipo: e.tipo || '', preco: Number(e.preco) || 0, palavras: e.palavras || '' })) : [];
   creatures.buys = Array.isArray(talk.compra) ? talk.compra.map(e => ({ tipo: e.tipo || '', preco: Number(e.preco) || 0, palavras: e.palavras || '' })) : [];
+  creatures.quests = Array.isArray(talk.missoes) ? talk.missoes.map(q => ({
+    nome: q.nome || '', palavras: q.palavras || '', tipo: q.tipo === 'matar' ? 'matar' : 'item', alvo: q.alvo || '', quantidade: Number(q.quantidade) || 1,
+    pedido: q.pedido || '', recompensa: { tipo: (q.recompensa && q.recompensa.tipo) || '', count: (q.recompensa && Number(q.recompensa.count)) || 1 },
+    xp: Number(q.xp) || 0, moedas: Number(q.moedas) || 0
+  })) : [];
   renderTopics();
   renderLines(talk);
   renderShop();

@@ -13,7 +13,8 @@ import { getAsset, displayName, creatureBehavior, splitType } from './assets.js'
 // reply }]: respondem durante a conversa). vocation ({ destination }): ele
 // dá a vocação a quem tem o nível 8 e leva pro destino (js/systems/npcs.js →
 // talkVocation). shop ([{ type, price, name, words }]): o que ele vende;
-// buys (igual): o que ele compra (talkShop). {nome} vira o nome do player. As
+// buys (igual): o que ele compra (talkShop). quests: as missões que ele dá
+// (questsFrom; js/systems/quests.js). {nome} vira o nome do player. As
 // palavras são comparadas sem acento e em minúsculas (normalizeSpeech).
 
 export const GREET_WORDS = ['oi', 'ola', 'oie', 'hi', 'hello', 'bom dia', 'boa tarde', 'boa noite'];
@@ -51,6 +52,16 @@ export const SHOP_LINES = {
   comprado: { label: 'Comprado', text: 'Negócio fechado!' },
   semItem: { label: 'Player sem o item', text: 'Você não tem {quantidade} {item}.' }
 };
+// Falas das missões: {progresso} vira o quanto falta (ex.: 3/5 rat) e
+// {missao} o nome da missão.
+export const QUEST_LINES = {
+  aceitou: { label: 'Ao aceitar', text: 'Ótimo! Volte quando terminar.' },
+  desistiu: { label: 'Ao dizer não', text: 'Tudo bem, quem sabe outra hora.' },
+  falta: { label: 'Ainda não terminou', text: 'Você ainda não terminou: {progresso}.' },
+  pronto: { label: 'Ao entregar', text: 'Muito obrigado, {nome}! Aqui está sua recompensa.' },
+  feita: { label: 'Já feita', text: 'Você já me ajudou com isso. Obrigado!' }
+};
+export const MAX_QUEST_AMOUNT = 1000;
 
 // ================================================================================================================================================================================================================================================
 // normalizeSpeech
@@ -88,8 +99,42 @@ export function npcDefFromAsset(type, pos) {
     vocationLines: linesFrom(VOCATION_LINES, talk.falasVocacao),
     shop: shopFrom(talk.vende),
     buys: shopFrom(talk.compra),
-    shopLines: linesFrom(SHOP_LINES, talk.falasVenda)
+    shopLines: linesFrom(SHOP_LINES, talk.falasVenda),
+    quests: questsFrom(talk.missoes, asset.nome || type.split('/').pop()),
+    questLines: linesFrom(QUEST_LINES, talk.falasMissao)
   };
+}
+
+// ================================================================================================================================================================================================================================================
+// questsFrom
+// As missões do NPC (gerador → Missões): [{ id, name, words, ask, kind
+// ('item': trazer amount do target; 'kill': matar amount da criatura
+// target), target, amount, reward ({ type, count } ou null), xp, money }].
+// O id junta o NPC e o nome da missão (é o que fica guardado no player).
+
+function questsFrom(list, npcName) {
+  if (!Array.isArray(list)) return [];
+  const int = (value, max) => Math.min(max, Math.max(0, Math.floor(Number(value)) || 0));
+  return list.filter(e => e && typeof e.nome === 'string' && e.nome.trim() && ['item', 'matar'].includes(e.tipo) &&
+    typeof e.alvo === 'string' && getAsset(splitType(e.alvo).asset)).map(e => {
+    const name = e.nome.trim().slice(0, 60);
+    const words = String(e.palavras || '').split(',').map(normalizeSpeech).filter(Boolean);
+    const reward = e.recompensa && typeof e.recompensa.tipo === 'string' && getAsset(splitType(e.recompensa.tipo).asset)
+      ? { type: e.recompensa.tipo, count: Math.max(1, int(e.recompensa.count, 100)) }
+      : null;
+    return {
+      id: `${npcName}/${normalizeSpeech(name)}`,
+      name,
+      words: [...new Set([...words, normalizeSpeech(name)])].filter(Boolean),
+      ask: String(e.pedido || '').trim() || `Pode me ajudar com ${name}? (sim / não)`,
+      kind: e.tipo === 'matar' ? 'kill' : 'item',
+      target: e.alvo,
+      amount: Math.max(1, int(e.quantidade, MAX_QUEST_AMOUNT)),
+      reward,
+      xp: int(e.xp, 10000000),
+      money: int(e.moedas, 10000000)
+    };
+  });
 }
 
 // ================================================================================================================================================================================================================================================

@@ -2,8 +2,9 @@
 
 import { Npc } from '../models/npc.js';
 import { getMapSpawn } from '../../shared/map-format.js';
-import { DEFAULT_RADIUS, YES_WORDS, NO_WORDS, TRADE_WORDS, SELL_WORDS, MAX_SELL, VOCATION_LINES, SHOP_LINES, normalizeSpeech, npcDefFromAsset, fillLine } from '../../shared/npcs.js';
+import { DEFAULT_RADIUS, YES_WORDS, NO_WORDS, TRADE_WORDS, SELL_WORDS, MAX_SELL, VOCATION_LINES, SHOP_LINES, QUEST_LINES, normalizeSpeech, npcDefFromAsset, fillLine } from '../../shared/npcs.js';
 import { buy, sell } from './trade.js';
+import { questState, startQuest, progressOf, progressText, completeQuest } from './quests.js';
 import { VOCATIONS, VOCATION_LEVEL } from '../../shared/vocations.js';
 import { getLevel } from '../core/geometry.js';
 import { directionFromDelta } from '../utils/helpers.js';
@@ -49,6 +50,7 @@ export class NpcController {
       npc.choosing = new Map();
       npc.offering = new Map();
       npc.selling = new Set();
+      npc.questOffer = new Map();
       npc.home = { x: spot.x, y: spot.y, z };
       npc.homeX = spot.x;
       npc.homeY = spot.y;
@@ -130,9 +132,11 @@ export class NpcController {
       npc.choosing.delete(player.id);
       npc.offering.delete(player.id);
       npc.selling.delete(player.id);
+      npc.questOffer.delete(player.id);
       this.npcSays(npc, player, def.bye.reply);
       return;
     }
+    if (def.quests && def.quests.length && this.talkQuest(npc, def, player, text)) return;
     if (def.vocation && this.talkVocation(npc, def, player, text)) return;
     if (((def.shop && def.shop.length) || (def.buys && def.buys.length)) && this.talkShop(npc, def, player, text)) return;
     const topic = def.topics.find(t => this.hasWord(text, t.words));
@@ -174,6 +178,44 @@ export class NpcController {
     } else {
       npc.choosing.set(player.id, key);
       this.npcSays(npc, player, fillLine(lines.confirmar, { vocacao: VOCATIONS[key].name }));
+    }
+    return true;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // talkQuest
+  // NPC com missões: o nome da missão (ou as palavras dela) pede pra aceitar
+  // (sim aceita, não desiste); aceita, mostra quanto falta ou, completa,
+  // entrega e dá a recompensa (quests.js); feita, agradece. Devolve true se
+  // a fala era dessa conversa.
+
+  talkQuest(npc, def, player, text) {
+    const lines = def.questLines || Object.fromEntries(Object.entries(QUEST_LINES).map(([k, v]) => [k, v.text]));
+    const offered = npc.questOffer.get(player.id);
+    if (offered && this.hasWord(text, YES_WORDS)) {
+      npc.questOffer.delete(player.id);
+      startQuest(this.sim, player, offered);
+      this.npcSays(npc, player, fillLine(lines.aceitou, { missao: offered.name }));
+      return true;
+    }
+    if (offered && this.hasWord(text, NO_WORDS)) {
+      npc.questOffer.delete(player.id);
+      this.npcSays(npc, player, fillLine(lines.desistiu, { missao: offered.name }));
+      return true;
+    }
+    const quest = def.quests.find(q => this.hasWord(text, q.words));
+    if (!quest) return false;
+    const state = questState(player, quest);
+    if (state && state.state === 'done') {
+      this.npcSays(npc, player, fillLine(lines.feita, { missao: quest.name }));
+    } else if (!state) {
+      npc.questOffer.set(player.id, quest);
+      this.npcSays(npc, player, quest.ask);
+    } else if (progressOf(player, quest) >= quest.amount) {
+      completeQuest(this.sim, player, quest);
+      this.npcSays(npc, player, fillLine(lines.pronto, { missao: quest.name }));
+    } else {
+      this.npcSays(npc, player, fillLine(lines.falta, { missao: quest.name, progresso: progressText(player, quest) }));
     }
     return true;
   }
