@@ -296,15 +296,29 @@ function observarMudancas(recarregar) {
 
 // ================================================================================================================================================================================================================================================
 // carregarPersonagens
-// Personagens guardados, pelo nome em minúsculas. Sem arquivo (ou com ele
-// estragado), começa vazio.
+// Personagens guardados, pelo nome em minúsculas. Sem arquivo, começa vazio;
+// com ele estragado, também, mas antes guarda uma cópia dele
+// (characters.json.estragado-<hora>) pra nada se perder quando o servidor
+// gravar o arquivo de novo.
+
+let copiaEstragada = null;
 
 function carregarPersonagens() {
   try {
     const personagens = JSON.parse(fs.readFileSync(CHARACTERS_PATH, 'utf8'));
     return personagens && typeof personagens === 'object' ? personagens : {};
   } catch (err) {
-    if (err.code !== 'ENOENT') console.error('❌ Erro ao ler personagens:', err.message);
+    if (err.code === 'ENOENT') return {};
+    try {
+      const versao = fs.statSync(CHARACTERS_PATH).mtimeMs;
+      if (versao === copiaEstragada) return {};
+      copiaEstragada = versao;
+      const copia = `${CHARACTERS_PATH}.estragado-${Date.now()}`;
+      fs.copyFileSync(CHARACTERS_PATH, copia);
+      console.error(`❌ Erro ao ler personagens: ${err.message}. O arquivo foi guardado em ${path.basename(copia)} antes de ser gravado de novo.`);
+    } catch (erroCopia) {
+      console.error('❌ Erro ao ler personagens:', err.message);
+    }
     return {};
   }
 }

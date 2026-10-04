@@ -1,0 +1,1407 @@
+{
+  "birou juice": {
+    "name": "Birou Juice",
+    "gender": "male",
+    "lvl": 50,
+    "xp": 2148,
+    "vocation": "none",
+    "home": {
+      "x": 187,
+      "y": 225,
+      "z": 0
+    },
+    "currentHp": 42,
+    "x": 159,
+    "y": 171,
+    "z": 1,
+    "skills": {
+      "magic": {
+        "lvl": 100,
+        "tries": 0,
+        "pct": 0
+      },
+      "fist": {
+        "lvl": 100,
+        "tries": 0,
+        "pct": 0
+      },
+      "club": {
+        "lvl": 100,
+        "tries": 0,
+        "pct": 0
+      },
+      "sword": {
+        "lvl": 100,
+        "tries": 0,
+        "pct": 0
+      },
+      "axe": {
+        "lvl": 100,
+        "tries": 18,
+        "pct": 0
+      },
+      "distance": {
+        "lvl": 100,
+        "tries": 0,
+        "pct": 0
+      },
+      "shielding": {
+        "lvl": 100,
+        "tries": 21,
+        "pct": 0
+      },
+      "fishing": {
+        "lvl": 100,
+        "tries": 0,
+        "pct": 0
+      }
+    },
+    "mana": 300,
+    "equip": {
+      "amuleto": null,
+      "cabeca": {
+        "type": "itens/capacetes/crown-helmet"
+      },
+      "mochila": null,
+      "arma": {
+        "type": "itens/machados/fire-axe"
+      },
+      "corpo": {
+        "type": "itens/armaduras/magic-plate-armor"
+      },
+      "escudo": {
+        "type": "itens/escudos/mastermind-shield"
+      },
+      "anel": null,
+      "pernas": {
+        "type": "itens/calcas/crown-legs"
+      },
+      "municao": {
+        "type": "itens/liquidos/health-potion",
+        "count": 10
+      },
+      "pes": {
+        "type": "itens/botas/boots-of-haste"
+      }
+    },
+    "depot": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "layout": {
+      "v": 2,
+      "left": [
+        {
+          "ref": "vitals",
+          "rows": 2,
+          "min": false,
+          "bars": []
+        },
+        {
+          "ref": "skills",
+          "rows": 2,
+          "min": false,
+          "bars": [
+            "axe",
+            "shielding"
+          ]
+        },
+        {
+          "ref": "battle",
+          "rows": 2,
+          "min": true,
+          "bars": []
+        }
+      ],
+      "right": [
+        {
+          "ref": "inventory",
+          "rows": 2,
+          "min": false,
+          "bars": []
+        }
+      ],
+      "free": []
+    },
+    "followMode": false,
+    "attackMode": false,
+    "food": 0,
+    "quests": []
+  },
+  "gigi": {
+    "name": "Gigi",
+    "gender": "female",
+    "lvl": 1,
+    "xp": 0,
+    "vocation": "none",
+    "home": {
+      "x": 187,
+      "y": 225,
+      "z": 0
+    },
+    "currentHp": 147,
+    "x": 182,
+    "y": 229,
+    "z": 0,
+    "skills": {
+      "magic": {
+        "lvl": 0,
+        "tries": 0,
+        "pct": 0
+      },
+      "fist": {
+        "lvl": 10,
+        "tries": 0,
+        "pct": 0
+      },
+      "club": {
+        "lvl": 10,
+        "tries": 4,
+        "pct": 8
+      },
+      "sword": {
+        "lvl": 10,
+        "tries": 0,
+        "pct": 0
+      },
+      "axe": {
+        "lvl": 10,
+        "tries": 0,
+        "pct": 0
+      },
+      "distance": {
+        "lvl": 10,
+        "tries": 0,
+        "pct": 0
+      },
+      "shielding": {
+        "lvl": 10,
+        "tries": 35,
+        "pct": 35
+      },
+      "fishing": {
+        "lvl": 10,
+        "tries": 0,
+        "pct": 0
+      }
+    },
+    "mana": 55,
+    "equip": {
+      "amuleto": null,
+      "cabeca": null,
+      "mochila": {
+        "type": "itens/recipientes/bag",
+        "items": [
+          {
+            "type": "itens/comidas/maca",
+            "count": 1
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      "arma": {
+        "type": "itens/clavas/club"
+      },
+      "corpo": {
+        "type": "itens/armaduras/jacket"
+      },
+      "escudo": null,
+      "anel": null,
+      "pernas": null,
+      "municao": null,
+      "pes": null
+    },
+    "depot": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "layout": {
+      "v": 2,
+      "left": [
+        {
+          "ref": "vitals",
+          "rows": 2,
+          "min": false,
+          "bars": []
+        },
+        {
+          "ref": "skills",
+          "rows": 2,
+          "min": true,
+          "bars": []
+        },
+        {
+          "ref": "battle",
+          "rows": 2,
+          "min": true,
+          "bars": []
+        },
+        {
+          "ref": "social",
+          "rows": 2,
+          "min": false,
+          "bars": []
+        }
+      ],
+      "right": [
+        {
+          "ref": "inventory",
+          "rows": 2,
+          "min": false,
+          "bars": []
+        },
+        {
+          "path": "mochila",
+          "rows": 2,
+          "min": false
+        }
+      ],
+      "free": []
+    },
+    "followMode": false,
+    "attackMode": false,
+    "food": 0,
+    "quests": [],
+    "missions": {},
+    "vip": []
+  },
+  "knight": {
+    "name": "Knight",
+    "gender": "female",
+    "lvl": 1,
+    "xp": 0,
+    "vocation": "none",
+    "home": {
+      "x": 187,
+      "y": 225,
+      "z": 0
+    },
+    "currentHp": 128,
+    "x": 191,
+    "y": 217,
+    "z": 0,
+    "skills": {
+      "magic": {
+        "lvl": 0,
+        "pct": 0,
+        "tries": 0
+      },
+      "fist": {
+        "lvl": 10,
+        "pct": 0,
+        "tries": 0
+      },
+      "club": {
+        "lvl": 10,
+        "pct": 10,
+        "tries": 5
+      },
+      "sword": {
+        "lvl": 10,
+        "pct": 0,
+        "tries": 0
+      },
+      "axe": {
+        "lvl": 10,
+        "pct": 0,
+        "tries": 0
+      },
+      "distance": {
+        "lvl": 10,
+        "pct": 0,
+        "tries": 0
+      },
+      "shielding": {
+        "lvl": 10,
+        "pct": 28,
+        "tries": 29
+      },
+      "fishing": {
+        "lvl": 10,
+        "pct": 0,
+        "tries": 0
+      }
+    },
+    "mana": 55,
+    "equip": {
+      "amuleto": null,
+      "cabeca": null,
+      "mochila": {
+        "type": "itens/recipientes/bag",
+        "items": [
+          {
+            "type": "itens/comidas/maca",
+            "count": 1
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      "arma": {
+        "type": "itens/clavas/club"
+      },
+      "corpo": {
+        "type": "itens/armaduras/jacket"
+      },
+      "escudo": {
+        "type": "itens/fontes-de-luz/torch"
+      },
+      "anel": null,
+      "pernas": null,
+      "municao": null,
+      "pes": null
+    },
+    "depot": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "layout": {
+      "v": 2,
+      "left": [
+        {
+          "ref": "vitals",
+          "rows": 2,
+          "min": false,
+          "bars": []
+        },
+        {
+          "ref": "skills",
+          "rows": 2,
+          "min": false,
+          "bars": []
+        },
+        {
+          "ref": "battle",
+          "rows": 2,
+          "min": true,
+          "bars": []
+        },
+        {
+          "ref": "social",
+          "rows": 2,
+          "min": true,
+          "bars": []
+        }
+      ],
+      "right": [
+        {
+          "ref": "inventory",
+          "rows": 2,
+          "min": false,
+          "bars": []
+        }
+      ],
+      "free": []
+    },
+    "followMode": true,
+    "attackMode": false,
+    "food": 0,
+    "quests": [],
+    "missions": {
+      "cacador/aranhas": {
+        "state": "active",
+        "name": "Aranhas",
+        "kind": "kill",
+        "target": "criaturas/vermes/spider",
+        "need": 10,
+        "count": 0
+      }
+    },
+    "vip": []
+  },
+  "cavaleiro": {
+    "name": "Cavaleiro",
+    "gender": "male",
+    "lvl": 100,
+    "xp": 0,
+    "vocation": "knight",
+    "home": {
+      "x": 187,
+      "y": 225,
+      "z": 0
+    },
+    "currentHp": 1565,
+    "x": 187,
+    "y": 225,
+    "z": 0,
+    "skills": {
+      "magic": {
+        "lvl": 9,
+        "tries": 0,
+        "pct": 0
+      },
+      "fist": {
+        "lvl": 40,
+        "tries": 0,
+        "pct": 0
+      },
+      "club": {
+        "lvl": 80,
+        "tries": 0,
+        "pct": 0
+      },
+      "sword": {
+        "lvl": 85,
+        "tries": 0,
+        "pct": 0
+      },
+      "axe": {
+        "lvl": 80,
+        "tries": 0,
+        "pct": 0
+      },
+      "distance": {
+        "lvl": 30,
+        "tries": 0,
+        "pct": 0
+      },
+      "shielding": {
+        "lvl": 82,
+        "tries": 0,
+        "pct": 0
+      },
+      "fishing": {
+        "lvl": 20,
+        "tries": 0,
+        "pct": 0
+      }
+    },
+    "mana": 550,
+    "equip": {
+      "amuleto": {
+        "type": "itens/amuletos-e-colares/stone-skin-amulet"
+      },
+      "cabeca": {
+        "type": "itens/capacetes/crown-helmet"
+      },
+      "mochila": {
+        "type": "itens/recipientes/backpack-verde",
+        "items": [
+          {
+            "type": "itens/liquidos/health-potion",
+            "count": 50
+          },
+          {
+            "type": "itens/liquidos/health-potion",
+            "count": 50
+          },
+          {
+            "type": "itens/comidas/ham",
+            "count": 20
+          },
+          {
+            "type": "itens/ferramentas/rope",
+            "count": 1
+          },
+          {
+            "type": "itens/ferramentas/shovel",
+            "count": 1
+          },
+          {
+            "type": "itens/valiosos/platinum-coin",
+            "count": 50
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      "arma": {
+        "type": "itens/espadas/fire-sword"
+      },
+      "corpo": {
+        "type": "itens/armaduras/knight-armor"
+      },
+      "escudo": {
+        "type": "itens/escudos/dragon-shield"
+      },
+      "anel": {
+        "type": "itens/aneis/life-ring"
+      },
+      "pernas": {
+        "type": "itens/calcas/knight-legs"
+      },
+      "municao": null,
+      "pes": {
+        "type": "itens/botas/leather-boots"
+      }
+    },
+    "depot": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "layout": {
+      "v": 2,
+      "left": [
+        {
+          "ref": "vitals",
+          "rows": 2,
+          "min": false,
+          "bars": []
+        },
+        {
+          "ref": "skills",
+          "rows": 2,
+          "min": true,
+          "bars": []
+        },
+        {
+          "ref": "battle",
+          "rows": 2,
+          "min": true,
+          "bars": []
+        },
+        {
+          "ref": "social",
+          "rows": 2,
+          "min": true,
+          "bars": []
+        }
+      ],
+      "right": [
+        {
+          "ref": "inventory",
+          "rows": 2,
+          "min": false,
+          "bars": []
+        },
+        {
+          "path": "mochila",
+          "rows": 2,
+          "min": false
+        }
+      ],
+      "free": []
+    },
+    "followMode": true,
+    "attackMode": false,
+    "food": 600000,
+    "quests": [],
+    "missions": {},
+    "vip": []
+  },
+  "arqueira": {
+    "name": "Arqueira",
+    "gender": "female",
+    "lvl": 100,
+    "xp": 0,
+    "vocation": "paladin",
+    "home": {
+      "x": 187,
+      "y": 225,
+      "z": 0
+    },
+    "currentHp": 1105,
+    "x": 187,
+    "y": 225,
+    "z": 0,
+    "skills": {
+      "magic": {
+        "lvl": 20,
+        "tries": 0,
+        "pct": 0
+      },
+      "fist": {
+        "lvl": 30,
+        "tries": 0,
+        "pct": 0
+      },
+      "club": {
+        "lvl": 30,
+        "tries": 0,
+        "pct": 0
+      },
+      "sword": {
+        "lvl": 30,
+        "tries": 0,
+        "pct": 0
+      },
+      "axe": {
+        "lvl": 30,
+        "tries": 0,
+        "pct": 0
+      },
+      "distance": {
+        "lvl": 90,
+        "tries": 0,
+        "pct": 0
+      },
+      "shielding": {
+        "lvl": 70,
+        "tries": 0,
+        "pct": 0
+      },
+      "fishing": {
+        "lvl": 20,
+        "tries": 0,
+        "pct": 0
+      }
+    },
+    "mana": 1470,
+    "equip": {
+      "amuleto": {
+        "type": "itens/amuletos-e-colares/elven-amulet"
+      },
+      "cabeca": {
+        "type": "itens/capacetes/steel-helmet"
+      },
+      "mochila": {
+        "type": "itens/recipientes/backpack-verde",
+        "items": [
+          {
+            "type": "itens/municao/arrow",
+            "count": 100
+          },
+          {
+            "type": "itens/municao/poison-arrow",
+            "count": 100
+          },
+          {
+            "type": "itens/municao/burst-arrow",
+            "count": 100
+          },
+          {
+            "type": "itens/distancia/spear",
+            "count": 20
+          },
+          {
+            "type": "itens/liquidos/health-potion",
+            "count": 50
+          },
+          {
+            "type": "itens/liquidos/mana-potion",
+            "count": 30
+          },
+          {
+            "type": "itens/comidas/ham",
+            "count": 20
+          },
+          {
+            "type": "itens/ferramentas/rope",
+            "count": 1
+          },
+          {
+            "type": "itens/valiosos/platinum-coin",
+            "count": 50
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      "arma": {
+        "type": "itens/distancia/crossbow"
+      },
+      "corpo": {
+        "type": "itens/armaduras/plate-armor"
+      },
+      "escudo": null,
+      "anel": {
+        "type": "itens/aneis/ring-of-healing"
+      },
+      "pernas": {
+        "type": "itens/calcas/plate-legs"
+      },
+      "municao": {
+        "type": "itens/municao/arrow",
+        "count": 100
+      },
+      "pes": {
+        "type": "itens/botas/leather-boots"
+      }
+    },
+    "depot": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "layout": {
+      "v": 2,
+      "left": [
+        {
+          "ref": "vitals",
+          "rows": 2,
+          "min": false,
+          "bars": []
+        },
+        {
+          "ref": "skills",
+          "rows": 2,
+          "min": true,
+          "bars": []
+        },
+        {
+          "ref": "battle",
+          "rows": 2,
+          "min": true,
+          "bars": []
+        },
+        {
+          "ref": "social",
+          "rows": 2,
+          "min": true,
+          "bars": []
+        }
+      ],
+      "right": [
+        {
+          "ref": "inventory",
+          "rows": 2,
+          "min": false,
+          "bars": []
+        },
+        {
+          "path": "mochila",
+          "rows": 2,
+          "min": false
+        }
+      ],
+      "free": []
+    },
+    "followMode": true,
+    "attackMode": false,
+    "food": 600000,
+    "quests": [],
+    "missions": {},
+    "vip": []
+  },
+  "feiticeiro": {
+    "name": "Feiticeiro",
+    "gender": "male",
+    "lvl": 100,
+    "xp": 0,
+    "vocation": "sorcerer",
+    "home": {
+      "x": 187,
+      "y": 225,
+      "z": 0
+    },
+    "currentHp": 645,
+    "x": 187,
+    "y": 225,
+    "z": 0,
+    "skills": {
+      "magic": {
+        "lvl": 70,
+        "tries": 0,
+        "pct": 0
+      },
+      "fist": {
+        "lvl": 15,
+        "tries": 0,
+        "pct": 0
+      },
+      "club": {
+        "lvl": 15,
+        "tries": 0,
+        "pct": 0
+      },
+      "sword": {
+        "lvl": 15,
+        "tries": 0,
+        "pct": 0
+      },
+      "axe": {
+        "lvl": 15,
+        "tries": 0,
+        "pct": 0
+      },
+      "distance": {
+        "lvl": 15,
+        "tries": 0,
+        "pct": 0
+      },
+      "shielding": {
+        "lvl": 30,
+        "tries": 0,
+        "pct": 0
+      },
+      "fishing": {
+        "lvl": 20,
+        "tries": 0,
+        "pct": 0
+      }
+    },
+    "mana": 2850,
+    "equip": {
+      "amuleto": {
+        "type": "itens/amuletos-e-colares/platinum-amulet"
+      },
+      "cabeca": null,
+      "mochila": {
+        "type": "itens/recipientes/backpack-verde",
+        "items": [
+          {
+            "type": "itens/runas/sudden-death-rune",
+            "charges": 3
+          },
+          {
+            "type": "itens/runas/sudden-death-rune",
+            "charges": 3
+          },
+          {
+            "type": "itens/runas/great-fireball-rune",
+            "charges": 4
+          },
+          {
+            "type": "itens/runas/great-fireball-rune",
+            "charges": 4
+          },
+          {
+            "type": "itens/runas/explosion-rune",
+            "charges": 6
+          },
+          {
+            "type": "itens/runas/magic-wall-rune",
+            "charges": 4
+          },
+          {
+            "type": "itens/runas/fire-bomb-rune",
+            "charges": 2
+          },
+          {
+            "type": "itens/runas/ultimate-healing-rune",
+            "charges": 1
+          },
+          {
+            "type": "itens/runas/ultimate-healing-rune",
+            "charges": 1
+          },
+          {
+            "type": "itens/runas/blank-rune"
+          },
+          {
+            "type": "itens/runas/blank-rune"
+          },
+          {
+            "type": "itens/runas/blank-rune"
+          },
+          {
+            "type": "itens/liquidos/mana-potion",
+            "count": 50
+          },
+          {
+            "type": "itens/comidas/ham",
+            "count": 20
+          },
+          {
+            "type": "itens/ferramentas/rope",
+            "count": 1
+          },
+          {
+            "type": "itens/valiosos/platinum-coin",
+            "count": 50
+          },
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      "arma": {
+        "type": "itens/wands/wand-of-inferno"
+      },
+      "corpo": {
+        "type": "itens/armaduras/blue-robe"
+      },
+      "escudo": {
+        "type": "itens/spellbooks/spellbook"
+      },
+      "anel": {
+        "type": "itens/aneis/time-ring"
+      },
+      "pernas": {
+        "type": "itens/calcas/leather-legs"
+      },
+      "municao": null,
+      "pes": {
+        "type": "itens/botas/boots-of-haste"
+      }
+    },
+    "depot": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "layout": {
+      "v": 2,
+      "left": [
+        {
+          "ref": "vitals",
+          "rows": 2,
+          "min": false,
+          "bars": []
+        },
+        {
+          "ref": "skills",
+          "rows": 2,
+          "min": true,
+          "bars": []
+        },
+        {
+          "ref": "battle",
+          "rows": 2,
+          "min": true,
+          "bars": []
+        },
+        {
+          "ref": "social",
+          "rows": 2,
+          "min": true,
+          "bars": []
+        }
+      ],
+      "right": [
+        {
+          "ref": "inventory",
+          "rows": 2,
+          "min": false,
+          "bars": []
+        },
+        {
+          "path": "mochila",
+          "rows": 2,
+          "min": false
+        }
+      ],
+      "free": []
+    },
+    "followMode": true,
+    "attackMode": false,
+    "food": 600000,
+    "quests": [],
+    "missions": {},
+    "vip": []
+  },
+  "druida": {
+    "name": "Druida",
+    "gender": "female",
+    "lvl": 100,
+    "xp": 0,
+    "vocation": "druid",
+    "home": {
+      "x": 187,
+      "y": 225,
+      "z": 0
+    },
+    "currentHp": 645,
+    "x": 187,
+    "y": 225,
+    "z": 0,
+    "skills": {
+      "magic": {
+        "lvl": 70,
+        "tries": 0,
+        "pct": 0
+      },
+      "fist": {
+        "lvl": 15,
+        "tries": 0,
+        "pct": 0
+      },
+      "club": {
+        "lvl": 15,
+        "tries": 0,
+        "pct": 0
+      },
+      "sword": {
+        "lvl": 15,
+        "tries": 0,
+        "pct": 0
+      },
+      "axe": {
+        "lvl": 15,
+        "tries": 0,
+        "pct": 0
+      },
+      "distance": {
+        "lvl": 15,
+        "tries": 0,
+        "pct": 0
+      },
+      "shielding": {
+        "lvl": 30,
+        "tries": 0,
+        "pct": 0
+      },
+      "fishing": {
+        "lvl": 20,
+        "tries": 0,
+        "pct": 0
+      }
+    },
+    "mana": 2850,
+    "equip": {
+      "amuleto": {
+        "type": "itens/amuletos-e-colares/silver-amulet"
+      },
+      "cabeca": null,
+      "mochila": {
+        "type": "itens/recipientes/backpack-verde",
+        "items": [
+          {
+            "type": "itens/runas/ultimate-healing-rune",
+            "charges": 1
+          },
+          {
+            "type": "itens/runas/ultimate-healing-rune",
+            "charges": 1
+          },
+          {
+            "type": "itens/runas/ultimate-healing-rune",
+            "charges": 1
+          },
+          {
+            "type": "itens/runas/intense-healing-rune",
+            "charges": 1
+          },
+          {
+            "type": "itens/runas/cure-poison-rune",
+            "charges": 1
+          },
+          {
+            "type": "itens/runas/great-fireball-rune",
+            "charges": 4
+          },
+          {
+            "type": "itens/runas/heavy-magic-missile-rune",
+            "charges": 5
+          },
+          {
+            "type": "itens/runas/poison-field-rune",
+            "charges": 3
+          },
+          {
+            "type": "itens/runas/energy-field-rune",
+            "charges": 3
+          },
+          {
+            "type": "itens/runas/blank-rune"
+          },
+          {
+            "type": "itens/runas/blank-rune"
+          },
+          {
+            "type": "itens/runas/blank-rune"
+          },
+          {
+            "type": "itens/liquidos/mana-potion",
+            "count": 50
+          },
+          {
+            "type": "itens/comidas/ham",
+            "count": 20
+          },
+          {
+            "type": "itens/ferramentas/rope",
+            "count": 1
+          },
+          {
+            "type": "itens/valiosos/platinum-coin",
+            "count": 50
+          },
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      "arma": {
+        "type": "itens/rods/terra-rod"
+      },
+      "corpo": {
+        "type": "itens/armaduras/red-robe"
+      },
+      "escudo": {
+        "type": "itens/spellbooks/spellbook"
+      },
+      "anel": {
+        "type": "itens/aneis/ring-of-healing"
+      },
+      "pernas": {
+        "type": "itens/calcas/leather-legs"
+      },
+      "municao": null,
+      "pes": {
+        "type": "itens/botas/sandals"
+      }
+    },
+    "depot": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "layout": {
+      "v": 2,
+      "left": [
+        {
+          "ref": "vitals",
+          "rows": 2,
+          "min": false,
+          "bars": []
+        },
+        {
+          "ref": "skills",
+          "rows": 2,
+          "min": true,
+          "bars": []
+        },
+        {
+          "ref": "battle",
+          "rows": 2,
+          "min": true,
+          "bars": []
+        },
+        {
+          "ref": "social",
+          "rows": 2,
+          "min": true,
+          "bars": []
+        }
+      ],
+      "right": [
+        {
+          "ref": "inventory",
+          "rows": 2,
+          "min": false,
+          "bars": []
+        },
+        {
+          "path": "mochila",
+          "rows": 2,
+          "min": false
+        }
+      ],
+      "free": []
+    },
+    "followMode": true,
+    "attackMode": false,
+    "food": 600000,
+    "quests": [],
+    "missions": {},
+    "vip": []
+  }
+}
