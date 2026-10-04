@@ -222,7 +222,7 @@ async function iniciarJogo(servidorHttp) {
         }
         const playerId = `player${proximoJogador}`;
         proximoJogador++;
-        const saved = personagens[erro.name.toLowerCase()];
+        const saved = carregarPersonagens()[erro.name.toLowerCase()] || personagens[erro.name.toLowerCase()];
         player = sim.addPlayer(playerId, { name: erro.name, gender: normalizeGender(mensagem.gender), saved });
         conexoes.set(playerId, { socket, sent: null });
         console.log(`🟢 ${player.name} entrou ${saved ? `(nível ${player.lvl}) ` : '(novo) '}(${conexoes.size} online)`);
@@ -356,11 +356,14 @@ function guardarCasas(sim) {
 
 // ================================================================================================================================================================================================================================================
 // guardarPersonagens
-// Atualiza os jogadores na lista e grava o arquivo (primeiro num temporário,
-// pra não estragar o arquivo se o servidor cair no meio).
+// Relê o arquivo (o que foi mudado nele com o servidor ligado, como pelo
+// ferramentas/players-exemplo.js, continua), atualiza os jogadores online
+// e grava (primeiro num temporário, pra não estragar o arquivo se o
+// servidor cair no meio). Ao entrar, o personagem também vem do arquivo.
 
 function guardarPersonagens(personagens, jogadores) {
   if (jogadores.length === 0) return;
+  Object.assign(personagens, carregarPersonagens());
   for (const jogador of jogadores) {
     personagens[jogador.name.toLowerCase()] = jogador.toSave();
   }
