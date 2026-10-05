@@ -7,7 +7,7 @@
 //
 // Listas com id (players, enemies, npcs, corpses, items): cada entrada nova
 // ou que mudou vai com o id e só os campos alterados ($d: campos que
-// sumiram); as que saíram vão em gone. A ordem da lista não importa. O resto do estado (you, doors, dug, unlit)
+// sumiram); as que saíram vão em gone. A ordem da lista não importa. O resto do estado (you, doors, active)
 // vai inteiro, só quando muda.
 
 const KEYED = ['players', 'enemies', 'npcs', 'corpses', 'items'];

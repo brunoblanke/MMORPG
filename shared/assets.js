@@ -354,24 +354,30 @@ export function objectUse(type) {
 }
 
 // ================================================================================================================================================================================================================================================
-// openedAs
-// Monte da pá: a folha do buraco aberto (gerador → Abre como), ou null.
+// activeAs
+// Todo objeto tem o estado normal e, se tiver o desenho dele (gerador → Ativo
+// como), o ativo: a tocha acesa, o monte que a pá abriu, o poste ligado…
+// Devolve a folha do desenho ativo, virada como o objeto, ou null.
 
-export function openedAs(type) {
+export function activeAs(type) {
   const asset = getAsset(splitType(type).asset);
-  const props = asset && asset.propriedades;
-  const target = props && props.uso === 'pa' && props.abreComo;
-  return target && getAsset(target) ? target : null;
+  const target = asset && asset.propriedades && asset.propriedades.ativoComo;
+  return target && getAsset(target) ? withDirection(target, type) : null;
 }
 
 // ================================================================================================================================================================================================================================================
-// litAs
-// Fonte de luz acesa: a folha do desenho aceso (gerador → Acesa como), ou null.
+// togglesOnUse / startsActive
+// Objeto fixo com o desenho ativo e sem outro Uso: usar alterna entre normal
+// e ativo (poste, lampião, alavanca…). startsActive: começa ativo no mapa
+// (gerador → Começa ativo).
 
-export function litAs(type) {
+export function togglesOnUse(type) {
+  return !objectProps(type).movable && !objectUse(type) && !!activeAs(type);
+}
+
+export function startsActive(type) {
   const asset = getAsset(splitType(type).asset);
-  const target = asset && asset.propriedades && asset.propriedades.acesoComo;
-  return target && getAsset(target) ? target : null;
+  return togglesOnUse(type) && !!(asset.propriedades && asset.propriedades.comecaAtivo);
 }
 
 // ================================================================================================================================================================================================================================================

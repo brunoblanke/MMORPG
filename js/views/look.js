@@ -62,5 +62,5 @@ export function describeGroundObject(obj) {
   if (obj.isCorpse) return describeEntity(obj);
   const type = objectIdType(obj.id);
   if (!isItemType(type)) return null;
-  return describeItem(obj.itemData || { type, count: obj.count, lit: obj.lit, fuel: obj.fuel });
+  return describeItem(obj.itemData || { type, count: obj.count, lit: obj.active, fuel: obj.fuel });
 }

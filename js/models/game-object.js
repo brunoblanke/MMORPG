@@ -3,9 +3,8 @@
 import { randEnemyColor } from '../utils/helpers.js';
 import { Enemy } from './enemy.js';
 import { computeBorderPieces } from '../../shared/floor-variant.js';
-import { isFloorType, isHoleType, isEntranceFolder, objectUse, objectIdType, splitType, pieceType, interiorVariant, getAsset, floorHasPiece, creatureBehavior } from '../../shared/assets.js';
+import { startsActive, isFloorType, isHoleType, isEntranceFolder, objectUse, objectIdType, splitType, pieceType, interiorVariant, getAsset, floorHasPiece, creatureBehavior } from '../../shared/assets.js';
 import { collectObjectDescriptors, collectEnemyDescriptors } from '../../shared/map-format.js';
-import { isSwitchableLight } from '../../shared/items.js';
 import { getStairTop, getStairTopTarget, getHoleTarget } from '../../shared/stairs.js';
 import { parseBorderType, hasSavedBorders, mergeSavedInnerCorners } from '../../shared/floor-borders.js';
 
@@ -22,7 +21,7 @@ export class GameObject {
     this.temporary = !!data.temporary;
     this.ownerId = data.ownerId || null;
     this.hidden = !!data.hidden;
-    this.lit = !!data.lit;
+    this.active = !!data.active;
 
     if (data.stairDirection) {
       this.stairDirection = data.stairDirection;
@@ -70,7 +69,7 @@ export function generateObjects(mapData) {
     obj.seq = descriptor.seq;
     if (descriptor.count) obj.count = descriptor.count;
     if (descriptor.data) obj.data = descriptor.data;
-    if (!obj.hidden && descriptor.type && isSwitchableLight(descriptor.type)) obj.lit = true;
+    if (!obj.hidden && descriptor.type && startsActive(descriptor.type)) obj.active = true;
     objs.push(obj);
   });
 

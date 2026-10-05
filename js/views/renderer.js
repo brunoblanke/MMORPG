@@ -5,7 +5,7 @@ import { drawEntityOverlay } from './entity-overlay.js';
 import { drawTileTooltip } from './tile-tooltip.js';
 import { prepareDrawables } from './draw-order.js';
 import { getEntityLevel } from '../core/geometry.js';
-import { getAsset, objectIdType, openedAs, litAs, splitType, withDirection } from '../../shared/assets.js';
+import { getAsset, objectIdType, activeAs, splitType } from '../../shared/assets.js';
 import { stackFrame } from '../../shared/items.js';
 import { drawTibiaText } from './tibia-text.js';
 import { LightingLayer } from './lighting-layer.js';
@@ -413,8 +413,8 @@ export class Renderer {
 
     if (entity && entity.id) {
       const type = objectIdType(entity.id);
-      const opened = entity.dug ? openedAs(type) : (entity.lit ? litAs(type) : null);
-      const sheet = this.getObjectSpriteSheet(opened ? `${withDirection(opened, type)}_0` : entity.id);
+      const active = entity.active ? activeAs(type) : null;
+      const sheet = this.getObjectSpriteSheet(active ? `${active}_0` : entity.id);
       if (isSheetReady(sheet)) {
         const asset = getAsset(splitType(type).asset);
         if (entity.isSplash) {

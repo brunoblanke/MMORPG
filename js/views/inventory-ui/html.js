@@ -1,6 +1,6 @@
 // js/views/inventory-ui/html.js
 
-import { getAsset, spriteFrame, splitType, displayName, litAs, withDirection } from '../../../shared/assets.js';
+import { getAsset, spriteFrame, splitType, displayName, activeAs } from '../../../shared/assets.js';
 import { getLevel } from '../../core/geometry.js';
 import { findPath } from '../../core/pathfinding.js';
 import { itemInfo, stackFrame } from '../../../shared/items.js';
@@ -61,7 +61,7 @@ export const htmlMethods = {
     }
     const info = itemInfo(item.type);
     const count = item.count > 1 ? `<span class="inv-count">${item.count}</span>` : '';
-    const look = (item.lit && withDirection(litAs(item.type), item.type)) || item.type;
+    const look = (item.lit && activeAs(item.type)) || item.type;
     return `<div class="inv-slot filled" data-place="${key}" data-uid="${item.uid}">${this.spriteHtml(look, item.count)}${count}</div>`;
   },
 

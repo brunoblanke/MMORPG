@@ -1,7 +1,7 @@
 // js/views/inventory-ui/aim.js
 
-import { objectIdType, objectUse } from '../../../shared/assets.js';
-import { itemInfo, isSwitchableLight } from '../../../shared/items.js';
+import { objectIdType, objectUse, togglesOnUse } from '../../../shared/assets.js';
+import { itemInfo } from '../../../shared/items.js';
 import { MAP_USES } from './common.js';
 
 // Métodos do InventoryUI (js/views/inventory-ui.js). Mira (potion, corda, pá) e o que está sob o mouse na tela do jogo:
@@ -96,7 +96,7 @@ export const aimMethods = {
 
   // ================================================================================================================================================================================================================================================
   // usableUnderMouse
-  // Comida ou potion no chão, objeto com uso de mapa ou luz fixa (poste) sob
+  // Comida ou potion no chão, objeto com uso de mapa ou que usar alterna (poste) sob
   // o mouse (duplo clique ou botão direito usa; o player anda até o lado se
   // estiver longe).
 
@@ -105,7 +105,7 @@ export const aimMethods = {
     const obj = input && !input.hoverCorpse ? input.hoverObject : null;
     if (!obj) return null;
     if (MAP_USES.includes(objectUse(objectIdType(obj.id)))) return obj;
-    if (obj.movable !== true) return isSwitchableLight(objectIdType(obj.id)) ? obj : null;
+    if (obj.movable !== true) return togglesOnUse(objectIdType(obj.id)) ? obj : null;
     const info = itemInfo(objectIdType(obj.id));
     return info.food || info.heal || info.light || objectUse(objectIdType(obj.id)) ? obj : null;
   },

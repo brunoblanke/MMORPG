@@ -26,7 +26,7 @@
     "manaMax": 0,
     "alimento": 0,
     "luz": 6,
-    "acesoComo": "itens/fontes-de-luz/torch-acesa",
+    "ativoComo": "itens/fontes-de-luz/torch-acesa",
     "duracao": 1200
   },
   "ferramenta": "objetos",

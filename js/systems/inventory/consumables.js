@@ -66,7 +66,7 @@ export const consumableMethods = {
     }
     if (info.light && !use && !info.food && !info.heal) {
       src.item.lit = !src.item.lit;
-      if (src.obj) src.obj.lit = src.item.lit;
+      if (src.obj) src.obj.active = src.item.lit;
       return;
     }
     if (rune) {

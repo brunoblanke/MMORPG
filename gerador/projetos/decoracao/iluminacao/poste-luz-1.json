@@ -30,8 +30,8 @@
     "regenVida": 0,
     "regenMana": 0,
     "uso": "",
-    "abreComo": "",
-    "acesoComo": "decoracao/iluminacao/poste-luz-1-aceso"
+    "ativoComo": "decoracao/iluminacao/poste-luz-1-aceso",
+    "comecaAtivo": true
   },
   "ferramenta": "objetos",
   "grupo": "decoracao",

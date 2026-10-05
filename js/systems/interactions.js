@@ -1,8 +1,8 @@
 // js/systems/interactions.js
 
 import { GameObject } from '../models/game-object.js';
-import { objectIdType, objectUse, openedAs, displayName, getAsset, splitType, isEntranceFolder } from '../../shared/assets.js';
-import { itemInfo, newItem, weightOf, isSwitchableLight } from '../../shared/items.js';
+import { objectIdType, objectUse, activeAs, togglesOnUse, displayName, getAsset, splitType, isEntranceFolder } from '../../shared/assets.js';
+import { itemInfo, newItem, weightOf } from '../../shared/items.js';
 import { getHoleTarget, toLowerLevel, toUpperLevel } from '../../shared/stairs.js';
 
 // Objetos do mapa que se usam (gerador → Objetos → Uso):
@@ -29,18 +29,18 @@ export class InteractionController {
   constructor(sim) {
     this.sim = sim;
     this.dugHoles = new Map();
-    this.unlitLights = new Set();
+    this.activeIds = new Set(sim.objects.filter(obj => obj.active).map(obj => obj.id));
   }
 
   // ================================================================================================================================================================================================================================================
   // isUsable
-  // Objeto do mapa (ainda nele) com um uso de mapa, ou luz fixa que se
-  // acende e apaga.
+  // Objeto do mapa (ainda nele) com um uso de mapa, ou que usar alterna entre
+  // normal e ativo (poste…).
 
   isUsable(obj) {
     if (!obj || obj.isCorpse || !this.sim.world.objects.has(obj)) return false;
     const type = objectIdType(obj.id);
-    return MAP_USES.includes(objectUse(type)) || (obj.movable !== true && isSwitchableLight(type));
+    return MAP_USES.includes(objectUse(type)) || (obj.movable !== true && togglesOnUse(type));
   }
 
   // ================================================================================================================================================================================================================================================
@@ -74,7 +74,7 @@ export class InteractionController {
     }
     const use = objectUse(objectIdType(obj.id));
     if (!use) {
-      this.switchLight(obj);
+      this.setActive(obj, !obj.active);
       return;
     }
     if (use === 'placa') {
@@ -87,14 +87,15 @@ export class InteractionController {
   }
 
   // ================================================================================================================================================================================================================================================
-  // switchLight
-  // Luz fixa do mapa (poste…): usar apaga ou acende, pra todos (as apagadas
-  // vão pro navegador em unlitLights).
+  // setActive
+  // Põe o objeto do mapa no estado ativo (desenho "Ativo como": aceso,
+  // aberto…) ou de volta no normal, pra todos (os ativos vão pro navegador em
+  // activeIds).
 
-  switchLight(obj) {
-    obj.lit = !obj.lit;
-    if (obj.lit) this.unlitLights.delete(obj.id);
-    else this.unlitLights.add(obj.id);
+  setActive(obj, active) {
+    obj.active = active;
+    if (active) this.activeIds.add(obj.id);
+    else this.activeIds.delete(obj.id);
   }
 
   // ================================================================================================================================================================================================================================================
@@ -159,7 +160,7 @@ export class InteractionController {
 
   isOpening(obj) {
     const type = objectIdType(obj.id);
-    if (SHOVEL_USES.includes(objectUse(type))) return !!obj.dug;
+    if (SHOVEL_USES.includes(objectUse(type))) return !!obj.active;
     return isEntranceFolder(type);
   }
 
@@ -239,14 +240,14 @@ export class InteractionController {
   dig(player, pile) {
     const type = objectIdType(pile.id);
     const falls = objectUse(type) === 'pa-cai';
-    if (!pile.dug) {
-      if (!openedAs(type) && !falls) return false;
+    if (!pile.active) {
+      if (!activeAs(type) && !falls) return false;
       const target = getHoleTarget(pile.x, pile.y, pile.z || 0);
       const hole = new GameObject({ id: `Dug_${pile.id}`, x: pile.x, y: pile.y, z: pile.z || 0, movable: false, hasVolume: false, blocksMovement: false,
         stairDirection: 'down', targetX: target.x, targetY: target.y, targetZ: target.z });
       hole.hidden = true;
       this.sim.world.registerTransition(hole);
-      pile.dug = true;
+      this.setActive(pile, true);
       this.dugHoles.set(pile.id, hole);
     } else if (!falls) {
       return false;

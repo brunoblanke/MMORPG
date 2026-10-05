@@ -58,7 +58,7 @@
     "manaMax": 0,
     "alimento": 0,
     "uso": "bau-quest",
-    "abreComo": ""
+    "ativoComo": ""
   },
   "ferramenta": "objetos",
   "grupo": "decoracao",

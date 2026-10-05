@@ -51,13 +51,13 @@ test('tocha vai na mão ou no espaço de munição; botão direito acende e apag
 });
 
 test('tocha acesa troca o desenho pelo "Acesa como" do gerador', async () => {
-  const { litAs } = await import('../shared/assets.js');
+  const { activeAs } = await import('../shared/assets.js');
   const TORCH = 'itens/fontes-de-luz/torch';
   const LIT = 'itens/fontes-de-luz/torch-acesa';
   const a = (id, propriedades) => ({ id, ferramenta: 'objetos', grupo: 'itens', pasta: 'fontes-de-luz', nome: id.split('/').pop(), rotulo: 'itens › fontes-de-luz', url: '/t.png', quadro: 32, quadros: 1, pecas: [], propriedades });
-  setAssets([a(TORCH, { move: true, luz: 6, acesoComo: LIT }), a(LIT, { move: true, luz: 6 })]);
-  assert.equal(litAs(TORCH), LIT);
-  assert.equal(litAs(LIT), null);
+  setAssets([a(TORCH, { move: true, luz: 6, ativoComo: LIT }), a(LIT, { move: true, luz: 6 })]);
+  assert.equal(activeAs(TORCH), LIT);
+  assert.equal(activeAs(LIT), null);
 });
 
 test('tocha acesa gasta como no Tibia (20 min); apagada não gasta; acabou, some', () => {
@@ -82,19 +82,19 @@ test('tocha acesa gasta como no Tibia (20 min); apagada não gasta; acabou, some
   assert.equal(sim.player.equip.escudo, null, 'queimou até o fim');
 });
 
-test('poste de luz fixo começa aceso; usar apaga e acende pra todos', async () => {
+test('objeto fixo com Ativo como e Começa ativo (poste): usar alterna normal/ativo pra todos', async () => {
   const { serializeState } = await import('../js/net/protocol.js');
   const POST = 'decoracao/iluminacao/poste';
   const LIT = 'decoracao/iluminacao/poste-aceso';
   const asset = (id, props) => ({ id, ferramenta: 'objetos', grupo: 'decoracao', pasta: 'iluminacao', nome: id.split('/').pop(), rotulo: 'decoracao › iluminacao', url: `/${id}.png`, quadro: 64, quadros: 1, pecas: [], propriedades: props });
-  setAssets([asset(POST, { move: false, bloqueia: true, luz: 6, acesoComo: LIT }), asset(LIT, { move: false, bloqueia: true, luz: 6 })]);
+  setAssets([asset(POST, { move: false, bloqueia: true, luz: 6, ativoComo: LIT, comecaAtivo: true }), asset(LIT, { move: false, bloqueia: true, luz: 6 })]);
   const sim = buildGame({ objects: [...floorRect(0, 10, 0, 10, 0), [POST, 3, 2, 0, 0, false, false, true]], player: { x: 2, y: 2, z: 0 } });
   const post = sim.objects.find(o => o.id.startsWith(POST));
-  assert.equal(post.lit, true);
+  assert.equal(post.active, true);
+  assert.deepEqual(serializeState(sim, sim.player.id).active, [post.id]);
   sim.interactions.useObject(sim.player, post.id);
-  assert.equal(post.lit, false);
-  assert.deepEqual(serializeState(sim, sim.player.id).unlit, [post.id]);
+  assert.equal(post.active, false);
+  assert.deepEqual(serializeState(sim, sim.player.id).active, []);
   sim.interactions.useObject(sim.player, post.id);
-  assert.equal(post.lit, true);
-  assert.deepEqual(serializeState(sim, sim.player.id).unlit, []);
+  assert.equal(post.active, true);
 });

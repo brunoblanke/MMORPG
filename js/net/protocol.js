@@ -101,8 +101,7 @@ export function serializeState(sim, playerId, nearOnly = false) {
     npcs: (sim.npcs || []).filter(near).map(n => ({ id: n.id, ...pick(n, NPC_FIELDS) })),
     corpses: sim.deadBodies.filter(near).map(c => pick(c, CORPSE_FIELDS)),
     doors: sim.doors.map(d => ({ x: d.x, y: d.y, z: d.z || 0, id: d.id })),
-    dug: sim.interactions ? [...sim.interactions.dugHoles.keys()] : [],
-    unlit: sim.interactions ? [...sim.interactions.unlitLights] : [],
+    active: sim.interactions ? [...sim.interactions.activeIds] : [],
     houses: sim.houses ? sim.houses.viewOf() : [],
     items: sim.objects.filter(o => isSyncedItem(o) && near(o)).map(o => ({
       id: o.id, x: o.x, y: o.y, z: o.z, step: o.step, hasVolume: o.hasVolume, blocksMovement: o.blocksMovement,
@@ -266,8 +265,7 @@ export function applyState(mirror, message, playerId, renderNow) {
 
   syncItems(mirror, state.items);
   syncDoors(world, state.doors || []);
-  syncDug(mirror, state.dug || []);
-  syncUnlit(mirror, state.unlit || []);
+  syncActive(mirror, state.active || []);
   syncHouses(world, state.houses || []);
 
   const me = mirror.players.find(p => p.id === playerId);
@@ -282,40 +280,22 @@ export function applyState(mirror, message, playerId, renderNow) {
 }
 
 // ================================================================================================================================================================================================================================================
-// syncUnlit
-// Luzes fixas do mapa apagadas por alguém (as outras ficam acesas).
+// syncActive
+// Objetos do mapa no estado ativo (montes abertos pela pá, postes acesos…);
+// os que saíram da lista voltam pro normal.
 
-function syncUnlit(mirror, ids) {
-  const off = new Set(ids);
-  for (const id of off) {
+function syncActive(mirror, ids) {
+  const active = new Set(ids);
+  for (const id of active) {
     const obj = mirror.objectsById.get(id);
-    if (obj) obj.lit = false;
+    if (obj) obj.active = true;
   }
-  for (const id of mirror.unlitIds || []) {
-    if (off.has(id)) continue;
+  for (const id of mirror.activeIds || []) {
+    if (active.has(id)) continue;
     const obj = mirror.objectsById.get(id);
-    if (obj) obj.lit = true;
+    if (obj) obj.active = false;
   }
-  mirror.unlitIds = off;
-}
-
-// ================================================================================================================================================================================================================================================
-// syncDug
-// Montes que a pá abriu: o navegador desenha o buraco no lugar deles.
-
-function syncDug(mirror, ids) {
-  const open = new Set(ids);
-  for (const id of open) {
-    const obj = mirror.objectsById.get(id);
-    if (obj) obj.dug = true;
-  }
-  if (!mirror.dugIds) mirror.dugIds = new Set();
-  for (const id of mirror.dugIds) {
-    if (open.has(id)) continue;
-    const obj = mirror.objectsById.get(id);
-    if (obj) obj.dug = false;
-  }
-  mirror.dugIds = open;
+  mirror.activeIds = active;
 }
 
 // ================================================================================================================================================================================================================================================
@@ -357,7 +337,7 @@ function syncItems(mirror, incoming) {
     }
     obj.step = data.step;
     obj.count = data.count;
-    obj.lit = !!data.lit;
+    obj.active = !!data.lit;
     obj.fuel = data.fuel;
     if (obj.isSplash) obj.stage = data.splash;
   }

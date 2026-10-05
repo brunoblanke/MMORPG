@@ -40,14 +40,14 @@ const NUMBERS = [
   { key: 'regenVida', label: 'Equipado: recupera vida a cada 6 s', min: 0, step: 1 },
   { key: 'regenMana', label: 'Equipado: recupera mana a cada 6 s', min: 0, step: 1 }
 ];
-const DEFAULT_PROPERTIES = { bloqueia: false, move: true, altura: false, empilhavel: false, peso: 10, espacos: 0, atk: 0, def: 0, ml: 0, speed: 0, vidaMin: 0, vidaMax: 0, manaMin: 0, manaMax: 0, alimento: 0, luz: 0, duracao: 0, regenVida: 0, regenMana: 0, uso: '', abreComo: '', acesoComo: '' };
+const DEFAULT_PROPERTIES = { bloqueia: false, move: true, altura: false, empilhavel: false, peso: 10, espacos: 0, atk: 0, def: 0, ml: 0, speed: 0, vidaMin: 0, vidaMax: 0, manaMin: 0, manaMax: 0, alimento: 0, luz: 0, duracao: 0, regenVida: 0, regenMana: 0, uso: '', ativoComo: '', comecaAtivo: false };
 const USES = [
   ['', 'Nenhum'],
   ['placa', 'Placa (mostra um texto, escrito no editor)'],
   ['livro', 'Livro (abre um texto, escrito no editor)'],
   ['bau-quest', 'Baú de quest (itens no editor, uma vez por player)'],
   ['corda', 'Marca de corda (sobe um andar usando a corda)'],
-  ['pa', 'Monte que a pá abre em buraco'],
+  ['pa', 'Monte que a pá abre em buraco (o buraco é o Ativo como)'],
   ['pa-cai', 'Buraco que a pá abre e o player já cai (o desenho não muda)'],
   ['descer', 'Bueiro (usar leva pro andar de baixo)'],
   ['deposito', 'Depósito (cada player guarda os itens dele)'],
@@ -307,28 +307,8 @@ function renderProperties() {
   useSelect.value = objects.properties.uso || '';
   useLabel.append('Uso', useSelect);
   list.appendChild(useLabel);
-  const openLabel = document.createElement('label');
-  openLabel.className = 'numberline';
-  openLabel.hidden = useSelect.value !== 'pa';
-  const openSelect = document.createElement('select');
-  openSelect.id = 'objectProp-abreComo';
-  const fillOpen = (paths) => {
-    const current = objects.properties.abreComo || '';
-    const options = current && !paths.includes(current) ? [current, ...paths] : paths;
-    openSelect.innerHTML = '<option value="">— buraco aberto —</option>' + options.map(p => `<option value="${p}">${p}</option>`).join('');
-    openSelect.value = current;
-  };
-  fillOpen([]);
-  fetchProjects().then(projects => fillOpen(projects.filter(p => p.ferramenta === 'objetos').map(p => p.caminho).sort())).catch(() => {});
-  openLabel.append('Abre como', openSelect);
-  list.appendChild(openLabel);
   useSelect.onchange = () => {
     objects.properties.uso = useSelect.value;
-    openLabel.hidden = useSelect.value !== 'pa';
-    objects.dirty = true;
-  };
-  openSelect.onchange = () => {
-    objects.properties.abreComo = openSelect.value;
     objects.dirty = true;
   };
   for (const number of NUMBERS) {
@@ -347,28 +327,35 @@ function renderProperties() {
     label.append(number.label, input);
     list.appendChild(label);
   }
-  const litLabel = document.createElement('label');
-  litLabel.className = 'numberline';
-  litLabel.hidden = !(Number(objects.properties.luz) > 0);
-  const litSelect = document.createElement('select');
-  litSelect.id = 'objectProp-acesoComo';
-  const fillLit = (paths) => {
-    const current = objects.properties.acesoComo || '';
+  const activeLabel = document.createElement('label');
+  activeLabel.className = 'numberline';
+  const activeSelect = document.createElement('select');
+  activeSelect.id = 'objectProp-ativoComo';
+  const fillActive = (paths) => {
+    const current = objects.properties.ativoComo || '';
     const options = current && !paths.includes(current) ? [current, ...paths] : paths;
-    litSelect.innerHTML = '<option value="">— mesmo desenho —</option>' + options.map(p => `<option value="${p}">${p}</option>`).join('');
-    litSelect.value = current;
+    activeSelect.innerHTML = '<option value="">— não tem —</option>' + options.map(p => `<option value="${p}">${p}</option>`).join('');
+    activeSelect.value = current;
   };
-  fillLit([]);
-  fetchProjects().then(projects => fillLit(projects.filter(p => p.ferramenta === 'objetos').map(p => p.caminho).sort())).catch(() => {});
-  litLabel.append('Acesa como (desenho quando acesa)', litSelect);
-  list.appendChild(litLabel);
-  litSelect.onchange = () => {
-    objects.properties.acesoComo = litSelect.value;
+  fillActive([]);
+  fetchProjects().then(projects => fillActive(projects.filter(p => p.ferramenta === 'objetos').map(p => p.caminho).sort())).catch(() => {});
+  activeLabel.append('Ativo como (desenho do estado ativo: aceso, aberto pela pá…)', activeSelect);
+  list.appendChild(activeLabel);
+  activeSelect.onchange = () => {
+    objects.properties.ativoComo = activeSelect.value;
     objects.dirty = true;
   };
-  document.getElementById('objectProp-luz').addEventListener('change', () => {
-    litLabel.hidden = !(Number(objects.properties.luz) > 0);
-  });
+  const startLabel = document.createElement('label');
+  startLabel.className = 'checkline';
+  const startInput = document.createElement('input');
+  startInput.type = 'checkbox';
+  startInput.checked = !!objects.properties.comecaAtivo;
+  startInput.onchange = () => {
+    objects.properties.comecaAtivo = startInput.checked;
+    objects.dirty = true;
+  };
+  startLabel.append(startInput, 'Começa ativo no mapa (objeto fixo sem Uso: usar alterna normal/ativo)');
+  list.appendChild(startLabel);
 }
 
 // ================================================================================================================================================================================================================================================

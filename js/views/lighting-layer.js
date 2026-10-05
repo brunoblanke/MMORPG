@@ -1,8 +1,8 @@
 // js/views/lighting-layer.js
 
 import { CONFIG } from '../config.js';
-import { objectIdType } from '../../shared/assets.js';
-import { itemInfo, isSwitchableLight } from '../../shared/items.js';
+import { objectIdType, togglesOnUse } from '../../shared/assets.js';
+import { itemInfo } from '../../shared/items.js';
 import { ambientLight, lightAt, PLAYER_LIGHT, VISIBLE_LIGHT } from '../../shared/lighting.js';
 
 // Escuridão por cima do mapa como no Tibia tradicional: em blocos, um nível
@@ -49,8 +49,8 @@ export class LightingLayer {
     for (const obj of drawables) {
       if ((obj.level !== level && !(obj.level > level && obj.level > 0)) || obj.isCreature || !obj.entity || !obj.entity.id) continue;
       const radius = itemInfo(objectIdType(obj.entity.id)).light;
-      const switches = obj.entity.movable === true || isSwitchableLight(objectIdType(obj.entity.id));
-      if (radius > 0 && (!switches || obj.entity.lit)) this.sources.push({ x: obj.x, y: obj.y, radius, warm: true });
+      const switches = obj.entity.movable === true || togglesOnUse(objectIdType(obj.entity.id));
+      if (radius > 0 && (!switches || obj.entity.active)) this.sources.push({ x: obj.x, y: obj.y, radius, warm: true });
     }
     return true;
   }

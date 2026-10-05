@@ -32,14 +32,14 @@ setAssets([
   asset(BOOK, { move: true, peso: 13, uso: 'livro' }),
   asset(CHEST, { bloqueia: true, uso: 'bau-quest' }),
   asset(SPOT, { uso: 'corda' }),
-  asset(PILE, { uso: 'pa', abreComo: OPEN }),
+  asset(PILE, { uso: 'pa', ativoComo: OPEN }),
   asset(OPEN, {}),
   asset(FALL_PILE, { uso: 'pa-cai' }),
   asset(ROPE, { move: true, peso: 18, uso: 'ferramenta-corda' }),
   asset(SHOVEL, { move: true, peso: 35, uso: 'ferramenta-pa' }),
   asset(BAG, { move: true, peso: 8, espacos: 4 }),
   asset(COIN, { move: true, peso: 0.1, empilhavel: true }),
-  asset(STONE_PILE, { uso: 'pa', abreComo: STONE_HOLE }),
+  asset(STONE_PILE, { uso: 'pa', ativoComo: STONE_HOLE }),
   asset(STONE_HOLE, {}),
   asset(SHADOW, { uso: 'corda' }),
   asset(GRATE, { uso: 'descer' })
@@ -132,10 +132,10 @@ test('corda na marca de corda sobe pro andar de cima; a pá abre o monte em bura
   const pile = at(sim, PILE);
   assert.deepEqual(texts(send(sim, { type: 'useObject', id: pile.id })), []);
   send(sim, { type: 'useItem', from: { t: 'c', uid: 'bag0', i: 1 }, target: { x: 5, y: 6, z: 1 } });
-  assert.equal(pile.dug, true);
+  assert.equal(pile.active, true);
   assert.ok(sim.world.getTransitionAt(5, 6, 1));
   run(sim, 10 * 60000);
-  assert.equal(pile.dug, true, 'fica aberto até o servidor reiniciar');
+  assert.equal(pile.active, true, 'fica aberto até o servidor reiniciar');
   assert.ok(sim.world.getTransitionAt(5, 6, 1));
 });
 
@@ -144,7 +144,7 @@ test('monte pa-cai: a pá abre o buraco e o player desce na hora', () => {
   placeAt(sim, sim.player, 5, 5, 1);
   sim.player.equip.mochila.items[0] = { uid: 's1', type: SHOVEL };
   send(sim, { type: 'useItem', from: { t: 'c', uid: 'bag0', i: 0 }, target: { x: 5, y: 6, z: 1 } });
-  assert.equal(at(sim, FALL_PILE).dug, true);
+  assert.equal(at(sim, FALL_PILE).active, true);
   assert.deepEqual([sim.player.x, sim.player.y, sim.player.z], [6, 7, 0]);
 });
 
@@ -160,8 +160,8 @@ test('corda e pá de longe: o player anda até o lado e usa ao chegar', () => {
   run(sim, 1000);
   send(sim, { type: 'useItem', from: { t: 'c', uid: 'bag0', i: 1 }, target: { x: 5, y: 12, z: 1 } });
   const pile = at(sim, PILE);
-  for (let i = 0; i < 300 && !pile.dug; i++) send(sim, { type: 'noop' });
-  assert.equal(pile.dug, true);
+  for (let i = 0; i < 300 && !pile.active; i++) send(sim, { type: 'noop' });
+  assert.equal(pile.active, true);
   assert.ok(Math.max(Math.abs(sim.player.x - 5), Math.abs(sim.player.y - 12)) <= 1);
 });
 

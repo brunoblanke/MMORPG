@@ -30,8 +30,7 @@
     "regenVida": 0,
     "regenMana": 0,
     "uso": "",
-    "abreComo": "",
-    "acesoComo": ""
+    "ativoComo": ""
   },
   "ferramenta": "objetos",
   "grupo": "estrutura",

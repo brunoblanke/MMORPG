@@ -48,8 +48,7 @@
     "regenVida": 0,
     "regenMana": 0,
     "uso": "placa",
-    "abreComo": "",
-    "acesoComo": ""
+    "ativoComo": ""
   },
   "ferramenta": "objetos",
   "grupo": "decoracao",
