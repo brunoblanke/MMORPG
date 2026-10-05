@@ -246,13 +246,13 @@ export class SpellController {
     if (rune.kind === 'attack') {
       const who = this.sim.enemies.find(at(target.x, target.y));
       if (!who) return 'Só dá pra usar em criaturas.';
-      this.sim.emit({ type: 'missile', fromX: player.x, fromY: player.y, toX: who.x, toY: who.y, kind: rune.element });
+      this.sim.emit({ type: 'missile', fromX: player.x, fromY: player.y, toX: who.x, toY: who.y, kind: rune.missile || rune.element });
       this.showEffect(who.x, who.y, rune.effect);
       this.hurt(player, who, this.roll(rune.formula, player), now, rune.element);
       return null;
     }
     if (rune.kind === 'area') {
-      this.sim.emit({ type: 'missile', fromX: player.x, fromY: player.y, toX: target.x, toY: target.y, kind: rune.element });
+      this.sim.emit({ type: 'missile', fromX: player.x, fromY: player.y, toX: target.x, toY: target.y, kind: rune.missile || rune.element });
       this.showEffect(target.x, target.y, rune.effect, tiles);
       for (const [x, y] of tiles) {
         for (const enemy of this.sim.enemies.filter(at(x, y))) this.hurt(player, enemy, this.roll(rune.formula, player), now, rune.element);

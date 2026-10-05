@@ -1,26 +1,22 @@
 // js/services/particle-system.js
 
-import { EFFECTS, EFFECT_FRAME_MS, effectUrl } from '../../shared/effects.js';
+import { EFFECTS, MISSILES, effectUrl, missileUrl, missileDirection } from '../../shared/effects.js';
 
-// As imagens dos efeitos do Tibia, carregadas na primeira vez que aparecem.
-const effectImages = new Map();
+// As imagens dos efeitos e projéteis do Tibia, carregadas na primeira vez
+// que aparecem.
+const images = new Map();
 
-// Projéteis: flecha e lança (risco e ponta) e as bolinhas de magia ([cor,
-// brilho]) de cada tipo.
-const MISSILE_SHAFTS = {
-  arrow: { length: 12, color: '#c8a46a', tip: '#d8d8d8' },
-  spear: { length: 18, color: '#9a7446', tip: '#e0e0e0' }
-};
-const MISSILE_COLORS = {
-  energy: ['#c084fc', '#a855f7'],
-  fire: ['#ffb347', '#ff5a1f'],
-  poison: ['#8ef070', '#2fbf3a'],
-  ice: ['#bfefff', '#4fb8ff'],
-  earth: ['#9fd36a', '#4a8a2a'],
-  death: ['#555', '#111'],
-  holy: ['#fff6b0', '#ffd84a'],
-  physical: ['#f1f1f1', '#9a9a9a']
-};
+// ================================================================================================================================================================================================================================================
+// loadImage
+
+function loadImage(url) {
+  if (!images.has(url)) {
+    const img = new Image();
+    img.src = url;
+    images.set(url, img);
+  }
+  return images.get(url);
+}
 
 export class ParticleSystem {
   constructor() {
@@ -66,12 +62,13 @@ export class ParticleSystem {
 
   // ================================================================================================================================================================================================================================================
   // spawnMissile
-  // Projétil que voa do sqm de origem até o de destino: flecha e lança são um
-  // risco apontado pra onde vão; o resto, uma bolinha da cor do tipo.
+  // Projétil do Tibia (shared/effects.js) que voa do sqm de origem até o de
+  // destino, virado pra direção dele.
 
   spawnMissile(fromX, fromY, toX, toY, renderer, kind = 'energy') {
+    const name = MISSILES[kind] ? kind : 'energy';
     this.missiles = this.missiles || [];
-    this.missiles.push({ fromX, fromY, toX, toY, renderer, kind, createdAt: performance.now(), duration: 280 });
+    this.missiles.push({ fromX, fromY, toX, toY, renderer, img: loadImage(missileUrl(name)), size: MISSILES[name].size, dir: missileDirection(toX - fromX, toY - fromY), createdAt: performance.now(), duration: 280 });
   }
 
   // ================================================================================================================================================================================================================================================
@@ -81,13 +78,8 @@ export class ParticleSystem {
   spawnEffect(tiles, name, renderer) {
     const info = EFFECTS[name];
     if (!info) return;
-    if (!effectImages.has(name)) {
-      const img = new Image();
-      img.src = effectUrl(name);
-      effectImages.set(name, img);
-    }
     this.effects = this.effects || [];
-    this.effects.push({ tiles, img: effectImages.get(name), frames: info.frames, renderer, createdAt: performance.now(), duration: info.frames * EFFECT_FRAME_MS });
+    this.effects.push({ tiles, img: loadImage(effectUrl(name)), frames: info.frames, size: info.size, ms: info.ms, renderer, createdAt: performance.now(), duration: info.frames * info.ms });
   }
 
   // ================================================================================================================================================================================================================================================
@@ -115,46 +107,29 @@ export class ParticleSystem {
   render(ctx) {
     for (const e of this.effects || []) {
       if (!e.img.complete || !e.img.naturalWidth) continue;
-      const frame = Math.min(e.frames - 1, Math.floor((performance.now() - e.createdAt) / EFFECT_FRAME_MS));
-      const size = e.renderer.camera.tileSize;
+      const frame = Math.min(e.frames - 1, Math.floor((performance.now() - e.createdAt) / e.ms));
+      const tile = e.renderer.camera.tileSize;
+      const size = e.size / 32 * tile;
       ctx.save();
       ctx.imageSmoothingEnabled = false;
       for (const [x, y] of e.tiles) {
         const pos = e.renderer.gridToScreenWithOffset(x, y);
-        ctx.drawImage(e.img, frame * 32, 0, 32, 32, pos.x, pos.y, size, size);
+        ctx.drawImage(e.img, frame * e.size, 0, e.size, e.size, pos.x + tile - size, pos.y + tile - size, size, size);
       }
       ctx.restore();
     }
     for (const m of this.missiles || []) {
+      if (!m.img.complete || !m.img.naturalWidth) continue;
       const t = Math.max(0, Math.min(1, (performance.now() - m.createdAt) / m.duration));
-      const size = m.renderer.camera.tileSize;
+      const tile = m.renderer.camera.tileSize;
+      const size = m.size / 32 * tile;
       const from = m.renderer.gridToScreenWithOffset(m.fromX, m.fromY);
       const to = m.renderer.gridToScreenWithOffset(m.toX, m.toY);
-      const x = from.x + (to.x - from.x) * t + size / 2;
-      const y = from.y + (to.y - from.y) * t + size / 2;
+      const x = from.x + (to.x - from.x) * t;
+      const y = from.y + (to.y - from.y) * t;
       ctx.save();
-      const shaft = MISSILE_SHAFTS[m.kind];
-      if (shaft) {
-        const angle = Math.atan2(to.y - from.y, to.x - from.x);
-        ctx.translate(x, y);
-        ctx.rotate(angle);
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = shaft.color;
-        ctx.beginPath();
-        ctx.moveTo(-shaft.length / 2, 0);
-        ctx.lineTo(shaft.length / 2, 0);
-        ctx.stroke();
-        ctx.fillStyle = shaft.tip;
-        ctx.fillRect(shaft.length / 2 - 2, -2, 4, 4);
-      } else {
-        const color = MISSILE_COLORS[m.kind] || MISSILE_COLORS.energy;
-        ctx.fillStyle = color[0];
-        ctx.shadowColor = color[1];
-        ctx.shadowBlur = 10;
-        ctx.beginPath();
-        ctx.arc(x, y, m.kind === 'energy' ? 4 : 5, 0, Math.PI * 2);
-        ctx.fill();
-      }
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(m.img, m.dir[0] * m.size, m.dir[1] * m.size, m.size, m.size, x + tile - size, y + tile - size, size, size);
       ctx.restore();
     }
     for (const p of this.particles) {

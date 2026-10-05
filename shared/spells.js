@@ -50,14 +50,15 @@ export const SPELLS = [
 // sqm (element: o tipo do dano); area fere as criaturas da área em volta do
 // sqm (AREAS); field cria o campo (nos sqms da área); cure tira o veneno do
 // player do sqm. effect: a animação do Tibia (shared/effects.js) que aparece
-// no sqm do alvo (na área, em cada sqm dela).
+// no sqm do alvo (na área, em cada sqm dela); missile: o projétil (sem ele, o
+// do element).
 export const RUNES = {
   'itens/runas/light-magic-missile-rune': { kind: 'attack', element: 'energy', effect: 'energy', charges: 5, ml: 0, formula: { min: [0.4, 2], max: [0.81, 4] } },
   'itens/runas/heavy-magic-missile-rune': { kind: 'attack', element: 'energy', effect: 'energy', charges: 5, ml: 1, formula: { min: [0.8, 5], max: [1.6, 9] } },
   'itens/runas/fireball-rune': { kind: 'attack', element: 'fire', effect: 'fire', charges: 5, ml: 5, formula: { min: [1.81, 10], max: [3, 18] } },
-  'itens/runas/sudden-death-rune': { kind: 'attack', element: 'death', effect: 'death', charges: 3, ml: 15, formula: { min: [4.605, 28], max: [7.395, 46] } },
+  'itens/runas/sudden-death-rune': { kind: 'attack', element: 'death', effect: 'death', missile: 'sudden-death', charges: 3, ml: 15, formula: { min: [4.605, 28], max: [7.395, 46] } },
   'itens/runas/great-fireball-rune': { kind: 'area', area: 'circle', element: 'fire', effect: 'fire', charges: 4, ml: 4, formula: { min: [1.2, 7], max: [2.85, 16] } },
-  'itens/runas/explosion-rune': { kind: 'area', area: 'square', element: 'physical', effect: 'explosion', charges: 6, ml: 6, formula: { min: [1.6, 9], max: [3.2, 19] } },
+  'itens/runas/explosion-rune': { kind: 'area', area: 'square', element: 'physical', effect: 'explosion', missile: 'explosion', charges: 6, ml: 6, formula: { min: [1.6, 9], max: [3.2, 19] } },
   'itens/runas/intense-healing-rune': { kind: 'heal', effect: 'heal', charges: 1, ml: 1, formula: { min: [3.2, 20], max: [5.4, 40] } },
   'itens/runas/ultimate-healing-rune': { kind: 'heal', effect: 'heal', charges: 1, ml: 4, formula: { min: [7.3, 42], max: [12.4, 90] } },
   'itens/runas/cure-poison-rune': { kind: 'cure', charges: 1, ml: 0 },
