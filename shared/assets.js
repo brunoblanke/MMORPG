@@ -155,7 +155,7 @@ export function doorType(type, open) {
 // ================================================================================================================================================================================================================================================
 // setAssets
 // Lista de /api/sprites: [{ id, ferramenta, grupo, pasta, nome, rotulo, url,
-// quadro, quadros, variacoes, pecas, propriedades, cadaver }].
+// quadro, quadros, variacoes, pecas, propriedades, cadaver, direcoes, sqms }].
 
 export function setAssets(list) {
   assets.clear();
@@ -383,9 +383,65 @@ export function interiorVariant(x, y, z, count = 4) {
 }
 
 // ================================================================================================================================================================================================================================================
+// objectDirections / objectDirection
+// Objeto que gira (gerador → Objetos → Direções): as direções que ele tem, na
+// ordem das linhas da folha ([] se não gira). No mapa, a direção vai como
+// peça ('decoracao/baus/bau-quest#leste'); sem peça (ou com uma que ele não
+// tem), vale a 1ª.
+
+export const DIRECTIONS = ['norte', 'leste', 'sul', 'oeste'];
+
+export function objectDirections(type) {
+  const asset = getAsset(splitType(type).asset);
+  return (asset && Array.isArray(asset.direcoes) && asset.direcoes) || [];
+}
+
+export function objectDirection(type) {
+  const directions = objectDirections(type);
+  const { piece } = splitType(type);
+  return directions.includes(piece) ? piece : directions[0] || null;
+}
+
+// ================================================================================================================================================================================================================================================
+// rotateType
+// O mesmo objeto virado pra próxima direção que ele tem (no sentido do
+// relógio; step -1 volta). Objeto que não gira fica como está.
+
+export function rotateType(type, step = 1) {
+  const directions = objectDirections(type);
+  if (directions.length < 2) return type;
+  const ordered = DIRECTIONS.filter(dir => directions.includes(dir));
+  const index = ordered.indexOf(objectDirection(type));
+  return pieceType(splitType(type).asset, ordered[(index + step + ordered.length) % ordered.length]);
+}
+
+// ================================================================================================================================================================================================================================================
+// withDirection
+// A folha target (ex.: o desenho aceso) virada como type, se ela tiver essa
+// direção.
+
+export function withDirection(target, type) {
+  const direction = objectDirection(type);
+  return direction && objectDirections(target).includes(direction) ? pieceType(target, direction) : target;
+}
+
+// ================================================================================================================================================================================================================================================
+// extraSquares
+// Objeto de 2 sqm (cama): o sqm a mais em volta do sqm onde ele está, [dx,
+// dy]: em pé (norte/sul), o de cima; deitado (leste/oeste), o da esquerda.
+// [] se ocupa só 1.
+
+export function extraSquares(type) {
+  const asset = getAsset(splitType(type).asset);
+  if (!asset || asset.sqms !== 2) return [];
+  return ['leste', 'oeste'].includes(objectDirection(type)) ? [[-1, 0]] : [[0, -1]];
+}
+
+// ================================================================================================================================================================================================================================================
 // spriteFrame
 // Onde desenhar a peça na folha: { url, x, y, size, frames } — x, y do 1º
-// quadro; os outros quadros seguem à direita. null se a folha não existe.
+// quadro; os outros quadros seguem à direita. Objeto que gira: uma linha por
+// direção. null se a folha não existe.
 
 export function spriteFrame(type) {
   const { asset: assetId, piece } = splitType(type);
@@ -401,5 +457,6 @@ export function spriteFrame(type) {
     const index = Math.max(0, (asset.ordem || WALL_PIECES).indexOf(piece || 'x'));
     return { url: asset.url, x: (index % 4) * size, y: Math.floor(index / 4) * size, size, frames: 1 };
   }
-  return { url: asset.url, x: 0, y: 0, size, frames: asset.quadros || 1 };
+  const row = Math.max(0, objectDirections(assetId).indexOf(objectDirection(type)));
+  return { url: asset.url, x: 0, y: row * size, size, frames: asset.quadros || 1 };
 }

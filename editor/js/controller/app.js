@@ -3,7 +3,8 @@
 import { state } from '../model/state.js';
 import { preloadAll } from '../view/image-cache.js';
 import { scheduleRender } from '../view/canvas-renderer.js';
-import { renderLayerTabs, renderTools, onLayerChange, updateStats, choosePaintDefaults } from '../view/tools-panel.js';
+import { renderLayerTabs, renderTools, onLayerChange, updateStats, choosePaintDefaults, rotatePaint } from '../view/tools-panel.js';
+import { rotateSelected } from '../view/forms.js';
 import { loadAssets } from '../../../shared/assets.js';
 import { loadMapIntoState, saveMap, hasUnsavedChanges } from '../model/map-io.js';
 import { resetHistory, commitHistory, undo, redo } from '../model/history.js';
@@ -36,6 +37,17 @@ async function handleSave() {
 }
 
 saveBtn.onclick = handleSave;
+
+// R gira o objeto: o do pincel ou, selecionando, o do sqm (Shift+R volta).
+window.addEventListener('keydown', (evt) => {
+  const tag = evt.target && evt.target.tagName;
+  if (evt.ctrlKey || evt.metaKey || evt.altKey || evt.key.toLowerCase() !== 'r' || tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+  const step = evt.shiftKey ? -1 : 1;
+  if (state.tool === 'select' ? rotateSelected(step) : rotatePaint(step)) {
+    evt.preventDefault();
+    commitHistory();
+  }
+});
 
 window.addEventListener('keydown', (evt) => {
   if (!(evt.ctrlKey || evt.metaKey)) return;

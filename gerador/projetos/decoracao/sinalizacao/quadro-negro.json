@@ -1,48 +1,34 @@
 {
   "formato": {
-    "quadro": 32,
+    "quadro": 64,
     "quadros": 1,
     "direcoes": [
-      "norte",
       "leste",
-      "sul",
-      "oeste"
+      "sul"
     ]
   },
   "objeto": {
     "tibia": {
-      "id": 2013,
+      "id": 2602,
       "variacao": 0
     }
   },
   "direcoes": {
-    "norte": {
-      "tibia": {
-        "id": 2013,
-        "variacao": 0
-      }
-    },
     "leste": {
       "tibia": {
-        "id": 2014,
+        "id": 2602,
         "variacao": 0
       }
     },
     "sul": {
       "tibia": {
-        "id": 2015,
-        "variacao": 0
-      }
-    },
-    "oeste": {
-      "tibia": {
-        "id": 2016,
+        "id": 2597,
         "variacao": 0
       }
     }
   },
   "propriedades": {
-    "bloqueia": true,
+    "bloqueia": false,
     "move": false,
     "altura": false,
     "empilhavel": false,
@@ -57,10 +43,16 @@
     "manaMin": 0,
     "manaMax": 0,
     "alimento": 0,
-    "uso": "placa"
+    "luz": 0,
+    "duracao": 0,
+    "regenVida": 0,
+    "regenMana": 0,
+    "uso": "placa",
+    "abreComo": "",
+    "acesoComo": ""
   },
   "ferramenta": "objetos",
   "grupo": "decoracao",
   "pasta": "sinalizacao",
-  "nome": "placa-baixa"
+  "nome": "quadro-negro"
 }

@@ -4,7 +4,7 @@ import { state, TOOLS } from '../model/state.js';
 import { FLOOR_MIN, FLOOR_MAX, GROUND_FLOOR } from '../../../shared/constants.js';
 import { canvas, scheduleRender } from './canvas-renderer.js';
 import { BORDER_VARIANTS } from '../../../shared/floor-borders.js';
-import { listAssets, creatureBehavior, pieceType, splitType, displayName, isStairsFolder, isEntranceFolder, isItemType, isWallType, WALL_PIECES, WALL_PIECE_NAMES } from '../../../shared/assets.js';
+import { listAssets, creatureBehavior, pieceType, splitType, displayName, isStairsFolder, isEntranceFolder, isItemType, isWallType, objectDirections, objectDirection, rotateType, withDirection, WALL_PIECES, WALL_PIECE_NAMES } from '../../../shared/assets.js';
 import { setThumb } from './sprite-thumb.js';
 import { svgIcon } from '../../../js/views/inventory-ui/icons.js';
 import { closeSelectPanel } from './forms.js';
@@ -105,7 +105,7 @@ function paintLabel(tool) {
   if (!value) return 'nenhum';
   if (tool.id === 'border') return `${displayName(value.type)} ${value.variant}`;
   if (tool.id === 'wall') return WALL_PIECE_NAMES[splitType(value).piece] || '';
-  return displayName(value);
+  return objectDirections(value).length > 1 ? `${displayName(value)} · ${objectDirection(value)} (R gira)` : displayName(value);
 }
 
 // ================================================================================================================================================================================================================================================
@@ -177,21 +177,41 @@ function isMonster(asset) {
 // ================================================================================================================================================================================================================================================
 // currentValue / setValue
 // O que está escolhido na ferramenta, no formato das opções ('<folha>' ou
-// '<folha>#<peça>').
+// '<folha>#<peça>'; objeto que gira aparece pela folha, sem a direção). Ao
+// trocar de objeto, o novo fica virado como o anterior, se tiver essa direção.
 
 function currentValue(tool) {
   const value = state[tool.paint];
   if (tool.id === 'border') return value ? pieceType(value.type, value.variant) : null;
-  return value;
+  if (tool.id === 'wall') return value;
+  return value && splitType(value).asset;
 }
 
 function setValue(tool, value) {
   if (tool.id === 'border') {
     const { asset, piece } = splitType(value);
     state.borderPaint = { type: asset, variant: piece };
-  } else {
+  } else if (tool.id === 'wall' || !state[tool.paint]) {
     state[tool.paint] = value;
+  } else {
+    state[tool.paint] = withDirection(value, state[tool.paint]);
   }
+}
+
+// ================================================================================================================================================================================================================================================
+// rotatePaint
+// R: vira o que a ferramenta pinta pra próxima direção (step -1, a
+// anterior). false se a ferramenta não pinta objeto que gira.
+
+export function rotatePaint(step = 1) {
+  const tool = TOOLS.find(t => t.id === state.tool);
+  if (!tool || !tool.paint || tool.id === 'wall' || tool.id === 'border') return false;
+  const value = state[tool.paint];
+  if (typeof value !== 'string' || objectDirections(value).length < 2) return false;
+  state[tool.paint] = rotateType(value, step);
+  renderTools();
+  scheduleRender();
+  return true;
 }
 
 // ================================================================================================================================================================================================================================================

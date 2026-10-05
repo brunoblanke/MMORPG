@@ -105,6 +105,8 @@ button:focus-visible, input:focus-visible, .slot:focus-visible{ outline:2px soli
 .slot-actions{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
 .checkline{ display:flex; align-items:center; gap:6px; font-size:12px; color:var(--muted); cursor:pointer; }
 .checkline input{ accent-color:var(--accent); }
+.object-layout{ display:flex; gap:18px; flex-wrap:wrap; }
+.object-layout .checkline{ color:var(--text); font-size:12.5px; }
 .file-btn{ display:inline-flex; align-items:center; }
 
 .sheet-rows{ display:flex; flex-direction:column; gap:12px; }

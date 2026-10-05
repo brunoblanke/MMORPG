@@ -1,42 +1,28 @@
 {
   "formato": {
-    "quadro": 32,
+    "quadro": 64,
     "quadros": 1,
     "direcoes": [
-      "norte",
-      "leste",
-      "sul",
-      "oeste"
-    ]
+      "norte"
+    ],
+    "sqms": 2
   },
   "objeto": {
     "tibia": {
-      "id": 2013,
+      "id": 1984,
       "variacao": 0
     }
   },
   "direcoes": {
     "norte": {
       "tibia": {
-        "id": 2013,
+        "id": 1984,
         "variacao": 0
       }
     },
-    "leste": {
+    "norte-2": {
       "tibia": {
-        "id": 2014,
-        "variacao": 0
-      }
-    },
-    "sul": {
-      "tibia": {
-        "id": 2015,
-        "variacao": 0
-      }
-    },
-    "oeste": {
-      "tibia": {
-        "id": 2016,
+        "id": 1987,
         "variacao": 0
       }
     }
@@ -44,10 +30,10 @@
   "propriedades": {
     "bloqueia": true,
     "move": false,
-    "altura": false,
+    "altura": true,
     "empilhavel": false,
     "peso": 10,
-    "espacos": 0,
+    "espacos": 8,
     "atk": 0,
     "def": 0,
     "ml": 0,
@@ -57,10 +43,16 @@
     "manaMin": 0,
     "manaMax": 0,
     "alimento": 0,
-    "uso": "placa"
+    "luz": 0,
+    "duracao": 0,
+    "regenVida": 0,
+    "regenMana": 0,
+    "uso": "",
+    "abreComo": "",
+    "acesoComo": ""
   },
   "ferramenta": "objetos",
-  "grupo": "decoracao",
-  "pasta": "sinalizacao",
-  "nome": "placa-baixa"
+  "grupo": "estrutura",
+  "pasta": "natureza",
+  "nome": "caixao"
 }

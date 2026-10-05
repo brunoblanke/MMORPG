@@ -1,42 +1,28 @@
 {
   "formato": {
-    "quadro": 32,
+    "quadro": 64,
     "quadros": 1,
     "direcoes": [
-      "norte",
       "leste",
-      "sul",
-      "oeste"
+      "sul"
     ]
   },
   "objeto": {
     "tibia": {
-      "id": 2013,
+      "id": 2022,
       "variacao": 0
     }
   },
   "direcoes": {
-    "norte": {
-      "tibia": {
-        "id": 2013,
-        "variacao": 0
-      }
-    },
     "leste": {
       "tibia": {
-        "id": 2014,
+        "id": 2022,
         "variacao": 0
       }
     },
     "sul": {
       "tibia": {
-        "id": 2015,
-        "variacao": 0
-      }
-    },
-    "oeste": {
-      "tibia": {
-        "id": 2016,
+        "id": 2021,
         "variacao": 0
       }
     }
@@ -62,5 +48,5 @@
   "ferramenta": "objetos",
   "grupo": "decoracao",
   "pasta": "sinalizacao",
-  "nome": "placa-baixa"
+  "nome": "placa-alta"
 }

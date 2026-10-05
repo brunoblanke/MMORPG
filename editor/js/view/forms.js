@@ -1,6 +1,6 @@
 // js/view/forms.js
 
-import { getAsset, listAssets, displayName, objectUse } from '../../../shared/assets.js';
+import { getAsset, listAssets, displayName, objectUse, objectDirections, objectDirection, rotateType } from '../../../shared/assets.js';
 import { state } from '../model/state.js';
 import { scheduleRender } from './canvas-renderer.js';
 import { updateStats } from './tools-panel.js';
@@ -115,11 +115,13 @@ function renderSelectPanel() {
     setThumb(thumb, obj.type, 24);
     const name = document.createElement('span');
     name.className = 'select-name';
-    name.textContent = displayName(obj.type) + (obj.count > 1 ? ` ×${obj.count}` : '') + (obj.dados ? ' •' : '');
+    const rotates = objectDirections(obj.type).length > 1;
+    name.textContent = displayName(obj.type) + (rotates ? ` · ${objectDirection(obj.type)}` : '') + (obj.count > 1 ? ` ×${obj.count}` : '') + (obj.dados ? ' •' : '');
     name.title = obj.type;
     const up = selectButton('▲', 'Subir na pilha', index === objects.length - 1, () => moveInStack(index, 1));
     const down = selectButton('▼', 'Descer na pilha', index === 0, () => moveInStack(index, -1));
     row.append(thumb, name, up, down);
+    if (rotates) row.appendChild(selectButton('⟳', 'Girar (R)', false, () => rotateObject(obj, 1)));
     const kind = editableKind(obj.type);
     if (kind) row.appendChild(selectButton('✎', kind === 'texto' ? 'Escrever o texto' : 'Escolher os itens', false, (evt) => openObjectDataForm(obj, evt.clientX, evt.clientY)));
     list.appendChild(row);
@@ -137,6 +139,26 @@ function selectButton(text, title, disabled, onClick) {
   button.disabled = disabled;
   button.onclick = onClick;
   return button;
+}
+
+// ================================================================================================================================================================================================================================================
+// rotateObject / rotateSelected
+// Vira o objeto pra próxima direção que ele tem. R com um sqm selecionado
+// gira o objeto que gira mais em cima dele; false se não tem nenhum.
+
+function rotateObject(obj, step) {
+  obj.type = rotateType(obj.type, step);
+  renderSelectPanel();
+  updateStats();
+  scheduleRender();
+}
+
+export function rotateSelected(step = 1) {
+  const cell = state.selected && selectedCell();
+  const obj = cell && [...cell.objects].reverse().find(o => objectDirections(o.type).length > 1);
+  if (!obj) return false;
+  rotateObject(obj, step);
+  return true;
 }
 
 // ================================================================================================================================================================================================================================================

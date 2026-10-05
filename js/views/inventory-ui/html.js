@@ -1,6 +1,6 @@
 // js/views/inventory-ui/html.js
 
-import { getAsset, spriteFrame, splitType, displayName, litAs } from '../../../shared/assets.js';
+import { getAsset, spriteFrame, splitType, displayName, litAs, withDirection } from '../../../shared/assets.js';
 import { getLevel } from '../../core/geometry.js';
 import { findPath } from '../../core/pathfinding.js';
 import { itemInfo, stackFrame } from '../../../shared/items.js';
@@ -27,7 +27,7 @@ export const htmlMethods = {
     if (!frame || !asset) return '<i class="inv-spr missing"></i>';
     const scale = 32 / frame.size;
     const width = Math.max(1, asset.quadros || 1) * asset.quadro * scale;
-    const height = asset.quadro * scale;
+    const height = Math.max(1, (asset.direcoes || []).length) * asset.quadro * scale;
     const x = frame.x + (asset.pilha ? Math.min(stackFrame(count), (asset.quadros || 1) - 1) * asset.quadro : 0);
     const frames = asset.pilha ? 1 : frame.frames || 1;
     const animation = frames > 1
@@ -61,7 +61,7 @@ export const htmlMethods = {
     }
     const info = itemInfo(item.type);
     const count = item.count > 1 ? `<span class="inv-count">${item.count}</span>` : '';
-    const look = (item.lit && litAs(item.type)) || item.type;
+    const look = (item.lit && withDirection(litAs(item.type), item.type)) || item.type;
     return `<div class="inv-slot filled" data-place="${key}" data-uid="${item.uid}">${this.spriteHtml(look, item.count)}${count}</div>`;
   },
 

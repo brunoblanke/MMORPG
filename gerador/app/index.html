@@ -292,6 +292,11 @@
           <button type="button" class="ghost-btn" id="objectClear">Limpar</button>
         </div>
       </div>
+      <div class="object-layout">
+        <label class="checkline"><input type="checkbox" id="objectRotates" />Gira (um desenho por direção; no editor, R gira)</label>
+        <label class="checkline"><input type="checkbox" id="objectTwoSquares" />Ocupa 2 sqm (cama)</label>
+      </div>
+      <div class="slots" id="objectSlots" hidden></div>
       <div class="creature-info" id="objectInfo"></div>
       <div class="outfit-options">
         <div class="section-label">Propriedades no jogo</div>
@@ -314,7 +319,7 @@
 
   <aside class="panel picker">
     <div class="picker-head">
-      <div class="section-label">Sprites do Tibia 7.8</div>
+      <div class="section-label">Sprites do Tibia</div>
       <span class="count" id="pickerCount"></span>
     </div>
     <div class="picker-tabs" id="pickerTabs"></div>

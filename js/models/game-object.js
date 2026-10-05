@@ -20,6 +20,7 @@ export class GameObject {
     this.blocksMovement = data.blocksMovement || false;
     this.temporary = !!data.temporary;
     this.ownerId = data.ownerId || null;
+    this.hidden = !!data.hidden;
 
     if (data.stairDirection) {
       this.stairDirection = data.stairDirection;
@@ -27,6 +28,7 @@ export class GameObject {
       this.targetY = data.targetY;
       this.targetZ = data.targetZ;
       this.manualStairs = !!data.manualStairs;
+      this.stairFacing = data.stairFacing || 'norte';
     }
 
     // Piso e borda: floorType é a folha do piso ('estrutura/pisos/…').
@@ -124,7 +126,7 @@ function applyTransitions(objs) {
   for (const obj of objs) {
     if (obj.stairDirection !== 'up') continue;
     const top = getStairTop(obj.x, obj.y, obj.z);
-    const target = getStairTopTarget(obj.x, obj.y, obj.z, obj.manualStairs ? 'reta' : 'normal');
+    const target = getStairTopTarget(obj.x, obj.y, obj.z, obj.manualStairs ? 'reta' : 'normal', obj.stairFacing);
     const stairTop = new GameObject({
       id: `StairTop_${stairTops.length + 1}`,
       x: top.x, y: top.y, z: top.z,

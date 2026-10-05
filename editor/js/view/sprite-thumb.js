@@ -7,14 +7,15 @@ import { getAsset, splitType, spriteFrame, WALL_PIECES } from '../../../shared/a
 
 // ================================================================================================================================================================================================================================================
 // sheetSize
-// Largura e altura da folha inteira, pelo formato de cada ferramenta.
+// Largura e altura da folha inteira, pelo formato de cada ferramenta (objeto
+// que gira: uma linha por direção).
 
 function sheetSize(asset) {
   const size = asset.quadro;
   if (asset.ferramenta === 'pisos') return [4 * size, 4 * size];
   if (asset.ferramenta === 'paredes') return [4 * size, Math.ceil((asset.ordem || WALL_PIECES).length / 4) * size];
   if (asset.ferramenta === 'criaturas') return [Math.max(asset.quadros, 3) * size, 5 * size];
-  return [Math.max(1, asset.quadros) * size, size];
+  return [Math.max(1, asset.quadros) * size, Math.max(1, (asset.direcoes || []).length) * size];
 }
 
 // ================================================================================================================================================================================================================================================

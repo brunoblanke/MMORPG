@@ -7991,16 +7991,6 @@
       17144
     ],
     [
-      "estrutura/natureza/caixao-norte",
-      215,
-      228,
-      -3,
-      0,
-      false,
-      true,
-      true
-    ],
-    [
       "estrutura/pisos/piso-terra-3",
       216,
       228,
@@ -8511,7 +8501,7 @@
       17145
     ],
     [
-      "estrutura/natureza/caixao-sul",
+      "estrutura/natureza/caixao#norte",
       215,
       229,
       -3,
@@ -24881,7 +24871,7 @@
       15115
     ],
     [
-      "decoracao/sinalizacao/placa-baixa",
+      "decoracao/sinalizacao/placa-baixa-2#sul",
       188,
       226,
       -2,
@@ -43015,16 +43005,6 @@
       12451
     ],
     [
-      "decoracao/moveis/cama-acampamento-norte",
-      186,
-      217,
-      -1,
-      0,
-      false,
-      true,
-      true
-    ],
-    [
       "estrutura/pisos/piso-terra-3",
       187,
       217,
@@ -43706,7 +43686,7 @@
       12452
     ],
     [
-      "decoracao/moveis/cama-acampamento-sul",
+      "decoracao/moveis/cama-acampamento#norte",
       186,
       218,
       -1,
@@ -49216,7 +49196,7 @@
       12484
     ],
     [
-      "decoracao/sinalizacao/placa-baixa-leste",
+      "decoracao/sinalizacao/placa-baixa#leste",
       192,
       225,
       -1,
@@ -49253,7 +49233,7 @@
       12483
     ],
     [
-      "decoracao/baus/bau-quest-sul",
+      "decoracao/baus/bau-quest#sul",
       193,
       225,
       -1,
@@ -139134,7 +139114,7 @@
       10685
     ],
     [
-      "decoracao/sinalizacao/placa-baixa",
+      "decoracao/sinalizacao/placa-baixa-2#sul",
       191,
       208,
       0,
@@ -155405,7 +155385,7 @@
       false
     ],
     [
-      "decoracao/sinalizacao/placa-baixa",
+      "decoracao/sinalizacao/placa-baixa-2#sul",
       186,
       221,
       0,
@@ -165102,7 +165082,7 @@
       true
     ],
     [
-      "decoracao/sinalizacao/quadro-negro-x",
+      "decoracao/sinalizacao/quadro-negro#sul",
       180,
       230,
       0,
@@ -166246,7 +166226,7 @@
       10877
     ],
     [
-      "decoracao/moveis/balcao-y-b",
+      "decoracao/moveis/balcao-2#leste",
       179,
       231,
       0,
@@ -167340,7 +167320,7 @@
       10880
     ],
     [
-      "decoracao/moveis/balcao-y-b",
+      "decoracao/moveis/balcao-2#leste",
       179,
       232,
       0,
@@ -169957,7 +169937,7 @@
       17275
     ],
     [
-      "decoracao/moveis/balcao-x-b",
+      "decoracao/moveis/balcao-2#sul",
       187,
       234,
       0,
@@ -169989,7 +169969,7 @@
       17276
     ],
     [
-      "decoracao/moveis/balcao-x-b",
+      "decoracao/moveis/balcao-2#sul",
       188,
       234,
       0,

@@ -1,7 +1,9 @@
 // shared/stairs.js
 //
-// Geometria da escada (virada pro norte), pelo tipo (assets.js → stairKind:
-// com altura, normal; sem, reta). Numa escada em (x, y, z):
+// Geometria da escada, pelo tipo (assets.js → stairKind: com altura,
+// normal; sem, reta) e pra onde ela sobe (facing: 'norte', o padrão, 'leste',
+// 'sul' ou 'oeste'; o exemplo abaixo é a virada pro norte). Numa escada em
+// (x, y, z):
 //   - o sqm (x-1, y-1, z+1), logo acima do pé, é o TOPO da escada: vira um
 //     buraco (sem piso, coberto pelo próprio sprite) que leva de volta pra
 //     baixo: na normal, em (x, y+1, z), logo à frente do pé; na reta, no
@@ -30,10 +32,21 @@ export function toLowerLevel(x, y, z) {
 }
 
 // ================================================================================================================================================================================================================================================
+// facingStep
+// O passo [dx, dy] pra onde a escada sobe.
+
+const FACING_STEPS = { norte: [0, -1], leste: [1, 0], sul: [0, 1], oeste: [-1, 0] };
+
+function facingStep(facing) {
+  return FACING_STEPS[facing] || FACING_STEPS.norte;
+}
+
+// ================================================================================================================================================================================================================================================
 // getStairTarget
 
-export function getStairTarget(x, y, z, kind = 'normal') {
-  return kind === 'reta' ? { x: x - 1, y, z: z + 1 } : { x: x - 1, y: y - 2, z: z + 1 };
+export function getStairTarget(x, y, z, kind = 'normal', facing = 'norte') {
+  const [dx, dy] = facingStep(facing);
+  return kind === 'reta' ? toUpperLevel(x - dx, y - dy, z) : toUpperLevel(x + dx, y + dy, z);
 }
 
 // ================================================================================================================================================================================================================================================
@@ -46,8 +59,9 @@ export function getStairTop(x, y, z) {
 // ================================================================================================================================================================================================================================================
 // getStairTopTarget
 
-export function getStairTopTarget(x, y, z, kind = 'normal') {
-  return kind === 'reta' ? { x, y, z } : { x, y: y + 1, z };
+export function getStairTopTarget(x, y, z, kind = 'normal', facing = 'norte') {
+  const [dx, dy] = facingStep(facing);
+  return kind === 'reta' ? { x, y, z } : { x: x - dx, y: y - dy, z };
 }
 
 // ================================================================================================================================================================================================================================================
