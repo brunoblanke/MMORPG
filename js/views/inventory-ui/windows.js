@@ -330,31 +330,28 @@ export const windowMethods = {
 
   // ================================================================================================================================================================================================================================================
   // window drag
-  // A janela vai junto com o mouse (uma cópia dela). Perto de uma coluna
-  // (lateral da tela), a linha mostra onde ela entra; fora delas, fica solta
-  // onde for solta.
+  // A própria janela vai junto com o mouse (sai da coluna enquanto isso).
+  // Perto de uma coluna (lateral da tela), a linha mostra onde ela entra;
+  // fora delas, fica solta onde for solta.
 
   startWinDrag(evt, winId) {
-    const el = document.querySelector(`.inv-win[data-win="${winId}"]`);
+    const el = /** @type {HTMLElement | null} */ (document.querySelector(`.inv-win[data-win="${winId}"]`));
     if (!el) return;
     const rect = el.getBoundingClientRect();
-    const ghost = /** @type {HTMLElement} */ (el.cloneNode(true));
-    ghost.classList.add('inv-ghostwin');
-    ghost.style.width = `${rect.width}px`;
-    document.body.appendChild(ghost);
+    el.classList.add('moving');
+    el.style.width = `${rect.width}px`;
     const line = document.createElement('div');
     line.className = 'inv-dropline';
-    el.classList.add('dragging');
-    this.drag = { kind: 'win', winId, line, ghost, target: null, dx: evt.clientX - rect.left, dy: evt.clientY - rect.top, width: rect.width, height: rect.height };
+    this.drag = { kind: 'win', winId, el, line, target: null, dx: evt.clientX - rect.left, dy: evt.clientY - rect.top, width: rect.width, height: rect.height };
     this.moveWinDrag(evt);
   },
 
   moveWinDrag(evt) {
-    const { line, ghost } = this.drag;
+    const { line, el } = this.drag;
     const x = Math.max(0, Math.min(window.innerWidth - this.drag.width, evt.clientX - this.drag.dx));
     const y = Math.max(0, Math.min(window.innerHeight - 30, evt.clientY - this.drag.dy));
-    ghost.style.left = `${x}px`;
-    ghost.style.top = `${y}px`;
+    el.style.left = `${x}px`;
+    el.style.top = `${y}px`;
     let col = null;
     for (const name of ['left', 'right']) {
       const r = this.columns[name].getBoundingClientRect();
@@ -366,7 +363,7 @@ export const windowMethods = {
       return;
     }
     const colEl = this.columns[col];
-    const wins = [...colEl.querySelectorAll('.inv-win')];
+    const wins = [...colEl.querySelectorAll('.inv-win')].filter(w => w !== el);
     let index = wins.length;
     for (let i = 0; i < wins.length; i++) {
       const r = wins[i].getBoundingClientRect();
@@ -378,9 +375,10 @@ export const windowMethods = {
   },
 
   endWinDrag() {
-    const { line, ghost, target, winId } = this.drag;
+    const { line, el, target, winId } = this.drag;
     line.remove();
-    ghost.remove();
+    el.classList.remove('moving');
+    el.style.width = el.style.left = el.style.top = '';
     this.drag = null;
     const found = this.findWindow(winId);
     if (target && found) {
@@ -391,8 +389,7 @@ export const windowMethods = {
         this.layout.free.push(found.win);
       } else {
         found.win.x = found.win.y = null;
-        const index = target.col === found.col && target.index > found.i ? target.index - 1 : target.index;
-        this.layout[target.col].splice(index, 0, found.win);
+        this.layout[target.col].splice(target.index, 0, found.win);
       }
       this.scheduleSave();
     }
