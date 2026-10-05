@@ -1,0 +1,58 @@
+{
+  "formato": {
+    "quadro": 64,
+    "colunas": 4,
+    "pecas": [
+      "norte",
+      "sul",
+      "oeste",
+      "leste",
+      "no",
+      "ne",
+      "so",
+      "se"
+    ]
+  },
+  "pecas": {
+    "norte": {
+      "tibia": {
+        "id": 2155,
+        "variacao": 0
+      }
+    },
+    "sul": {
+      "tibia": {
+        "id": 2154,
+        "variacao": 0
+      }
+    },
+    "oeste": {
+      "tibia": {
+        "id": 2157,
+        "variacao": 0
+      }
+    },
+    "leste": {
+      "tibia": {
+        "id": 2156,
+        "variacao": 0
+      }
+    },
+    "ne": {
+      "tibia": {
+        "id": 2161,
+        "variacao": 0
+      }
+    },
+    "so": {
+      "tibia": {
+        "id": 2160,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "paredes",
+  "grupo": "estrutura",
+  "pasta": "parapeitos",
+  "nome": "cerca-1"
+}
