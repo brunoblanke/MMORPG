@@ -19,21 +19,6 @@
       </div>
     </div>
 
-    <div class="ed-win">
-      <div class="ed-head"><span class="ed-title">Opções</span></div>
-      <div class="ed-body ed-options">
-        <label class="checkline">
-          <input type="checkbox" id="ghostToggle" checked />
-          Mostrar andar abaixo (fantasma)
-        </label>
-        <div class="border-toggle on" id="borderToggle">
-          <div class="led"></div>
-          <span>Exibir bordas</span>
-        </div>
-      </div>
-    </div>
-
-    <button class="export-btn" id="saveBtn" title="Salva em data/map.json (Ctrl+S)">Salvar</button>
   </div>
 
   <div class="main">
@@ -43,6 +28,20 @@
       <div class="quick-tools" id="quickTools"></div>
       <div class="quick-sep"></div>
       <input class="goto-input" id="gotoInput" placeholder="x, y, z" title="Vai pro sqm (Enter): x, y, z" autocomplete="off" />
+    </div>
+
+    <div class="quickbar bottombar">
+      <label class="checkline">
+        <input type="checkbox" id="ghostToggle" checked />
+        Mostrar andar abaixo
+      </label>
+      <div class="quick-sep"></div>
+      <div class="border-toggle on" id="borderToggle">
+        <div class="led"></div>
+        <span>Exibir bordas</span>
+      </div>
+      <div class="quick-sep"></div>
+      <button class="export-btn" id="saveBtn" title="Salva em data/map.json (Ctrl+S)">Salvar</button>
     </div>
 
     <div class="canvas-wrap">

@@ -48,7 +48,6 @@ body{
 }
 .ed-title{ flex:1; font-weight:500; }
 .ed-body{ padding:8px; }
-.ed-options{ display:flex; flex-direction:column; gap:8px; }
 
 /* Barra flutuante no topo, no estilo da caixa de fala do jogo: andar e as
    ferramentas rápidas (selecionar, borracha, tirar borda, respawn). */
@@ -59,6 +58,10 @@ body{
   background:rgba(17, 19, 26, .82); box-shadow:0 6px 20px rgba(0,0,0,.35); white-space:nowrap;
 }
 .quick-sep{ width:1px; align-self:stretch; background:var(--line); }
+/* A mesma barra, embaixo (acima da linha de status): andar fantasma, bordas e Salvar. */
+.quickbar.bottombar{ top:auto; bottom:46px; gap:10px; }
+.bottombar .border-toggle{ padding:4px 10px; }
+.bottombar .export-btn{ padding:6px 16px; }
 .layer-tabs{ display:flex; gap:3px; }
 .layer-tab{
   min-width:26px; padding:4px 5px; text-align:center; border-radius:5px; border:1px solid transparent;
@@ -160,7 +163,7 @@ body{
 .border-toggle.on{ color:var(--accent); border-color:var(--accent); }
 .border-toggle.on .led{ background:var(--accent); box-shadow:0 0 6px var(--accent); }
 
-.canvas-wrap{ flex:1; display:flex; align-items:center; justify-content:center; padding:56px 26px 20px; overflow:auto; }
+.canvas-wrap{ flex:1; display:flex; align-items:center; justify-content:center; padding:56px 26px 64px; overflow:auto; }
 
 .board{
   background:rgba(22, 25, 32, .82); border:1px solid var(--line); border-radius:8px; padding:12px;
