@@ -71,9 +71,9 @@ class TibiaAssets {
   // ================================================================================================================================================================================================================================================
   // constructor
 
-  constructor(pastaCliente) {
-    this.spr = fs.readFileSync(path.join(pastaCliente, 'Tibia.spr'));
-    this.dat = fs.readFileSync(path.join(pastaCliente, 'Tibia.dat'));
+  constructor(pastaCliente, arquivos = { spr: 'Tibia.spr', dat: 'Tibia.dat' }) {
+    this.spr = fs.readFileSync(path.join(pastaCliente, arquivos.spr));
+    this.dat = fs.readFileSync(path.join(pastaCliente, arquivos.dat));
     this.estendido = this.spr.readUInt32LE(4) * 4 + 8 <= this.spr.length && this.spr.readUInt32LE(8) === this.spr.readUInt32LE(4) * 4 + 8;
     this.spriteCount = this.estendido ? this.spr.readUInt32LE(4) : this.spr.readUInt16LE(4);
     this.inicioDosEnderecos = this.estendido ? 8 : 6;

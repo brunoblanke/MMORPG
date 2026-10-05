@@ -16,7 +16,9 @@ const { TibiaAssets, paletaDeRoupa } = require('./tibia-assets.js');
 
 const PORTA = process.env.GERADOR_PORT || 8100;
 const PASTA_APP = path.join(__dirname, 'app');
-const PASTA_TIBIA = fs.existsSync(path.join(__dirname, 'tibia', 'atual', 'Tibia.spr')) ? path.join(__dirname, 'tibia', 'atual') : path.join(__dirname, 'tibia', '780');
+const PASTA_ATUAL = path.join(__dirname, 'tibia', 'atual');
+const ARQUIVOS_ATUAL = arquivosDoCliente(PASTA_ATUAL);
+const PASTA_TIBIA = ARQUIVOS_ATUAL ? PASTA_ATUAL : path.join(__dirname, 'tibia', '780');
 const PASTA_SAIDA = path.join(__dirname, 'saida');
 const PASTA_PROJETOS = path.join(__dirname, 'projetos');
 const FERRAMENTAS = ['pisos', 'criaturas', 'paredes', 'objetos'];
@@ -51,15 +53,47 @@ let tibia = null;
 app.listen(PORTA, () => {
   console.log(`\n🎨 Gerador de sprites em http://localhost:${PORTA}`);
   console.log(`🗂️  Sprites do Tibia de tibia/${path.basename(PASTA_TIBIA)}`);
+  if (!ARQUIVOS_ATUAL) avisarPastaAtual();
   console.log(`📁 PNGs prontos em ${PASTA_SAIDA}\n`);
 });
+
+// ================================================================================================================================================================================================================================================
+// arquivosDoCliente
+// { spr, dat }: os nomes do .spr e do .dat da pasta (qualquer nome, maiúscula
+// ou minúscula; havendo mais de um, o Tibia.spr/Tibia.dat), ou null se faltar
+// algum.
+
+function arquivosDoCliente(pasta) {
+  if (!fs.existsSync(pasta)) return null;
+  const nomes = fs.readdirSync(pasta);
+  const achar = (extensao) => {
+    const deste = nomes.filter(nome => nome.toLowerCase().endsWith(extensao));
+    return deste.find(nome => nome.toLowerCase() === `tibia${extensao}`) || deste[0] || null;
+  };
+  const spr = achar('.spr');
+  const dat = achar('.dat');
+  return spr && dat ? { spr, dat } : null;
+}
+
+// ================================================================================================================================================================================================================================================
+// avisarPastaAtual
+// Sem o Tibia atual: diz onde ele é procurado e o que tem lá.
+
+function avisarPastaAtual() {
+  if (!fs.existsSync(PASTA_ATUAL)) {
+    console.log(`   (pro Tibia atual, crie ${PASTA_ATUAL} com o .spr e o .dat dentro)`);
+    return;
+  }
+  const nomes = fs.readdirSync(PASTA_ATUAL);
+  console.log(`   (${PASTA_ATUAL} existe, mas falta o .spr ou o .dat; tem: ${nomes.length ? nomes.join(', ') : 'nada'})`);
+}
 
 // ================================================================================================================================================================================================================================================
 // arquivosTibia
 // Tibia.spr/Tibia.dat, lidos na 1ª vez que a tela pede.
 
 function arquivosTibia() {
-  if (!tibia) tibia = new TibiaAssets(PASTA_TIBIA);
+  if (!tibia) tibia = new TibiaAssets(PASTA_TIBIA, ARQUIVOS_ATUAL || undefined);
   return tibia;
 }
 
