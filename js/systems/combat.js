@@ -9,6 +9,7 @@ import { equipBonus, itemInfo, newItem } from '../../shared/items.js';
 import { addSkillTry } from '../../shared/skills.js';
 import { AMMO_CONDITIONS } from '../../shared/conditions.js';
 import { WANDS, WAND_RANGE } from '../../shared/spells.js';
+import { MISSILES } from '../../shared/effects.js';
 
 // Auto ataque: alvo sem caminho por UNREACHABLE_MS é largado e ignorado por SKIP_TARGET_MS.
 export const UNREACHABLE_MS = 1500;
@@ -236,7 +237,9 @@ export class CombatController {
     const ammo = player.equip[ranged.ammoKey];
     ammo.count = (ammo.count || 1) - 1;
     if (ammo.count <= 0) player.equip[ranged.ammoKey] = null;
-    this.sim.emit({ type: 'missile', fromX: player.x, fromY: player.y, toX: target.x, toY: target.y, kind: ranged.thrown ? 'spear' : 'arrow' });
+    const ammoName = ammo.type.split('/').pop();
+    const kind = MISSILES[ammoName] ? ammoName : ranged.thrown ? 'spear' : 'arrow';
+    this.sim.emit({ type: 'missile', fromX: player.x, fromY: player.y, toX: target.x, toY: target.y, kind });
     if (ranged.thrown) {
       const inventory = this.sim.inventory;
       inventory.mergeGroundStack(inventory.spawnGroundItem(newItem(inventory.nextUid(), ammo.type, 1), target.x, target.y, target.z || 0));

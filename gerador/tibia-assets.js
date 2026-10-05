@@ -546,11 +546,15 @@ function lerDatEstendido(dat) {
     if (w > 1 || h > 1) p++;
     const [layers, px, py, pz, anim] = dat.subarray(p, p + 5);
     p += 5;
-    if (anim > 1) p += 6 + anim * 8;
+    const duracoes = [];
+    if (anim > 1) {
+      p += 6;
+      for (let a = 0; a < anim; a++, p += 8) duracoes.push(dat.readUInt32LE(p));
+    }
     const total = w * h * layers * px * py * pz * anim;
     const sprites = [];
     for (let i = 0; i < total; i++, p += 4) sprites.push(dat.readUInt32LE(p));
-    return { w, h, layers, px, py, pz, anim, sprites };
+    return { w, h, layers, px, py, pz, anim, duracoes, sprites };
   };
 
   for (const tipo of ['item', 'outfit', 'effect', 'missile']) {
@@ -602,7 +606,7 @@ function juntarGrupos(grupos) {
   const mesmoTamanho = ['w', 'h', 'layers', 'px', 'py', 'pz'].every(chave => parada[chave] === andando[chave]);
   if (!mesmoTamanho) return parada.anim >= andando.anim ? parada : andando;
   const porQuadro = parada.w * parada.h * parada.layers * parada.px * parada.py * parada.pz;
-  return { ...andando, anim: andando.anim + 1, sprites: [...parada.sprites.slice(0, porQuadro), ...andando.sprites] };
+  return { ...andando, anim: andando.anim + 1, duracoes: [], sprites: [...parada.sprites.slice(0, porQuadro), ...andando.sprites] };
 }
 
 // ================================================================================================================================================================================================================================================
@@ -856,4 +860,4 @@ function crc32(buffer) {
   return (c ^ 0xFFFFFFFF) >>> 0;
 }
 
-module.exports = { TibiaAssets, DEFAULT_OUTFIT_COLORS, paletaDeRoupa };
+module.exports = { TibiaAssets, DEFAULT_OUTFIT_COLORS, paletaDeRoupa, gerarPng };
