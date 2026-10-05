@@ -4,9 +4,7 @@
 // skills de quem chegou nesse nível e o equipamento da vocação: Cavaleiro
 // (knight), Arqueira (paladin), Feiticeiro (sorcerer) e Druida (druid).
 // Entram no data/characters.json (ou no arquivo de JOGO_PERSONAGENS); quem
-// já existe com o mesmo nome é trocado. Pode rodar com o servidor ligado,
-// mas com esses 4 personagens fora do jogo (quem está online é gravado por
-// cima ao sair).
+// já existe com o mesmo nome é trocado. Rode com o servidor desligado.
 //
 // Uso: node ferramentas/players-exemplo.js
 

@@ -185,7 +185,6 @@ async function iniciarJogo(servidorHttp) {
   observarMudancas(() => {
     let novo;
     try {
-      setAssets(lerSprites());
       novo = criarMundo(sim.houses.toSave());
     } catch (err) {
       console.error('❌ Não deu pra recarregar (arquivo ainda sendo gravado?):', err.message);
@@ -199,7 +198,7 @@ async function iniciarJogo(servidorHttp) {
     conexoes.clear();
     geracao++;
     sim = novo;
-    console.log('🔄 Mapa e gerador recarregados: os navegadores recarregam sozinhos');
+    console.log('🔄 Mapa recarregado: os navegadores recarregam sozinhos');
   });
 
   const wss = new WebSocketServer({ server: servidorHttp, path: '/ws' });
@@ -222,7 +221,7 @@ async function iniciarJogo(servidorHttp) {
         }
         const playerId = `player${proximoJogador}`;
         proximoJogador++;
-        const saved = carregarPersonagens()[erro.name.toLowerCase()] || personagens[erro.name.toLowerCase()];
+        const saved = personagens[erro.name.toLowerCase()];
         player = sim.addPlayer(playerId, { name: erro.name, gender: normalizeGender(mensagem.gender), saved });
         conexoes.set(playerId, { socket, sent: null });
         console.log(`🟢 ${player.name} entrou ${saved ? `(nível ${player.lvl}) ` : '(novo) '}(${conexoes.size} online)`);
@@ -271,9 +270,8 @@ async function iniciarJogo(servidorHttp) {
 
 // ================================================================================================================================================================================================================================================
 // observarMudancas
-// Chama recarregar quando o gerador (folhas, receitas, taxonomia) ou o mapa
-// mudam no disco, uma vez por leva de mudanças (RECARREGAR_ESPERA_MS sem
-// nada novo). Assim, salvar no gerador ou no editor já vale no jogo.
+// Chama recarregar quando o mapa muda no disco (salvo no editor), uma vez
+// por leva de mudanças (RECARREGAR_ESPERA_MS sem nada novo).
 
 function observarMudancas(recarregar) {
   let espera = null;
@@ -288,37 +286,20 @@ function observarMudancas(recarregar) {
       console.error(`❌ Não deu pra observar ${alvo}:`, err.message);
     }
   };
-  observar(PASTA_PROJETOS, { recursive: true });
-  observar(PASTA_SAIDA, { recursive: true });
-  observar(path.dirname(TAXONOMIA_PATH), {}, nome => nome === path.basename(TAXONOMIA_PATH));
   observar(path.dirname(MAP_DATA_PATH), {}, nome => nome === path.basename(MAP_DATA_PATH));
 }
 
 // ================================================================================================================================================================================================================================================
 // carregarPersonagens
-// Personagens guardados, pelo nome em minúsculas. Sem arquivo, começa vazio;
-// com ele estragado, também, mas antes guarda uma cópia dele
-// (characters.json.estragado-<hora>) pra nada se perder quando o servidor
-// gravar o arquivo de novo.
-
-let copiaEstragada = null;
+// Personagens guardados, pelo nome em minúsculas. Sem arquivo (ou com ele
+// estragado), começa vazio.
 
 function carregarPersonagens() {
   try {
     const personagens = JSON.parse(fs.readFileSync(CHARACTERS_PATH, 'utf8'));
     return personagens && typeof personagens === 'object' ? personagens : {};
   } catch (err) {
-    if (err.code === 'ENOENT') return {};
-    try {
-      const versao = fs.statSync(CHARACTERS_PATH).mtimeMs;
-      if (versao === copiaEstragada) return {};
-      copiaEstragada = versao;
-      const copia = `${CHARACTERS_PATH}.estragado-${Date.now()}`;
-      fs.copyFileSync(CHARACTERS_PATH, copia);
-      console.error(`❌ Erro ao ler personagens: ${err.message}. O arquivo foi guardado em ${path.basename(copia)} antes de ser gravado de novo.`);
-    } catch (erroCopia) {
-      console.error('❌ Erro ao ler personagens:', err.message);
-    }
+    if (err.code !== 'ENOENT') console.error('❌ Erro ao ler personagens:', err.message);
     return {};
   }
 }
@@ -370,14 +351,11 @@ function guardarCasas(sim) {
 
 // ================================================================================================================================================================================================================================================
 // guardarPersonagens
-// Relê o arquivo (o que foi mudado nele com o servidor ligado, como pelo
-// ferramentas/players-exemplo.js, continua), atualiza os jogadores online
-// e grava (primeiro num temporário, pra não estragar o arquivo se o
-// servidor cair no meio). Ao entrar, o personagem também vem do arquivo.
+// Atualiza os jogadores online e grava (primeiro num temporário, pra não
+// estragar o arquivo se o servidor cair no meio).
 
 function guardarPersonagens(personagens, jogadores) {
   if (jogadores.length === 0) return;
-  Object.assign(personagens, carregarPersonagens());
   for (const jogador of jogadores) {
     personagens[jogador.name.toLowerCase()] = jogador.toSave();
   }
