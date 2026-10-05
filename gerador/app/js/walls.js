@@ -10,8 +10,10 @@ import { fillFolderSelect, folderOf, setFolder, recipePath } from './folders.js'
 //   linha 1  x (horizontal) · y (vertical) · xy (canto) · yx (pilar)
 //   linha 2  porta x fechada · porta x aberta · porta y fechada · porta y aberta
 //   linha 3  arco x oeste · arco x leste · arco y norte · arco y sul
-//   linha 4  janela x · janela y
+//   linha 4  janela x · janela y · passagem x · passagem y
 // O arco ocupa 2 sqm: o x tem a metade oeste e a leste; o y, a norte e a sul.
+// A passagem é só o topo da parede (no Tibia, "sempre por cima"): o vão onde
+// a parede continua em cima e dá pra passar por baixo.
 // x corre ao longo de x (paredes de cima e de baixo da sala); y ao longo de
 // y (paredes dos lados); xy é o canto que fecha a sala embaixo à direita e yx
 // o pilar que fecha em cima à esquerda. Porta, arco e janela x ficam numa
@@ -40,21 +42,23 @@ const OPENING_PIECES = [
   { key: 'arco-y-norte', name: 'Arco Y · norte' },
   { key: 'arco-y-sul', name: 'Arco Y · sul' },
   { key: 'janela-x', name: 'Janela X' },
-  { key: 'janela-y', name: 'Janela Y' }
+  { key: 'janela-y', name: 'Janela Y' },
+  { key: 'passagem-x', name: 'Passagem X · só o topo' },
+  { key: 'passagem-y', name: 'Passagem Y · só o topo' }
 ];
 const PIECES = [...WALL_PIECES, ...DOOR_PIECES, ...OPENING_PIECES];
 
 // Sala da prévia (como no Tibia): pilar em cima à esquerda, a parede x de
 // cima indo até o fim à direita, a y da esquerda até o fim embaixo, e o canto
 // xy fechando embaixo à direita. Porta fechada em cima e à esquerda, aberta
-// embaixo e à direita; arco (as duas metades) e janela em cima e à
-// esquerda. Sem a peça escolhida, fica a parede.
+// embaixo e à direita; arco (as duas metades), janela e passagem em cima e
+// à esquerda. Sem a peça escolhida, fica a parede.
 const ROOM = [
   '..........',
-  '.pxdxabwx.',
+  '.pxdxabwq.',
   '.v......v.',
   '.e......E.',
-  '.v......v.',
+  '.Q......v.',
   '.A......v.',
   '.B......v.',
   '.W......v.',
@@ -65,7 +69,7 @@ const ROOM_PIECES = {
   c: ['xy'], x: ['x'], v: ['y'], p: ['yx'],
   d: ['porta-x', 'x'], D: ['porta-x-aberta', 'x'], e: ['porta-y', 'y'], E: ['porta-y-aberta', 'y'],
   a: ['arco-x-oeste', 'x'], b: ['arco-x-leste', 'x'], A: ['arco-y-norte', 'y'], B: ['arco-y-sul', 'y'],
-  w: ['janela-x', 'x'], W: ['janela-y', 'y']
+  w: ['janela-x', 'x'], W: ['janela-y', 'y'], q: ['passagem-x', 'x'], Q: ['passagem-y', 'y']
 };
 
 const walls = {
@@ -117,7 +121,7 @@ function status(text, kind) {
 // ================================================================================================================================================================================================================================================
 // groupOf
 // Grupo da peça: paredes (sugere pelo material), portas (sugere pelo par) ou
-// aberturas (arco e janela, escolhidos à mão).
+// aberturas (arco, janela e passagem, escolhidos à mão).
 
 function groupOf(key) {
   if (DOOR_PIECES.some(piece => piece.key === key)) return 'door';
