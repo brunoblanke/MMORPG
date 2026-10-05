@@ -8,6 +8,7 @@ import { serializeMapFromLayers, buildLayersFromMapData } from '../shared/map-fo
 const GRID = 10;
 
 setAssets([
+  { id: 'estrutura/pisos/agua', ferramenta: 'pisos', rotulo: 'Estrutura › Pisos', nome: 'agua', url: '/a.png', quadro: 32, quadros: 14, msPorQuadro: 200, variacoes: 4, pecas: [] },
   { id: 'estrutura/pisos/grama', ferramenta: 'pisos', rotulo: 'Estrutura › Pisos', nome: 'grama', url: '/g.png', quadro: 32, quadros: 1, variacoes: 4, pecas: [] },
   { id: 'estrutura/paredes/tijolo', ferramenta: 'paredes', rotulo: 'Estrutura › Paredes', nome: 'tijolo', url: '/t.png', quadro: 64, quadros: 1, ordem: null, pecas: ['x', 'porta-x-aberta'] },
   { id: 'itens/recipientes/caixa', ferramenta: 'objetos', rotulo: 'Itens › Recipientes', nome: 'caixa', url: '/c.png', quadro: 32, quadros: 2, propriedades: { bloqueia: false, move: true, altura: true } },
@@ -27,11 +28,13 @@ test('a pasta da folha diz o que ela é', () => {
 });
 
 test('cada peça sai do lugar certo da folha', () => {
-  assert.deepEqual(spriteFrame('estrutura/pisos/grama#meio-3'), { url: '/g.png', x: 64, y: 0, size: 32, frames: 1 });
-  assert.deepEqual(spriteFrame('estrutura/pisos/grama#nl'), { url: '/g.png', x: 64, y: 64, size: 32, frames: 1 });
-  assert.deepEqual(spriteFrame('estrutura/paredes/tijolo#porta-x-aberta'), { url: '/t.png', x: 64, y: 64, size: 64, frames: 1 });
-  assert.deepEqual(spriteFrame('itens/recipientes/caixa'), { url: '/c.png', x: 0, y: 0, size: 32, frames: 2 });
+  assert.deepEqual(spriteFrame('estrutura/pisos/grama#meio-3'), { url: '/g.png', x: 64, y: 0, size: 32, frames: 1, ms: 0 });
+  assert.deepEqual(spriteFrame('estrutura/pisos/grama#nl'), { url: '/g.png', x: 64, y: 64, size: 32, frames: 1, ms: 0 });
+  assert.deepEqual(spriteFrame('estrutura/paredes/tijolo#porta-x-aberta'), { url: '/t.png', x: 64, y: 64, size: 64, frames: 1, ms: 0 });
+  assert.deepEqual(spriteFrame('itens/recipientes/caixa'), { url: '/c.png', x: 0, y: 0, size: 32, frames: 2, ms: 0 });
   assert.equal(spriteFrame('itens/nada/nada'), null);
+  assert.deepEqual(spriteFrame('estrutura/pisos/agua#meio-2'), { url: '/a.png', x: 14 * 32, y: 0, size: 32, frames: 14, ms: 200 });
+  assert.deepEqual(spriteFrame('estrutura/pisos/agua#l'), { url: '/a.png', x: 3 * 14 * 32, y: 32, size: 32, frames: 14, ms: 200 });
 });
 
 test('parede e objeto gravam no mapa o comportamento deles', () => {

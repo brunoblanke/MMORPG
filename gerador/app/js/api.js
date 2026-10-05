@@ -53,7 +53,7 @@ export async function fetchBorderSuggestion(groundIds) {
 
 // ================================================================================================================================================================================================================================================
 // fetchItemInfo
-// { id, categoria, tamanho, quadros, variacoes, bloqueia, move, altura, pegavel, empilhavel }.
+// { id, categoria, tamanho, quadros, msPorQuadro, variacoes, bloqueia, move, altura, pegavel, empilhavel }.
 
 export async function fetchItemInfo(id) {
   return (await requestJson(`/api/item/${id}`)).item;

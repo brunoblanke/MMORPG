@@ -48,7 +48,7 @@ export class SpriteRegistry {
     let sheet = null;
     if (frame) {
       sheet = new SpriteSheet(frame.url, frame.size, frame.size, frame.frames, ['idle'], { x: frame.x, y: frame.y });
-      if (frame.frames > 1) sheet._frameDuration = ANIMATION_CYCLE_MS / frame.frames;
+      if (frame.frames > 1) sheet._frameDuration = frame.ms || ANIMATION_CYCLE_MS / frame.frames;
     }
     this.objectSpriteSheets.set(type, sheet);
     return sheet;

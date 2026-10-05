@@ -155,7 +155,8 @@ export function doorType(type, open) {
 // ================================================================================================================================================================================================================================================
 // setAssets
 // Lista de /api/sprites: [{ id, ferramenta, grupo, pasta, nome, rotulo, url,
-// quadro, quadros, variacoes, pecas, propriedades, cadaver, direcoes, sqms }].
+// quadro, quadros, msPorQuadro, variacoes, pecas, propriedades, cadaver,
+// direcoes, sqms }].
 
 export function setAssets(list) {
   assets.clear();
@@ -439,9 +440,10 @@ export function extraSquares(type) {
 
 // ================================================================================================================================================================================================================================================
 // spriteFrame
-// Onde desenhar a peça na folha: { url, x, y, size, frames } — x, y do 1º
-// quadro; os outros quadros seguem à direita. Objeto que gira: uma linha por
-// direção. null se a folha não existe.
+// Onde desenhar a peça na folha: { url, x, y, size, frames, ms } — x, y do
+// 1º quadro; os outros quadros seguem à direita, um a cada ms (0: o ciclo
+// padrão). Piso animado: cada peça com os quadros dela lado a lado. Objeto
+// que gira: uma linha por direção. null se a folha não existe.
 
 export function spriteFrame(type) {
   const { asset: assetId, piece } = splitType(type);
@@ -451,12 +453,13 @@ export function spriteFrame(type) {
   if (asset.ferramenta === 'pisos') {
     const middle = /^meio-(\d+)$/.exec(piece || 'meio-1');
     const [col, row] = middle ? [Math.min(Number(middle[1]), asset.variacoes || 1) - 1, 0] : (FLOOR_CELLS[piece] || [0, 0]);
-    return { url: asset.url, x: col * size, y: row * size, size, frames: 1 };
+    const frames = asset.quadros || 1;
+    return { url: asset.url, x: col * frames * size, y: row * size, size, frames, ms: asset.msPorQuadro || 0 };
   }
   if (asset.ferramenta === 'paredes') {
     const index = Math.max(0, (asset.ordem || WALL_PIECES).indexOf(piece || 'x'));
-    return { url: asset.url, x: (index % 4) * size, y: Math.floor(index / 4) * size, size, frames: 1 };
+    return { url: asset.url, x: (index % 4) * size, y: Math.floor(index / 4) * size, size, frames: 1, ms: 0 };
   }
   const row = Math.max(0, objectDirections(assetId).indexOf(objectDirection(type)));
-  return { url: asset.url, x: 0, y: row * size, size, frames: asset.quadros || 1 };
+  return { url: asset.url, x: 0, y: row * size, size, frames: asset.quadros || 1, ms: 0 };
 }
