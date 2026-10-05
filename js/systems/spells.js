@@ -111,11 +111,30 @@ export class SpellController {
       this.showEffect(target.x, target.y, spell.element);
       return null;
     }
+    if (spell.kind === 'blast') return this.blast(player, spell, now);
     const level = getLevel(player);
     for (const enemy of this.sim.enemies) {
       if (enemy.isAlive() && getLevel(enemy) === level && isPositionAdjacentTo(player.x, player.y, enemy.x, enemy.y)) {
         this.hurt(player, enemy, this.roll(spell.formula, player), now);
       }
+    }
+    return null;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // blast
+  // Magia de área em volta do player (exevo gran mas flam): a animação em
+  // cada sqm com chão da área e o dano em cada criatura nela.
+
+  blast(player, spell, now) {
+    const z = player.z || 0;
+    const world = this.sim.world;
+    const tiles = AREAS[spell.area].map(([dx, dy]) => [player.x + dx, player.y + dy])
+      .filter(([x, y]) => (x !== player.x || y !== player.y) && world.hasFloorAt(x, y, z) && !world.hasBlockerAt(x, y, z));
+    const inArea = new Set(tiles.map(([x, y]) => `${x},${y}`));
+    this.showEffect(player.x, player.y, spell.effect, tiles);
+    for (const enemy of this.sim.enemies) {
+      if (enemy.isAlive() && (enemy.z || 0) === z && inArea.has(`${enemy.x},${enemy.y}`)) this.hurt(player, enemy, this.roll(spell.formula, player), now, spell.element);
     }
     return null;
   }
