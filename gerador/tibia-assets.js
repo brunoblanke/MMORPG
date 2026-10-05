@@ -180,6 +180,7 @@ class TibiaAssets {
       categoria: categoriaDoItem(thing),
       tamanho: Math.max(thing.w, thing.h) * SPRITE_SIZE,
       quadros: thing.anim,
+      msPorQuadro: thing.duracoes && thing.duracoes.length ? Math.round(thing.duracoes.reduce((a, b) => a + b, 0) / thing.duracoes.length) : 0,
       variacoes: totalDeVariacoes(thing),
       variacoesSemCamadas: thing.px * thing.py * thing.pz,
       bloqueia: temFlag(thing, FLAG.UNPASSABLE),

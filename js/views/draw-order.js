@@ -1,6 +1,7 @@
 // js/views/draw-order.js
 
 import { levelOf, getEntityLevel } from '../core/geometry.js';
+import { isOnTopType, objectIdType } from '../../shared/assets.js';
 
 // ================================================================================================================================================================================================================================================
 // getRoofLevel
@@ -46,7 +47,8 @@ export function getRoofLevel(player, world) {
 // ================================================================================================================================================================================================================================================
 // compareDrawables
 // No mesmo andar e sqm, player e inimigo ficam sempre por cima de itens,
-// cadáveres e objetos; só o que está num andar acima passa por cima deles.
+// cadáveres e objetos, menos da peça "por cima" (passagem: o topo da parede
+// sobre o vão); fora isso, só o que está num andar acima passa por cima deles.
 
 function compareDrawables(a, b) {
   if (a.level !== b.level) return a.level - b.level;
@@ -59,6 +61,7 @@ function compareDrawables(a, b) {
   const tileXB = Math.round(b.renderX);
   if (tileXA !== tileXB) return tileXA - tileXB;
 
+  if (!!a.onTop !== !!b.onTop) return a.onTop ? 1 : -1;
   if (!!a.isCreature !== !!b.isCreature) return a.isCreature ? 1 : -1;
 
   const orderA = a.order || 0;
@@ -99,6 +102,7 @@ export function prepareDrawables(gameState) {
       blocksMovement: obj.blocksMovement || false,
       entity: obj,
       order: obj.order || 0,
+      onTop: isOnTopType(objectIdType(obj.id)),
       isFloor: !!obj.floorType
     }, obj);
   }

@@ -21,11 +21,12 @@ const FLOOR_CELLS = {
 };
 
 // Folha de parede (64 px, 4 colunas), na ordem em que o gerador grava.
+// Passagem: só o topo da parede (o vão por onde se passa por baixo).
 export const WALL_PIECES = [
   'x', 'y', 'xy', 'yx',
   'porta-x', 'porta-x-aberta', 'porta-y', 'porta-y-aberta',
   'arco-x-oeste', 'arco-x-leste', 'arco-y-norte', 'arco-y-sul',
-  'janela-x', 'janela-y'
+  'janela-x', 'janela-y', 'passagem-x', 'passagem-y'
 ];
 export const WALL_PIECE_NAMES = {
   x: 'X', y: 'Y', xy: 'Canto XY', yx: 'Pilar YX',
@@ -33,18 +34,20 @@ export const WALL_PIECE_NAMES = {
   'porta-y': 'Porta Y fechada', 'porta-y-aberta': 'Porta Y aberta',
   'arco-x-oeste': 'Arco X oeste', 'arco-x-leste': 'Arco X leste',
   'arco-y-norte': 'Arco Y norte', 'arco-y-sul': 'Arco Y sul',
-  'janela-x': 'Janela X', 'janela-y': 'Janela Y'
+  'janela-x': 'Janela X', 'janela-y': 'Janela Y',
+  'passagem-x': 'Passagem X', 'passagem-y': 'Passagem Y'
 };
 
-// Parede: bloqueia (menos porta aberta e arco); tem altura (dá pra empilhar
-// em volta) só a parede cheia, a porta fechada e a janela.
+// Parede: bloqueia (menos porta aberta, arco e passagem); tem altura (dá
+// pra empilhar em volta) só a parede cheia, a porta fechada e a janela.
 const WALL_PROPS = {
   x: [true, true], y: [true, true], xy: [false, true], yx: [false, true],
   'porta-x': [true, true], 'porta-y': [true, true],
   'porta-x-aberta': [false, false], 'porta-y-aberta': [false, false],
   'arco-x-oeste': [false, false], 'arco-x-leste': [false, false],
   'arco-y-norte': [false, false], 'arco-y-sul': [false, false],
-  'janela-x': [true, true], 'janela-y': [true, true]
+  'janela-x': [true, true], 'janela-y': [true, true],
+  'passagem-x': [false, false], 'passagem-y': [false, false]
 };
 
 const assets = new Map();
@@ -155,7 +158,8 @@ export function doorType(type, open) {
 // ================================================================================================================================================================================================================================================
 // setAssets
 // Lista de /api/sprites: [{ id, ferramenta, grupo, pasta, nome, rotulo, url,
-// quadro, quadros, variacoes, pecas, propriedades, cadaver, direcoes, sqms }].
+// quadro, quadros, msPorQuadro, variacoes, pecas, propriedades, cadaver,
+// direcoes, sqms }].
 
 export function setAssets(list) {
   assets.clear();
@@ -236,8 +240,8 @@ export function floorHasPiece(type, piece) {
 
 // ================================================================================================================================================================================================================================================
 // blocksThrow
-// O que barra item jogado: parede (Estrutura › Paredes), menos janela e porta
-// aberta. Árvore, pedra e outros objetos que bloqueiam a passagem de player e
+// O que barra item jogado: parede (Estrutura › Paredes), menos janela,
+// passagem e porta aberta. Árvore, pedra e outros objetos que bloqueiam a passagem de player e
 // inimigos deixam o item passar por cima.
 
 export const MAGIC_WALL = 'itens/itens-encantados/magic-wall';
@@ -246,7 +250,17 @@ export function blocksThrow(type) {
   const { asset, piece } = splitType(type);
   if (asset === MAGIC_WALL) return true;
   if (!asset.startsWith(WALL_FOLDER)) return false;
-  return !/^janela|^porta-.*-aberta$/.test(piece || '');
+  return !/^janela|^passagem|^porta-.*-aberta$/.test(piece || '');
+}
+
+// ================================================================================================================================================================================================================================================
+// isOnTopType
+// Peça que fica por cima de quem está no sqm (a passagem: o topo da parede
+// por onde se passa por baixo), como o "sempre por cima" do Tibia.
+
+export function isOnTopType(type) {
+  const { asset, piece } = splitType(type);
+  return isWallType(type) && /^passagem-/.test(splitType(type).piece || '');
 }
 
 // ================================================================================================================================================================================================================================================
@@ -439,9 +453,10 @@ export function extraSquares(type) {
 
 // ================================================================================================================================================================================================================================================
 // spriteFrame
-// Onde desenhar a peça na folha: { url, x, y, size, frames } — x, y do 1º
-// quadro; os outros quadros seguem à direita. Objeto que gira: uma linha por
-// direção. null se a folha não existe.
+// Onde desenhar a peça na folha: { url, x, y, size, frames, ms } — x, y do
+// 1º quadro; os outros quadros seguem à direita, um a cada ms (0: o ciclo
+// padrão). Piso animado: cada peça com os quadros dela lado a lado. Objeto
+// que gira: uma linha por direção. null se a folha não existe.
 
 export function spriteFrame(type) {
   const { asset: assetId, piece } = splitType(type);
@@ -451,12 +466,13 @@ export function spriteFrame(type) {
   if (asset.ferramenta === 'pisos') {
     const middle = /^meio-(\d+)$/.exec(piece || 'meio-1');
     const [col, row] = middle ? [Math.min(Number(middle[1]), asset.variacoes || 1) - 1, 0] : (FLOOR_CELLS[piece] || [0, 0]);
-    return { url: asset.url, x: col * size, y: row * size, size, frames: 1 };
+    const frames = asset.quadros || 1;
+    return { url: asset.url, x: col * frames * size, y: row * size, size, frames, ms: asset.msPorQuadro || 0 };
   }
   if (asset.ferramenta === 'paredes') {
     const index = Math.max(0, (asset.ordem || WALL_PIECES).indexOf(piece || 'x'));
-    return { url: asset.url, x: (index % 4) * size, y: Math.floor(index / 4) * size, size, frames: 1 };
+    return { url: asset.url, x: (index % 4) * size, y: Math.floor(index / 4) * size, size, frames: 1, ms: 0 };
   }
   const row = Math.max(0, objectDirections(assetId).indexOf(objectDirection(type)));
-  return { url: asset.url, x: 0, y: row * size, size, frames: asset.quadros || 1 };
+  return { url: asset.url, x: 0, y: row * size, size, frames: asset.quadros || 1, ms: 0 };
 }

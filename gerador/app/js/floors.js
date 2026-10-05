@@ -1,6 +1,6 @@
 // gerador/app/js/floors.js
 
-import { spriteUrl, saveProject, fetchBorderSuggestion } from './api.js';
+import { spriteUrl, saveProject, fetchBorderSuggestion, fetchItemInfo } from './api.js';
 import { itemCategory } from './picker.js';
 import { normalizeName } from './common.js';
 import { refreshProjects } from './projects.js';
@@ -16,10 +16,14 @@ import { fillFolderSelect, folderOf, setFolder, recipePath } from './folders.js'
 // borda do Tibia (ex.: grama 4531–4542), pra "Preencher em sequência" encaixar
 // as 12 de uma vez. Cada espaço vem de um item do Tibia (número e variação)
 // ou de um PNG enviado.
+// Piso animado (água…): cada peça vem com todos os quadros da animação do
+// Tibia, lado a lado na folha (a peça da coluna c ocupa as colunas c × quadros
+// até c × quadros + quadros - 1); peça parada repete o desenho.
 
 const TILE = 32;
 const CATEGORY = 'pisos';
 const MAX_VARIANTS = 4;
+const DEFAULT_FRAME_MS = 200;
 
 // Diagramas: onde fica o piso (x, y de -1 a 1) em volta da peça (no centro).
 const TOP = [[-1, -1], [0, -1], [1, -1]];
@@ -81,6 +85,7 @@ const PREVIEW_SHAPE = [
 const floors = {
   slots: {},
   images: new Map(),
+  frameMs: new Map(),
   selected: 'meio-1',
   name: '',
   path: '',
@@ -132,6 +137,11 @@ export function initFloors() {
     floors.damage = Math.max(1, Math.floor(Number(damageEl.value)) || 1);
     floors.dirty = true;
   });
+  setInterval(() => {
+    if (sheetFrameCount() < 2) return;
+    composeSheet(sheetCanvas, currentFrame());
+    drawGroundPreview();
+  }, 50);
   render();
 }
 
@@ -290,24 +300,68 @@ function setSlot(key, source, redraw = true) {
 
 // ================================================================================================================================================================================================================================================
 // loadSlotImage
+// Carrega o desenho do espaço: do Tibia, todos os quadros da animação (com o
+// tempo de cada um); de um PNG, a imagem.
 
-function loadSlotImage(key, source) {
-  const img = new Image();
-  img.onload = () => {
+async function loadSlotImage(key, source) {
+  const done = () => {
     if (floors.slots[key] === source) render();
   };
-  img.src = source.png || spriteUrl(source.tibia.id, source.tibia.variacao);
-  floors.images.set(source, img);
+  const load = (url) => {
+    const img = new Image();
+    img.onload = done;
+    img.src = url;
+    return img;
+  };
+  if (source.png) {
+    floors.images.set(source, [load(source.png)]);
+    return;
+  }
+  floors.images.set(source, [load(spriteUrl(source.tibia.id, source.tibia.variacao))]);
+  try {
+    const info = await fetchItemInfo(source.tibia.id);
+    if (!info || info.quadros < 2 || floors.slots[key] !== source) return;
+    floors.frameMs.set(source, info.msPorQuadro || DEFAULT_FRAME_MS);
+    floors.images.set(source, Array.from({ length: info.quadros }, (_, frame) => load(spriteUrl(source.tibia.id, source.tibia.variacao, frame))));
+  } catch (error) {
+    setStatus(`Não deu pra ler os quadros do item ${source.tibia.id}: ${error.message}`, 'error');
+  }
 }
 
 // ================================================================================================================================================================================================================================================
-// slotImage
-// Imagem já carregada do espaço, ou null.
+// slotImage / slotFrames
+// O desenho já carregado do espaço (o quadro frame, que repete se ele tiver
+// menos quadros), ou null. slotFrames: quantos quadros ele tem.
 
-function slotImage(key) {
+function slotImage(key, frame = 0) {
   const source = floors.slots[key];
-  const img = source && floors.images.get(source);
+  const images = source && floors.images.get(source);
+  const img = images && images[frame % images.length];
   return img && img.complete && img.naturalWidth ? img : null;
+}
+
+function slotFrames(key) {
+  const source = floors.slots[key];
+  const images = source && floors.images.get(source);
+  return images ? images.length : 0;
+}
+
+// ================================================================================================================================================================================================================================================
+// sheetFrameCount / frameMs / currentFrame
+// Quadros da folha (o espaço com mais quadros), o tempo de cada um e o
+// quadro que a prévia mostra agora.
+
+function sheetFrameCount() {
+  return Math.max(1, ...Object.keys(floors.slots).map(slotFrames));
+}
+
+function frameMs() {
+  const times = Object.values(floors.slots).map(source => floors.frameMs.get(source)).filter(Boolean);
+  return times.length ? Math.max(...times) : DEFAULT_FRAME_MS;
+}
+
+function currentFrame() {
+  return Math.floor(performance.now() / frameMs()) % sheetFrameCount();
 }
 
 // ================================================================================================================================================================================================================================================
@@ -346,7 +400,7 @@ function render() {
     if (img) drawPiece(ctx, img, 0, 0);
     button.querySelector('.slot-source').textContent = !source ? '' : source.png ? 'PNG' : `#${source.tibia.id}${source.tibia.variacao ? ` v${source.tibia.variacao + 1}` : ''}`;
   }
-  composeSheet(sheetCanvas);
+  composeSheet(sheetCanvas, currentFrame());
   drawGroundPreview();
 }
 
@@ -360,20 +414,25 @@ function middleKeysInUse() {
 
 // ================================================================================================================================================================================================================================================
 // composeSheet
-// A folha final: meio compactado à esquerda da 1ª linha; bordas nas posições fixas.
+// A folha: meio compactado à esquerda da 1ª linha; bordas nas posições fixas.
+// Com frame, só aquele quadro da animação (a prévia, 4 × 4); sem, a folha
+// inteira, com os quadros de cada peça lado a lado.
 
-function composeSheet(canvas) {
+function composeSheet(canvas, frame = null) {
+  const count = frame === null ? sheetFrameCount() : 1;
+  canvas.width = 4 * count * TILE;
+  canvas.height = 4 * TILE;
   const ctx = canvas.getContext('2d');
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  middleKeysInUse().forEach((key, column) => {
-    const img = slotImage(key);
-    if (img) drawPiece(ctx, img, column * TILE, 0);
-  });
+  const place = (key, column, row) => {
+    for (let f = 0; f < count; f++) {
+      const img = slotImage(key, frame === null ? f : frame);
+      if (img) drawPiece(ctx, img, (column * count + f) * TILE, row * TILE);
+    }
+  };
+  middleKeysInUse().forEach((key, column) => place(key, column, 0));
   FLOOR_ROWS.slice(1).forEach((row, i) => {
-    row.slots.forEach((slot, column) => {
-      const img = slotImage(slot.key);
-      if (img) drawPiece(ctx, img, column * TILE, (i + 1) * TILE);
-    });
+    row.slots.forEach((slot, column) => place(slot.key, column, i + 1));
   });
 }
 
@@ -421,7 +480,8 @@ function drawGroundPreview() {
   const ctx = groundCanvas.getContext('2d');
   ctx.clearRect(0, 0, groundCanvas.width, groundCanvas.height);
   const isFloor = (x, y) => PREVIEW_SHAPE[y] && PREVIEW_SHAPE[y][x] === '#';
-  const middle = middleKeysInUse().map(slotImage).filter(Boolean);
+  const frame = currentFrame();
+  const middle = middleKeysInUse().map(key => slotImage(key, frame)).filter(Boolean);
 
   for (let y = 0; y < PREVIEW_SHAPE.length; y++) {
     for (let x = 0; x < PREVIEW_SHAPE[y].length; x++) {
@@ -432,7 +492,7 @@ function drawGroundPreview() {
         continue;
       }
       for (const key of borderPiecesAt(isFloor, x, y)) {
-        const img = slotImage(key);
+        const img = slotImage(key, frame);
         if (img) drawPiece(ctx, img, x * TILE, y * TILE);
       }
     }
@@ -453,7 +513,7 @@ async function save() {
     setStatus('Preencha pelo menos um espaço do meio.', 'error');
     return;
   }
-  const loading = Object.keys(floors.slots).filter(key => !slotImage(key));
+  const loading = Object.keys(floors.slots).filter(key => Array.from({ length: slotFrames(key) }, (_, f) => slotImage(key, f)).some(img => !img));
   if (loading.length) {
     setStatus('Espere as imagens terminarem de carregar.', 'error');
     return;
@@ -469,12 +529,12 @@ async function save() {
   floors.saving = true;
   document.getElementById('saveBtn').disabled = true;
   const canvas = document.createElement('canvas');
-  canvas.width = sheetCanvas.width;
-  canvas.height = sheetCanvas.height;
   composeSheet(canvas);
+  const frames = sheetFrameCount();
   const recipe = {
     formato: {
       quadro: TILE,
+      ...(frames > 1 ? { quadros: frames, msPorQuadro: frameMs() } : {}),
       linhas: [
         `meio: ${middleKeysInUse().length} variações`,
         FLOOR_ROWS[1].slots.map(s => s.key).join(' '),
@@ -511,6 +571,7 @@ async function save() {
 function openRecipe(recipe) {
   floors.slots = {};
   floors.images.clear();
+  floors.frameMs.clear();
   for (const [key, source] of Object.entries(recipe.slots || {})) {
     if (!ALL_SLOTS.some(slot => slot.key === key)) continue;
     floors.slots[key] = source;

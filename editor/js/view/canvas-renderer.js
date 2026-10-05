@@ -84,7 +84,7 @@ function drawPiece(type, px, py, fallback = null, target = ctx, count = 1) {
   const drawY = py + TILE - (frame ? frame.size : TILE);
   if (entry && entry.status === 'ok') {
     const asset = getAsset(type);
-    const duration = ANIMATION_CYCLE_MS / frame.frames;
+    const duration = frame.ms || ANIMATION_CYCLE_MS / frame.frames;
     const rect = asset && (asset.pilha || asset.respingo)
       ? { sx: Math.min(asset.pilha ? stackFrame(count) : 0, frame.frames - 1) * frame.size, sy: 0 }
       : pickFrameRect(['idle'], frame.size, frame.size, frame.frames, 'idle', performance.now(), duration);

@@ -1,6 +1,8 @@
 {
   "formato": {
     "quadro": 32,
+    "quadros": 14,
+    "msPorQuadro": 200,
     "linhas": [
       "meio: 4 variações",
       "s o n l",

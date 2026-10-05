@@ -24,7 +24,7 @@ setAssets([
 ]);
 
 test('cada direção é uma linha da folha; sem direção (ou uma que não tem) vale a 1ª', () => {
-  assert.deepEqual(spriteFrame(`${CHEST}#oeste`), { url: `/${CHEST}.png`, x: 0, y: 64, size: 32, frames: 1 });
+  assert.deepEqual(spriteFrame(`${CHEST}#oeste`), { url: `/${CHEST}.png`, x: 0, y: 64, size: 32, frames: 1, ms: 0 });
   assert.equal(spriteFrame(CHEST).y, 0);
   assert.equal(objectDirection(`${CHEST}#sul`), 'norte');
 });

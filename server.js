@@ -127,6 +127,7 @@ function descreverSprite(id, grupo, pasta, nome, receita) {
     url: `/gerador/saida/${id}.png`,
     quadro: formato.quadro || 32,
     quadros: formato.quadros || 1,
+    msPorQuadro: formato.msPorQuadro || 0,
     pilha: !!formato.pilha,
     respingo: !!formato.respingo,
     direcoes: Array.isArray(formato.direcoes) && formato.direcoes.length ? formato.direcoes : null,
