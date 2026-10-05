@@ -49,6 +49,14 @@ const EDGE_FULL = 0.75;
 const OUTER_CORNER_MAX_PIXELS = 600;
 const MAX_BORDER_COLOR_DISTANCE = 35;
 
+// Chão feito de itens separados (padraoDeItens): até 9 peças, no máximo 4 por
+// lado, de cor parecida; vale se as emendas não forem mais que 15% piores que
+// o meio das peças.
+const PATTERN_MAX_PIECES = 9;
+const PATTERN_MAX_SIDE = 4;
+const PATTERN_COLOR_DISTANCE = 35;
+const PATTERN_SEAM_TOLERANCE = 1.15;
+
 // Parede: as 4 peças, cada uma com um item do Tibia de molde (o formato é o
 // mesmo em todo material): x horizontal, y vertical, xy canto, yx pilar. Uma
 // parede é daquela peça se o desenho coincide com o molde pelo menos tanto.
@@ -191,6 +199,83 @@ class TibiaAssets {
       empilhavel: temFlag(thing, FLAG.STACKABLE),
       container: temFlag(thing, FLAG.CONTAINER)
     };
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // padraoDeItens
+  // Chão do Tibia feito de itens separados que juntos formam um bloco sem
+  // costura (ex.: areia 959–966, 2 × 4): os vizinhos de número do mesmo tipo
+  // e cor parecida, no arranjo em que as emendas ficam tão suaves quanto o
+  // meio de cada peça. { colunas, linhas, ids } (ids linha a linha) ou null.
+
+  padraoDeItens(id) {
+    const simples = (outro) => {
+      const thing = this.things.item.get(outro);
+      return thing && categoriaDoItem(thing) === 'ground' && thing.w === 1 && thing.h === 1 && thing.px * thing.py === 1;
+    };
+    if (!simples(id)) return null;
+    const cor = (item) => corMedia(this.quadro(this.things.item.get(item), {}));
+    const parecido = (a, b) => simples(b) && distanciaDeCor(cor(a), cor(b)) <= PATTERN_COLOR_DISTANCE;
+    let inicio = id;
+    let fim = id;
+    while (parecido(inicio, inicio - 1) && id - inicio < PATTERN_MAX_PIECES) inicio--;
+    while (parecido(fim, fim + 1) && fim - id < PATTERN_MAX_PIECES) fim++;
+    for (let total = Math.min(PATTERN_MAX_PIECES, fim - inicio + 1); total >= 2; total--) {
+      for (let primeiro = Math.max(inicio, id - total + 1); primeiro <= Math.min(id, fim - total + 1); primeiro++) {
+        const padrao = this.blocoSemCostura(Array.from({ length: total }, (_, i) => primeiro + i));
+        if (padrao) return padrao;
+      }
+    }
+    return null;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // blocoSemCostura
+  // O arranjo das peças (até 4 por lado) em que as emendas, repetindo o
+  // bloco, ficam tão suaves quanto o meio de cada peça, ou null.
+
+  blocoSemCostura(ids) {
+    const total = ids.length;
+    const pixels = new Map(ids.map(item => [item, this.quadro(this.things.item.get(item), {}).pixels]));
+    const diferenca = (a, ia, b, ib) => Math.abs(a[ia] - b[ib]) + Math.abs(a[ia + 1] - b[ib + 1]) + Math.abs(a[ia + 2] - b[ib + 2]);
+    const emenda = (a, b, horizontal) => {
+      let soma = 0;
+      for (let k = 0; k < SPRITE_SIZE; k++) {
+        soma += horizontal
+          ? diferenca(pixels.get(a), (k * SPRITE_SIZE + SPRITE_SIZE - 1) * 4, pixels.get(b), k * SPRITE_SIZE * 4)
+          : diferenca(pixels.get(a), ((SPRITE_SIZE - 1) * SPRITE_SIZE + k) * 4, pixels.get(b), k * 4);
+      }
+      return soma / SPRITE_SIZE;
+    };
+    let interno = 0;
+    for (const item of ids) {
+      for (let k = 0; k < SPRITE_SIZE; k++) interno += diferenca(pixels.get(item), (k * SPRITE_SIZE + 15) * 4, pixels.get(item), (k * SPRITE_SIZE + 16) * 4) / SPRITE_SIZE;
+    }
+    interno /= total;
+    const direita = new Map(ids.map(a => [a, new Map(ids.map(b => [b, emenda(a, b, true)]))]));
+    const abaixo = new Map(ids.map(a => [a, new Map(ids.map(b => [b, emenda(a, b, false)]))]));
+
+    let melhor = null;
+    for (let colunas = 1; colunas <= PATTERN_MAX_SIDE; colunas++) {
+      if (total % colunas || total / colunas > PATTERN_MAX_SIDE) continue;
+      const linhas = total / colunas;
+      const custo = (ordem) => {
+        let soma = 0;
+        for (let y = 0; y < linhas; y++) {
+          for (let x = 0; x < colunas; x++) {
+            const a = ordem[y * colunas + x];
+            soma += direita.get(a).get(ordem[y * colunas + (x + 1) % colunas]) + abaixo.get(a).get(ordem[((y + 1) % linhas) * colunas + x]);
+          }
+        }
+        return soma / (2 * total);
+      };
+      for (const ordem of permutacoes(ids.slice(1), [ids[0]])) {
+        const valor = custo(ordem);
+        if (!melhor || valor < melhor.valor) melhor = { valor, colunas, linhas, ids: ordem };
+      }
+    }
+    if (!melhor || melhor.valor > interno * PATTERN_SEAM_TOLERANCE) return null;
+    return { colunas: melhor.colunas, linhas: melhor.linhas, ids: melhor.ids };
   }
 
   // ================================================================================================================================================================================================================================================
@@ -811,6 +896,20 @@ function colar(folha, larguraFolha, quadro, x, y) {
 
 function paletaDeRoupa() {
   return Array.from({ length: 133 }, (_, i) => '#' + corDaPaleta(i).map(v => v.toString(16).padStart(2, '0')).join(''));
+}
+
+// ================================================================================================================================================================================================================================================
+// permutacoes
+// Todas as ordens de resto, cada uma depois de prefixo (gerador).
+
+function* permutacoes(resto, prefixo) {
+  if (!resto.length) {
+    yield prefixo;
+    return;
+  }
+  for (let i = 0; i < resto.length; i++) {
+    yield* permutacoes([...resto.slice(0, i), ...resto.slice(i + 1)], [...prefixo, resto[i]]);
+  }
 }
 
 // ================================================================================================================================================================================================================================================

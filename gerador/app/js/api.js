@@ -52,6 +52,15 @@ export async function fetchBorderSuggestion(groundIds) {
 }
 
 // ================================================================================================================================================================================================================================================
+// fetchPattern
+// O bloco sem costura do chão feito de itens separados: { colunas, linhas,
+// ids } ou null.
+
+export async function fetchPattern(id) {
+  return (await requestJson(`/api/padrao/${id}`)).padrao;
+}
+
+// ================================================================================================================================================================================================================================================
 // fetchItemInfo
 // { id, categoria, tamanho, quadros, msPorQuadro, variacoes, bloqueia, move, altura, pegavel, empilhavel }.
 

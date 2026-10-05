@@ -32,6 +32,7 @@ app.get('/api/bordas-sugeridas', bordasSugeridas);
 app.get('/api/paredes-sugeridas', paredesSugeridas);
 app.get('/api/portas-sugeridas', portasSugeridas);
 app.get('/api/item/:id', infoDoItem);
+app.get('/api/padrao/:id', padraoDeItens);
 app.get('/api/criatura/:id/miniatura', miniaturaCriatura);
 app.get('/api/criatura/:id/folha', folhaDeCriatura);
 app.get('/api/paleta', (req, res) => res.json({ success: true, cores: paletaDeRoupa() }));
@@ -201,6 +202,19 @@ function infoDoItem(req, res) {
     const info = arquivosTibia().infoDoItem(parseInt(req.params.id, 10));
     if (!info) return res.status(404).json({ success: false, message: 'Item não existe.' });
     res.json({ success: true, item: info });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+}
+
+// ================================================================================================================================================================================================================================================
+// padraoDeItens
+// /api/padrao/959 → { padrao: { colunas, linhas, ids } }: o chão feito de
+// itens separados que formam um bloco sem costura, ou padrao null.
+
+function padraoDeItens(req, res) {
+  try {
+    res.json({ success: true, padrao: arquivosTibia().padraoDeItens(parseInt(req.params.id, 10)) });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }

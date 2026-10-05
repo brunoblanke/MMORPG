@@ -1,6 +1,6 @@
 // gerador/app/js/floors.js
 
-import { spriteUrl, saveProject, fetchBorderSuggestion, fetchItemInfo } from './api.js';
+import { spriteUrl, saveProject, fetchBorderSuggestion, fetchItemInfo, fetchPattern } from './api.js';
 import { itemCategory } from './picker.js';
 import { normalizeName } from './common.js';
 import { refreshProjects } from './projects.js';
@@ -273,30 +273,37 @@ export async function useAllVariations(id, total) {
 
 // ================================================================================================================================================================================================================================================
 // usePattern / clearPattern
-// Chão do Tibia que muda pela posição vira padrão: o meio fica com o 1º
-// pedaço e o bloco inteiro (até 4 × 4) vai pros espaços 'padrao-<c>-<l>'.
-// false se o item não é chão com padrão.
+// Chão do Tibia em padrão vira padrão do piso: o bloco inteiro (até 4 × 4)
+// vai pros espaços 'padrao-<c>-<l>' e o meio fica com o 1º pedaço. O bloco
+// vem das variações do item (areia 231: 4 × 4 pela posição) ou de itens
+// separados que emendam sem costura (areia 959–966: 2 × 4, o servidor acha o
+// arranjo). false se o chão não é padrão.
 
 async function usePattern(id) {
-  let info;
+  let pieces = null;
   try {
-    info = await fetchItemInfo(id);
+    const info = await fetchItemInfo(id);
+    const [cols, rows] = (info && info.categoria === 'ground' && info.padrao) || [1, 1];
+    if (cols * rows > 1) {
+      pieces = { cols: Math.min(cols, PATTERN_MAX), rows: Math.min(rows, PATTERN_MAX), source: (c, r) => ({ tibia: { id, variacao: r * cols + c } }) };
+    } else {
+      const block = await fetchPattern(id);
+      if (block) pieces = { cols: block.colunas, rows: block.linhas, source: (c, r) => ({ tibia: { id: block.ids[r * block.colunas + c], variacao: 0 } }) };
+    }
   } catch (error) {
     return false;
   }
-  const [cols, rows] = (info && info.categoria === 'ground' && info.padrao) || [1, 1];
-  if (cols * rows < 2) return false;
-  const pattern = [Math.min(cols, PATTERN_MAX), Math.min(rows, PATTERN_MAX)];
+  if (!pieces) return false;
   clearPattern();
   MIDDLE_KEYS.forEach(key => setSlot(key, null, false));
-  setSlot('meio-1', { tibia: { id, variacao: 0 } }, false);
-  for (let row = 0; row < pattern[1]; row++) {
-    for (let col = 0; col < pattern[0]; col++) setSlot(`padrao-${col}-${row}`, { tibia: { id, variacao: row * cols + col } }, false);
+  setSlot('meio-1', pieces.source(0, 0), false);
+  for (let row = 0; row < pieces.rows; row++) {
+    for (let col = 0; col < pieces.cols; col++) setSlot(`padrao-${col}-${row}`, pieces.source(col, row), false);
   }
-  floors.pattern = pattern;
+  floors.pattern = [pieces.cols, pieces.rows];
   floors.selected = BORDER_KEYS[0];
   render();
-  setStatus(`Padrão ${pattern[0]} × ${pattern[1]} do item ${id}: cada sqm usa o pedaço da posição dele.`, 'ok');
+  setStatus(`Padrão ${pieces.cols} × ${pieces.rows}: cada sqm usa o pedaço da posição dele.`, 'ok');
   if (!BORDER_KEYS.some(key => floors.slots[key])) suggestBorders();
   return true;
 }
