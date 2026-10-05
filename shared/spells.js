@@ -41,7 +41,8 @@ export const SPELLS = [
   { words: 'adori gran flam', name: 'Great Fireball', lvl: 30, mana: 240, vocations: MAGES, kind: 'conjure', rune: 'itens/runas/great-fireball-rune' },
   { words: 'adevo mas hur', name: 'Explosion', lvl: 31, mana: 180, vocations: MAGES, kind: 'conjure', rune: 'itens/runas/explosion-rune' },
   { words: 'adevo grav tera', name: 'Magic Wall', lvl: 32, mana: 250, vocations: ['sorcerer'], kind: 'conjure', rune: 'itens/runas/magic-wall-rune' },
-  { words: 'adori gran mort', name: 'Sudden Death', lvl: 45, mana: 220, vocations: ['sorcerer'], kind: 'conjure', rune: 'itens/runas/sudden-death-rune' }
+  { words: 'adori gran mort', name: 'Sudden Death', lvl: 45, mana: 220, vocations: ['sorcerer'], kind: 'conjure', rune: 'itens/runas/sudden-death-rune' },
+  { words: 'exevo gran mas flam', name: "Hell's Core", lvl: 60, mana: 1100, vocations: ['sorcerer'], kind: 'blast', area: 'big', element: 'fire', effect: 'fire', formula: { min: [7, 44], max: [14, 80] } }
 ];
 
 // Runas: o que faz ao usar com a mira, quantas cargas a conjuração dá e o
@@ -90,7 +91,8 @@ export const AREAS = {
   single: [[0, 0]],
   cross: [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]],
   square: [[-1, -1], [0, -1], [1, -1], [-1, 0], [0, 0], [1, 0], [-1, 1], [0, 1], [1, 1]],
-  circle: circleArea(3)
+  circle: circleArea(3),
+  big: circleArea(5)
 };
 
 // ================================================================================================================================================================================================================================================

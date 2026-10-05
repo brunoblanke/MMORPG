@@ -246,3 +246,17 @@ test('efeitos do Tibia: UH brilha em quem cura, SD a bola preta no alvo, explosi
   const state = serializeState(game, 'player1');
   assert.ok(state.items.some(i => i.id.startsWith(MAGIC_WALL) && i.blocksMovement && i.temporary));
 });
+
+test('exevo gran mas flam: fogo num círculo grande em volta do sorcerer, ferindo todas as criaturas dele', () => {
+  const game = mage('sorcerer', { enemies: [[9, 5, 0], [5, 9, 0], [13, 13, 0]] });
+  game.player.lvl = 100;
+  game.player.setVocation('sorcerer');
+  game.player.mana = game.player.maxMana;
+  for (const enemy of game.enemies) enemy.atk = 0;
+  const hp = game.enemies.map(e => e.currentHp);
+  const events = say(game, 'exevo gran mas flam');
+  assert.ok(game.enemies[0].currentHp < hp[0] && game.enemies[1].currentHp < hp[1]);
+  assert.equal(game.enemies[2].currentHp, hp[2]);
+  const fire = events.find(e => e.type === 'effect' && e.effect === 'fire');
+  assert.ok(fire && fire.tiles.length > 60);
+});
