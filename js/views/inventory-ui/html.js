@@ -70,7 +70,7 @@ export const htmlMethods = {
 
   windowHtml(win) {
     const buttons = (closable) => `<button class="inv-btn" data-act="min" type="button" aria-label="Minimizar">${win.min ? BUTTON_ICONS.plus : BUTTON_ICONS.minus}</button>` +
-      (closable ? `<button class="inv-btn close" data-act="close" type="button" aria-label="Fechar">${BUTTON_ICONS.close}</button>` : '');
+      (closable ? `<button class="inv-btn danger" data-act="close" type="button" aria-label="Fechar">${BUTTON_ICONS.close}</button>` : '');
     if (win.kind === 'inventory') {
       const { equip, cap } = this.view;
       const free = Math.max(0, cap.max - cap.used);
@@ -291,10 +291,14 @@ export const htmlMethods = {
 
   // ================================================================================================================================================================================================================================================
   // sendButtonHtml
-  // Botão que manda o comando pro servidor ao clicar.
+  // Botão que manda o comando pro servidor ao clicar. Os botões das janelas
+  // são de dois tipos: de ícone (inv-btn: 18 px, sem fundo; danger fica
+  // vermelho no hover) e de texto (inv-btn inv-text-btn). kind: 'text',
+  // 'icon' ou 'danger' (ícone de tirar/fechar).
 
-  sendButtonHtml(command, label, title = '') {
-    return `<button class="inv-btn inv-social-btn" data-act="send" data-send="${this.escapeHtml(JSON.stringify(command))}" type="button" title="${title}">${label}</button>`;
+  sendButtonHtml(command, label, title = '', kind = 'text') {
+    const cls = kind === 'text' ? 'inv-btn inv-text-btn' : kind === 'danger' ? 'inv-btn danger' : 'inv-btn';
+    return `<button class="${cls}" data-act="send" data-send="${this.escapeHtml(JSON.stringify(command))}" type="button" title="${title}" aria-label="${title}">${label}</button>`;
   },
 
   // ================================================================================================================================================================================================================================================
@@ -329,7 +333,7 @@ export const htmlMethods = {
     const social = this.view.social || { party: [], invites: [], vip: [] };
     const esc = (text) => this.escapeHtml(text);
     const vip = social.vip.map(v => `<div class="inv-social-line"><span class="inv-vip ${v.online ? 'on' : 'off'}">${esc(v.name)}</span>
-        <span class="inv-social-acts">${v.online ? `<button class="inv-btn inv-social-btn" data-act="pm" data-name="${esc(v.name)}" type="button" title="Mensagem privada">✉</button>` : ''}${this.sendButtonHtml({ type: 'vipRemove', name: v.name }, BUTTON_ICONS.close, 'Tirar da VIP')}</span></div>`).join('');
+        <span class="inv-social-acts">${v.online ? `<button class="inv-btn" data-act="pm" data-name="${esc(v.name)}" type="button" title="Mensagem privada" aria-label="Mensagem privada">${BUTTON_ICONS.mail}</button>` : ''}${this.sendButtonHtml({ type: 'vipRemove', name: v.name }, BUTTON_ICONS.close, 'Tirar da VIP', 'danger')}</span></div>`).join('');
     return `<section class="inv-win${win.min ? ' min' : ''}" data-win="${win.id}">
       <header class="inv-head"><span class="inv-title">VIP</span>${buttons}</header>
       <div class="inv-body"><div class="inv-battle">
@@ -356,8 +360,8 @@ export const htmlMethods = {
       <header class="inv-head"><span class="inv-title">Troca com ${esc(trade.with)}</span></header>
       <div class="inv-body"><div class="inv-trade-row">${offer(trade.mine, true, trade.myAccept)}${offer(trade.theirs, false, trade.theirAccept)}</div>
         <div class="inv-trade-btns">
-          <button class="inv-btn inv-social-btn" data-act="send" data-send="${esc(JSON.stringify({ type: 'tradeCancel' }))}" type="button">Cancelar</button>
-          <button class="inv-btn inv-social-btn primary" data-act="send" data-send="${esc(JSON.stringify({ type: 'tradeAccept' }))}" type="button"${trade.myAccept ? ' disabled' : ''}>Aceitar</button>
+          <button class="inv-btn inv-text-btn" data-act="send" data-send="${esc(JSON.stringify({ type: 'tradeCancel' }))}" type="button">Cancelar</button>
+          <button class="inv-btn inv-text-btn primary" data-act="send" data-send="${esc(JSON.stringify({ type: 'tradeAccept' }))}" type="button"${trade.myAccept ? ' disabled' : ''}>Aceitar</button>
         </div>
       </div>
     </section>`;

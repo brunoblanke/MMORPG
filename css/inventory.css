@@ -60,7 +60,7 @@
 }
 .inv-btn svg{ display:block; }
 .inv-btn:hover{ color:var(--inv-text); background:rgba(255, 255, 255, .08); }
-.inv-btn.close:hover{ color:var(--inv-danger); }
+.inv-btn.danger:hover{ color:var(--inv-danger); }
 
 .inv-body{ position:relative; }
 .inv-body::before, .inv-body::after{
@@ -173,7 +173,7 @@
 .inv-social-head{ display:flex; align-items:center; justify-content:space-between; margin-top:4px; font-size:10px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--inv-muted); }
 .inv-social-line{ display:flex; align-items:center; justify-content:space-between; gap:4px; padding:2px 6px; font-size:11px; }
 .inv-social-acts{ display:flex; gap:2px; }
-.inv-social-btn{ width:auto; min-width:18px; padding:0 6px; font-size:11px; background:rgba(255, 255, 255, .06); }
+.inv-text-btn{ width:auto; min-width:18px; padding:0 6px; font-size:11px; background:rgba(255, 255, 255, .06); }
 .inv-vip{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .inv-vip::before{ content:''; display:inline-block; width:6px; height:6px; margin-right:5px; border-radius:50%; background:var(--inv-muted); vertical-align:middle; }
 .inv-vip.on::before{ background:#22c55e; }
@@ -187,4 +187,4 @@
 .inv-tslot.mine{ border-style:dashed; border-color:var(--inv-accent-dim); }
 .inv-trade-name{ font-size:10px; color:var(--inv-muted); }
 .inv-trade-btns{ display:flex; justify-content:flex-end; gap:6px; padding:0 8px 8px; }
-.inv-social-btn.primary{ background:var(--inv-accent-dim); color:var(--inv-text); }
+.inv-text-btn.primary{ background:var(--inv-accent-dim); color:var(--inv-text); }

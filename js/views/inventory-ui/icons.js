@@ -43,5 +43,6 @@ export const BUTTON_ICONS = {
   plus: BUTTON_ICON('<path d="M5 1.5v7M1.5 5h7"/>'),
   minus: BUTTON_ICON('<path d="M1.5 5h7"/>'),
   close: BUTTON_ICON('<path d="M2 2l6 6M8 2l-6 6"/>'),
-  up: BUTTON_ICON('<path d="M5 8.5v-7M2 4.5l3-3 3 3"/>')
+  up: BUTTON_ICON('<path d="M5 8.5v-7M2 4.5l3-3 3 3"/>'),
+  mail: BUTTON_ICON('<rect x="1" y="2.5" width="8" height="5.5" rx="1"/><path d="M1.5 3l3.5 2.6L8.5 3"/>')
 };
