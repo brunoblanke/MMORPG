@@ -8,7 +8,7 @@ import { PLAYER_SPRITES, DEFAULT_GENDER } from '../../../shared/catalog.js';
 import { CORPSE_ROW } from '../sprite-registry.js';
 import { ANIMATION_CYCLE_MS } from '../../../shared/constants.js';
 import { EQUIP_LAYOUT, SKILL_NAMES, SKILL_ORDER, PITCH, REACH_CHECK_MS } from './common.js';
-import { ICONS, FOLLOW_ICONS } from './icons.js';
+import { ICONS, FOLLOW_ICONS, BUTTON_ICONS } from './icons.js';
 import { CONDITIONS } from '../../../shared/conditions.js';
 
 // Métodos do InventoryUI (js/views/inventory-ui.js). O HTML de cada parte das janelas: espaços, containers, skills, vida e
@@ -69,8 +69,8 @@ export const htmlMethods = {
   // windowHtml
 
   windowHtml(win) {
-    const buttons = (closable) => `<button class="inv-btn" data-act="min" type="button" aria-label="Minimizar">${win.min ? '+' : '–'}</button>` +
-      (closable ? '<button class="inv-btn close" data-act="close" type="button" aria-label="Fechar">×</button>' : '');
+    const buttons = (closable) => `<button class="inv-btn" data-act="min" type="button" aria-label="Minimizar">${win.min ? BUTTON_ICONS.plus : BUTTON_ICONS.minus}</button>` +
+      (closable ? `<button class="inv-btn close" data-act="close" type="button" aria-label="Fechar">${BUTTON_ICONS.close}</button>` : '');
     if (win.kind === 'inventory') {
       const { equip, cap } = this.view;
       const free = Math.max(0, cap.max - cap.used);
@@ -95,7 +95,7 @@ export const htmlMethods = {
     const box = this.findContainer(win.uid);
     if (!box) return '';
     const slots = box.items.map((item, i) => this.slotHtml(item, { t: 'c', uid: box.uid, i })).join('');
-    const up = this.parentOf(win.uid) ? '<button class="inv-btn" data-act="up" type="button" aria-label="Voltar pro container de fora">↑</button>' : '';
+    const up = this.parentOf(win.uid) ? `<button class="inv-btn" data-act="up" type="button" aria-label="Voltar pro container de fora">${BUTTON_ICONS.up}</button>` : '';
     return `<section class="inv-win${win.min ? ' min' : ''}" data-win="${win.id}">
       <header class="inv-head"><span class="inv-icon">${this.windowIcon(win, box)}</span>
         <span class="inv-title">${this.windowTitle(win, box)}</span>${up}${buttons(true)}</header>
@@ -329,7 +329,7 @@ export const htmlMethods = {
     const social = this.view.social || { party: [], invites: [], vip: [] };
     const esc = (text) => this.escapeHtml(text);
     const vip = social.vip.map(v => `<div class="inv-social-line"><span class="inv-vip ${v.online ? 'on' : 'off'}">${esc(v.name)}</span>
-        <span class="inv-social-acts">${v.online ? `<button class="inv-btn inv-social-btn" data-act="pm" data-name="${esc(v.name)}" type="button" title="Mensagem privada">✉</button>` : ''}${this.sendButtonHtml({ type: 'vipRemove', name: v.name }, '×', 'Tirar da VIP')}</span></div>`).join('');
+        <span class="inv-social-acts">${v.online ? `<button class="inv-btn inv-social-btn" data-act="pm" data-name="${esc(v.name)}" type="button" title="Mensagem privada">✉</button>` : ''}${this.sendButtonHtml({ type: 'vipRemove', name: v.name }, BUTTON_ICONS.close, 'Tirar da VIP')}</span></div>`).join('');
     return `<section class="inv-win${win.min ? ' min' : ''}" data-win="${win.id}">
       <header class="inv-head"><span class="inv-title">VIP</span>${buttons}</header>
       <div class="inv-body"><div class="inv-battle">

@@ -1,7 +1,7 @@
 // js/views/inventory-ui/icons.js
 
 // Ícones de linha das janelas (espaços vazios do inventário, seguir e
-// auto ataque).
+// auto ataque, e os botões pequenos do cabeçalho).
 
 // ================================================================================================================================================================================================================================================
 // svgIcon
@@ -35,4 +35,13 @@ export const FOLLOW_ICONS = {
   follow: svgIcon('0 0 17.4 19.84', '<circle cx="14.06" cy="3.34" r="2.38"/><path d="M5.13,7.57l4.17-2.38,3.58,3.58,3.58.6"/><path d="M8.82,11.84l4.05,1.09-1.19,5.96"/><path d="M11.32,7.2l-5,6.92-5.36,1.19"/>', MODE_ICON_SCALE),
   attack: svgIcon('0 0 19.79 19.19', '<path d="M1.55.95l13.11,13.11M18.24.95L5.13,14.06"/><path d="M12.28,16.45l4.77-4.77M2.74,11.68l4.77,4.77"/><path d="M15.85,15.26l2.98,2.98M3.93,15.26l-2.98,2.98"/>', MODE_ICON_SCALE),
   stand: svgIcon('0 0 11.44 19.84', '<circle cx="5.72" cy="3.4" r="2.44"/><path d="M5.72,8.76v4.17"/><path d="M.95,9.95l4.77-1.79,4.77,1.79"/><path d="M5.72,12.93l-4.17,5.96"/><path d="M5.72,12.93l4.17,5.96"/>', MODE_ICON_SCALE)
+};
+
+const BUTTON_ICON = (shapes) => `<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${shapes}</svg>`;
+
+export const BUTTON_ICONS = {
+  plus: BUTTON_ICON('<path d="M5 1.5v7M1.5 5h7"/>'),
+  minus: BUTTON_ICON('<path d="M1.5 5h7"/>'),
+  close: BUTTON_ICON('<path d="M2 2l6 6M8 2l-6 6"/>'),
+  up: BUTTON_ICON('<path d="M5 8.5v-7M2 4.5l3-3 3 3"/>')
 };
