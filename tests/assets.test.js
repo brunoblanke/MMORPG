@@ -2,7 +2,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { setAssets, spriteFrame, objectProps, isFloorType, isStairsType, isHoleType, isItemType, isWallType, displayName, interiorVariant, objectIdType, blocksThrow, PARAPET_PIECES } from '../shared/assets.js';
+import { setAssets, spriteFrame, objectProps, isFloorType, isStairsType, isHoleType, isItemType, isWallType, displayName, interiorVariant, objectIdType } from '../shared/assets.js';
 import { serializeMapFromLayers, buildLayersFromMapData } from '../shared/map-format.js';
 
 const GRID = 10;
@@ -10,7 +10,6 @@ const GRID = 10;
 setAssets([
   { id: 'estrutura/pisos/grama', ferramenta: 'pisos', rotulo: 'Estrutura › Pisos', nome: 'grama', url: '/g.png', quadro: 32, quadros: 1, variacoes: 4, pecas: [] },
   { id: 'estrutura/paredes/tijolo', ferramenta: 'paredes', rotulo: 'Estrutura › Paredes', nome: 'tijolo', url: '/t.png', quadro: 64, quadros: 1, ordem: null, pecas: ['x', 'porta-x-aberta'] },
-  { id: 'estrutura/parapeitos/pedra', ferramenta: 'paredes', rotulo: 'Estrutura › Parapeitos e muretas', nome: 'pedra', url: '/p.png', quadro: 64, quadros: 1, ordem: PARAPET_PIECES, pecas: ['norte', 'se'] },
   { id: 'itens/recipientes/caixa', ferramenta: 'objetos', rotulo: 'Itens › Recipientes', nome: 'caixa', url: '/c.png', quadro: 32, quadros: 2, propriedades: { bloqueia: false, move: true, altura: true } },
   { id: 'estrutura/escadas/escada', ferramenta: 'objetos', rotulo: 'Estrutura › Escadas', nome: 'escada', url: '/e.png', quadro: 64, quadros: 1, propriedades: {} }
 ]);
@@ -33,13 +32,6 @@ test('cada peça sai do lugar certo da folha', () => {
   assert.deepEqual(spriteFrame('estrutura/paredes/tijolo#porta-x-aberta'), { url: '/t.png', x: 64, y: 64, size: 64, frames: 1 });
   assert.deepEqual(spriteFrame('itens/recipientes/caixa'), { url: '/c.png', x: 0, y: 0, size: 32, frames: 2 });
   assert.equal(spriteFrame('itens/nada/nada'), null);
-});
-
-test('parapeito: peça pelo lado e canto, bloqueia a passagem mas não barra tiro nem item jogado', () => {
-  assert.deepEqual(spriteFrame('estrutura/parapeitos/pedra#se'), { url: '/p.png', x: 192, y: 64, size: 64, frames: 1 });
-  assert.deepEqual(objectProps('estrutura/parapeitos/pedra#norte'), { movable: false, hasVolume: false, blocksMovement: true });
-  assert.ok(!blocksThrow('estrutura/parapeitos/pedra#norte'));
-  assert.ok(blocksThrow('estrutura/paredes/tijolo#x'));
 });
 
 test('parede e objeto gravam no mapa o comportamento deles', () => {

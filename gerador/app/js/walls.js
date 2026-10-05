@@ -16,9 +16,7 @@ import { fillFolderSelect, folderOf, setFolder, recipePath } from './folders.js'
 // y (paredes dos lados); xy é o canto que fecha a sala embaixo à direita e yx
 // o pilar que fecha em cima à esquerda. Porta, arco e janela x ficam numa
 // parede x; os y, numa y.
-// Serve também pras cercas (a porta vira o portão).
-// Parapeito e mureta (pasta Estrutura › Parapeitos) têm outras peças: pelo
-// lado do sqm onde ficam (norte, sul, oeste, leste) e os 4 cantos.
+// Serve também pras cercas e parapeitos (a porta vira o portão).
 // Cada peça vem de um item do Tibia ou de um PNG.
 
 const CATEGORY = 'paredes';
@@ -45,17 +43,6 @@ const OPENING_PIECES = [
   { key: 'janela-y', name: 'Janela Y' }
 ];
 const PIECES = [...WALL_PIECES, ...DOOR_PIECES, ...OPENING_PIECES];
-const PARAPET_FOLDER = 'estrutura/parapeitos';
-const PARAPET_PIECES = [
-  { key: 'norte', name: 'Norte' },
-  { key: 'sul', name: 'Sul' },
-  { key: 'oeste', name: 'Oeste' },
-  { key: 'leste', name: 'Leste' },
-  { key: 'no', name: 'Canto noroeste' },
-  { key: 'ne', name: 'Canto nordeste' },
-  { key: 'so', name: 'Canto sudoeste' },
-  { key: 'se', name: 'Canto sudeste' }
-];
 
 // Sala da prévia (como no Tibia): pilar em cima à esquerda, a parede x de
 // cima indo até o fim à direita, a y da esquerda até o fim embaixo, e o canto
@@ -81,27 +68,6 @@ const ROOM_PIECES = {
   w: ['janela-x', 'x'], W: ['janela-y', 'y']
 };
 
-// Varanda da prévia dos parapeitos: o contorno de dentro de uma área, com
-// cada lado e canto na sua peça.
-const BALCONY = [
-  '..........',
-  '..........',
-  '..1nnnn2..',
-  '..o....l..',
-  '..o....l..',
-  '..o....l..',
-  '..3ssss4..',
-  '..........',
-  '..........',
-  '..........'
-];
-const BALCONY_PIECES = {
-  n: ['norte'], s: ['sul'], o: ['oeste'], l: ['leste'],
-  1: ['no', 'norte'], 2: ['ne', 'norte'], 3: ['so', 'sul'], 4: ['se', 'sul']
-};
-const ROOM_HINT = 'Portas fechadas em cima e à esquerda, abertas embaixo e à direita; arco (as duas metades) e janela em cima e à esquerda. Pilar em cima à esquerda e canto XY embaixo à direita.';
-const BALCONY_HINT = 'O contorno de uma varanda: cada lado com a sua peça e os 4 cantos.';
-
 const walls = {
   slots: {},
   images: new Map(),
@@ -118,39 +84,6 @@ const folderEl = document.getElementById('wallFolder');
 const slotsEl = document.getElementById('wallSlots');
 const roomCanvas = document.getElementById('wallPreview');
 const sheetCanvas = document.getElementById('wallSheet');
-const hintEl = document.getElementById('wallPreviewHint');
-
-// ================================================================================================================================================================================================================================================
-// isParapet
-// A pasta escolhida é a dos parapeitos (peças por lado e cantos)?
-
-function isParapet() {
-  return folderEl.value === PARAPET_FOLDER;
-}
-
-// ================================================================================================================================================================================================================================================
-// pieces
-// As peças da folha, pela pasta escolhida.
-
-function pieces() {
-  return isParapet() ? PARAPET_PIECES : PIECES;
-}
-
-// ================================================================================================================================================================================================================================================
-// changeFolder
-// Trocar entre parede e parapeito troca as peças; as que não existem no
-// outro tipo saem.
-
-function changeFolder() {
-  walls.dirty = true;
-  const keys = pieces().map(piece => piece.key);
-  for (const key of Object.keys(walls.slots)) {
-    if (!keys.includes(key)) delete walls.slots[key];
-  }
-  if (!keys.includes(walls.selected)) walls.selected = keys[0];
-  renderSlots();
-  render();
-}
 
 // ================================================================================================================================================================================================================================================
 // initWalls
@@ -170,9 +103,8 @@ function initWalls() {
   });
   nameEl.addEventListener('input', () => { walls.dirty = true; });
   fillFolderSelect(folderEl, CATEGORY);
-  folderEl.addEventListener('change', changeFolder);
-  changeFolder();
-  walls.dirty = false;
+  folderEl.addEventListener('change', () => { walls.dirty = true; });
+  render();
 }
 
 // ================================================================================================================================================================================================================================================
@@ -209,13 +141,6 @@ function firstTibia(pieces) {
 
 function pick(kind, id, variation) {
   if (kind !== 'item') return;
-  if (isParapet()) {
-    setPiece(walls.selected, { tibia: { id, variacao: variation } }, false);
-    const nextPiece = PARAPET_PIECES[PARAPET_PIECES.findIndex(piece => piece.key === walls.selected) + 1];
-    if (nextPiece) walls.selected = nextPiece.key;
-    render();
-    return;
-  }
   const group = groupOf(walls.selected);
   const pieces = group === 'door' ? DOOR_PIECES : WALL_PIECES;
   const category = itemCategory(id);
@@ -237,10 +162,6 @@ function pick(kind, id, variation) {
 // portas pela primeira porta do Tibia.
 
 async function suggestAll() {
-  if (isParapet()) {
-    status('Parapeito não tem sugestão: escolha cada lado e canto à mão.', 'error');
-    return;
-  }
   const wallId = firstTibia(WALL_PIECES);
   const doorId = firstTibia(DOOR_PIECES);
   if (!wallId && !doorId) {
@@ -306,7 +227,7 @@ async function suggestDoors(id) {
 
 function renderSlots() {
   slotsEl.innerHTML = '';
-  for (const piece of pieces()) {
+  for (const piece of PIECES) {
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'slot';
@@ -387,7 +308,7 @@ function render() {
 function composeSheet(canvas) {
   const ctx = canvas.getContext('2d');
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  pieces().forEach((piece, i) => drawPiece(ctx, piece.key, (i % COLUMNS) * SIZE, Math.floor(i / COLUMNS) * SIZE));
+  PIECES.forEach((piece, i) => drawPiece(ctx, piece.key, (i % COLUMNS) * SIZE, Math.floor(i / COLUMNS) * SIZE));
 }
 
 // ================================================================================================================================================================================================================================================
@@ -396,21 +317,18 @@ function composeSheet(canvas) {
 // como o jogo desenha).
 
 function drawRoom() {
-  const layout = isParapet() ? BALCONY : ROOM;
-  const layoutPieces = isParapet() ? BALCONY_PIECES : ROOM_PIECES;
-  hintEl.textContent = isParapet() ? BALCONY_HINT : ROOM_HINT;
   const tile = 32;
   const ctx = roomCanvas.getContext('2d');
   ctx.clearRect(0, 0, roomCanvas.width, roomCanvas.height);
-  for (let y = 0; y < layout.length; y++) {
-    for (let x = 0; x < layout[y].length; x++) {
+  for (let y = 0; y < ROOM.length; y++) {
+    for (let x = 0; x < ROOM[y].length; x++) {
       ctx.fillStyle = (x + y) % 2 ? '#2a2f3a' : '#262a33';
       ctx.fillRect(x * tile, y * tile, tile, tile);
     }
   }
-  for (let y = 0; y < layout.length; y++) {
-    for (let x = 0; x < layout[y].length; x++) {
-      const keys = layoutPieces[layout[y][x]];
+  for (let y = 0; y < ROOM.length; y++) {
+    for (let x = 0; x < ROOM[y].length; x++) {
+      const keys = ROOM_PIECES[ROOM[y][x]];
       const key = keys && keys.find(k => pieceImage(k));
       if (key) drawPiece(ctx, key, x * tile + tile - SIZE, y * tile + tile - SIZE);
     }
@@ -431,7 +349,7 @@ async function save() {
     status('Dê um nome à parede (ex.: madeira).', 'error');
     return;
   }
-  if (pieces().some(piece => walls.slots[piece.key] && !pieceImage(piece.key))) {
+  if (PIECES.some(piece => walls.slots[piece.key] && !pieceImage(piece.key))) {
     status('Espere as imagens terminarem de carregar.', 'error');
     return;
   }
@@ -450,7 +368,7 @@ async function save() {
   canvas.height = sheetCanvas.height;
   composeSheet(canvas);
   const recipe = {
-    formato: { quadro: SIZE, colunas: COLUMNS, pecas: pieces().map(piece => piece.key) },
+    formato: { quadro: SIZE, colunas: COLUMNS, pecas: PIECES.map(piece => piece.key) },
     pecas: walls.slots
   };
 
@@ -475,16 +393,15 @@ async function save() {
 function openRecipe(recipe) {
   walls.slots = {};
   walls.images.clear();
+  for (const piece of PIECES) {
+    const source = (recipe.pecas || {})[piece.key];
+    if (source) setPiece(piece.key, source, false);
+  }
+  walls.selected = 'x';
   walls.name = recipe.nome || '';
   nameEl.value = walls.name;
   walls.path = recipePath(recipe, CATEGORY);
   setFolder(folderEl, recipe);
-  for (const piece of pieces()) {
-    const source = (recipe.pecas || {})[piece.key];
-    if (source) setPiece(piece.key, source, false);
-  }
-  walls.selected = pieces()[0].key;
-  renderSlots();
   walls.dirty = false;
   status(recipe.nome ? `Aberto: ${recipe.nome}` : '');
   render();
