@@ -10,7 +10,8 @@ import { getHoleTarget, toLowerLevel, toUpperLevel } from '../../shared/stairs.j
 //   livro     → abre o texto numa janela (no chão ou carregado);
 //   bau-quest → dá os itens (editor) uma vez por player;
 //   corda     → marca de corda: com a corda, sobe pro andar de cima;
-//   pa        → monte que a pá abre em buraco (fica aberto até o servidor reiniciar);
+//   pa        → monte que a pá abre em buraco (fica aberto até o servidor reiniciar;
+//               com "Ao cavar, o player já cai", quem cavou desce na hora);
 //   descer    → bueiro: usar leva pro andar de baixo (pisar não);
 //   deposito  → abre o depósito do player (inventory/depot.js).
 // Longe, o player anda até o lado e usa ao chegar.
@@ -212,17 +213,36 @@ export class InteractionController {
   // ================================================================================================================================================================================================================================================
   // dig
   // Abre o monte: vira buraco (desenho de "Abre como") que leva pro andar de
-  // baixo e fica aberto até o servidor reiniciar.
+  // baixo e fica aberto até o servidor reiniciar. Com "Ao cavar, o player
+  // já cai" (gerador), quem cavou desce na hora pelo buraco.
 
   dig(player, pile) {
-    if (pile.dug || !openedAs(objectIdType(pile.id))) return false;
-    const target = getHoleTarget(pile.x, pile.y, pile.z || 0);
-    const hole = new GameObject({ id: `Dug_${pile.id}`, x: pile.x, y: pile.y, z: pile.z || 0, movable: false, hasVolume: false, blocksMovement: false,
-      stairDirection: 'down', targetX: target.x, targetY: target.y, targetZ: target.z });
-    hole.hidden = true;
-    this.sim.world.registerTransition(hole);
-    pile.dug = true;
-    this.dugHoles.set(pile.id, hole);
+    const type = objectIdType(pile.id);
+    const falls = !!(getAsset(splitType(type).asset)?.propriedades?.desceAoCavar);
+    if (!pile.dug) {
+      if (!openedAs(type) && !falls) return false;
+      const target = getHoleTarget(pile.x, pile.y, pile.z || 0);
+      const hole = new GameObject({ id: `Dug_${pile.id}`, x: pile.x, y: pile.y, z: pile.z || 0, movable: false, hasVolume: false, blocksMovement: false,
+        stairDirection: 'down', targetX: target.x, targetY: target.y, targetZ: target.z });
+      hole.hidden = true;
+      this.sim.world.registerTransition(hole);
+      pile.dug = true;
+      this.dugHoles.set(pile.id, hole);
+    } else if (!falls) {
+      return false;
+    }
+    if (falls) this.fallInto(player, this.dugHoles.get(pile.id));
+    return true;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // fallInto
+  // O player cai pelo buraco aberto pro andar de baixo.
+
+  fallInto(player, hole) {
+    if (!hole) return false;
+    if (!this.sim.movement.useTransition(player, { id: 'buraco', targetX: hole.targetX, targetY: hole.targetY, targetZ: hole.targetZ })) return false;
+    this.sim.control.clearWalk(player);
     return true;
   }
 

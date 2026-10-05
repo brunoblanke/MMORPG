@@ -2,7 +2,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { buildGame, floorRect } from './helpers/fixture.js';
+import { buildGame, floorRect, placeAt } from './helpers/fixture.js';
 import { TICK_MS } from '../js/simulation.js';
 import { setAssets } from '../shared/assets.js';
 
@@ -12,6 +12,7 @@ const CHEST = 'decoracao/moveis/bau';
 const SPOT = 'estrutura/natureza/marca-de-corda';
 const PILE = 'estrutura/natureza/monte';
 const OPEN = 'estrutura/natureza/buraco';
+const FALL_PILE = 'estrutura/natureza/monte-que-cai';
 const ROPE = 'itens/ferramentas/rope';
 const SHOVEL = 'itens/ferramentas/shovel';
 const BAG = 'itens/recipientes/bolsa';
@@ -33,6 +34,7 @@ setAssets([
   asset(SPOT, { uso: 'corda' }),
   asset(PILE, { uso: 'pa', abreComo: OPEN }),
   asset(OPEN, {}),
+  asset(FALL_PILE, { uso: 'pa', abreComo: OPEN, desceAoCavar: true }),
   asset(ROPE, { move: true, peso: 18, uso: 'ferramenta-corda' }),
   asset(SHOVEL, { move: true, peso: 35, uso: 'ferramenta-pa' }),
   asset(BAG, { move: true, peso: 8, espacos: 4 }),
@@ -135,6 +137,15 @@ test('corda na marca de corda sobe pro andar de cima; a pá abre o monte em bura
   run(sim, 10 * 60000);
   assert.equal(pile.dug, true, 'fica aberto até o servidor reiniciar');
   assert.ok(sim.world.getTransitionAt(5, 6, 1));
+});
+
+test('monte com "Ao cavar, o player já cai": a pá abre o buraco e o player desce na hora', () => {
+  const sim = game([[FALL_PILE, 5, 6, 1]]);
+  placeAt(sim, sim.player, 5, 5, 1);
+  sim.player.equip.mochila.items[0] = { uid: 's1', type: SHOVEL };
+  send(sim, { type: 'useItem', from: { t: 'c', uid: 'bag0', i: 0 }, target: { x: 5, y: 6, z: 1 } });
+  assert.equal(at(sim, FALL_PILE).dug, true);
+  assert.deepEqual([sim.player.x, sim.player.y, sim.player.z], [6, 7, 0]);
 });
 
 test('corda e pá de longe: o player anda até o lado e usa ao chegar', () => {

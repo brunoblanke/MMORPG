@@ -35,7 +35,7 @@ const NUMBERS = [
   { key: 'regenVida', label: 'Equipado: recupera vida a cada 6 s', min: 0, step: 1 },
   { key: 'regenMana', label: 'Equipado: recupera mana a cada 6 s', min: 0, step: 1 }
 ];
-const DEFAULT_PROPERTIES = { bloqueia: false, move: true, altura: false, empilhavel: false, peso: 10, espacos: 0, atk: 0, def: 0, ml: 0, speed: 0, vidaMin: 0, vidaMax: 0, manaMin: 0, manaMax: 0, alimento: 0, luz: 0, duracao: 0, regenVida: 0, regenMana: 0, uso: '', abreComo: '', acesoComo: '' };
+const DEFAULT_PROPERTIES = { bloqueia: false, move: true, altura: false, empilhavel: false, peso: 10, espacos: 0, atk: 0, def: 0, ml: 0, speed: 0, vidaMin: 0, vidaMax: 0, manaMin: 0, manaMax: 0, alimento: 0, luz: 0, duracao: 0, regenVida: 0, regenMana: 0, uso: '', abreComo: '', desceAoCavar: false, acesoComo: '' };
 const USES = [
   ['', 'Nenhum'],
   ['placa', 'Placa (mostra um texto, escrito no editor)'],
@@ -239,9 +239,22 @@ function renderProperties() {
   fetchProjects().then(projects => fillOpen(projects.filter(p => p.ferramenta === 'objetos').map(p => p.caminho).sort())).catch(() => {});
   openLabel.append('Abre como', openSelect);
   list.appendChild(openLabel);
+  const fallLabel = document.createElement('label');
+  fallLabel.className = 'checkline';
+  fallLabel.hidden = useSelect.value !== 'pa';
+  const fallInput = document.createElement('input');
+  fallInput.type = 'checkbox';
+  fallInput.id = 'objectProp-desceAoCavar';
+  fallInput.checked = !!objects.properties.desceAoCavar;
+  fallInput.onchange = () => {
+    objects.properties.desceAoCavar = fallInput.checked;
+    objects.dirty = true;
+  };
+  fallLabel.append(fallInput, 'Ao cavar, o player já cai no buraco');
+  list.appendChild(fallLabel);
   useSelect.onchange = () => {
     objects.properties.uso = useSelect.value;
-    openLabel.hidden = useSelect.value !== 'pa';
+    openLabel.hidden = fallLabel.hidden = useSelect.value !== 'pa';
     objects.dirty = true;
   };
   openSelect.onchange = () => {
