@@ -1,0 +1,40 @@
+{
+  "formato": {
+    "quadro": 32,
+    "quadros": 4
+  },
+  "objeto": {
+    "tibia": {
+      "id": 2121,
+      "variacao": 0
+    }
+  },
+  "propriedades": {
+    "bloqueia": false,
+    "move": false,
+    "altura": false,
+    "empilhavel": false,
+    "peso": 10,
+    "espacos": 0,
+    "atk": 0,
+    "def": 0,
+    "ml": 0,
+    "speed": 0,
+    "vidaMin": 0,
+    "vidaMax": 0,
+    "manaMin": 0,
+    "manaMax": 0,
+    "alimento": 0,
+    "luz": 0,
+    "duracao": 0,
+    "regenVida": 0,
+    "regenMana": 0,
+    "uso": "",
+    "abreComo": "",
+    "acesoComo": ""
+  },
+  "ferramenta": "objetos",
+  "grupo": "estrutura",
+  "pasta": "natureza",
+  "nome": "veneno"
+}

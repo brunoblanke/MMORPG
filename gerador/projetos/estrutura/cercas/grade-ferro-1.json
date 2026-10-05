@@ -1,0 +1,46 @@
+{
+  "formato": {
+    "quadro": 64,
+    "colunas": 4,
+    "pecas": [
+      "x",
+      "y",
+      "xy",
+      "yx",
+      "porta-x",
+      "porta-x-aberta",
+      "porta-y",
+      "porta-y-aberta",
+      "arco-x-oeste",
+      "arco-x-leste",
+      "arco-y-norte",
+      "arco-y-sul",
+      "janela-x",
+      "janela-y"
+    ]
+  },
+  "pecas": {
+    "x": {
+      "tibia": {
+        "id": 2182,
+        "variacao": 0
+      }
+    },
+    "y": {
+      "tibia": {
+        "id": 2181,
+        "variacao": 0
+      }
+    },
+    "xy": {
+      "tibia": {
+        "id": 2183,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "paredes",
+  "grupo": "estrutura",
+  "pasta": "cercas",
+  "nome": "grade-ferro-1"
+}
