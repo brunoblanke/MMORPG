@@ -3,9 +3,9 @@
 :root{
   --inv-panel:#161920;
   --inv-panel-2:#1c2028;
-  --inv-slot:#12151b;
+  --inv-slot:rgba(10, 12, 16, .4);
   --inv-line:#2a2f3a;
-  --inv-line-soft:#222731;
+  --inv-line-soft:rgba(255, 255, 255, .06);
   --inv-text:#e7e9ee;
   --inv-muted:#8b93a3;
   --inv-accent:#5eead4;
