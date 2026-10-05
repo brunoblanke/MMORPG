@@ -151891,7 +151891,7 @@
       false
     ],
     [
-      "estrutura/paredes/parede-madeira-1#y",
+      "estrutura/paredes/parede-madeira-1#janela-y",
       179,
       218,
       0,
@@ -151997,7 +151997,7 @@
       false
     ],
     [
-      "estrutura/paredes/parede-madeira-1#y",
+      "estrutura/paredes/parede-madeira-1#janela-y",
       182,
       218,
       0,
@@ -153096,16 +153096,6 @@
     ],
     [
       "estrutura/paredes/parede-madeira-1#porta-x",
-      181,
-      219,
-      0,
-      0,
-      false,
-      true,
-      true
-    ],
-    [
-      "estrutura/paredes/parede-tijolos-1#porta-x",
       181,
       219,
       0,
@@ -185579,7 +185569,7 @@
       false
     ],
     [
-      "estrutura/paredes/parede-madeira-1#x",
+      "estrutura/paredes/parede-madeira-1#janela-x",
       180,
       215,
       1,
@@ -185777,7 +185767,7 @@
       false
     ],
     [
-      "estrutura/paredes/parede-madeira-1#y",
+      "estrutura/paredes/parede-madeira-1#janela-y",
       178,
       217,
       1,
@@ -185820,7 +185810,7 @@
       17012
     ],
     [
-      "estrutura/paredes/parede-madeira-1#y",
+      "estrutura/paredes/parede-madeira-1#janela-y",
       181,
       217,
       1,
@@ -185922,7 +185912,7 @@
       17010
     ],
     [
-      "estrutura/paredes/parede-madeira-1#x",
+      "estrutura/paredes/parede-madeira-1#janela-x",
       180,
       218,
       1,
