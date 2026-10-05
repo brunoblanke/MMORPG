@@ -1,6 +1,6 @@
 // ferramentas/pre-classificar.js
 
-// Pré-classifica todos os sprites do Tibia (gerador/tibia/atual) nas pastas
+// Pré-classifica todos os sprites do Tibia 15.01 (gerador/tibia/atual) nas pastas
 // da taxonomia, pra conferir na página Classificar do gerador. De onde vem a
 // pasta de cada um:
 //   itens: a categoria do TibiaWiki que o Canary (servidor open source)
@@ -9,9 +9,7 @@
 //   criaturas: a classe do bestiário (ou a pasta) do monstro do Canary que
 //     usa aquela roupa; roupa só de NPC vai pra NPCs; roupa colorida de humano
 //     sem monstro, pra Players.
-// Na 1ª vez, o que já estava classificado (do 7.80) continua, e conta como
-// conferido, se o desenho do 7.80 e o do atual forem o mesmo item. Rodando de
-// novo, o que foi conferido na página fica como está. O resto vira sugestão
+// O que já foi conferido na página fica como está; o resto vira sugestão
 // (classificacao.json → sugeridos), que a página mostra pra conferir.
 //
 // Uso: node ferramentas/pre-classificar.js <pasta do canary>
@@ -25,7 +23,6 @@ const { TibiaAssets } = require('../gerador/tibia-assets.js');
 const RAIZ = path.join(__dirname, '..');
 const ARQUIVO = path.join(RAIZ, 'gerador', 'classificacao.json');
 const TAXONOMIA = JSON.parse(fs.readFileSync(path.join(RAIZ, 'gerador', 'taxonomia.json'), 'utf8'));
-const MESMO_ITEM = 40;
 
 const FLAG = { GROUND: 0, GROUND_BORDER: 1, ON_BOTTOM: 2, CONTAINER: 4, STACKABLE: 5, WRITABLE: 9, WRITABLE_ONCE: 10, FLUID_CONTAINER: 11, UNPASSABLE: 13, PICKUPABLE: 17, HANGABLE: 18, LIGHT: 22, LYING: 27, LENS_HELP: 30, MARKET: 134 };
 
@@ -178,35 +175,13 @@ function pastaDoItem(thing, canary) {
 }
 
 // ================================================================================================================================================================================================================================================
-// mesmoDesenho
-// O item tem (quase) o mesmo desenho no 7.80 e no atual?
-
-function mesmoDesenho(velho, atual, id) {
-  const a = velho.things.item.get(id);
-  const b = atual.things.item.get(id);
-  if (!a || !b || a.w !== b.w || a.h !== b.h) return false;
-  const qa = velho.quadro(a, {});
-  const qb = atual.quadro(b, {});
-  let diferenca = 0;
-  for (let i = 0; i < qa.pixels.length; i += 4) {
-    const pa = qa.pixels[i + 3] > 0;
-    const pb = qb.pixels[i + 3] > 0;
-    if (pa !== pb) diferenca += 765;
-    else if (pa) diferenca += Math.abs(qa.pixels[i] - qb.pixels[i]) + Math.abs(qa.pixels[i + 1] - qb.pixels[i + 1]) + Math.abs(qa.pixels[i + 2] - qb.pixels[i + 2]);
-  }
-  return diferenca / (qa.pixels.length / 4) <= MESMO_ITEM;
-}
-
-// ================================================================================================================================================================================================================================================
 // preClassificar
 
 function preClassificar(canary) {
   const atual = new TibiaAssets(path.join(RAIZ, 'gerador', 'tibia', 'atual'));
-  const velho = new TibiaAssets(path.join(RAIZ, 'gerador', 'tibia', '780'));
   const antiga = JSON.parse(fs.readFileSync(ARQUIVO, 'utf8'));
-  const primeiraVez = !antiga.sugeridos;
-  const sugeridosAntes = new Set(primeiraVez ? [] : antiga.sugeridos.itens);
-  const criaturasSugeridasAntes = new Set(primeiraVez ? [] : antiga.sugeridos.criaturas);
+  const sugeridosAntes = new Set((antiga.sugeridos && antiga.sugeridos.itens) || []);
+  const criaturasSugeridasAntes = new Set((antiga.sugeridos && antiga.sugeridos.criaturas) || []);
   const itensCanary = lerItensDoCanary(canary);
   const roupasCanary = lerRoupasDoCanary(canary);
   const catalogo = atual.catalogo();
@@ -215,8 +190,7 @@ function preClassificar(canary) {
 
   for (const [id] of catalogo.items) {
     const anterior = antiga.itens[id];
-    const conferido = primeiraVez ? mesmoDesenho(velho, atual, id) : !sugeridosAntes.has(id);
-    if (anterior && pastaExiste(anterior) && conferido) {
+    if (anterior && pastaExiste(anterior) && !sugeridosAntes.has(id)) {
       nova.itens[id] = anterior;
       contagem.conferidos++;
       continue;

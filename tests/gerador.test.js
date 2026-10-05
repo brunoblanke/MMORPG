@@ -6,7 +6,7 @@ import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 const { TibiaAssets } = require('../gerador/tibia-assets.js');
-const CLIENT = new URL('../gerador/tibia/780', import.meta.url).pathname;
+const CLIENT = new URL('./tibia-780', import.meta.url).pathname;
 
 // ================================================================================================================================================================================================================================================
 // pngSize

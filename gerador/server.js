@@ -6,8 +6,7 @@ const path = require('path');
 const { TibiaAssets, paletaDeRoupa } = require('./tibia-assets.js');
 
 // Gerador de sprites: programa à parte do jogo e do editor. Mostra os sprites
-// do Tibia (tibia/atual, se a pasta tiver o Tibia.spr e o Tibia.dat; senão
-// tibia/780), monta folhas com as ferramentas (pisos, criaturas,
+// do Tibia 15.01 (o .spr e o .dat em tibia/atual), monta folhas com as ferramentas (pisos, criaturas,
 // paredes, objetos) na tela e grava na pasta escolhida (taxonomia.json):
 //   saida/<grupo>/<pasta>/<nome>.png      a folha pronta, no formato do jogo
 //   projetos/<grupo>/<pasta>/<nome>.json  a receita (de onde veio cada parte)
@@ -16,9 +15,7 @@ const { TibiaAssets, paletaDeRoupa } = require('./tibia-assets.js');
 
 const PORTA = process.env.GERADOR_PORT || 8100;
 const PASTA_APP = path.join(__dirname, 'app');
-const PASTA_ATUAL = path.join(__dirname, 'tibia', 'atual');
-const ARQUIVOS_ATUAL = arquivosDoCliente(PASTA_ATUAL);
-const PASTA_TIBIA = ARQUIVOS_ATUAL ? PASTA_ATUAL : path.join(__dirname, 'tibia', '780');
+const PASTA_TIBIA = path.join(__dirname, 'tibia', 'atual');
 const PASTA_SAIDA = path.join(__dirname, 'saida');
 const PASTA_PROJETOS = path.join(__dirname, 'projetos');
 const FERRAMENTAS = ['pisos', 'criaturas', 'paredes', 'objetos'];
@@ -52,8 +49,8 @@ let tibia = null;
 
 app.listen(PORTA, () => {
   console.log(`\n🎨 Gerador de sprites em http://localhost:${PORTA}`);
-  console.log(`🗂️  Sprites do Tibia de tibia/${path.basename(PASTA_TIBIA)}`);
-  if (!ARQUIVOS_ATUAL) avisarPastaAtual();
+  if (arquivosDoCliente(PASTA_TIBIA)) console.log(`🗂️  Sprites do Tibia de ${PASTA_TIBIA}`);
+  else avisarPastaAtual();
   console.log(`📁 PNGs prontos em ${PASTA_SAIDA}\n`);
 });
 
@@ -77,15 +74,15 @@ function arquivosDoCliente(pasta) {
 
 // ================================================================================================================================================================================================================================================
 // avisarPastaAtual
-// Sem o Tibia atual: diz onde ele é procurado e o que tem lá.
+// Sem o .spr e o .dat: diz onde eles são procurados e o que tem lá.
 
 function avisarPastaAtual() {
-  if (!fs.existsSync(PASTA_ATUAL)) {
-    console.log(`   (pro Tibia atual, crie ${PASTA_ATUAL} com o .spr e o .dat dentro)`);
+  if (!fs.existsSync(PASTA_TIBIA)) {
+    console.log(`❌ Sem os sprites do Tibia: crie ${PASTA_TIBIA} com o Tibia.spr e o Tibia.dat dentro`);
     return;
   }
-  const nomes = fs.readdirSync(PASTA_ATUAL);
-  console.log(`   (${PASTA_ATUAL} existe, mas falta o .spr ou o .dat; tem: ${nomes.length ? nomes.join(', ') : 'nada'})`);
+  const nomes = fs.readdirSync(PASTA_TIBIA);
+  console.log(`❌ Sem os sprites do Tibia: falta o .spr ou o .dat em ${PASTA_TIBIA} (tem: ${nomes.length ? nomes.join(', ') : 'nada'})`);
 }
 
 // ================================================================================================================================================================================================================================================
@@ -93,7 +90,11 @@ function avisarPastaAtual() {
 // Tibia.spr/Tibia.dat, lidos na 1ª vez que a tela pede.
 
 function arquivosTibia() {
-  if (!tibia) tibia = new TibiaAssets(PASTA_TIBIA, ARQUIVOS_ATUAL || undefined);
+  if (!tibia) {
+    const arquivos = arquivosDoCliente(PASTA_TIBIA);
+    if (!arquivos) throw new Error(`falta o Tibia.spr ou o Tibia.dat em ${PASTA_TIBIA}`);
+    tibia = new TibiaAssets(PASTA_TIBIA, arquivos);
+  }
   return tibia;
 }
 
@@ -105,7 +106,7 @@ function catalogo(req, res) {
     res.json({ success: true, ...arquivosTibia().catalogo() });
   } catch (err) {
     console.error('❌ Tibia:', err.message);
-    res.status(500).json({ success: false, message: `Não foi possível ler tibia/${path.basename(PASTA_TIBIA)}: ${err.message}` });
+    res.status(500).json({ success: false, message: `Não foi possível ler os sprites do Tibia: ${err.message}` });
   }
 }
 
