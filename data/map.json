@@ -6198,15 +6198,14 @@
       14855
     ],
     [
-      "estrutura/pisos/piso-terra-2",
+      "Border:estrutura/pisos/piso-terra-2:int-sl",
       212,
       225,
       -3,
       0,
       false,
       false,
-      false,
-      15186
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -6220,15 +6219,14 @@
       14856
     ],
     [
-      "estrutura/pisos/piso-terra-2",
+      "Border:estrutura/pisos/piso-terra-2:s",
       213,
       225,
       -3,
       0,
       false,
       false,
-      false,
-      15185
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -6242,7 +6240,7 @@
       14857
     ],
     [
-      "Border:estrutura/pisos/piso-terra-2:l",
+      "Border:estrutura/pisos/piso-terra-2:sl",
       214,
       225,
       -3,
@@ -6769,7 +6767,7 @@
       14851
     ],
     [
-      "Border:estrutura/pisos/piso-terra-2:s",
+      "Border:estrutura/pisos/piso-terra-2:sl",
       212,
       226,
       -3,
@@ -6790,16 +6788,6 @@
       14852
     ],
     [
-      "Border:estrutura/pisos/piso-terra-2:s",
-      213,
-      226,
-      -3,
-      0,
-      false,
-      false,
-      false
-    ],
-    [
       "estrutura/pisos/piso-terra-3",
       214,
       226,
@@ -6809,16 +6797,6 @@
       false,
       false,
       14853
-    ],
-    [
-      "Border:estrutura/pisos/piso-terra-2:sl",
-      214,
-      226,
-      -3,
-      0,
-      false,
-      false,
-      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -7205,6 +7183,16 @@
       14935
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:no",
+      205,
+      227,
+      -3,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "Border:estrutura/pisos/piso-terra-2:sl",
       205,
       227,
@@ -7226,6 +7214,16 @@
       14936
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:n",
+      206,
+      227,
+      -3,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       207,
       227,
@@ -7235,6 +7233,16 @@
       false,
       false,
       14937
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:n",
+      207,
+      227,
+      -3,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -7248,6 +7256,16 @@
       14938
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:n",
+      208,
+      227,
+      -3,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       209,
       227,
@@ -7257,6 +7275,16 @@
       false,
       false,
       14939
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:nl",
+      209,
+      227,
+      -3,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -7292,6 +7320,26 @@
       14847
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:no",
+      212,
+      227,
+      -3,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/natureza/pedra-1-canto",
+      212,
+      227,
+      -3,
+      0,
+      false,
+      false,
+      true
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       213,
       227,
@@ -7301,6 +7349,16 @@
       false,
       false,
       14848
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:n",
+      213,
+      227,
+      -3,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -7314,6 +7372,16 @@
       14849
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:n",
+      214,
+      227,
+      -3,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       215,
       227,
@@ -7325,6 +7393,16 @@
       15081
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:n",
+      215,
+      227,
+      -3,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       216,
       227,
@@ -7334,6 +7412,16 @@
       false,
       false,
       15082
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:nl",
+      216,
+      227,
+      -3,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -7605,6 +7693,16 @@
       14798
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:no",
+      203,
+      228,
+      -3,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       204,
       228,
@@ -7614,6 +7712,16 @@
       false,
       false,
       14802
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:n",
+      204,
+      228,
+      -3,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -7627,6 +7735,16 @@
       14806
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:int-no",
+      205,
+      228,
+      -3,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       206,
       228,
@@ -7636,6 +7754,17 @@
       false,
       false,
       14810
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      206,
+      228,
+      -3,
+      0,
+      false,
+      false,
+      false,
+      17134
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -7649,6 +7778,17 @@
       14814
     ],
     [
+      "estrutura/pisos/piso-terra-2",
+      207,
+      228,
+      -3,
+      0,
+      false,
+      false,
+      false,
+      17135
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       208,
       228,
@@ -7658,6 +7798,17 @@
       false,
       false,
       14818
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      208,
+      228,
+      -3,
+      0,
+      false,
+      false,
+      false,
+      17136
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -7671,6 +7822,16 @@
       14822
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:int-nl",
+      209,
+      228,
+      -3,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       210,
       228,
@@ -7680,6 +7841,16 @@
       false,
       false,
       14826
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:n",
+      210,
+      228,
+      -3,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -7693,6 +7864,16 @@
       14830
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:n",
+      211,
+      228,
+      -3,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       212,
       228,
@@ -7702,6 +7883,16 @@
       false,
       false,
       14834
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:int-no",
+      212,
+      228,
+      -3,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -7715,6 +7906,27 @@
       14838
     ],
     [
+      "estrutura/pisos/piso-terra-2",
+      213,
+      228,
+      -3,
+      0,
+      false,
+      false,
+      false,
+      17158
+    ],
+    [
+      "estrutura/natureza/pedra-1-base",
+      213,
+      228,
+      -3,
+      0,
+      false,
+      false,
+      true
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       214,
       228,
@@ -7724,6 +7936,27 @@
       false,
       false,
       14842
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      214,
+      228,
+      -3,
+      0,
+      false,
+      false,
+      false,
+      17142
+    ],
+    [
+      "itens/itens-encantados/poison-field",
+      214,
+      228,
+      -3,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -7737,6 +7970,27 @@
       15084
     ],
     [
+      "estrutura/pisos/piso-terra-2",
+      215,
+      228,
+      -3,
+      0,
+      false,
+      false,
+      false,
+      17144
+    ],
+    [
+      "estrutura/natureza/caixao-norte",
+      215,
+      228,
+      -3,
+      0,
+      false,
+      true,
+      true
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       216,
       228,
@@ -7746,6 +8000,16 @@
       false,
       false,
       15085
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:l",
+      216,
+      228,
+      -3,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -7955,6 +8219,16 @@
       14799
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:o",
+      203,
+      229,
+      -3,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       204,
       229,
@@ -7964,6 +8238,17 @@
       false,
       false,
       14803
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      204,
+      229,
+      -3,
+      0,
+      false,
+      false,
+      false,
+      17131
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -7977,6 +8262,17 @@
       14807
     ],
     [
+      "estrutura/pisos/piso-terra-2",
+      205,
+      229,
+      -3,
+      0,
+      false,
+      false,
+      false,
+      17132
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       206,
       229,
@@ -7986,6 +8282,17 @@
       false,
       false,
       14811
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      206,
+      229,
+      -3,
+      0,
+      false,
+      false,
+      false,
+      17133
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -7999,6 +8306,16 @@
       14815
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:int-sl",
+      207,
+      229,
+      -3,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       208,
       229,
@@ -8008,6 +8325,16 @@
       false,
       false,
       14819
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:int-so",
+      208,
+      229,
+      -3,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -8021,6 +8348,17 @@
       14823
     ],
     [
+      "estrutura/pisos/piso-terra-2",
+      209,
+      229,
+      -3,
+      0,
+      false,
+      false,
+      false,
+      17137
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       210,
       229,
@@ -8030,6 +8368,17 @@
       false,
       false,
       14827
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      210,
+      229,
+      -3,
+      0,
+      false,
+      false,
+      false,
+      17138
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -8043,6 +8392,17 @@
       14831
     ],
     [
+      "estrutura/pisos/piso-terra-2",
+      211,
+      229,
+      -3,
+      0,
+      false,
+      false,
+      false,
+      17139
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       212,
       229,
@@ -8052,6 +8412,27 @@
       false,
       false,
       14835
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      212,
+      229,
+      -3,
+      0,
+      false,
+      false,
+      false,
+      17140
+    ],
+    [
+      "estrutura/cercas/grade-ferro-1#y",
+      212,
+      229,
+      -3,
+      0,
+      false,
+      true,
+      true
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -8065,6 +8446,17 @@
       14839
     ],
     [
+      "estrutura/pisos/piso-terra-2",
+      213,
+      229,
+      -3,
+      0,
+      false,
+      false,
+      false,
+      17141
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       214,
       229,
@@ -8074,6 +8466,17 @@
       false,
       false,
       14843
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      214,
+      229,
+      -3,
+      0,
+      false,
+      false,
+      false,
+      17143
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -8087,6 +8490,27 @@
       15087
     ],
     [
+      "estrutura/pisos/piso-terra-2",
+      215,
+      229,
+      -3,
+      0,
+      false,
+      false,
+      false,
+      17145
+    ],
+    [
+      "estrutura/natureza/caixao-sul",
+      215,
+      229,
+      -3,
+      0,
+      false,
+      true,
+      true
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       216,
       229,
@@ -8096,6 +8520,16 @@
       false,
       false,
       15088
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:l",
+      216,
+      229,
+      -3,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -8305,6 +8739,16 @@
       14800
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:so",
+      203,
+      230,
+      -3,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       204,
       230,
@@ -8314,6 +8758,16 @@
       false,
       false,
       14804
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:s",
+      204,
+      230,
+      -3,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -8327,6 +8781,16 @@
       14808
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:s",
+      205,
+      230,
+      -3,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       206,
       230,
@@ -8336,6 +8800,16 @@
       false,
       false,
       14812
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:s",
+      206,
+      230,
+      -3,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -8349,6 +8823,16 @@
       14816
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:sl",
+      207,
+      230,
+      -3,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       208,
       230,
@@ -8358,6 +8842,16 @@
       false,
       false,
       14820
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:so",
+      208,
+      230,
+      -3,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -8371,6 +8865,16 @@
       14824
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:s",
+      209,
+      230,
+      -3,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       210,
       230,
@@ -8380,6 +8884,16 @@
       false,
       false,
       14828
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:s",
+      210,
+      230,
+      -3,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -8393,6 +8907,16 @@
       14832
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:s",
+      211,
+      230,
+      -3,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       212,
       230,
@@ -8402,6 +8926,26 @@
       false,
       false,
       14836
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:int-so",
+      212,
+      230,
+      -3,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
+      "estrutura/cercas/grade-ferro-1#y",
+      212,
+      230,
+      -3,
+      0,
+      false,
+      true,
+      true
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -8415,6 +8959,17 @@
       14840
     ],
     [
+      "estrutura/pisos/piso-terra-2",
+      213,
+      230,
+      -3,
+      0,
+      false,
+      false,
+      false,
+      17148
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       214,
       230,
@@ -8424,6 +8979,17 @@
       false,
       false,
       14844
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      214,
+      230,
+      -3,
+      0,
+      false,
+      false,
+      false,
+      17147
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -8437,6 +9003,27 @@
       15090
     ],
     [
+      "estrutura/pisos/piso-terra-2",
+      215,
+      230,
+      -3,
+      0,
+      false,
+      false,
+      false,
+      17161
+    ],
+    [
+      "itens/itens-encantados/poison-field",
+      215,
+      230,
+      -3,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       216,
       230,
@@ -8446,6 +9033,16 @@
       false,
       false,
       15091
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:l",
+      216,
+      230,
+      -3,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -8754,6 +9351,16 @@
       14837
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:so",
+      212,
+      231,
+      -3,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       213,
       231,
@@ -8763,6 +9370,16 @@
       false,
       false,
       14841
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:s",
+      213,
+      231,
+      -3,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -8776,6 +9393,16 @@
       14845
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:s",
+      214,
+      231,
+      -3,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       215,
       231,
@@ -8787,6 +9414,16 @@
       15093
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:s",
+      215,
+      231,
+      -3,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       216,
       231,
@@ -8796,6 +9433,16 @@
       false,
       false,
       15094
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:sl",
+      216,
+      231,
+      -3,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -21839,7 +22486,7 @@
       13410
     ],
     [
-      "Border:estrutura/pisos/piso-terra-2:l",
+      "Border:estrutura/pisos/piso-terra-2:int-nl",
       198,
       222,
       -2,
@@ -21858,6 +22505,16 @@
       false,
       false,
       13411
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:nl",
+      199,
+      222,
+      -2,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "Border:estrutura/pisos/piso-terra-2:o",
@@ -22441,7 +23098,18 @@
       13520
     ],
     [
-      "Border:estrutura/pisos/piso-terra-2:l",
+      "estrutura/pisos/piso-terra-2",
+      198,
+      223,
+      -2,
+      0,
+      false,
+      false,
+      false,
+      17061
+    ],
+    [
+      "estrutura/escadas/sombra-buraco",
       198,
       223,
       -2,
@@ -22460,6 +23128,16 @@
       false,
       false,
       13522
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:l",
+      199,
+      223,
+      -2,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "Border:estrutura/pisos/piso-terra-2:so",
@@ -23033,17 +23711,6 @@
       13532
     ],
     [
-      "estrutura/pisos/piso-terra-2",
-      198,
-      224,
-      -2,
-      0,
-      false,
-      false,
-      false,
-      13286
-    ],
-    [
       "estrutura/pisos/piso-terra-3",
       198,
       224,
@@ -23055,14 +23722,15 @@
       13521
     ],
     [
-      "Border:estrutura/pisos/piso-terra-2:int-nl",
+      "estrutura/pisos/piso-terra-2",
       198,
       224,
       -2,
       0,
       false,
       false,
-      false
+      false,
+      17060
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -23076,7 +23744,7 @@
       13537
     ],
     [
-      "Border:estrutura/pisos/piso-terra-2:n",
+      "Border:estrutura/pisos/piso-terra-2:int-nl",
       199,
       224,
       -2,
@@ -23720,16 +24388,6 @@
       13291
     ],
     [
-      "Border:estrutura/pisos/piso-terra-3:so",
-      197,
-      225,
-      -2,
-      0,
-      false,
-      false,
-      false
-    ],
-    [
       "estrutura/pisos/piso-terra-3",
       198,
       225,
@@ -23772,16 +24430,6 @@
       false,
       false,
       13538
-    ],
-    [
-      "estrutura/escadas/sombra-buraco",
-      199,
-      225,
-      -2,
-      0,
-      false,
-      false,
-      false
     ],
     [
       "Border:estrutura/pisos/piso-terra-2:l",
@@ -23836,6 +24484,16 @@
       13871
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:no",
+      202,
+      225,
+      -2,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       203,
       225,
@@ -23847,6 +24505,16 @@
       13866
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:n",
+      203,
+      225,
+      -2,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       204,
       225,
@@ -23856,6 +24524,16 @@
       false,
       false,
       13861
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:nl",
+      204,
+      225,
+      -2,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -23902,6 +24580,16 @@
       13833
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:no",
+      208,
+      225,
+      -2,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       209,
       225,
@@ -23913,6 +24601,16 @@
       13828
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:n",
+      209,
+      225,
+      -2,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       210,
       225,
@@ -23922,6 +24620,16 @@
       false,
       false,
       13822
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:nl",
+      210,
+      225,
+      -2,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -24434,6 +25142,16 @@
       13872
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:o",
+      202,
+      226,
+      -2,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       203,
       226,
@@ -24443,6 +25161,17 @@
       false,
       false,
       13867
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      203,
+      226,
+      -2,
+      0,
+      false,
+      false,
+      false,
+      17117
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -24456,6 +25185,16 @@
       13862
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:int-nl",
+      204,
+      226,
+      -2,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       205,
       226,
@@ -24465,6 +25204,16 @@
       false,
       false,
       13853
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:nl",
+      205,
+      226,
+      -2,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -24478,6 +25227,16 @@
       13848
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:no",
+      206,
+      226,
+      -2,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       207,
       226,
@@ -24487,6 +25246,16 @@
       false,
       false,
       13839
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:n",
+      207,
+      226,
+      -2,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -24500,6 +25269,16 @@
       13834
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:int-no",
+      208,
+      226,
+      -2,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       209,
       226,
@@ -24509,6 +25288,17 @@
       false,
       false,
       13829
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      209,
+      226,
+      -2,
+      0,
+      false,
+      false,
+      false,
+      17091
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -24522,6 +25312,16 @@
       13823
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:int-nl",
+      210,
+      226,
+      -2,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       211,
       226,
@@ -24533,6 +25333,16 @@
       13814
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:n",
+      211,
+      226,
+      -2,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       212,
       226,
@@ -24542,6 +25352,16 @@
       false,
       false,
       13806
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:nl",
+      212,
+      226,
+      -2,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -25074,6 +25894,16 @@
       13568
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:no",
+      201,
+      227,
+      -2,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       202,
       227,
@@ -25083,6 +25913,16 @@
       false,
       false,
       13873
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:int-no",
+      202,
+      227,
+      -2,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -25096,6 +25936,17 @@
       13868
     ],
     [
+      "estrutura/pisos/piso-terra-2",
+      203,
+      227,
+      -2,
+      0,
+      false,
+      false,
+      false,
+      17116
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       204,
       227,
@@ -25105,6 +25956,17 @@
       false,
       false,
       13863
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      204,
+      227,
+      -2,
+      0,
+      false,
+      false,
+      false,
+      17118
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -25118,6 +25980,16 @@
       13854
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:l",
+      205,
+      227,
+      -2,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       206,
       227,
@@ -25127,6 +25999,16 @@
       false,
       false,
       13849
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:o",
+      206,
+      227,
+      -2,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -25140,6 +26022,17 @@
       13840
     ],
     [
+      "estrutura/pisos/piso-terra-2",
+      207,
+      227,
+      -2,
+      0,
+      false,
+      false,
+      false,
+      17096
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       208,
       227,
@@ -25149,6 +26042,17 @@
       false,
       false,
       13835
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      208,
+      227,
+      -2,
+      0,
+      false,
+      false,
+      false,
+      17097
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -25162,6 +26066,17 @@
       13830
     ],
     [
+      "estrutura/pisos/piso-terra-2",
+      209,
+      227,
+      -2,
+      0,
+      false,
+      false,
+      false,
+      17092
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       210,
       227,
@@ -25171,6 +26086,17 @@
       false,
       false,
       13824
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      210,
+      227,
+      -2,
+      0,
+      false,
+      false,
+      false,
+      17098
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -25184,6 +26110,17 @@
       13815
     ],
     [
+      "estrutura/pisos/piso-terra-2",
+      211,
+      227,
+      -2,
+      0,
+      false,
+      false,
+      false,
+      17099
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       212,
       227,
@@ -25193,6 +26130,16 @@
       false,
       false,
       13816
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:l",
+      212,
+      227,
+      -2,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -25659,6 +26606,16 @@
       13501
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:no",
+      200,
+      228,
+      -2,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       201,
       228,
@@ -25668,6 +26625,16 @@
       false,
       false,
       13565
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:int-no",
+      201,
+      228,
+      -2,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -25681,6 +26648,17 @@
       13874
     ],
     [
+      "estrutura/pisos/piso-terra-2",
+      202,
+      228,
+      -2,
+      0,
+      false,
+      false,
+      false,
+      17126
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       203,
       228,
@@ -25690,6 +26668,27 @@
       false,
       false,
       13869
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      203,
+      228,
+      -2,
+      0,
+      false,
+      false,
+      false,
+      17115
+    ],
+    [
+      "estrutura/entradas/bueiro",
+      203,
+      228,
+      -2,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -25703,6 +26702,17 @@
       13864
     ],
     [
+      "estrutura/pisos/piso-terra-2",
+      204,
+      228,
+      -2,
+      0,
+      false,
+      false,
+      false,
+      17119
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       205,
       228,
@@ -25712,6 +26722,16 @@
       false,
       false,
       13855
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:l",
+      205,
+      228,
+      -2,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -25725,6 +26745,16 @@
       13850
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:so",
+      206,
+      228,
+      -2,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       207,
       228,
@@ -25734,6 +26764,16 @@
       false,
       false,
       13841
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:int-so",
+      207,
+      228,
+      -2,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -25747,6 +26787,17 @@
       13842
     ],
     [
+      "estrutura/pisos/piso-terra-2",
+      208,
+      228,
+      -2,
+      0,
+      false,
+      false,
+      false,
+      17094
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       209,
       228,
@@ -25756,6 +26807,16 @@
       false,
       false,
       13843
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:int-sl",
+      209,
+      228,
+      -2,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -25769,6 +26830,16 @@
       13844
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:int-so",
+      210,
+      228,
+      -2,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       211,
       228,
@@ -25778,6 +26849,17 @@
       false,
       false,
       13845
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      211,
+      228,
+      -2,
+      0,
+      false,
+      false,
+      false,
+      17100
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -25791,6 +26873,16 @@
       14237
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:int-nl",
+      212,
+      228,
+      -2,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       213,
       228,
@@ -25800,6 +26892,16 @@
       false,
       false,
       14238
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:nl",
+      213,
+      228,
+      -2,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -26249,6 +27351,16 @@
       13502
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:o",
+      200,
+      229,
+      -2,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       201,
       229,
@@ -26258,6 +27370,17 @@
       false,
       false,
       13564
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      201,
+      229,
+      -2,
+      0,
+      false,
+      false,
+      false,
+      17124
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -26271,6 +27394,17 @@
       13875
     ],
     [
+      "estrutura/pisos/piso-terra-2",
+      202,
+      229,
+      -2,
+      0,
+      false,
+      false,
+      false,
+      17121
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       203,
       229,
@@ -26280,6 +27414,17 @@
       false,
       false,
       13870
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      203,
+      229,
+      -2,
+      0,
+      false,
+      false,
+      false,
+      17114
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -26293,6 +27438,17 @@
       13865
     ],
     [
+      "estrutura/pisos/piso-terra-2",
+      204,
+      229,
+      -2,
+      0,
+      false,
+      false,
+      false,
+      17120
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       205,
       229,
@@ -26302,6 +27458,16 @@
       false,
       false,
       13856
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:int-nl",
+      205,
+      229,
+      -2,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -26315,6 +27481,16 @@
       13857
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:nl",
+      206,
+      229,
+      -2,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       207,
       229,
@@ -26324,6 +27500,16 @@
       false,
       false,
       13858
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:so",
+      207,
+      229,
+      -2,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -26337,6 +27523,16 @@
       13859
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:s",
+      208,
+      229,
+      -2,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       209,
       229,
@@ -26346,6 +27542,16 @@
       false,
       false,
       13860
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:sl",
+      209,
+      229,
+      -2,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -26359,6 +27565,16 @@
       14202
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:o",
+      210,
+      229,
+      -2,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       211,
       229,
@@ -26368,6 +27584,17 @@
       false,
       false,
       14207
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      211,
+      229,
+      -2,
+      0,
+      false,
+      false,
+      false,
+      17101
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -26381,6 +27608,17 @@
       14212
     ],
     [
+      "estrutura/pisos/piso-terra-2",
+      212,
+      229,
+      -2,
+      0,
+      false,
+      false,
+      false,
+      17102
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       213,
       229,
@@ -26390,6 +27628,16 @@
       false,
       false,
       14217
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:l",
+      213,
+      229,
+      -2,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -26841,6 +28089,16 @@
       13899
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:o",
+      200,
+      230,
+      -2,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       201,
       230,
@@ -26850,6 +28108,17 @@
       false,
       false,
       13891
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      201,
+      230,
+      -2,
+      0,
+      false,
+      false,
+      false,
+      17123
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -26863,6 +28132,17 @@
       13876
     ],
     [
+      "estrutura/pisos/piso-terra-2",
+      202,
+      230,
+      -2,
+      0,
+      false,
+      false,
+      false,
+      17122
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       203,
       230,
@@ -26872,6 +28152,17 @@
       false,
       false,
       13877
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      203,
+      230,
+      -2,
+      0,
+      false,
+      false,
+      false,
+      17113
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -26885,6 +28176,17 @@
       13878
     ],
     [
+      "estrutura/pisos/piso-terra-2",
+      204,
+      230,
+      -2,
+      0,
+      false,
+      false,
+      false,
+      17129
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       205,
       230,
@@ -26894,6 +28196,17 @@
       false,
       false,
       13879
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      205,
+      230,
+      -2,
+      0,
+      false,
+      false,
+      false,
+      17128
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -26907,6 +28220,16 @@
       13880
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:int-nl",
+      206,
+      230,
+      -2,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       207,
       230,
@@ -26916,6 +28239,16 @@
       false,
       false,
       14190
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:n",
+      207,
+      230,
+      -2,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -26929,6 +28262,16 @@
       14194
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:n",
+      208,
+      230,
+      -2,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       209,
       230,
@@ -26938,6 +28281,16 @@
       false,
       false,
       14198
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:n",
+      209,
+      230,
+      -2,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -26951,6 +28304,16 @@
       14203
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:int-no",
+      210,
+      230,
+      -2,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       211,
       230,
@@ -26960,6 +28323,17 @@
       false,
       false,
       14208
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      211,
+      230,
+      -2,
+      0,
+      false,
+      false,
+      false,
+      17104
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -26973,6 +28347,17 @@
       14213
     ],
     [
+      "estrutura/pisos/piso-terra-2",
+      212,
+      230,
+      -2,
+      0,
+      false,
+      false,
+      false,
+      17103
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       213,
       230,
@@ -26982,6 +28367,16 @@
       false,
       false,
       14218
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:l",
+      213,
+      230,
+      -2,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -27430,6 +28825,16 @@
       13900
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:so",
+      200,
+      231,
+      -2,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       201,
       231,
@@ -27439,6 +28844,16 @@
       false,
       false,
       13892
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:s",
+      201,
+      231,
+      -2,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -27452,6 +28867,16 @@
       13881
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:int-so",
+      202,
+      231,
+      -2,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       203,
       231,
@@ -27461,6 +28886,17 @@
       false,
       false,
       13882
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      203,
+      231,
+      -2,
+      0,
+      false,
+      false,
+      false,
+      17112
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -27474,6 +28910,17 @@
       13883
     ],
     [
+      "estrutura/pisos/piso-terra-2",
+      204,
+      231,
+      -2,
+      0,
+      false,
+      false,
+      false,
+      17111
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       205,
       231,
@@ -27483,6 +28930,17 @@
       false,
       false,
       13884
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      205,
+      231,
+      -2,
+      0,
+      false,
+      false,
+      false,
+      17110
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -27496,6 +28954,17 @@
       13885
     ],
     [
+      "estrutura/pisos/piso-terra-2",
+      206,
+      231,
+      -2,
+      0,
+      false,
+      false,
+      false,
+      17127
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       207,
       231,
@@ -27505,6 +28974,17 @@
       false,
       false,
       14191
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      207,
+      231,
+      -2,
+      0,
+      false,
+      false,
+      false,
+      17109
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -27518,6 +28998,17 @@
       14195
     ],
     [
+      "estrutura/pisos/piso-terra-2",
+      208,
+      231,
+      -2,
+      0,
+      false,
+      false,
+      false,
+      17108
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       209,
       231,
@@ -27527,6 +29018,17 @@
       false,
       false,
       14199
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      209,
+      231,
+      -2,
+      0,
+      false,
+      false,
+      false,
+      17107
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -27540,6 +29042,17 @@
       14204
     ],
     [
+      "estrutura/pisos/piso-terra-2",
+      210,
+      231,
+      -2,
+      0,
+      false,
+      false,
+      false,
+      17106
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       211,
       231,
@@ -27549,6 +29062,17 @@
       false,
       false,
       14209
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      211,
+      231,
+      -2,
+      0,
+      false,
+      false,
+      false,
+      17105
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -27562,6 +29086,16 @@
       14214
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:int-sl",
+      212,
+      231,
+      -2,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       213,
       231,
@@ -27571,6 +29105,16 @@
       false,
       false,
       14219
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:sl",
+      213,
+      231,
+      -2,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -28027,6 +29571,16 @@
       13886
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:so",
+      202,
+      232,
+      -2,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       203,
       232,
@@ -28036,6 +29590,16 @@
       false,
       false,
       13887
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:s",
+      203,
+      232,
+      -2,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -28049,6 +29613,16 @@
       13888
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:s",
+      204,
+      232,
+      -2,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       205,
       232,
@@ -28058,6 +29632,16 @@
       false,
       false,
       13889
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:s",
+      205,
+      232,
+      -2,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -28071,6 +29655,16 @@
       13890
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:s",
+      206,
+      232,
+      -2,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       207,
       232,
@@ -28080,6 +29674,16 @@
       false,
       false,
       14192
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:s",
+      207,
+      232,
+      -2,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -28093,6 +29697,16 @@
       14196
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:s",
+      208,
+      232,
+      -2,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       209,
       232,
@@ -28102,6 +29716,16 @@
       false,
       false,
       14200
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:s",
+      209,
+      232,
+      -2,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -28115,6 +29739,16 @@
       14205
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:s",
+      210,
+      232,
+      -2,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       211,
       232,
@@ -28126,6 +29760,16 @@
       14210
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:s",
+      211,
+      232,
+      -2,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       212,
       232,
@@ -28135,6 +29779,16 @@
       false,
       false,
       14215
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:sl",
+      212,
+      232,
+      -2,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -45415,6 +47069,16 @@
       12412
     ],
     [
+      "estrutura/entradas/bueiro",
+      197,
+      222,
+      -1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       198,
       222,
@@ -46214,15 +47878,14 @@
       11760
     ],
     [
-      "estrutura/pisos/piso-terra-2",
+      "Border:estrutura/pisos/piso-terra-2:int-sl",
       201,
       223,
       -1,
       0,
       false,
       false,
-      false,
-      12347
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -46236,15 +47899,14 @@
       11761
     ],
     [
-      "estrutura/pisos/piso-terra-2",
+      "Border:estrutura/pisos/piso-terra-2:s",
       202,
       223,
       -1,
       0,
       false,
       false,
-      false,
-      12334
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -46258,7 +47920,7 @@
       11792
     ],
     [
-      "Border:estrutura/pisos/piso-terra-2:l",
+      "Border:estrutura/pisos/piso-terra-2:sl",
       203,
       223,
       -1,
@@ -46857,7 +48519,7 @@
       11712
     ],
     [
-      "Border:estrutura/pisos/piso-terra-2:o",
+      "Border:estrutura/pisos/piso-terra-2:so",
       195,
       224,
       -1,
@@ -46878,15 +48540,14 @@
       11713
     ],
     [
-      "estrutura/pisos/piso-terra-2",
+      "Border:estrutura/pisos/piso-terra-2:s",
       196,
       224,
       -1,
       0,
       false,
       false,
-      false,
-      12415
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -46900,15 +48561,14 @@
       11730
     ],
     [
-      "estrutura/pisos/piso-terra-2",
+      "Border:estrutura/pisos/piso-terra-2:s",
       197,
       224,
       -1,
       0,
       false,
       false,
-      false,
-      12420
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -46922,18 +48582,7 @@
       11731
     ],
     [
-      "estrutura/pisos/piso-terra-2",
-      198,
-      224,
-      -1,
-      0,
-      false,
-      false,
-      false,
-      12330
-    ],
-    [
-      "estrutura/entradas/bueiro",
+      "Border:estrutura/pisos/piso-terra-2:s",
       198,
       224,
       -1,
@@ -46954,15 +48603,14 @@
       11732
     ],
     [
-      "estrutura/pisos/piso-terra-2",
+      "Border:estrutura/pisos/piso-terra-2:s",
       199,
       224,
       -1,
       0,
       false,
       false,
-      false,
-      12343
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -46976,15 +48624,14 @@
       11733
     ],
     [
-      "estrutura/pisos/piso-terra-2",
+      "Border:estrutura/pisos/piso-terra-2:s",
       200,
       224,
       -1,
       0,
       false,
       false,
-      false,
-      12342
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -46998,15 +48645,14 @@
       11762
     ],
     [
-      "estrutura/pisos/piso-terra-2",
+      "Border:estrutura/pisos/piso-terra-2:sl",
       201,
       224,
       -1,
       0,
       false,
       false,
-      false,
-      12333
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -47020,16 +48666,6 @@
       11763
     ],
     [
-      "Border:estrutura/pisos/piso-terra-2:int-sl",
-      202,
-      224,
-      -1,
-      0,
-      false,
-      false,
-      false
-    ],
-    [
       "estrutura/pisos/piso-terra-3",
       203,
       224,
@@ -47039,16 +48675,6 @@
       false,
       false,
       11772
-    ],
-    [
-      "Border:estrutura/pisos/piso-terra-2:sl",
-      203,
-      224,
-      -1,
-      0,
-      false,
-      false,
-      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -47648,7 +49274,7 @@
       11715
     ],
     [
-      "Border:estrutura/pisos/piso-terra-2:int-nl",
+      "Border:estrutura/pisos/piso-terra-2:l",
       194,
       225,
       -1,
@@ -47669,26 +49295,6 @@
       11716
     ],
     [
-      "Border:estrutura/pisos/piso-terra-2:nl",
-      195,
-      225,
-      -1,
-      0,
-      false,
-      false,
-      false
-    ],
-    [
-      "Border:estrutura/pisos/piso-terra-2:so",
-      195,
-      225,
-      -1,
-      0,
-      false,
-      false,
-      false
-    ],
-    [
       "estrutura/pisos/piso-terra-3",
       196,
       225,
@@ -47698,16 +49304,6 @@
       false,
       false,
       11717
-    ],
-    [
-      "Border:estrutura/pisos/piso-terra-2:int-so",
-      196,
-      225,
-      -1,
-      0,
-      false,
-      false,
-      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -47721,25 +49317,14 @@
       11734
     ],
     [
-      "estrutura/pisos/piso-terra-2",
+      "Border:estrutura/pisos/piso-terra-2:no",
       197,
       225,
       -1,
       0,
       false,
       false,
-      false,
-      12416
-    ],
-    [
-      "estrutura/natureza/pedra-1-canto",
-      197,
-      225,
-      -1,
-      0,
-      false,
-      false,
-      true
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -47753,15 +49338,14 @@
       11735
     ],
     [
-      "estrutura/pisos/piso-terra-2",
+      "Border:estrutura/pisos/piso-terra-2:n",
       198,
       225,
       -1,
       0,
       false,
       false,
-      false,
-      12419
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -47775,15 +49359,14 @@
       11736
     ],
     [
-      "estrutura/pisos/piso-terra-2",
+      "Border:estrutura/pisos/piso-terra-2:n",
       199,
       225,
       -1,
       0,
       false,
       false,
-      false,
-      12331
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -47797,15 +49380,14 @@
       11737
     ],
     [
-      "estrutura/pisos/piso-terra-2",
+      "Border:estrutura/pisos/piso-terra-2:nl",
       200,
       225,
       -1,
       0,
       false,
       false,
-      false,
-      12332
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -47819,16 +49401,6 @@
       11764
     ],
     [
-      "Border:estrutura/pisos/piso-terra-2:int-sl",
-      201,
-      225,
-      -1,
-      0,
-      false,
-      false,
-      false
-    ],
-    [
       "estrutura/pisos/piso-terra-3",
       202,
       225,
@@ -47838,16 +49410,6 @@
       false,
       false,
       11765
-    ],
-    [
-      "Border:estrutura/pisos/piso-terra-2:sl",
-      202,
-      225,
-      -1,
-      0,
-      false,
-      false,
-      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -47872,6 +49434,16 @@
       11776
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:no",
+      204,
+      225,
+      -1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       205,
       225,
@@ -47881,6 +49453,16 @@
       false,
       false,
       11777
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:n",
+      205,
+      225,
+      -1,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -47894,6 +49476,16 @@
       11797
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:n",
+      206,
+      225,
+      -1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       207,
       225,
@@ -47905,6 +49497,16 @@
       13062
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:n",
+      207,
+      225,
+      -1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       208,
       225,
@@ -47914,6 +49516,16 @@
       false,
       false,
       13063
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:nl",
+      208,
+      225,
+      -1,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -48393,15 +50005,14 @@
       11719
     ],
     [
-      "estrutura/pisos/piso-terra-2",
+      "Border:estrutura/pisos/piso-terra-2:l",
       194,
       226,
       -1,
       0,
       false,
       false,
-      false,
-      12488
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -48415,16 +50026,6 @@
       11720
     ],
     [
-      "Border:estrutura/pisos/piso-terra-2:l",
-      195,
-      226,
-      -1,
-      0,
-      false,
-      false,
-      false
-    ],
-    [
       "estrutura/pisos/piso-terra-3",
       196,
       226,
@@ -48436,7 +50037,7 @@
       11721
     ],
     [
-      "Border:estrutura/pisos/piso-terra-2:o",
+      "Border:estrutura/pisos/piso-terra-2:no",
       196,
       226,
       -1,
@@ -48457,23 +50058,12 @@
       11738
     ],
     [
-      "estrutura/pisos/piso-terra-2",
+      "Border:estrutura/pisos/piso-terra-2:int-no",
       197,
       226,
       -1,
       0,
       false,
-      false,
-      false,
-      12417
-    ],
-    [
-      "itens/produtos-de-criaturas/spider-silk",
-      197,
-      226,
-      -1,
-      0,
-      true,
       false,
       false
     ],
@@ -48497,17 +50087,7 @@
       false,
       false,
       false,
-      12418
-    ],
-    [
-      "estrutura/natureza/pedra-1-base",
-      198,
-      226,
-      -1,
-      0,
-      false,
-      false,
-      true
+      17130
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -48521,14 +50101,15 @@
       11740
     ],
     [
-      "Border:estrutura/pisos/piso-terra-2:int-sl",
+      "estrutura/pisos/piso-terra-2",
       199,
       226,
       -1,
       0,
       false,
       false,
-      false
+      false,
+      17064
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -48542,7 +50123,7 @@
       11741
     ],
     [
-      "Border:estrutura/pisos/piso-terra-2:s",
+      "Border:estrutura/pisos/piso-terra-2:int-nl",
       200,
       226,
       -1,
@@ -48563,7 +50144,7 @@
       11766
     ],
     [
-      "Border:estrutura/pisos/piso-terra-2:sl",
+      "Border:estrutura/pisos/piso-terra-2:nl",
       201,
       226,
       -1,
@@ -48606,6 +50187,16 @@
       11779
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:o",
+      204,
+      226,
+      -1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       205,
       226,
@@ -48615,6 +50206,17 @@
       false,
       false,
       11780
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      205,
+      226,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      17083
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -48628,6 +50230,17 @@
       11798
     ],
     [
+      "estrutura/pisos/piso-terra-2",
+      206,
+      226,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      17085
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       207,
       226,
@@ -48639,6 +50252,27 @@
       13068
     ],
     [
+      "estrutura/pisos/piso-terra-2",
+      207,
+      226,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      17084
+    ],
+    [
+      "estrutura/entradas/bueiro",
+      207,
+      226,
+      -1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       208,
       226,
@@ -48648,6 +50282,16 @@
       false,
       false,
       13069
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:l",
+      208,
+      226,
+      -1,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -49115,15 +50759,14 @@
       11723
     ],
     [
-      "estrutura/pisos/piso-terra-2",
+      "Border:estrutura/pisos/piso-terra-2:l",
       194,
       227,
       -1,
       0,
       false,
       false,
-      false,
-      12490
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -49137,16 +50780,6 @@
       11724
     ],
     [
-      "Border:estrutura/pisos/piso-terra-2:l",
-      195,
-      227,
-      -1,
-      0,
-      false,
-      false,
-      false
-    ],
-    [
       "estrutura/pisos/piso-terra-3",
       196,
       227,
@@ -49158,7 +50791,7 @@
       11725
     ],
     [
-      "Border:estrutura/pisos/piso-terra-2:so",
+      "Border:estrutura/pisos/piso-terra-2:o",
       196,
       227,
       -1,
@@ -49179,14 +50812,15 @@
       11742
     ],
     [
-      "Border:estrutura/pisos/piso-terra-2:s",
+      "estrutura/pisos/piso-terra-2",
       197,
       227,
       -1,
       0,
       false,
       false,
-      false
+      false,
+      17067
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -49200,14 +50834,15 @@
       11743
     ],
     [
-      "Border:estrutura/pisos/piso-terra-2:s",
+      "estrutura/pisos/piso-terra-2",
       198,
       227,
       -1,
       0,
       false,
       false,
-      false
+      false,
+      17066
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -49221,14 +50856,15 @@
       11744
     ],
     [
-      "Border:estrutura/pisos/piso-terra-2:sl",
+      "estrutura/pisos/piso-terra-2",
       199,
       227,
       -1,
       0,
       false,
       false,
-      false
+      false,
+      17065
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -49242,6 +50878,17 @@
       11745
     ],
     [
+      "estrutura/pisos/piso-terra-2",
+      200,
+      227,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      17074
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       201,
       227,
@@ -49251,6 +50898,16 @@
       false,
       false,
       11768
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:l",
+      201,
+      227,
+      -1,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -49286,6 +50943,16 @@
       11782
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:o",
+      204,
+      227,
+      -1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       205,
       227,
@@ -49295,6 +50962,17 @@
       false,
       false,
       11783
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      205,
+      227,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      17087
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -49308,6 +50986,17 @@
       11799
     ],
     [
+      "estrutura/pisos/piso-terra-2",
+      206,
+      227,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      17086
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       207,
       227,
@@ -49319,6 +51008,16 @@
       13074
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:int-sl",
+      207,
+      227,
+      -1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       208,
       227,
@@ -49328,6 +51027,16 @@
       false,
       false,
       13075
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:sl",
+      208,
+      227,
+      -1,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -49767,7 +51476,7 @@
       11727
     ],
     [
-      "Border:estrutura/pisos/piso-terra-2:s",
+      "Border:estrutura/pisos/piso-terra-2:sl",
       194,
       228,
       -1,
@@ -49788,16 +51497,6 @@
       11728
     ],
     [
-      "Border:estrutura/pisos/piso-terra-2:sl",
-      195,
-      228,
-      -1,
-      0,
-      false,
-      false,
-      false
-    ],
-    [
       "estrutura/pisos/piso-terra-3",
       196,
       228,
@@ -49807,6 +51506,16 @@
       false,
       false,
       11729
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:so",
+      196,
+      228,
+      -1,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -49820,6 +51529,16 @@
       11746
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:int-so",
+      197,
+      228,
+      -1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       198,
       228,
@@ -49829,6 +51548,17 @@
       false,
       false,
       11747
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      198,
+      228,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      17071
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -49842,6 +51572,17 @@
       11748
     ],
     [
+      "estrutura/pisos/piso-terra-2",
+      199,
+      228,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      17072
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       200,
       228,
@@ -49851,6 +51592,17 @@
       false,
       false,
       11749
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      200,
+      228,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      17073
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -49864,6 +51616,16 @@
       11770
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:int-nl",
+      201,
+      228,
+      -1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       202,
       228,
@@ -49873,6 +51635,16 @@
       false,
       false,
       11771
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:n",
+      202,
+      228,
+      -1,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -49886,6 +51658,16 @@
       11784
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:n",
+      203,
+      228,
+      -1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       204,
       228,
@@ -49895,6 +51677,16 @@
       false,
       false,
       11785
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:int-no",
+      204,
+      228,
+      -1,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -49908,6 +51700,17 @@
       11786
     ],
     [
+      "estrutura/pisos/piso-terra-2",
+      205,
+      228,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      17082
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       206,
       228,
@@ -49919,6 +51722,17 @@
       11800
     ],
     [
+      "estrutura/pisos/piso-terra-2",
+      206,
+      228,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      17088
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       207,
       228,
@@ -49928,6 +51742,16 @@
       false,
       false,
       13080
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:l",
+      207,
+      228,
+      -1,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -50310,6 +52134,16 @@
       11752
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:so",
+      197,
+      229,
+      -1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       198,
       229,
@@ -50319,6 +52153,16 @@
       false,
       false,
       11753
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:s",
+      198,
+      229,
+      -1,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -50332,6 +52176,16 @@
       11754
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:int-so",
+      199,
+      229,
+      -1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       200,
       229,
@@ -50341,6 +52195,17 @@
       false,
       false,
       11755
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      200,
+      229,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      17075
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -50354,6 +52219,17 @@
       11787
     ],
     [
+      "estrutura/pisos/piso-terra-2",
+      201,
+      229,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      17076
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       202,
       229,
@@ -50363,6 +52239,17 @@
       false,
       false,
       11788
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      202,
+      229,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      17077
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -50376,6 +52263,17 @@
       11789
     ],
     [
+      "estrutura/pisos/piso-terra-2",
+      203,
+      229,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      17080
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       204,
       229,
@@ -50385,6 +52283,17 @@
       false,
       false,
       11790
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      204,
+      229,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      17081
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -50398,6 +52307,16 @@
       11791
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:int-sl",
+      205,
+      229,
+      -1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       206,
       229,
@@ -50409,6 +52328,16 @@
       12161
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:s",
+      206,
+      229,
+      -1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       207,
       229,
@@ -50418,6 +52347,16 @@
       false,
       false,
       13086
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:sl",
+      207,
+      229,
+      -1,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -50792,6 +52731,16 @@
       12154
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:so",
+      199,
+      230,
+      -1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       200,
       230,
@@ -50801,6 +52750,16 @@
       false,
       false,
       12155
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:s",
+      200,
+      230,
+      -1,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -50814,6 +52773,16 @@
       12156
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:int-so",
+      201,
+      230,
+      -1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       202,
       230,
@@ -50823,6 +52792,17 @@
       false,
       false,
       12157
+    ],
+    [
+      "estrutura/pisos/piso-terra-2",
+      202,
+      230,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      17078
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -50836,6 +52816,17 @@
       12158
     ],
     [
+      "estrutura/pisos/piso-terra-2",
+      203,
+      230,
+      -1,
+      0,
+      false,
+      false,
+      false,
+      17079
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       204,
       230,
@@ -50847,6 +52838,16 @@
       12159
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:int-sl",
+      204,
+      230,
+      -1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       205,
       230,
@@ -50856,6 +52857,16 @@
       false,
       false,
       12160
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:sl",
+      205,
+      230,
+      -1,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -51274,6 +53285,16 @@
       12888
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:so",
+      201,
+      231,
+      -1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       202,
       231,
@@ -51283,6 +53304,16 @@
       false,
       false,
       12894
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:s",
+      202,
+      231,
+      -1,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -51296,6 +53327,16 @@
       12900
     ],
     [
+      "Border:estrutura/pisos/piso-terra-2:s",
+      203,
+      231,
+      -1,
+      0,
+      false,
+      false,
+      false
+    ],
+    [
       "estrutura/pisos/piso-terra-3",
       204,
       231,
@@ -51305,6 +53346,16 @@
       false,
       false,
       12901
+    ],
+    [
+      "Border:estrutura/pisos/piso-terra-2:sl",
+      204,
+      231,
+      -1,
+      0,
+      false,
+      false,
+      false
     ],
     [
       "estrutura/pisos/piso-terra-3",
@@ -185316,6 +187367,15 @@
   "transicoesData": [
     [
       "estrutura/escadas/escada-madeira-reta-1",
+      204,
+      229,
+      -3,
+      "up",
+      203,
+      229
+    ],
+    [
+      "estrutura/escadas/escada-madeira-reta-1",
       196,
       214,
       -2,
@@ -185352,6 +187412,15 @@
     ],
     [
       "estrutura/escadas/escada-madeira-reta-1",
+      208,
+      227,
+      -2,
+      "up",
+      207,
+      227
+    ],
+    [
+      "estrutura/escadas/escada-madeira-reta-1",
       172,
       168,
       -1,
@@ -185367,6 +187436,15 @@
       "up",
       191,
       210
+    ],
+    [
+      "estrutura/escadas/escada-madeira-reta-1",
+      198,
+      226,
+      -1,
+      "up",
+      197,
+      226
     ],
     [
       "estrutura/escadas/escada-madeira-reta-1",
@@ -185455,6 +187533,30 @@
       5,
       32,
       "criaturas/humanoides/troll"
+    ],
+    [
+      204,
+      229,
+      -3,
+      1,
+      32,
+      "criaturas/mortos-vivos/bat"
+    ],
+    [
+      211,
+      229,
+      -3,
+      1,
+      32,
+      "criaturas/mortos-vivos/skeleton"
+    ],
+    [
+      214,
+      229,
+      -3,
+      1,
+      32,
+      "criaturas/mortos-vivos/vamp"
     ],
     [
       195,
@@ -185585,6 +187687,14 @@
       "criaturas/repteis/snake"
     ],
     [
+      207,
+      227,
+      -2,
+      1,
+      32,
+      "criaturas/mortos-vivos/skeleton"
+    ],
+    [
       192,
       228,
       -2,
@@ -185593,12 +187703,28 @@
       "criaturas/humanoides/orc"
     ],
     [
+      202,
+      229,
+      -2,
+      1,
+      32,
+      "criaturas/mortos-vivos/skeleton"
+    ],
+    [
       197,
       231,
       -2,
       1,
       32,
       "criaturas/mamiferos/rat"
+    ],
+    [
+      205,
+      231,
+      -2,
+      1,
+      32,
+      "criaturas/mortos-vivos/bat"
     ],
     [
       170,
@@ -185705,12 +187831,28 @@
       "criaturas/vermes/spider"
     ],
     [
+      206,
+      226,
+      -1,
+      1,
+      32,
+      "criaturas/mortos-vivos/skeleton"
+    ],
+    [
       182,
       227,
       -1,
       2,
       32,
       "criaturas/vermes/spider"
+    ],
+    [
+      199,
+      227,
+      -1,
+      1,
+      32,
+      "criaturas/mortos-vivos/skeleton"
     ],
     [
       144,

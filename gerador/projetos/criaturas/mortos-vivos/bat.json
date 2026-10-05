@@ -1,0 +1,62 @@
+{
+  "formato": {
+    "quadro": 32,
+    "quadros": 2,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 122,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 4363,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4364,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 4365,
+        "variacao": 0
+      }
+    }
+  },
+  "propriedades": {
+    "comportamento": "normal",
+    "vida": 99,
+    "xp": 99,
+    "velocidade": 190,
+    "armadura": 99,
+    "defesa": 99,
+    "ataque": 99,
+    "magia": null,
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
+    "loot": [],
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "mortos-vivos",
+  "nome": "bat"
+}
