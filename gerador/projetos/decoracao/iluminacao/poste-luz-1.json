@@ -1,0 +1,40 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 1
+  },
+  "objeto": {
+    "tibia": {
+      "id": 2108,
+      "variacao": 0
+    }
+  },
+  "propriedades": {
+    "bloqueia": true,
+    "move": false,
+    "altura": false,
+    "empilhavel": false,
+    "peso": 999,
+    "espacos": 0,
+    "atk": 0,
+    "def": 0,
+    "ml": 0,
+    "speed": 0,
+    "vidaMin": 0,
+    "vidaMax": 0,
+    "manaMin": 0,
+    "manaMax": 0,
+    "alimento": 0,
+    "luz": 6,
+    "duracao": 0,
+    "regenVida": 0,
+    "regenMana": 0,
+    "uso": "bau-quest",
+    "abreComo": "",
+    "acesoComo": "decoracao/iluminacao/poste-luz-1-aceso"
+  },
+  "ferramenta": "objetos",
+  "grupo": "decoracao",
+  "pasta": "iluminacao",
+  "nome": "poste-luz-1"
+}
