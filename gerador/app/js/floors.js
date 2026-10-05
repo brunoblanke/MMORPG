@@ -338,7 +338,8 @@ export async function suggestBorders() {
     }
     render();
     const missing = BORDER_KEYS.filter(key => !suggestion.pecas[key]).length;
-    setStatus(`Bordas sugeridas: conjunto ${suggestion.conjunto[0]}–${suggestion.conjunto[1]}${missing ? ` (faltaram ${missing} peças)` : ''}. Troque o que quiser.`, 'ok');
+    const filled = (suggestion.completadas || []).length;
+    setStatus(`Bordas sugeridas: conjunto ${suggestion.conjunto[0]}–${suggestion.conjunto[1]}${filled ? ` (${filled} peças completadas de outro conjunto: ${suggestion.completadas.join(', ')})` : ''}${missing ? ` (faltaram ${missing} peças)` : ''}. Troque o que quiser.`, 'ok');
   } catch (error) {
     setStatus(`Não deu pra sugerir bordas: ${error.message}`, 'error');
   }

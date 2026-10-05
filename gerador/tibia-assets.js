@@ -48,6 +48,7 @@ const EDGE_BAND = 3;
 const EDGE_FULL = 0.75;
 const OUTER_CORNER_MAX_PIXELS = 600;
 const MAX_BORDER_COLOR_DISTANCE = 35;
+const BORDER_KEYS_TOTAL = 12;
 
 // Chão feito de itens separados (padraoDeItens): até 9 peças, no máximo 4 por
 // lado, de cor parecida; vale se as emendas não forem mais que 15% piores que
@@ -282,26 +283,42 @@ class TibiaAssets {
   // sugerirBordas
   // O conjunto de borda que combina com o chão (ids do meio): o de cor mais
   // parecida, desempatando pelo número mais perto do chão (no Tibia o
-  // conjunto costuma vir logo depois dele). Devolve { pecas: { s: id, … },
-  // conjunto: [primeiro, último] } ou null se nenhum combinar.
+  // conjunto costuma vir logo depois dele). Prefere os de desenho novo (fora
+  // de antigos, a aba Old); faltando peça, completa com o conjunto inteiro que
+  // mais combina. Devolve { pecas: { s: id, … }, conjunto: [primeiro,
+  // último], completadas: [peças de outro conjunto] } ou null.
 
   sugerirBordas(chaoIds) {
     const cores = chaoIds.map(id => this.things.item.get(id)).filter(Boolean).map(thing => corMedia(this.quadro(thing, {})));
     if (!cores.length) return null;
     const cor = [0, 1, 2].map(c => cores.reduce((soma, atual) => soma + atual[c], 0) / cores.length);
+    const antigo = (conjunto) => !!this.antigos && conjunto.every(peca => this.antigos.has(peca.id));
 
-    let melhor = null;
-    for (const conjunto of this.conjuntosDeBorda()) {
-      const diferenca = conjunto.reduce((soma, peca) => soma + distanciaDeCor(peca.cor, cor), 0) / conjunto.length;
-      const pontos = diferenca + Math.min(Math.abs(conjunto[0].id - chaoIds[0]), 2000) / 200;
-      if (diferenca <= MAX_BORDER_COLOR_DISTANCE && (!melhor || pontos < melhor.pontos)) melhor = { conjunto, pontos };
-    }
-    if (!melhor) return null;
+    const melhorDe = (conjuntos) => {
+      let melhor = null;
+      for (const conjunto of conjuntos) {
+        const diferenca = conjunto.reduce((soma, peca) => soma + distanciaDeCor(peca.cor, cor), 0) / conjunto.length;
+        const pontos = diferenca + Math.min(Math.abs(conjunto[0].id - chaoIds[0]), 2000) / 200;
+        if (diferenca <= MAX_BORDER_COLOR_DISTANCE && (!melhor || pontos < melhor.pontos)) melhor = { conjunto, pontos };
+      }
+      return melhor && melhor.conjunto;
+    };
+    const todos = this.conjuntosDeBorda();
+    const escolhido = melhorDe(todos.filter(conjunto => !antigo(conjunto))) || melhorDe(todos);
+    if (!escolhido) return null;
 
     const pecas = {};
-    for (const peca of melhor.conjunto) pecas[peca.chave] = peca.id;
-    return { pecas, conjunto: [melhor.conjunto[0].id, melhor.conjunto[melhor.conjunto.length - 1].id] };
+    for (const peca of escolhido) pecas[peca.chave] = peca.id;
+    const completo = melhorDe(todos.filter(conjunto => conjunto.length >= BORDER_KEYS_TOTAL));
+    const completadas = [];
+    for (const peca of completo && completo !== escolhido ? completo : []) {
+      if (pecas[peca.chave]) continue;
+      pecas[peca.chave] = peca.id;
+      completadas.push(peca.chave);
+    }
+    return { pecas, conjunto: [escolhido[0].id, escolhido[escolhido.length - 1].id], completadas };
   }
+
 
   // ================================================================================================================================================================================================================================================
   // conjuntosDeBorda

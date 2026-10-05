@@ -1,111 +1,154 @@
 {
   "formato": {
     "quadro": 32,
+    "padrao": [
+      3,
+      3
+    ],
     "linhas": [
-      "meio: 4 variações",
+      "meio: 1 variações",
       "s o n l",
       "sl so nl no",
       "int-sl int-so int-nl int-no"
     ]
   },
-  "variacoesDoMeio": 4,
+  "variacoesDoMeio": 1,
   "slots": {
-    "meio-1": {
-      "tibia": {
-        "id": 351,
-        "variacao": 0
-      }
-    },
     "s": {
       "tibia": {
-        "id": 357,
+        "id": 44815,
         "variacao": 0
       }
     },
     "o": {
       "tibia": {
-        "id": 358,
+        "id": 44816,
         "variacao": 0
       }
     },
     "n": {
       "tibia": {
-        "id": 356,
+        "id": 44814,
         "variacao": 0
-      }
-    },
-    "meio-2": {
-      "tibia": {
-        "id": 353,
-        "variacao": 1
-      }
-    },
-    "meio-3": {
-      "tibia": {
-        "id": 353,
-        "variacao": 15
-      }
-    },
-    "meio-4": {
-      "tibia": {
-        "id": 353,
-        "variacao": 5
       }
     },
     "l": {
       "tibia": {
-        "id": 359,
+        "id": 44817,
         "variacao": 0
       }
     },
     "sl": {
       "tibia": {
-        "id": 362,
+        "id": 44821,
         "variacao": 0
       }
     },
     "so": {
       "tibia": {
-        "id": 363,
+        "id": 44820,
         "variacao": 0
       }
     },
     "nl": {
       "tibia": {
-        "id": 361,
+        "id": 44819,
         "variacao": 0
       }
     },
     "no": {
       "tibia": {
-        "id": 360,
+        "id": 44818,
         "variacao": 0
       }
     },
     "int-sl": {
       "tibia": {
-        "id": 366,
+        "id": 44825,
         "variacao": 0
       }
     },
     "int-so": {
       "tibia": {
-        "id": 367,
+        "id": 44824,
         "variacao": 0
       }
     },
     "int-nl": {
       "tibia": {
-        "id": 365,
+        "id": 44823,
         "variacao": 0
       }
     },
     "int-no": {
       "tibia": {
-        "id": 364,
+        "id": 44822,
         "variacao": 0
       }
+    },
+    "meio-1": {
+      "tibia": {
+        "id": 44807,
+        "variacao": 0
+      }
+    },
+    "padrao-0-0": {
+      "tibia": {
+        "id": 44807,
+        "variacao": 0
+      }
+    },
+    "padrao-1-0": {
+      "tibia": {
+        "id": 44807,
+        "variacao": 1
+      }
+    },
+    "padrao-2-0": {
+      "tibia": {
+        "id": 44807,
+        "variacao": 2
+      }
+    },
+    "padrao-0-1": {
+      "tibia": {
+        "id": 44807,
+        "variacao": 3
+      }
+    },
+    "padrao-1-1": {
+      "tibia": {
+        "id": 44807,
+        "variacao": 4
+      }
+    },
+    "padrao-2-1": {
+      "tibia": {
+        "id": 44807,
+        "variacao": 5
+      }
+    },
+    "padrao-0-2": {
+      "tibia": {
+        "id": 44807,
+        "variacao": 6
+      }
+    },
+    "padrao-1-2": {
+      "tibia": {
+        "id": 44807,
+        "variacao": 7
+      }
+    },
+    "padrao-2-2": {
+      "tibia": {
+        "id": 44807,
+        "variacao": 8
+      }
     }
+  },
+  "propriedades": {
+    "comportamento": "normal"
   },
   "ferramenta": "pisos",
   "grupo": "estrutura",

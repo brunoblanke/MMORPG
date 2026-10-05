@@ -96,6 +96,7 @@ function arquivosTibia() {
     const arquivos = arquivosDoCliente(PASTA_TIBIA);
     if (!arquivos) throw new Error(`falta o Tibia.spr ou o Tibia.dat em ${PASTA_TIBIA}`);
     tibia = new TibiaAssets(PASTA_TIBIA, arquivos);
+    tibia.antigos = idsAntigos();
   }
   return tibia;
 }

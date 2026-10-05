@@ -1,111 +1,98 @@
 {
   "formato": {
     "quadro": 32,
+    "quadros": 14,
+    "msPorQuadro": 200,
     "linhas": [
-      "meio: 4 variações",
+      "meio: 1 variações",
       "s o n l",
       "sl so nl no",
       "int-sl int-so int-nl int-no"
     ]
   },
-  "variacoesDoMeio": 4,
+  "variacoesDoMeio": 1,
   "slots": {
-    "meio-1": {
-      "tibia": {
-        "id": 5572,
-        "variacao": 0
-      }
-    },
     "sl": {
       "tibia": {
-        "id": 5576,
+        "id": 24988,
         "variacao": 0
       }
     },
     "so": {
       "tibia": {
-        "id": 5574,
+        "id": 24987,
         "variacao": 0
       }
     },
     "nl": {
       "tibia": {
-        "id": 5570,
+        "id": 24986,
         "variacao": 0
       }
     },
     "no": {
       "tibia": {
-        "id": 5568,
+        "id": 24985,
         "variacao": 0
       }
     },
     "int-sl": {
       "tibia": {
-        "id": 5568,
+        "id": 24992,
         "variacao": 0
       }
     },
     "int-so": {
       "tibia": {
-        "id": 5570,
+        "id": 24991,
         "variacao": 0
       }
     },
     "int-nl": {
       "tibia": {
-        "id": 5574,
+        "id": 24990,
         "variacao": 0
       }
     },
     "int-no": {
       "tibia": {
-        "id": 5576,
-        "variacao": 0
-      }
-    },
-    "meio-2": {
-      "tibia": {
-        "id": 5572,
-        "variacao": 0
-      }
-    },
-    "meio-3": {
-      "tibia": {
-        "id": 5572,
-        "variacao": 0
-      }
-    },
-    "meio-4": {
-      "tibia": {
-        "id": 5572,
+        "id": 24989,
         "variacao": 0
       }
     },
     "s": {
       "tibia": {
-        "id": 5575,
+        "id": 24982,
         "variacao": 0
       }
     },
     "o": {
       "tibia": {
-        "id": 5571,
+        "id": 24983,
         "variacao": 0
       }
     },
     "n": {
       "tibia": {
-        "id": 5569,
+        "id": 24981,
         "variacao": 0
       }
     },
     "l": {
       "tibia": {
-        "id": 5573,
+        "id": 24984,
+        "variacao": 0
+      }
+    },
+    "meio-1": {
+      "tibia": {
+        "id": 45728,
         "variacao": 0
       }
     }
+  },
+  "propriedades": {
+    "comportamento": "normal"
   },
   "ferramenta": "pisos",
   "grupo": "estrutura",

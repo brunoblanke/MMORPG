@@ -1,41 +1,21 @@
 {
   "formato": {
     "quadro": 32,
-    "quadros": 9,
+    "quadros": 13,
     "msPorQuadro": 225,
+    "padrao": [
+      2,
+      3
+    ],
     "linhas": [
-      "meio: 4 variações",
+      "meio: 1 variações",
       "s o n l",
       "sl so nl no",
       "int-sl int-so int-nl int-no"
     ]
   },
-  "variacoesDoMeio": 4,
+  "variacoesDoMeio": 1,
   "slots": {
-    "meio-1": {
-      "tibia": {
-        "id": 4738,
-        "variacao": 0
-      }
-    },
-    "meio-2": {
-      "tibia": {
-        "id": 4739,
-        "variacao": 0
-      }
-    },
-    "meio-3": {
-      "tibia": {
-        "id": 4741,
-        "variacao": 0
-      }
-    },
-    "meio-4": {
-      "tibia": {
-        "id": 4690,
-        "variacao": 0
-      }
-    },
     "s": {
       "tibia": {
         "id": 4702,
@@ -105,6 +85,48 @@
     "int-no": {
       "tibia": {
         "id": 4713,
+        "variacao": 0
+      }
+    },
+    "meio-1": {
+      "tibia": {
+        "id": 4738,
+        "variacao": 0
+      }
+    },
+    "padrao-0-0": {
+      "tibia": {
+        "id": 4738,
+        "variacao": 0
+      }
+    },
+    "padrao-1-0": {
+      "tibia": {
+        "id": 4739,
+        "variacao": 0
+      }
+    },
+    "padrao-0-1": {
+      "tibia": {
+        "id": 4740,
+        "variacao": 0
+      }
+    },
+    "padrao-1-1": {
+      "tibia": {
+        "id": 4741,
+        "variacao": 0
+      }
+    },
+    "padrao-0-2": {
+      "tibia": {
+        "id": 4742,
+        "variacao": 0
+      }
+    },
+    "padrao-1-2": {
+      "tibia": {
+        "id": 4743,
         "variacao": 0
       }
     }
