@@ -89,7 +89,8 @@ export const htmlMethods = {
     if (win.kind === 'battle') return this.battleHtml(win, buttons(false));
     if (win.kind === 'vitals') return this.vitalsHtml(win);
     if (win.kind === 'book') return this.bookHtml(win, buttons(true));
-    if (win.kind === 'social') return this.socialHtml(win, buttons(false));
+    if (win.kind === 'party') return this.partyHtml(win, buttons(false));
+    if (win.kind === 'vip') return this.vipHtml(win, buttons(false));
     if (win.kind === 'trade') return this.tradeHtml(win);
     const box = this.findContainer(win.uid);
     if (!box) return '';
@@ -282,28 +283,56 @@ export const htmlMethods = {
   },
 
   // ================================================================================================================================================================================================================================================
-  // socialHtml
-  // Party (membros com vida e mana; sair), convites de party (entrar) e a
-  // lista VIP (verde online, cinza offline; × tira; campo pra pôr um nome).
+  // escapeHtml
 
-  socialHtml(win, buttons) {
+  escapeHtml(text) {
+    return String(text).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+  },
+
+  // ================================================================================================================================================================================================================================================
+  // sendButtonHtml
+  // Botão que manda o comando pro servidor ao clicar.
+
+  sendButtonHtml(command, label, title = '') {
+    return `<button class="inv-btn inv-social-btn" data-act="send" data-send="${this.escapeHtml(JSON.stringify(command))}" type="button" title="${title}">${label}</button>`;
+  },
+
+  // ================================================================================================================================================================================================================================================
+  // partyHtml
+  // Party (membros com vida e mana; sair) e os convites de party (entrar).
+  // Qualquer player pode ser convidado, esteja ou não na VIP.
+
+  partyHtml(win, buttons) {
     const social = this.view.social || { party: [], invites: [], vip: [] };
-    const esc = (text) => String(text).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-    const send = (command, label, title = '') => `<button class="inv-btn inv-social-btn" data-act="send" data-send="${esc(JSON.stringify(command))}" type="button" title="${title}">${label}</button>`;
+    const esc = (text) => this.escapeHtml(text);
     const party = social.party.map(m => `<div class="inv-battle-row">
         <span class="inv-battle-name">${m.leader ? '★ ' : ''}${esc(m.name)}</span>
         <div class="inv-battle-hp${m.hp <= 25 ? ' low' : m.hp <= 50 ? ' mid' : ''}"><i style="width:${m.hp}%"></i></div>
         <div class="inv-battle-hp mana"><i style="width:${m.mana}%"></i></div>
       </div>`).join('');
-    const invites = social.invites.map(i => `<div class="inv-social-line"><span>${esc(i.name)} te convidou</span>${send({ type: 'partyJoin', leaderId: i.id }, 'Entrar')}</div>`).join('');
-    const vip = social.vip.map(v => `<div class="inv-social-line"><span class="inv-vip ${v.online ? 'on' : 'off'}">${esc(v.name)}</span>
-        <span class="inv-social-acts">${v.online ? `<button class="inv-btn inv-social-btn" data-act="pm" data-name="${esc(v.name)}" type="button" title="Mensagem privada">✉</button>` : ''}${send({ type: 'vipRemove', name: v.name }, '×', 'Tirar da VIP')}</span></div>`).join('');
+    const invites = social.invites.map(i => `<div class="inv-social-line"><span>${esc(i.name)} te convidou</span>${this.sendButtonHtml({ type: 'partyJoin', leaderId: i.id }, 'Entrar')}</div>`).join('');
+    const leave = social.party.length ? this.sendButtonHtml({ type: 'partyLeave' }, 'Sair') : '';
     return `<section class="inv-win${win.min ? ' min' : ''}" data-win="${win.id}">
-      <header class="inv-head"><span class="inv-title">Social</span>${buttons}</header>
+      <header class="inv-head"><span class="inv-title">Party</span>${leave}${buttons}</header>
       <div class="inv-body"><div class="inv-battle">
-        <div class="inv-social-head">Party${social.party.length ? send({ type: 'partyLeave' }, 'Sair') : ''}</div>
         ${party || '<div class="inv-battle-empty">Botão direito num player pra convidar</div>'}${invites}
-        <div class="inv-social-head">VIP</div>
+      </div></div>
+    </section>`;
+  },
+
+  // ================================================================================================================================================================================================================================================
+  // vipHtml
+  // Lista VIP (verde online, cinza offline; ✉ mensagem; × tira) e o campo
+  // pra pôr um nome.
+
+  vipHtml(win, buttons) {
+    const social = this.view.social || { party: [], invites: [], vip: [] };
+    const esc = (text) => this.escapeHtml(text);
+    const vip = social.vip.map(v => `<div class="inv-social-line"><span class="inv-vip ${v.online ? 'on' : 'off'}">${esc(v.name)}</span>
+        <span class="inv-social-acts">${v.online ? `<button class="inv-btn inv-social-btn" data-act="pm" data-name="${esc(v.name)}" type="button" title="Mensagem privada">✉</button>` : ''}${this.sendButtonHtml({ type: 'vipRemove', name: v.name }, '×', 'Tirar da VIP')}</span></div>`).join('');
+    return `<section class="inv-win${win.min ? ' min' : ''}" data-win="${win.id}">
+      <header class="inv-head"><span class="inv-title">VIP</span>${buttons}</header>
+      <div class="inv-body"><div class="inv-battle">
         ${vip || '<div class="inv-battle-empty">Ninguém na lista</div>'}
         <div class="inv-social-line"><input class="inv-vip-input" type="text" maxlength="30" placeholder="Nome" aria-label="Nome pra VIP"><button class="inv-btn inv-social-btn" data-act="vipadd" type="button">+</button></div>
       </div></div>

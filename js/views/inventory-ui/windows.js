@@ -21,7 +21,7 @@ export const windowMethods = {
     if (saved && saved.v === LAYOUT_VERSION && Array.isArray(saved.left) && Array.isArray(saved.right)) {
       for (const col of LAYOUT_COLS) {
         for (const entry of Array.isArray(saved[col]) ? saved[col] : []) {
-          if (entry && ['inventory', 'skills', 'vitals', 'battle', 'social'].includes(entry.ref)) {
+          if (entry && ['inventory', 'skills', 'vitals', 'battle', 'party', 'vip'].includes(entry.ref)) {
             layout[col].push(this.makeWindow(entry.ref, null, entry));
             continue;
           }
@@ -31,20 +31,20 @@ export const windowMethods = {
       }
       if (LAYOUT_COLS.some(col => layout[col].some(w => w.kind === 'inventory'))) return this.withVitals(layout);
     }
-    layout.left.push(this.makeWindow('vitals', null), this.makeWindow('skills', null, { min: true }), this.makeWindow('battle', null, { min: true }), this.makeWindow('social', null, { min: true }));
+    layout.left.push(this.makeWindow('vitals', null), this.makeWindow('skills', null, { min: true }), this.makeWindow('battle', null, { min: true }), this.makeWindow('party', null, { min: true }), this.makeWindow('vip', null, { min: true }));
     layout.right.push(this.makeWindow('inventory', null));
     return layout;
   },
 
   // ================================================================================================================================================================================================================================================
   // withVitals
-  // Vida e mana, skills, battle e social sempre existem (não fecham, só
+  // Vida e mana, skills, battle, party e VIP sempre existem (não fecham, só
   // minimizam): a que falta no layout entra embaixo do inventário, nessa
-  // ordem. Skills, battle e social entram minimizadas.
+  // ordem. Skills, battle, party e VIP entram minimizadas.
 
   withVitals(layout) {
     let after = 'inventory';
-    for (const kind of ['vitals', 'skills', 'battle', 'social']) {
+    for (const kind of ['vitals', 'skills', 'battle', 'party', 'vip']) {
       if (!LAYOUT_COLS.some(c => layout[c].some(w => w.kind === kind))) {
         const col = LAYOUT_COLS.find(c => layout[c].some(w => w.kind === after)) || 'right';
         layout[col].splice(layout[col].findIndex(w => w.kind === after) + 1, 0, this.makeWindow(kind, null, { min: kind !== 'vitals' }));
