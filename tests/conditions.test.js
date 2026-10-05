@@ -2,7 +2,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { buildGame, floorRect, placeAt, CREATURE } from './helpers/fixture.js';
+import { buildGame, floorRect, placeAt, wall, CREATURE } from './helpers/fixture.js';
 import { setAssets } from '../shared/assets.js';
 import { TICK_MS } from '../js/simulation.js';
 import { CONDITIONS, FIELDS } from '../shared/conditions.js';
@@ -81,4 +81,20 @@ test('campo criado some no tempo dele; o dano dele numa criatura conta pro playe
   assert.ok(enemy.damageBy.get(sim.player.id) > 0);
   runFor(sim, FIELDS[FIRE].ms);
   assert.ok(!sim.objects.includes(field));
+});
+
+test('inimigo contorna o campo que fere; se o único caminho passa por ele, atravessa', () => {
+  const open = game({ enemies: [[2, 5, 0]] });
+  const enemy = open.enemies[0];
+  open.conditions.placeField(FIRE, 6, 5, 0);
+  const around = open.movement.findPath(enemy, { x: 10, y: 5, z: 0 }, { sameFloor: true });
+  assert.ok(around.length > 0);
+  assert.ok(!around.some(step => step.x === 6 && step.y === 5));
+
+  const walls = [];
+  for (let x = 0; x <= 14; x++) walls.push(...wall(x, 4), ...wall(x, 6));
+  const corridor = buildGame({ objects: [...floorRect(0, 14, 0, 14, 0), ...walls], enemies: [[2, 5, 0]], player: { x: 12, y: 8, z: 0 } });
+  corridor.conditions.placeField(FIRE, 6, 5, 0);
+  const through = corridor.movement.findPath(corridor.enemies[0], { x: 10, y: 5, z: 0 }, { sameFloor: true });
+  assert.ok(through.some(step => step.x === 6 && step.y === 5));
 });

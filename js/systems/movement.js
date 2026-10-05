@@ -14,6 +14,10 @@ const NO_PATH_RETRY_MS = 500;
 // sem caminho, a busca sem limite travava o servidor).
 const CHASE_MAX_NODES = 1000;
 
+// Quanto vale a mais pisar num campo que fere, pro inimigo (em sqms andados):
+// contorna se o desvio for menor que isso.
+const FIELD_STEP_COST = 30;
+
 export class MovementController {
 
   // ================================================================================================================================================================================================================================================
@@ -90,10 +94,15 @@ export class MovementController {
 
   // ================================================================================================================================================================================================================================================
   // findPath
-  // Caminho de start até end = { x, y, z } (core/pathfinding.js).
+  // Caminho de start até end = { x, y, z } (core/pathfinding.js). Inimigo
+  // contorna campo que fere; se não achar caminho assim (sem passagem ou
+  // longe demais), atravessa o campo.
 
   findPath(start, end, options = {}) {
-    return findPath(this.world, start, end, { enemiesPassable: this.enemiesPassable, avoidSafe: !!start.avoidsSafeZones, groundOnly: !!start.groundOnly, entering: start.isPlayer ? start : null, ...options });
+    const base = { enemiesPassable: this.enemiesPassable, avoidSafe: !!start.avoidsSafeZones, groundOnly: !!start.groundOnly, entering: start.isPlayer ? start : null, ...options };
+    if (start.isPlayer) return findPath(this.world, start, end, base);
+    const avoiding = findPath(this.world, start, end, { ...base, fieldCost: FIELD_STEP_COST });
+    return avoiding.length ? avoiding : findPath(this.world, start, end, base);
   }
 
   // ================================================================================================================================================================================================================================================

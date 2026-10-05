@@ -145,7 +145,8 @@ export class ConditionController {
   // ================================================================================================================================================================================================================================================
   // placeField
   // Cria o campo type no sqm (runa ou criatura); some sozinho no tempo dele.
-  // owner: o player que criou (o dano conta pra XP dele).
+  // owner: o player que criou (o dano conta pra XP dele). Os inimigos do
+  // andar refazem o caminho (pra contornar o campo novo).
 
   placeField(type, x, y, z, owner = null) {
     const field = FIELDS[type];
@@ -162,6 +163,9 @@ export class ConditionController {
     this.sim.objects.push(obj);
     this.sim.objectsById.set(obj.id, obj);
     this.sim.world.addObject(obj);
+    for (const enemy of this.sim.enemies) {
+      if ((enemy.z || 0) === z && enemy.route) enemy.route.path = null;
+    }
     this.sim.schedule((this.sim.time || 0) + field.ms, () => {
       if (this.sim.objectsById.get(obj.id) === obj) inventory.removeGroundObject(obj);
     });
