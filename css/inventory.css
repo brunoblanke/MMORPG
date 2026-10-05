@@ -44,7 +44,7 @@
 .inv-book-text{ max-height:60vh; overflow-y:auto; padding:10px 12px; white-space:pre-wrap; line-height:1.5; font-size:13px; color:var(--inv-text); }
 
 /* Janelas levemente transparentes: o mapa aparece por trás delas. */
-.inv-win{ flex-shrink:0; background:rgba(22, 25, 32, .82); border:1px solid var(--inv-line); border-radius:8px; overflow:hidden; }
+.inv-win{ flex-shrink:0; background:rgba(22, 25, 32, .82); border-radius:8px; overflow:hidden; }
 .inv-win.flash{ animation:inv-flash .7s ease-out; }
 @keyframes inv-flash{ 0%{ box-shadow:0 0 0 2px var(--inv-accent); } 100%{ box-shadow:0 0 0 0 transparent; } }
 .inv-win.dragging{ visibility:hidden; }
