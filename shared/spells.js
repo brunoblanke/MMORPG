@@ -48,16 +48,17 @@ export const SPELLS = [
 // magic level pra usar. heal cura o player do sqm; attack fere a criatura do
 // sqm (element: o tipo do dano); area fere as criaturas da área em volta do
 // sqm (AREAS); field cria o campo (nos sqms da área); cure tira o veneno do
-// player do sqm.
+// player do sqm. effect: a animação do Tibia (shared/effects.js) que aparece
+// no sqm do alvo (na área, em cada sqm dela).
 export const RUNES = {
-  'itens/runas/light-magic-missile-rune': { kind: 'attack', element: 'energy', charges: 5, ml: 0, formula: { min: [0.4, 2], max: [0.81, 4] } },
-  'itens/runas/heavy-magic-missile-rune': { kind: 'attack', element: 'energy', charges: 5, ml: 1, formula: { min: [0.8, 5], max: [1.6, 9] } },
-  'itens/runas/fireball-rune': { kind: 'attack', element: 'fire', charges: 5, ml: 5, formula: { min: [1.81, 10], max: [3, 18] } },
-  'itens/runas/sudden-death-rune': { kind: 'attack', element: 'death', charges: 3, ml: 15, formula: { min: [4.605, 28], max: [7.395, 46] } },
-  'itens/runas/great-fireball-rune': { kind: 'area', area: 'circle', element: 'fire', charges: 4, ml: 4, formula: { min: [1.2, 7], max: [2.85, 16] } },
-  'itens/runas/explosion-rune': { kind: 'area', area: 'cross', element: 'physical', charges: 6, ml: 6, formula: { min: [1.6, 9], max: [3.2, 19] } },
-  'itens/runas/intense-healing-rune': { kind: 'heal', charges: 1, ml: 1, formula: { min: [3.2, 20], max: [5.4, 40] } },
-  'itens/runas/ultimate-healing-rune': { kind: 'heal', charges: 1, ml: 4, formula: { min: [7.3, 42], max: [12.4, 90] } },
+  'itens/runas/light-magic-missile-rune': { kind: 'attack', element: 'energy', effect: 'energy', charges: 5, ml: 0, formula: { min: [0.4, 2], max: [0.81, 4] } },
+  'itens/runas/heavy-magic-missile-rune': { kind: 'attack', element: 'energy', effect: 'energy', charges: 5, ml: 1, formula: { min: [0.8, 5], max: [1.6, 9] } },
+  'itens/runas/fireball-rune': { kind: 'attack', element: 'fire', effect: 'fire', charges: 5, ml: 5, formula: { min: [1.81, 10], max: [3, 18] } },
+  'itens/runas/sudden-death-rune': { kind: 'attack', element: 'death', effect: 'death', charges: 3, ml: 15, formula: { min: [4.605, 28], max: [7.395, 46] } },
+  'itens/runas/great-fireball-rune': { kind: 'area', area: 'circle', element: 'fire', effect: 'fire', charges: 4, ml: 4, formula: { min: [1.2, 7], max: [2.85, 16] } },
+  'itens/runas/explosion-rune': { kind: 'area', area: 'square', element: 'physical', effect: 'explosion', charges: 6, ml: 6, formula: { min: [1.6, 9], max: [3.2, 19] } },
+  'itens/runas/intense-healing-rune': { kind: 'heal', effect: 'heal', charges: 1, ml: 1, formula: { min: [3.2, 20], max: [5.4, 40] } },
+  'itens/runas/ultimate-healing-rune': { kind: 'heal', effect: 'heal', charges: 1, ml: 4, formula: { min: [7.3, 42], max: [12.4, 90] } },
   'itens/runas/cure-poison-rune': { kind: 'cure', charges: 1, ml: 0 },
   'itens/runas/poison-field-rune': { kind: 'field', field: 'itens/itens-encantados/poison-field', area: 'single', charges: 3, ml: 0 },
   'itens/runas/fire-field-rune': { kind: 'field', field: 'itens/itens-encantados/fire-field', area: 'single', charges: 3, ml: 1 },
@@ -71,8 +72,23 @@ export const AREAS = {
   single: [[0, 0]],
   cross: [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]],
   square: [[-1, -1], [0, -1], [1, -1], [-1, 0], [0, 0], [1, 0], [-1, 1], [0, 1], [1, 1]],
-  circle: [[-1, -1], [0, -1], [1, -1], [-1, 0], [0, 0], [1, 0], [-1, 1], [0, 1], [1, 1], [0, -2], [0, 2], [-2, 0], [2, 0]]
+  circle: circleArea(3)
 };
+
+// ================================================================================================================================================================================================================================================
+// circleArea
+// O círculo de raio r do Tibia (o da great fireball, r = 3: 37 sqms em
+// linhas de 3, 5, 7, 7, 7, 5 e 3).
+
+function circleArea(r) {
+  const tiles = [];
+  for (let dy = -r; dy <= r; dy++) {
+    for (let dx = -r; dx <= r; dx++) {
+      if (dx * dx + dy * dy <= r * r + 1) tiles.push([dx, dy]);
+    }
+  }
+  return tiles;
+}
 
 // ================================================================================================================================================================================================================================================
 // findSpell

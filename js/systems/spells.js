@@ -5,6 +5,7 @@ import { isPositionAdjacentTo } from '../utils/helpers.js';
 import { getAsset, splitType } from '../../shared/assets.js';
 import { EQUIP_SLOTS, newItem, equipBonus } from '../../shared/items.js';
 import { addSkillTry } from '../../shared/skills.js';
+import { EFFECTS } from '../../shared/effects.js';
 import { RUNES, AREAS, BLANK_RUNE, SPELL_COOLDOWN_MS, SPELL_RANGE, RUNE_RANGE, LIGHT_SPELL, findSpell, spellRange } from '../../shared/spells.js';
 
 // Magias e runas (shared/spells.js). A magia é dita no chat: se as palavras
@@ -85,10 +86,12 @@ export class SpellController {
     }
     if (spell.kind === 'heal') {
       this.heal(player, this.roll(spell.formula, player));
+      this.showEffect(player.x, player.y, 'heal');
       return null;
     }
     if (spell.kind === 'cure') {
       if (player.conditions) delete player.conditions.poison;
+      this.showEffect(player.x, player.y, 'heal');
       return null;
     }
     if (spell.kind === 'haste') {
@@ -105,6 +108,7 @@ export class SpellController {
       if (!this.sim.movement.hasLineOfSight(player, target)) return 'Tem algo no caminho.';
       this.sim.emit({ type: 'missile', fromX: player.x, fromY: player.y, toX: target.x, toY: target.y, kind: spell.element });
       this.hurt(player, target, this.roll(spell.formula, player), now, spell.element);
+      this.showEffect(target.x, target.y, spell.element);
       return null;
     }
     const level = getLevel(player);
@@ -114,6 +118,14 @@ export class SpellController {
       }
     }
     return null;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // showEffect
+  // A animação do Tibia (shared/effects.js) no sqm, ou em cada sqm de tiles.
+
+  showEffect(x, y, name, tiles = [[x, y]]) {
+    if (EFFECTS[name]) this.sim.emit({ type: 'effect', x, y, tiles, effect: name });
   }
 
   // ================================================================================================================================================================================================================================================
@@ -208,6 +220,7 @@ export class SpellController {
       if (!who) return 'Só dá pra usar em players.';
       if (rune.kind === 'heal') this.heal(who, this.roll(rune.formula, player));
       else if (who.conditions) delete who.conditions.poison;
+      this.showEffect(who.x, who.y, rune.effect || 'heal');
       return null;
     }
     const tiles = AREAS[rune.area || 'single'].map(([dx, dy]) => [target.x + dx, target.y + dy]);
@@ -215,12 +228,13 @@ export class SpellController {
       const who = this.sim.enemies.find(at(target.x, target.y));
       if (!who) return 'Só dá pra usar em criaturas.';
       this.sim.emit({ type: 'missile', fromX: player.x, fromY: player.y, toX: who.x, toY: who.y, kind: rune.element });
+      this.showEffect(who.x, who.y, rune.effect);
       this.hurt(player, who, this.roll(rune.formula, player), now, rune.element);
       return null;
     }
     if (rune.kind === 'area') {
       this.sim.emit({ type: 'missile', fromX: player.x, fromY: player.y, toX: target.x, toY: target.y, kind: rune.element });
-      this.sim.emit({ type: 'burst', x: target.x, y: target.y, tiles, kind: rune.element });
+      this.showEffect(target.x, target.y, rune.effect, tiles);
       for (const [x, y] of tiles) {
         for (const enemy of this.sim.enemies.filter(at(x, y))) this.hurt(player, enemy, this.roll(rune.formula, player), now, rune.element);
       }

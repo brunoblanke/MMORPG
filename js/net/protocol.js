@@ -74,10 +74,11 @@ function pick(source, fields) {
 
 // ================================================================================================================================================================================================================================================
 // isSyncedItem
-// Itens que podem mudar de lugar (arrastados). Pisos, bordas e paredes fixas não.
+// Itens que podem mudar de lugar (arrastados) e os campos criados por runa
+// ou criatura (somem sozinhos). Pisos, bordas e paredes fixas não.
 
 export function isSyncedItem(obj) {
-  return (obj.movable === true || obj.isSplash === true) && !obj.floorType && !obj.isBorder && !obj.stairDirection;
+  return (obj.movable === true || obj.isSplash === true || obj.temporary === true) && !obj.floorType && !obj.isBorder && !obj.stairDirection;
 }
 
 // Alcance do que o servidor manda pra cada jogador (sqm em volta dele).
@@ -104,6 +105,7 @@ export function serializeState(sim, playerId, nearOnly = false) {
     houses: sim.houses ? sim.houses.viewOf() : [],
     items: sim.objects.filter(o => isSyncedItem(o) && near(o)).map(o => ({
       id: o.id, x: o.x, y: o.y, z: o.z, step: o.step, hasVolume: o.hasVolume, blocksMovement: o.blocksMovement,
+      temporary: o.temporary ? true : undefined,
       count: o.itemData ? o.itemData.count : o.count,
       splash: o.isSplash ? o.stage : undefined,
       lit: o.itemData && o.itemData.lit ? true : undefined,
@@ -322,7 +324,7 @@ function syncItems(mirror, incoming) {
     seen.add(data.id);
     let obj = mirror.objectsById.get(data.id);
     if (!obj) {
-      obj = new GameObject({ id: data.id, x: data.x, y: data.y, z: data.z, step: data.step, movable: data.splash === undefined, hasVolume: data.hasVolume, blocksMovement: data.blocksMovement });
+      obj = new GameObject({ id: data.id, x: data.x, y: data.y, z: data.z, step: data.step, movable: data.splash === undefined && !data.temporary, hasVolume: data.hasVolume, blocksMovement: data.blocksMovement, temporary: !!data.temporary });
       if (data.splash !== undefined) {
         obj.isSplash = true;
         obj.order = -1;

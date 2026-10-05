@@ -199,7 +199,7 @@ test('great fireball fere todas as criaturas da área; fire bomb põe fogo nos 9
   const events = rune(game, GFB, 9, 5);
   assert.ok(game.enemies[0].currentHp < hp[0] && game.enemies[1].currentHp < hp[1]);
   assert.equal(game.enemies[2].currentHp, hp[2]);
-  assert.ok(events.some(e => e.type === 'burst' && e.tiles.length === 13));
+  assert.ok(events.some(e => e.type === 'effect' && e.effect === 'fire' && e.tiles.length === 37));
 
   rune(game, FIRE_BOMB, 6, 9);
   const fires = game.objects.filter(o => o.id.startsWith(FIRE_FIELD) && Math.abs(o.x - 6) <= 1 && Math.abs(o.y - 9) <= 1);
@@ -225,4 +225,24 @@ test('cure poison rune tira o veneno do player mirado', () => {
   rune(game, CURE, 5, 5, 1);
   assert.equal(game.player.conditions.poison, undefined);
   assert.equal(game.player.equip.mochila.items[0], null);
+});
+
+test('efeitos do Tibia: UH brilha em quem cura, SD a bola preta no alvo, explosion nos 9 sqms; o campo criado vai pro navegador', async () => {
+  const UH = 'itens/runas/ultimate-healing-rune';
+  const SD = 'itens/runas/sudden-death-rune';
+  const EXPLOSION = 'itens/runas/explosion-rune';
+  setAssets([asset(BAG, { move: true }), asset(UH, { move: true }), asset(SD, { move: true }), asset(EXPLOSION, { move: true }), asset(MAGIC_WALL, { move: false, bloqueia: true }), asset(MW_RUNE, { move: true }), asset(CREATURE, { vida: 5000 })]);
+  const game = mage('sorcerer', { enemies: [[8, 5, 0]] });
+  game.player.skills.magic.lvl = 50;
+  game.enemies[0].atk = 0;
+  const effects = (events) => events.filter(e => e.type === 'effect');
+  assert.deepEqual(effects(rune(game, UH, 5, 5, 1)).map(e => e.effect), ['heal']);
+  assert.deepEqual(effects(rune(game, SD, 8, 5)).map(e => [e.effect, e.tiles]), [['death', [[8, 5]]]]);
+  const boom = effects(rune(game, EXPLOSION, 8, 5));
+  assert.equal(boom[0].effect, 'explosion');
+  assert.equal(boom[0].tiles.length, 9);
+  rune(game, MW_RUNE, 6, 7);
+  const { serializeState } = await import('../js/net/protocol.js');
+  const state = serializeState(game, 'player1');
+  assert.ok(state.items.some(i => i.id.startsWith(MAGIC_WALL) && i.blocksMovement && i.temporary));
 });
