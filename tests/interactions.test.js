@@ -34,7 +34,7 @@ setAssets([
   asset(SPOT, { uso: 'corda' }),
   asset(PILE, { uso: 'pa', abreComo: OPEN }),
   asset(OPEN, {}),
-  asset(FALL_PILE, { uso: 'pa', abreComo: OPEN, desceAoCavar: true }),
+  asset(FALL_PILE, { uso: 'pa-cai' }),
   asset(ROPE, { move: true, peso: 18, uso: 'ferramenta-corda' }),
   asset(SHOVEL, { move: true, peso: 35, uso: 'ferramenta-pa' }),
   asset(BAG, { move: true, peso: 8, espacos: 4 }),
@@ -139,7 +139,7 @@ test('corda na marca de corda sobe pro andar de cima; a pá abre o monte em bura
   assert.ok(sim.world.getTransitionAt(5, 6, 1));
 });
 
-test('monte com "Ao cavar, o player já cai": a pá abre o buraco e o player desce na hora', () => {
+test('monte pa-cai: a pá abre o buraco e o player desce na hora', () => {
   const sim = game([[FALL_PILE, 5, 6, 1]]);
   placeAt(sim, sim.player, 5, 5, 1);
   sim.player.equip.mochila.items[0] = { uid: 's1', type: SHOVEL };

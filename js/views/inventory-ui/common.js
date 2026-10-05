@@ -26,7 +26,7 @@ export const LAYOUT_COLS = ['left', 'right', 'free'];
 export const LAYOUT_VERSION = 2;
 export const REACH_CHECK_MS = 500;
 
-export const MAP_USES = ['placa', 'livro', 'bau-quest', 'corda', 'pa', 'descer', 'deposito'];
+export const MAP_USES = ['placa', 'livro', 'bau-quest', 'corda', 'pa', 'pa-cai', 'descer', 'deposito'];
 
 // ================================================================================================================================================================================================================================================
 // aimsWith

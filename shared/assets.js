@@ -275,7 +275,7 @@ export function isStairsType(type) {
 }
 
 export function isHoleType(type) {
-  return splitType(type).asset.startsWith(HOLE_FOLDER) && !['pa', 'descer'].includes(objectUse(type));
+  return splitType(type).asset.startsWith(HOLE_FOLDER) && !['pa', 'pa-cai', 'descer'].includes(objectUse(type));
 }
 
 // ================================================================================================================================================================================================================================================
@@ -326,11 +326,12 @@ export function objectProps(type) {
 // Pra que serve o objeto (gerador → Objetos → Uso): 'placa' (mostra o texto),
 // 'livro' (abre o texto), 'bau-quest' (dá os itens uma vez por player),
 // 'corda' (marca de corda: sobe um andar com a corda), 'pa' (monte que a pá
-// abre em buraco), 'descer' (bueiro: usar leva pro andar de baixo),
+// abre em buraco), 'pa-cai' (a pá abre e o player já cai; o desenho não
+// muda), 'descer' (bueiro: usar leva pro andar de baixo),
 // 'ferramenta-corda', 'ferramenta-pa' ou 'deposito' (abre o depósito do
 // player); null se nenhum.
 
-export const OBJECT_USES = ['placa', 'livro', 'bau-quest', 'corda', 'pa', 'descer', 'ferramenta-corda', 'ferramenta-pa', 'deposito'];
+export const OBJECT_USES = ['placa', 'livro', 'bau-quest', 'corda', 'pa', 'pa-cai', 'descer', 'ferramenta-corda', 'ferramenta-pa', 'deposito'];
 
 export function objectUse(type) {
   const asset = getAsset(splitType(type).asset);
@@ -344,7 +345,8 @@ export function objectUse(type) {
 
 export function openedAs(type) {
   const asset = getAsset(splitType(type).asset);
-  const target = asset && asset.propriedades && asset.propriedades.abreComo;
+  const props = asset && asset.propriedades;
+  const target = props && props.uso === 'pa' && props.abreComo;
   return target && getAsset(target) ? target : null;
 }
 

@@ -139,7 +139,7 @@ function applyTransitions(objs) {
 
   const holeKeys = new Set(objs.filter(obj => isEntranceFolder(objectIdType(obj.id))).map(obj => `${obj.x},${obj.y},${obj.z}`));
   const topKeys = new Set(stairTops.map(t => `${t.x},${t.y},${t.z}`).filter(key => !holeKeys.has(key)));
-  const closedKeys = new Set(objs.filter(obj => ['descer', 'pa'].includes(objectUse(objectIdType(obj.id)))).map(obj => `${obj.x},${obj.y},${obj.z}`));
+  const closedKeys = new Set(objs.filter(obj => ['descer', 'pa', 'pa-cai'].includes(objectUse(objectIdType(obj.id)))).map(obj => `${obj.x},${obj.y},${obj.z}`));
   const result = objs.filter(obj => !(obj.floorType && topKeys.has(`${obj.x},${obj.y},${obj.z}`)));
   result.push(...stairTops.filter(top => !closedKeys.has(`${top.x},${top.y},${top.z}`)));
 

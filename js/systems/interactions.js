@@ -10,13 +10,14 @@ import { getHoleTarget, toLowerLevel, toUpperLevel } from '../../shared/stairs.j
 //   livro     → abre o texto numa janela (no chão ou carregado);
 //   bau-quest → dá os itens (editor) uma vez por player;
 //   corda     → marca de corda: com a corda, sobe pro andar de cima;
-//   pa        → monte que a pá abre em buraco (fica aberto até o servidor reiniciar;
-//               com "Ao cavar, o player já cai", quem cavou desce na hora);
+//   pa        → monte que a pá abre em buraco (fica aberto até o servidor reiniciar);
+//   pa-cai    → a pá abre e quem cavou já cai no buraco (o desenho não muda);
 //   descer    → bueiro: usar leva pro andar de baixo (pisar não);
 //   deposito  → abre o depósito do player (inventory/depot.js).
 // Longe, o player anda até o lado e usa ao chegar.
 
-const MAP_USES = ['placa', 'livro', 'bau-quest', 'corda', 'pa', 'descer', 'deposito'];
+const MAP_USES = ['placa', 'livro', 'bau-quest', 'corda', 'pa', 'pa-cai', 'descer', 'deposito'];
+const SHOVEL_USES = ['pa', 'pa-cai'];
 const SIGN_KINDS = ['info', 'warn', 'danger', 'blue'];
 const CLIMB_OFFSETS = [[0, 1], [1, 1], [-1, 1], [1, 0], [-1, 0], [0, -1], [1, -1], [-1, -1]];
 
@@ -96,17 +97,17 @@ export class InteractionController {
   useTool(player, tool, target, from = null) {
     const z = player.z || 0;
     if (!target || !Number.isInteger(target.x) || !Number.isInteger(target.y) || (target.z ?? z) !== z) return false;
-    const wanted = tool === 'ferramenta-corda' ? 'corda' : 'pa';
+    const wanted = tool === 'ferramenta-corda' ? ['corda'] : SHOVEL_USES;
     const here = this.sim.world.getObjectsAt(target.x, target.y).filter(o => (o.z || 0) === z);
-    const hole = wanted === 'corda' ? here.find(o => this.isOpening(o)) : null;
-    const obj = here.find(o => objectUse(objectIdType(o.id)) === wanted) || hole;
+    const hole = tool === 'ferramenta-corda' ? here.find(o => this.isOpening(o)) : null;
+    const obj = here.find(o => wanted.includes(objectUse(objectIdType(o.id)))) || hole;
     if (!obj) return false;
     if (!this.sim.inventory.isNear(player, obj)) {
       if (from) this.sim.inventory.walkNextTo(player, obj, { type: 'useItem', from, target });
       return false;
     }
     if (obj === hole) return this.pullUp(hole);
-    return wanted === 'corda' ? this.climb(player, obj) : this.dig(player, obj);
+    return tool === 'ferramenta-corda' ? this.climb(player, obj) : this.dig(player, obj);
   }
 
   // ================================================================================================================================================================================================================================================
@@ -139,7 +140,7 @@ export class InteractionController {
 
   isOpening(obj) {
     const type = objectIdType(obj.id);
-    if (objectUse(type) === 'pa') return !!obj.dug;
+    if (SHOVEL_USES.includes(objectUse(type))) return !!obj.dug;
     return isEntranceFolder(type);
   }
 
@@ -213,12 +214,12 @@ export class InteractionController {
   // ================================================================================================================================================================================================================================================
   // dig
   // Abre o monte: vira buraco (desenho de "Abre como") que leva pro andar de
-  // baixo e fica aberto até o servidor reiniciar. Com "Ao cavar, o player
-  // já cai" (gerador), quem cavou desce na hora pelo buraco.
+  // baixo e fica aberto até o servidor reiniciar. No 'pa-cai', quem cavou
+  // desce na hora pelo buraco.
 
   dig(player, pile) {
     const type = objectIdType(pile.id);
-    const falls = !!(getAsset(splitType(type).asset)?.propriedades?.desceAoCavar);
+    const falls = objectUse(type) === 'pa-cai';
     if (!pile.dug) {
       if (!openedAs(type) && !falls) return false;
       const target = getHoleTarget(pile.x, pile.y, pile.z || 0);
