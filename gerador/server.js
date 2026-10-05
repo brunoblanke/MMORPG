@@ -6,7 +6,8 @@ const path = require('path');
 const { TibiaAssets, paletaDeRoupa } = require('./tibia-assets.js');
 
 // Gerador de sprites: programa à parte do jogo e do editor. Mostra os sprites
-// do Tibia (tibia/780), monta folhas com as ferramentas (pisos, criaturas,
+// do Tibia (tibia/atual, se a pasta tiver o Tibia.spr e o Tibia.dat; senão
+// tibia/780), monta folhas com as ferramentas (pisos, criaturas,
 // paredes, objetos) na tela e grava na pasta escolhida (taxonomia.json):
 //   saida/<grupo>/<pasta>/<nome>.png      a folha pronta, no formato do jogo
 //   projetos/<grupo>/<pasta>/<nome>.json  a receita (de onde veio cada parte)
@@ -15,7 +16,7 @@ const { TibiaAssets, paletaDeRoupa } = require('./tibia-assets.js');
 
 const PORTA = process.env.GERADOR_PORT || 8100;
 const PASTA_APP = path.join(__dirname, 'app');
-const PASTA_TIBIA = path.join(__dirname, 'tibia', '780');
+const PASTA_TIBIA = fs.existsSync(path.join(__dirname, 'tibia', 'atual', 'Tibia.spr')) ? path.join(__dirname, 'tibia', 'atual') : path.join(__dirname, 'tibia', '780');
 const PASTA_SAIDA = path.join(__dirname, 'saida');
 const PASTA_PROJETOS = path.join(__dirname, 'projetos');
 const FERRAMENTAS = ['pisos', 'criaturas', 'paredes', 'objetos'];
@@ -49,6 +50,7 @@ let tibia = null;
 
 app.listen(PORTA, () => {
   console.log(`\n🎨 Gerador de sprites em http://localhost:${PORTA}`);
+  console.log(`🗂️  Sprites do Tibia de tibia/${path.basename(PASTA_TIBIA)}`);
   console.log(`📁 PNGs prontos em ${PASTA_SAIDA}\n`);
 });
 
@@ -69,7 +71,7 @@ function catalogo(req, res) {
     res.json({ success: true, ...arquivosTibia().catalogo() });
   } catch (err) {
     console.error('❌ Tibia:', err.message);
-    res.status(500).json({ success: false, message: `Não foi possível ler tibia/780: ${err.message}` });
+    res.status(500).json({ success: false, message: `Não foi possível ler tibia/${path.basename(PASTA_TIBIA)}: ${err.message}` });
   }
 }
 

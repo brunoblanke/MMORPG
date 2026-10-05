@@ -4,8 +4,11 @@ const fs = require('fs');
 const path = require('path');
 const zlib = require('zlib');
 
-// Lê os arquivos do cliente do Tibia (Tibia.spr e Tibia.dat, versão 7.80–8.54)
-// pro gerador de sprites:
+// Lê os arquivos do cliente do Tibia (Tibia.spr e Tibia.dat) pro gerador de
+// sprites. Lê dois formatos: o da versão 7.80–8.54 e o estendido (10.x em
+// diante, usado pelas conversões do cliente atual: sprites às vezes com
+// transparência, ids de 4 bytes, animação com tempo por quadro e criatura parada/andando em
+// grupos separados). O resto do gerador vê os dois do mesmo jeito.
 //   - catálogo dos itens e criaturas, por categoria;
 //   - PNG de uma variação de um item (o gerador monta as folhas com eles);
 //   - sugestão do conjunto de borda que combina com um chão;
@@ -27,6 +30,13 @@ const FLAG = {
   LENS_HELP: 30, FULL_GROUND: 31, IGNORE_LOOK: 32
 };
 const FLAG_DATA_BYTES = { 0: 2, 9: 2, 10: 2, 22: 4, 25: 4, 26: 2, 29: 2, 30: 2 };
+
+// .dat estendido: número → número da tabela acima (o que não existe no 7.80
+// fica com 100 + o número, sem uso), bytes de dado de cada um e o do mercado
+// (tamanho variável).
+const EXTENDED_FLAGS = [0, 1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15, 16, 116, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32];
+const EXTENDED_DATA_BYTES = { 0: 2, 8: 2, 9: 2, 22: 4, 25: 4, 26: 2, 29: 2, 30: 2, 33: 2, 35: 2 };
+const EXTENDED_MARKET = 34;
 
 // Direções do jogo (linhas do sprite) → coluna de direção do Tibia (0 norte, 1 leste, 2 sul, 3 oeste).
 const DIRECTION_PATTERNS = [2, 0, 1, 3];
@@ -64,9 +74,39 @@ class TibiaAssets {
   constructor(pastaCliente) {
     this.spr = fs.readFileSync(path.join(pastaCliente, 'Tibia.spr'));
     this.dat = fs.readFileSync(path.join(pastaCliente, 'Tibia.dat'));
-    this.spriteCount = this.spr.readUInt16LE(4);
-    this.things = lerDat(this.dat);
+    this.estendido = this.spr.readUInt32LE(4) * 4 + 8 <= this.spr.length && this.spr.readUInt32LE(8) === this.spr.readUInt32LE(4) * 4 + 8;
+    this.spriteCount = this.estendido ? this.spr.readUInt32LE(4) : this.spr.readUInt16LE(4);
+    this.inicioDosEnderecos = this.estendido ? 8 : 6;
+    this.bytesPorPixel = this.estendido && this.temTransparencia() ? 4 : 3;
+    this.things = this.estendido ? lerDatEstendido(this.dat) : lerDat(this.dat);
     this.thumbCache = new Map();
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // temTransparencia
+  // O .spr estendido pode ter a cor em RGB ou RGBA: é RGBA se, lendo assim,
+  // os primeiros sprites desenhados terminam certinho no tamanho deles.
+
+  temTransparencia() {
+    let conferidos = 0;
+    for (let id = 1; id <= this.spriteCount && conferidos < 20; id++) {
+      const inicio = this.enderecoDoSprite(id);
+      if (!inicio) continue;
+      conferidos++;
+      let p = inicio + 5;
+      const fim = p + this.spr.readUInt16LE(inicio + 3);
+      while (p < fim) p += 4 + this.spr.readUInt16LE(p + 2) * 4;
+      if (p !== fim) return false;
+    }
+    return conferidos > 0;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // enderecoDoSprite
+  // Onde o sprite começa no .spr (0 se ele é vazio).
+
+  enderecoDoSprite(id) {
+    return this.spr.readUInt32LE(this.inicioDosEnderecos + (id - 1) * 4);
   }
 
   // ================================================================================================================================================================================================================================================
@@ -93,7 +133,7 @@ class TibiaAssets {
   // temDesenho
 
   temDesenho(thing) {
-    return thing.sprites.some(id => id > 0 && id <= this.spriteCount && this.spr.readUInt32LE(6 + (id - 1) * 4) > 0);
+    return thing.sprites.some(id => id > 0 && id <= this.spriteCount && this.enderecoDoSprite(id) > 0);
   }
 
   // ================================================================================================================================================================================================================================================
@@ -409,27 +449,29 @@ class TibiaAssets {
   // ================================================================================================================================================================================================================================================
   // sprite
   // Sprite 32×32 em RGBA. No .spr cada sprite é: cor transparente (3 bytes),
-  // tamanho, e pares (pixels transparentes, pixels coloridos + RGB deles).
+  // tamanho, e pares (pixels transparentes, pixels coloridos + cor deles: RGB
+  // no 7.80, RGBA no estendido).
 
   sprite(id) {
     const pixels = new Uint8Array(SPRITE_SIZE * SPRITE_SIZE * 4);
     if (id <= 0 || id > this.spriteCount) return pixels;
-    const inicio = this.spr.readUInt32LE(6 + (id - 1) * 4);
+    const inicio = this.enderecoDoSprite(id);
     if (!inicio) return pixels;
 
+    const bytesPorPixel = this.bytesPorPixel;
     const tamanho = this.spr.readUInt16LE(inicio + 3);
     let p = inicio + 5;
     const fim = p + tamanho;
     let pixel = 0;
-    while (p < fim) {
+    while (p < fim && pixel < SPRITE_SIZE * SPRITE_SIZE) {
       pixel += this.spr.readUInt16LE(p);
       const coloridos = this.spr.readUInt16LE(p + 2);
       p += 4;
-      for (let i = 0; i < coloridos; i++, pixel++, p += 3) {
+      for (let i = 0; i < coloridos && pixel < SPRITE_SIZE * SPRITE_SIZE; i++, pixel++, p += bytesPorPixel) {
         pixels[pixel * 4] = this.spr[p];
         pixels[pixel * 4 + 1] = this.spr[p + 1];
         pixels[pixel * 4 + 2] = this.spr[p + 2];
-        pixels[pixel * 4 + 3] = 255;
+        pixels[pixel * 4 + 3] = bytesPorPixel === 4 ? this.spr[p + 3] : 255;
       }
     }
     return pixels;
@@ -477,6 +519,88 @@ function lerDat(dat) {
 
   if (p !== dat.length) throw new Error(`Tibia.dat não é da versão 7.80–8.54 (leu ${p} de ${dat.length} bytes)`);
   return things;
+}
+
+// ================================================================================================================================================================================================================================================
+// lerDatEstendido
+// O .dat estendido (10.x em diante): as propriedades vêm numa tabela um pouco
+// diferente (traduzidas pra do 7.80), os ids das sprites têm 4 bytes, a
+// animação tem o tempo de cada quadro e a criatura tem dois grupos: parada e
+// andando. Pro gerador, a criatura fica como no 7.80: o 1º quadro parado e
+// depois os quadros andando.
+
+function lerDatEstendido(dat) {
+  const quantos = {
+    item: dat.readUInt16LE(4) - ITEM_FIRST_ID + 1,
+    outfit: dat.readUInt16LE(6),
+    effect: dat.readUInt16LE(8),
+    missile: dat.readUInt16LE(10)
+  };
+  const things = { item: new Map(), outfit: new Map(), effect: new Map(), missile: new Map() };
+  let p = 12;
+
+  const lerGrupo = () => {
+    const w = dat[p];
+    const h = dat[p + 1];
+    p += 2;
+    if (w > 1 || h > 1) p++;
+    const [layers, px, py, pz, anim] = dat.subarray(p, p + 5);
+    p += 5;
+    if (anim > 1) p += 6 + anim * 8;
+    const total = w * h * layers * px * py * pz * anim;
+    const sprites = [];
+    for (let i = 0; i < total; i++, p += 4) sprites.push(dat.readUInt32LE(p));
+    return { w, h, layers, px, py, pz, anim, sprites };
+  };
+
+  for (const tipo of ['item', 'outfit', 'effect', 'missile']) {
+    const primeiro = tipo === 'item' ? ITEM_FIRST_ID : 1;
+    for (let n = 0; n < quantos[tipo]; n++) {
+      const flags = {};
+      for (;;) {
+        const flag = dat[p++];
+        if (flag === 0xFF) break;
+        const nome = flag < EXTENDED_FLAGS.length ? EXTENDED_FLAGS[flag] : 100 + flag;
+        if (flag === EXTENDED_MARKET) {
+          p += 6;
+          p += 2 + dat.readUInt16LE(p) + 4;
+          flags[nome] = true;
+          continue;
+        }
+        const bytes = EXTENDED_DATA_BYTES[flag] || 0;
+        flags[nome] = bytes === 2 ? dat.readUInt16LE(p) : bytes === 4 ? [dat.readUInt16LE(p), dat.readUInt16LE(p + 2)] : true;
+        p += bytes;
+      }
+      if (tipo !== 'outfit') {
+        things[tipo].set(primeiro + n, { flags, ...lerGrupo() });
+        continue;
+      }
+      const grupos = [];
+      for (let g = dat[p++]; g > 0; g--) {
+        p++;
+        grupos.push(lerGrupo());
+      }
+      things[tipo].set(primeiro + n, { flags, ...juntarGrupos(grupos) });
+    }
+  }
+
+  if (p !== dat.length) throw new Error(`Tibia.dat estendido não foi lido inteiro (leu ${p} de ${dat.length} bytes)`);
+  return things;
+}
+
+// ================================================================================================================================================================================================================================================
+// juntarGrupos
+// Criatura com o grupo parada e o andando (do mesmo tamanho): um grupo só com
+// o 1º quadro parado seguido dos quadros andando. Senão, o grupo que tiver
+// mais quadros.
+
+function juntarGrupos(grupos) {
+  const [parada, andando] = grupos;
+  if (!andando) return parada;
+  const mesmoTamanho = ['w', 'h', 'layers', 'px', 'py', 'pz'].every(chave => parada[chave] === andando[chave]);
+  if (!mesmoTamanho) return parada.anim >= andando.anim ? parada : andando;
+  const porQuadro = parada.w * parada.h * parada.layers * parada.px * parada.py * parada.pz;
+  return { ...andando, anim: andando.anim + 1, sprites: [...parada.sprites.slice(0, porQuadro), ...andando.sprites] };
 }
 
 // ================================================================================================================================================================================================================================================
@@ -650,8 +774,9 @@ function corDaPaleta(indice) {
 
 // ================================================================================================================================================================================================================================================
 // colar
-// Copia o quadro (pixels opacos) pra dentro da folha na posição (x, y); o que
-// cair fora da folha fica de fora.
+// Copia o quadro pra dentro da folha na posição (x, y), misturando os pixels
+// meio transparentes com o que já está embaixo; o que cair fora da folha fica
+// de fora.
 
 function colar(folha, larguraFolha, quadro, x, y) {
   const alturaFolha = folha.length / 4 / larguraFolha;
@@ -662,7 +787,12 @@ function colar(folha, larguraFolha, quadro, x, y) {
       const fx = x + coluna;
       const fy = y + linha;
       if (fx < 0 || fy < 0 || fx >= larguraFolha || fy >= alturaFolha) continue;
-      folha.set(quadro.pixels.subarray(origem, origem + 4), (fy * larguraFolha + fx) * 4);
+      const destino = (fy * larguraFolha + fx) * 4;
+      const alfa = quadro.pixels[origem + 3] / 255;
+      const alfaEmbaixo = folha[destino + 3] / 255 * (1 - alfa);
+      const alfaFinal = alfa + alfaEmbaixo;
+      for (let c = 0; c < 3; c++) folha[destino + c] = Math.round((quadro.pixels[origem + c] * alfa + folha[destino + c] * alfaEmbaixo) / alfaFinal);
+      folha[destino + 3] = Math.round(alfaFinal * 255);
     }
   }
 }

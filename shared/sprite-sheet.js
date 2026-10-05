@@ -1,5 +1,8 @@
 // shared/sprite-sheet.js
 
+// Quadros de caminhada das folhas do Tibia 7.80 (a base da velocidade da animação).
+const WALK_BASE_FRAMES = 2;
+
 // ================================================================================================================================================================================================================================================
 // pickFrameRect
 
@@ -55,12 +58,14 @@ export class SpriteSheet {
   // ================================================================================================================================================================================================================================================
   // getWalkRect
   // Andando: só os quadros de caminhada (do 2º em diante); o 1º, parado, fica
-  // pra quando a criatura realmente para.
+  // pra quando a criatura realmente para. durationPerFrame é o tempo de um
+  // quadro numa caminhada de 2 quadros: com mais quadros (Tibia atual: 8),
+  // cada um dura menos e a volta inteira leva o mesmo tempo.
 
   getWalkRect(direction, timestamp, durationPerFrame) {
     if (this.totalFrames <= 1) return this.getIdleRect(direction);
     const walkFrames = this.totalFrames - 1;
-    const duration = durationPerFrame || 100;
+    const duration = (durationPerFrame || 100) * Math.min(1, WALK_BASE_FRAMES / walkFrames);
     const frameIndex = 1 + Math.floor((timestamp % (walkFrames * duration)) / duration);
     const idle = this.getIdleRect(direction);
     return { ...idle, sx: idle.sx + frameIndex * this.frameWidth };
