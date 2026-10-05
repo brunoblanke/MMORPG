@@ -42,18 +42,20 @@
   },
   "propriedades": {
     "comportamento": "normal",
-    "vida": 99,
-    "xp": 99,
-    "velocidade": 190,
-    "armadura": 99,
-    "defesa": 99,
-    "ataque": 99,
+    "vida": 30,
+    "xp": 10,
+    "velocidade": 320,
+    "armadura": 2,
+    "defesa": 2,
+    "ataque": 8,
     "magia": null,
     "veneno": 0,
     "invoca": null,
     "respawn": 0,
     "loot": [],
-    "falas": []
+    "falas": [
+      "Flap! Flap!"
+    ]
   },
   "ferramenta": "criaturas",
   "grupo": "criaturas",

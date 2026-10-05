@@ -42,18 +42,61 @@
   },
   "propriedades": {
     "comportamento": "normal",
-    "vida": 99,
-    "xp": 99,
-    "velocidade": 190,
-    "armadura": 99,
-    "defesa": 99,
-    "ataque": 99,
-    "magia": null,
+    "vida": 475,
+    "xp": 305,
+    "velocidade": 220,
+    "armadura": 38,
+    "defesa": 38,
+    "ataque": 150,
+    "magia": {
+      "tipo": "death",
+      "dano": 130,
+      "chance": 15
+    },
     "veneno": 0,
-    "invoca": null,
+    "invoca": {
+      "tipo": "criaturas/mortos-vivos/bat",
+      "max": 2
+    },
     "respawn": 0,
-    "loot": [],
-    "falas": []
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.9,
+        "min": 1,
+        "max": 60
+      },
+      {
+        "tipo": "itens/produtos-de-criaturas/skull",
+        "chance": 0.1,
+        "min": 1,
+        "max": 1
+      },
+      {
+        "tipo": "itens/amuletos-e-colares/bronze-amulet",
+        "chance": 0.07,
+        "min": 1,
+        "max": 1
+      },
+      {
+        "tipo": "itens/valiosos/black-pearl",
+        "chance": 0.02,
+        "min": 1,
+        "max": 1
+      },
+      {
+        "tipo": "itens/aneis/ring-of-healing",
+        "chance": 0.005,
+        "min": 1,
+        "max": 1
+      }
+    ],
+    "falas": [
+      "BLOOD!",
+      "Let me kiss your neck",
+      "I smell warm blood!",
+      "I call you, my bats! Come!"
+    ]
   },
   "ferramenta": "criaturas",
   "grupo": "criaturas",
