@@ -5,6 +5,7 @@ import { preloadAll } from '../view/image-cache.js';
 import { scheduleRender } from '../view/canvas-renderer.js';
 import { renderLayerTabs, renderTools, onLayerChange, updateStats, choosePaintDefaults, rotatePaint } from '../view/tools-panel.js';
 import { rotateSelected } from '../view/forms.js';
+import { restoreFloor, restoreScroll } from '../view/view-memory.js';
 import { loadAssets } from '../../../shared/assets.js';
 import { loadMapIntoState, saveMap, hasUnsavedChanges } from '../model/map-io.js';
 import { resetHistory, commitHistory, undo, redo } from '../model/history.js';
@@ -94,11 +95,13 @@ try {
 }
 resetHistory();
 
+restoreFloor();
 renderLayerTabs();
 renderTools();
 onLayerChange();
 updateStats();
 scheduleRender();
+restoreScroll();
 
 // Cadência de repaint pra manter as animações fluindo; o frame exibido em cada
 // redesenho é sempre calculado em tempo real (shared/sprite-sheet.js), então
