@@ -1,10 +1,6 @@
 {
   "formato": {
     "quadro": 32,
-    "padrao": [
-      2,
-      4
-    ],
     "linhas": [
       "meio: 1 variações",
       "s o n l",
@@ -16,127 +12,79 @@
   "slots": {
     "s": {
       "tibia": {
-        "id": 979,
+        "id": 38077,
         "variacao": 0
       }
     },
     "o": {
       "tibia": {
-        "id": 983,
+        "id": 38078,
         "variacao": 0
       }
     },
     "n": {
       "tibia": {
-        "id": 980,
+        "id": 38076,
         "variacao": 0
       }
     },
     "l": {
       "tibia": {
-        "id": 981,
+        "id": 38079,
         "variacao": 0
       }
     },
     "sl": {
       "tibia": {
-        "id": 984,
+        "id": 38083,
         "variacao": 0
       }
     },
     "so": {
       "tibia": {
-        "id": 985,
+        "id": 38082,
         "variacao": 0
       }
     },
     "nl": {
       "tibia": {
-        "id": 986,
+        "id": 38081,
         "variacao": 0
       }
     },
     "no": {
       "tibia": {
-        "id": 987,
+        "id": 38080,
         "variacao": 0
       }
     },
     "int-sl": {
       "tibia": {
-        "id": 988,
+        "id": 38087,
         "variacao": 0
       }
     },
     "int-so": {
       "tibia": {
-        "id": 989,
+        "id": 38086,
         "variacao": 0
       }
     },
     "int-nl": {
       "tibia": {
-        "id": 990,
+        "id": 38085,
         "variacao": 0
       }
     },
     "int-no": {
       "tibia": {
-        "id": 991,
+        "id": 38084,
         "variacao": 0
       }
     },
     "meio-1": {
       "tibia": {
-        "id": 959,
-        "variacao": 0
-      }
-    },
-    "padrao-0-0": {
-      "tibia": {
-        "id": 959,
-        "variacao": 0
-      }
-    },
-    "padrao-1-0": {
-      "tibia": {
-        "id": 960,
-        "variacao": 0
-      }
-    },
-    "padrao-0-1": {
-      "tibia": {
-        "id": 962,
-        "variacao": 0
-      }
-    },
-    "padrao-1-1": {
-      "tibia": {
-        "id": 961,
-        "variacao": 0
-      }
-    },
-    "padrao-0-2": {
-      "tibia": {
-        "id": 964,
-        "variacao": 0
-      }
-    },
-    "padrao-1-2": {
-      "tibia": {
-        "id": 963,
-        "variacao": 0
-      }
-    },
-    "padrao-0-3": {
-      "tibia": {
-        "id": 965,
-        "variacao": 0
-      }
-    },
-    "padrao-1-3": {
-      "tibia": {
-        "id": 966,
+        "id": 38061,
         "variacao": 0
       }
     }
@@ -147,5 +95,5 @@
   "ferramenta": "pisos",
   "grupo": "estrutura",
   "pasta": "pisos",
-  "nome": "piso-areia-1"
+  "nome": "piso-paralelepipedo-2"
 }
