@@ -1,7 +1,7 @@
 {
   "formato": {
     "quadro": 64,
-    "quadros": 3,
+    "quadros": 9,
     "linhas": [
       "sul",
       "norte",
@@ -35,7 +35,7 @@
     },
     "ossos": {
       "tibia": {
-        "id": 4100,
+        "id": 4099,
         "variacao": 0
       }
     }

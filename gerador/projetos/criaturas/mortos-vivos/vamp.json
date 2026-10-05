@@ -1,7 +1,7 @@
 {
   "formato": {
-    "quadro": 32,
-    "quadros": 3,
+    "quadro": 64,
+    "quadros": 9,
     "linhas": [
       "sul",
       "norte",
