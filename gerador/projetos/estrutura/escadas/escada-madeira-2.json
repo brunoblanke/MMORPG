@@ -1,12 +1,30 @@
 {
   "formato": {
     "quadro": 64,
-    "quadros": 1
+    "quadros": 1,
+    "direcoes": [
+      "norte",
+      "oeste"
+    ]
   },
   "objeto": {
     "tibia": {
       "id": 1958,
       "variacao": 0
+    }
+  },
+  "direcoes": {
+    "norte": {
+      "tibia": {
+        "id": 1958,
+        "variacao": 0
+      }
+    },
+    "oeste": {
+      "tibia": {
+        "id": 7881,
+        "variacao": 0
+      }
     }
   },
   "propriedades": {
