@@ -3,7 +3,8 @@
 // Pré-classifica todos os sprites do Tibia 15.01 (gerador/tibia/atual) nas pastas
 // da taxonomia, pra conferir na página Classificar do gerador. De onde vem a
 // pasta de cada um:
-//   itens: a categoria do TibiaWiki que o Canary (servidor open source)
+//   itens: corpo (deitado no chão, no .dat) vai pra Corpos; o resto, a
+//     categoria do TibiaWiki que o Canary (servidor open source)
 //     guarda no items.xml; sem ela, a categoria de mercado do Tibia.dat; sem
 //     as duas, as propriedades do item (chão, parede, pega, luz…);
 //   criaturas: a classe do bestiário (ou a pasta) do monstro do Canary que
@@ -41,7 +42,7 @@ const POR_CATEGORIA = {
   plants: 'decoracao/plantas', flowers: 'decoracao/plantas', mushrooms: 'decoracao/plantas',
   statues: 'decoracao/estatuas', 'shrines and altars': 'decoracao/estatuas', skeletons: 'decoracao/estatuas',
   decoration: 'decoracao/adornos', 'floor decorations': 'decoracao/adornos', 'quest objects': 'decoracao/adornos', animals: 'decoracao/adornos',
-  remains: 'decoracao/adornos', 'other items': 'decoracao/adornos',
+  remains: 'itens/corpos', 'other items': 'decoracao/adornos',
   helmets: 'itens/capacetes', helmet: 'itens/capacetes', armors: 'itens/armaduras', shields: 'itens/escudos', legs: 'itens/calcas',
   spellbooks: 'itens/spellbooks', boots: 'itens/botas', quivers: 'itens/aljavas', 'extra slot': 'itens/extra-slot',
   'axe weapons': 'itens/machados', 'club weapons': 'itens/clavas', 'sword weapons': 'itens/espadas', rods: 'itens/rods', wands: 'itens/wands',
@@ -149,6 +150,7 @@ function lerRoupasDoCanary(canary) {
 function pastaDoItem(thing, canary) {
   const tem = (flag) => flag in thing.flags;
   if (tem(FLAG.GROUND) || tem(FLAG.GROUND_BORDER)) return 'estrutura/pisos';
+  if (tem(FLAG.LYING)) return 'itens/corpos';
   const porCategoria = canary && canary.categoria && POR_CATEGORIA[canary.categoria];
   if (porCategoria) return porCategoria;
   if (tem(FLAG.ON_BOTTOM)) return 'estrutura/paredes';
@@ -159,7 +161,6 @@ function pastaDoItem(thing, canary) {
     if (mercado.categoria === 13 && /spellbook|book of/.test(nome)) return 'itens/spellbooks';
     if (POR_MERCADO[mercado.categoria]) return POR_MERCADO[mercado.categoria];
   }
-  if (tem(FLAG.LYING)) return 'itens/produtos-de-criaturas';
   if (tem(FLAG.PICKUPABLE)) {
     if (tem(FLAG.FLUID_CONTAINER)) return 'itens/liquidos';
     if (tem(FLAG.LIGHT)) return 'itens/fontes-de-luz';

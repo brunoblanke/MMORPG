@@ -87,7 +87,8 @@
             { "id": "comidas", "nome": "Comidas", "ferramenta": "objetos" },
             { "id": "liquidos", "nome": "Líquidos", "ferramenta": "objetos" },
             { "id": "plantas-e-ervas", "nome": "Plantas e ervas", "ferramenta": "objetos" },
-            { "id": "produtos-de-criaturas", "nome": "Produtos de criaturas", "ferramenta": "objetos" }
+            { "id": "produtos-de-criaturas", "nome": "Produtos de criaturas", "ferramenta": "objetos" },
+            { "id": "corpos", "nome": "Corpos", "ferramenta": "objetos" }
           ]
         },
         {
