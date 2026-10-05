@@ -5,7 +5,7 @@ import { GRID, TILE } from '../config.js';
 import { STACK_OFFSET, ANIMATION_CYCLE_MS } from '../../../shared/constants.js';
 import { pickFrameRect } from '../../../shared/sprite-sheet.js';
 import { PLAYER_SPRITES, DEFAULT_GENDER } from '../../../shared/catalog.js';
-import { getAsset, spriteFrame, pieceType, interiorVariant, displayName, isItemType } from '../../../shared/assets.js';
+import { getAsset, spriteFrame, pieceType, interiorVariant, displayName, isItemType, objectProps } from '../../../shared/assets.js';
 import { getStairTopKeys, getRopeTopKeys } from '../model/borders.js';
 import { state } from '../model/state.js';
 import { restackItems } from '../../../shared/map-format.js';
@@ -262,6 +262,7 @@ function drawBrush() {
   if (!hover) return;
   const cells = state.tool === 'select' ? [hover] : brushCells(hover.x, hover.y);
   if (!cells.length) return;
+  drawPaintPreview(cells);
   const minX = Math.min(...cells.map(c => c.x));
   const minY = Math.min(...cells.map(c => c.y));
   const maxX = Math.max(...cells.map(c => c.x));
@@ -278,6 +279,28 @@ function drawBrush() {
     ctx.fillRect(minX * TILE + 2, minY * TILE + 2, ctx.measureText(label).width + 8, 15);
     ctx.fillStyle = '#5eead4';
     ctx.fillText(label, minX * TILE + 6, minY * TILE + 13);
+  }
+  ctx.restore();
+}
+
+// ================================================================================================================================================================================================================================================
+// drawPaintPreview
+// O que o pincel vai colocar, meio transparente em cada sqm dele (virado na
+// direção escolhida; item por cima da pilha que já está no sqm).
+
+const PREVIEW_PAINTS = { wall: 'wallPaint', stairs: 'stairsPaint', hole: 'holePaint', item: 'itemPaint', deco: 'decoPaint' };
+const PREVIEW_ALPHA = 0.55;
+
+function drawPaintPreview(cells) {
+  const type = state[PREVIEW_PAINTS[state.tool]];
+  if (typeof type !== 'string') return;
+  const layer = state.layers[state.activeZ];
+  ctx.save();
+  ctx.globalAlpha = PREVIEW_ALPHA;
+  for (const { x, y } of cells) {
+    const cell = layer && layer[`${x},${y}`];
+    const height = cell && isItemType(type) ? cell.objects.filter(o => isItemType(o.type) && objectProps(o.type).hasVolume).length : 0;
+    drawPiece(type, x * TILE - height * STACK_OFFSET, y * TILE - height * STACK_OFFSET);
   }
   ctx.restore();
 }
