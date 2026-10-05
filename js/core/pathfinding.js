@@ -1,6 +1,8 @@
 // js/core/pathfinding.js
 
 import { DIRECTIONS, resolveStep } from './movement.js';
+import { FIELDS } from '../../shared/conditions.js';
+import { objectIdType } from '../../shared/assets.js';
 
 // ================================================================================================================================================================================================================================================
 // heapPush
@@ -46,6 +48,14 @@ function isInsideBounds(bounds, x, y) {
 }
 
 // ================================================================================================================================================================================================================================================
+// hasHarmfulField
+// O sqm tem campo que fere (fogo, veneno, energia)?
+
+function hasHarmfulField(world, x, y, z) {
+  return world.getObjectsAt(x, y).some(obj => (obj.z || 0) === z && obj.temporary && FIELDS[objectIdType(obj.id)] && FIELDS[objectIdType(obj.id)].kind);
+}
+
+// ================================================================================================================================================================================================================================================
 // findPath
 // A busca de caminho (A*), feita passo a passo pela mesma regra de passo
 // (resolveStep). Caminho de start = { x, y, z, step } até o sqm end = { x, y, z }.
@@ -60,11 +70,13 @@ function isInsideBounds(bounds, x, y) {
 //   - groundOnly: só chão, sem volume, escada nem buraco (criaturas, NPCs);
 //   - maxNodes: desiste depois de expandir tantos nós;
 //   - goals: [{ x, y }] — chegar em qualquer um deles (no andar de end) serve;
-//     vai pro que der o caminho mais curto.
+//     vai pro que der o caminho mais curto;
+//   - fieldCost: quanto custa a mais pisar num campo que fere (inimigos
+//     contornam o campo; sem outra passagem, atravessam).
 // Devolve [] se não houver caminho.
 
 export function findPath(world, start, end, options = {}) {
-  const { sameFloor = false, bounds = null, enemiesPassable = false, avoidSafe = false, groundOnly = false, entering = null, maxNodes = 20000, goals = null } = options;
+  const { sameFloor = false, bounds = null, enemiesPassable = false, avoidSafe = false, groundOnly = false, entering = null, maxNodes = 20000, goals = null, fieldCost = 0 } = options;
   const targets = goals && goals.length ? goals : [end];
   const goalKeys = new Set(targets.map(goal => `${goal.x},${goal.y}`));
   const stepOptions = { sameFloor, transitions: !sameFloor, enemiesPassable, avoidSafe, groundOnly, entering };
@@ -115,7 +127,7 @@ export function findPath(world, start, end, options = {}) {
       const nextKey = keyOf(next, reached);
       if (closed.has(nextKey)) continue;
 
-      const g = current.g + (dx !== 0 && dy !== 0 ? 1.4 : 1) + (next.step !== current.step ? 0.5 : 0);
+      const g = current.g + (dx !== 0 && dy !== 0 ? 1.4 : 1) + (next.step !== current.step ? 0.5 : 0) + (fieldCost && hasHarmfulField(world, next.x, next.y, next.z) ? fieldCost : 0);
       if (bestG.has(nextKey) && bestG.get(nextKey) <= g) continue;
       bestG.set(nextKey, g);
 
