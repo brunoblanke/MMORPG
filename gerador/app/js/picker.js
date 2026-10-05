@@ -6,28 +6,32 @@ import { spriteUrl } from './api.js';
 // mudam com a categoria aberta (pisos: chão, bordas, todos os itens;
 // criaturas: as criaturas e os itens, pro cadáver; paredes: paredes, portas
 // e todos os itens; objetos: objetos, itens e todos) e cada categoria lembra a
-// última aba usada. Item com várias variações (chão que muda pelo sqm) abre a
-// lista delas.
+// última aba usada. Item com o desenho do Tibia antigo só aparece na aba Old.
+// Item com várias variações (chão que muda pelo sqm) abre a lista delas.
 
 const MODES = {
   floors: [
     { id: 'ground', label: 'Chão' },
     { id: 'border', label: 'Bordas' },
-    { id: 'all', label: 'Todos' }
+    { id: 'all', label: 'Todos' },
+    { id: 'old', label: 'Old' }
   ],
   creatures: [
     { id: 'creature', label: 'Criaturas' },
-    { id: 'all', label: 'Itens' }
+    { id: 'all', label: 'Itens' },
+    { id: 'old', label: 'Old' }
   ],
   walls: [
     { id: 'wall', label: 'Paredes' },
     { id: 'door', label: 'Portas' },
-    { id: 'all', label: 'Todos' }
+    { id: 'all', label: 'Todos' },
+    { id: 'old', label: 'Old' }
   ],
   objects: [
     { id: 'object', label: 'Objetos' },
     { id: 'item', label: 'Itens' },
-    { id: 'all', label: 'Todos' }
+    { id: 'all', label: 'Todos' },
+    { id: 'old', label: 'Old' }
   ]
 };
 
@@ -54,7 +58,8 @@ const useAllEl = document.getElementById('useAllVariations');
 
 // ================================================================================================================================================================================================================================================
 // initPicker
-// catalog: { items: [id, categoria, largura, altura, quadros, variações],
+// catalog: { items: [id, categoria, largura, altura, quadros, variações,
+// variações sem camadas, antigo],
 // creatures: [id, largura, altura, quadros, tem cores, addons] } (api/catalogo).
 // onPick(tipo, id, variação) — tipo 'item' ou 'creature'; onUseAll(id, total).
 
@@ -204,7 +209,7 @@ function renderGrid() {
   }
 
   const tab = currentTab();
-  const visible = picker.items.filter(([id, category]) => (tab === 'all' || category === tab) && matches(id));
+  const visible = picker.items.filter(([id, category, , , , , , old]) => (tab === 'old' ? old : !old && (tab === 'all' || category === tab)) && matches(id));
   for (const [id, , , , frames, variations] of visible) {
     const extra = [variations > 1 ? `${variations} variações` : '', frames > 1 ? `${frames} quadros` : ''].filter(Boolean).join(' · ');
     const cell = spriteCell(spriteUrl(id, 0), `Item ${id}${extra ? ` · ${extra}` : ''}`, variations > 1 ? `×${variations}` : '');

@@ -20,6 +20,7 @@ const PASTA_SAIDA = path.join(__dirname, 'saida');
 const PASTA_PROJETOS = path.join(__dirname, 'projetos');
 const FERRAMENTAS = ['pisos', 'criaturas', 'paredes', 'objetos'];
 const ARQUIVO_CLASSIFICACAO = path.join(__dirname, 'classificacao.json');
+const ARQUIVO_ANTIGOS = path.join(__dirname, 'itens-antigos.json');
 const TAXONOMIA = JSON.parse(fs.readFileSync(path.join(__dirname, 'taxonomia.json'), 'utf8'));
 const NOME_VALIDO = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
@@ -100,14 +101,31 @@ function arquivosTibia() {
 
 // ================================================================================================================================================================================================================================================
 // catalogo
+// Os sprites do Tibia pro painel da direita; cada item ganha no fim 1 se o
+// desenho dele é o do Tibia antigo (itens-antigos.json, aba Old).
 
 function catalogo(req, res) {
   try {
-    res.json({ success: true, ...arquivosTibia().catalogo() });
+    const { items, creatures } = arquivosTibia().catalogo();
+    const antigos = idsAntigos();
+    res.json({ success: true, items: items.map(item => [...item, antigos.has(item[0]) ? 1 : 0]), creatures });
   } catch (err) {
     console.error('❌ Tibia:', err.message);
     res.status(500).json({ success: false, message: `Não foi possível ler os sprites do Tibia: ${err.message}` });
   }
+}
+
+// ================================================================================================================================================================================================================================================
+// idsAntigos
+// Os itens com o desenho do Tibia antigo (ferramentas/itens-antigos.js).
+
+function idsAntigos() {
+  const ids = new Set();
+  if (!fs.existsSync(ARQUIVO_ANTIGOS)) return ids;
+  for (const [de, ate] of JSON.parse(fs.readFileSync(ARQUIVO_ANTIGOS, 'utf8'))) {
+    for (let id = de; id <= ate; id++) ids.add(id);
+  }
+  return ids;
 }
 
 // ================================================================================================================================================================================================================================================

@@ -183,6 +183,7 @@ class TibiaAssets {
       msPorQuadro: thing.duracoes && thing.duracoes.length ? Math.round(thing.duracoes.reduce((a, b) => a + b, 0) / thing.duracoes.length) : 0,
       variacoes: totalDeVariacoes(thing),
       variacoesSemCamadas: thing.px * thing.py * thing.pz,
+      padrao: [thing.px, thing.py],
       bloqueia: temFlag(thing, FLAG.UNPASSABLE),
       move: !temFlag(thing, FLAG.UNMOVEABLE),
       altura: temFlag(thing, FLAG.ELEVATION),

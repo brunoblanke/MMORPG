@@ -3,7 +3,7 @@
 import { randEnemyColor } from '../utils/helpers.js';
 import { Enemy } from './enemy.js';
 import { computeBorderPieces } from '../../shared/floor-variant.js';
-import { startsActive, isFloorType, isHoleType, isEntranceFolder, objectUse, objectIdType, splitType, pieceType, interiorVariant, getAsset, floorHasPiece, creatureBehavior } from '../../shared/assets.js';
+import { startsActive, isFloorType, isHoleType, isEntranceFolder, objectUse, objectIdType, splitType, pieceType, floorMiddle, getAsset, floorHasPiece, creatureBehavior } from '../../shared/assets.js';
 import { collectObjectDescriptors, collectEnemyDescriptors } from '../../shared/map-format.js';
 import { getStairTop, getStairTopTarget, getHoleTarget } from '../../shared/stairs.js';
 import { parseBorderType, hasSavedBorders, mergeSavedInnerCorners } from '../../shared/floor-borders.js';
@@ -207,8 +207,7 @@ function applyFloorVariants(objs) {
     visibleFloorsByZ.get(obj.z).set(key, { type: obj.floorType, seq: obj.seq });
 
     counters[obj.floorType] = (counters[obj.floorType] || 0) + 1;
-    const variations = (getAsset(obj.floorType) || {}).variacoes || 4;
-    obj.id = `${pieceType(obj.floorType, interiorVariant(obj.x, obj.y, obj.z, variations))}_${counters[obj.floorType]}`;
+    obj.id = `${pieceType(obj.floorType, floorMiddle(obj.floorType, obj.x, obj.y, obj.z))}_${counters[obj.floorType]}`;
   }
 
   return visibleFloorsByZ;

@@ -16,6 +16,10 @@ import { fillFolderSelect, folderOf, setFolder, recipePath } from './folders.js'
 // borda do Tibia (ex.: grama 4531–4542), pra "Preencher em sequência" encaixar
 // as 12 de uma vez. Cada espaço vem de um item do Tibia (número e variação)
 // ou de um PNG enviado.
+// Chão do Tibia que muda pela posição (areia 4 × 4, paralelepípedo 4 × 2…):
+// escolhido no meio, vira padrão — o bloco inteiro fica nas linhas de baixo
+// da folha (linha 5 em diante) e cada sqm do mapa usa o pedaço da posição
+// dele, emendando sem costura.
 // Piso animado (água…): cada peça vem com todos os quadros da animação do
 // Tibia, lado a lado na folha (a peça da coluna c ocupa as colunas c × quadros
 // até c × quadros + quadros - 1); peça parada repete o desenho.
@@ -24,6 +28,8 @@ const TILE = 32;
 const CATEGORY = 'pisos';
 const MAX_VARIANTS = 4;
 const DEFAULT_FRAME_MS = 200;
+const PATTERN_MAX = 4;
+const PATTERN_KEY = /^padrao-\d+-\d+$/;
 
 // Diagramas: onde fica o piso (x, y de -1 a 1) em volta da peça (no centro).
 const TOP = [[-1, -1], [0, -1], [1, -1]];
@@ -86,6 +92,7 @@ const floors = {
   slots: {},
   images: new Map(),
   frameMs: new Map(),
+  pattern: null,
   selected: 'meio-1',
   name: '',
   path: '',
@@ -115,7 +122,10 @@ export function initFloors() {
     evt.preventDefault();
     save();
   });
-  document.getElementById('clearSlot').onclick = () => setSlot(floors.selected, null);
+  document.getElementById('clearSlot').onclick = () => {
+    if (floors.selected.startsWith('meio')) clearPattern();
+    setSlot(floors.selected, null);
+  };
   document.getElementById('suggestBorders').onclick = () => {
     if (BORDER_KEYS.some(key => floors.slots[key]) && !window.confirm('Trocar as bordas atuais pela sugestão?')) return;
     suggestBorders();
@@ -227,11 +237,13 @@ function selectSlot(key) {
 // Com "Preencher em sequência", os espaços seguintes do mesmo grupo (meio ou
 // bordas) recebem id+1, id+2… enquanto os itens forem da mesma categoria.
 
-export function pickSprite(id, variation) {
+export async function pickSprite(id, variation) {
   const group = floors.selected.startsWith('meio') ? MIDDLE_KEYS : BORDER_KEYS;
   const start = group.indexOf(floors.selected);
   const sequence = document.getElementById('fillSequence').checked && variation === 0;
   const category = itemCategory(id);
+  if (group === MIDDLE_KEYS && await usePattern(id)) return;
+  if (group === MIDDLE_KEYS) clearPattern();
 
   let filled = 0;
   for (const key of sequence ? group.slice(start) : [floors.selected]) {
@@ -249,12 +261,51 @@ export function pickSprite(id, variation) {
 // useAllVariations
 // Enche o meio com as variações do chão escolhido (até 4), na ordem do Tibia.
 
-export function useAllVariations(id, total) {
+export async function useAllVariations(id, total) {
+  if (await usePattern(id)) return;
+  clearPattern();
   MIDDLE_KEYS.forEach((key, i) => setSlot(key, i < total ? { tibia: { id, variacao: i } } : null, false));
   floors.selected = BORDER_KEYS[0];
   render();
   if (total > MAX_VARIANTS) setStatus(`O item ${id} tem ${total} variações; a folha guarda as ${MAX_VARIANTS} primeiras.`);
   if (!BORDER_KEYS.some(key => floors.slots[key])) suggestBorders();
+}
+
+// ================================================================================================================================================================================================================================================
+// usePattern / clearPattern
+// Chão do Tibia que muda pela posição vira padrão: o meio fica com o 1º
+// pedaço e o bloco inteiro (até 4 × 4) vai pros espaços 'padrao-<c>-<l>'.
+// false se o item não é chão com padrão.
+
+async function usePattern(id) {
+  let info;
+  try {
+    info = await fetchItemInfo(id);
+  } catch (error) {
+    return false;
+  }
+  const [cols, rows] = (info && info.categoria === 'ground' && info.padrao) || [1, 1];
+  if (cols * rows < 2) return false;
+  const pattern = [Math.min(cols, PATTERN_MAX), Math.min(rows, PATTERN_MAX)];
+  clearPattern();
+  MIDDLE_KEYS.forEach(key => setSlot(key, null, false));
+  setSlot('meio-1', { tibia: { id, variacao: 0 } }, false);
+  for (let row = 0; row < pattern[1]; row++) {
+    for (let col = 0; col < pattern[0]; col++) setSlot(`padrao-${col}-${row}`, { tibia: { id, variacao: row * cols + col } }, false);
+  }
+  floors.pattern = pattern;
+  floors.selected = BORDER_KEYS[0];
+  render();
+  setStatus(`Padrão ${pattern[0]} × ${pattern[1]} do item ${id}: cada sqm usa o pedaço da posição dele.`, 'ok');
+  if (!BORDER_KEYS.some(key => floors.slots[key])) suggestBorders();
+  return true;
+}
+
+function clearPattern() {
+  for (const key of Object.keys(floors.slots)) {
+    if (PATTERN_KEY.test(key)) delete floors.slots[key];
+  }
+  floors.pattern = null;
 }
 
 // ================================================================================================================================================================================================================================================
@@ -382,7 +433,10 @@ function uploadPng(evt) {
   evt.target.value = '';
   if (!file) return;
   const reader = new FileReader();
-  reader.onload = () => setSlot(floors.selected, { png: reader.result });
+  reader.onload = () => {
+    if (floors.selected.startsWith('meio')) clearPattern();
+    setSlot(floors.selected, { png: reader.result });
+  };
   reader.readAsDataURL(file);
 }
 
@@ -400,6 +454,8 @@ function render() {
     if (img) drawPiece(ctx, img, 0, 0);
     button.querySelector('.slot-source').textContent = !source ? '' : source.png ? 'PNG' : `#${source.tibia.id}${source.tibia.variacao ? ` v${source.tibia.variacao + 1}` : ''}`;
   }
+  const note = rowsEl.querySelector('.row-title span');
+  note.textContent = floors.pattern ? `Padrão ${floors.pattern[0]} × ${floors.pattern[1]} pela posição: cada sqm usa o pedaço dele.` : FLOOR_ROWS[0].note;
   composeSheet(sheetCanvas, currentFrame());
   drawGroundPreview();
 }
@@ -420,8 +476,10 @@ function middleKeysInUse() {
 
 function composeSheet(canvas, frame = null) {
   const count = frame === null ? sheetFrameCount() : 1;
+  const patternRows = floors.pattern ? floors.pattern[1] : 0;
   canvas.width = 4 * count * TILE;
-  canvas.height = 4 * TILE;
+  canvas.height = (4 + patternRows) * TILE;
+  if (canvas === sheetCanvas) canvas.style.height = `${(4 + patternRows) * 64}px`;
   const ctx = canvas.getContext('2d');
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   const place = (key, column, row) => {
@@ -434,6 +492,9 @@ function composeSheet(canvas, frame = null) {
   FLOOR_ROWS.slice(1).forEach((row, i) => {
     row.slots.forEach((slot, column) => place(slot.key, column, i + 1));
   });
+  for (let r = 0; r < patternRows; r++) {
+    for (let c = 0; c < floors.pattern[0]; c++) place(`padrao-${c}-${r}`, c, 4 + r);
+  }
 }
 
 // ================================================================================================================================================================================================================================================
@@ -487,7 +548,10 @@ function drawGroundPreview() {
     for (let x = 0; x < PREVIEW_SHAPE[y].length; x++) {
       if (isFloor(x, y)) {
         if (!middle.length) continue;
-        const img = middle[hashTile(x, y) % middle.length];
+        const img = floors.pattern
+          ? slotImage(`padrao-${x % floors.pattern[0]}-${y % floors.pattern[1]}`, frame)
+          : middle[hashTile(x, y) % middle.length];
+        if (!img) continue;
         drawPiece(ctx, img, x * TILE, y * TILE);
         continue;
       }
@@ -535,6 +599,7 @@ async function save() {
     formato: {
       quadro: TILE,
       ...(frames > 1 ? { quadros: frames, msPorQuadro: frameMs() } : {}),
+      ...(floors.pattern ? { padrao: floors.pattern } : {}),
       linhas: [
         `meio: ${middleKeysInUse().length} variações`,
         FLOOR_ROWS[1].slots.map(s => s.key).join(' '),
@@ -572,8 +637,9 @@ function openRecipe(recipe) {
   floors.slots = {};
   floors.images.clear();
   floors.frameMs.clear();
+  floors.pattern = recipe.formato && Array.isArray(recipe.formato.padrao) ? recipe.formato.padrao : null;
   for (const [key, source] of Object.entries(recipe.slots || {})) {
-    if (!ALL_SLOTS.some(slot => slot.key === key)) continue;
+    if (!ALL_SLOTS.some(slot => slot.key === key) && !PATTERN_KEY.test(key)) continue;
     floors.slots[key] = source;
     loadSlotImage(key, source);
   }

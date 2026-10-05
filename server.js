@@ -133,6 +133,7 @@ function descreverSprite(id, grupo, pasta, nome, receita) {
     direcoes: Array.isArray(formato.direcoes) && formato.direcoes.length ? formato.direcoes : null,
     sqms: formato.sqms === 2 ? 2 : 1,
     variacoes: receita.variacoesDoMeio || 0,
+    padrao: Array.isArray(formato.padrao) ? formato.padrao : null,
     ordem: formato.pecas || null,
     pecas: Object.keys(receita.pecas || receita.slots || {}),
     propriedades: receita.propriedades || null,

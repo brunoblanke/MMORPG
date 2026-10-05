@@ -5,7 +5,7 @@ import { GRID, TILE } from '../config.js';
 import { STACK_OFFSET, ANIMATION_CYCLE_MS } from '../../../shared/constants.js';
 import { pickFrameRect } from '../../../shared/sprite-sheet.js';
 import { PLAYER_SPRITES, DEFAULT_GENDER } from '../../../shared/catalog.js';
-import { getAsset, spriteFrame, pieceType, interiorVariant, displayName, isItemType, objectProps } from '../../../shared/assets.js';
+import { getAsset, spriteFrame, pieceType, floorMiddle, displayName, isItemType, objectProps } from '../../../shared/assets.js';
 import { getStairTopKeys, getRopeTopKeys } from '../model/borders.js';
 import { state } from '../model/state.js';
 import { restackItems } from '../../../shared/map-format.js';
@@ -99,8 +99,7 @@ function drawPiece(type, px, py, fallback = null, target = ctx, count = 1) {
 // drawFloorTile
 
 function drawFloorTile(type, x, y, z, px, py) {
-  const variations = (getAsset(type) || {}).variacoes || 4;
-  drawPiece(pieceType(type, interiorVariant(x, y, z, variations)), px, py, '#3c3826');
+  drawPiece(pieceType(type, floorMiddle(type, x, y, z)), px, py, '#3c3826');
 }
 
 // ================================================================================================================================================================================================================================================

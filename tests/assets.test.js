@@ -2,12 +2,13 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { setAssets, spriteFrame, objectProps, isFloorType, isStairsType, isHoleType, isItemType, isWallType, displayName, interiorVariant, objectIdType } from '../shared/assets.js';
+import { setAssets, floorMiddle, spriteFrame, objectProps, isFloorType, isStairsType, isHoleType, isItemType, isWallType, displayName, interiorVariant, objectIdType } from '../shared/assets.js';
 import { serializeMapFromLayers, buildLayersFromMapData } from '../shared/map-format.js';
 
 const GRID = 10;
 
 setAssets([
+  { id: 'estrutura/pisos/areia', ferramenta: 'pisos', rotulo: 'Estrutura › Pisos', nome: 'areia', url: '/s.png', quadro: 32, quadros: 1, variacoes: 1, padrao: [4, 2], pecas: [] },
   { id: 'estrutura/pisos/agua', ferramenta: 'pisos', rotulo: 'Estrutura › Pisos', nome: 'agua', url: '/a.png', quadro: 32, quadros: 14, msPorQuadro: 200, variacoes: 4, pecas: [] },
   { id: 'estrutura/pisos/grama', ferramenta: 'pisos', rotulo: 'Estrutura › Pisos', nome: 'grama', url: '/g.png', quadro: 32, quadros: 1, variacoes: 4, pecas: [] },
   { id: 'estrutura/paredes/tijolo', ferramenta: 'paredes', rotulo: 'Estrutura › Paredes', nome: 'tijolo', url: '/t.png', quadro: 64, quadros: 1, ordem: null, pecas: ['x', 'porta-x-aberta'] },
@@ -54,4 +55,11 @@ test('parede e objeto gravam no mapa o comportamento deles', () => {
     ['estrutura/paredes/tijolo#x', 2, 2, 0, 0, false, true, true]
   ]);
   assert.equal(map.transicoesData[0][0], 'estrutura/escadas/escada');
+});
+
+test('piso com padrão usa o pedaço da posição (emenda sem costura); sem padrão, sorteia o meio', () => {
+  assert.equal(floorMiddle('estrutura/pisos/areia', 5, 3, 0), 'padrao-1-1');
+  assert.equal(floorMiddle('estrutura/pisos/areia', 8, 4, 0), 'padrao-0-0');
+  assert.deepEqual(spriteFrame('estrutura/pisos/areia#padrao-3-1'), { url: '/s.png', x: 96, y: 5 * 32, size: 32, frames: 1, ms: 0 });
+  assert.match(floorMiddle('estrutura/pisos/grama', 5, 3, 0), /^meio-[1-4]$/);
 });

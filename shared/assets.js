@@ -158,8 +158,8 @@ export function doorType(type, open) {
 // ================================================================================================================================================================================================================================================
 // setAssets
 // Lista de /api/sprites: [{ id, ferramenta, grupo, pasta, nome, rotulo, url,
-// quadro, quadros, msPorQuadro, variacoes, pecas, propriedades, cadaver,
-// direcoes, sqms }].
+// quadro, quadros, msPorQuadro, variacoes, padrao, pecas, propriedades,
+// cadaver, direcoes, sqms }].
 
 export function setAssets(list) {
   assets.clear();
@@ -458,6 +458,21 @@ export function extraSquares(type) {
 }
 
 // ================================================================================================================================================================================================================================================
+// floorMiddle
+// A peça do meio do piso no sqm: piso com padrão (gerador: chão do Tibia que
+// muda pela posição, ex. areia 4 × 4) usa o pedaço da posição
+// ('padrao-<coluna>-<linha>'), emendando sem costura; os outros sorteiam uma
+// das variações do meio (interiorVariant).
+
+export function floorMiddle(type, x, y, z) {
+  const asset = getAsset(splitType(type).asset);
+  const pattern = asset && Array.isArray(asset.padrao) ? asset.padrao : null;
+  if (!pattern) return interiorVariant(x, y, z, (asset && asset.variacoes) || 4);
+  const [cols, rows] = pattern;
+  return `padrao-${((x % cols) + cols) % cols}-${((y % rows) + rows) % rows}`;
+}
+
+// ================================================================================================================================================================================================================================================
 // spriteFrame
 // Onde desenhar a peça na folha: { url, x, y, size, frames, ms } — x, y do
 // 1º quadro; os outros quadros seguem à direita, um a cada ms (0: o ciclo
@@ -471,7 +486,9 @@ export function spriteFrame(type) {
   const size = asset.quadro;
   if (asset.ferramenta === 'pisos') {
     const middle = /^meio-(\d+)$/.exec(piece || 'meio-1');
-    const [col, row] = middle ? [Math.min(Number(middle[1]), asset.variacoes || 1) - 1, 0] : (FLOOR_CELLS[piece] || [0, 0]);
+    const pattern = /^padrao-(\d+)-(\d+)$/.exec(piece || '');
+    const [col, row] = pattern ? [Number(pattern[1]), 4 + Number(pattern[2])]
+      : middle ? [Math.min(Number(middle[1]), asset.variacoes || 1) - 1, 0] : (FLOOR_CELLS[piece] || [0, 0]);
     const frames = asset.quadros || 1;
     return { url: asset.url, x: col * frames * size, y: row * size, size, frames, ms: asset.msPorQuadro || 0 };
   }
