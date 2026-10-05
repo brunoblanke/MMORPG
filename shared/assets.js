@@ -12,6 +12,7 @@ export const FLOOR_FOLDER = 'estrutura/pisos/';
 export const STAIRS_FOLDER = 'estrutura/escadas/';
 export const HOLE_FOLDER = 'estrutura/entradas/';
 export const WALL_FOLDER = 'estrutura/paredes/';
+export const PARAPET_FOLDER = 'estrutura/parapeitos/';
 
 // Folha de piso (32 px): linha 1 com as variações do meio, depois as bordas.
 const FLOOR_CELLS = {
@@ -33,8 +34,15 @@ export const WALL_PIECE_NAMES = {
   'porta-y': 'Porta Y fechada', 'porta-y-aberta': 'Porta Y aberta',
   'arco-x-oeste': 'Arco X oeste', 'arco-x-leste': 'Arco X leste',
   'arco-y-norte': 'Arco Y norte', 'arco-y-sul': 'Arco Y sul',
-  'janela-x': 'Janela X', 'janela-y': 'Janela Y'
+  'janela-x': 'Janela X', 'janela-y': 'Janela Y',
+  norte: 'Norte', sul: 'Sul', oeste: 'Oeste', leste: 'Leste',
+  no: 'Canto noroeste', ne: 'Canto nordeste', so: 'Canto sudoeste', se: 'Canto sudeste'
 };
+
+// Parapeito e mureta (Estrutura › Parapeitos): peça pelo lado do sqm onde
+// ela fica (norte, sul, oeste, leste) e os 4 cantos. Bloqueia a passagem,
+// mas é baixa: não barra item jogado nem tiro.
+export const PARAPET_PIECES = ['norte', 'sul', 'oeste', 'leste', 'no', 'ne', 'so', 'se'];
 
 // Parede: bloqueia (menos porta aberta e arco); tem altura (dá pra empilhar
 // em volta) só a parede cheia, a porta fechada e a janela.
@@ -44,7 +52,8 @@ const WALL_PROPS = {
   'porta-x-aberta': [false, false], 'porta-y-aberta': [false, false],
   'arco-x-oeste': [false, false], 'arco-x-leste': [false, false],
   'arco-y-norte': [false, false], 'arco-y-sul': [false, false],
-  'janela-x': [true, true], 'janela-y': [true, true]
+  'janela-x': [true, true], 'janela-y': [true, true],
+  ...Object.fromEntries(PARAPET_PIECES.map(piece => [piece, [false, true]]))
 };
 
 const assets = new Map();

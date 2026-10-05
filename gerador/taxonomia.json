@@ -9,7 +9,8 @@
           "pastas": [
             { "id": "pisos", "nome": "Pisos", "ferramenta": "pisos" },
             { "id": "paredes", "nome": "Paredes", "ferramenta": "paredes" },
-            { "id": "cercas", "nome": "Cercas e parapeitos", "ferramenta": "paredes" },
+            { "id": "cercas", "nome": "Cercas", "ferramenta": "paredes" },
+            { "id": "parapeitos", "nome": "Parapeitos e muretas", "ferramenta": "paredes" },
             { "id": "escadas", "nome": "Escadas", "ferramenta": "objetos" },
             { "id": "entradas", "nome": "Entradas", "ferramenta": "objetos" },
             { "id": "natureza", "nome": "Natureza", "ferramenta": "objetos" }
