@@ -8,6 +8,7 @@ import { CONFIG } from '../config.js';
 import { equipBonus, itemInfo, newItem } from '../../shared/items.js';
 import { addSkillTry } from '../../shared/skills.js';
 import { AMMO_CONDITIONS } from '../../shared/conditions.js';
+import { WANDS, WAND_RANGE } from '../../shared/spells.js';
 
 // Auto ataque: alvo sem caminho por UNREACHABLE_MS é largado e ignorado por SKIP_TARGET_MS.
 export const UNREACHABLE_MS = 1500;
@@ -191,12 +192,20 @@ export class CombatController {
 
   // ================================================================================================================================================================================================================================================
   // rangedWeapon
-  // A arma de distância do player: { range, attack, ammoKey, thrown }, ou
-  // { error } (sem munição), ou null (não é de distância).
+  // A arma de distância do player: { range, attack, ammoKey, thrown }, a
+  // wand ou rod ({ range, wand }), ou { error } (sem munição; wand de outra
+  // vocação, sem o nível ou sem mana), ou null (não é de distância).
 
   rangedWeapon(player) {
     const weapon = player.equip && player.equip.arma;
     const info = weapon ? itemInfo(weapon.type) : null;
+    const wand = weapon ? WANDS[weapon.type] : null;
+    if (wand) {
+      if (!wand.vocations.includes(player.vocation)) return { error: `Só ${wand.vocations[0]} usa essa arma.` };
+      if (player.lvl < wand.lvl) return { error: `Você precisa do nível ${wand.lvl} pra usar essa arma.` };
+      if (player.mana < wand.mana) return { error: 'Você não tem mana suficiente.' };
+      return { range: WAND_RANGE, wand };
+    }
     if (!info || info.weaponSkill !== 'distance') return null;
     if (info.stack) return { range: THROWN_RANGE, attack: info.atk, ammoKey: 'arma', thrown: true };
     const ammo = player.equip.municao;
@@ -223,6 +232,7 @@ export class CombatController {
 
   shoot(player, target, ranged, now) {
     if (now - player.lastAttackTime < CONFIG.attackCooldown || !target.isAlive()) return;
+    if (ranged.wand) return this.zap(player, target, ranged.wand, now);
     const ammo = player.equip[ranged.ammoKey];
     ammo.count = (ammo.count || 1) - 1;
     if (ammo.count <= 0) player.equip[ranged.ammoKey] = null;
@@ -240,6 +250,23 @@ export class CombatController {
     }
     player.lastAttackTime = now;
     this.trainSkill(player, 'distance');
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // zap
+  // Tiro de wand ou rod: gasta a mana dela (que treina o magic level) e fere
+  // o alvo com o dano do tipo dela.
+
+  zap(player, target, wand, now) {
+    player.lastAttackTime = now;
+    player.mana -= wand.mana;
+    const spells = this.sim.spells;
+    this.sim.emit({ type: 'missile', fromX: player.x, fromY: player.y, toX: target.x, toY: target.y, kind: wand.element });
+    spells.hurt(player, target, wand.min + Math.floor(Math.random() * (wand.max - wand.min + 1)), now, wand.element);
+    spells.showEffect(target.x, target.y, wand.element);
+    if (addSkillTry(player.skills, 'magic', player.vocation, wand.mana)) {
+      this.sim.emit({ type: 'message', playerId: player.id, text: `Você avançou para magic level ${player.skills.magic.lvl}.`, kind: 'info' });
+    }
   }
 
   // ================================================================================================================================================================================================================================================

@@ -67,6 +67,24 @@ export const RUNES = {
   'itens/runas/magic-wall-rune': { kind: 'field', field: 'itens/itens-encantados/magic-wall', area: 'single', charges: 4, ml: 9 }
 };
 
+// Wands (sorcerer) e rods (druid), como no Tibia: atiram sozinhas no alvo
+// até WAND_RANGE sqm, gastando `mana` por tiro, com dano de `min` a `max` do
+// tipo `element` (sem defesa nem armadura). Precisam do nível `lvl`.
+export const WAND_RANGE = 3;
+const WAND = (lvl, mana, element, min, max, vocation) => ({ lvl, mana, element, min, max, vocations: [vocation] });
+export const WANDS = {
+  'itens/wands/wand-of-vortex': WAND(7, 1, 'energy', 8, 18, 'sorcerer'),
+  'itens/wands/wand-of-dragonbreath': WAND(13, 2, 'fire', 13, 25, 'sorcerer'),
+  'itens/wands/wand-of-decay': WAND(19, 3, 'death', 25, 35, 'sorcerer'),
+  'itens/wands/wand-of-cosmic-energy': WAND(26, 5, 'energy', 40, 50, 'sorcerer'),
+  'itens/wands/wand-of-inferno': WAND(33, 8, 'fire', 56, 74, 'sorcerer'),
+  'itens/rods/snakebite-rod': WAND(7, 2, 'earth', 8, 18, 'druid'),
+  'itens/rods/moonlight-rod': WAND(13, 3, 'ice', 13, 25, 'druid'),
+  'itens/rods/necrotic-rod': WAND(19, 4, 'death', 25, 35, 'druid'),
+  'itens/rods/terra-rod': WAND(26, 5, 'earth', 40, 50, 'druid'),
+  'itens/rods/hailstorm-rod': WAND(33, 8, 'ice', 56, 74, 'druid')
+};
+
 // Áreas das runas em volta do sqm mirado: [dx, dy].
 export const AREAS = {
   single: [[0, 0]],
