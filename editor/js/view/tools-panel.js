@@ -8,6 +8,7 @@ import { listAssets, creatureBehavior, pieceType, splitType, displayName, isStai
 import { setThumb } from './sprite-thumb.js';
 import { svgIcon } from '../../../js/views/inventory-ui/icons.js';
 import { closeSelectPanel } from './forms.js';
+import { rememberView } from './view-memory.js';
 
 // ================================================================================================================================================================================================================================================
 // renderLayerTabs
@@ -57,6 +58,7 @@ export function onLayerChange() {
   renderLayerTabs();
   updateStats();
   scheduleRender();
+  rememberView();
 }
 
 // ================================================================================================================================================================================================================================================
