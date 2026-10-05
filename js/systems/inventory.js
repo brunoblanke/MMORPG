@@ -416,7 +416,7 @@ export class InventoryController {
       equip: player.equip,
       cap: { used: this.capUsed(player), max: this.capMax(player) },
       opened: [
-        ...this.openGroundObjects(player).map(obj => ({ id: obj.id, item: this.groundItem(obj), corpse: !!obj.isCorpse, name: obj.isCorpse ? obj.name : null })),
+        ...this.openGroundObjects(player).map(obj => ({ id: obj.id, item: this.groundItem(obj), corpse: !!obj.isCorpse, name: obj.isCorpse ? obj.name : null, creature: obj.isCorpse ? obj.creature : null, isPlayer: !!obj.isPlayer })),
         ...(this.depotObject(player) ? [{ id: player.openDepot, item: player.depot, corpse: false, depot: true, name: null }] : [])
       ],
       stats: this.statsFor(player),

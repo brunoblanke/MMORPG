@@ -96,11 +96,21 @@ export const htmlMethods = {
     const slots = box.items.map((item, i) => this.slotHtml(item, { t: 'c', uid: box.uid, i })).join('');
     const up = this.parentOf(win.uid) ? '<button class="inv-btn" data-act="up" type="button" aria-label="Voltar pro container de fora">↑</button>' : '';
     return `<section class="inv-win${win.min ? ' min' : ''}" data-win="${win.id}">
-      <header class="inv-head"><span class="inv-icon">${this.spriteHtml(box.type)}</span>
+      <header class="inv-head"><span class="inv-icon">${this.windowIcon(win, box)}</span>
         <span class="inv-title">${this.windowTitle(win, box)}</span>${up}${buttons(true)}</header>
       <div class="inv-body"><div class="inv-scroller" style="height:${Math.min(win.rows, Math.ceil(box.items.length / 4)) * PITCH + 8}px"><div class="inv-grid">${slots}</div></div></div>
       <div class="inv-resize"></div>
     </section>`;
+  },
+
+  // ================================================================================================================================================================================================================================================
+  // windowIcon
+  // A sprite do container; do cadáver, a do corpo morto da criatura.
+
+  windowIcon(win, box) {
+    const opened = win.ground && this.view.opened.find(o => o.id === win.ground);
+    if (opened && opened.corpse && opened.item.uid === box.uid) return this.corpseSpriteHtml(opened);
+    return this.spriteHtml(box.type);
   },
 
   // ================================================================================================================================================================================================================================================
