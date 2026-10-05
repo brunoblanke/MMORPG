@@ -153363,6 +153363,16 @@
       false
     ],
     [
+      "decoracao/iluminacao/poste-luz-1-aceso",
+      190,
+      219,
+      0,
+      0,
+      false,
+      false,
+      true
+    ],
+    [
       "estrutura/pisos/piso-grama-1",
       191,
       219,
@@ -164015,6 +164025,16 @@
       8544
     ],
     [
+      "decoracao/iluminacao/poste-luz-1-aceso",
+      182,
+      229,
+      0,
+      0,
+      false,
+      false,
+      true
+    ],
+    [
       "estrutura/pisos/piso-agua-1",
       183,
       229,
@@ -165319,6 +165339,16 @@
       false,
       false,
       10316
+    ],
+    [
+      "decoracao/iluminacao/poste-luz-1",
+      187,
+      230,
+      0,
+      0,
+      false,
+      false,
+      true
     ],
     [
       "estrutura/pisos/piso-grama-1",
@@ -167666,6 +167696,16 @@
       false,
       false,
       10331
+    ],
+    [
+      "decoracao/iluminacao/poste-luz-1-aceso",
+      193,
+      232,
+      0,
+      0,
+      false,
+      false,
+      true
     ],
     [
       "estrutura/pisos/piso-agua-1",

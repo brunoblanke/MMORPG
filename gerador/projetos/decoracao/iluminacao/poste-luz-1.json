@@ -29,7 +29,7 @@
     "duracao": 0,
     "regenVida": 0,
     "regenMana": 0,
-    "uso": "bau-quest",
+    "uso": "",
     "abreComo": "",
     "acesoComo": "decoracao/iluminacao/poste-luz-1-aceso"
   },
