@@ -2,7 +2,7 @@
 
 import { GameObject } from '../models/game-object.js';
 import { objectIdType, objectUse, openedAs, displayName, getAsset, splitType, isEntranceFolder } from '../../shared/assets.js';
-import { itemInfo, newItem, weightOf } from '../../shared/items.js';
+import { itemInfo, newItem, weightOf, isSwitchableLight } from '../../shared/items.js';
 import { getHoleTarget, toLowerLevel, toUpperLevel } from '../../shared/stairs.js';
 
 // Objetos do mapa que se usam (gerador → Objetos → Uso):
@@ -29,14 +29,18 @@ export class InteractionController {
   constructor(sim) {
     this.sim = sim;
     this.dugHoles = new Map();
+    this.unlitLights = new Set();
   }
 
   // ================================================================================================================================================================================================================================================
   // isUsable
-  // Objeto do mapa (ainda nele) com um uso de mapa.
+  // Objeto do mapa (ainda nele) com um uso de mapa, ou luz fixa que se
+  // acende e apaga.
 
   isUsable(obj) {
-    return !!obj && !obj.isCorpse && this.sim.world.objects.has(obj) && MAP_USES.includes(objectUse(objectIdType(obj.id)));
+    if (!obj || obj.isCorpse || !this.sim.world.objects.has(obj)) return false;
+    const type = objectIdType(obj.id);
+    return MAP_USES.includes(objectUse(type)) || (obj.movable !== true && isSwitchableLight(type));
   }
 
   // ================================================================================================================================================================================================================================================
@@ -69,6 +73,10 @@ export class InteractionController {
       return;
     }
     const use = objectUse(objectIdType(obj.id));
+    if (!use) {
+      this.switchLight(obj);
+      return;
+    }
     if (use === 'placa') {
       if (obj.data && obj.data.texto) this.signText(player, obj);
     }
@@ -76,6 +84,17 @@ export class InteractionController {
     else if (use === 'bau-quest') this.openQuestChest(player, obj);
     else if (use === 'descer') this.goDown(player, obj);
     else if (use === 'deposito') inventory.openDepotAt(player, obj);
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // switchLight
+  // Luz fixa do mapa (poste…): usar apaga ou acende, pra todos (as apagadas
+  // vão pro navegador em unlitLights).
+
+  switchLight(obj) {
+    obj.lit = !obj.lit;
+    if (obj.lit) this.unlitLights.delete(obj.id);
+    else this.unlitLights.add(obj.id);
   }
 
   // ================================================================================================================================================================================================================================================

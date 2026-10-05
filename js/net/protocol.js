@@ -102,6 +102,7 @@ export function serializeState(sim, playerId, nearOnly = false) {
     corpses: sim.deadBodies.filter(near).map(c => pick(c, CORPSE_FIELDS)),
     doors: sim.doors.map(d => ({ x: d.x, y: d.y, z: d.z || 0, id: d.id })),
     dug: sim.interactions ? [...sim.interactions.dugHoles.keys()] : [],
+    unlit: sim.interactions ? [...sim.interactions.unlitLights] : [],
     houses: sim.houses ? sim.houses.viewOf() : [],
     items: sim.objects.filter(o => isSyncedItem(o) && near(o)).map(o => ({
       id: o.id, x: o.x, y: o.y, z: o.z, step: o.step, hasVolume: o.hasVolume, blocksMovement: o.blocksMovement,
@@ -266,6 +267,7 @@ export function applyState(mirror, message, playerId, renderNow) {
   syncItems(mirror, state.items);
   syncDoors(world, state.doors || []);
   syncDug(mirror, state.dug || []);
+  syncUnlit(mirror, state.unlit || []);
   syncHouses(world, state.houses || []);
 
   const me = mirror.players.find(p => p.id === playerId);
@@ -277,6 +279,24 @@ export function applyState(mirror, message, playerId, renderNow) {
     me.walk = state.you.walk;
     mirror.inventoryView = state.you.inventory;
   }
+}
+
+// ================================================================================================================================================================================================================================================
+// syncUnlit
+// Luzes fixas do mapa apagadas por alguém (as outras ficam acesas).
+
+function syncUnlit(mirror, ids) {
+  const off = new Set(ids);
+  for (const id of off) {
+    const obj = mirror.objectsById.get(id);
+    if (obj) obj.lit = false;
+  }
+  for (const id of mirror.unlitIds || []) {
+    if (off.has(id)) continue;
+    const obj = mirror.objectsById.get(id);
+    if (obj) obj.lit = true;
+  }
+  mirror.unlitIds = off;
 }
 
 // ================================================================================================================================================================================================================================================

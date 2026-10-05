@@ -1,6 +1,6 @@
 // shared/items.js
 
-import { getAsset, displayName, splitType } from './assets.js';
+import { getAsset, displayName, splitType, litAs, objectProps } from './assets.js';
 import { vocationStats } from './vocations.js';
 
 // Regras dos itens que o player carrega (inventário e containers). Um item é
@@ -289,4 +289,14 @@ export function fromPlain(plain, nextUid) {
   if (Number.isFinite(plain.fuel) && plain.fuel > 0) item.fuel = plain.fuel;
   if (Number.isInteger(plain.charges) && plain.charges > 0) item.charges = plain.charges;
   return item;
+}
+
+// ================================================================================================================================================================================================================================================
+// isSwitchableLight
+// Luz fixa do mapa que se acende e apaga usando (poste, lampião na parede):
+// tem luz e o desenho aceso (gerador → Acesa como) e não se move. Começa
+// acesa.
+
+export function isSwitchableLight(type) {
+  return itemInfo(type).light > 0 && !!litAs(type) && !objectProps(type).movable;
 }

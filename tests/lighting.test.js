@@ -81,3 +81,20 @@ test('tocha acesa gasta como no Tibia (20 min); apagada não gasta; acabou, some
   sim.inventory.burnLights(1000);
   assert.equal(sim.player.equip.escudo, null, 'queimou até o fim');
 });
+
+test('poste de luz fixo começa aceso; usar apaga e acende pra todos', async () => {
+  const { serializeState } = await import('../js/net/protocol.js');
+  const POST = 'decoracao/iluminacao/poste';
+  const LIT = 'decoracao/iluminacao/poste-aceso';
+  const asset = (id, props) => ({ id, ferramenta: 'objetos', grupo: 'decoracao', pasta: 'iluminacao', nome: id.split('/').pop(), rotulo: 'decoracao › iluminacao', url: `/${id}.png`, quadro: 64, quadros: 1, pecas: [], propriedades: props });
+  setAssets([asset(POST, { move: false, bloqueia: true, luz: 6, acesoComo: LIT }), asset(LIT, { move: false, bloqueia: true, luz: 6 })]);
+  const sim = buildGame({ objects: [...floorRect(0, 10, 0, 10, 0), [POST, 3, 2, 0, 0, false, false, true]], player: { x: 2, y: 2, z: 0 } });
+  const post = sim.objects.find(o => o.id.startsWith(POST));
+  assert.equal(post.lit, true);
+  sim.interactions.useObject(sim.player, post.id);
+  assert.equal(post.lit, false);
+  assert.deepEqual(serializeState(sim, sim.player.id).unlit, [post.id]);
+  sim.interactions.useObject(sim.player, post.id);
+  assert.equal(post.lit, true);
+  assert.deepEqual(serializeState(sim, sim.player.id).unlit, []);
+});

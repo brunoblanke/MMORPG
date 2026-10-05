@@ -1,7 +1,7 @@
 // js/views/inventory-ui.js
 
 import { objectIdType, objectUse } from '../../shared/assets.js';
-import { itemInfo } from '../../shared/items.js';
+import { itemInfo, isSwitchableLight } from '../../shared/items.js';
 import { describeItem, describeEntity } from './look.js';
 import { PITCH, MAP_USES, LONG_PRESS_MS, aimsWith } from './inventory-ui/common.js';
 import { patchChildren } from './inventory-ui/dom-patch.js';
@@ -327,7 +327,7 @@ export class InventoryUI {
       if (!usable) return false;
       this.game.cancelPendingWalk();
       const type = objectIdType(usable.id);
-      if (MAP_USES.includes(objectUse(type))) this.game.send({ type: 'useObject', id: usable.id });
+      if (MAP_USES.includes(objectUse(type)) || (usable.movable !== true && isSwitchableLight(type))) this.game.send({ type: 'useObject', id: usable.id });
       else if (aimsWith(type)) this.startAim({ t: 'g', id: usable.id });
       else this.game.send({ type: 'useItem', from: { t: 'g', id: usable.id } });
       return true;
