@@ -22,6 +22,7 @@ export class GameObject {
     this.temporary = !!data.temporary;
     this.ownerId = data.ownerId || null;
     this.hidden = !!data.hidden;
+    this.lit = !!data.lit;
 
     if (data.stairDirection) {
       this.stairDirection = data.stairDirection;
