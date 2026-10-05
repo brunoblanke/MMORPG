@@ -1,5 +1,10 @@
 // js/services/particle-system.js
 
+import { EFFECTS, EFFECT_FRAME_MS, effectUrl } from '../../shared/effects.js';
+
+// As imagens dos efeitos do Tibia, carregadas na primeira vez que aparecem.
+const effectImages = new Map();
+
 // Projéteis: flecha e lança (risco e ponta) e as bolinhas de magia ([cor,
 // brilho]) de cada tipo.
 const MISSILE_SHAFTS = {
@@ -70,12 +75,19 @@ export class ParticleSystem {
   }
 
   // ================================================================================================================================================================================================================================================
-  // spawnBurst
-  // Área de runa: cada sqm acende na cor do tipo e apaga rápido.
+  // spawnEffect
+  // Efeito do Tibia (shared/effects.js) animado em cada sqm de tiles.
 
-  spawnBurst(tiles, kind, renderer) {
-    this.bursts = this.bursts || [];
-    this.bursts.push({ tiles, kind, renderer, createdAt: performance.now(), duration: 400 });
+  spawnEffect(tiles, name, renderer) {
+    const info = EFFECTS[name];
+    if (!info) return;
+    if (!effectImages.has(name)) {
+      const img = new Image();
+      img.src = effectUrl(name);
+      effectImages.set(name, img);
+    }
+    this.effects = this.effects || [];
+    this.effects.push({ tiles, img: effectImages.get(name), frames: info.frames, renderer, createdAt: performance.now(), duration: info.frames * EFFECT_FRAME_MS });
   }
 
   // ================================================================================================================================================================================================================================================
@@ -94,22 +106,22 @@ export class ParticleSystem {
       return true;
     });
     this.missiles = (this.missiles || []).filter(m => timestamp - m.createdAt < m.duration);
-    this.bursts = (this.bursts || []).filter(b => timestamp - b.createdAt < b.duration);
+    this.effects = (this.effects || []).filter(e => timestamp - e.createdAt < e.duration);
   }
 
   // ================================================================================================================================================================================================================================================
   // render
 
   render(ctx) {
-    for (const b of this.bursts || []) {
-      const t = Math.max(0, Math.min(1, (performance.now() - b.createdAt) / b.duration));
-      const size = b.renderer.camera.tileSize;
+    for (const e of this.effects || []) {
+      if (!e.img.complete || !e.img.naturalWidth) continue;
+      const frame = Math.min(e.frames - 1, Math.floor((performance.now() - e.createdAt) / EFFECT_FRAME_MS));
+      const size = e.renderer.camera.tileSize;
       ctx.save();
-      ctx.globalAlpha = 0.55 * (1 - t);
-      ctx.fillStyle = (MISSILE_COLORS[b.kind] || MISSILE_COLORS.energy)[1];
-      for (const [x, y] of b.tiles) {
-        const pos = b.renderer.gridToScreenWithOffset(x, y);
-        ctx.fillRect(pos.x, pos.y, size, size);
+      ctx.imageSmoothingEnabled = false;
+      for (const [x, y] of e.tiles) {
+        const pos = e.renderer.gridToScreenWithOffset(x, y);
+        ctx.drawImage(e.img, frame * 32, 0, 32, 32, pos.x, pos.y, size, size);
       }
       ctx.restore();
     }
@@ -166,6 +178,6 @@ export class ParticleSystem {
   clear() {
     this.particles = [];
     this.missiles = [];
-    this.bursts = [];
+    this.effects = [];
   }
 }
