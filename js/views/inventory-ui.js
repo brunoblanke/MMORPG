@@ -271,12 +271,6 @@ export class InventoryUI {
         this.game.chatBox.writeTo(btn.dataset.name);
         return;
       }
-      if (btn.dataset.act === 'vipadd') {
-        const input = btn.closest('.inv-win').querySelector('.inv-vip-input');
-        if (input && input.value.trim()) this.game.send({ type: 'vipAdd', name: input.value.trim() });
-        if (input) input.value = '';
-        return;
-      }
       if (btn.dataset.act === 'attackmode') {
         this.game.send({ type: 'toggleAttackMode' });
         return;

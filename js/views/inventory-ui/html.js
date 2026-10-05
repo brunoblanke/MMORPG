@@ -322,8 +322,8 @@ export const htmlMethods = {
 
   // ================================================================================================================================================================================================================================================
   // vipHtml
-  // Lista VIP (verde online, cinza offline; ✉ mensagem; × tira) e o campo
-  // pra pôr um nome.
+  // Lista VIP (verde online, cinza offline; ✉ mensagem; × tira). Só entra
+  // quem for adicionado pelo botão direito no player.
 
   vipHtml(win, buttons) {
     const social = this.view.social || { party: [], invites: [], vip: [] };
@@ -333,8 +333,7 @@ export const htmlMethods = {
     return `<section class="inv-win${win.min ? ' min' : ''}" data-win="${win.id}">
       <header class="inv-head"><span class="inv-title">VIP</span>${buttons}</header>
       <div class="inv-body"><div class="inv-battle">
-        ${vip || '<div class="inv-battle-empty">Ninguém na lista</div>'}
-        <div class="inv-social-line"><input class="inv-vip-input" type="text" maxlength="30" placeholder="Nome" aria-label="Nome pra VIP"><button class="inv-btn inv-social-btn" data-act="vipadd" type="button">+</button></div>
+        ${vip || '<div class="inv-battle-empty">Botão direito num player pra adicionar</div>'}
       </div></div>
     </section>`;
   },

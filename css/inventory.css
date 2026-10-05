@@ -181,7 +181,6 @@
 .inv-vip::before{ content:''; display:inline-block; width:6px; height:6px; margin-right:5px; border-radius:50%; background:var(--inv-muted); vertical-align:middle; }
 .inv-vip.on::before{ background:#22c55e; }
 .inv-vip.off{ color:var(--inv-muted); }
-.inv-vip-input{ flex:1; min-width:0; height:20px; padding:0 6px; border-radius:4px; border:1px solid var(--inv-line); background:var(--inv-slot); color:var(--inv-text); font:inherit; font-size:11px; }
 .inv-battle-hp.mana i{ background:#4c8dff; }
 .inv-trade{ width:260px; }
 .inv-trade-row{ display:flex; gap:8px; padding:8px; }
