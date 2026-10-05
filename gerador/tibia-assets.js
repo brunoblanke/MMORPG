@@ -562,9 +562,11 @@ function lerDatEstendido(dat) {
         if (flag === 0xFF) break;
         const nome = flag < EXTENDED_FLAGS.length ? EXTENDED_FLAGS[flag] : 100 + flag;
         if (flag === EXTENDED_MARKET) {
+          const categoria = dat.readUInt16LE(p);
           p += 6;
-          p += 2 + dat.readUInt16LE(p) + 4;
-          flags[nome] = true;
+          const tamanho = dat.readUInt16LE(p);
+          flags[nome] = { categoria, nome: dat.toString('latin1', p + 2, p + 2 + tamanho) };
+          p += 2 + tamanho + 4;
           continue;
         }
         const bytes = EXTENDED_DATA_BYTES[flag] || 0;

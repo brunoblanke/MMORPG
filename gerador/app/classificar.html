@@ -44,6 +44,7 @@
     <select id="targetFolder"></select>
   </div>
   <button type="button" class="primary-btn" id="applyBtn">Aplicar</button>
+  <button type="button" class="ghost-btn" id="confirmBtn" title="Os marcados ficam na pasta sugerida">Confirmar sugestão</button>
   <button type="button" class="ghost-btn" id="unclassifyBtn">Tirar da pasta</button>
   <button type="button" class="ghost-btn" id="clearSelectionBtn">Limpar seleção</button>
   <span class="classify-count" id="classifyCount"></span>
@@ -52,7 +53,7 @@
 
 <main class="classify-grid" id="classifyGrid" aria-label="Sprites"></main>
 
-<p class="classify-help">Clique marca · Shift+clique marca o intervalo · Ctrl+A marca tudo que está na tela · Esc limpa</p>
+<p class="classify-help">Etiqueta tracejada = sugestão ainda não conferida · Clique marca · Shift+clique marca o intervalo · Ctrl+A marca tudo que está na tela · Esc limpa</p>
 
 <script type="module" src="js/classify.js"></script>
 </body>

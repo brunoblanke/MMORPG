@@ -219,6 +219,7 @@ button:focus-visible, input:focus-visible, .slot:focus-visible{ outline:2px soli
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis; pointer-events:none;
 }
 .tile-tag[hidden]{ display:none; }
+.tile-tag.suggested{ background:rgba(11, 21, 18, .85) !important; border:1px dashed currentColor; line-height:9px; }
 .classify-help{ margin:0; padding:6px 20px; color:var(--muted); font-size:11px; background:var(--panel); border-top:1px solid var(--line); }
 
 .loot-field{ min-width:100%; }

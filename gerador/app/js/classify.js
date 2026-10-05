@@ -6,13 +6,18 @@ import { fetchCatalog, fetchTaxonomy, fetchClassification, classify, spriteUrl }
 // grade só, pra pôr cada um numa pasta (gerador/taxonomia.json). Clique marca,
 // Shift+clique marca o intervalo desde o último clicado, Ctrl+A marca tudo o
 // que está na tela e Esc limpa. A classificação fica em classificacao.json.
+// As sugestões da pré-classificação (ferramentas/pre-classificar.js) aparecem
+// com a etiqueta tracejada até serem conferidas: "Confirmar sugestão" aceita a
+// pasta sugerida; aplicar outra pasta ou tirar da pasta também conta como
+// conferido.
 
 const page = {
   type: 'itens',
   items: [],
   creatures: [],
   taxonomy: { grupos: [] },
-  classification: { itens: {}, criaturas: {} },
+  classification: { itens: {}, criaturas: {}, sugeridos: { itens: [], criaturas: [] } },
+  suggested: { itens: new Set(), criaturas: new Set() },
   selected: new Set(),
   anchor: null,
   visible: [],
@@ -37,7 +42,7 @@ async function boot() {
     page.items = catalog.items;
     page.creatures = catalog.creatures;
     page.taxonomy = taxonomy;
-    page.classification = classification;
+    setClassification(classification);
   } catch (error) {
     status(`Não deu pra ler os sprites: ${error.message}. O gerador está rodando?`, 'error');
     return;
@@ -50,9 +55,20 @@ async function boot() {
   gridEl.addEventListener('click', onGridClick);
   document.getElementById('applyBtn').onclick = () => apply(targetEl.value || null, true);
   document.getElementById('unclassifyBtn').onclick = () => apply(null, false);
+  document.getElementById('confirmBtn').onclick = confirmSuggestions;
   document.getElementById('clearSelectionBtn').onclick = () => { clearSelection(); updateCells(); };
   document.addEventListener('keydown', onKey);
   setType('itens');
+}
+
+// ================================================================================================================================================================================================================================================
+// setClassification
+// Guarda a classificação e os sugeridos (em Set, pra consultar rápido).
+
+function setClassification(classification) {
+  page.classification = classification;
+  const suggested = classification.sugeridos || {};
+  page.suggested = { itens: new Set(suggested.itens || []), criaturas: new Set(suggested.criaturas || []) };
 }
 
 // ================================================================================================================================================================================================================================================
@@ -73,7 +89,8 @@ function setType(type) {
     button.classList.toggle('active', button.dataset.type === type);
   }
   tibiaFieldEl.hidden = type !== 'itens';
-  fillFolders(showEl, [['pending', 'Não classificados'], ['all', 'Todos']]);
+  fillFolders(showEl, [['suggested', 'A conferir (sugestões)'], ['pending', 'Não classificados'], ['all', 'Todos']]);
+  if (!page.suggested[type].size) showEl.value = 'pending';
   fillFolders(targetEl, [['', 'Escolha a pasta…']]);
   clearSelection();
   render();
@@ -135,7 +152,8 @@ function visibleIds() {
   let list = page.type === 'itens'
     ? page.items.filter(([, category]) => !tibiaEl.value || category === tibiaEl.value).map(([id]) => id)
     : page.creatures.map(([id]) => id);
-  if (show === 'pending') list = list.filter(id => !assigned[id]);
+  if (show === 'suggested') list = list.filter(id => page.suggested[page.type].has(id));
+  else if (show === 'pending') list = list.filter(id => !assigned[id]);
   else if (show !== 'all') list = list.filter(id => assigned[id] === show);
   return list;
 }
@@ -172,12 +190,15 @@ function updateCell(cell) {
   const folder = page.classification[page.type][id];
   const info = folderInfo(folder);
   cell.classList.toggle('selected', page.selected.has(id));
-  cell.title = `#${id}${info ? ` · ${info.label}` : ''}`;
+  const suggested = page.suggested[page.type].has(id);
+  cell.title = `#${id}${info ? ` · ${info.label}${suggested ? ' (sugestão)' : ''}` : ''}`;
   const tag = cell.querySelector('.tile-tag');
   tag.hidden = !info;
+  tag.classList.toggle('suggested', suggested);
   if (info) {
     tag.textContent = info.short;
     tag.style.background = folderColor(folder);
+    tag.style.color = suggested ? folderColor(folder) : '';
   }
 }
 
@@ -269,9 +290,33 @@ async function apply(folder, needsFolder) {
   const ids = [...page.selected];
   page.busy = true;
   try {
-    page.classification = await classify(page.type, ids, folder);
+    setClassification(await classify(page.type, ids, folder));
     const info = folderInfo(folder);
     status(info ? `${ids.length} em ${info.label}.` : `${ids.length} tirados da pasta.`, 'ok');
+    clearSelection();
+    render();
+  } catch (error) {
+    status(`Não deu pra salvar: ${error.message}`, 'error');
+  } finally {
+    page.busy = false;
+  }
+}
+
+// ================================================================================================================================================================================================================================================
+// confirmSuggestions
+// Os marcados que são sugestão ficam na pasta sugerida e passam a conferidos.
+
+async function confirmSuggestions() {
+  if (page.busy) return;
+  const ids = [...page.selected].filter(id => page.suggested[page.type].has(id));
+  if (!ids.length) {
+    status('Marque sprites com sugestão (etiqueta tracejada).', 'error');
+    return;
+  }
+  page.busy = true;
+  try {
+    setClassification(await classify(page.type, ids, null, true));
+    status(`${ids.length} sugestões confirmadas.`, 'ok');
     clearSelection();
     render();
   } catch (error) {

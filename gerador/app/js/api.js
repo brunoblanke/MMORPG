@@ -95,11 +95,11 @@ export async function fetchClassification() {
 // Põe os sprites (tipo 'itens' ou 'criaturas') na pasta 'grupo/pasta' (null
 // tira da pasta). Devolve a classificação toda, já atualizada.
 
-export async function classify(type, ids, folder) {
+export async function classify(type, ids, folder, confirm = false) {
   return (await requestJson('/api/classificacao', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ tipo: type, ids, pasta: folder })
+    body: JSON.stringify({ tipo: type, ids, pasta: folder, confirmar: confirm })
   })).classificacao;
 }
 

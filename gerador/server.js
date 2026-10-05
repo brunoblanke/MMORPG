@@ -273,25 +273,35 @@ function excluirProjeto(req, res) {
 
 // ================================================================================================================================================================================================================================================
 // lerClassificacao
-// { itens: { id: 'grupo/pasta' }, criaturas: { id: 'grupo/pasta' } }.
+// { itens: { id: 'grupo/pasta' }, criaturas: { id: 'grupo/pasta' },
+//   sugeridos: { itens: [ids], criaturas: [ids] } } — sugeridos são os que a
+// pré-classificação (ferramentas/pre-classificar.js) pôs e ainda não foram
+// conferidos.
 
 function lerClassificacao() {
-  if (!fs.existsSync(ARQUIVO_CLASSIFICACAO)) return { itens: {}, criaturas: {} };
+  const vazia = { itens: {}, criaturas: {}, sugeridos: { itens: [], criaturas: [] } };
+  if (!fs.existsSync(ARQUIVO_CLASSIFICACAO)) return vazia;
   const dados = JSON.parse(fs.readFileSync(ARQUIVO_CLASSIFICACAO, 'utf8'));
-  return { itens: dados.itens || {}, criaturas: dados.criaturas || {} };
+  const sugeridos = dados.sugeridos || {};
+  return {
+    itens: dados.itens || {},
+    criaturas: dados.criaturas || {},
+    sugeridos: { itens: sugeridos.itens || [], criaturas: sugeridos.criaturas || [] }
+  };
 }
 
 // ================================================================================================================================================================================================================================================
 // classificar
-// { tipo: 'itens' | 'criaturas', ids: [números], pasta: 'grupo/pasta' ou null }
-// — põe os sprites na pasta (null tira da pasta). Criatura só vai pra pasta
-// de criatura; item, pras outras.
+// { tipo: 'itens' | 'criaturas', ids: [números], pasta: 'grupo/pasta' ou null,
+// confirmar } — põe os sprites na pasta (null tira da pasta); com confirmar,
+// os sugeridos ficam na pasta sugerida. Nos dois casos, eles deixam de ser
+// sugestão. Criatura só vai pra pasta de criatura; item, pras outras.
 
 function classificar(req, res) {
-  const { tipo, ids, pasta } = req.body || {};
+  const { tipo, ids, pasta, confirmar } = req.body || {};
   if (tipo !== 'itens' && tipo !== 'criaturas') return res.status(400).json({ success: false, message: 'Tipo inválido.' });
   if (!Array.isArray(ids) || !ids.every(Number.isInteger)) return res.status(400).json({ success: false, message: 'Sprites inválidos.' });
-  if (pasta !== null) {
+  if (!confirmar && pasta !== null) {
     const [grupo, id] = String(pasta).split('/');
     const destino = pastaDaTaxonomia(grupo, id);
     if (!destino) return res.status(400).json({ success: false, message: 'Pasta inválida.' });
@@ -303,9 +313,12 @@ function classificar(req, res) {
   try {
     const classificacao = lerClassificacao();
     for (const id of ids) {
+      if (confirmar) continue;
       if (pasta) classificacao[tipo][id] = pasta;
       else delete classificacao[tipo][id];
     }
+    const conferidos = new Set(ids);
+    classificacao.sugeridos[tipo] = classificacao.sugeridos[tipo].filter(id => !conferidos.has(id));
     fs.writeFileSync(ARQUIVO_CLASSIFICACAO, JSON.stringify(classificacao, null, 1), 'utf8');
     res.json({ success: true, classificacao });
   } catch (err) {
