@@ -83,7 +83,7 @@ export function choosePaintDefaults() {
 // Peças que a folha de parede tem, na ordem da folha.
 
 function wallPieces(asset) {
-  return (asset.ordem || WALL_PIECES).filter(piece => asset.pecas.includes(piece));
+  return WALL_PIECES.filter(piece => asset.pecas.includes(piece));
 }
 
 // ================================================================================================================================================================================================================================================
@@ -129,7 +129,7 @@ function accordionGroups(tool) {
   }
   if (tool.id === 'wall') {
     return {
-      empty: 'Nenhuma parede gerada (Estrutura › Paredes, Cercas ou Parapeitos).',
+      empty: 'Nenhuma parede gerada (Estrutura › Paredes ou Cercas).',
       groups: listAssets('paredes').map(asset => ({
         title: `${displayName(asset.id)} · ${asset.rotulo.split(' › ').pop()}`,
         compact: true,
