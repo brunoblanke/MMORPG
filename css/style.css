@@ -187,27 +187,3 @@ canvas {
 .chat-send:hover {
   color: #e8e8e8;
 }
-
-.joystick {
-  position: fixed;
-  left: 24px;
-  bottom: 24px;
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  background: rgba(22, 25, 32, .82);
-  touch-action: none;
-  user-select: none;
-  z-index: 3;
-}
-
-.joystick-knob {
-  position: absolute;
-  left: 36px;
-  top: 36px;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: rgba(10, 12, 16, .4);
-  pointer-events: none;
-}

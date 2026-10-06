@@ -2,7 +2,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { directionFromOffset } from '../js/input/joystick.js';
+import { directionFromOffset, followAnchor } from '../js/input/joystick.js';
 
 test('o controle anda na direção do eixo que mais passou do centro', () => {
   assert.deepEqual(directionFromOffset(30, 5, 36), { dx: 1, dy: 0 });
@@ -22,6 +22,12 @@ test('o controle anda na diagonal quando o arraste fica entre dois eixos', () =>
 test('perto do centro o controle não anda', () => {
   assert.equal(directionFromOffset(0, 0, 36), null);
   assert.equal(directionFromOffset(5, -5, 36), null);
+});
+
+test('o centro do joystick acompanha o dedo quando ele passa do alcance', () => {
+  assert.deepEqual(followAnchor({ x: 100, y: 100 }, { x: 130, y: 100 }, 60), { x: 100, y: 100 });
+  assert.deepEqual(followAnchor({ x: 100, y: 100 }, { x: 200, y: 100 }, 60), { x: 140, y: 100 });
+  assert.deepEqual(followAnchor({ x: 100, y: 100 }, { x: 100, y: 0 }, 60), { x: 100, y: 60 });
 });
 
 test('o servidor anda na diagonal com walkDir (dx e dy juntos)', async () => {

@@ -101,7 +101,7 @@ export class GameController {
       .then((session) => {
         this.session = session;
         this.inputController = new InputController(this.canvas, this.renderer, this.camera, this.eventManager, this);
-        this.joystick = new Joystick(this.inputController);
+        this.joystick = new Joystick(this.inputController, this.canvas);
         this.inventoryUI = new InventoryUI(this);
         this.setupEventListeners();
         this.start();
