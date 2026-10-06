@@ -49,10 +49,11 @@ function isInsideBounds(bounds, x, y) {
 
 // ================================================================================================================================================================================================================================================
 // hasHarmfulField
-// O sqm tem campo que fere (fogo, veneno, energia)?
+// O sqm tem campo que fere (fogo, veneno, energia), posto no mapa ou criado
+// por runa?
 
-function hasHarmfulField(world, x, y, z) {
-  return world.getObjectsAt(x, y).some(obj => (obj.z || 0) === z && obj.temporary && FIELDS[objectIdType(obj.id)] && FIELDS[objectIdType(obj.id)].kind);
+export function hasHarmfulField(world, x, y, z) {
+  return world.getObjectsAt(x, y).some(obj => (obj.z || 0) === z && FIELDS[objectIdType(obj.id)] && FIELDS[objectIdType(obj.id)].kind);
 }
 
 // ================================================================================================================================================================================================================================================

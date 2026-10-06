@@ -5,6 +5,7 @@ import { getLevel } from '../core/geometry.js';
 import { AI_STATE } from '../models/enemy.js';
 import { CONFIG } from '../config.js';
 import { creatureBehavior } from '../../shared/assets.js';
+import { hasHarmfulField } from '../core/pathfinding.js';
 
 // Sem caminho até o player parado no mesmo sqm: tenta de novo só depois disso (ms).
 const CHASE_STUCK_RETRY_MS = 8000;
@@ -482,7 +483,7 @@ export class EnemyAI {
         if (x === enemy.x && y === enemy.y) continue;
         if (!this.movement.isInsideMap(x, y) || !enemy.isInPatrolZone(x, y)) continue;
         if (this.movement.isBlocked(x, y, floor, enemy) || this.isOccupiedByOther(enemy, enemies, x, y)) continue;
-        if (this.movement.world.getTransitionAt(x, y, floor) || this.movement.world.isSafe(x, y, floor)) continue;
+        if (this.movement.world.getTransitionAt(x, y, floor) || this.movement.world.isSafe(x, y, floor) || hasHarmfulField(this.movement.world, x, y, floor)) continue;
         if (this.movement.getPassableStep(x, y, floor, enemy.step || 0) === null) continue;
         spots.push({ x, y });
       }
@@ -490,7 +491,7 @@ export class EnemyAI {
 
     for (let attempt = 0; attempt < 8 && spots.length; attempt++) {
       const { x, y } = spots.splice(Math.floor(Math.random() * spots.length), 1)[0];
-      const path = this.movement.findPath(enemy, { x, y, z: floor }, { sameFloor: true, bounds });
+      const path = this.movement.findPath(enemy, { x, y, z: floor }, { sameFloor: true, bounds, noFieldCrossing: true });
       if (path.length > 0) {
         enemy.route = { path, x, y };
         return true;

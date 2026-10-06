@@ -2,7 +2,7 @@
 
 import { calculateMoveDelay, distance, directionFromDelta, getAdjacentPositions, isPositionAdjacentTo } from '../utils/helpers.js';
 import { resolveStep, isSameLanding } from '../core/movement.js';
-import { findPath } from '../core/pathfinding.js';
+import { findPath, hasHarmfulField } from '../core/pathfinding.js';
 import { isValidFloor } from '../../shared/constants.js';
 import { blocksThrow, objectIdType } from '../../shared/assets.js';
 
@@ -96,13 +96,14 @@ export class MovementController {
   // findPath
   // Caminho de start até end = { x, y, z } (core/pathfinding.js). Inimigo
   // contorna campo que fere; se não achar caminho assim (sem passagem ou
-  // longe demais), atravessa o campo.
+  // longe demais), o caminho atravessa o campo (com options.noFieldCrossing,
+  // fica sem caminho). Quem anda não pisa no campo (blockedByField).
 
   findPath(start, end, options = {}) {
     const base = { enemiesPassable: this.enemiesPassable, avoidSafe: !!start.avoidsSafeZones, groundOnly: !!start.groundOnly, entering: start.isPlayer ? start : null, ...options };
     if (start.isPlayer) return findPath(this.world, start, end, base);
     const avoiding = findPath(this.world, start, end, { ...base, fieldCost: FIELD_STEP_COST });
-    return avoiding.length ? avoiding : findPath(this.world, start, end, base);
+    return avoiding.length || options.noFieldCrossing ? avoiding : findPath(this.world, start, end, base);
   }
 
   // ================================================================================================================================================================================================================================================
@@ -172,10 +173,21 @@ export class MovementController {
     if (timestamp - entity.lastMoveTime < moveDelay) return false;
 
     const landing = this.resolveStep(entity, dx, dy);
-    if (!landing) return false;
+    if (!landing || this.blockedByField(entity, landing)) return false;
 
     this.applyStep(entity, landing, timestamp);
     return true;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // blockedByField
+  // Criatura (não player) não pisa em campo que fere, a não ser que já esteja
+  // num: aí pode sair andando por onde der.
+
+  blockedByField(entity, landing) {
+    if (entity.isPlayer) return false;
+    const floor = entity.z || 0;
+    return hasHarmfulField(this.world, landing.x, landing.y, landing.z ?? floor) && !hasHarmfulField(this.world, entity.x, entity.y, floor);
   }
 
   // ================================================================================================================================================================================================================================================
@@ -185,7 +197,7 @@ export class MovementController {
 
   stepAlongPath(entity, nextStep, timestamp, duration) {
     const landing = this.resolveStep(entity, nextStep.dx, nextStep.dy, { sameFloor: true });
-    if (!isSameLanding(landing, nextStep)) return false;
+    if (!isSameLanding(landing, nextStep) || this.blockedByField(entity, landing)) return false;
 
     this.faceTowards(entity, nextStep.dx, nextStep.dy);
     this.applyStep(entity, landing, timestamp, duration);

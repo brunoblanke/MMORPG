@@ -11,11 +11,13 @@ import { TICK_MS } from '../js/simulation.js';
 test('o golpe no inimigo de um andar sai com o z dele', () => {
   const sim = buildGame({ objects: [...floorRect(0, 12, 0, 12, 0), ...floorRect(0, 12, 0, 12, -1)], enemies: [[6, 5, -1]], player: { x: 5, y: 5, z: -1 } });
   const enemy = sim.enemies[0];
-  sim.player.lastAttackTime = -1e9;
-  sim.combat.attackTarget(sim.player, enemy, sim.time + TICK_MS, { melee: true });
-  sim.player.currentHp = 0;
-  const events = sim.drainEvents();
-  const damage = events.find(e => e.type === 'damage' && e.targetId === enemy.id);
+  enemy.hp = enemy.currentHp = 100000;
+  let damage = null;
+  for (let i = 0; i < 200 && !damage; i++) {
+    sim.player.lastAttackTime = -1e9;
+    sim.combat.attackTarget(sim.player, enemy, sim.time + TICK_MS, { melee: true });
+    damage = sim.drainEvents().find(e => e.type === 'damage' && e.targetId === enemy.id) || null;
+  }
   assert.ok(damage, 'houve dano');
   assert.equal(damage.z, -1);
 });

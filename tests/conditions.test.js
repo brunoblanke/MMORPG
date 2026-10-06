@@ -98,3 +98,40 @@ test('inimigo contorna o campo que fere; se o único caminho passa por ele, atra
   const through = corridor.movement.findPath(corridor.enemies[0], { x: 10, y: 5, z: 0 }, { sameFloor: true });
   assert.ok(through.some(step => step.x === 6 && step.y === 5));
 });
+
+test('criatura não pisa em campo do mapa (não só nos de runa): passeia sem entrar e contorna na pathfinding', () => {
+  const fields = [];
+  for (let x = 4; x <= 8; x++) for (let y = 4; y <= 8; y++) if ((x + y) % 2 === 0) fields.push([FIRE, x, y, 0, 0, false, false, false]);
+  const sim = buildGame({ objects: [...floorRect(0, 14, 0, 14, 0), ...fields], enemies: [[2, 2, 0]], player: { x: 13, y: 13, z: 0 } });
+  const enemy = sim.enemies[0];
+  enemy.patrolRadius = 8;
+  enemy.patrolCenterX = 6;
+  enemy.patrolCenterY = 6;
+  enemy.detectionRadius = 0;
+  const onField = () => fields.some(([, x, y]) => enemy.x === x && enemy.y === y);
+  let visited = 0;
+  for (let t = 0; t < 180000; t += TICK_MS) {
+    sim.tick(sim.time + TICK_MS);
+    if (onField()) visited++;
+  }
+  assert.equal(visited, 0);
+  const path = sim.movement.findPath(enemy, { x: 10, y: 6, z: 0 }, { sameFloor: true });
+  assert.ok(path.length > 0);
+  assert.ok(!path.some(step => fields.some(([, x, y]) => step.x === x && step.y === y)));
+});
+
+test('sem caminho que evite o campo, o passeio não atravessa', () => {
+  const walls = [];
+  for (let x = 0; x <= 14; x++) walls.push(...wall(x, 4), ...wall(x, 6));
+  const sim = buildGame({ objects: [...floorRect(0, 14, 0, 14, 0), ...walls, [FIRE, 6, 5, 0, 0, false, false, false]], enemies: [[2, 5, 0]], player: { x: 12, y: 9, z: 0 } });
+  const enemy = sim.enemies[0];
+  enemy.patrolRadius = 8;
+  enemy.patrolCenterX = 7;
+  enemy.patrolCenterY = 5;
+  enemy.detectionRadius = 0;
+  for (let t = 0; t < 120000; t += TICK_MS) {
+    sim.tick(sim.time + TICK_MS);
+    assert.ok(!(enemy.x >= 6 && enemy.y === 5) || enemy.x < 6, 'passou pelo campo');
+  }
+  assert.ok(enemy.x < 6);
+});
