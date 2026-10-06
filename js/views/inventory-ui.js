@@ -130,7 +130,7 @@ export class InventoryUI {
         const item = this.itemAt(this.placeOf(slot));
         if (item) this.game.look(describeItem(item));
       } else {
-        const enemy = this.game.session && this.game.session.enemies.find(e => e.id === row.dataset.enemy);
+        const enemy = this.battleEntity(row.dataset.enemy);
         if (enemy) this.game.look(describeEntity(enemy));
       }
     }, LONG_PRESS_MS);
@@ -140,6 +140,15 @@ export class InventoryUI {
   stopLongPress() {
     if (this.press) clearTimeout(this.press.timer);
     this.press = null;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // battleEntity
+  // A criatura ou o player da linha da battle, pelo id.
+
+  battleEntity(id) {
+    const session = this.game.session;
+    return session ? [...session.enemies, ...session.players].find(e => e.id === id) : undefined;
   }
 
   // ================================================================================================================================================================================================================================================
@@ -172,7 +181,7 @@ export class InventoryUI {
       const row = evt.target.closest('.inv-battle-row');
       if (row && evt.pointerType === 'touch') return;
       if (row && evt.shiftKey) {
-        const enemy = this.game.session && this.game.session.enemies.find(e => e.id === row.dataset.enemy);
+        const enemy = this.battleEntity(row.dataset.enemy);
         if (enemy) this.game.look(describeEntity(enemy));
         return;
       }

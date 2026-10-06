@@ -231,8 +231,9 @@ export const htmlMethods = {
 
   // ================================================================================================================================================================================================================================================
   // battleList
-  // Inimigos vivos que o player alcança (canReach): nome, vida e se é o
-  // alvo. Só os da tela entram na conta (os de fora não dá pra ver).
+  // Inimigos vivos e outros players que o player alcança (canReach): nome,
+  // vida e se é o alvo. Só os da tela entram na conta (os de fora não dá pra
+  // ver).
 
   battleList() {
     const { player, session, camera } = this.game;
@@ -240,10 +241,13 @@ export const htmlMethods = {
     const visible = camera.getVisibleTiles();
     const level = getLevel(player);
     const targetId = player.target ? player.target.id : null;
-    return session.enemies
-      .filter(e => e.isAlive() && getLevel(e) === level &&
-        e.x >= visible.startX && e.x < visible.endX && e.y >= visible.startY && e.y < visible.endY && this.canReach(e))
-      .map(e => ({ id: e.id, name: displayName(e.creature), hp: Math.max(0, Math.round(e.currentHp / e.maxHp * 100)), target: e.id === targetId }));
+    const onScreen = (e) => e.isAlive() && getLevel(e) === level &&
+      e.x >= visible.startX && e.x < visible.endX && e.y >= visible.startY && e.y < visible.endY && this.canReach(e);
+    const row = (e, name) => ({ id: e.id, name, hp: Math.max(0, Math.round(e.currentHp / e.maxHp * 100)), target: e.id === targetId });
+    return [
+      ...session.enemies.filter(onScreen).map(e => row(e, displayName(e.creature))),
+      ...session.players.filter(p => p.id !== player.id && onScreen(p)).map(p => row(p, p.name))
+    ];
   },
 
   // ================================================================================================================================================================================================================================================
