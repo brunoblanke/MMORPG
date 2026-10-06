@@ -64,6 +64,7 @@ export class LifeCycleController {
     const { world, control } = this.sim;
     const corpse = this.createCorpse(player, 'player_corpse', now);
     this.sim.inventory.fillPlayerCorpse(corpse, player);
+    player.lastCombatTime = -Infinity;
     const spot = this.sim.findFreeSpot(player.spawnX, player.spawnY, player.spawnZ);
     world.moveEntityTile(player, player.x, player.y, player.z || 0, spot.x, spot.y, player.spawnZ);
     player.respawn(spot);

@@ -47,6 +47,7 @@ export class Simulation {
     this.objects = generateObjects(mapData);
     this.enemies = generateEnemies(mapData);
     this.players = [];
+    this.loggedOut = [];
     this.deadBodies = [];
 
     this.world.load(this.objects);
@@ -161,6 +162,65 @@ export class Simulation {
     this.social.onLogout(player);
     this.world.removeCreature(player);
     this.players = this.players.filter(p => p !== player);
+  }
+
+// ================================================================================================================================================================================================================================================
+  // inCombat
+  // Deu ou levou golpe nos últimos CONFIG.logoutCombatMs, fora de zona segura.
+
+  inCombat(player, now = this.time) {
+    if (this.world.isInSafeZone(player)) return false;
+    return now - player.lastCombatTime < CONFIG.logoutCombatMs;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // leaveGame
+  // A conexão do player caiu. Fora de combate ele sai na hora; em combate o
+  // corpo fica parado no mapa (offline), atacando e apanhando, até passar
+  // logoutCombatMs sem golpe (releaseOffline). Devolve true se ele saiu.
+
+  leaveGame(id) {
+    const player = this.getPlayer(id);
+    if (!player) return true;
+    if (!this.inCombat(player)) {
+      this.removePlayer(id);
+      return true;
+    }
+    player.offline = true;
+    this.control.clearWalk(player);
+    return false;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // findOffline
+  // O corpo que ficou no mapa com esse nome (sem diferenciar maiúsculas), ou null.
+
+  findOffline(name) {
+    const wanted = String(name).toLowerCase();
+    return this.players.find(p => p.offline && p.name.toLowerCase() === wanted) || null;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // releaseOffline
+  // Tira do mapa os corpos offline que já não estão em combate (ou que foram
+  // pra zona segura); eles ficam em loggedOut pro servidor guardar.
+
+  releaseOffline(now) {
+    for (const player of [...this.players]) {
+      if (!player.offline || this.inCombat(player, now)) continue;
+      this.removePlayer(player.id);
+      this.loggedOut.push(player);
+    }
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // drainLoggedOut
+  // Os players que saíram do mapa depois de ficar offline em combate.
+
+  drainLoggedOut() {
+    const left = this.loggedOut;
+    this.loggedOut = [];
+    return left;
   }
 
   // ================================================================================================================================================================================================================================================
@@ -296,6 +356,7 @@ export class Simulation {
     this.conditions.update(now);
     this.social.update(now);
     this.houses.update();
+    this.releaseOffline(now);
 
     this.movement.checkFloorTransitions([...this.players, ...this.enemies]);
     this.lifeCycle.processDeaths(now);

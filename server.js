@@ -223,6 +223,15 @@ async function iniciarJogo(servidorHttp) {
           socket.send(JSON.stringify({ type: 'joinError', error: erro.error }));
           return;
         }
+        const corpo = sim.findOffline(erro.name);
+        if (corpo) {
+          player = corpo;
+          player.offline = false;
+          conexoes.set(player.id, { socket, sent: null });
+          console.log(`🟢 ${player.name} voltou ao corpo que ficou no mapa (${conexoes.size} online)`);
+          socket.send(JSON.stringify({ type: 'welcome', playerId: player.id }));
+          return;
+        }
         const playerId = `player${proximoJogador}`;
         proximoJogador++;
         const saved = personagens[erro.name.toLowerCase()];
@@ -241,9 +250,9 @@ async function iniciarJogo(servidorHttp) {
     socket.on('close', () => {
       if (!player || minhaGeracao !== geracao) return;
       guardarPersonagens(personagens, [player]);
-      sim.removePlayer(player.id);
       conexoes.delete(player.id);
-      console.log(`🔴 ${player.name} saiu (${conexoes.size} online)`);
+      const saiu = sim.leaveGame(player.id);
+      console.log(saiu ? `🔴 ${player.name} saiu (${conexoes.size} online)` : `🟠 ${player.name} caiu em combate: o corpo fica no mapa (${conexoes.size} online)`);
     });
   });
 
@@ -254,6 +263,10 @@ async function iniciarJogo(servidorHttp) {
     while (tempo + TICK_MS <= agora) {
       tempo += TICK_MS;
       sim.tick(tempo);
+      for (const saiu of sim.drainLoggedOut()) {
+        guardarPersonagens(personagens, [saiu]);
+        console.log(`🔴 ${saiu.name} saiu do mapa depois do combate (${conexoes.size} online)`);
+      }
       enviarEstado(sim, conexoes, tempo, { serializeState, encodeDelta, range: [VIEW_RANGE_X, VIEW_RANGE_Y] });
     }
   }, TICK_MS);
@@ -386,13 +399,14 @@ function lerMensagem(dados) {
 
 // ================================================================================================================================================================================================================================================
 // validarEntrada
-// Nome válido (validateName) e que nenhum jogador online esteja usando.
+// Nome válido (validateName) e que nenhum jogador online esteja usando (o
+// corpo que ficou no mapa em combate não conta: quem volta assume ele).
 // Devolve { name } ou { error }.
 
 function validarEntrada(sim, nome, validateName) {
   const resultado = validateName(nome);
   if (resultado.error) return resultado;
-  const emUso = sim.players.some(p => p.name.toLowerCase() === resultado.name.toLowerCase());
+  const emUso = sim.players.some(p => !p.offline && p.name.toLowerCase() === resultado.name.toLowerCase());
   if (emUso) return { error: 'Esse nome já está em uso. Escolha outro.' };
   return resultado;
 }

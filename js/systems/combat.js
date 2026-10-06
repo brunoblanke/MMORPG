@@ -152,6 +152,7 @@ export class CombatController {
     if (now - attacker.lastAttackTime < CONFIG.attackCooldown) return false;
     if (!defender.isAlive()) return false;
 
+    this.markCombat(attacker, defender, now);
     const damage = this.calculateDamage(attacker, defender, now, { melee, attack });
     attacker.lastAttackTime = now;
     if (attacker.isPlayer) this.trainSkill(attacker, equipBonus(attacker.equip).atkSkill);
@@ -166,6 +167,16 @@ export class CombatController {
     const poison = attacker.isPlayer ? 0 : creaturePowers(attacker.creature).poison;
     if (poison && melee) this.sim.conditions.add(defender, 'poison', { damage: poison, ticks: POISON_HIT_TICKS });
     return hpLeft;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // markCombat
+  // Golpe dado ou levado: os players dessa luta ficam em combate (não saem do
+  // jogo na hora; simulation.js → inCombat).
+
+  markCombat(a, b, now) {
+    if (a.isPlayer) a.lastCombatTime = now;
+    if (b.isPlayer) b.lastCombatTime = now;
   }
 
   // ================================================================================================================================================================================================================================================
@@ -342,7 +353,7 @@ export class CombatController {
       player.unreachableSince = null;
       this.attackTarget(player, target, now);
     }
-    if (!adjacent && player.autoFollow && !this.sim.control.isWalking(player)) {
+    if (!adjacent && player.autoFollow && !player.offline && !this.sim.control.isWalking(player)) {
       const searchBounds = this.sim.searchBoundsAround(player);
       const reachable = this.sim.movement.moveTowardsPosition(player, target.x, target.y, now, target, searchBounds, this.sim.enemies);
       this.checkUnreachable(player, target, reachable, now);

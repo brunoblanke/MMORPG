@@ -162,6 +162,7 @@ export class SpellController {
 
   hurt(player, enemy, amount, now, element = null) {
     if (amount <= 0) return;
+    this.sim.combat.markCombat(player, enemy, now);
     if (enemy.isPlayer) this.sim.social.onPlayerAttack(player, enemy, now);
     else this.sim.combat.recordDamage(enemy, player, Math.min(amount, enemy.currentHp));
     enemy.takeDamage(amount, now);

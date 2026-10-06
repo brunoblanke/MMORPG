@@ -37,6 +37,8 @@ export class Entity {
 
     this.lastMoveTime = 0;
     this.lastAttackTime = 0;
+    this.lastCombatTime = -Infinity;
+    this.offline = false;
     
     this.isTarget = false;
     this.hitFlash = false;

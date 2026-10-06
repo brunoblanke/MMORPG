@@ -13,6 +13,7 @@ export const CONFIG = {
   fleeHealth: 0.2,             // criatura "foge" foge com a vida em até 20%
   mageRange: 4,                // mago ataca de até 4 sqm (com linha livre de parede)
   mageKeepDistance: 3,         // mago se afasta se o player chega a menos de 3 sqm
+  logoutCombatMs: 30000,       // sair em combate deixa o corpo no mapa até passar esse tempo sem golpe dado ou levado
   attackCooldown: 2000,       // como no Tibia: um golpe a cada 2 s
   targetLoseRange: 25,         // alvo mais longe que isso (ou em outro andar) é perdido
   // Escalas globais (player e inimigos, sem mexer nos atributos por lvl):
