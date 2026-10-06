@@ -22,6 +22,10 @@ if (window.matchMedia('(max-width: 700px)').matches) toolsWindow.classList.add('
 
 document.getElementById('ghostToggle').onchange = (evt) => { state.ghost = evt.target.checked; scheduleRender(); };
 document.getElementById('detailsToggle').onchange = (evt) => { state.showDetails = evt.target.checked; scheduleRender(); };
+document.getElementById('statsToggle').onchange = (evt) => {
+  document.getElementById('statusbar').hidden = !evt.target.checked;
+  document.querySelector('.main').classList.toggle('stats-hidden', !evt.target.checked);
+};
 
 // ================================================================================================================================================================================================================================================
 // Salvar direto em data/map.json (precisa do server.js rodando)

@@ -22,7 +22,7 @@
 
   </div>
 
-  <div class="main">
+  <div class="main stats-hidden">
     <div class="quickbar" id="quickbar">
       <div class="layer-tabs" id="layerTabs"></div>
       <div class="quick-sep"></div>
@@ -33,13 +33,18 @@
 
     <div class="quickbar bottombar">
       <label class="checkline" title="Mostra o andar de baixo esmaecido">
-        <input type="checkbox" id="ghostToggle" checked />
+        <input type="checkbox" id="ghostToggle" />
         Andares
       </label>
       <div class="quick-sep"></div>
       <label class="checkline" title="Mostra as bordas dos pisos e as animações">
-        <input type="checkbox" id="detailsToggle" checked />
+        <input type="checkbox" id="detailsToggle" />
         Detalhes
+      </label>
+      <div class="quick-sep"></div>
+      <label class="checkline" title="Mostra a barra de contagem (piso, borda, parede…) na base da tela">
+        <input type="checkbox" id="statsToggle" />
+        Stats
       </label>
       <div class="quick-sep"></div>
       <button class="export-btn" id="saveBtn" title="Salva em data/map.json (Ctrl+S)">Salvar</button>
@@ -51,7 +56,7 @@
       </div>
     </div>
 
-    <div class="statusbar">
+    <div class="statusbar" id="statusbar" hidden>
       <span>Editando <b id="layerLabel">Andar 0</b></span>
       <div class="status-list">
         <div>Piso: <b id="statFloor">0</b></div>

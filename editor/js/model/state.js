@@ -50,14 +50,14 @@ export const state = {
   housePaint: { name: '', price: 0 },
   safePaintValue: false,
   openAccordion: null,
-  showDetails: true,
+  showDetails: false,
   painting: false,
   brushSize: 1,
   hoverCell: null,
   selected: null,
   focus: null,
   strokeTouched: new Set(),
-  ghost: true
+  ghost: false
 };
 
 // paint: campo do state com o que a ferramenta pinta (as que têm lista).
