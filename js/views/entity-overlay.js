@@ -14,7 +14,7 @@ const NAME_COLOR = '#5fe35f';
 const CORPSE_NAME_COLOR = '#a0a0a0';
 const SKULL_COLOR = '#ffffff';
 const COMBAT_ICON_COLOR = '#5fe35f';
-const COMBAT_ICON_SIZE = 14;
+const COMBAT_ICON_SIZE = 10;
 let combatIcon = null;
 
 // ================================================================================================================================================================================================================================================
@@ -59,7 +59,7 @@ function getCombatIcon() {
 function drawCombatIcon(ctx, left, top, size) {
   const icon = getCombatIcon();
   if (!icon.complete) return;
-  ctx.drawImage(icon, left + size, top, COMBAT_ICON_SIZE, COMBAT_ICON_SIZE * icon.naturalHeight / icon.naturalWidth);
+  ctx.drawImage(icon, left + size, top, COMBAT_ICON_SIZE, COMBAT_ICON_SIZE);
 }
 
 // ================================================================================================================================================================================================================================================
