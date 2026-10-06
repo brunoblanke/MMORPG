@@ -96,14 +96,13 @@ export class MovementController {
   // findPath
   // Caminho de start até end = { x, y, z } (core/pathfinding.js). Inimigo
   // contorna campo que fere; se não achar caminho assim (sem passagem ou
-  // longe demais), o caminho atravessa o campo (com options.noFieldCrossing,
-  // fica sem caminho). Quem anda não pisa no campo (blockedByField).
+  // longe demais), o caminho atravessa o campo.
 
   findPath(start, end, options = {}) {
     const base = { enemiesPassable: this.enemiesPassable, avoidSafe: !!start.avoidsSafeZones, groundOnly: !!start.groundOnly, entering: start.isPlayer ? start : null, ...options };
     if (start.isPlayer) return findPath(this.world, start, end, base);
     const avoiding = findPath(this.world, start, end, { ...base, fieldCost: FIELD_STEP_COST });
-    return avoiding.length || options.noFieldCrossing ? avoiding : findPath(this.world, start, end, base);
+    return avoiding.length ? avoiding : findPath(this.world, start, end, base);
   }
 
   // ================================================================================================================================================================================================================================================
@@ -173,7 +172,7 @@ export class MovementController {
     if (timestamp - entity.lastMoveTime < moveDelay) return false;
 
     const landing = this.resolveStep(entity, dx, dy);
-    if (!landing || this.blockedByField(entity, landing)) return false;
+    if (!landing) return false;
 
     this.applyStep(entity, landing, timestamp);
     return true;
@@ -181,13 +180,19 @@ export class MovementController {
 
   // ================================================================================================================================================================================================================================================
   // blockedByField
-  // Criatura (não player) não pisa em campo que fere, a não ser que já esteja
-  // num: aí pode sair andando por onde der.
+  // O passo entra num campo que fere e há outro caminho até o destino da rota
+  // (entity.route) sem passar por campo? Então não pisa: o caminho é refeito
+  // (um campo novo no meio do caminho). Sem outro caminho, atravessa.
 
   blockedByField(entity, landing) {
-    if (entity.isPlayer) return false;
+    if (entity.isPlayer || !entity.route || entity.route.x === null || entity.route.x === undefined) return false;
     const floor = entity.z || 0;
-    return hasHarmfulField(this.world, landing.x, landing.y, landing.z ?? floor) && !hasHarmfulField(this.world, entity.x, entity.y, floor);
+    const z = landing.z ?? floor;
+    if (!hasHarmfulField(this.world, landing.x, landing.y, z) || hasHarmfulField(this.world, entity.x, entity.y, floor)) return false;
+    const around = this.findPath(entity, { x: entity.route.x, y: entity.route.y, z: floor }, { sameFloor: true });
+    if (around.length === 0 || around.some(step => hasHarmfulField(this.world, step.x, step.y, step.z ?? floor))) return false;
+    entity.route.path = null;
+    return true;
   }
 
   // ================================================================================================================================================================================================================================================

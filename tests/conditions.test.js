@@ -120,7 +120,7 @@ test('criatura não pisa em campo do mapa (não só nos de runa): passeia sem en
   assert.ok(!path.some(step => fields.some(([, x, y]) => step.x === x && step.y === y)));
 });
 
-test('sem caminho que evite o campo, o passeio não atravessa', () => {
+test('sem outro caminho, o passeio atravessa o campo (só evita quando dá)', () => {
   const walls = [];
   for (let x = 0; x <= 14; x++) walls.push(...wall(x, 4), ...wall(x, 6));
   const sim = buildGame({ objects: [...floorRect(0, 14, 0, 14, 0), ...walls, [FIRE, 6, 5, 0, 0, false, false, false]], enemies: [[2, 5, 0]], player: { x: 12, y: 9, z: 0 } });
@@ -129,9 +129,30 @@ test('sem caminho que evite o campo, o passeio não atravessa', () => {
   enemy.patrolCenterX = 7;
   enemy.patrolCenterY = 5;
   enemy.detectionRadius = 0;
-  for (let t = 0; t < 120000; t += TICK_MS) {
+  let crossed = false;
+  for (let t = 0; t < 180000 && !crossed; t += TICK_MS) {
     sim.tick(sim.time + TICK_MS);
-    assert.ok(!(enemy.x >= 6 && enemy.y === 5) || enemy.x < 6, 'passou pelo campo');
+    crossed = enemy.x > 6;
   }
-  assert.ok(enemy.x < 6);
+  assert.ok(crossed, 'o único caminho passa pelo campo: atravessou');
+});
+
+test('campo novo no meio do caminho: com outro caminho livre o passo não entra; sem outro, entra', () => {
+  const open = game({ enemies: [[4, 5, 0]] });
+  const enemy = open.enemies[0];
+  const path = open.movement.findPath(enemy, { x: 8, y: 5, z: 0 }, { sameFloor: true });
+  enemy.route = { path: [...path], x: 8, y: 5 };
+  open.conditions.placeField(FIRE, path[0].x, path[0].y, 0);
+  assert.equal(open.movement.stepAlongPath(enemy, path[0], open.time + 5000), false);
+  assert.equal(enemy.route.path, null);
+
+  const walls = [];
+  for (let x = 0; x <= 14; x++) walls.push(...wall(x, 4), ...wall(x, 6));
+  const corridor = buildGame({ objects: [...floorRect(0, 14, 0, 14, 0), ...walls], enemies: [[5, 5, 0]], player: { x: 12, y: 9, z: 0 } });
+  const walker = corridor.enemies[0];
+  const line = corridor.movement.findPath(walker, { x: 9, y: 5, z: 0 }, { sameFloor: true });
+  walker.route = { path: [...line], x: 9, y: 5 };
+  corridor.conditions.placeField(FIRE, 6, 5, 0);
+  assert.equal(corridor.movement.stepAlongPath(walker, line[0], corridor.time + 5000), true);
+  assert.deepEqual([walker.x, walker.y], [6, 5]);
 });

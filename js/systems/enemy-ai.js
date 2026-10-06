@@ -491,7 +491,7 @@ export class EnemyAI {
 
     for (let attempt = 0; attempt < 8 && spots.length; attempt++) {
       const { x, y } = spots.splice(Math.floor(Math.random() * spots.length), 1)[0];
-      const path = this.movement.findPath(enemy, { x, y, z: floor }, { sameFloor: true, bounds, noFieldCrossing: true });
+      const path = this.movement.findPath(enemy, { x, y, z: floor }, { sameFloor: true, bounds });
       if (path.length > 0) {
         enemy.route = { path, x, y };
         return true;
