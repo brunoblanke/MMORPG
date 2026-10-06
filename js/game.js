@@ -16,6 +16,7 @@ import { getRoofLevel } from './views/draw-order.js';
 import { getLevel } from './core/geometry.js';
 import { ParticleController } from './systems/particle-controller.js';
 import { InputController } from './input/input.js';
+import { Joystick } from './input/joystick.js';
 import { NameModal } from './views/name-modal.js';
 import { InventoryUI } from './views/inventory-ui.js';
 import { describeEntity, describeGroundObject } from './views/look.js';
@@ -100,6 +101,7 @@ export class GameController {
       .then((session) => {
         this.session = session;
         this.inputController = new InputController(this.canvas, this.renderer, this.camera, this.eventManager, this);
+        this.joystick = new Joystick(this.inputController);
         this.inventoryUI = new InventoryUI(this);
         this.setupEventListeners();
         this.start();

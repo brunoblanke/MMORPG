@@ -31,6 +31,7 @@ export class InputController {
     this.eventManager = eventManager;
     this.keysPressed = {};
     this.walkDir = null;
+    this.joystickDir = null;
     this.hoverTile = null;
     this.hoverEnemy = null;
     this.hoverObject = null;
@@ -66,9 +67,10 @@ export class InputController {
 
   // ================================================================================================================================================================================================================================================
   // getKeyDirection
-  // Direção da primeira seta apertada, ou null.
+  // Direção do controle de toque, ou da primeira seta apertada, ou null.
 
   getKeyDirection() {
+    if (this.joystickDir) return this.joystickDir;
     for (const key in this.keysPressed) {
       if (this.keysPressed[key] && KEY_DIRECTIONS[key]) {
         const [dx, dy] = KEY_DIRECTIONS[key];
