@@ -400,3 +400,18 @@ test('Ctrl + direção: o player vira pro lado sem sair do sqm', () => {
     assert.deepEqual([sim.player.x, sim.player.y, sim.player.direction], [5, 5, dir]);
   }
 });
+
+test('o player só mantém um corpo: ao morrer de novo o anterior some na hora', () => {
+  const sim = buildGame({ objects: GROUND, player: { x: 3, y: 3, z: 0 } });
+  sim.player.currentHp = 0;
+  runFor(sim, TICK_MS);
+  const first = sim.deadBodies.find(c => c.isPlayer);
+  sim.enqueue('player1', { type: 'walkTo', x: 9, y: 3, z: 0 });
+  runFor(sim, 2000);
+  sim.player.currentHp = 0;
+  runFor(sim, TICK_MS);
+  const corpses = sim.deadBodies.filter(c => c.isPlayer);
+  assert.equal(corpses.length, 1);
+  assert.notEqual(corpses[0], first);
+  assert.ok(!sim.deadBodies.includes(first));
+});

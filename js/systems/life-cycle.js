@@ -56,14 +56,25 @@ export class LifeCycleController {
   }
 
   // ================================================================================================================================================================================================================================================
+  // removePlayerCorpses
+  // Tira do mapa os corpos que o player já deixou (pelo nome).
+
+  removePlayerCorpses(player) {
+    const name = String(player.name).toLowerCase();
+    for (const corpse of this.sim.deadBodies.filter(c => c.isPlayer && String(c.name).toLowerCase() === name)) this.removeCorpse(corpse);
+  }
+
+  // ================================================================================================================================================================================================================================================
   // handlePlayerDeath
   // O corpo fica com a mochila e, por sorteio, outros itens do inventário
-  // (inventory.fillPlayerCorpse); o player volta no spawn sem eles.
+  // (inventory.fillPlayerCorpse); o player volta no spawn sem eles. Cada player
+  // só tem um corpo: o anterior some na hora (com o que tinha dentro).
 
   handlePlayerDeath(player, now) {
     const { world, control } = this.sim;
     this.sim.social.onPlayerDeath(player, now);
     if (player.isBot) return this.reviveBot(player);
+    this.removePlayerCorpses(player);
     const corpse = this.createCorpse(player, 'player_corpse', now);
     this.sim.inventory.fillPlayerCorpse(corpse, player);
     player.lastCombatTime = -Infinity;
