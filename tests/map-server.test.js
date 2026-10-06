@@ -3,7 +3,7 @@
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
-import { mkdtempSync, rmSync, existsSync, readFileSync, readdirSync } from 'node:fs';
+import { mkdtempSync, rmSync, existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -75,4 +75,31 @@ test('salvar um mapa vazio por cima de um mapa com conteúdo é recusado', async
   assert.equal(saved.status, 400);
   const again = await (await fetch(`http://localhost:${PORT}/api/map`)).json();
   assert.ok(again.objetosData.length > 0);
+});
+
+test('com o JOGO_MAPA num caminho que não dá pra usar, o servidor cai pro mapa do repositório e segue de pé', async () => {
+  const port = PORT + 1;
+  writeFileSync(path.join(tempDir, 'arquivo-comum'), 'não é uma pasta');
+  const other = spawn(process.execPath, ['server.js'], {
+    cwd: ROOT,
+    env: { ...process.env, PORT: String(port), JOGO_MAPA: path.join(tempDir, 'arquivo-comum', 'map.json'), JOGO_PERSONAGENS: path.join(tempDir, 'outros', 'characters.json') },
+    stdio: ['ignore', 'pipe', 'pipe']
+  });
+  try {
+    await new Promise((resolve, reject) => {
+      const timer = setTimeout(() => reject(new Error('servidor não subiu')), 60000);
+      other.stdout.on('data', (chunk) => {
+        if (String(chunk).includes('Servidor rodando')) {
+          clearTimeout(timer);
+          resolve();
+        }
+      });
+      other.on('exit', (code) => reject(new Error(`servidor saiu (${code})`)));
+    });
+    const res = await fetch(`http://localhost:${port}/api/map`);
+    assert.equal(res.status, 200);
+    assert.ok(Array.isArray((await res.json()).objetosData));
+  } finally {
+    await new Promise((resolve) => { other.once('exit', resolve); other.kill(); });
+  }
 });

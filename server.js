@@ -11,7 +11,7 @@ const app = express();
 
 const PASTA_JOGO = __dirname;
 const MAPA_INICIAL = path.join(PASTA_JOGO, 'data', 'map.json');
-const MAP_DATA_PATH = path.resolve(process.env.JOGO_MAPA || MAPA_INICIAL);
+let MAP_DATA_PATH = path.resolve(process.env.JOGO_MAPA || MAPA_INICIAL);
 const CHARACTERS_PATH = process.env.JOGO_PERSONAGENS || path.join(PASTA_JOGO, 'data', 'characters.json');
 const HOUSES_PATH = process.env.JOGO_CASAS || path.join(path.dirname(CHARACTERS_PATH), 'houses.json');
 const PASTA_PROJETOS = path.join(PASTA_JOGO, 'gerador', 'projetos');
@@ -52,16 +52,21 @@ function liberarCors(req, res, next) {
 // prepararMapa
 // O mapa ao vivo fica em MAP_DATA_PATH (JOGO_MAPA: o servidor é quem manda, o
 // deploy não mexe). Sem o arquivo ainda, começa de uma cópia do data/map.json
-// do repositório.
+// do repositório. Se o arquivo não dá pra criar ou ler (caminho errado, sem
+// permissão, JSON estragado), usa o do repositório e avisa.
 
 function prepararMapa() {
-  if (fs.existsSync(MAP_DATA_PATH)) return;
   try {
+    if (fs.existsSync(MAP_DATA_PATH)) {
+      JSON.parse(fs.readFileSync(MAP_DATA_PATH, 'utf8'));
+      return;
+    }
     fs.mkdirSync(path.dirname(MAP_DATA_PATH), { recursive: true });
     fs.copyFileSync(MAPA_INICIAL, MAP_DATA_PATH);
     console.log(`🗺️  Mapa criado em ${MAP_DATA_PATH} a partir do mapa do repositório`);
   } catch (err) {
-    console.error('❌ Não deu pra criar o mapa:', err.message);
+    console.error(`❌ Não deu pra usar o mapa em ${MAP_DATA_PATH} (${err.message}): usando o mapa do repositório, e o que for salvo no editor vai pra ele.`);
+    MAP_DATA_PATH = MAPA_INICIAL;
   }
 }
 
@@ -74,8 +79,11 @@ function enviarMapa(req, res) {
   res.set('Cache-Control', 'no-cache');
   if (req.query.baixar) res.attachment('map.json');
   res.type('application/json');
-  res.sendFile(MAP_DATA_PATH, (err) => {
-    if (err && !res.headersSent) res.status(404).json({ success: false, message: 'Mapa não encontrado.' });
+  res.sendFile(MAP_DATA_PATH, { dotfiles: 'allow' }, (err) => {
+    if (err && !res.headersSent) {
+      console.error(`❌ Não deu pra enviar o mapa ${MAP_DATA_PATH}:`, err.message);
+      res.status(404).json({ success: false, message: 'Mapa não encontrado.' });
+    }
   });
 }
 
