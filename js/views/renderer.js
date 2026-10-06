@@ -511,7 +511,7 @@ export class Renderer {
       if (frame) {
         const isTargeted = entity && (entity === this.selectedTarget || (isPlayer && entity.isTarget));
         const inCombat = isPlayer && entity === this.localPlayer && entity.inCombat;
-        const outline = inCombat ? COMBAT_OUTLINE : (isTargeted ? TARGET_OUTLINE : null);
+        const outline = isTargeted ? TARGET_OUTLINE : (inCombat ? COMBAT_OUTLINE : null);
         this.drawAnchoredSprite(frame.image, frame.frameRect, base, size, stackOffsetX, stackOffsetY, tint, outline);
       } else {
         const color = entity && entity.color ? entity.color : "#888888";
