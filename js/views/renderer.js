@@ -43,6 +43,7 @@ export const MESSAGE_COLORS = { info: '#5fe35f', warn: '#ffd84a', danger: '#ff4a
 const TINT_HIT = { color: '#ff2a2a', alpha: 0.55 };
 const TINT_ENEMY_HOVER = { color: '#ff2a2a', alpha: 0.35 };
 const TARGET_OUTLINE = '#ff2a2a';
+const COMBAT_OUTLINE = '#ffd700';
 const TINT_HOVER = { color: '#3b82f6', alpha: 0.35 };
 const FLOOR_DARKEN = 0.2;
 
@@ -508,7 +509,9 @@ export class Renderer {
     } else {
       const frame = this.getEntityFrame(entity, isPlayer, isEnemy);
       if (frame) {
-        const outline = entity && (entity === this.selectedTarget || (isPlayer && entity.isTarget)) ? TARGET_OUTLINE : null;
+        const isTargeted = entity && (entity === this.selectedTarget || (isPlayer && entity.isTarget));
+        const inCombat = isPlayer && entity === this.localPlayer && entity.inCombat;
+        const outline = inCombat ? COMBAT_OUTLINE : (isTargeted ? TARGET_OUTLINE : null);
         this.drawAnchoredSprite(frame.image, frame.frameRect, base, size, stackOffsetX, stackOffsetY, tint, outline);
       } else {
         const color = entity && entity.color ? entity.color : "#888888";
