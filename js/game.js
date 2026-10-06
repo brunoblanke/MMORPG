@@ -89,7 +89,7 @@ export class GameController {
   boot() {
     const modal = new NameModal();
     const spritesReady = this.loadSprites();
-    const mapReady = loadMapDataFromURL(CONFIG.mapDataUrl).catch((error) => {
+    const mapReady = loadMapDataFromURL(CONFIG.mapDataUrl, CONFIG.mapFallbackUrl).catch((error) => {
       console.error('❌ Erro ao carregar mapa:', error);
       return {};
     });

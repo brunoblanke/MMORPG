@@ -344,10 +344,13 @@ export function buildLayersFromMapData(mapData, GRID) {
 
 // ================================================================================================================================================================================================================================================
 // loadMapDataFromURL
+// Com fallbackUrl, se a primeira não responder (servidor antigo, sem a rota),
+// lê dela.
 
-export async function loadMapDataFromURL(url) {
+export async function loadMapDataFromURL(url, fallbackUrl = null) {
   const response = await fetch(url);
   if (!response.ok) {
+    if (fallbackUrl) return loadMapDataFromURL(fallbackUrl);
     throw new Error(`Falha ao carregar mapa (${response.status}): ${url}`);
   }
   return response.json();
