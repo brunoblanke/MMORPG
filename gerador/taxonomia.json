@@ -8,6 +8,7 @@
           "nome": null,
           "pastas": [
             { "id": "pisos", "nome": "Pisos", "ferramenta": "pisos" },
+            { "id": "bordas", "nome": "Bordas", "ferramenta": "pisos" },
             { "id": "paredes", "nome": "Paredes", "ferramenta": "paredes" },
             { "id": "cercas", "nome": "Cercas e parapeitos", "ferramenta": "paredes" },
             { "id": "escadas", "nome": "Escadas", "ferramenta": "objetos" },
@@ -30,7 +31,8 @@
             { "id": "baus", "nome": "Baús", "ferramenta": "objetos" },
             { "id": "plantas", "nome": "Plantas", "ferramenta": "objetos" },
             { "id": "estatuas", "nome": "Estátuas", "ferramenta": "objetos" },
-            { "id": "adornos", "nome": "Adornos", "ferramenta": "objetos" }
+            { "id": "adornos", "nome": "Adornos", "ferramenta": "objetos" },
+            { "id": "corpos", "nome": "Corpos", "ferramenta": "objetos" }
           ]
         }
       ]

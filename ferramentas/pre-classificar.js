@@ -148,7 +148,8 @@ function lerRoupasDoCanary(canary) {
 
 function pastaDoItem(thing, canary) {
   const tem = (flag) => flag in thing.flags;
-  if (tem(FLAG.GROUND) || tem(FLAG.GROUND_BORDER)) return 'estrutura/pisos';
+  if (tem(FLAG.GROUND_BORDER)) return 'estrutura/bordas';
+  if (tem(FLAG.GROUND)) return 'estrutura/pisos';
   const porCategoria = canary && canary.categoria && POR_CATEGORIA[canary.categoria];
   if (porCategoria) return porCategoria;
   if (tem(FLAG.ON_BOTTOM)) return 'estrutura/paredes';
