@@ -112,6 +112,26 @@ function lerItensDoCanary(canary) {
 }
 
 // ================================================================================================================================================================================================================================================
+// lerCadaveresDoCanary
+// Os ids de item que algum monstro deixa como cadáver (monster.corpse).
+
+function lerCadaveresDoCanary(canary) {
+  const cadaveres = new Set();
+  const andar = (dir) => {
+    for (const nome of fs.readdirSync(dir)) {
+      const caminho = path.join(dir, nome);
+      if (fs.statSync(caminho).isDirectory()) andar(caminho);
+      else if (nome.endsWith('.lua')) {
+        const achado = /monster\.corpse\s*=\s*(\d+)/.exec(fs.readFileSync(caminho, 'utf8'));
+        if (achado && Number(achado[1])) cadaveres.add(Number(achado[1]));
+      }
+    }
+  };
+  andar(path.join(canary, 'data-otservbr-global', 'monster'));
+  return cadaveres;
+}
+
+// ================================================================================================================================================================================================================================================
 // lerRoupasDoCanary
 // lookType → pasta de criatura (monstros) ou 'npc' (só NPCs usam).
 
@@ -146,8 +166,9 @@ function lerRoupasDoCanary(canary) {
 // pastaDoItem
 // A pasta sugerida pro item, ou null se não der pra saber.
 
-function pastaDoItem(thing, canary) {
+function pastaDoItem(thing, canary, cadaver) {
   const tem = (flag) => flag in thing.flags;
+  if (cadaver) return 'decoracao/corpos';
   if (tem(FLAG.GROUND_BORDER)) return 'estrutura/bordas';
   if (tem(FLAG.GROUND)) return 'estrutura/pisos';
   const porCategoria = canary && canary.categoria && POR_CATEGORIA[canary.categoria];
@@ -185,18 +206,20 @@ function preClassificar(canary) {
   const criaturasSugeridasAntes = new Set((antiga.sugeridos && antiga.sugeridos.criaturas) || []);
   const itensCanary = lerItensDoCanary(canary);
   const roupasCanary = lerRoupasDoCanary(canary);
+  const cadaveres = lerCadaveresDoCanary(canary);
   const catalogo = atual.catalogo();
   const nova = { itens: {}, criaturas: {}, sugeridos: { itens: [], criaturas: [] } };
   const contagem = { conferidos: 0, sugeridos: 0, semPasta: 0 };
 
   for (const [id] of catalogo.items) {
     const anterior = antiga.itens[id];
-    if (anterior && pastaExiste(anterior) && !sugeridosAntes.has(id)) {
+    const pasta = pastaDoItem(atual.things.item.get(id), itensCanary.get(id), cadaveres.has(id));
+    const dividida = pasta === 'estrutura/bordas' || pasta === 'decoracao/corpos';
+    if (anterior && pastaExiste(anterior) && !sugeridosAntes.has(id) && !(dividida && anterior !== pasta)) {
       nova.itens[id] = anterior;
       contagem.conferidos++;
       continue;
     }
-    const pasta = pastaDoItem(atual.things.item.get(id), itensCanary.get(id));
     if (!pasta || !pastaExiste(pasta)) {
       contagem.semPasta++;
       continue;
@@ -228,9 +251,13 @@ function preClassificar(canary) {
   console.log(`✅ ${catalogo.items.length} itens e ${catalogo.creatures.length} criaturas: ${contagem.conferidos} já conferidos, ${contagem.sugeridos} sugeridos, ${contagem.semPasta} sem pasta.`);
 }
 
-const canary = process.argv[2];
-if (!canary || !fs.existsSync(path.join(canary, 'data', 'items', 'items.xml'))) {
-  console.error('Uso: node ferramentas/pre-classificar.js <pasta do canary>');
-  process.exit(1);
+module.exports = { lerCadaveresDoCanary };
+
+if (require.main === module) {
+  const canary = process.argv[2];
+  if (!canary || !fs.existsSync(path.join(canary, 'data', 'items', 'items.xml'))) {
+    console.error('Uso: node ferramentas/pre-classificar.js <pasta do canary>');
+    process.exit(1);
+  }
+  preClassificar(canary);
 }
-preClassificar(canary);
