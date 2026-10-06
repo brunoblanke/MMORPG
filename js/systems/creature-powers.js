@@ -50,9 +50,9 @@ export class CreaturePowers {
     const range = Math.max(Math.abs(enemy.x - player.x), Math.abs(enemy.y - player.y));
     if (range > CONFIG.mageRange || !this.sim.movement.hasLineOfSight(enemy, player)) return false;
     const damage = Math.ceil(spell.damage / 2) + Math.floor(Math.random() * (Math.floor(spell.damage / 2) + 1));
-    this.sim.emit({ type: 'missile', fromX: enemy.x, fromY: enemy.y, toX: player.x, toY: player.y, kind: spell.kind });
+    this.sim.emit({ type: 'missile', fromX: enemy.x, fromY: enemy.y, toX: player.x, toY: player.y, z: enemy.z || 0, kind: spell.kind });
     this.sim.conditions.hurt(player, damage, spell.kind);
-    if (EFFECTS[spell.kind]) this.sim.emit({ type: 'effect', x: player.x, y: player.y, tiles: [[player.x, player.y]], effect: spell.kind });
+    if (EFFECTS[spell.kind]) this.sim.emit({ type: 'effect', x: player.x, y: player.y, z: player.z || 0, tiles: [[player.x, player.y]], effect: spell.kind });
     if (spell.kind === 'poison') this.sim.conditions.add(player, 'poison', { damage: Math.max(1, Math.floor(spell.damage / 4)), ticks: SPELL_POISON_TICKS });
     enemy.lastAttackTime = now;
     return true;

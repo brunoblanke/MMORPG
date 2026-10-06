@@ -54,7 +54,7 @@ export function completeQuest(sim, player, quest) {
   if (quest.money) give(sim, player, quest.money);
   if (quest.xp) {
     const levels = player.gainXp(quest.xp);
-    sim.emit({ type: 'xp', playerId: player.id, x: player.x, y: player.y, amount: quest.xp });
+    sim.emit({ type: 'xp', playerId: player.id, x: player.x, y: player.y, z: player.z || 0, amount: quest.xp });
     if (levels > 0) sim.emit({ type: 'levelUp', playerId: player.id, lvl: player.lvl });
   }
   sim.emit({ type: 'message', playerId: player.id, text: `Missão concluída: ${quest.name}.`, kind: 'info' });

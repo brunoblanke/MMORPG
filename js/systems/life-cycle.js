@@ -140,7 +140,7 @@ export class LifeCycleController {
       const xpGain = Math.round(share);
       if (xpGain <= 0) continue;
       const levels = player.gainXp(xpGain);
-      sim.emit({ type: 'xp', playerId: player.id, x: enemy.x, y: enemy.y, amount: xpGain });
+      sim.emit({ type: 'xp', playerId: player.id, x: enemy.x, y: enemy.y, z: enemy.z || 0, amount: xpGain });
       if (levels > 0) {
         sim.emit({ type: 'levelUp', playerId: player.id, lvl: player.lvl });
         console.log(`⭐ ${player.name} subiu para o nível ${player.lvl}`);

@@ -473,7 +473,12 @@ function enviarEstado(sim, conexoes, tempo, { serializeState, encodeDelta, range
     const state = serializeState(sim, playerId, true);
     const delta = encodeDelta(conexao.sent, state);
     conexao.sent = JSON.parse(JSON.stringify(state));
-    const perto = events.filter(e => !player || e.x === undefined || (Math.abs(e.x - player.x) <= range[0] && Math.abs(e.y - player.y) <= range[1]));
+    const perto = events.filter((e) => {
+      const x = e.x ?? e.fromX;
+      const y = e.y ?? e.fromY;
+      if (!player || x === undefined) return true;
+      return Math.abs(x - player.x) <= range[0] && Math.abs(y - player.y) <= range[1] && (e.z === undefined || e.z === (player.z || 0));
+    });
     socket.send(JSON.stringify({ type: 'state', time: tempo, delta, events: perto }));
   }
 }

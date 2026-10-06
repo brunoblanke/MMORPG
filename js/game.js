@@ -482,11 +482,14 @@ export class GameController {
 
   // ================================================================================================================================================================================================================================================
   // handleSimEvents
-  // O que a simulação avisou no tick: números de dano/XP e mensagens.
+  // O que a simulação avisou no tick: números de dano/XP e mensagens. O que
+  // aconteceu em outro andar não aparece.
 
   handleSimEvents(events, timestamp) {
     const playerId = this.session.playerId;
+    const floor = this.player ? (this.player.z || 0) : 0;
     for (const event of events) {
+      if (event.z !== undefined && event.z !== floor) continue;
       if (event.type === 'missile') {
         this.particleController.spawnMissile(event, this.renderer);
       } else if (event.type === 'effect') {

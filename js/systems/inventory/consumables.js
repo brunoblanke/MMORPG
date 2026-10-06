@@ -132,7 +132,7 @@ export const consumableMethods = {
       const mana = Math.min(roll(heal.mana), patient.maxMana - patient.mana);
       patient.currentHp += hp;
       patient.mana += mana;
-      this.sim.emit({ type: 'heal', playerId: patient.id, x: patient.x, y: patient.y, hp, mana });
+      this.sim.emit({ type: 'heal', playerId: patient.id, x: patient.x, y: patient.y, z: patient.z || 0, hp, mana });
     } else {
       this.spill(target.x, target.y, z, heal.hp[1] > 0 ? SPLASH_HP : SPLASH_MANA);
     }
@@ -267,7 +267,7 @@ export const consumableMethods = {
       player.starveElapsed -= STARVE_TICK_MS;
       const amount = Math.max(1, Math.round(player.hp * CONFIG.starveHpPercent / 100));
       player.takeDamage(amount, now);
-      this.sim.emit({ type: 'damage', targetId: player.id, x: player.x, y: player.y, amount });
+      this.sim.emit({ type: 'damage', targetId: player.id, x: player.x, y: player.y, z: player.z || 0, amount });
     }
   },
 

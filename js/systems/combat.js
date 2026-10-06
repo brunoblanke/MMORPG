@@ -163,7 +163,7 @@ export class CombatController {
     if (damage <= 0) return defender.currentHp;
     if (attacker.isPlayer && !defender.isPlayer) this.recordDamage(defender, attacker, Math.min(damage, defender.currentHp));
     const hpLeft = defender.takeDamage(damage, now);
-    this.sim.emit({ type: 'damage', targetId: defender.id, x: defender.x, y: defender.y, amount: damage });
+    this.sim.emit({ type: 'damage', targetId: defender.id, x: defender.x, y: defender.y, z: defender.z || 0, amount: damage });
     const poison = attacker.isPlayer ? 0 : creaturePowers(attacker.creature).poison;
     if (poison && melee) this.sim.conditions.add(defender, 'poison', { damage: poison, ticks: POISON_HIT_TICKS });
     return hpLeft;
@@ -198,7 +198,7 @@ export class CombatController {
     const range = Math.max(Math.abs(enemy.x - player.x), Math.abs(enemy.y - player.y));
     if (range > CONFIG.mageRange || !this.sim.movement.hasLineOfSight(enemy, player)) return;
     if (now - enemy.lastAttackTime < CONFIG.attackCooldown) return;
-    this.sim.emit({ type: 'missile', fromX: enemy.x, fromY: enemy.y, toX: player.x, toY: player.y });
+    this.sim.emit({ type: 'missile', fromX: enemy.x, fromY: enemy.y, toX: player.x, toY: player.y, z: enemy.z || 0 });
     this.attackTarget(enemy, player, now, { melee: false });
   }
 
@@ -250,7 +250,7 @@ export class CombatController {
     if (ammo.count <= 0) player.equip[ranged.ammoKey] = null;
     const ammoName = ammo.type.split('/').pop();
     const kind = MISSILES[ammoName] ? ammoName : ranged.thrown ? 'spear' : 'arrow';
-    this.sim.emit({ type: 'missile', fromX: player.x, fromY: player.y, toX: target.x, toY: target.y, kind });
+    this.sim.emit({ type: 'missile', fromX: player.x, fromY: player.y, toX: target.x, toY: target.y, z: player.z || 0, kind });
     if (ranged.thrown) {
       const inventory = this.sim.inventory;
       inventory.mergeGroundStack(inventory.spawnGroundItem(newItem(inventory.nextUid(), ammo.type, 1), target.x, target.y, target.z || 0));
@@ -275,9 +275,9 @@ export class CombatController {
     player.lastAttackTime = now;
     player.mana -= wand.mana;
     const spells = this.sim.spells;
-    this.sim.emit({ type: 'missile', fromX: player.x, fromY: player.y, toX: target.x, toY: target.y, kind: wand.element });
+    this.sim.emit({ type: 'missile', fromX: player.x, fromY: player.y, toX: target.x, toY: target.y, z: player.z || 0, kind: wand.element });
     spells.hurt(player, target, wand.min + Math.floor(Math.random() * (wand.max - wand.min + 1)), now, wand.element);
-    spells.showEffect(target.x, target.y, wand.element);
+    spells.showEffect(target.x, target.y, wand.element, undefined, target.z || 0);
     if (addSkillTry(player.skills, 'magic', player.vocation, wand.mana)) {
       this.sim.emit({ type: 'message', playerId: player.id, text: `Você avançou para magic level ${player.skills.magic.lvl}.`, kind: 'info' });
     }
@@ -312,7 +312,7 @@ export class CombatController {
     player.floorDamageKey = key;
     player.lastFloorDamage = now;
     player.takeDamage(damage, now);
-    this.sim.emit({ type: 'damage', targetId: player.id, x: player.x, y: player.y, amount: damage });
+    this.sim.emit({ type: 'damage', targetId: player.id, x: player.x, y: player.y, z: player.z || 0, amount: damage });
   }
 
   // ================================================================================================================================================================================================================================================

@@ -109,7 +109,7 @@ export class ConditionController {
     const source = sourceId ? this.sim.getPlayer(sourceId) : null;
     if (source && !entity.isPlayer) this.sim.combat.recordDamage(entity, source, Math.min(amount, entity.currentHp));
     entity.takeDamage(amount, this.sim.time || 0);
-    this.sim.emit({ type: 'damage', targetId: entity.id, x: entity.x, y: entity.y, amount, element: kind });
+    this.sim.emit({ type: 'damage', targetId: entity.id, x: entity.x, y: entity.y, z: entity.z || 0, amount, element: kind });
   }
 
   // ================================================================================================================================================================================================================================================

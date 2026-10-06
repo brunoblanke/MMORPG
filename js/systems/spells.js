@@ -86,12 +86,12 @@ export class SpellController {
     }
     if (spell.kind === 'heal') {
       this.heal(player, this.roll(spell.formula, player));
-      this.showEffect(player.x, player.y, 'heal');
+      this.showEffect(player.x, player.y, 'heal', undefined, player.z || 0);
       return null;
     }
     if (spell.kind === 'cure') {
       if (player.conditions) delete player.conditions.poison;
-      this.showEffect(player.x, player.y, 'heal');
+      this.showEffect(player.x, player.y, 'heal', undefined, player.z || 0);
       return null;
     }
     if (spell.kind === 'haste') {
@@ -106,9 +106,9 @@ export class SpellController {
       if (!target || !target.isAlive() || getLevel(target) !== getLevel(player)) return 'Você precisa de um alvo.';
       if (Math.max(Math.abs(target.x - player.x), Math.abs(target.y - player.y)) > SPELL_RANGE) return 'Longe demais.';
       if (!this.sim.movement.hasLineOfSight(player, target)) return 'Tem algo no caminho.';
-      this.sim.emit({ type: 'missile', fromX: player.x, fromY: player.y, toX: target.x, toY: target.y, kind: spell.element });
+      this.sim.emit({ type: 'missile', fromX: player.x, fromY: player.y, toX: target.x, toY: target.y, z: player.z || 0, kind: spell.element });
       this.hurt(player, target, this.roll(spell.formula, player), now, spell.element);
-      this.showEffect(target.x, target.y, spell.element);
+      this.showEffect(target.x, target.y, spell.element, undefined, target.z || 0);
       return null;
     }
     if (spell.kind === 'blast') return this.blast(player, spell, now);
@@ -132,7 +132,7 @@ export class SpellController {
     const tiles = AREAS[spell.area].map(([dx, dy]) => [player.x + dx, player.y + dy])
       .filter(([x, y]) => (x !== player.x || y !== player.y) && world.hasFloorAt(x, y, z) && !world.hasBlockerAt(x, y, z));
     const inArea = new Set(tiles.map(([x, y]) => `${x},${y}`));
-    this.showEffect(player.x, player.y, spell.effect, tiles);
+    this.showEffect(player.x, player.y, spell.effect, tiles, z);
     for (const enemy of this.sim.enemies) {
       if (enemy.isAlive() && (enemy.z || 0) === z && inArea.has(`${enemy.x},${enemy.y}`)) this.hurt(player, enemy, this.roll(spell.formula, player), now, spell.element);
     }
@@ -143,8 +143,8 @@ export class SpellController {
   // showEffect
   // A animação do Tibia (shared/effects.js) no sqm, ou em cada sqm de tiles.
 
-  showEffect(x, y, name, tiles = [[x, y]]) {
-    if (EFFECTS[name]) this.sim.emit({ type: 'effect', x, y, tiles, effect: name });
+  showEffect(x, y, name, tiles = [[x, y]], z = 0) {
+    if (EFFECTS[name]) this.sim.emit({ type: 'effect', x, y, z, tiles, effect: name });
   }
 
   // ================================================================================================================================================================================================================================================
@@ -153,7 +153,7 @@ export class SpellController {
   heal(patient, amount) {
     const hp = Math.min(amount, patient.hp - patient.currentHp);
     patient.currentHp += hp;
-    this.sim.emit({ type: 'heal', playerId: patient.id, x: patient.x, y: patient.y, hp, mana: 0 });
+    this.sim.emit({ type: 'heal', playerId: patient.id, x: patient.x, y: patient.y, z: patient.z || 0, hp, mana: 0 });
   }
 
   // ================================================================================================================================================================================================================================================
@@ -166,7 +166,7 @@ export class SpellController {
     if (enemy.isPlayer) this.sim.social.onPlayerAttack(player, enemy, now);
     else this.sim.combat.recordDamage(enemy, player, Math.min(amount, enemy.currentHp));
     enemy.takeDamage(amount, now);
-    this.sim.emit({ type: 'damage', targetId: enemy.id, x: enemy.x, y: enemy.y, amount, element });
+    this.sim.emit({ type: 'damage', targetId: enemy.id, x: enemy.x, y: enemy.y, z: enemy.z || 0, amount, element });
   }
 
   // ================================================================================================================================================================================================================================================
@@ -240,21 +240,21 @@ export class SpellController {
       if (!who) return 'Só dá pra usar em players.';
       if (rune.kind === 'heal') this.heal(who, this.roll(rune.formula, player));
       else if (who.conditions) delete who.conditions.poison;
-      this.showEffect(who.x, who.y, rune.effect || 'heal');
+      this.showEffect(who.x, who.y, rune.effect || 'heal', undefined, who.z || 0);
       return null;
     }
     const tiles = AREAS[rune.area || 'single'].map(([dx, dy]) => [target.x + dx, target.y + dy]);
     if (rune.kind === 'attack') {
       const who = this.sim.enemies.find(at(target.x, target.y));
       if (!who) return 'Só dá pra usar em criaturas.';
-      this.sim.emit({ type: 'missile', fromX: player.x, fromY: player.y, toX: who.x, toY: who.y, kind: rune.missile || rune.element });
-      this.showEffect(who.x, who.y, rune.effect);
+      this.sim.emit({ type: 'missile', fromX: player.x, fromY: player.y, toX: who.x, toY: who.y, z: player.z || 0, kind: rune.missile || rune.element });
+      this.showEffect(who.x, who.y, rune.effect, undefined, who.z || 0);
       this.hurt(player, who, this.roll(rune.formula, player), now, rune.element);
       return null;
     }
     if (rune.kind === 'area') {
-      this.sim.emit({ type: 'missile', fromX: player.x, fromY: player.y, toX: target.x, toY: target.y, kind: rune.missile || rune.element });
-      this.showEffect(target.x, target.y, rune.effect, tiles);
+      this.sim.emit({ type: 'missile', fromX: player.x, fromY: player.y, toX: target.x, toY: target.y, z: player.z || 0, kind: rune.missile || rune.element });
+      this.showEffect(target.x, target.y, rune.effect, tiles, target.z);
       for (const [x, y] of tiles) {
         for (const enemy of this.sim.enemies.filter(at(x, y))) this.hurt(player, enemy, this.roll(rune.formula, player), now, rune.element);
       }
