@@ -1,10 +1,6 @@
 {
   "formato": {
     "quadro": 32,
-    "padrao": [
-      1,
-      4
-    ],
     "linhas": [
       "meio: 1 variações",
       "s o n l",
@@ -16,103 +12,7 @@
   "slots": {
     "meio-1": {
       "tibia": {
-        "id": 1007,
-        "variacao": 0
-      }
-    },
-    "padrao-0-0": {
-      "tibia": {
-        "id": 1007,
-        "variacao": 0
-      }
-    },
-    "padrao-0-1": {
-      "tibia": {
-        "id": 1008,
-        "variacao": 0
-      }
-    },
-    "padrao-0-2": {
-      "tibia": {
-        "id": 1010,
-        "variacao": 0
-      }
-    },
-    "padrao-0-3": {
-      "tibia": {
-        "id": 1009,
-        "variacao": 0
-      }
-    },
-    "s": {
-      "tibia": {
-        "id": 12357,
-        "variacao": 0
-      }
-    },
-    "o": {
-      "tibia": {
-        "id": 12358,
-        "variacao": 0
-      }
-    },
-    "n": {
-      "tibia": {
-        "id": 12356,
-        "variacao": 0
-      }
-    },
-    "l": {
-      "tibia": {
-        "id": 12359,
-        "variacao": 0
-      }
-    },
-    "sl": {
-      "tibia": {
-        "id": 12366,
-        "variacao": 0
-      }
-    },
-    "so": {
-      "tibia": {
-        "id": 12367,
-        "variacao": 0
-      }
-    },
-    "nl": {
-      "tibia": {
-        "id": 12365,
-        "variacao": 0
-      }
-    },
-    "no": {
-      "tibia": {
-        "id": 12364,
-        "variacao": 0
-      }
-    },
-    "int-sl": {
-      "tibia": {
-        "id": 12362,
-        "variacao": 0
-      }
-    },
-    "int-so": {
-      "tibia": {
-        "id": 12363,
-        "variacao": 0
-      }
-    },
-    "int-nl": {
-      "tibia": {
-        "id": 12361,
-        "variacao": 0
-      }
-    },
-    "int-no": {
-      "tibia": {
-        "id": 12360,
+        "id": 101,
         "variacao": 0
       }
     }

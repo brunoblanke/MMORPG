@@ -16,31 +16,31 @@
   "slots": {
     "s": {
       "tibia": {
-        "id": 357,
+        "id": 5637,
         "variacao": 0
       }
     },
     "o": {
       "tibia": {
-        "id": 358,
+        "id": 5630,
         "variacao": 0
       }
     },
     "n": {
       "tibia": {
-        "id": 356,
+        "id": 5631,
         "variacao": 0
       }
     },
     "l": {
       "tibia": {
-        "id": 359,
+        "id": 5636,
         "variacao": 0
       }
     },
     "sl": {
       "tibia": {
-        "id": 362,
+        "id": 5648,
         "variacao": 0
       }
     },
@@ -52,37 +52,37 @@
     },
     "nl": {
       "tibia": {
-        "id": 361,
+        "id": 5650,
         "variacao": 0
       }
     },
     "no": {
       "tibia": {
-        "id": 360,
+        "id": 5646,
         "variacao": 0
       }
     },
     "int-so": {
       "tibia": {
-        "id": 367,
+        "id": 5633,
         "variacao": 0
       }
     },
     "int-nl": {
       "tibia": {
-        "id": 365,
+        "id": 5635,
         "variacao": 0
       }
     },
     "int-no": {
       "tibia": {
-        "id": 364,
+        "id": 5634,
         "variacao": 0
       }
     },
     "int-sl": {
       "tibia": {
-        "id": 366,
+        "id": 5632,
         "variacao": 0
       }
     },
@@ -195,5 +195,5 @@
   "ferramenta": "pisos",
   "grupo": "estrutura",
   "pasta": "pisos",
-  "nome": "piso-terra-2"
+  "nome": "piso-terra-8"
 }
