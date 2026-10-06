@@ -1,7 +1,7 @@
 // gerador/app/js/floors.js
 
-import { spriteUrl, saveProject, fetchBorderSuggestion, fetchItemInfo, fetchPattern } from './api.js';
-import { itemCategory } from './picker.js';
+import { spriteUrl, saveProject, fetchBorderSuggestion, fetchFloorSuggestion, fetchItemInfo, fetchPattern } from './api.js';
+import { itemCategory, showSuggestions } from './picker.js';
 import { normalizeName } from './common.js';
 import { refreshProjects } from './projects.js';
 import { fillFolderSelect, folderOf, setFolder, recipePath } from './folders.js';
@@ -130,6 +130,7 @@ export function initFloors() {
     if (BORDER_KEYS.some(key => floors.slots[key]) && !window.confirm('Trocar as bordas atuais pela sugestão?')) return;
     suggestBorders();
   };
+  document.getElementById('suggestFloor').onclick = suggestFloor;
   document.getElementById('uploadPng').addEventListener('change', uploadPng);
   nameEl.addEventListener('input', () => { floors.dirty = true; });
   fillFolderSelect(folderEl, CATEGORY);
@@ -313,6 +314,36 @@ function clearPattern() {
     if (PATTERN_KEY.test(key)) delete floors.slots[key];
   }
   floors.pattern = null;
+}
+
+// ================================================================================================================================================================================================================================================
+// suggestFloor
+// O inverso de Sugerir bordas: mostra à direita os chãos que combinam com as
+// bordas escolhidas; clicar num deles põe ele no meio (como escolher na
+// lista: chão em padrão vira padrão).
+
+async function suggestFloor() {
+  const borderIds = BORDER_KEYS.map(key => floors.slots[key]).filter(source => source && source.tibia).map(source => source.tibia.id);
+  if (!borderIds.length) {
+    setStatus('Pra sugerir o piso, escolha antes as bordas (do Tibia).', 'error');
+    return;
+  }
+  try {
+    const ids = await fetchFloorSuggestion(borderIds);
+    if (!ids.length) {
+      setStatus('Nenhum chão do Tibia combina com essas bordas.');
+      return;
+    }
+    showSuggestions('Pisos que combinam com as bordas', ids, (id) => {
+      clearPattern();
+      MIDDLE_KEYS.forEach(key => setSlot(key, null, false));
+      floors.selected = 'meio-1';
+      pickSprite(id, 0);
+    });
+    setStatus('Pisos sugeridos à direita, do que mais combina pro menos. Clique num pra pôr no meio.', 'ok');
+  } catch (error) {
+    setStatus(`Não deu pra sugerir o piso: ${error.message}`, 'error');
+  }
 }
 
 // ================================================================================================================================================================================================================================================

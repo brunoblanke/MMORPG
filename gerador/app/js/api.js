@@ -52,6 +52,14 @@ export async function fetchBorderSuggestion(groundIds) {
 }
 
 // ================================================================================================================================================================================================================================================
+// fetchFloorSuggestion
+// Os chãos que combinam com as bordas: [ids], do que mais combina pro menos.
+
+export async function fetchFloorSuggestion(borderIds) {
+  return (await requestJson(`/api/pisos-sugeridos?bordas=${borderIds.join(',')}`)).pisos;
+}
+
+// ================================================================================================================================================================================================================================================
 // fetchPattern
 // O bloco sem costura do chão feito de itens separados: { colunas, linhas,
 // ids } ou null.

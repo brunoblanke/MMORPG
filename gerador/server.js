@@ -29,6 +29,7 @@ app.use(express.json({ limit: '20mb' }));
 app.get('/api/catalogo', catalogo);
 app.get('/api/sprite/:id/:variacao', spriteDoItem);
 app.get('/api/bordas-sugeridas', bordasSugeridas);
+app.get('/api/pisos-sugeridos', pisosSugeridos);
 app.get('/api/paredes-sugeridas', paredesSugeridas);
 app.get('/api/portas-sugeridas', portasSugeridas);
 app.get('/api/item/:id', infoDoItem);
@@ -190,6 +191,19 @@ function bordasSugeridas(req, res) {
   const ids = String(req.query.chao || '').split(',').map(n => parseInt(n, 10)).filter(Number.isInteger);
   try {
     res.json({ success: true, sugestao: ids.length ? arquivosTibia().sugerirBordas(ids) : null });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+}
+
+// ================================================================================================================================================================================================================================================
+// pisosSugeridos
+// ?bordas=9488,9489 → { pisos: [ids] }: os chãos que combinam com as bordas.
+
+function pisosSugeridos(req, res) {
+  const ids = String(req.query.bordas || '').split(',').map(n => parseInt(n, 10)).filter(Number.isInteger);
+  try {
+    res.json({ success: true, pisos: ids.length ? arquivosTibia().sugerirPisos(ids) : [] });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }

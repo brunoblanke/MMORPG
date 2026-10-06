@@ -50,6 +50,12 @@ const OUTER_CORNER_MAX_PIXELS = 600;
 const MAX_BORDER_COLOR_DISTANCE = 35;
 const BORDER_KEYS_TOTAL = 12;
 
+// sugerirPisos: quantos chãos sugere e quanto o desenho antigo pesa contra.
+const SUGGESTED_FLOORS = 12;
+const OLD_FLOOR_PENALTY = 0.15;
+const HISTOGRAM_LEVELS = 6;
+const FULL_FLOOR = 0.95;
+
 // Chão feito de itens separados (padraoDeItens): até 9 peças, no máximo 4 por
 // lado, de cor parecida; vale se as emendas não forem mais que 15% piores que
 // o meio das peças.
@@ -317,6 +323,40 @@ class TibiaAssets {
       completadas.push(peca.chave);
     }
     return { pecas, conjunto: [escolhido[0].id, escolhido[escolhido.length - 1].id], completadas };
+  }
+
+
+  // ================================================================================================================================================================================================================================================
+  // sugerirPisos
+  // O inverso de sugerirBordas: os chãos (que cobrem o sqm inteiro) que
+  // combinam com as bordas (ids), pelas cores da parte desenhada delas, os de desenho novo antes (fora de
+  // antigos) e desempatando pelo número mais perto das bordas. Devolve até
+  // SUGGESTED_FLOORS ids (cada chão uma vez, pelo 1º da família de peças).
+
+  sugerirPisos(bordaIds) {
+    const bordas = bordaIds.map(id => this.things.item.get(id)).filter(Boolean).map(thing => this.quadro(thing, {}).pixels);
+    if (!bordas.length) return [];
+    const alvo = histogramaDeCor(bordas);
+    const perto = bordaIds[0];
+    const candidatos = [];
+    for (const [id, thing] of this.things.item) {
+      if (categoriaDoItem(thing) !== 'ground' || thing.w !== 1 || thing.h !== 1 || !this.temDesenho(thing)) continue;
+      const pixels = this.quadro(thing, {}).pixels;
+      let cheios = 0;
+      for (let i = 3; i < pixels.length; i += 4) if (pixels[i] > 128) cheios++;
+      if (cheios < SPRITE_SIZE * SPRITE_SIZE * FULL_FLOOR) continue;
+      const diferenca = distanciaDeHistograma(histogramaDeCor([pixels]), alvo);
+      const antigo = !!this.antigos && this.antigos.has(id);
+      candidatos.push({ id, pontos: diferenca + Math.min(Math.abs(id - perto), 5000) / 20000 + (antigo ? OLD_FLOOR_PENALTY : 0) });
+    }
+    candidatos.sort((x, y) => x.pontos - y.pontos);
+    const escolhidos = [];
+    for (const { id } of candidatos) {
+      if (escolhidos.some(outro => Math.abs(outro - id) === 1)) continue;
+      escolhidos.push(id);
+      if (escolhidos.length === SUGGESTED_FLOORS) break;
+    }
+    return escolhidos;
   }
 
 
@@ -913,6 +953,32 @@ function colar(folha, larguraFolha, quadro, x, y) {
 
 function paletaDeRoupa() {
   return Array.from({ length: 133 }, (_, i) => '#' + corDaPaleta(i).map(v => v.toString(16).padStart(2, '0')).join(''));
+}
+
+// ================================================================================================================================================================================================================================================
+// histogramaDeCor / distanciaDeHistograma
+// Quanto de cada cor (HISTOGRAM_LEVELS níveis por canal) tem na parte
+// desenhada dos sprites, somando 1; a distância vai de 0 (iguais) a 2.
+
+function histogramaDeCor(listaDePixels) {
+  const niveis = HISTOGRAM_LEVELS;
+  const contagem = new Float64Array(niveis ** 3);
+  let total = 0;
+  for (const pixels of listaDePixels) {
+    for (let i = 0; i < pixels.length; i += 4) {
+      if (pixels[i + 3] < 128) continue;
+      const nivel = (valor) => Math.min(niveis - 1, Math.floor(valor * niveis / 256));
+      contagem[(nivel(pixels[i]) * niveis + nivel(pixels[i + 1])) * niveis + nivel(pixels[i + 2])]++;
+      total++;
+    }
+  }
+  return total ? contagem.map(valor => valor / total) : contagem;
+}
+
+function distanciaDeHistograma(a, b) {
+  let soma = 0;
+  for (let i = 0; i < a.length; i++) soma += Math.abs(a[i] - b[i]);
+  return soma;
 }
 
 // ================================================================================================================================================================================================================================================
