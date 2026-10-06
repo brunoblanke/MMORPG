@@ -6,32 +6,28 @@ import { spriteUrl } from './api.js';
 // mudam com a categoria aberta (pisos: chão, bordas, todos os itens;
 // criaturas: as criaturas e os itens, pro cadáver; paredes: paredes, portas
 // e todos os itens; objetos: objetos, itens e todos) e cada categoria lembra a
-// última aba usada. Item com o desenho do Tibia antigo só aparece na aba Old.
+// última aba usada. Item com o desenho do Tibia antigo só aparece na aba de todos os itens.
 // Item com várias variações (chão que muda pelo sqm) abre a lista delas.
 
 const MODES = {
   floors: [
     { id: 'ground', label: 'Chão' },
     { id: 'border', label: 'Bordas' },
-    { id: 'all', label: 'Todos' },
-    { id: 'old', label: 'Old' }
+    { id: 'all', label: 'Todos' }
   ],
   creatures: [
     { id: 'creature', label: 'Criaturas' },
-    { id: 'all', label: 'Itens' },
-    { id: 'old', label: 'Old' }
+    { id: 'all', label: 'Itens' }
   ],
   walls: [
     { id: 'wall', label: 'Paredes' },
     { id: 'door', label: 'Portas' },
-    { id: 'all', label: 'Todos' },
-    { id: 'old', label: 'Old' }
+    { id: 'all', label: 'Todos' }
   ],
   objects: [
     { id: 'object', label: 'Objetos' },
     { id: 'item', label: 'Itens' },
-    { id: 'all', label: 'Todos' },
-    { id: 'old', label: 'Old' }
+    { id: 'all', label: 'Todos' }
   ]
 };
 
@@ -208,7 +204,7 @@ function renderGrid() {
   }
 
   const tab = currentTab();
-  const visible = picker.items.filter(([, category, , , , , , old]) => tab === 'old' ? old : !old && (tab === 'all' || category === tab));
+  const visible = picker.items.filter(([, category, , , , , , old]) => tab === 'all' || (!old && category === tab));
   for (const [id, , , , frames, variations] of visible) {
     const extra = [variations > 1 ? `${variations} variações` : '', frames > 1 ? `${frames} quadros` : ''].filter(Boolean).join(' · ');
     const cell = spriteCell(spriteUrl(id, 0), `Item ${id}${extra ? ` · ${extra}` : ''}`, variations > 1 ? `×${variations}` : '');
