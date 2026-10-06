@@ -5,6 +5,7 @@ import assert from 'node:assert/strict';
 import { buildGame, floorRect } from './helpers/fixture.js';
 import { TICK_MS } from '../js/simulation.js';
 import { CONFIG } from '../js/config.js';
+import { CONDITIONS } from '../shared/conditions.js';
 
 // ================================================================================================================================================================================================================================================
 // run
@@ -28,14 +29,14 @@ function withStarvation(fn) {
   }
 }
 
-test('sem comida o player perde 1% da vida máxima por segundo', () => {
+test('sem comida o player perde 1% da vida máxima no mesmo intervalo do veneno', () => {
   withStarvation(() => {
     const game = buildGame({ objects: floorRect(0, 10, 0, 10, 0), player: { x: 5, y: 5, z: 0 } });
     const { player } = game;
     player.food = 0;
     const per = Math.max(1, Math.round(player.hp * 0.01));
     const start = player.currentHp;
-    run(game, 5000 + TICK_MS);
+    run(game, CONDITIONS.poison.interval * 5 + TICK_MS);
     assert.equal(player.currentHp, start - 5 * per);
   });
 });
@@ -56,7 +57,7 @@ test('comer para a fome e a vida volta a regenerar', () => {
     const game = buildGame({ objects: floorRect(0, 10, 0, 10, 0), player: { x: 5, y: 5, z: 0 } });
     const { player } = game;
     player.food = 0;
-    run(game, 3000);
+    run(game, CONDITIONS.poison.interval * 2 + TICK_MS);
     const hurt = player.currentHp;
     assert.ok(hurt < player.hp);
     player.food = 60000;
@@ -73,7 +74,7 @@ test('o corpo offline também passa fome e a fome pode matar', () => {
     player.currentHp = 3;
     player.lastCombatTime = game.time;
     game.leaveGame('player1');
-    run(game, 4000);
+    run(game, CONDITIONS.poison.interval * 3);
     assert.equal(game.getPlayer('player1'), null, 'morreu de fome, voltou ao spawn e saiu do mapa');
   });
 });

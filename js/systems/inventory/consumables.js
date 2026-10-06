@@ -3,12 +3,13 @@
 import { GameObject } from '../../models/game-object.js';
 import { objectUse } from '../../../shared/assets.js';
 import { CONFIG } from '../../config.js';
+import { CONDITIONS } from '../../../shared/conditions.js';
 import { RUNES } from '../../../shared/spells.js';
 import {
   EQUIP_SLOTS, USE_COOLDOWN_MS, FOOD_MAX_SECONDS, POTION_RANGE, EMPTY_VIAL, SPLASH_HP, SPLASH_MANA, SPLASH_STAGES, SPLASH_STAGE_MS, REGEN_MS, REGEN_HP, REGEN_MANA, itemInfo, newItem
 } from '../../../shared/items.js';
 
-const STARVE_TICK_MS = 1000;
+const STARVE_TICK_MS = CONDITIONS.poison.interval;
 
 // Métodos do InventoryController (js/systems/inventory.js) sobre o que se usa
 // e se gasta: comida e regeneração, poções e respingos, fonte de luz que
@@ -253,8 +254,8 @@ export const consumableMethods = {
 
   // ================================================================================================================================================================================================================================================
   // starve
-  // Sem comida, o player perde CONFIG.starveHpPercent % da vida máxima a cada
-  // segundo (pelo menos 1), até comer algo.
+  // Sem comida, o player perde CONFIG.starveHpPercent % da vida máxima (pelo
+  // menos 1) no mesmo intervalo do veneno, até comer algo.
 
   starve(player, now, elapsed) {
     if (!player.isAlive() || !CONFIG.starveHpPercent) {
