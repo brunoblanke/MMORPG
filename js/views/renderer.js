@@ -509,8 +509,9 @@ export class Renderer {
     } else {
       const frame = this.getEntityFrame(entity, isPlayer, isEnemy);
       if (frame) {
-        const isTargeted = entity && (entity === this.selectedTarget || (isPlayer && entity.isTarget));
-        const inCombat = isPlayer && entity === this.localPlayer && entity.inCombat;
+        const isSelf = isPlayer && entity === this.localPlayer;
+        const isTargeted = entity && (entity === this.selectedTarget || (isSelf && entity.isTarget));
+        const inCombat = isSelf && entity.inCombat;
         const outline = isTargeted ? TARGET_OUTLINE : (inCombat ? COMBAT_OUTLINE : null);
         this.drawAnchoredSprite(frame.image, frame.frameRect, base, size, stackOffsetX, stackOffsetY, tint, outline);
       } else {

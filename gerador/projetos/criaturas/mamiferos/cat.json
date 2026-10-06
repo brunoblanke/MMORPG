@@ -22,17 +22,18 @@
     }
   },
   "propriedades": {
-    "comportamento": "normal",
-    "vida": 999,
+    "comportamento": "pacifico",
+    "vida": 20,
     "xp": 0,
-    "velocidade": 100,
-    "armadura": 999,
-    "defesa": 999,
+    "velocidade": 62,
+    "armadura": 1,
+    "defesa": 5,
     "ataque": 0,
     "loot": [],
     "falas": [
-      "Miau!",
-      "Miaaaaauuu!"
+      "Mew!",
+      "Meow!",
+      "Meow meow!"
     ]
   },
   "ferramenta": "criaturas",
