@@ -88,7 +88,7 @@ export class GameController {
 
   boot() {
     const modal = new NameModal();
-    const spritesReady = this.loadSprites();
+    const spritesReady = this.loadSprites(modal);
     const mapReady = loadMapDataFromURL(CONFIG.mapDataUrl, CONFIG.mapFallbackUrl).catch((error) => {
       console.error('❌ Erro ao carregar mapa:', error);
       return {};
@@ -112,12 +112,13 @@ export class GameController {
 
   // ================================================================================================================================================================================================================================================
   // loadSprites
-  // Primeiro a lista das folhas do gerador (/api/sprites), depois as imagens.
+  // Primeiro a lista das folhas do gerador (/api/sprites), depois as imagens
+  // (o botão da janela de entrada mostra o andamento).
 
-  loadSprites() {
+  loadSprites(modal) {
     return loadAssets()
       .catch((error) => console.error('❌ Erro ao listar os sprites:', error))
-      .then(() => this.spriteLoader.loadAll(getSpritePaths()))
+      .then(() => this.spriteLoader.loadAll(getSpritePaths(), (done, total) => modal.setLoading(done / total)))
       .catch((error) => console.error('❌ Erro ao carregar sprites:', error));
   }
 
@@ -415,7 +416,7 @@ export class GameController {
       return;
     }
     const obj = this.inputController.hoverCorpse || this.inputController.hoverObject;
-    const text = obj ? describeGroundObject(obj) : null;
+    const text = obj ? describeGroundObject(obj, this.session.world) : null;
     if (text) this.look(text);
   }
 

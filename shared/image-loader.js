@@ -23,9 +23,14 @@ export function loadImage(url) {
 
 // ================================================================================================================================================================================================================================================
 // loadAllImages
+// onProgress(feitas, total) é chamado a cada imagem que termina (ou falha).
 
-export function loadAllImages(urls) {
-  return Promise.all(urls.map(url => loadImage(url).promise));
+export function loadAllImages(urls, onProgress = null) {
+  let done = 0;
+  return Promise.all(urls.map(url => loadImage(url).promise.finally(() => {
+    done++;
+    if (onProgress) onProgress(done, urls.length);
+  })));
 }
 
 // ================================================================================================================================================================================================================================================

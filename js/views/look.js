@@ -1,6 +1,6 @@
 // js/views/look.js
 
-import { displayName, objectIdType, isItemType } from '../../shared/assets.js';
+import { displayName, objectIdType, isItemType, doorState } from '../../shared/assets.js';
 import { itemInfo, weightOf } from '../../shared/items.js';
 
 // Shift + clique: o que o player vê no item, na criatura ou no player (vai
@@ -55,12 +55,28 @@ export function describeEntity(entity, self = null) {
 }
 
 // ================================================================================================================================================================================================================================================
-// describeGroundObject
-// Objeto do chão: só item (ou cadáver) tem descrição; o resto devolve null.
+// describeDoor
+// Porta de uma casa com dono: "Essa casa pertence a {nome}". A porta fica no
+// sqm da casa ou na parede ao lado dela.
 
-export function describeGroundObject(obj) {
+function describeDoor(obj, world) {
+  const z = obj.z || 0;
+  for (const [dx, dy] of [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]]) {
+    const house = world.houseAt(obj.x + dx, obj.y + dy, z);
+    if (house) return house.owner ? `Essa casa pertence a ${house.owner}` : null;
+  }
+  return null;
+}
+
+// ================================================================================================================================================================================================================================================
+// describeGroundObject
+// Objeto do chão: só item (ou cadáver) e porta de casa têm descrição; o resto
+// devolve null.
+
+export function describeGroundObject(obj, world = null) {
   if (obj.isCorpse) return describeEntity(obj);
   const type = objectIdType(obj.id);
+  if (world && doorState(type)) return describeDoor(obj, world);
   if (!isItemType(type)) return null;
   return describeItem(obj.itemData || { type, count: obj.count, lit: obj.active, fuel: obj.fuel });
 }
