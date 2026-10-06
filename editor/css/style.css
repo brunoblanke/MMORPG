@@ -47,6 +47,10 @@ body{
   border-bottom:1px solid var(--line); user-select:none; font-size:12px;
 }
 .ed-title{ flex:1; font-weight:500; }
+.ed-head{ cursor:pointer; }
+.ed-head::after{ content:'▾'; color:var(--muted); }
+.ed-win.collapsed .ed-head::after{ content:'▸'; }
+.ed-win.collapsed .ed-body{ display:none; }
 .ed-body{ padding:8px; }
 
 /* Barra flutuante no topo, no estilo da caixa de fala do jogo: andar e as
@@ -258,3 +262,18 @@ textarea{
 .house-form input{ width:100%; box-sizing:border-box; }
 .house-opt{ padding:4px 6px; border-radius:4px; cursor:pointer; font-size:12px; }
 .house-opt:hover, .house-opt.selected{ background:rgba(245, 158, 11, .18); }
+
+/* Celular: as barras quebram linha e cabem na tela (o Salvar fica sempre à
+   vista), as ferramentas ocupam menos largura e o painel de status quebra linha. */
+@media (max-width: 700px){
+  .side-col{ width:min(240px, 62vw); }
+  .quickbar{
+    top:48px; left:8px; right:8px; transform:none; flex-wrap:wrap; justify-content:center; white-space:normal; gap:6px;
+  }
+  .quickbar.bottombar{ top:auto; bottom:76px; }
+  .bottombar .export-btn{ flex:1 1 100%; padding:10px 16px; font-size:14px; }
+  .goto-input{ width:80px; }
+  .canvas-wrap{ padding:140px 12px 150px; }
+  .status-list{ flex-wrap:wrap; gap:2px 10px; }
+  .float-panel.wide{ width:min(320px, calc(100vw - 16px)); }
+}

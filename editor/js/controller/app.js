@@ -12,6 +12,14 @@ import { resetHistory, commitHistory, undo, redo } from '../model/history.js';
 import './canvas-input.js';
 import '../view/goto-field.js';
 
+// ================================================================================================================================================================================================================================================
+// Janela de ferramentas: tocar no título recolhe e abre (no celular ela começa
+// recolhida, pra não cobrir a barra de andares).
+
+const toolsWindow = document.querySelector('.side-col .ed-win');
+toolsWindow.querySelector('.ed-head').onclick = () => toolsWindow.classList.toggle('collapsed');
+if (window.matchMedia('(max-width: 700px)').matches) toolsWindow.classList.add('collapsed');
+
 document.getElementById('ghostToggle').onchange = (evt) => { state.ghost = evt.target.checked; scheduleRender(); };
 
 // ================================================================================================================================================================================================================================================
