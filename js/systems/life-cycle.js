@@ -63,6 +63,7 @@ export class LifeCycleController {
   handlePlayerDeath(player, now) {
     const { world, control } = this.sim;
     this.sim.social.onPlayerDeath(player, now);
+    if (player.isBot) return this.reviveBot(player);
     const corpse = this.createCorpse(player, 'player_corpse', now);
     this.sim.inventory.fillPlayerCorpse(corpse, player);
     player.lastCombatTime = -Infinity;
@@ -73,6 +74,21 @@ export class LifeCycleController {
     player.renderStep = spot.step;
     control.clearWalk(player);
     if (player.target) player.target = null;
+    this.sim.emit({ type: 'death', playerId: player.id });
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // reviveBot
+  // Player de teste: sem corpo nem perda de itens, volta com a vida cheia no
+  // mesmo lugar em que morreu.
+
+  reviveBot(player) {
+    player.currentHp = player.hp;
+    player.mana = player.maxMana;
+    player.conditions = {};
+    player.skullUntil = 0;
+    player.lastAggressor = null;
+    player.lastCombatTime = -Infinity;
     this.sim.emit({ type: 'death', playerId: player.id });
   }
 

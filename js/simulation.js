@@ -40,6 +40,7 @@ export class Simulation {
   // options.lootTable: o que cada criatura deixa cair (systems/inventory.js).
   // options.npcs: NPCs além dos do mapa (definições de shared/npcs.js).
   // options.houses: dono, convidados e itens guardados das casas (houses.js).
+  // options.bots: players de teste [{ name, x, y, z, lvl }] (spawnBots).
 
   constructor(mapData, options = {}) {
     this.mapData = mapData;
@@ -78,6 +79,7 @@ export class Simulation {
     this.houses = new HouseController(this, options.houses || {});
     this.npcs = [];
     this.talk = new NpcController(this, options.npcs || []);
+    this.spawnBots(options.bots || []);
   }
 
   // ================================================================================================================================================================================================================================================
@@ -107,6 +109,28 @@ export class Simulation {
     this.world.addCreature(player);
     this.social.onLogin(player);
     return player;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // spawnBots
+  // Players de teste: parados, sem revidar e que renascem no mesmo lugar ao
+  // morrer (life-cycle.js), pra testar PvP e caveira. Sem piso no sqm, o bot
+  // não entra.
+
+  spawnBots(bots) {
+    bots.forEach((bot, index) => {
+      if (!this.world.hasFloorAt(bot.x, bot.y, bot.z || 0)) return;
+      const player = this.addPlayer(`bot${index + 1}`, { name: bot.name, gender: 'male' });
+      player.isBot = true;
+      player.lvl = bot.lvl || 20;
+      player.applyLevelStats();
+      player.currentHp = player.hp;
+      player.mana = player.maxMana;
+      player.food = Number.MAX_SAFE_INTEGER;
+      player.attackMode = false;
+      player.autoFollow = false;
+      this.teleportPlayer(player, bot.x, bot.y, bot.z || 0, { home: true });
+    });
   }
 
   // ================================================================================================================================================================================================================================================

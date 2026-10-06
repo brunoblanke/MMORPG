@@ -37,6 +37,7 @@ export class Player extends Entity {
     this.missions = {};
     this.vip = [];
     this.skull = null;
+    this.isBot = false;
     this.skullUntil = 0;
     this.frags = [];
     this.lastAggressor = null;

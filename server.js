@@ -166,6 +166,7 @@ function enderecosRede(porta) {
 
 async function iniciarJogo(servidorHttp) {
   const { Simulation, TICK_MS } = await import(pathToFileURL(path.join(PASTA_JOGO, 'js', 'simulation.js')).href);
+  const { CONFIG } = await import(pathToFileURL(path.join(PASTA_JOGO, 'js', 'config.js')).href);
   const { serializeState, validateName, normalizeGender, VIEW_RANGE_X, VIEW_RANGE_Y } = await import(pathToFileURL(path.join(PASTA_JOGO, 'js', 'net', 'protocol.js')).href);
   const { encodeDelta } = await import(pathToFileURL(path.join(PASTA_JOGO, 'js', 'net', 'delta.js')).href);
 
@@ -174,7 +175,7 @@ async function iniciarJogo(servidorHttp) {
 
   const { validateWorld } = await import(pathToFileURL(path.join(PASTA_JOGO, 'js', 'core', 'validate.js')).href);
   const criarMundo = (casas = carregarCasas()) => {
-    const mundo = new Simulation(JSON.parse(fs.readFileSync(MAP_DATA_PATH, 'utf8')), { houses: casas });
+    const mundo = new Simulation(JSON.parse(fs.readFileSync(MAP_DATA_PATH, 'utf8')), { houses: casas, bots: CONFIG.testBots });
     const avisos = validateWorld(mundo);
     if (avisos.length) console.log(`\n⚠️  Conferência do mapa e do gerador (${avisos.length}):\n${avisos.map(a => `   • ${a}`).join('\n')}`);
     return mundo;
@@ -374,7 +375,7 @@ function guardarCasas(sim) {
 function guardarPersonagens(personagens, jogadores) {
   if (jogadores.length === 0) return;
   for (const jogador of jogadores) {
-    personagens[jogador.name.toLowerCase()] = jogador.toSave();
+    if (!jogador.isBot) personagens[jogador.name.toLowerCase()] = jogador.toSave();
   }
   try {
     const temporario = CHARACTERS_PATH + '.tmp';
