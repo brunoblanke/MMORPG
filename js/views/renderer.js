@@ -58,6 +58,7 @@ export class Renderer {
 
     this.frameTimestamp = 0;
     this.pendingOverlays = [];
+    this.localPlayer = null;
     this.lighting = new LightingLayer();
     this.floorCache = new FloorCache(this.sprites);
 
@@ -551,7 +552,7 @@ export class Renderer {
 
   flushOverlays() {
     for (const o of this.pendingOverlays) {
-      drawEntityOverlay(this.ctx, o.entity, o.base, o.stackOffsetX, o.stackOffsetY, o.size, this.devMode);
+      drawEntityOverlay(this.ctx, o.entity, o.base, o.stackOffsetX, o.stackOffsetY, o.size, this.devMode, o.entity === this.localPlayer);
     }
     this.pendingOverlays = [];
   }
@@ -574,6 +575,7 @@ export class Renderer {
   render(gameState, ui) {
     this.frameTimestamp = performance.now();
     this.selectedTarget = gameState.player.target || null;
+    this.localPlayer = gameState.player;
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.ctx.imageSmoothingEnabled = false;
     this.camera.update(gameState.player);

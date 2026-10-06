@@ -65,7 +65,7 @@ function drawCombatIcon(ctx, left, top, size) {
 // ================================================================================================================================================================================================================================================
 // drawEntityOverlay
 
-export function drawEntityOverlay(ctx, entity, base, stackOffsetX, stackOffsetY, size, devMode) {
+export function drawEntityOverlay(ctx, entity, base, stackOffsetX, stackOffsetY, size, devMode, isSelf = false) {
   if (!entity) return;
   if (entity.floorType) return;
 
@@ -87,7 +87,7 @@ export function drawEntityOverlay(ctx, entity, base, stackOffsetX, stackOffsetY,
 
   drawTibiaText(ctx, name, centerX, barY - 3, isCorpse ? CORPSE_NAME_COLOR : NAME_COLOR);
   if (isPlayer && entity.skull) drawTibiaText(ctx, '☠', centerX, barY - 16, SKULL_COLOR);
-  if (isPlayer && entity.inCombat) drawCombatIcon(ctx, barX, base.y - stackOffsetY, size);
+  if (isPlayer && isSelf && entity.inCombat) drawCombatIcon(ctx, barX, base.y - stackOffsetY, size);
 
   if (hasHp && !isCorpse) {
     ctx.save();
