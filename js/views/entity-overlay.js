@@ -4,15 +4,15 @@ import { displayName } from '../../shared/assets.js';
 import { drawTibiaText, healthColor } from './tibia-text.js';
 import { FOLLOW_ICONS } from './inventory-ui/icons.js';
 
-// Nome no estilo do Tibia (negrito, contorno preto), sempre verde (player
-// com caveira: a caveira branca em cima do nome), e barra
+// Nome no estilo do Tibia (negrito, contorno preto), verde (player com
+// caveira: branco, vermelho ou preto, pela caveira), e barra
 // com o mesmo visual da janela de battle (css/inventory.css): 3px, cantos
 // arredondados, na cor da vida (healthColor: verde/amarela/vermelha).
 const HP_BAR_HEIGHT = 3;
 const HP_BAR_BACK = '#12151b';
 const NAME_COLOR = '#5fe35f';
 const CORPSE_NAME_COLOR = '#a0a0a0';
-const SKULL_COLOR = '#ffffff';
+const SKULL_NAMES = { white: { color: '#ffffff', outline: '#000000' }, red: { color: '#ff3b3b', outline: '#000000' }, black: { color: '#000000', outline: '#ffffff' } };
 const COMBAT_ICON_COLOR = '#5fe35f';
 const COMBAT_ICON_SIZE = 10;
 let combatIcon = null;
@@ -85,8 +85,8 @@ export function drawEntityOverlay(ctx, entity, base, stackOffsetX, stackOffsetY,
   const barX = base.x - stackOffsetX;
   const barY = base.y - 15 - stackOffsetY;
 
-  drawTibiaText(ctx, name, centerX, barY - 3, isCorpse ? CORPSE_NAME_COLOR : NAME_COLOR);
-  if (isPlayer && entity.skull) drawTibiaText(ctx, '☠', centerX, barY - 16, SKULL_COLOR);
+  const skull = isPlayer ? SKULL_NAMES[entity.skull] : null;
+  drawTibiaText(ctx, name, centerX, barY - 3, skull ? skull.color : (isCorpse ? CORPSE_NAME_COLOR : NAME_COLOR), skull ? skull.outline : undefined);
   if (isPlayer && isSelf && entity.inCombat) drawCombatIcon(ctx, barX, base.y - stackOffsetY, size);
 
   if (hasHp && !isCorpse) {

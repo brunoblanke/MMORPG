@@ -9,16 +9,17 @@ const OUTLINE_OFFSETS = [[-1, -1], [0, -1], [1, -1], [-1, 0], [1, 0], [-1, 1], [
 
 // ================================================================================================================================================================================================================================================
 // drawTibiaText
-// Escreve text centrado em (x, y) com a base em y (textBaseline bottom).
+// Escreve text centrado em (x, y) com a base em y (textBaseline bottom), com
+// contorno preto (ou da cor outline).
 
-export function drawTibiaText(ctx, text, x, y, color) {
+export function drawTibiaText(ctx, text, x, y, color, outline = '#000000') {
   const px = Math.round(x);
   const py = Math.round(y);
   ctx.save();
   ctx.font = TIBIA_FONT;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'bottom';
-  ctx.fillStyle = '#000000';
+  ctx.fillStyle = outline;
   for (const [dx, dy] of OUTLINE_OFFSETS) ctx.fillText(text, px + dx, py + dy);
   ctx.fillStyle = color;
   ctx.fillText(text, px, py);

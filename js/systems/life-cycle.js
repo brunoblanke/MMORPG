@@ -62,6 +62,7 @@ export class LifeCycleController {
 
   handlePlayerDeath(player, now) {
     const { world, control } = this.sim;
+    this.sim.social.onPlayerDeath(player, now);
     const corpse = this.createCorpse(player, 'player_corpse', now);
     this.sim.inventory.fillPlayerCorpse(corpse, player);
     player.lastCombatTime = -Infinity;

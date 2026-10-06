@@ -36,8 +36,10 @@ export class Player extends Entity {
     this.pendingDrag = null;
     this.missions = {};
     this.vip = [];
-    this.skull = false;
+    this.skull = null;
     this.skullUntil = 0;
+    this.frags = [];
+    this.lastAggressor = null;
   }
 
   // ================================================================================================================================================================================================================================================
@@ -118,7 +120,8 @@ export class Player extends Entity {
       food: this.food || 0,
       quests: this.quests || [],
       missions: this.missions || {},
-      vip: this.vip || []
+      vip: this.vip || [],
+      frags: this.frags
     };
   }
 
@@ -144,6 +147,7 @@ export class Player extends Entity {
     if (Array.isArray(saved.quests)) this.quests = saved.quests.filter(q => typeof q === 'string').slice(0, 1000);
     if (saved.missions && typeof saved.missions === 'object') this.missions = savedMissions(saved.missions);
     if (Array.isArray(saved.vip)) this.vip = saved.vip.filter(n => typeof n === 'string' && n.trim()).map(n => n.trim().slice(0, 30)).slice(0, 50);
+    if (Array.isArray(saved.frags)) this.frags = saved.frags.filter(t => Number.isFinite(t)).slice(-100);
     if (Number.isFinite(saved.food) && saved.food > 0) this.food = Math.min(saved.food, FOOD_MAX_SECONDS * 1000);
 
     const hasPosition = Number.isInteger(saved.x) && Number.isInteger(saved.y) && isValidFloor(saved.z);

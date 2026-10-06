@@ -16,12 +16,22 @@ import { displayName } from '../../shared/assets.js';
 //   (mais de TRADE_RANGE sqm ou outro andar), a troca é cancelada.
 //   PvP: fora da zona segura, player de nível PVP_MIN_LEVEL+ pode atacar
 //   outro; atacar quem não tem caveira nem atacou ele antes dá a caveira
-//   branca por SKULL_MS. Quem morre com caveira perde tudo o que carrega.
+//   branca por SKULL_MS. Matar assim (sem justificativa) é um frag: 3 em 24 h,
+//   5 em 7 dias ou 10 em 30 dias dão a caveira vermelha; 6, 10 ou 20, a preta
+//   (como no Tibia). A cor do nome mostra a caveira. Quem morre com caveira
+//   perde tudo o que carrega.
 
 export const PARTY_RANGE = 30;
 export const TRADE_RANGE = 2;
 export const PVP_MIN_LEVEL = 8;
 export const SKULL_MS = 15 * 60 * 1000;
+export const KILL_CREDIT_MS = 60 * 1000;
+const DAY_MS = 24 * 60 * 60 * 1000;
+export const FRAG_LIMITS = [
+  { ms: DAY_MS, red: 3, black: 6 },
+  { ms: 7 * DAY_MS, red: 5, black: 10 },
+  { ms: 30 * DAY_MS, red: 10, black: 20 }
+];
 export const VIP_MAX = 50;
 export const PRIVATE_MAX_LENGTH = 200;
 
@@ -342,16 +352,46 @@ export class SocialController {
     attacker.pvpAttacked = attacker.pvpAttacked || new Map();
     attacker.pvpAttacked.set(victim.id, now);
     const victimStarted = victim.pvpAttacked && now - (victim.pvpAttacked.get(attacker.id) ?? -Infinity) < SKULL_MS;
-    if (this.hasSkull(victim, now) || victimStarted) return;
+    const unjustified = !this.hasSkull(victim, now) && !victimStarted;
+    victim.lastAggressor = { id: attacker.id, at: now, unjustified };
+    if (!unjustified) return;
     if (!this.hasSkull(attacker, now)) this.message(attacker, 'Você atacou um player e ganhou a caveira branca.');
     attacker.skullUntil = now + SKULL_MS;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // onPlayerDeath
+  // Morreu pelo golpe de outro player nos últimos KILL_CREDIT_MS: se o ataque
+  // não tinha justificativa, é um frag de quem matou.
+
+  onPlayerDeath(victim, now) {
+    const aggressor = victim.lastAggressor;
+    victim.lastAggressor = null;
+    if (!aggressor || !aggressor.unjustified || now - aggressor.at > KILL_CREDIT_MS) return;
+    const killer = this.sim.getPlayer(aggressor.id);
+    if (killer) killer.frags.push(this.sim.wallTime(now));
   }
 
   // ================================================================================================================================================================================================================================================
   // hasSkull
 
   hasSkull(player, now = this.sim.time || 0) {
-    return (player.skullUntil || 0) > now;
+    return !!this.skullOf(player, now);
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // skullOf
+  // 'black', 'red' (pelos frags nas janelas de FRAG_LIMITS), 'white' (atacou
+  // sem justificativa há menos de SKULL_MS) ou null.
+
+  skullOf(player, now = this.sim.time || 0) {
+    const wall = this.sim.wallTime(now);
+    const oldest = FRAG_LIMITS[FRAG_LIMITS.length - 1].ms;
+    player.frags = player.frags.filter(t => wall - t < oldest);
+    const count = (ms) => player.frags.filter(t => wall - t < ms).length;
+    if (FRAG_LIMITS.some(limit => count(limit.ms) >= limit.black)) return 'black';
+    if (FRAG_LIMITS.some(limit => count(limit.ms) >= limit.red)) return 'red';
+    return (player.skullUntil || 0) > now ? 'white' : null;
   }
 
   // ================================================================================================================================================================================================================================================
@@ -360,7 +400,7 @@ export class SocialController {
   // se afastou ou não tem mais o item oferecido.
 
   update(now) {
-    for (const player of this.sim.players) player.skull = this.hasSkull(player, now);
+    for (const player of this.sim.players) player.skull = this.skullOf(player, now);
     for (const trade of [...this.trades]) {
       const a = this.sim.getPlayer(trade.a);
       const b = this.sim.getPlayer(trade.b);

@@ -122,7 +122,7 @@ test('PvP: atacar quem não tem caveira dá a caveira branca; quem se defende n�
   sim.combat.attackTarget(bia, ana, sim.time);
   assert.equal(sim.social.hasSkull(bia), false);
   sim.tick(sim.time + TICK_MS);
-  assert.equal(ana.skull, true);
+  assert.equal(ana.skull, 'white');
 
   ana.equip.arma = { uid: 's2', type: SWORD };
   ana.currentHp = 0;
@@ -140,4 +140,47 @@ test('PvP: na zona segura ou abaixo do nível 8 não dá pra atacar player', () 
   low.bia.lvl = 5;
   run(low.sim, 'player1', { type: 'attack', targetId: low.bia.id });
   assert.equal(low.ana.target, null);
+});
+
+// ================================================================================================================================================================================================================================================
+// killWithoutReason
+// Ana ataca Bia (sem justificativa) e Bia morre logo depois.
+
+function killWithoutReason(sim, ana, bia) {
+  bia.skullUntil = 0;
+  bia.pvpAttacked = null;
+  ana.pvpAttacked = null;
+  bia.hp = bia.currentHp = 100000;
+  ana.lastAttackTime = -1e9;
+  sim.combat.attackTarget(ana, bia, sim.time);
+  bia.currentHp = 0;
+  sim.tick(sim.time + TICK_MS);
+}
+
+test('frags: matar sem justificativa conta; 3 dão a caveira vermelha e 6 a preta (nas 24 h)', () => {
+  const { sim, ana, bia } = game();
+  ana.hp = ana.currentHp = 100000;
+  for (let i = 0; i < 2; i++) killWithoutReason(sim, ana, bia);
+  assert.equal(ana.frags.length, 2);
+  assert.equal(sim.social.skullOf(ana), 'white');
+  killWithoutReason(sim, ana, bia);
+  assert.equal(sim.social.skullOf(ana), 'red');
+  for (let i = 0; i < 3; i++) killWithoutReason(sim, ana, bia);
+  assert.equal(sim.social.skullOf(ana), 'black');
+});
+
+test('frags: matar quem tinha caveira ou atacou primeiro não conta e o frag velho expira', () => {
+  const { sim, ana, bia } = game();
+  ana.hp = ana.currentHp = 100000;
+  bia.skullUntil = sim.time + SKULL_MS;
+  bia.hp = bia.currentHp = 100000;
+  ana.lastAttackTime = -1e9;
+  sim.combat.attackTarget(ana, bia, sim.time);
+  bia.currentHp = 0;
+  sim.tick(sim.time + TICK_MS);
+  assert.equal(ana.frags.length, 0);
+  ana.frags = [sim.wallTime() - 25 * 60 * 60 * 1000, sim.wallTime() - 26 * 60 * 60 * 1000, sim.wallTime() - 27 * 60 * 60 * 1000];
+  assert.notEqual(sim.social.skullOf(ana), 'red', 'três frags de mais de 24 h não dão vermelha');
+  ana.frags = [...ana.frags, sim.wallTime(), sim.wallTime(), sim.wallTime(), sim.wallTime(), sim.wallTime()];
+  assert.equal(sim.social.skullOf(ana), 'red', '5 frags na semana dão vermelha');
 });

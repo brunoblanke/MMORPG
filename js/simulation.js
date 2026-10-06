@@ -48,6 +48,7 @@ export class Simulation {
     this.enemies = generateEnemies(mapData);
     this.players = [];
     this.loggedOut = [];
+    this.startedAt = Date.now();
     this.deadBodies = [];
 
     this.world.load(this.objects);
@@ -165,6 +166,15 @@ export class Simulation {
   }
 
 // ================================================================================================================================================================================================================================================
+  // wallTime
+  // A hora real (ms desde 1970) de um instante da simulação: o que fica
+  // guardado no personagem (kills de player) sobrevive a reiniciar o servidor.
+
+  wallTime(now = this.time) {
+    return this.startedAt + now;
+  }
+
+  // ================================================================================================================================================================================================================================================
   // inCombat
   // Deu ou levou golpe nos últimos CONFIG.logoutCombatMs, fora de zona segura.
 
