@@ -21,6 +21,7 @@ toolsWindow.querySelector('.ed-head').onclick = () => toolsWindow.classList.togg
 if (window.matchMedia('(max-width: 700px)').matches) toolsWindow.classList.add('collapsed');
 
 document.getElementById('ghostToggle').onchange = (evt) => { state.ghost = evt.target.checked; scheduleRender(); };
+document.getElementById('detailsToggle').onchange = (evt) => { state.showDetails = evt.target.checked; scheduleRender(); };
 
 // ================================================================================================================================================================================================================================================
 // Salvar direto em data/map.json (precisa do server.js rodando)
@@ -115,4 +116,4 @@ restoreScroll();
 // redesenho é sempre calculado em tempo real (shared/sprite-sheet.js), então
 // esse valor só afeta suavidade visual, não a precisão do timing.
 const REDRAW_INTERVAL_MS = 250;
-setInterval(scheduleRender, REDRAW_INTERVAL_MS);
+setInterval(() => { if (state.showDetails) scheduleRender(); }, REDRAW_INTERVAL_MS);

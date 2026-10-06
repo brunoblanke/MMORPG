@@ -406,13 +406,6 @@ function normalizeSearch(text) {
   return String(text || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
 }
 
-const borderToggle = document.getElementById('borderToggle');
-borderToggle.onclick = () => {
-  state.showBorders = !state.showBorders;
-  borderToggle.classList.toggle('on', state.showBorders);
-  scheduleRender();
-};
-
 // ================================================================================================================================================================================================================================================
 // updateStats
 

@@ -64,7 +64,6 @@ body{
 .quick-sep{ width:1px; align-self:stretch; background:var(--line); }
 /* A mesma barra, embaixo (acima da linha de status): andar fantasma, bordas e Salvar. */
 .quickbar.bottombar{ top:auto; bottom:46px; gap:10px; }
-.bottombar .border-toggle{ padding:4px 10px; }
 .bottombar .export-btn{ padding:6px 16px; }
 .layer-tabs{ display:flex; gap:3px; }
 .layer-tab{
@@ -158,14 +157,6 @@ body{
 .status-list{ display:flex; gap:14px; font-size:11px; color:var(--muted); font-family:'IBM Plex Mono',monospace; }
 .status-list b{ color:var(--accent); }
 
-.border-toggle{
-  display:flex; align-items:center; gap:8px; padding:6px 12px; background:var(--panel-2);
-  border:1px solid var(--line); border-radius:20px; cursor:pointer; font-size:11.5px; color:var(--muted);
-  user-select:none;
-}
-.border-toggle .led{ width:8px;height:8px;border-radius:50%; background:var(--line); }
-.border-toggle.on{ color:var(--accent); border-color:var(--accent); }
-.border-toggle.on .led{ background:var(--accent); box-shadow:0 0 6px var(--accent); }
 
 .canvas-wrap{ flex:1; display:flex; align-items:center; justify-content:center; padding:56px 26px 64px; overflow:auto; }
 
@@ -271,7 +262,7 @@ textarea{
     top:48px; left:8px; right:8px; transform:none; flex-wrap:wrap; justify-content:center; white-space:normal; gap:6px;
   }
   .quickbar.bottombar{ top:auto; bottom:76px; }
-  .bottombar .export-btn{ flex:1 1 100%; padding:10px 16px; font-size:14px; }
+  .bottombar .export-btn{ flex:1; padding:10px 16px; font-size:14px; }
   .goto-input{ width:80px; }
   .canvas-wrap{ padding:140px 12px 150px; }
   .status-list{ flex-wrap:wrap; gap:2px 10px; }

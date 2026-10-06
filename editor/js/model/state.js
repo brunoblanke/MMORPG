@@ -50,7 +50,7 @@ export const state = {
   housePaint: { name: '', price: 0 },
   safePaintValue: false,
   openAccordion: null,
-  showBorders: true,
+  showDetails: true,
   painting: false,
   brushSize: 1,
   hoverCell: null,

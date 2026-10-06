@@ -74,7 +74,7 @@ function drawLabel(text, x, y) {
 // ================================================================================================================================================================================================================================================
 // drawPiece
 // Peça de uma folha do gerador ancorada no canto de baixo à direita do sqm
-// (com a animação, se tiver quadros). Item de pilha não anima: usa o quadro
+// (com a animação, se tiver quadros e os Detalhes ligados). Item de pilha não anima: usa o quadro
 // da quantidade (count), como no jogo. Sem imagem, um bloco da cor dada.
 
 function drawPiece(type, px, py, fallback = null, target = ctx, count = 1) {
@@ -87,7 +87,7 @@ function drawPiece(type, px, py, fallback = null, target = ctx, count = 1) {
     const duration = frame.ms || ANIMATION_CYCLE_MS / frame.frames;
     const rect = asset && (asset.pilha || asset.respingo)
       ? { sx: Math.min(asset.pilha ? stackFrame(count) : 0, frame.frames - 1) * frame.size, sy: 0 }
-      : pickFrameRect(['idle'], frame.size, frame.size, frame.frames, 'idle', performance.now(), duration);
+      : pickFrameRect(['idle'], frame.size, frame.size, frame.frames, 'idle', state.showDetails ? performance.now() : 0, duration);
     target.drawImage(entry.img, frame.x + rect.sx, frame.y + rect.sy, frame.size, frame.size, drawX, drawY, frame.size, frame.size);
   } else if (fallback) {
     target.fillStyle = fallback;
@@ -151,7 +151,7 @@ function drawLayer(layer, alpha, z) {
           if (cell[k]) drawFloorTile(cell[k].type, x, y, z, px, py);
         }
       }
-      if (state.showBorders) {
+      if (state.showDetails) {
         for (const piece of cell.borders) drawBorderPiece(piece, px, py);
       }
 
