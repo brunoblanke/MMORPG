@@ -14,7 +14,6 @@ export const CONFIG = {
   mageRange: 4,                // mago ataca de até 4 sqm (com linha livre de parede)
   mageKeepDistance: 3,         // mago se afasta se o player chega a menos de 3 sqm
   starveHpPercent: 1,          // sem comida nenhuma, o player perde esse % da vida máxima a cada tique do veneno (0 desliga)
-  testBots: [{ name: 'Alvo', x: 191, y: 224, z: 0, lvl: 20 }],   // players de teste: parados, não revidam e renascem no mesmo lugar (pra testar PvP e PK); [] desliga
   logoutCombatMs: 30000,       // sair em combate deixa o corpo no mapa até passar esse tempo sem golpe dado ou levado
   attackCooldown: 2000,       // como no Tibia: um golpe a cada 2 s
   targetLoseRange: 25,         // alvo mais longe que isso (ou em outro andar) é perdido

@@ -127,6 +127,17 @@ export function collectEnemyDescriptors(mapData) {
 }
 
 // ================================================================================================================================================================================================================================================
+// collectBotDescriptors
+// Os bots de teste do mapa (botData, pintados no editor): players parados que
+// renascem no mesmo lugar. O nome é Bot 1, Bot 2…; o gênero vem da folha.
+
+export function collectBotDescriptors(mapData) {
+  return (mapData.botData || []).map(([x, y, z, type, lvl], index) => ({
+    name: `Bot ${index + 1}`, x, y, z, lvl, gender: String(type).includes('feminino') ? 'female' : 'male'
+  }));
+}
+
+// ================================================================================================================================================================================================================================================
 // getMapSpawn
 
 export function getMapSpawn(mapData, fallback) {
@@ -141,6 +152,7 @@ export function serializeMapFromLayers(layerOrder, layers, GRID) {
   const transicoesData = [];
   const enemyData = [];
   const npcData = [];
+  const botData = [];
   const safeZoneData = [];
   const houseData = [];
   let spawn = null;
@@ -195,6 +207,10 @@ export function serializeMapFromLayers(layerOrder, layers, GRID) {
           npcData.push([cell.npc.type, x, y, z]);
         }
 
+        if (cell.bot) {
+          botData.push([x, y, z, cell.bot.type, cell.bot.lvl]);
+        }
+
         if (cell.spawn && !spawn) {
           spawn = { x, y, z };
         }
@@ -210,7 +226,7 @@ export function serializeMapFromLayers(layerOrder, layers, GRID) {
     }
   });
 
-  return { version: MAP_FORMAT_VERSION, objetosData, transicoesData, enemyData, npcData, safeZoneData, houseData, spawn };
+  return { version: MAP_FORMAT_VERSION, objetosData, transicoesData, enemyData, npcData, botData, safeZoneData, houseData, spawn };
 }
 
 // ================================================================================================================================================================================================================================================
@@ -220,7 +236,7 @@ function makeEmptyLayerCells(GRID) {
   const cells = {};
   for (let y = 0; y < GRID; y++) {
     for (let x = 0; x < GRID; x++) {
-      cells[`${x},${y}`] = { floor: null, floorTop: null, hole: null, borders: [], objects: [], enemy: null, npc: null, spawn: false, safe: false, house: null };
+      cells[`${x},${y}`] = { floor: null, floorTop: null, hole: null, borders: [], objects: [], enemy: null, npc: null, bot: null, spawn: false, safe: false, house: null };
     }
   }
   return cells;
@@ -291,6 +307,12 @@ export function buildLayersFromMapData(mapData, GRID) {
     ensureLayer(z);
     layers[z][`${x},${y}`].npc = { type };
     stats.npc++;
+  });
+
+  (mapData.botData || []).forEach(([x, y, z, type, lvl]) => {
+    if (!inRange(x, y)) { stats.outOfRange++; return; }
+    ensureLayer(z);
+    layers[z][`${x},${y}`].bot = { type, lvl };
   });
 
   (mapData.safeZoneData || []).forEach(([x, y, z]) => {

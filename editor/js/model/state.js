@@ -10,7 +10,7 @@ export function makeEmptyLayer() {
   const cells = {};
   for (let y = 0; y < GRID; y++) {
     for (let x = 0; x < GRID; x++) {
-      cells[`${x},${y}`] = { floor: null, floorTop: null, hole: null, borders: [], objects: [], enemy: null, npc: null, spawn: false, safe: false, house: null };
+      cells[`${x},${y}`] = { floor: null, floorTop: null, hole: null, borders: [], objects: [], enemy: null, npc: null, bot: null, spawn: false, safe: false, house: null };
     }
   }
   return cells;
@@ -45,6 +45,7 @@ export const state = {
   decoPaint: null,
   enemyPaint: null,
   npcPaint: null,
+  botPaint: null,
   borderPaint: null,
   housePaint: { name: '', price: 0 },
   safePaintValue: false,
@@ -72,6 +73,7 @@ export const TOOLS = [
   { id:'item', label:'Item', paint:'itemPaint' },
   { id:'enemy', label:'Criatura', paint:'enemyPaint' },
   { id:'npc', label:'NPC', paint:'npcPaint' },
+  { id:'bot', label:'Bot de teste (player)', paint:'botPaint' },
   { id:'spawn', label:'Respawn', quick:true },
   { id:'safe', label:'Zona segura (liga/desliga)' },
   { id:'house', label:'Casa (liga/desliga)' },

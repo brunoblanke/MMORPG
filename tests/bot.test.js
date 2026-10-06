@@ -53,3 +53,14 @@ test('matar o bot sem justificativa dá a caveira branca e conta frag; 3 dão a 
   assert.equal(sim.player.frags.length, 3);
   assert.equal(sim.social.skullOf(sim.player), 'red');
 });
+
+test('o bot pintado no editor (botData) entra no mapa e volta no salvamento', async () => {
+  const { buildLayersFromMapData, serializeMapFromLayers } = await import('../shared/map-format.js');
+  const mapData = { ...buildMapData({ objects: floorRect(0, 20, 0, 20, 0), spawn: { x: 5, y: 5, z: 0 } }), botData: [[9, 9, 0, 'personagens/players/player-feminino', 15]] };
+  const sim = new Simulation(mapData);
+  const bot = sim.players.find(p => p.isBot);
+  assert.deepEqual([bot.name, bot.x, bot.y, bot.lvl, bot.gender], ['Bot 1', 9, 9, 15, 'female']);
+  const { layers, layerOrder } = buildLayersFromMapData(mapData, 21);
+  assert.deepEqual(layers[0]['9,9'].bot, { type: 'personagens/players/player-feminino', lvl: 15 });
+  assert.deepEqual(serializeMapFromLayers(layerOrder, layers, 21).botData, mapData.botData);
+});

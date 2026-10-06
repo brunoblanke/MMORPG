@@ -44,7 +44,7 @@ function layerHasContent(z) {
   if (!layer) return false;
   for (const key in layer) {
     const cell = layer[key];
-    if (cell.floor || cell.floorTop || cell.hole || cell.borders.length || cell.objects.length || cell.enemy || cell.npc || cell.spawn || cell.safe || cell.house) return true;
+    if (cell.floor || cell.floorTop || cell.hole || cell.borders.length || cell.objects.length || cell.enemy || cell.npc || cell.bot || cell.spawn || cell.safe || cell.house) return true;
   }
   return false;
 }
@@ -77,6 +77,7 @@ export function choosePaintDefaults() {
   if (!state.decoPaint) state.decoPaint = first(listAssets('objetos', isDecoration));
   if (!state.enemyPaint) state.enemyPaint = first(listAssets('criaturas', isMonster));
   if (!state.npcPaint) state.npcPaint = first(listAssets('criaturas', a => creatureBehavior(a.id) === 'npc'));
+  if (!state.botPaint) state.botPaint = first(listAssets('criaturas', isPlayerSheet));
   if (!state.borderPaint && floors[0]) state.borderPaint = { type: floors[0].id, variant: 'n' };
 }
 
@@ -155,14 +156,15 @@ function accordionGroups(tool) {
   if (tool.id === 'deco') return { empty: 'Nenhuma decoração gerada (Decoração ou Estrutura › Natureza).', groups: byFolder(listAssets('objetos', isDecoration), simple) };
   if (tool.id === 'enemy') return { empty: 'Nenhuma criatura gerada (Criaturas).', groups: byFolder(listAssets('criaturas', isMonster), simple) };
   if (tool.id === 'npc') return { empty: 'Nenhum NPC gerado (Personagens › NPCs, comportamento NPC).', groups: byFolder(listAssets('criaturas', a => creatureBehavior(a.id) === 'npc'), simple) };
+  if (tool.id === 'bot') return { empty: 'Nenhum player gerado (Personagens › Players).', groups: byFolder(listAssets('criaturas', isPlayerSheet), simple) };
   return { empty: '', groups: [] };
 }
 
 // ================================================================================================================================================================================================================================================
-// isCarried / isDecoration / isMonster
+// isCarried / isDecoration / isPlayerSheet / isMonster
 // Ferramenta Item: o que fica no grupo Itens. Decoração: os outros objetos
-// soltos no mapa (Decoração e a natureza da Estrutura). Criatura: as do
-// grupo Criaturas que não são NPC.
+// soltos no mapa (Decoração e a natureza da Estrutura). Bot: as folhas de
+// Personagens › Players. Criatura: as do grupo Criaturas que não são NPC.
 
 function isCarried(asset) {
   return isItemType(asset.id) && asset.grupo === 'itens';
@@ -170,6 +172,10 @@ function isCarried(asset) {
 
 function isDecoration(asset) {
   return isItemType(asset.id) && asset.grupo !== 'itens';
+}
+
+function isPlayerSheet(asset) {
+  return asset.grupo === 'personagens' && asset.pasta === 'players';
 }
 
 function isMonster(asset) {

@@ -5,7 +5,7 @@ import { TICK_MS } from '../shared/constants.js';
 import { World } from './core/world.js';
 import { generateObjects, generateEnemies } from './models/game-object.js';
 import { Player } from './models/player.js';
-import { getMapSpawn } from '../shared/map-format.js';
+import { getMapSpawn, collectBotDescriptors } from '../shared/map-format.js';
 import { distance } from './utils/helpers.js';
 import { MovementController } from './systems/movement.js';
 import { EnemyAI } from './systems/enemy-ai.js';
@@ -40,7 +40,7 @@ export class Simulation {
   // options.lootTable: o que cada criatura deixa cair (systems/inventory.js).
   // options.npcs: NPCs além dos do mapa (definições de shared/npcs.js).
   // options.houses: dono, convidados e itens guardados das casas (houses.js).
-  // options.bots: players de teste [{ name, x, y, z, lvl }] (spawnBots).
+  // options.bots: bots de teste além dos do mapa [{ name, x, y, z, lvl }] (spawnBots).
 
   constructor(mapData, options = {}) {
     this.mapData = mapData;
@@ -79,7 +79,7 @@ export class Simulation {
     this.houses = new HouseController(this, options.houses || {});
     this.npcs = [];
     this.talk = new NpcController(this, options.npcs || []);
-    this.spawnBots(options.bots || []);
+    this.spawnBots([...collectBotDescriptors(mapData), ...(options.bots || [])]);
   }
 
   // ================================================================================================================================================================================================================================================
@@ -120,7 +120,7 @@ export class Simulation {
   spawnBots(bots) {
     bots.forEach((bot, index) => {
       if (!this.world.hasFloorAt(bot.x, bot.y, bot.z || 0)) return;
-      const player = this.addPlayer(`bot${index + 1}`, { name: bot.name, gender: 'male' });
+      const player = this.addPlayer(`bot${index + 1}`, { name: bot.name, gender: bot.gender || 'male' });
       player.isBot = true;
       player.lvl = bot.lvl || 20;
       player.applyLevelStats();

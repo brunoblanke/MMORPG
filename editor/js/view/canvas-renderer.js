@@ -175,6 +175,12 @@ function drawLayer(layer, alpha, z) {
         labels.push({ text: `${displayName(cell.enemy.type)} ${cell.enemy.lvl}`, ...at });
       }
 
+      if (cell.bot) {
+        const asset = getAsset(cell.bot.type);
+        const at = drawCharacter(asset ? asset.url : null, asset ? asset.quadro : TILE, '#2ecc71', px, py);
+        labels.push({ text: `Bot ${cell.bot.lvl}`, ...at });
+      }
+
       if (cell.npc) {
         const asset = getAsset(cell.npc.type);
         const at = drawCharacter(asset ? asset.url : null, asset ? asset.quadro : TILE, '#3fa9f5', px, py);
