@@ -80,6 +80,19 @@ function enviarMapa(req, res) {
 }
 
 // ================================================================================================================================================================================================================================================
+// mapaTemObjetos
+// O mapa ao vivo já tem alguma coisa?
+
+function mapaTemObjetos() {
+  try {
+    const mapa = JSON.parse(fs.readFileSync(MAP_DATA_PATH, 'utf8'));
+    return Array.isArray(mapa.objetosData) && mapa.objetosData.length > 0;
+  } catch {
+    return false;
+  }
+}
+
+// ================================================================================================================================================================================================================================================
 // salvarMapa
 
 function salvarMapa(req, res) {
@@ -92,6 +105,11 @@ function salvarMapa(req, res) {
   if (!isValidMap) {
     console.error('❌ POST /api/save-map: conteúdo não é um mapa válido');
     return res.status(400).json({ success: false, message: 'Conteúdo não é um mapa válido.' });
+  }
+
+  if (mapData.objetosData.length === 0 && mapaTemObjetos()) {
+    console.error('❌ POST /api/save-map: mapa vazio recusado (apagaria o mapa atual)');
+    return res.status(400).json({ success: false, message: 'Mapa vazio recusado: apagaria o mapa atual.' });
   }
 
   try {

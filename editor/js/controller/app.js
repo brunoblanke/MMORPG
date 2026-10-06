@@ -7,7 +7,7 @@ import { renderLayerTabs, renderTools, onLayerChange, updateStats, choosePaintDe
 import { rotateSelected } from '../view/forms.js';
 import { restoreFloor, restoreScroll } from '../view/view-memory.js';
 import { loadAssets } from '../../../shared/assets.js';
-import { loadMapIntoState, saveMap, hasUnsavedChanges } from '../model/map-io.js';
+import { loadMapIntoState, saveMap, hasUnsavedChanges, markLoadFailed } from '../model/map-io.js';
 import { resetHistory, commitHistory, undo, redo } from '../model/history.js';
 import './canvas-input.js';
 import '../view/goto-field.js';
@@ -104,7 +104,9 @@ choosePaintDefaults();
 try {
   await loadMapIntoState();
 } catch (error) {
-  console.warn('Não foi possível carregar data/map.json; começando com mapa vazio.', error);
+  console.warn('Não foi possível carregar o mapa do servidor.', error);
+  markLoadFailed();
+  alert(`Não deu pra carregar o mapa do servidor.\n\n${error.message}\n\nO Salvar fica bloqueado pra não apagar o mapa. Recarregue a página.`);
 }
 resetHistory();
 

@@ -10,6 +10,7 @@ const MAP_URL = '../api/map';
 const SAVE_URL = '/api/save-map';
 
 let lastSavedJson = null;
+let loadFailed = false;
 
 // ================================================================================================================================================================================================================================================
 // buildMapData
@@ -41,6 +42,7 @@ export async function loadMapIntoState() {
 // saveMap
 
 export async function saveMap() {
+  if (loadFailed) throw new Error('O mapa não carregou: salvar agora apagaria o mapa do servidor. Recarregue a página.');
   const mapData = buildMapData();
   const response = await fetch(SAVE_URL, {
     method: 'POST',
@@ -52,6 +54,14 @@ export async function saveMap() {
     throw new Error(result.message || `HTTP ${response.status}`);
   }
   lastSavedJson = JSON.stringify(mapData);
+}
+
+// ================================================================================================================================================================================================================================================
+// markLoadFailed
+// O mapa não carregou (o editor começou vazio): bloqueia o Salvar.
+
+export function markLoadFailed() {
+  loadFailed = true;
 }
 
 // ================================================================================================================================================================================================================================================

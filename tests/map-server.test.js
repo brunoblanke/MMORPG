@@ -67,3 +67,12 @@ test('salvar grava no mapa do servidor e o /api/map devolve o salvo; o backup do
   assert.deepEqual(again.spawn, { x: 11, y: 22, z: 0 });
   assert.ok(readdirSync(path.join(path.dirname(mapFile), 'backups')).some(name => /^map-\d{4}-\d{2}-\d{2}\.json$/.test(name)));
 });
+
+test('salvar um mapa vazio por cima de um mapa com conteúdo é recusado', async () => {
+  const map = await (await fetch(`http://localhost:${PORT}/api/map`)).json();
+  const empty = { ...map, objetosData: [], transicoesData: [], enemyData: [] };
+  const saved = await fetch(`http://localhost:${PORT}/api/save-map`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(empty) });
+  assert.equal(saved.status, 400);
+  const again = await (await fetch(`http://localhost:${PORT}/api/map`)).json();
+  assert.ok(again.objetosData.length > 0);
+});
