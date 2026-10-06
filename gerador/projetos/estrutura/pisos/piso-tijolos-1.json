@@ -1,0 +1,127 @@
+{
+  "formato": {
+    "quadro": 32,
+    "padrao": [
+      1,
+      4
+    ],
+    "linhas": [
+      "meio: 1 variações",
+      "s o n l",
+      "sl so nl no",
+      "int-sl int-so int-nl int-no"
+    ]
+  },
+  "variacoesDoMeio": 1,
+  "slots": {
+    "s": {
+      "tibia": {
+        "id": 17549,
+        "variacao": 0
+      }
+    },
+    "o": {
+      "tibia": {
+        "id": 17550,
+        "variacao": 0
+      }
+    },
+    "n": {
+      "tibia": {
+        "id": 17548,
+        "variacao": 0
+      }
+    },
+    "l": {
+      "tibia": {
+        "id": 17551,
+        "variacao": 0
+      }
+    },
+    "sl": {
+      "tibia": {
+        "id": 17558,
+        "variacao": 0
+      }
+    },
+    "so": {
+      "tibia": {
+        "id": 17559,
+        "variacao": 0
+      }
+    },
+    "nl": {
+      "tibia": {
+        "id": 17557,
+        "variacao": 0
+      }
+    },
+    "no": {
+      "tibia": {
+        "id": 17556,
+        "variacao": 0
+      }
+    },
+    "int-sl": {
+      "tibia": {
+        "id": 17554,
+        "variacao": 0
+      }
+    },
+    "int-so": {
+      "tibia": {
+        "id": 17555,
+        "variacao": 0
+      }
+    },
+    "int-nl": {
+      "tibia": {
+        "id": 17553,
+        "variacao": 0
+      }
+    },
+    "int-no": {
+      "tibia": {
+        "id": 17552,
+        "variacao": 0
+      }
+    },
+    "meio-1": {
+      "tibia": {
+        "id": 17544,
+        "variacao": 0
+      }
+    },
+    "padrao-0-0": {
+      "tibia": {
+        "id": 17544,
+        "variacao": 0
+      }
+    },
+    "padrao-0-1": {
+      "tibia": {
+        "id": 17545,
+        "variacao": 0
+      }
+    },
+    "padrao-0-2": {
+      "tibia": {
+        "id": 17546,
+        "variacao": 0
+      }
+    },
+    "padrao-0-3": {
+      "tibia": {
+        "id": 17547,
+        "variacao": 0
+      }
+    }
+  },
+  "propriedades": {
+    "comportamento": "normal"
+  },
+  "ferramenta": "pisos",
+  "grupo": "estrutura",
+  "pasta": "pisos",
+  "nome": "piso-tijolos-1"
+}
