@@ -4,7 +4,8 @@
 // da tela (menos num item arrastável) e arrastar vira um joystick que começa onde o dedo encostou. A
 // direção do arraste (8 direções) é pra onde o personagem anda; soltar para.
 // Toque rápido continua indo até o ponto, e o que começa em janela ou em item
-// arrastável segue o comportamento de sempre.
+// arrastável segue o comportamento de sempre. Só em aparelho de toque
+// (celular e tablet); no PC, mesmo com tela de toque, não liga.
 
 const START_DISTANCE = 20;
 const REACH = 60;
@@ -50,6 +51,7 @@ export class Joystick {
     this.pointerId = null;
     this.anchor = null;
     this.dragging = false;
+    if (!window.matchMedia('(pointer: coarse)').matches) return;
     canvas.style.touchAction = 'none';
     canvas.addEventListener('pointerdown', (e) => this.start(e));
     canvas.addEventListener('pointermove', (e) => this.move(e));
