@@ -6,6 +6,7 @@ import { buildGame, floorRect } from './helpers/fixture.js';
 import { TICK_MS } from '../js/simulation.js';
 import { CONFIG } from '../js/config.js';
 import { CONDITIONS } from '../shared/conditions.js';
+import { FOOD_MAX_SECONDS } from '../shared/items.js';
 
 // ================================================================================================================================================================================================================================================
 // run
@@ -77,4 +78,25 @@ test('o corpo offline também passa fome e a fome pode matar', () => {
     run(game, CONDITIONS.poison.interval * 3);
     assert.equal(game.getPlayer('player1'), null, 'morreu de fome, voltou ao spawn e saiu do mapa');
   });
+});
+
+// ================================================================================================================================================================================================================================================
+// hungerMessages
+
+function hungerMessages(game) {
+  return game.events.filter(e => e.type === 'message' && e.text === 'Você está com fome.');
+}
+
+test('o player novo começa com a comida cheia', () => {
+  const game = buildGame({ objects: floorRect(0, 10, 0, 10, 0), player: { x: 5, y: 5, z: 0 } });
+  const fresh = game.addPlayer('player2');
+  assert.equal(fresh.food, FOOD_MAX_SECONDS * 1000);
+});
+
+test('quando a comida acaba avisa "Você está com fome." uma vez só', () => {
+  const game = buildGame({ objects: floorRect(0, 10, 0, 10, 0), player: { x: 5, y: 5, z: 0 } });
+  game.player.food = 3000;
+  run(game, 10000);
+  assert.equal(game.player.food, 0);
+  assert.equal(hungerMessages(game).length, 1);
 });

@@ -244,6 +244,7 @@ export const consumableMethods = {
     player.starveElapsed = 0;
     const elapsed = Math.min(now - last, player.food);
     player.food = Math.max(0, player.food - elapsed);
+    if (!player.food) this.message(player, 'Você está com fome.');
     player.regenElapsed = (player.regenElapsed || 0) + elapsed;
     while (player.regenElapsed >= REGEN_MS) {
       player.regenElapsed -= REGEN_MS;

@@ -91,6 +91,7 @@ export function buildGame({ objects = [], stairs = [], enemies = [], safe = [], 
   sim.player.applyLevelStats();
   sim.player.currentHp = sim.player.hp;
   sim.player.mana = sim.player.maxMana;
+  sim.player.food = 0;
   sim.movementController = sim.movement;
   return sim;
 }
