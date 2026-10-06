@@ -184,6 +184,11 @@ export class GameController {
         return;
       }
 
+      if (self.ui.isFullscreenButtonClicked(data.mouseX, data.mouseY)) {
+        self.toggleFullscreen();
+        return;
+      }
+
       if (data.event && data.event.shiftKey) {
         self.lookAtMouse();
         return;
@@ -304,6 +309,14 @@ export class GameController {
     this.devMode = !this.devMode;
     this.renderer.setDevMode(this.devMode);
     console.log(`🛠️ Modo Dev: ${this.devMode ? 'ATIVADO' : 'DESATIVADO'}`);
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // toggleFullscreen
+
+  toggleFullscreen() {
+    if (document.fullscreenElement) document.exitFullscreen();
+    else if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(() => {});
   }
 
   // ================================================================================================================================================================================================================================================
