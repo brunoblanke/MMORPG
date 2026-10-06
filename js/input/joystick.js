@@ -2,21 +2,25 @@
 
 // Controle de movimento pro celular: um círculo com o fundo das janelas e,
 // dentro, o círculo menor com a cor dos espaços de um recipiente. Arrastar o
-// círculo menor anda na direção dele (4 direções, como as setas); soltar para.
+// círculo menor anda na direção dele (8 direções, com as diagonais); soltar para.
 // Só aparece em tela de toque.
 
 const BASE_SIZE = 120;
 const KNOB_SIZE = 48;
 const DEAD_ZONE = 0.3;
+const DIAGONAL_RATIO = Math.tan(Math.PI / 8);
 
 // ================================================================================================================================================================================================================================================
 // directionFromOffset
-// A direção { dx, dy } de um arraste de (offsetX, offsetY) a partir do centro,
-// ou null se ele ficou perto demais do centro (radius é o alcance máximo).
+// A direção { dx, dy } (uma das 8) de um arraste de (offsetX, offsetY) a partir
+// do centro, ou null se ele ficou perto demais do centro (radius é o alcance máximo).
 
 export function directionFromOffset(offsetX, offsetY, radius) {
   if (Math.hypot(offsetX, offsetY) < radius * DEAD_ZONE) return null;
-  if (Math.abs(offsetX) > Math.abs(offsetY)) return { dx: Math.sign(offsetX), dy: 0 };
+  const absX = Math.abs(offsetX);
+  const absY = Math.abs(offsetY);
+  if (Math.min(absX, absY) / Math.max(absX, absY) > DIAGONAL_RATIO) return { dx: Math.sign(offsetX), dy: Math.sign(offsetY) };
+  if (absX > absY) return { dx: Math.sign(offsetX), dy: 0 };
   return { dx: 0, dy: Math.sign(offsetY) };
 }
 
