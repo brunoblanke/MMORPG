@@ -20,6 +20,7 @@ const TAXONOMIA_PATH = path.join(PASTA_JOGO, 'gerador', 'taxonomia.json');
 const SAVE_INTERVAL_MS = 10000;
 const BACKUP_DIAS = 7;
 const RECARREGAR_ESPERA_MS = 500;
+const estado = { iniciadoEm: Date.now(), conexoesTotal: 0, online: 0 };
 const PORT = process.env.PORT || 8000;
 
 app.use(express.text({ type: 'text/plain', limit: '50mb' }));
@@ -27,6 +28,7 @@ app.use(express.json({ limit: '50mb' }));
 app.use(liberarCors);
 app.post('/api/save-map', salvarMapa);
 app.get('/api/map', enviarMapa);
+app.get('/api/status', enviarStatus);
 app.get('/api/sprites', listarSprites);
 app.use(express.static(PASTA_JOGO));
 
@@ -98,6 +100,32 @@ function mapaTemObjetos() {
   } catch {
     return false;
   }
+}
+
+// ================================================================================================================================================================================================================================================
+// enviarStatus
+// O que o servidor está usando agora (pra conferir o que não funciona): o
+// mapa ao vivo e se é o do repositório, se dá pra gravar nas pastas, e quantas
+// conexões do jogo (WebSocket) já chegaram e estão abertas.
+
+function enviarStatus(req, res) {
+  const gravavel = (arquivo) => {
+    try {
+      fs.accessSync(path.dirname(arquivo), fs.constants.W_OK);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+  res.set('Cache-Control', 'no-cache');
+  res.json({
+    ok: true,
+    node: process.version,
+    iniciadoEm: new Date(estado.iniciadoEm).toISOString(),
+    mapa: { arquivo: MAP_DATA_PATH, doRepositorio: MAP_DATA_PATH === MAPA_INICIAL, variavelJogoMapa: !!process.env.JOGO_MAPA, gravavel: gravavel(MAP_DATA_PATH) },
+    personagens: { arquivo: CHARACTERS_PATH, variavelJogoPersonagens: !!process.env.JOGO_PERSONAGENS, gravavel: gravavel(CHARACTERS_PATH) },
+    jogo: { conexoesTotal: estado.conexoesTotal, online: estado.online }
+  });
 }
 
 // ================================================================================================================================================================================================================================================
@@ -268,6 +296,9 @@ async function iniciarJogo(servidorHttp) {
 
   const wss = new WebSocketServer({ server: servidorHttp, path: '/ws' });
   wss.on('connection', (socket) => {
+    estado.conexoesTotal++;
+    estado.online++;
+    socket.on('close', () => { estado.online--; });
     let player = null;
     let minhaGeracao = geracao;
 

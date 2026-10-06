@@ -103,3 +103,12 @@ test('com o JOGO_MAPA num caminho que não dá pra usar, o servidor cai pro mapa
     await new Promise((resolve) => { other.once('exit', resolve); other.kill(); });
   }
 });
+
+test('/api/status mostra o mapa em uso e as conexões do jogo', async () => {
+  const status = await (await fetch(`http://localhost:${PORT}/api/status`)).json();
+  assert.equal(status.ok, true);
+  assert.equal(status.mapa.arquivo, mapFile);
+  assert.equal(status.mapa.doRepositorio, false);
+  assert.equal(status.mapa.variavelJogoMapa, true);
+  assert.equal(status.jogo.conexoesTotal, 0);
+});
