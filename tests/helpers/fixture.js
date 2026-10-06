@@ -1,6 +1,9 @@
 // tests/helpers/fixture.js
 
 import { Simulation } from '../../js/simulation.js';
+import { CONFIG } from '../../js/config.js';
+
+CONFIG.starveHpPercent = 0;
 
 // Tipos de teste, nas pastas que dão a regra (shared/assets.js).
 export const FLOOR = 'estrutura/pisos/teste';

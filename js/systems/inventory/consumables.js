@@ -2,10 +2,13 @@
 
 import { GameObject } from '../../models/game-object.js';
 import { objectUse } from '../../../shared/assets.js';
+import { CONFIG } from '../../config.js';
 import { RUNES } from '../../../shared/spells.js';
 import {
   EQUIP_SLOTS, USE_COOLDOWN_MS, FOOD_MAX_SECONDS, POTION_RANGE, EMPTY_VIAL, SPLASH_HP, SPLASH_MANA, SPLASH_STAGES, SPLASH_STAGE_MS, REGEN_MS, REGEN_HP, REGEN_MANA, itemInfo, newItem
 } from '../../../shared/items.js';
+
+const STARVE_TICK_MS = 1000;
 
 // Métodos do InventoryController (js/systems/inventory.js) sobre o que se usa
 // e se gasta: comida e regeneração, poções e respingos, fonte de luz que
@@ -234,8 +237,10 @@ export const consumableMethods = {
     this.wornRegen(player, now - last);
     if (!player.food || !player.isAlive()) {
       player.regenElapsed = 0;
+      this.starve(player, now, now - last);
       return;
     }
+    player.starveElapsed = 0;
     const elapsed = Math.min(now - last, player.food);
     player.food = Math.max(0, player.food - elapsed);
     player.regenElapsed = (player.regenElapsed || 0) + elapsed;
@@ -243,6 +248,25 @@ export const consumableMethods = {
       player.regenElapsed -= REGEN_MS;
       player.currentHp = Math.min(player.hp, player.currentHp + REGEN_HP);
       player.mana = Math.min(player.maxMana, player.mana + REGEN_MANA);
+    }
+  },
+
+  // ================================================================================================================================================================================================================================================
+  // starve
+  // Sem comida, o player perde CONFIG.starveHpPercent % da vida máxima a cada
+  // segundo (pelo menos 1), até comer algo.
+
+  starve(player, now, elapsed) {
+    if (!player.isAlive() || !CONFIG.starveHpPercent) {
+      player.starveElapsed = 0;
+      return;
+    }
+    player.starveElapsed = (player.starveElapsed || 0) + elapsed;
+    while (player.starveElapsed >= STARVE_TICK_MS) {
+      player.starveElapsed -= STARVE_TICK_MS;
+      const amount = Math.max(1, Math.round(player.hp * CONFIG.starveHpPercent / 100));
+      player.takeDamage(amount, now);
+      this.sim.emit({ type: 'damage', targetId: player.id, x: player.x, y: player.y, amount });
     }
   },
 
