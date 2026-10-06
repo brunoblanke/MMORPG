@@ -2,6 +2,7 @@
 
 import { displayName } from '../../shared/assets.js';
 import { drawTibiaText, healthColor } from './tibia-text.js';
+import { FOLLOW_ICONS } from './inventory-ui/icons.js';
 
 // Nome no estilo do Tibia (negrito, contorno preto), sempre verde (player
 // com caveira: a caveira branca em cima do nome), e barra
@@ -12,6 +13,9 @@ const HP_BAR_BACK = '#12151b';
 const NAME_COLOR = '#5fe35f';
 const CORPSE_NAME_COLOR = '#a0a0a0';
 const SKULL_COLOR = '#ffffff';
+const COMBAT_ICON_COLOR = '#5fe35f';
+const COMBAT_ICON_SIZE = 14;
+let combatIcon = null;
 
 // ================================================================================================================================================================================================================================================
 // roundRect
@@ -31,6 +35,31 @@ function getEntityName(entity, isPlayer, isEnemy, isCorpse) {
   if (isPlayer || entity.isNpc) return entity.name || 'Player';
   if (isEnemy) return displayName(entity.creature);
   return '';
+}
+
+// ================================================================================================================================================================================================================================================
+// getCombatIcon
+// O ícone do auto ataque (espadas cruzadas das janelas), em verde, pronto
+// pro canvas.
+
+function getCombatIcon() {
+  if (!combatIcon) {
+    const svg = FOLLOW_ICONS.attack.replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg"').replace(/currentColor/g, COMBAT_ICON_COLOR);
+    combatIcon = new Image();
+    combatIcon.src = 'data:image/svg+xml;base64,' + btoa(svg);
+  }
+  return combatIcon;
+}
+
+// ================================================================================================================================================================================================================================================
+// drawCombatIcon
+// Player em combate (não sai do jogo): o ícone no topo do sqm, encostado na
+// borda direita, por fora dele.
+
+function drawCombatIcon(ctx, left, top, size) {
+  const icon = getCombatIcon();
+  if (!icon.complete) return;
+  ctx.drawImage(icon, left + size, top, COMBAT_ICON_SIZE, COMBAT_ICON_SIZE * icon.naturalHeight / icon.naturalWidth);
 }
 
 // ================================================================================================================================================================================================================================================
@@ -58,6 +87,7 @@ export function drawEntityOverlay(ctx, entity, base, stackOffsetX, stackOffsetY,
 
   drawTibiaText(ctx, name, centerX, barY - 3, isCorpse ? CORPSE_NAME_COLOR : NAME_COLOR);
   if (isPlayer && entity.skull) drawTibiaText(ctx, '☠', centerX, barY - 16, SKULL_COLOR);
+  if (isPlayer && entity.inCombat) drawCombatIcon(ctx, barX, base.y - stackOffsetY, size);
 
   if (hasHp && !isCorpse) {
     ctx.save();

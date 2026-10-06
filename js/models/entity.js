@@ -39,6 +39,7 @@ export class Entity {
     this.lastAttackTime = 0;
     this.lastCombatTime = -Infinity;
     this.offline = false;
+    this.inCombat = false;
     
     this.isTarget = false;
     this.hitFlash = false;

@@ -357,6 +357,7 @@ export class Simulation {
     this.social.update(now);
     this.houses.update();
     this.releaseOffline(now);
+    for (const player of this.players) player.inCombat = this.inCombat(player, now);
 
     this.movement.checkFloorTransitions([...this.players, ...this.enemies]);
     this.lifeCycle.processDeaths(now);
