@@ -30,7 +30,7 @@ Jogo multiplayer estilo Tibia em JavaScript puro (sem framework), com editor de 
 
 ## Estrutura
 
-- `server.js` — servidor do jogo (Express + WebSocket), roda a simulação; serve o jogo e o editor (`/editor/`). Lê as folhas do gerador ao iniciar (reiniciar após mudanças no gerador). Variáveis de teste: `PORT`, `JOGO_MAPA`, `JOGO_PERSONAGENS`, `JOGO_CASAS`. O navegador carrega `data/map.json` direto do repositório.
+- `server.js` — servidor do jogo (Express + WebSocket), roda a simulação; serve o jogo e o editor (`/editor/`). Lê as folhas do gerador ao iniciar (reiniciar após mudanças no gerador). Variáveis de teste: `PORT`, `JOGO_MAPA`, `JOGO_PERSONAGENS`, `JOGO_CASAS`. O mapa ao vivo é o do servidor (`JOGO_MAPA`; o navegador e o editor leem de `/api/map`, o editor salva nele e baixa com `?baixar=1`, com backup diário em `backups/`); `data/map.json` do repositório é só o mapa inicial, copiado na 1ª subida quando o arquivo ao vivo não existe.
 - `js/` — jogo: `simulation.js` (autoritativa no servidor), `systems/` (combate, magias, interações, inventário…), `models/`, `net/` (protocolo, delta, sessão remota), `views/` (renderer, janelas, iluminação).
 - `shared/` — usado por jogo, editor e servidor: `assets.js` (folhas do gerador, tipos `pasta/nome#peça`, direções, estado ativo, padrão de piso), `map-format.js`, `items.js`, `spells.js`, `effects.js`, `stairs.js`.
 - `editor/` — editor de mapa (salva em `data/map.json`; R gira objetos; prévia do pincel; a ferramenta Bot de teste pinta players parados que renascem no lugar, `botData`).

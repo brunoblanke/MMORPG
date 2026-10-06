@@ -130,7 +130,7 @@ test('um player vê o outro chegar e ouve o que ele fala', async () => {
 
 test('ao subir, o servidor faz o backup do dia dos personagens e guarda só os 7 mais novos', () => {
   const today = `characters-${new Date().toISOString().slice(0, 10)}.json`;
-  const copies = readdirSync(path.join(tempDir, 'backups')).sort();
+  const copies = readdirSync(path.join(tempDir, 'backups')).filter(name => name.startsWith('characters-')).sort();
   assert.equal(copies.length, 7);
   assert.ok(copies.includes(today));
   assert.ok(!copies.includes('characters-2020-01-01.json'));

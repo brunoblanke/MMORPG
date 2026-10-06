@@ -5,8 +5,8 @@ import { state, makeAllLayers } from './state.js';
 import { getAllFloors, isValidFloor, GROUND_FLOOR } from '../../../shared/constants.js';
 import { serializeMapFromLayers, buildLayersFromMapData, loadMapDataFromURL } from '../../../shared/map-format.js';
 
-// Mesmo arquivo que o jogo carrega (js/config.js → mapDataUrl).
-const MAP_URL = '../data/map.json';
+// Mesmo mapa que o jogo carrega (js/config.js → mapDataUrl): o do servidor.
+const MAP_URL = '../api/map';
 const SAVE_URL = '/api/save-map';
 
 let lastSavedJson = null;

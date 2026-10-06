@@ -10,7 +10,8 @@ const { WebSocketServer } = require('ws');
 const app = express();
 
 const PASTA_JOGO = __dirname;
-const MAP_DATA_PATH = process.env.JOGO_MAPA || path.join(PASTA_JOGO, 'data', 'map.json');
+const MAPA_INICIAL = path.join(PASTA_JOGO, 'data', 'map.json');
+const MAP_DATA_PATH = path.resolve(process.env.JOGO_MAPA || MAPA_INICIAL);
 const CHARACTERS_PATH = process.env.JOGO_PERSONAGENS || path.join(PASTA_JOGO, 'data', 'characters.json');
 const HOUSES_PATH = process.env.JOGO_CASAS || path.join(path.dirname(CHARACTERS_PATH), 'houses.json');
 const PASTA_PROJETOS = path.join(PASTA_JOGO, 'gerador', 'projetos');
@@ -25,9 +26,11 @@ app.use(express.text({ type: 'text/plain', limit: '50mb' }));
 app.use(express.json({ limit: '50mb' }));
 app.use(liberarCors);
 app.post('/api/save-map', salvarMapa);
+app.get('/api/map', enviarMapa);
 app.get('/api/sprites', listarSprites);
 app.use(express.static(PASTA_JOGO));
 
+prepararMapa();
 const servidor = http.createServer(app);
 iniciarJogo(servidor).then(() => iniciarServidor(servidor, PORT));
 
@@ -46,6 +49,37 @@ function liberarCors(req, res, next) {
 }
 
 // ================================================================================================================================================================================================================================================
+// prepararMapa
+// O mapa ao vivo fica em MAP_DATA_PATH (JOGO_MAPA: o servidor é quem manda, o
+// deploy não mexe). Sem o arquivo ainda, começa de uma cópia do data/map.json
+// do repositório.
+
+function prepararMapa() {
+  if (fs.existsSync(MAP_DATA_PATH)) return;
+  try {
+    fs.mkdirSync(path.dirname(MAP_DATA_PATH), { recursive: true });
+    fs.copyFileSync(MAPA_INICIAL, MAP_DATA_PATH);
+    console.log(`🗺️  Mapa criado em ${MAP_DATA_PATH} a partir do mapa do repositório`);
+  } catch (err) {
+    console.error('❌ Não deu pra criar o mapa:', err.message);
+  }
+}
+
+// ================================================================================================================================================================================================================================================
+// enviarMapa
+// O mapa ao vivo (o jogo e o editor carregam daqui). Com ?baixar=1 vai como
+// arquivo pra baixar.
+
+function enviarMapa(req, res) {
+  res.set('Cache-Control', 'no-cache');
+  if (req.query.baixar) res.attachment('map.json');
+  res.type('application/json');
+  res.sendFile(MAP_DATA_PATH, (err) => {
+    if (err && !res.headersSent) res.status(404).json({ success: false, message: 'Mapa não encontrado.' });
+  });
+}
+
+// ================================================================================================================================================================================================================================================
 // salvarMapa
 
 function salvarMapa(req, res) {
@@ -61,6 +95,7 @@ function salvarMapa(req, res) {
   }
 
   try {
+    copiarBackupDiario(MAP_DATA_PATH, 'map');
     fs.writeFileSync(MAP_DATA_PATH, JSON.stringify(mapData, null, 2), 'utf8');
     console.log(`✅ Mapa salvo em ${MAP_DATA_PATH} (${mapData.objetosData.length} objetos)`);
     res.json({ success: true, message: 'Mapa salvo com sucesso!' });
@@ -323,22 +358,33 @@ function carregarPersonagens() {
 
 // ================================================================================================================================================================================================================================================
 // fazerBackup
-// Ao subir o servidor, uma cópia dos personagens do dia em backups/ (ao lado
-// do arquivo, fora do git: characters-AAAA-MM-DD.json). Ficam as
-// BACKUP_DIAS mais novas.
+// Ao subir o servidor, uma cópia dos personagens e do mapa do dia em backups/
+// (ao lado de cada arquivo, fora do git: characters-AAAA-MM-DD.json e
+// map-AAAA-MM-DD.json). Ficam as BACKUP_DIAS mais novas.
 
 function fazerBackup() {
-  if (!fs.existsSync(CHARACTERS_PATH)) return;
+  copiarBackupDiario(CHARACTERS_PATH, 'characters');
+  copiarBackupDiario(MAP_DATA_PATH, 'map');
+}
+
+// ================================================================================================================================================================================================================================================
+// copiarBackupDiario
+// Uma cópia por dia do arquivo (prefixo-AAAA-MM-DD.json) na pasta backups ao
+// lado dele, guardando as últimas BACKUP_DIAS.
+
+function copiarBackupDiario(arquivo, prefixo) {
+  if (!fs.existsSync(arquivo)) return;
   try {
-    const pasta = path.join(path.dirname(CHARACTERS_PATH), 'backups');
+    const pasta = path.join(path.dirname(arquivo), 'backups');
     fs.mkdirSync(pasta, { recursive: true });
     const dia = new Date().toISOString().slice(0, 10);
-    const destino = path.join(pasta, `characters-${dia}.json`);
-    if (!fs.existsSync(destino)) fs.copyFileSync(CHARACTERS_PATH, destino);
-    const copias = fs.readdirSync(pasta).filter(nome => /^characters-\d{4}-\d{2}-\d{2}\.json$/.test(nome)).sort();
+    const destino = path.join(pasta, `${prefixo}-${dia}.json`);
+    if (!fs.existsSync(destino)) fs.copyFileSync(arquivo, destino);
+    const padrao = new RegExp(`^${prefixo}-\\d{4}-\\d{2}-\\d{2}\\.json$`);
+    const copias = fs.readdirSync(pasta).filter(nome => padrao.test(nome)).sort();
     for (const velha of copias.slice(0, Math.max(0, copias.length - BACKUP_DIAS))) fs.unlinkSync(path.join(pasta, velha));
   } catch (err) {
-    console.error('❌ Erro no backup dos personagens:', err.message);
+    console.error(`❌ Erro no backup (${prefixo}):`, err.message);
   }
 }
 

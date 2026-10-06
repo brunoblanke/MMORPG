@@ -28,7 +28,7 @@ document.getElementById('statsToggle').onchange = (evt) => {
 };
 
 // ================================================================================================================================================================================================================================================
-// Salvar direto em data/map.json (precisa do server.js rodando)
+// Salvar direto no mapa do servidor (precisa do server.js rodando)
 
 const saveBtn = document.getElementById('saveBtn');
 let saving = false;

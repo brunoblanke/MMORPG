@@ -6,7 +6,7 @@ export const CONFIG = {
   tileSize: TILE,
   mapWidth: GRID_WIDTH,
   mapHeight: GRID_HEIGHT,
-  mapDataUrl: 'data/map.json',
+  mapDataUrl: 'api/map',
   playerStartLevel: 1,        // nível de quem entra pela primeira vez (personagem salvo mantém o dele)
   patrolRadius: 4,
   detectionRadius: 7,
