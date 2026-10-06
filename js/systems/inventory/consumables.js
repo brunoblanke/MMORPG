@@ -10,6 +10,7 @@ import {
 } from '../../../shared/items.js';
 
 const STARVE_TICK_MS = CONDITIONS.poison.interval;
+const HUNGER_MSG_MS = 10000;
 
 // Métodos do InventoryController (js/systems/inventory.js) sobre o que se usa
 // e se gasta: comida e regeneração, poções e respingos, fonte de luz que
@@ -239,18 +240,29 @@ export const consumableMethods = {
     if (!player.food || !player.isAlive()) {
       player.regenElapsed = 0;
       this.starve(player, now, now - last);
+      if (player.isAlive()) this.warnHunger(player, now);
       return;
     }
     player.starveElapsed = 0;
     const elapsed = Math.min(now - last, player.food);
     player.food = Math.max(0, player.food - elapsed);
-    if (!player.food) this.message(player, 'Você está com fome.');
     player.regenElapsed = (player.regenElapsed || 0) + elapsed;
     while (player.regenElapsed >= REGEN_MS) {
       player.regenElapsed -= REGEN_MS;
       player.currentHp = Math.min(player.hp, player.currentHp + REGEN_HP);
       player.mana = Math.min(player.maxMana, player.mana + REGEN_MANA);
     }
+  },
+
+  // ================================================================================================================================================================================================================================================
+  // warnHunger
+  // Sem comida, repete "Você está com fome." a cada HUNGER_MSG_MS até o player
+  // comer (com a fome ligada, CONFIG.starveHpPercent).
+
+  warnHunger(player, now) {
+    if (!CONFIG.starveHpPercent || now - (player.hungerMsgAt ?? -Infinity) < HUNGER_MSG_MS) return;
+    player.hungerMsgAt = now;
+    this.message(player, 'Você está com fome.');
   },
 
   // ================================================================================================================================================================================================================================================

@@ -93,10 +93,17 @@ test('o player novo começa com a comida cheia', () => {
   assert.equal(fresh.food, FOOD_MAX_SECONDS * 1000);
 });
 
-test('quando a comida acaba avisa "Você está com fome." uma vez só', () => {
-  const game = buildGame({ objects: floorRect(0, 10, 0, 10, 0), player: { x: 5, y: 5, z: 0 } });
-  game.player.food = 3000;
-  run(game, 10000);
-  assert.equal(game.player.food, 0);
-  assert.equal(hungerMessages(game).length, 1);
+test('sem comida avisa "Você está com fome." de 10 em 10 segundos até o player comer', () => {
+  withStarvation(() => {
+    const game = buildGame({ objects: floorRect(0, 10, 0, 10, 0), player: { x: 5, y: 5, z: 0 } });
+    game.player.food = 3000;
+    game.player.currentHp = game.player.hp = 100000;
+    run(game, 25000);
+    assert.equal(game.player.food, 0);
+    assert.equal(hungerMessages(game).length, 3);
+    game.player.food = 60000;
+    game.events = [];
+    run(game, 20000);
+    assert.equal(hungerMessages(game).length, 0);
+  });
 });
