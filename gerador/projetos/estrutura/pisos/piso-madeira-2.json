@@ -1,10 +1,6 @@
 {
   "formato": {
     "quadro": 32,
-    "padrao": [
-      4,
-      2
-    ],
     "linhas": [
       "meio: 1 variações",
       "s o n l",
@@ -16,128 +12,80 @@
   "slots": {
     "s": {
       "tibia": {
-        "id": 30725,
+        "id": 9489,
         "variacao": 0
       }
     },
     "o": {
       "tibia": {
-        "id": 30726,
+        "id": 9490,
         "variacao": 0
       }
     },
     "n": {
       "tibia": {
-        "id": 30724,
+        "id": 9488,
         "variacao": 0
       }
     },
     "l": {
       "tibia": {
-        "id": 30727,
+        "id": 9491,
         "variacao": 0
       }
     },
     "sl": {
       "tibia": {
-        "id": 30731,
+        "id": 9498,
         "variacao": 0
       }
     },
     "so": {
       "tibia": {
-        "id": 30730,
+        "id": 9499,
         "variacao": 0
       }
     },
     "nl": {
       "tibia": {
-        "id": 30729,
+        "id": 9497,
         "variacao": 0
       }
     },
     "no": {
       "tibia": {
-        "id": 30728,
+        "id": 9496,
         "variacao": 0
       }
     },
     "int-sl": {
       "tibia": {
-        "id": 30735,
+        "id": 9494,
         "variacao": 0
       }
     },
     "int-so": {
       "tibia": {
-        "id": 30734,
+        "id": 9495,
         "variacao": 0
       }
     },
     "int-nl": {
       "tibia": {
-        "id": 30733,
+        "id": 9493,
         "variacao": 0
       }
     },
     "int-no": {
       "tibia": {
-        "id": 30732,
+        "id": 9492,
         "variacao": 0
       }
     },
     "meio-1": {
       "tibia": {
-        "id": 35074,
+        "id": 464,
         "variacao": 0
-      }
-    },
-    "padrao-0-0": {
-      "tibia": {
-        "id": 35074,
-        "variacao": 0
-      }
-    },
-    "padrao-1-0": {
-      "tibia": {
-        "id": 35074,
-        "variacao": 1
-      }
-    },
-    "padrao-2-0": {
-      "tibia": {
-        "id": 35074,
-        "variacao": 2
-      }
-    },
-    "padrao-3-0": {
-      "tibia": {
-        "id": 35074,
-        "variacao": 3
-      }
-    },
-    "padrao-0-1": {
-      "tibia": {
-        "id": 35074,
-        "variacao": 4
-      }
-    },
-    "padrao-1-1": {
-      "tibia": {
-        "id": 35074,
-        "variacao": 5
-      }
-    },
-    "padrao-2-1": {
-      "tibia": {
-        "id": 35074,
-        "variacao": 6
-      }
-    },
-    "padrao-3-1": {
-      "tibia": {
-        "id": 35074,
-        "variacao": 7
       }
     }
   },
