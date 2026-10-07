@@ -108,7 +108,7 @@
       },
       {
         "forma": "bola",
-        "elemento": "holy",
+        "elemento": "fire",
         "min": 1,
         "max": 1,
         "chance": 99,
