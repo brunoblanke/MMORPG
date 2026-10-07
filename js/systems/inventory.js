@@ -2,7 +2,7 @@
 
 import { PLAYER_LIGHT } from '../../shared/lighting.js';
 import { isPositionAdjacentTo } from '../utils/helpers.js';
-import { getAsset, splitType } from '../../shared/assets.js';
+import { getAsset, splitType, objectUse, objectIdType } from '../../shared/assets.js';
 import {
   EQUIP_SLOTS, THROW_RANGE, STARTER_KIT, itemInfo, itemLight, fitsSlot, isAmmo, isQuiver, capacityFor, newItem, weightOf, contains, findInTree, fromPlain, equipBonus
 } from '../../shared/items.js';
@@ -171,6 +171,8 @@ export class InventoryController {
       const reach = Math.max(Math.abs(player.x - to.x), Math.abs(player.y - to.y));
       if (reach > THROW_RANGE) return { error: `Longe demais: dá pra jogar até ${THROW_RANGE} sqm.` };
       if (!this.sim.world.mayEnter(player, to.x, to.y, Number.isInteger(to.z) ? to.z : (player.z || 0))) return { error: 'Essa casa não é sua.' };
+      const mailbox = this.mailboxAt(to.x, to.y, Number.isInteger(to.z) ? to.z : (player.z || 0));
+      if (mailbox) return itemInfo(item.type).postal ? { kind: 'mail', obj: mailbox } : { error: 'A caixa de correio só recebe cartas e encomendas.' };
       return { kind: 'ground', x: to.x, y: to.y, z: Number.isInteger(to.z) ? to.z : (player.z || 0) };
     }
     if (to.t === 'e') {
@@ -282,6 +284,14 @@ export class InventoryController {
   }
 
   // ================================================================================================================================================================================================================================================
+  // mailboxAt
+  // A caixa de correio (Uso Correio) no sqm, ou null.
+
+  mailboxAt(x, y, z) {
+    return this.sim.world.getObjectsAt(x, y).find(obj => (obj.z || 0) === z && objectUse(objectIdType(obj.id)) === 'correio') || null;
+  }
+
+  // ================================================================================================================================================================================================================================================
   // moveNow
 
   moveNow(player, from, to, amount) {
@@ -294,6 +304,12 @@ export class InventoryController {
     }
     if (src.obj && !this.isNear(player, src.obj)) {
       this.walkNextTo(player, src.obj, { type: 'moveInv', from, to, amount });
+      return;
+    }
+
+    if (dest.kind === 'mail') {
+      if (!this.isNear(player, dest.obj)) return this.walkNextTo(player, dest.obj, { type: 'moveInv', from, to, amount });
+      if (this.sim.mail.send(player, src.item)) src.remove();
       return;
     }
 

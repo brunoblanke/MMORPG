@@ -12,6 +12,7 @@
   "propriedades": {
     "bloqueia": false,
     "move": true,
+    "postal": true,
     "altura": false,
     "empilhavel": false,
     "peso": 0.5,

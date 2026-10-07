@@ -110,6 +110,7 @@ export function itemInfo(type) {
     regen: { hp: bonusValue(props.regenVida), mana: bonusValue(props.regenMana) },
     weaponSkill: SKILL_BY_WEAPON_FOLDER[folder] || null,
     twoHanded: !!props.duasMaos,
+    postal: !!props.postal,
     impact: impactOf(props)
   };
 }

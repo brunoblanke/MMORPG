@@ -22,6 +22,7 @@ import { ConditionController } from './systems/conditions.js';
 import { CreaturePowers } from './systems/creature-powers.js';
 import { SocialController } from './systems/social.js';
 import { HouseController } from './systems/houses.js';
+import { MailController } from './systems/mail.js';
 import { objectIdType, doorState } from '../shared/assets.js';
 
 export { TICK_MS };
@@ -80,6 +81,7 @@ export class Simulation {
     this.social = new SocialController(this);
     this.savedCharacters = options.characters || {};
     this.houses = new HouseController(this, options.houses || {});
+    this.mail = new MailController(this);
     this.npcs = [];
     this.talk = new NpcController(this, options.npcs || []);
     this.spawnBots([...collectBotDescriptors(mapData), ...(options.bots || [])]);
