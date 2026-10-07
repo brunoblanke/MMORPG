@@ -14,10 +14,12 @@ const CATEGORIES = [
 ];
 const ELEMENTS = ['physical', 'fire', 'energy', 'poison', 'ice', 'earth', 'death', 'holy'];
 const CUSTOM_NUMBERS = [['min', 'Min', 60], ['max', 'Max', 110], ['radius', 'Radius', 1], ['length', 'Length', 8], ['spread', 'Spread', 3], ['jumps', 'Players', 3]];
+const DUMMY = 'criaturas/humanos/dummy';
 const HIDDEN_SPELL_KINDS = ['conjure', 'ammo'];
 
-// Painel do simulador (simulador.html): escolhe o boneco de treino e a magia
-// e lança com o botão ou a barra de espaço, mirando no sqm sob o mouse.
+// Painel do simulador (simulador.html): escolhe a magia
+// e lança com o botão ou a tecla F2, mirando no sqm sob o mouse. O boneco de
+// treino é sempre a criatura dummy.
 
 export class SimulatorPanel {
 
@@ -27,33 +29,26 @@ export class SimulatorPanel {
   constructor(game) {
     this.game = game;
     this.root = document.getElementById('simPanel');
-    this.target = document.getElementById('simTarget');
     this.category = document.getElementById('simCategory');
     this.entry = document.getElementById('simEntry');
     this.cast = document.getElementById('simCast');
     this.custom = this.buildCustom();
     this.creatures = listAssets('criaturas').map(asset => asset.id).sort();
-    this.fill(this.target, this.creatures.map(id => [id, displayName(id)]));
     this.fill(this.category, CATEGORIES);
     this.fillEntries();
     this.root.hidden = false;
-    this.target.addEventListener('change', () => { this.send({ kind: 'target', id: this.target.value }); this.target.blur(); });
     this.category.addEventListener('change', () => { this.fillEntries(); this.category.blur(); });
     this.category.value = 'custom';
     this.fillEntries();
     this.entry.addEventListener('change', () => this.entry.blur());
     this.cast.addEventListener('click', () => this.fire());
     window.addEventListener('keydown', (event) => {
-      const tag = document.activeElement && document.activeElement.tagName;
-      if (event.code !== 'Space' || tag === 'TEXTAREA' || tag === 'INPUT') return;
+      if (event.key !== 'F2') return;
       event.preventDefault();
       this.fire();
     });
-    const first = this.creatures.find(id => id.endsWith('/dragon')) || this.creatures[0];
-    if (first) {
-      this.target.value = first;
-      this.send({ kind: 'target', id: first });
-    }
+    const target = this.creatures.includes(DUMMY) ? DUMMY : this.creatures[0];
+    if (target) this.send({ kind: 'target', id: target });
   }
 
   // ================================================================================================================================================================================================================================================
