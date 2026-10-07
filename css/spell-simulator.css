@@ -1,0 +1,14 @@
+:root { color-scheme: dark; }
+body { margin: 0; background: #14141a; color: #ddd; font: 14px system-ui, sans-serif; display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 16px; }
+form { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: center; max-width: 1100px; }
+.sim-who { display: flex; }
+.sim-who button { background: #2c2c33; color: #ddd; border: 1px solid #555; padding: 6px 18px; cursor: pointer; }
+.sim-who button:first-child { border-radius: 4px 0 0 4px; }
+.sim-who button:last-child { border-radius: 0 4px 4px 0; border-left: 0; }
+.sim-who button.on { background: #d9531e; border-color: #d9531e; color: #fff; }
+.sim-fields { display: contents; }
+label { display: flex; align-items: center; gap: 6px; }
+select, input { background: #2c2c33; color: #eee; border: 1px solid #555; border-radius: 3px; padding: 4px; }
+input[type="number"] { width: 56px; }
+#simCast { background: #d9531e; color: #fff; border: 0; border-radius: 4px; padding: 6px 16px; cursor: pointer; }
+canvas { width: min(100%, 1408px); image-rendering: pixelated; background: #14141a; }

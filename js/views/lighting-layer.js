@@ -33,7 +33,7 @@ export class LightingLayer {
   // andar 1 vista da rua). Devolve true se há escuridão a desenhar.
 
   prepare(gameState, drawables, level, now) {
-    this.ambient = window.SIMULATOR ? 1 : ambientLight(now, level);
+    this.ambient = ambientLight(now, level);
     this.sources = [];
     if (this.ambient >= 0.999) return false;
     const atLevel = (entity) => Math.floor(entity.renderZ ?? entity.z ?? 0) === level;

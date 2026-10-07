@@ -7,6 +7,7 @@ import { CONFIG } from '../config.js';
 import { EFFECTS } from '../../shared/effects.js';
 import { circleArea, AREAS } from '../../shared/spells.js';
 import { FIELDS } from '../../shared/conditions.js';
+import { AROUND, ringArea, lineTiles, waveOffsets, beamOffsets, sweepOffsets } from '../../shared/spell-areas.js';
 
 // O que a criatura faz além do golpe (shared/assets.js → creaturePowers),
 // enquanto persegue um player no mesmo andar e fora da zona segura:
@@ -24,49 +25,10 @@ import { FIELDS } from '../../shared/conditions.js';
 //   morre junto com quem invocou.
 // O veneno do golpe fica no combate (combat.js).
 
-// ================================================================================================================================================================================================================================================
-// lineTiles
-// Os sqms da linha reta de a até b (sem o de a, com o de b).
-
-export function lineTiles(a, b) {
-  const tiles = [];
-  let x = a.x;
-  let y = a.y;
-  const dx = Math.abs(b.x - x);
-  const dy = Math.abs(b.y - y);
-  const sx = b.x > x ? 1 : -1;
-  const sy = b.y > y ? 1 : -1;
-  let err = dx - dy;
-  while (x !== b.x || y !== b.y) {
-    const e2 = 2 * err;
-    if (e2 > -dy) { err -= dy; x += sx; }
-    if (e2 < dx) { err += dx; y += sy; }
-    tiles.push([x, y]);
-  }
-  return tiles;
-}
-
 export const POWER_TRY_MS = 2000;
 export const SUMMON_CHANCE = 0.25;
 const SPELL_POISON_TICKS = 5;
 const DIRECTIONAL = ['wave', 'beam', 'sweep'];
-const FACING = { norte: [0, -1], sul: [0, 1], leste: [1, 0], oeste: [-1, 0] };
-export const AROUND = [[-1, -1], [0, -1], [1, -1], [-1, 0], [1, 0], [-1, 1], [0, 1], [1, 1]];
-
-// ================================================================================================================================================================================================================================================
-// ringArea
-// O aro de raio r (os sqms a r sqm do centro, sem o miolo).
-
-export function ringArea(r) {
-  const tiles = [];
-  for (let dy = -r; dy <= r; dy++) {
-    for (let dx = -r; dx <= r; dx++) {
-      const d = Math.hypot(dx, dy);
-      if (d >= r - 0.5 && d < r + 0.5) tiles.push([dx, dy]);
-    }
-  }
-  return tiles;
-}
 
 export class CreaturePowers {
 
@@ -157,39 +119,20 @@ export class CreaturePowers {
   }
 
   // ================================================================================================================================================================================================================================================
-  // direction
-  // Pra onde quem lança está virado (norte, sul, leste ou oeste): [ux, uy] e o passo (em 45°).
+  // reach
+  // Dos deslocamentos de offsets a partir de enemy, só os sqms dentro do mapa e com linha livre.
 
-  direction(caster) {
-    const [ux, uy] = FACING[caster.direction] || FACING.sul;
-    return { step: Math.round(Math.atan2(uy, ux) / (Math.PI / 4)), ux, uy };
+  reach(enemy, offsets) {
+    return offsets.map(([dx, dy]) => [enemy.x + dx, enemy.y + dy])
+      .filter(([x, y]) => this.sim.world.isInside(x, y) && this.sim.movement.hasLineOfSight(enemy, { x, y }));
   }
 
   // ================================================================================================================================================================================================================================================
   // waveTiles
-  // O leque pra frente, na direção em que a criatura está virada: a largura de
-  // cada fileira vem de attack.widths (ex. 1-3-3-5) ou, sem elas, vai de 1 sqm
-  // perto até 2 × abertura + 1; sem atravessar parede.
+  // O leque pra frente, na direção em que a criatura está virada (spell-areas.js), sem atravessar parede.
 
   waveTiles(enemy, attack) {
-    const { ux, uy } = this.direction(enemy);
-    const norm = ux * ux + uy * uy;
-    const widths = attack.widths || [];
-    const half = (along) => widths.length
-      ? (widths[Math.min(widths.length, Math.max(1, Math.round(along))) - 1] - 1) / 2
-      : Math.min(attack.spread, Math.floor(along / 2));
-    const tiles = [];
-    for (let ry = -attack.length; ry <= attack.length; ry++) {
-      for (let rx = -attack.length; rx <= attack.length; rx++) {
-        const along = (rx * ux + ry * uy) / norm;
-        const across = Math.abs(rx * uy - ry * ux) / norm;
-        if (along < 1 || along > attack.length || across > half(along) + 0.5) continue;
-        const x = enemy.x + rx;
-        const y = enemy.y + ry;
-        if (this.sim.world.isInside(x, y) && this.sim.movement.hasLineOfSight(enemy, { x, y })) tiles.push([x, y]);
-      }
-    }
-    return tiles;
+    return this.reach(enemy, waveOffsets(attack, enemy.direction));
   }
 
   // ================================================================================================================================================================================================================================================
@@ -197,11 +140,8 @@ export class CreaturePowers {
   // A linha reta de comprimento sqm na direção em que a criatura está virada (a parede corta).
 
   beamTiles(enemy, attack) {
-    const { ux, uy } = this.direction(enemy);
     const tiles = [];
-    for (let k = 1; k <= attack.length; k++) {
-      const x = enemy.x + ux * k;
-      const y = enemy.y + uy * k;
+    for (const [x, y] of beamOffsets(attack, enemy.direction).map(([dx, dy]) => [enemy.x + dx, enemy.y + dy])) {
       if (!this.sim.world.isInside(x, y) || !this.sim.movement.hasLineOfSight(enemy, { x, y })) break;
       tiles.push([x, y]);
     }
@@ -213,10 +153,7 @@ export class CreaturePowers {
   // Os 3 sqms colados na frente (a direção em que está virada e as duas do lado).
 
   sweepTiles(enemy) {
-    const { step } = this.direction(enemy);
-    return [-1, 0, 1]
-      .map(turn => [enemy.x + Math.round(Math.cos((step + turn) * Math.PI / 4)), enemy.y + Math.round(Math.sin((step + turn) * Math.PI / 4))])
-      .filter(([x, y]) => this.sim.world.isInside(x, y) && this.sim.movement.hasLineOfSight(enemy, { x, y }));
+    return this.reach(enemy, sweepOffsets(enemy.direction));
   }
 
   // ================================================================================================================================================================================================================================================

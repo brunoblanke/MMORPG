@@ -50,7 +50,6 @@ export class PlayerControl {
       case 'useStairs': return this.useStairs(player, command.x, command.y, command.z);
       case 'useDoor': return this.useDoor(player, command.x, command.y, command.z);
       case 'say': return this.sim.spells.cast(player, command.text) || this.sim.houses.command(player, command.text) || this.sim.mail.command(player, command.text) || this.sim.talk.playerSays(player, command.text);
-      case 'simulate': return this.sim.simulator && this.sim.simulator.run(player, command);
       case 'turn': return this.turn(player, command.dx, command.dy);
       case 'partyInvite': return this.sim.social.invite(player, command.targetId);
       case 'partyJoin': return this.sim.social.join(player, command.leaderId);
