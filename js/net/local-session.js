@@ -14,8 +14,8 @@ export class LocalSession {
   // ================================================================================================================================================================================================================================================
   // constructor
 
-  constructor(mapData, name = 'Player', gender, lootTable = {}, options = {}) {
-    this.sim = new Simulation(mapData, { lootTable, ...options });
+  constructor(mapData, name = 'Player', gender, lootTable = {}) {
+    this.sim = new Simulation(mapData, { lootTable });
     this.playerId = 'player1';
     this.storageKey = `character:${name.toLowerCase()}`;
     this.sim.addPlayer(this.playerId, { name, gender, saved: this.loadCharacter() });

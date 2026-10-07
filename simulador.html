@@ -1,65 +1,21 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Spell simulator</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/inventory.css">
-  <link rel="stylesheet" href="css/simulator.css">
+  <link rel="stylesheet" href="css/spell-simulator.css" />
 </head>
 <body>
-  <aside class="inv-column" id="invLeft" aria-label="Janelas da esquerda"></aside>
-  <canvas id="gameCanvas"></canvas>
-  <aside class="inv-column" id="invRight" aria-label="Janelas da direita"></aside>
-  <div class="inv-free" id="invFree" aria-label="Janelas soltas"></div>
-  <form id="chatBox" class="chat-box" autocomplete="off">
-    <textarea id="chatInput" maxlength="120" placeholder="Fale algo… (Enter)" spellcheck="false"></textarea>
-    <button type="submit" class="chat-send" aria-label="Enviar">
-      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-    </button>
+  <form id="simForm" autocomplete="off">
+    <div class="sim-who">
+      <button type="button" tabindex="-1" data-who="creature">Creature</button>
+      <button type="button" tabindex="-1" data-who="player">Player</button>
+    </div>
+    <div id="simFields" class="sim-fields"></div>
+    <button type="button" tabindex="-1" id="simCast">Cast</button>
   </form>
-
-  <div id="simPanel" class="sim-panel" hidden>
-    <label>Category <select id="simCategory"></select></label>
-    <label>Spell <select id="simEntry"></select></label>
-    <button type="button" id="simCast">Cast (F2)</button>
-    <small>Aim with the mouse. F2 casts. Waves, beams and sweeps go where you face (Ctrl + arrow turns you). WASD or arrows to walk. Nothing is spent.</small>
-  </div>
-
-  <div id="nameModal" class="modal">
-    <form id="nameForm" class="modal-box" autocomplete="off">
-      <h1>Seja bem-vindo, aventureiro!</h1>
-      <div class="name-row">
-        <input id="nameInput" type="text" placeholder="Nome do personagem" spellcheck="false" autofocus>
-        <div class="gender-picker" role="radiogroup" aria-label="Gênero do personagem">
-          <button type="button" class="gender-option" data-gender="male" role="radio" aria-label="Masculino">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5"/><path d="m21 3-6.75 6.75"/><circle cx="10" cy="14" r="6"/></svg>
-          </button>
-          <button type="button" class="gender-option" data-gender="female" role="radio" aria-label="Feminino">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15v7"/><path d="M9 19h6"/><circle cx="12" cy="9" r="6"/></svg>
-          </button>
-        </div>
-      </div>
-      <input id="passwordInput" class="password-input" type="password" placeholder="Senha" maxlength="64" autocomplete="current-password" spellcheck="false">
-      <p id="nameError" class="modal-error" role="alert"></p>
-      <button type="submit">Entrar</button>
-    </form>
-  </div>
-  
-  <script type="importmap">
-  {
-    "imports": {
-      "./js/": "./js/"
-    }
-  }
-  </script>
-  
-  <script>window.SIMULATOR = true;</script>
-  <script type="module">
-    import { GameController } from './js/game.js';
-    window.game = new GameController();
-  </script>
+  <canvas id="simCanvas"></canvas>
+  <script type="module" src="js/views/spell-simulator.js"></script>
 </body>
 </html>

@@ -511,7 +511,7 @@ export class CombatController {
     let attacked = false;
 
     for (const enemy of this.sim.enemies) {
-      if (!enemy.isAlive() || enemy.dummy || creatureBehavior(enemy.creature) === 'pacifico') continue;
+      if (!enemy.isAlive() || creatureBehavior(enemy.creature) === 'pacifico') continue;
       if (!enemy.isInDetectionRange(player.x, player.y)) continue;
 
       const isAdjacent = isPositionAdjacentTo(enemy.x, enemy.y, player.x, player.y);
