@@ -1,7 +1,7 @@
 // js/systems/simulator.js
 
 import { Enemy } from '../models/enemy.js';
-import { creaturePowers, getAsset } from '../../shared/assets.js';
+import { creaturePowers, getAsset, RESISTANCE_ELEMENTS } from '../../shared/assets.js';
 import { EFFECTS } from '../../shared/effects.js';
 import { findSpell, RUNES, WANDS, AREAS, circleArea } from '../../shared/spells.js';
 import { newItem } from '../../shared/items.js';
@@ -13,6 +13,8 @@ import { AROUND, ringArea, lineTiles } from './creature-powers.js';
 // de sobra). Tudo passa pelas mesmas funções do jogo; o comando `simulate`
 // escolhe o quê. A mira é o sqm sob o mouse (x, y), ou o boneco mais perto.
 
+export const CUSTOM_SHAPES = ['shot', 'ball', 'wave', 'beam', 'cross', 'ring', 'around', 'sweep', 'field', 'chain', 'slow', 'heal'];
+export const CUSTOM_FIELDS = ['itens/itens-encantados/fire-field', 'itens/itens-encantados/poison-field', 'itens/itens-encantados/energy-field'];
 export const DUMMY_SPOTS = [[4, 0], [6, 0], [6, -2], [6, 2], [8, 0]];
 export const DUMMY_HP = 1000000;
 const LAUNCHERS = ['itens/distancia/crossbow', 'itens/distancia/bow'];
@@ -114,7 +116,7 @@ export class SimulatorController {
   // Comando simulate: { kind: 'target' | 'creature' | 'spell' | 'rune' | 'ammo' | 'wand', id, index, x, y }.
 
   run(player, command) {
-    if (!command || typeof command !== 'object' || typeof command.id !== 'string') return;
+    if (!command || typeof command !== 'object' || (typeof command.id !== 'string' && command.kind !== 'custom')) return;
     if (command.kind === 'target') return this.setTarget(player, command.id);
     if (!player.isAlive()) return;
     this.refill(player);
@@ -122,7 +124,8 @@ export class SimulatorController {
     const previous = player.target;
     player.target = aim.dummy;
     const now = this.sim.time || 0;
-    if (command.kind === 'creature') this.creatureSpell(player, command.id, Math.floor(Number(command.index)) || 0, aim, now);
+    if (command.kind === 'creature') this.creatureSpell(player, creaturePowers(command.id).attacks[Math.floor(Number(command.index)) || 0], aim, now);
+    else if (command.kind === 'custom') this.creatureSpell(player, this.customAttack(command.attack), aim, now);
     else if (command.kind === 'spell') this.playerSpell(player, command.id);
     else if (command.kind === 'rune') this.rune(player, command.id, aim, now);
     else if (command.kind === 'ammo' || command.kind === 'wand') this.shoot(player, command, aim, now);
@@ -188,6 +191,36 @@ export class SimulatorController {
   }
 
   // ================================================================================================================================================================================================================================================
+  // customAttack
+  // A magia montada no painel (forma, elemento e números), limpa e no formato de creaturePowers; null se inválida.
+
+  customAttack(raw) {
+    if (!raw || typeof raw !== 'object' || !CUSTOM_SHAPES.includes(raw.shape)) return null;
+    const int = (value, min, max, fallback) => Math.min(max, Math.max(min, Math.floor(Number(value)))) || fallback;
+    const max = int(raw.max, 0, 5000, 100);
+    const element = RESISTANCE_ELEMENTS.includes(raw.element) ? raw.element : 'fire';
+    const field = CUSTOM_FIELDS.includes(raw.field) ? raw.field : CUSTOM_FIELDS[0];
+    return {
+      shape: raw.shape,
+      element: ['heal', 'field', 'slow'].includes(raw.shape) ? null : element,
+      min: Math.min(max, int(raw.min, 0, 5000, 0)),
+      max,
+      chance: 100,
+      range: 7,
+      radius: int(raw.radius, 0, 6, 1),
+      length: int(raw.length, 1, 12, 8),
+      spread: int(raw.spread, 0, 6, 3),
+      widths: [],
+      center: raw.center === 'self' ? 'self' : 'target',
+      field: raw.shape === 'field' ? field : '',
+      jumps: int(raw.jumps, 1, 10, 3),
+      jumpRange: 4,
+      speed: -20,
+      ms: 5000
+    };
+  }
+
+  // ================================================================================================================================================================================================================================================
   // areaTiles
   // Os sqms que a magia da criatura (attack) alcança lançada pelo player, mirando em aim.
 
@@ -230,10 +263,9 @@ export class SimulatorController {
 
   // ================================================================================================================================================================================================================================================
   // creatureSpell
-  // A magia número index da criatura, lançada pelo player: o efeito e o dano nos bonecos da área.
+  // A magia de criatura (attack), lançada pelo player: o efeito e o dano nos bonecos da área.
 
-  creatureSpell(player, creature, index, aim, now) {
-    const attack = creaturePowers(creature).attacks[index];
+  creatureSpell(player, attack, aim, now) {
     if (!attack) return;
     const z = player.z || 0;
     const powers = this.sim.powers;

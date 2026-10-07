@@ -92,6 +92,17 @@ test('simulador: magia, runa e wand de player e munição saem com mana e muniç
   assert.equal(player.equip.municao, null);
 });
 
+test('simulador: magia montada (wave de veneno, ball de morte) usa a forma e o elemento escolhidos', () => {
+  const { sim, player } = game();
+  let events = run(sim, { kind: 'custom', attack: { shape: 'wave', element: 'poison', min: 10, max: 20, length: 6, spread: 2 }, x: player.x + 4, y: player.y });
+  assert.ok(events.some(e => e.type === 'effect' && e.effect === 'poison' && e.tiles.length > 8));
+  events = run(sim, { kind: 'custom', attack: { shape: 'ball', element: 'death', min: 10, max: 20, radius: 2, center: 'target' }, x: player.x + 4, y: player.y });
+  assert.ok(events.some(e => e.type === 'effect' && e.effect === 'death' && e.tiles.length === 21));
+  assert.ok(events.some(e => e.type === 'damage' && e.element === 'death'));
+  events = run(sim, { kind: 'custom', attack: { shape: 'nada' } });
+  assert.equal(events.length, 0);
+});
+
 test('simulador: mapa da arena é um campo de grama com o spawn dentro', () => {
   const map = buildArenaMap();
   assert.ok(map.objetosData.length > 500);

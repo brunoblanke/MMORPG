@@ -2,14 +2,18 @@
 
 import { listAssets, creaturePowers, displayName } from '../../shared/assets.js';
 import { SPELLS, RUNES, WANDS } from '../../shared/spells.js';
+import { CUSTOM_SHAPES, CUSTOM_FIELDS } from '../systems/simulator.js';
 
 const CATEGORIES = [
+  ['custom', 'Build your own'],
   ['creature', 'Creature attacks'],
   ['spell', 'Player spells'],
   ['rune', 'Runes'],
   ['ammo', 'Ammunition'],
   ['wand', 'Wands and rods']
 ];
+const ELEMENTS = ['physical', 'fire', 'energy', 'poison', 'ice', 'earth', 'death', 'holy'];
+const CUSTOM_NUMBERS = [['min', 'Min', 60], ['max', 'Max', 110], ['radius', 'Radius', 1], ['length', 'Length', 8], ['spread', 'Spread', 3], ['jumps', 'Players', 3]];
 const HIDDEN_SPELL_KINDS = ['conjure', 'ammo'];
 
 // Painel do simulador (simulador.html): escolhe o boneco de treino e a magia
@@ -27,6 +31,7 @@ export class SimulatorPanel {
     this.category = document.getElementById('simCategory');
     this.entry = document.getElementById('simEntry');
     this.cast = document.getElementById('simCast');
+    this.custom = this.buildCustom();
     this.creatures = listAssets('criaturas').map(asset => asset.id).sort();
     this.fill(this.target, this.creatures.map(id => [id, displayName(id)]));
     this.fill(this.category, CATEGORIES);
@@ -34,6 +39,8 @@ export class SimulatorPanel {
     this.root.hidden = false;
     this.target.addEventListener('change', () => { this.send({ kind: 'target', id: this.target.value }); this.target.blur(); });
     this.category.addEventListener('change', () => { this.fillEntries(); this.category.blur(); });
+    this.category.value = 'custom';
+    this.fillEntries();
     this.entry.addEventListener('change', () => this.entry.blur());
     this.cast.addEventListener('click', () => this.fire());
     window.addEventListener('keydown', (event) => {
@@ -50,6 +57,38 @@ export class SimulatorPanel {
   }
 
   // ================================================================================================================================================================================================================================================
+  // buildCustom
+  // Os campos de "Build your own": forma, elemento, centro, campo e os números.
+
+  buildCustom() {
+    const box = document.createElement('div');
+    box.className = 'sim-custom';
+    const select = (id, label, options) => `<label>${label} <select id="${id}">${options.map(([value, text]) => `<option value="${value}">${text}</option>`).join('')}</select></label>`;
+    const title = (text) => text.charAt(0).toUpperCase() + text.slice(1);
+    box.innerHTML = select('simShape', 'Shape', CUSTOM_SHAPES.map(shape => [shape, title(shape)]))
+      + select('simElement', 'Element', ELEMENTS.map(element => [element, title(element)]))
+      + select('simCenter', 'Center', [['target', 'On the target'], ['self', 'On me']])
+      + select('simField', 'Field', CUSTOM_FIELDS.map(field => [field, displayName(field)]))
+      + CUSTOM_NUMBERS.map(([key, label, value]) => `<label>${label} <input id="sim_${key}" type="number" min="0" max="5000" value="${value}"></label>`).join('');
+    document.getElementById('simCast').before(box);
+    box.hidden = false;
+    box.querySelector('#simShape').value = 'wave';
+    box.querySelector('#simElement').value = 'poison';
+    return box;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // customCommand
+  // O comando da magia montada nos campos.
+
+  customCommand() {
+    const read = (id) => this.custom.querySelector(`#${id}`).value;
+    const attack = { shape: read('simShape'), element: read('simElement'), center: read('simCenter'), field: read('simField') };
+    for (const [key] of CUSTOM_NUMBERS) attack[key] = Number(read(`sim_${key}`));
+    return { kind: 'custom', attack };
+  }
+
+  // ================================================================================================================================================================================================================================
   // fill
   // Põe as opções [valor, texto] no select.
 
@@ -91,7 +130,10 @@ export class SimulatorPanel {
   // fillEntries
 
   fillEntries() {
-    this.entries = this.entriesOf(this.category.value);
+    const custom = this.category.value === 'custom';
+    this.custom.hidden = !custom;
+    this.entry.parentElement.hidden = custom;
+    this.entries = custom ? [] : this.entriesOf(this.category.value);
     this.fill(this.entry, this.entries.map(entry => [entry.value, entry.label]));
   }
 
@@ -107,7 +149,7 @@ export class SimulatorPanel {
   // Lança a escolhida no sqm sob o mouse.
 
   fire() {
-    const entry = this.entries.find(item => item.value === this.entry.value);
+    const entry = this.category.value === 'custom' ? { command: this.customCommand() } : this.entries.find(item => item.value === this.entry.value);
     if (!entry) return;
     const hover = this.game.inputController && this.game.inputController.hoverTile;
     this.send({ ...entry.command, ...(hover ? { x: hover.x, y: hover.y } : {}) });
