@@ -131,6 +131,15 @@
       <div class="field stat"><label for="creatureSummon" title="Chama essa criatura ao lado enquanto persegue (sem XP nem loot)">Invoca</label><select id="creatureSummon"><option value="">Ninguém</option></select></div>
       <div class="field stat"><label for="creatureSummonMax">Invocadas no máximo</label><input type="number" id="creatureSummonMax" min="0" max="5" step="1" value="0" /></div>
       <div class="field stat"><label for="creatureRespawn" title="Segundos pra renascer depois de morrer (0 = o padrão); chefe: um tempo grande">Respawn (s)</label><input type="number" id="creatureRespawn" min="0" step="1" value="0" /></div>
+      <div class="field attacks-field">
+        <label title="Cada linha é uma magia que a criatura usa perseguindo (a cada 2 s, com a chance dela)">Magias · as do Tibia (tiro, bola, onda, raio, cruz, anel, redor, varredura, campo, corrente, lentidão, cura, reflexo)</label>
+        <div class="attack-list" id="creatureAttacks"></div>
+        <button type="button" class="ghost-btn" id="creatureAttackAdd">+ Magia</button>
+      </div>
+      <div class="field attacks-field">
+        <label title="% do dano de cada tipo que ela leva: 100 = normal, 0 = imune, mais que 100 = fraca">Resistências · % do dano que leva (100 = normal, 0 = imune)</label>
+        <div class="resist-grid" id="creatureResistances"></div>
+      </div>
       <div class="field loot-field">
         <label>Loot · chance de cair (%) e quantidade</label>
         <div class="loot-list" id="creatureLoot"></div>

@@ -225,6 +225,16 @@ button:focus-visible, input:focus-visible, .slot:focus-visible{ outline:2px soli
 .tile-tag.suggested{ background:rgba(11, 21, 18, .85) !important; border:1px dashed currentColor; line-height:9px; }
 .classify-help{ margin:0; padding:6px 20px; color:var(--muted); font-size:11px; background:var(--panel); border-top:1px solid var(--line); }
 
+.attacks-field{ min-width:100%; }
+.attack-list{ display:flex; flex-direction:column; gap:6px; max-height:360px; overflow-y:auto; padding-right:4px; }
+.attack-row{ display:flex; flex-wrap:wrap; align-items:flex-end; gap:6px; padding:6px; border:1px solid var(--line); border-radius:6px; font-size:11px; color:var(--muted); }
+.attack-row label{ display:flex; flex-direction:column; gap:2px; }
+.attack-row input[type=number]{ width:64px; }
+.attack-row input[type=text]{ width:90px; }
+.attack-row .ghost-btn{ padding:2px 8px; margin-left:auto; }
+.resist-grid{ display:flex; flex-wrap:wrap; gap:6px; font-size:11px; color:var(--muted); }
+.resist-grid label{ display:flex; flex-direction:column; gap:2px; }
+.resist-grid input[type=number]{ width:64px; }
 .loot-field{ min-width:100%; }
 .voices-field{ min-width:100%; }
 .voices-field textarea{ resize:vertical; }

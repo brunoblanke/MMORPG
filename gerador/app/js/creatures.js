@@ -29,6 +29,7 @@ const WALK_FRAME_MS = 160;
 
 const creatures = {
   attacks: [],
+  resist: {},
   outfit: null,
   colors: [...DEFAULT_COLORS],
   addons: [],
@@ -80,6 +81,49 @@ const walkCanvas = document.getElementById('walkPreview');
 const sheetCanvas = document.getElementById('creatureSheet');
 const slotsEl = document.getElementById('corpseSlots');
 const lootEl = document.getElementById('creatureLoot');
+const attacksEl = document.getElementById('creatureAttacks');
+const resistEl = document.getElementById('creatureResistances');
+const ATTACK_ELEMENTS = [['fire', 'Fogo'], ['energy', 'Energia'], ['poison', 'Veneno'], ['ice', 'Gelo'], ['earth', 'Terra'], ['death', 'Morte'], ['holy', 'Sagrado']];
+const RESIST_ELEMENTS = [['physical', 'Físico'], ...ATTACK_ELEMENTS];
+const ATTACK_FIELD_TYPES = [['itens/itens-encantados/fire-field', 'Campo de fogo'], ['itens/itens-encantados/poison-field', 'Campo de veneno'], ['itens/itens-encantados/energy-field', 'Campo de energia']];
+const ATTACK_SHAPES = [
+  ['tiro', 'Tiro (um alvo)'], ['bola', 'Bola (área no alvo)'], ['onda', 'Onda (leque)'], ['raio', 'Raio (linha)'], ['cruz', 'Cruz (no alvo)'],
+  ['anel', 'Anel (aro)'], ['redor', 'Redor (8 sqms colados)'], ['varredura', 'Varredura (3 sqms na frente)'], ['campo', 'Campo (cria no chão)'],
+  ['corrente', 'Corrente (pula entre players)'], ['lentidao', 'Lentidão'], ['cura', 'Cura (ela mesma)'], ['reflexo', 'Reflexo (devolve dano)']
+];
+const ATTACK_FIELDS = {
+  elemento: { label: 'Elemento', options: ATTACK_ELEMENTS },
+  min: { label: 'Dano mín.', min: 0 },
+  max: { label: 'Dano máx.', min: 0 },
+  chance: { label: 'Chance (%)', min: 1, max: 100 },
+  alcance: { label: 'Alcance (sqm)', min: 0 },
+  raio: { label: 'Raio (sqm)', min: 0 },
+  comprimento: { label: 'Comprimento', min: 0 },
+  abertura: { label: 'Abertura', min: 0 },
+  larguras: { label: 'Larguras (ex. 1,3,3,5)', text: true },
+  centro: { label: 'Centro', options: [['si', 'Nela'], ['alvo', 'No alvo']] },
+  campo: { label: 'Campo', options: ATTACK_FIELD_TYPES },
+  saltos: { label: 'Players (total)', min: 1 },
+  alcanceSalto: { label: 'Pulo (sqm)', min: 1 },
+  velocidade: { label: 'Velocidade (negativa)' },
+  ms: { label: 'Duração (ms)', min: 0 },
+  porcentagem: { label: 'Devolve (%)', min: 1, max: 100 }
+};
+const ATTACK_SHAPE_FIELDS = {
+  tiro: ['elemento', 'min', 'max', 'chance', 'alcance'],
+  bola: ['elemento', 'min', 'max', 'chance', 'alcance', 'raio'],
+  onda: ['elemento', 'min', 'max', 'chance', 'comprimento', 'abertura', 'larguras'],
+  raio: ['elemento', 'min', 'max', 'chance', 'comprimento'],
+  cruz: ['elemento', 'min', 'max', 'chance', 'alcance'],
+  anel: ['elemento', 'min', 'max', 'chance', 'raio', 'centro', 'alcance'],
+  redor: ['elemento', 'min', 'max', 'chance'],
+  varredura: ['elemento', 'min', 'max', 'chance'],
+  campo: ['campo', 'chance', 'alcance', 'raio'],
+  corrente: ['elemento', 'min', 'max', 'chance', 'alcance', 'saltos', 'alcanceSalto'],
+  lentidao: ['velocidade', 'ms', 'chance', 'alcance'],
+  cura: ['min', 'max', 'chance'],
+  reflexo: ['chance', 'porcentagem']
+};
 const formEl = document.getElementById('creatureSaveForm');
 const npcFieldsEl = document.getElementById('npcFields');
 const npcTopicsEl = document.getElementById('npcTopics');
@@ -152,9 +196,16 @@ function initCreatures() {
   };
   for (const [, el] of STAT_FIELDS) el.addEventListener('input', () => { creatures.dirty = true; });
   for (const el of Object.values(POWER_FIELDS)) el.addEventListener('input', () => { creatures.dirty = true; });
+  renderAttacks();
+  renderResistances();
   voicesEl.addEventListener('input', () => { creatures.dirty = true; });
   fillFolderSelect(folderEl, CATEGORY);
   folderEl.addEventListener('change', () => { creatures.dirty = true; });
+  document.getElementById('creatureAttackAdd').onclick = () => {
+    creatures.attacks.push({ forma: 'tiro', elemento: 'fire', min: 10, max: 30, chance: 15, alcance: 4 });
+    creatures.dirty = true;
+    renderAttacks();
+  };
   document.getElementById('creatureLootAdd').onclick = () => {
     creatures.loot.push({ tipo: '', chance: 0.1, min: 1, max: 1 });
     creatures.dirty = true;
@@ -531,7 +582,8 @@ function powerValues() {
   const f = POWER_FIELDS;
   return {
     magia: f.spell.value && int(f.spellDamage) ? { tipo: f.spell.value, dano: int(f.spellDamage), chance: Math.min(100, int(f.spellChance)) } : null,
-    ...(creatures.attacks.length ? { ataques: creatures.attacks } : {}),
+    ...(creatures.attacks.length ? { ataques: attackValues() } : {}),
+    ...(Object.keys(resistValues()).length ? { resistencias: resistValues() } : {}),
     veneno: int(f.poison),
     invoca: f.summon.value && int(f.summonMax) ? { tipo: f.summon.value, max: Math.min(5, int(f.summonMax)) } : null,
     respawn: int(f.respawn)
@@ -545,7 +597,10 @@ function loadPowers(props) {
   const f = POWER_FIELDS;
   const magic = props.magia || {};
   const call = props.invoca || {};
-  creatures.attacks = Array.isArray(props.ataques) ? props.ataques : [];
+  creatures.attacks = Array.isArray(props.ataques) ? props.ataques.map(entry => ({ ...entry })) : [];
+  creatures.resist = props.resistencias && typeof props.resistencias === 'object' ? { ...props.resistencias } : {};
+  renderAttacks();
+  renderResistances();
   f.spell.value = magic.tipo || '';
   f.spellDamage.value = String(Number(magic.dano) || 0);
   f.spellChance.value = String(Number(magic.chance) || 20);
@@ -553,6 +608,99 @@ function loadPowers(props) {
   f.summonMax.value = String(Number(call.max) || 0);
   f.respawn.value = String(Number(props.respawn) || 0);
   fillSummonOptions(call.tipo || '');
+}
+
+// ================================================================================================================================================================================================================================================
+// renderAttacks
+// Uma linha por magia: a forma e só os campos que ela usa.
+
+function renderAttacks() {
+  attacksEl.innerHTML = '';
+  creatures.attacks.forEach((entry, index) => {
+    const row = document.createElement('div');
+    row.className = 'attack-row';
+    const shapeLabel = document.createElement('label');
+    const shape = document.createElement('select');
+    shape.innerHTML = ATTACK_SHAPES.map(([value, text]) => `<option value="${value}">${text}</option>`).join('');
+    shape.value = entry.forma;
+    shape.onchange = () => { entry.forma = shape.value; creatures.dirty = true; renderAttacks(); };
+    shapeLabel.append('Forma', shape);
+    row.appendChild(shapeLabel);
+    for (const key of ATTACK_SHAPE_FIELDS[entry.forma] || []) {
+      const spec = ATTACK_FIELDS[key];
+      const label = document.createElement('label');
+      const input = document.createElement(spec.options ? 'select' : 'input');
+      const stored = key === 'larguras' ? (entry.larguras || []).join(',') : entry[key];
+      if (spec.options) {
+        input.innerHTML = spec.options.map(([value, text]) => `<option value="${value}">${text}</option>`).join('');
+        input.value = stored ?? spec.options[0][0];
+        if (stored === undefined) entry[key] = input.value;
+      } else if (spec.text) {
+        input.type = 'text';
+        input.value = stored || '';
+      } else {
+        Object.assign(input, { type: 'number', min: spec.min ?? '', max: spec.max ?? '', step: 1, value: stored ?? 0 });
+      }
+      input.oninput = () => {
+        if (spec.options) entry[key] = input.value;
+        else if (spec.text) entry[key] = input.value.split(',').map(part => Math.floor(Number(part))).filter(w => w > 0);
+        else entry[key] = Number(input.value) || 0;
+        creatures.dirty = true;
+      };
+      label.append(spec.label, input);
+      row.appendChild(label);
+    }
+    const remove = document.createElement('button');
+    remove.type = 'button';
+    remove.className = 'ghost-btn';
+    remove.textContent = '×';
+    remove.title = 'Tirar a magia';
+    remove.onclick = () => { creatures.attacks.splice(index, 1); creatures.dirty = true; renderAttacks(); };
+    row.appendChild(remove);
+    attacksEl.appendChild(row);
+  });
+}
+
+// ================================================================================================================================================================================================================================================
+// attackValues
+// As magias pra receita: de cada uma só a forma e os campos dela.
+
+function attackValues() {
+  return creatures.attacks.map(entry => {
+    const values = { forma: entry.forma };
+    for (const key of ATTACK_SHAPE_FIELDS[entry.forma] || []) {
+      if (entry[key] === undefined || entry[key] === '' || (Array.isArray(entry[key]) && !entry[key].length)) continue;
+      values[key] = entry[key];
+    }
+    return values;
+  });
+}
+
+// ================================================================================================================================================================================================================================================
+// renderResistances
+// Uma caixa por tipo de dano (100 = normal).
+
+function renderResistances() {
+  resistEl.innerHTML = '';
+  for (const [key, text] of RESIST_ELEMENTS) {
+    const label = document.createElement('label');
+    const input = document.createElement('input');
+    Object.assign(input, { type: 'number', min: 0, max: 500, step: 1, value: creatures.resist[key] ?? 100 });
+    input.oninput = () => {
+      creatures.resist[key] = Math.max(0, Math.min(500, Math.round(Number(input.value)) || 0));
+      creatures.dirty = true;
+    };
+    label.append(text, input);
+    resistEl.appendChild(label);
+  }
+}
+
+// ================================================================================================================================================================================================================================================
+// resistValues
+// Só os tipos que mudam do normal (100).
+
+function resistValues() {
+  return Object.fromEntries(Object.entries(creatures.resist).filter(([key, value]) => RESIST_ELEMENTS.some(([k]) => k === key) && value !== 100));
 }
 
 // ================================================================================================================================================================================================================================================
