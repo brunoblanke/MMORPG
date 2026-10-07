@@ -13,11 +13,11 @@ import { AROUND, ringArea, lineTiles, waveOffsets, beamOffsets, sweepOffsets } f
 // { missiles: [{ from, to, kind }], effects: [{ tiles, name }], fields: [{ type, tiles }] }
 
 export const ARENA_WIDTH = 20;
-export const ARENA_HEIGHT = 10;
-export const CASTER = { x: 5, y: 4 };
+export const ARENA_HEIGHT = 9;
+export const CASTER = { x: 7, y: 4 };
 export const CASTER_FACING = 'leste';
-export const DISTANCE = 6;
-const TARGET_X = CASTER.x + DISTANCE;
+const TARGET_X = ARENA_WIDTH - 1 - 7;
+export const DISTANCE = TARGET_X - CASTER.x;
 
 // ================================================================================================================================================================================================================================================
 // layoutFor

@@ -18,14 +18,17 @@ const blank = { range: 0, radius: 0, length: 0, spread: 0, widths: [], center: '
 const tilesOf = (plan) => plan.effects.flatMap(effect => effect.tiles);
 const inArena = ([x, y]) => x >= 0 && x < ARENA_WIDTH && y >= 0 && y < ARENA_HEIGHT;
 
-test('simulador: o alvo fica a 6 sqm de quem lança; beam e chain têm cópias 1 sqm a oeste cada, na linha ou 1 sqm ao norte e ao sul', () => {
+test('simulador: quem lança e o alvo ficam a 7 sqm das bordas; beam e chain têm cópias 1 sqm a oeste cada, na linha ou 1 sqm ao norte e ao sul', () => {
   const single = layoutFor('wave');
-  assert.equal(single.caster.x, 5);
-  assert.deepEqual(single.targets, [{ x: CASTER.x + DISTANCE, y: CASTER.y }]);
+  assert.equal(single.caster.x, 7);
+  assert.deepEqual(single.targets, [{ x: ARENA_WIDTH - 1 - 7, y: CASTER.y }]);
+  assert.equal(ARENA_HEIGHT, 9);
+  const x = single.targets[0].x;
   const beam = layoutFor('beam');
-  assert.deepEqual(beam.targets, [{ x: 11, y: CASTER.y }, { x: 10, y: CASTER.y }, { x: 9, y: CASTER.y }]);
+  assert.deepEqual(beam.targets, [{ x, y: CASTER.y }, { x: x - 1, y: CASTER.y }, { x: x - 2, y: CASTER.y }]);
   const chain = layoutFor('chain');
-  assert.deepEqual(chain.targets.map(t => [t.x, t.y]).sort(), [[10, CASTER.y - 1], [11, CASTER.y], [9, CASTER.y + 1]].sort());
+  assert.deepEqual(chain.targets.map(t => [t.x, t.y]).sort(), [[x - 1, CASTER.y - 1], [x, CASTER.y], [x - 2, CASTER.y + 1]].sort());
+  assert.equal(DISTANCE, 5);
 });
 
 test('simulador: onda, raio e bola de criatura saem pra leste e ficam dentro do campo', () => {
@@ -34,7 +37,7 @@ test('simulador: onda, raio e bola de criatura saem pra leste e ficam dentro do 
   assert.equal(wave.effects[0].name, 'poison');
   assert.ok(wave.effects[0].tiles.every(([x]) => x > CASTER.x) && wave.effects[0].tiles.every(inArena));
   const beam = planCreatureAttack({ ...blank, shape: 'beam', element: 'fire', length: 8 }, layoutFor('beam'));
-  assert.deepEqual(beam.effects[0].tiles, [6, 7, 8, 9, 10, 11, 12, 13].map(x => [x, CASTER.y]));
+  assert.deepEqual(beam.effects[0].tiles, [8, 9, 10, 11, 12, 13, 14, 15].map(x => [x, CASTER.y]));
   const ball = planCreatureAttack({ ...blank, shape: 'ball', element: 'death', radius: 2 }, layout);
   assert.equal(ball.effects[0].tiles.length, 21);
   assert.equal(ball.missiles.length, 1);
@@ -44,7 +47,7 @@ test('simulador: onda, raio e bola de criatura saem pra leste e ficam dentro do 
 
 test('simulador: a corrente passa pelos alvos que pulam e o campo vira sprite no alvo', () => {
   const chain = planCreatureAttack({ ...blank, shape: 'chain', element: 'energy', jumps: 3 }, layoutFor('chain'));
-  assert.ok(chain.effects[0].tiles.length > 6);
+  assert.ok(chain.effects[0].tiles.length >= 6);
   const one = planCreatureAttack({ ...blank, shape: 'chain', element: 'energy', jumps: 1 }, layoutFor('chain'));
   assert.ok(one.effects[0].tiles.length < chain.effects[0].tiles.length);
   const field = planCreatureAttack({ ...blank, shape: 'field', field: 'itens/itens-encantados/fire-field', radius: 1 }, layoutFor('field'));
