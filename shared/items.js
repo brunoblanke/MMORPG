@@ -82,7 +82,8 @@ const SLOT_BY_FOLDER = {
 // da luz (sqm) que ele dá equipado ou no chão (0 = não ilumina), burn os
 // segundos que ele dura em uso (aceso, ou equipado se regenera) até acabar
 // (0 = não gasta) e regen o que ele recupera equipado a cada REGEN_MS
-// (anel de cura) e twoHanded se a arma pede as duas mãos (não usa com escudo).
+// (anel de cura), twoHanded se a arma pede as duas mãos (não usa com escudo) e
+// impact o que a munição faz ao acertar (impactOf).
 
 export function itemInfo(type) {
   const asset = getAsset(splitType(type).asset);
@@ -108,7 +109,34 @@ export function itemInfo(type) {
     burn: bonusValue(props.duracao),
     regen: { hp: bonusValue(props.regenVida), mana: bonusValue(props.regenMana) },
     weaponSkill: SKILL_BY_WEAPON_FOLDER[folder] || null,
-    twoHanded: !!props.duasMaos
+    twoHanded: !!props.duasMaos,
+    impact: impactOf(props)
+  };
+}
+
+// ================================================================================================================================================================================================================================================
+// impactOf
+// O que a munição faz ao acertar (gerador → Objetos → munição, propriedade
+// `impacto`): { kind: 'area' (explode em volta do alvo, radius 1 = 3×3),
+// 'poison' (veneno: damage por vez, ticks vezes) ou 'element' (damage extra
+// do tipo element), element, radius, damage, ticks, effect (animação) }, ou
+// null.
+
+const IMPACT_KINDS = { area: 'area', veneno: 'poison', elemento: 'element' };
+const IMPACT_ELEMENTS = ['physical', 'fire', 'energy', 'poison', 'ice', 'earth', 'death', 'holy'];
+
+function impactOf(props) {
+  const impact = props.impacto;
+  const kind = impact && IMPACT_KINDS[impact.tipo];
+  if (!kind) return null;
+  const int = (value) => Math.max(0, Math.floor(Number(value)) || 0);
+  return {
+    kind,
+    element: IMPACT_ELEMENTS.includes(impact.elemento) ? impact.elemento : 'physical',
+    radius: Math.min(3, Math.max(1, int(impact.raio) || 1)),
+    damage: int(impact.dano),
+    ticks: Math.max(1, int(impact.ticks) || 6),
+    effect: typeof impact.efeito === 'string' ? impact.efeito : ''
   };
 }
 

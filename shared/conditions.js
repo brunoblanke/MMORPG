@@ -26,11 +26,6 @@ export const FIELDS = {
   'itens/itens-encantados/energy-field': { kind: 'energy', hit: 30, damage: 25, ticks: 3, ms: 30000 }
 };
 
-// Munição que deixa estado no alvo atingido.
-export const AMMO_CONDITIONS = {
-  'itens/municao/poison-arrow': { kind: 'poison', damage: 3, ticks: 6 }
-};
-
 // Cor do dano das magias que não são estado.
 const ELEMENT_COLORS = { ice: '#7dd3fc', earth: '#a3e635', death: '#a1a1aa', holy: '#fde68a' };
 

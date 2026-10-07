@@ -2,7 +2,8 @@
 
 import { getLevel } from '../core/geometry.js';
 import { isPositionAdjacentTo } from '../utils/helpers.js';
-import { getAsset, splitType } from '../../shared/assets.js';
+import { getAsset, splitType, displayName } from '../../shared/assets.js';
+import { giveItem } from './trade.js';
 import { EQUIP_SLOTS, newItem, equipBonus } from '../../shared/items.js';
 import { addSkillTry } from '../../shared/skills.js';
 import { EFFECTS } from '../../shared/effects.js';
@@ -100,6 +101,7 @@ export class SpellController {
       return null;
     }
     if (spell.kind === 'conjure') return this.conjure(player, spell);
+    if (spell.kind === 'ammo') return this.conjureAmmo(player, spell);
     if (this.sim.world.isInSafeZone(player)) return 'Você não pode atacar na zona segura.';
     if (spell.kind === 'strike') {
       const target = player.target;
@@ -180,6 +182,23 @@ export class SpellController {
     const rune = newItem(this.sim.inventory.nextUid(), spell.rune);
     rune.charges = RUNES[spell.rune].charges;
     found.list[found.key] = rune;
+    return null;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // conjureAmmo
+  // Troca uma unidade da reagent (a flecha carregada, onde estiver) por count
+  // da munição, que vai pra mochila (sem espaço, pro chão).
+
+  conjureAmmo(player, spell) {
+    if (!getAsset(splitType(spell.ammo).asset)) return 'Essa munição ainda não existe no gerador.';
+    const found = this.findCarried(player, spell.reagent);
+    if (!found) return `Você precisa de ${displayName(spell.reagent)}.`;
+    const stack = found.list[found.key];
+    if ((stack.count || 1) > 1) stack.count--;
+    else found.list[found.key] = null;
+    giveItem(this.sim, player, spell.ammo, spell.count);
+    this.sim.inventory.compactAll(player);
     return null;
   }
 

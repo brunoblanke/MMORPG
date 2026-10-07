@@ -21,7 +21,7 @@ setAssets([
   asset(CROSSBOW, { move: true, peso: 40 }),
   asset(SPEAR, { move: true, peso: 20, empilhavel: true, atk: 25 }),
   asset(ARROW, { move: true, peso: 0.7, empilhavel: true, atk: 25 }),
-  asset(POISON_ARROW, { move: true, peso: 0.8, empilhavel: true, atk: 23 }),
+  asset(POISON_ARROW, { move: true, peso: 0.8, empilhavel: true, atk: 23, impacto: { tipo: 'veneno', dano: 3, ticks: 6 } }),
   asset(INFERNO, { move: true, peso: 27 }),
   asset(TERRA, { move: true, peso: 25 }),
   asset(CREATURE, { vida: 5000 })

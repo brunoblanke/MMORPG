@@ -7,7 +7,6 @@ import { creatureBehavior, creaturePowers } from '../../shared/assets.js';
 import { CONFIG } from '../config.js';
 import { equipBonus, itemInfo, newItem, isAmmo, isQuiver } from '../../shared/items.js';
 import { addSkillTry } from '../../shared/skills.js';
-import { AMMO_CONDITIONS } from '../../shared/conditions.js';
 import { WANDS, WAND_RANGE } from '../../shared/spells.js';
 import { MISSILES } from '../../shared/effects.js';
 
@@ -159,6 +158,15 @@ export class CombatController {
     if (defender.isPlayer && defender.equip && defender.equip.escudo && itemInfo(defender.equip.escudo.type).slot === 'escudo') {
       this.trainSkill(defender, 'shielding');
     }
+    return this.applyDamage(attacker, defender, damage, now, melee);
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // applyDamage
+  // Tira a vida do golpe já calculado: conta pro PvP, pra XP da criatura, mostra
+  // o número e deixa o veneno do golpe da criatura.
+
+  applyDamage(attacker, defender, damage, now, melee) {
     if (attacker.isPlayer && defender.isPlayer) this.sim.social.onPlayerAttack(attacker, defender, now);
     if (damage <= 0) return defender.currentHp;
     if (attacker.isPlayer && !defender.isPlayer) this.recordDamage(defender, attacker, Math.min(damage, defender.currentHp));
@@ -270,11 +278,55 @@ export class CombatController {
       inventory.mergeGroundStack(inventory.spawnGroundItem(newItem(inventory.nextUid(), ammo.type, 1), target.x, target.y, target.z || 0));
     }
     const skill = player.skills && player.skills.distance ? player.skills.distance.lvl : 10;
+    const impact = itemInfo(ammo.type).impact;
+    if (impact && impact.kind === 'area') {
+      this.explode(player, target, ranged, impact, now);
+      return;
+    }
     if (Math.random() * 100 < Math.min(DISTANCE_HIT_MAX, DISTANCE_HIT_BASE + skill)) {
       this.attackTarget(player, target, now, { melee: false, attack: ranged.attack });
-      const effect = AMMO_CONDITIONS[ammo.type];
-      if (effect) this.sim.conditions.add(target, effect.kind, { ...effect, source: player });
+      if (impact) this.impactEffect(player, target, impact, now);
       return;
+    }
+    player.lastAttackTime = now;
+    this.trainSkill(player, 'distance');
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // impactEffect
+  // O que a munição deixa no alvo atingido: veneno ou dano extra do tipo dela.
+
+  impactEffect(player, target, impact, now) {
+    if (impact.kind === 'poison') this.sim.conditions.add(target, 'poison', { damage: Math.max(1, impact.damage), ticks: impact.ticks, source: player });
+    else if (impact.kind === 'element' && impact.damage > 0) this.sim.spells.hurt(player, target, impact.damage, now, impact.element);
+    if (impact.effect) this.sim.spells.showEffect(target.x, target.y, impact.effect, undefined, target.z || 0);
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // explode
+  // Munição que explode (burst arrow): no sqm do alvo, acertando ou errando,
+  // fere cada criatura (e player, onde o PvP deixa) nos sqms em volta, o alvo
+  // junto, com o dano do tiro e sem rolar a chance de acerto de novo.
+
+  explode(player, target, ranged, impact, now) {
+    const world = this.sim.world;
+    const z = target.z || 0;
+    const origin = { x: target.x, y: target.y, z };
+    const tiles = [];
+    for (let dy = -impact.radius; dy <= impact.radius; dy++) {
+      for (let dx = -impact.radius; dx <= impact.radius; dx++) {
+        const x = target.x + dx;
+        const y = target.y + dy;
+        if (world.isInside(x, y) && this.sim.movement.hasLineOfSight(origin, { x, y })) tiles.push([x, y]);
+      }
+    }
+    const inArea = new Set(tiles.map(([x, y]) => `${x},${y}`));
+    this.sim.spells.showEffect(target.x, target.y, impact.effect || 'explosion', tiles, z);
+    const victims = [...this.sim.enemies, ...this.sim.players].filter(entity => entity !== player && entity.isAlive() && (entity.z || 0) === z && inArea.has(`${entity.x},${entity.y}`));
+    for (const victim of victims) {
+      if (victim.isPlayer && victim !== target && !this.sim.social.canAttack(player, victim)) continue;
+      this.markCombat(player, victim, now);
+      this.applyDamage(player, victim, this.calculateDamage(player, victim, now, { melee: false, attack: ranged.attack }), now, false);
     }
     player.lastAttackTime = now;
     this.trainSkill(player, 'distance');

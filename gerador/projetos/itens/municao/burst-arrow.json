@@ -25,7 +25,13 @@
     "vidaMax": 0,
     "manaMin": 0,
     "manaMax": 0,
-    "alimento": 0
+    "alimento": 0,
+    "impacto": {
+      "tipo": "area",
+      "elemento": "physical",
+      "raio": 1,
+      "efeito": "explosion"
+    }
   },
   "ferramenta": "objetos",
   "grupo": "itens",

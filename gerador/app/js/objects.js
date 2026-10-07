@@ -54,6 +54,19 @@ const USES = [
   ['ferramenta-corda', 'Ferramenta: corda'],
   ['ferramenta-pa', 'Ferramenta: pá']
 ];
+// O que a munição faz ao acertar (receita: impacto). Cada tipo usa só alguns
+// dos campos: explosão (elemento, raio e animação), veneno (dano por vez e
+// quantas vezes), dano extra (elemento e dano).
+const IMPACT_TYPES = [['', 'Nenhum (só o dano do tiro)'], ['area', 'Explode em área'], ['veneno', 'Deixa veneno'], ['elemento', 'Dano extra de elemento']];
+const IMPACT_ELEMENTS = [['physical', 'Físico'], ['fire', 'Fogo'], ['energy', 'Energia'], ['poison', 'Veneno'], ['ice', 'Gelo'], ['earth', 'Terra'], ['death', 'Morte'], ['holy', 'Sagrado']];
+const IMPACT_EFFECTS = [['', 'Nenhuma'], ['explosion', 'Explosão'], ['fire', 'Fogo'], ['energy', 'Energia'], ['poison', 'Veneno'], ['ice', 'Gelo'], ['earth', 'Terra'], ['death', 'Morte'], ['holy', 'Sagrado']];
+const IMPACT_FIELDS = [
+  { key: 'elemento', label: 'Elemento do dano', options: IMPACT_ELEMENTS, kinds: ['area', 'elemento'] },
+  { key: 'raio', label: 'Raio da explosão (1 = 3×3 sqm)', min: 1, step: 1, kinds: ['area'] },
+  { key: 'dano', label: 'Dano (veneno: por vez; dano extra: total)', min: 0, step: 1, kinds: ['veneno', 'elemento'] },
+  { key: 'ticks', label: 'Vezes que o veneno age', min: 1, step: 1, kinds: ['veneno'] },
+  { key: 'efeito', label: 'Animação no alvo', options: IMPACT_EFFECTS, kinds: ['area', 'veneno', 'elemento'] }
+];
 const CONTAINER_SIZE = 8;
 const STACK_VARIATIONS = 8;
 const PROPERTIES = [
@@ -281,6 +294,62 @@ function drawFrame(ctx, frame, x, y, size) {
 }
 
 // ================================================================================================================================================================================================================================================
+// renderImpact
+// O efeito da munição ao acertar: o tipo e os campos dele (impacto na receita;
+// "Nenhum" tira a propriedade).
+
+function renderImpact(list) {
+  const kindLabel = document.createElement('label');
+  kindLabel.className = 'numberline';
+  const kindSelect = document.createElement('select');
+  kindSelect.id = 'objectProp-impacto';
+  kindSelect.innerHTML = IMPACT_TYPES.map(([value, text]) => `<option value="${value}">${text}</option>`).join('');
+  kindSelect.value = (objects.properties.impacto && objects.properties.impacto.tipo) || '';
+  kindLabel.append('Ao acertar (munição)', kindSelect);
+  list.appendChild(kindLabel);
+  const rows = [];
+  const refresh = () => {
+    const kind = kindSelect.value;
+    for (const { field, label } of rows) label.hidden = !field.kinds.includes(kind);
+  };
+  for (const field of IMPACT_FIELDS) {
+    const label = document.createElement('label');
+    label.className = 'numberline';
+    const input = document.createElement(field.options ? 'select' : 'input');
+    input.id = `objectProp-impacto-${field.key}`;
+    const saved = (objects.properties.impacto || {})[field.key];
+    if (field.options) {
+      input.innerHTML = field.options.map(([value, text]) => `<option value="${value}">${text}</option>`).join('');
+      input.value = saved ?? field.options[0][0];
+    } else {
+      input.type = 'number';
+      input.min = field.min;
+      input.step = field.step;
+      input.value = saved ?? field.min;
+    }
+    input.onchange = () => update();
+    label.append(field.label, input);
+    list.appendChild(label);
+    rows.push({ field, label, input });
+  }
+  const update = () => {
+    const kind = kindSelect.value;
+    if (!kind) delete objects.properties.impacto;
+    else {
+      const impact = { tipo: kind };
+      for (const { field, input } of rows) {
+        if (field.kinds.includes(kind)) impact[field.key] = field.options ? input.value : Math.max(field.min, Number(input.value) || field.min);
+      }
+      objects.properties.impacto = impact;
+    }
+    objects.dirty = true;
+    refresh();
+  };
+  kindSelect.onchange = update;
+  refresh();
+}
+
+// ================================================================================================================================================================================================================================================
 // renderProperties
 
 function renderProperties() {
@@ -300,6 +369,7 @@ function renderProperties() {
     label.append(input, property.label);
     list.appendChild(label);
   }
+  renderImpact(list);
   const useLabel = document.createElement('label');
   useLabel.className = 'numberline';
   const useSelect = document.createElement('select');

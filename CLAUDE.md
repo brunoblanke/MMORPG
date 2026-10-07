@@ -45,4 +45,7 @@ Jogo multiplayer estilo Tibia em JavaScript puro (sem framework), com editor de 
 - Estado normal/ativo: `ativoComo` (desenho ativo) + `comecaAtivo`; objeto fixo sem Uso alterna ao usar; sincronizado em `active`.
 - Piso com padrão pela posição (`formato.padrao`), animado (`quadros`, `msPorQuadro`).
 - Escadas sobem para a direção delas (`shared/stairs.js`).
+- Munição: o efeito ao acertar vem da receita (`impacto` no gerador: explode em área, veneno ou dano extra de elemento), não do tipo da flecha. Arma de duas mãos (`duasMaos`) não equipa com escudo; aljava (pasta Aljavas, container) vai no espaço de munição e só guarda munição.
+- Magias das criaturas: lista `ataques` na receita (tiro, bola, onda, cura), valores do Canary; `magia` antiga vira um tiro.
+- Dois players só dividem o sqm no respawn e ao cair em buraco; escada de usar com alguém em cima sai no sqm livre mais perto.
 - "Antigo" (aba Old) = sprite idêntico ao 7.80; o Tibia atual ainda usa muitos deles.

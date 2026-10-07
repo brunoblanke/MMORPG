@@ -260,3 +260,26 @@ test('exevo gran mas flam: fogo num círculo grande em volta do sorcerer, ferind
   const fire = events.find(e => e.type === 'effect' && e.effect === 'fire');
   assert.ok(fire && fire.tiles.length > 60);
 });
+
+test('exevo con flam (Explosive Arrow): paladino nível 25 troca 1 flecha por 8 burst arrows, gasta 290 de mana', () => {
+  const ARROW = 'itens/municao/arrow';
+  const BURST = 'itens/municao/burst-arrow';
+  setAssets([asset(BAG, { move: true, peso: 10, espacos: 4 }), asset(ARROW, { move: true, peso: 0.7, empilhavel: true, atk: 25 }), asset(BURST, { move: true, peso: 0.9, empilhavel: true, atk: 27 }), asset(CREATURE, { vida: 500 })]);
+  const game = mage('paladin');
+  const player = game.player;
+  player.lvl = 25;
+  player.mana = player.maxMana = 1000;
+  player.equip.municao = { uid: 'a1', type: ARROW, count: 5 };
+  const mana = player.mana;
+  say(game, 'exevo con flam');
+  assert.equal(player.mana, mana - 290);
+  assert.equal(player.equip.municao.count, 4);
+  assert.equal(player.equip.mochila.items[0].type, BURST);
+  assert.equal(player.equip.mochila.items[0].count, 8);
+
+  player.equip.municao = null;
+  game.time += SPELL_COOLDOWN_MS + 100;
+  const events = say(game, 'exevo con flam');
+  assert.equal(player.mana, mana - 290);
+  assert.ok(events.some(e => e.type === 'message'));
+});

@@ -4,7 +4,8 @@ import { normalizeSpeech } from './npcs.js';
 
 // Magias do Tibia 7.6, ditas no chat: palavras, nível mínimo, mana, vocações
 // e o que fazem (js/systems/spells.js). As de runa (conjure) transformam uma
-// blank rune carregada pelo player na runa, com as cargas dela. As fórmulas
+// blank rune carregada pelo player na runa, com as cargas dela; as de
+// munição (ammo) trocam uma reagent (flecha) por count da munição. As fórmulas
 // de cura e dano usam o nível e o magic level de quem usa: min/max =
 // nível / 5 + magic level × fator + base.
 
@@ -27,6 +28,7 @@ export const SPELLS = [
   { words: 'utani hur', name: 'Haste', lvl: 14, mana: 60, vocations: ALL, kind: 'haste', speed: [0.3, -24], ms: 33000 },
   { words: 'exura vita', name: 'Ultimate Healing', lvl: 20, mana: 160, vocations: MAGES, kind: 'heal', formula: { min: [7.3, 42], max: [12.4, 90] } },
   { words: 'utani gran hur', name: 'Strong Haste', lvl: 20, mana: 100, vocations: MAGES, kind: 'haste', speed: [0.7, -56], ms: 22000 },
+  { words: 'exevo con flam', name: 'Explosive Arrow', lvl: 25, mana: 290, vocations: ['paladin'], kind: 'ammo', reagent: 'itens/municao/arrow', ammo: 'itens/municao/burst-arrow', count: 8 },
   { words: 'exori', name: 'Berserk', lvl: 35, mana: 115, vocations: ['knight'], kind: 'around', formula: { min: [1.2, 20], max: [2.4, 40] } },
   { words: 'adori', name: 'Light Magic Missile', lvl: 15, mana: 120, vocations: MAGES, kind: 'conjure', rune: 'itens/runas/light-magic-missile-rune' },
   { words: 'adori gran', name: 'Heavy Magic Missile', lvl: 25, mana: 350, vocations: MAGES, kind: 'conjure', rune: 'itens/runas/heavy-magic-missile-rune' },
