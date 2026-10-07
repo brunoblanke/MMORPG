@@ -260,6 +260,7 @@ async function iniciarJogo(servidorHttp) {
   const { serializeState, validateName, validatePassword, normalizeGender, VIEW_RANGE_X, VIEW_RANGE_Y } = await import(pathToFileURL(path.join(PASTA_JOGO, 'js', 'net', 'protocol.js')).href);
   const { encodeDelta } = await import(pathToFileURL(path.join(PASTA_JOGO, 'js', 'net', 'delta.js')).href);
   const { PasswordStore, LoginGuard } = await import(pathToFileURL(path.join(PASTA_JOGO, 'js', 'net', 'passwords.js')).href);
+  const { createTestCharacters, TEST_CHARACTERS, TEST_PASSWORD } = await import(pathToFileURL(path.join(PASTA_JOGO, 'js', 'net', 'test-characters.js')).href);
 
   const { setAssets } = await import(pathToFileURL(path.join(PASTA_JOGO, 'shared', 'assets.js')).href);
   setAssets(lerSprites());
@@ -279,6 +280,18 @@ async function iniciarJogo(servidorHttp) {
   const guarda = new LoginGuard();
   const conexoes = new Map();
   let proximoJogador = 1;
+
+  app.post('/api/personagens-teste', async (req, res) => {
+    const pedida = req.body && typeof req.body.senha === 'string' && req.body.senha ? req.body.senha : TEST_PASSWORD;
+    const senha = validatePassword(pedida);
+    if (senha.error) return res.status(400).json({ ok: false, message: senha.error });
+    const emUso = Object.keys(TEST_CHARACTERS).filter(nome => sim.players.some(p => p.name.toLowerCase() === nome.toLowerCase()));
+    if (emUso.length) return res.status(409).json({ ok: false, message: `Esses personagens estão no jogo, saia antes: ${emUso.join(', ')}.` });
+    const nomes = await createTestCharacters(personagens, senhas, senha.password);
+    gravarPersonagens(personagens);
+    console.log(`🧪 Personagens de teste criados: ${nomes.join(', ')}`);
+    res.json({ ok: true, nomes });
+  });
 
   observarMudancas(() => {
     let novo;
@@ -508,6 +521,14 @@ function guardarPersonagens(personagens, jogadores) {
   for (const jogador of jogadores) {
     if (!jogador.isBot) personagens[jogador.name.toLowerCase()] = jogador.toSave();
   }
+  gravarPersonagens(personagens);
+}
+
+// ================================================================================================================================================================================================================================================
+// gravarPersonagens
+// Grava o objeto de personagens no arquivo (primeiro num temporário).
+
+function gravarPersonagens(personagens) {
   try {
     const temporario = CHARACTERS_PATH + '.tmp';
     fs.writeFileSync(temporario, JSON.stringify(personagens, null, 2), 'utf8');

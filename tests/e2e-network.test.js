@@ -175,3 +175,27 @@ test('senha: depois de 5 erradas seguidas o servidor pede pra esperar, mesmo com
   for (let i = 0; i < 5; i++) await assert.rejects(connect('Travado', 'errada'), /Senha incorreta/);
   await assert.rejects(connect('Travado', 'abc123'), /Muitas tentativas/);
 });
+
+test('botão do editor: cria os personagens de teste; quem já está no jogo não é refeito; e eles entram com a senha', async () => {
+  const pedir = async (corpo = {}) => {
+    const resposta = await fetch(`http://localhost:${PORT}/api/personagens-teste`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(corpo) });
+    return { status: resposta.status, json: await resposta.json() };
+  };
+  assert.equal((await pedir({ senha: 'abc' })).status, 400);
+  const criado = await pedir();
+  assert.equal(criado.status, 200);
+  assert.deepEqual(criado.json.nomes, ['Druid', 'Paladin', 'Knight', 'Sorcerer']);
+  const paladin = await connect('Paladin', '123456');
+  try {
+    await until(paladin, c => c.state.you && c.state.you.inventory, 'inventário do Paladin');
+    assert.equal(equip(paladin).arma.type, 'itens/distancia/crossbow');
+    assert.equal(equip(paladin).municao.count, 100);
+    const emUso = await pedir();
+    assert.equal(emUso.status, 409);
+    assert.match(emUso.json.message, /Paladin/);
+  } finally {
+    await leave(paladin);
+  }
+  await assert.rejects(connect('Druid', 'errada'), /Senha incorreta/);
+  await leave(await connect('Druid', '123456'));
+});

@@ -35,7 +35,7 @@ Jogo multiplayer estilo Tibia em JavaScript puro (sem framework), com editor de 
 - `shared/` — usado por jogo, editor e servidor: `assets.js` (folhas do gerador, tipos `pasta/nome#peça`, direções, estado ativo, padrão de piso), `map-format.js`, `items.js`, `spells.js`, `effects.js`, `stairs.js`.
 - `editor/` — editor de mapa (salva em `data/map.json`; R gira objetos; prévia do pincel; a ferramenta Bot de teste pinta players parados que renascem no lugar, `botData`).
 - `gerador/` — gerador de sprites (porta `GERADOR_PORT`, padrão 8100): `server.js`, `tibia-assets.js` (lê .spr/.dat), `app/` (Pisos, Criaturas, Paredes, Objetos, Classificar). Receitas em `gerador/projetos/**.json`, folhas prontas em `gerador/saida/**.png`. `taxonomia.json` define pastas; `classificacao.json` a classificação; `itens-antigos.json` a aba Old.
-- `ferramentas/` — scripts: `efeitos.js` (efeitos/projéteis), `itens-antigos.js`, `pre-classificar.js`, `mover-folhas.js`, `importar-ataques.js` (magias e resistências das criaturas, do Canary), `criar-personagens-teste.js` (Druid, Paladin, Knight e Sorcerer nível 100 com senha de teste; rodar com o servidor parado).
+- `ferramentas/` — scripts: `efeitos.js` (efeitos/projéteis), `itens-antigos.js`, `pre-classificar.js`, `mover-folhas.js`, `importar-ataques.js` (magias e resistências das criaturas, do Canary), `criar-personagens-teste.js` (Druid, Paladin, Knight e Sorcerer nível 100 com senha de teste; só com o servidor parado — com ele ligado, o botão "Players de teste" do editor faz o mesmo, `POST /api/personagens-teste`, dados em `js/net/test-characters.js`).
 - `tests/` — `node --test`; `tests/tibia-780/` é o cliente 7.80 usado nos testes e na comparação de sprites antigos.
 
 ## Conceitos importantes

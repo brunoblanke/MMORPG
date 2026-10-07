@@ -59,10 +59,12 @@ test('personagens de teste: nível 100, skills 100, equipamento da vocação car
         if (plano) assert.ok(player.equip[chave], `${nome}: ${chave} (${plano.type}) não carregou`);
       }
       assert.ok(player.equip.mochila.items.filter(Boolean).length >= 8);
-      assert.ok(player.equip.mochila.items.filter(Boolean).every(item => !item.charges));
-    }
-    const mortes = jogadores.Sorcerer.equip.mochila.items.find(item => item && item.type.endsWith('sudden-death-rune'));
-    assert.equal(mortes.count, 50);
+          }
+    const todos = (itens) => itens.filter(Boolean).flatMap(item => [item, ...(item.items ? todos(item.items) : [])]);
+    const mortes = todos(jogadores.Sorcerer.equip.mochila.items).filter(item => item.type.endsWith('sudden-death-rune'));
+    assert.equal(mortes.length, 3);
+    assert.ok(mortes.every(pilha => pilha.count === 100));
+    assert.ok(todos(jogadores.Paladin.equip.mochila.items).filter(item => item.type.endsWith('burst-arrow')).length >= 5);
     const paladin = jogadores.Paladin;
     const arco = sim.combat.rangedWeapon(paladin);
     assert.ok(!arco.error && arco.ammo.item.count === 100);

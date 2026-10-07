@@ -52,6 +52,26 @@ async function handleSave() {
 
 saveBtn.onclick = handleSave;
 
+// ================================================================================================================================================================================================================================================
+// handleTestPlayers
+// Pede ao servidor pra criar (ou refazer) os 4 personagens de teste.
+
+async function handleTestPlayers() {
+  if (!confirm('Criar (ou refazer) Druid, Paladin, Knight e Sorcerer: nível 100, skills 100, com armas, munição e runas, senha 123456?')) return;
+  const button = document.getElementById('testPlayersBtn');
+  button.disabled = true;
+  try {
+    const response = await fetch('../api/personagens-teste', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+    const result = await response.json().catch(() => ({}));
+    alert(result.ok ? `Criados: ${result.nomes.join(', ')}.\nSenha: 123456` : (result.message || `Erro ${response.status}`));
+  } catch (error) {
+    alert(`Não deu pra falar com o servidor: ${error.message}`);
+  }
+  button.disabled = false;
+}
+
+document.getElementById('testPlayersBtn').onclick = handleTestPlayers;
+
 // R gira o objeto: o do pincel ou, selecionando, o do sqm (Shift+R volta).
 window.addEventListener('keydown', (evt) => {
   const tag = evt.target && evt.target.tagName;
