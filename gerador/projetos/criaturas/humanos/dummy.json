@@ -21,6 +21,12 @@
     "addons": []
   },
   "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 4240,
+        "variacao": 0
+      }
+    },
     "apodrecendo": {
       "tibia": {
         "id": 4241,
@@ -30,12 +36,6 @@
     "ossos": {
       "tibia": {
         "id": 4246,
-        "variacao": 0
-      }
-    },
-    "fresco": {
-      "tibia": {
-        "id": 4240,
         "variacao": 0
       }
     }
@@ -55,7 +55,7 @@
         "elemento": "fire",
         "min": 1,
         "max": 1,
-        "chance": 99,
+        "chance": 10,
         "alcance": 6
       },
       {
@@ -63,7 +63,7 @@
         "elemento": "energy",
         "min": 1,
         "max": 1,
-        "chance": 99,
+        "chance": 10,
         "alcance": 6
       },
       {
@@ -71,7 +71,7 @@
         "elemento": "poison",
         "min": 1,
         "max": 1,
-        "chance": 99,
+        "chance": 10,
         "alcance": 6
       },
       {
@@ -79,7 +79,7 @@
         "elemento": "ice",
         "min": 1,
         "max": 1,
-        "chance": 99,
+        "chance": 10,
         "alcance": 6
       },
       {
@@ -87,7 +87,7 @@
         "elemento": "earth",
         "min": 1,
         "max": 1,
-        "chance": 99,
+        "chance": 10,
         "alcance": 6
       },
       {
@@ -95,7 +95,7 @@
         "elemento": "death",
         "min": 1,
         "max": 1,
-        "chance": 99,
+        "chance": 10,
         "alcance": 6
       },
       {
@@ -103,7 +103,7 @@
         "elemento": "holy",
         "min": 1,
         "max": 1,
-        "chance": 99,
+        "chance": 10,
         "alcance": 6
       },
       {
