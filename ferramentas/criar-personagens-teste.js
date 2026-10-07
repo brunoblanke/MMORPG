@@ -21,18 +21,18 @@ const item = (tipo, count) => (count ? { type: BASE + tipo, count } : { type: BA
 const comida = [item('comidas/dragon-ham', 20), item('comidas/ham', 20)];
 const pocoes = [item('liquidos/health-potion', 100), item('liquidos/mana-potion', 100)];
 const ferramentas = [item('ferramentas/rope', 1), item('ferramentas/shovel'), item('ferramentas/pick')];
-const runa = (nome, cargas) => ({ type: `${BASE}runas/${nome}`, charges: cargas });
+const runa = (nome, quantidade) => ({ type: `${BASE}runas/${nome}`, count: quantidade });
 
 const PERSONAGENS = {
   Druid: {
     vocation: 'druid',
     equip: { cabeca: item('capacetes/crown-helmet'), corpo: item('armaduras/blue-robe'), pernas: item('calcas/crown-legs'), pes: item('botas/boots-of-haste'), arma: item('rods/terra-rod'), escudo: item('spellbooks/spellbook'), anel: item('aneis/life-ring'), amuleto: item('amuletos-e-colares/stone-skin-amulet') },
-    mochila: [item('runas/blank-rune'), item('runas/blank-rune'), item('runas/blank-rune'), runa('ultimate-healing-rune', 1), runa('intense-healing-rune', 1), runa('cure-poison-rune', 1), runa('sudden-death-rune', 3), runa('great-fireball-rune', 4), runa('heavy-magic-missile-rune', 5), runa('magic-wall-rune', 3), runa('poison-field-rune', 3), runa('explosion-rune', 6), ...pocoes, ...comida, ...ferramentas]
+    mochila: [runa('blank-rune', 50), runa('ultimate-healing-rune', 50), runa('intense-healing-rune', 50), runa('cure-poison-rune', 20), runa('sudden-death-rune', 50), runa('great-fireball-rune', 50), runa('heavy-magic-missile-rune', 50), runa('magic-wall-rune', 30), runa('poison-field-rune', 30), runa('explosion-rune', 50), ...pocoes, ...comida, ...ferramentas]
   },
   Paladin: {
     vocation: 'paladin',
     equip: { cabeca: item('capacetes/crown-helmet'), corpo: item('armaduras/crown-armor'), pernas: item('calcas/crown-legs'), pes: item('botas/boots-of-haste'), arma: item('distancia/crossbow'), municao: item('municao/arrow', 100), anel: item('aneis/might-ring'), amuleto: item('amuletos-e-colares/stone-skin-amulet') },
-    mochila: [item('municao/arrow', 100), item('municao/burst-arrow', 100), item('municao/poison-arrow', 100), item('distancia/spear', 50), runa('ultimate-healing-rune', 1), runa('sudden-death-rune', 3), ...pocoes, ...comida, ...ferramentas]
+    mochila: [item('municao/arrow', 100), item('municao/burst-arrow', 100), item('municao/poison-arrow', 100), item('distancia/spear', 50), runa('ultimate-healing-rune', 50), runa('sudden-death-rune', 50), ...pocoes, ...comida, ...ferramentas]
   },
   Knight: {
     vocation: 'knight',
@@ -42,7 +42,7 @@ const PERSONAGENS = {
   Sorcerer: {
     vocation: 'sorcerer',
     equip: { cabeca: item('capacetes/crown-helmet'), corpo: item('armaduras/red-robe'), pernas: item('calcas/crown-legs'), pes: item('botas/boots-of-haste'), arma: item('wands/wand-of-inferno'), escudo: item('spellbooks/spellbook'), anel: item('aneis/life-ring'), amuleto: item('amuletos-e-colares/stone-skin-amulet') },
-    mochila: [item('wands/wand-of-cosmic-energy'), item('runas/blank-rune'), item('runas/blank-rune'), item('runas/blank-rune'), runa('sudden-death-rune', 3), runa('great-fireball-rune', 4), runa('fireball-rune', 5), runa('heavy-magic-missile-rune', 5), runa('explosion-rune', 6), runa('fire-bomb-rune', 2), runa('fire-field-rune', 3), runa('energy-field-rune', 3), runa('magic-wall-rune', 3), ...pocoes, ...comida, ...ferramentas]
+    mochila: [item('wands/wand-of-cosmic-energy'), runa('blank-rune', 50), runa('sudden-death-rune', 50), runa('great-fireball-rune', 50), runa('fireball-rune', 50), runa('heavy-magic-missile-rune', 50), runa('explosion-rune', 50), runa('fire-bomb-rune', 20), runa('fire-field-rune', 30), runa('energy-field-rune', 30), runa('magic-wall-rune', 30), ...pocoes, ...comida, ...ferramentas]
   }
 };
 

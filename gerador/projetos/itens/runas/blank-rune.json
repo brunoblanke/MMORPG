@@ -13,7 +13,7 @@
     "bloqueia": false,
     "move": true,
     "altura": false,
-    "empilhavel": false,
+    "empilhavel": true,
     "peso": 2.1,
     "espacos": 0,
     "atk": 0,

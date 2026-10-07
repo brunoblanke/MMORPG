@@ -182,11 +182,21 @@ export function sell(sim, player, type, price, amount) {
 
 // ================================================================================================================================================================================================================================================
 // giveItem
-// Põe count do item na mochila (espaço vazio); sem espaço, aos pés do player.
+// Põe count do item na mochila: junta nas pilhas iguais, depois nos espaços
+// vazios; sem espaço, aos pés do player.
 
 export function giveItem(sim, player, type, count = 1) {
   const inventory = sim.inventory;
+  const stack = itemInfo(type).stack;
   let left = count;
+  for (const { list, key } of stack ? bagSlots(player) : []) {
+    const item = list[key];
+    if (left <= 0) break;
+    if (!item || item.type !== type || (item.count || 1) >= stack) continue;
+    const add = Math.min(left, stack - (item.count || 1));
+    item.count = (item.count || 1) + add;
+    left -= add;
+  }
   while (left > 0) {
     const item = newItem(inventory.nextUid(), type, left);
     left -= item.count || 1;

@@ -6,7 +6,7 @@ import { buildGame, floorRect, safeRect, CREATURE } from './helpers/fixture.js';
 import { setAssets, MAGIC_WALL } from '../shared/assets.js';
 import { TICK_MS } from '../js/simulation.js';
 import { BLANK_RUNE, SPELL_COOLDOWN_MS } from '../shared/spells.js';
-import { toPlain, fromPlain } from '../shared/items.js';
+import { toPlain, fromPlain, itemInfo } from '../shared/items.js';
 
 const BAG = 'itens/recipientes/bag';
 const LMM = 'itens/runas/light-magic-missile-rune';
@@ -23,13 +23,13 @@ const asset = (id, propriedades) => {
 
 setAssets([
   asset(BAG, { move: true, peso: 10, espacos: 4 }),
-  asset(BLANK_RUNE, { move: true, peso: 2.1 }),
-  asset(LMM, { move: true, peso: 1.2 }),
-  asset(IH, { move: true, peso: 1.2 }),
-  asset(GFB, { move: true, peso: 1.2 }),
-  asset(FIRE_BOMB, { move: true, peso: 1.2 }),
-  asset(MW_RUNE, { move: true, peso: 1.2 }),
-  asset(CURE, { move: true, peso: 1.2 }),
+  asset(BLANK_RUNE, { move: true, peso: 2.1, empilhavel: true }),
+  asset(LMM, { move: true, peso: 1.2, empilhavel: true }),
+  asset(IH, { move: true, peso: 1.2, empilhavel: true }),
+  asset(GFB, { move: true, peso: 1.2, empilhavel: true }),
+  asset(FIRE_BOMB, { move: true, peso: 1.2, empilhavel: true }),
+  asset(MW_RUNE, { move: true, peso: 1.2, empilhavel: true }),
+  asset(CURE, { move: true, peso: 1.2, empilhavel: true }),
   asset(FIRE_FIELD, { move: false }),
   asset(MAGIC_WALL, { move: false, bloqueia: true }),
   asset(CREATURE, { vida: 500 })
@@ -124,30 +124,30 @@ test('exori vis fere o alvo até 3 sqm e conta pra XP; na zona segura não sai',
   assert.equal(safe.player.mana, mana);
 });
 
-test('adori: a blank rune da mochila vira light magic missile com 5 cargas; sem blank rune não sai', () => {
+test('adori: a blank rune da mochila vira 5 light magic missiles empilhadas; sem blank rune não sai', () => {
   const game = mage();
   game.player.equip.mochila.items[2] = { uid: 'r1', type: BLANK_RUNE };
   say(game, 'adori');
-  const rune = game.player.equip.mochila.items[2];
-  assert.equal(rune.type, LMM);
-  assert.equal(rune.charges, 5);
-  assert.equal(fromPlain(toPlain(rune), () => 'x').charges, 5);
+  const rune = game.player.equip.mochila.items.find(item => item && item.type === LMM);
+  assert.equal(rune.count, 5);
+  assert.ok(!game.player.equip.mochila.items.some(item => item && item.type === BLANK_RUNE));
+  assert.equal(fromPlain(toPlain(rune), () => 'x').count, 5);
   const end = game.time + SPELL_COOLDOWN_MS;
   while (game.time < end) game.tick(game.time + TICK_MS);
   assert.ok(say(game, 'adori').some(e => e.type === 'message' && /blank rune/.test(e.text)));
 });
 
-test('runa: a de ataque fere a criatura na mira e gasta uma carga; a de cura cura o player; a última carga some com a runa', () => {
+test('runa: a de ataque fere a criatura na mira e gasta uma da pilha; a de cura cura o player; a última da pilha some', () => {
   const game = mage('druid', { enemies: [[8, 5, 0]] });
   const enemy = game.enemies[0];
   enemy.atk = 0;
-  game.player.equip.mochila.items[0] = { uid: 'r1', type: LMM, charges: 2 };
-  game.player.equip.mochila.items[1] = { uid: 'r2', type: IH, charges: 1 };
+  game.player.equip.mochila.items[0] = { uid: 'r1', type: LMM, count: 2 };
+  game.player.equip.mochila.items[1] = { uid: 'r2', type: IH, count: 1 };
   const hp = enemy.currentHp;
   game.enqueue('player1', { type: 'useItem', from: { t: 'c', uid: 'b1', i: 0 }, target: { x: 8, y: 5, z: 0 } });
   game.tick(game.time + TICK_MS);
   assert.ok(enemy.currentHp < hp);
-  assert.equal(game.player.equip.mochila.items[0].charges, 1);
+  assert.equal(game.player.equip.mochila.items[0].count, 1);
 
   const end = game.time + SPELL_COOLDOWN_MS;
   while (game.time < end) game.tick(game.time + TICK_MS);
@@ -163,8 +163,8 @@ test('runa: a de ataque fere a criatura na mira e gasta uma carga; a de cura cur
 // rune
 // Usa a runa type (no 1º espaço da mochila) mirando em (x, y); devolve os eventos.
 
-function rune(game, type, x, y, charges = 3) {
-  game.player.equip.mochila.items[0] = { uid: 'r9', type, charges };
+function rune(game, type, x, y, count = 3) {
+  game.player.equip.mochila.items[0] = { uid: 'r9', type, count };
   game.player.useReadyAt = 0;
   game.enqueue('player1', { type: 'useItem', from: { t: 'c', uid: 'b1', i: 0 }, target: { x, y, z: 0 } });
   game.tick(game.time + TICK_MS);
@@ -231,7 +231,7 @@ test('efeitos do Tibia: UH brilha em quem cura, SD a bola preta no alvo, explosi
   const UH = 'itens/runas/ultimate-healing-rune';
   const SD = 'itens/runas/sudden-death-rune';
   const EXPLOSION = 'itens/runas/explosion-rune';
-  setAssets([asset(BAG, { move: true }), asset(UH, { move: true }), asset(SD, { move: true }), asset(EXPLOSION, { move: true }), asset(MAGIC_WALL, { move: false, bloqueia: true }), asset(MW_RUNE, { move: true }), asset(CREATURE, { vida: 5000 })]);
+  setAssets([asset(BAG, { move: true }), asset(UH, { move: true, empilhavel: true }), asset(SD, { move: true, empilhavel: true }), asset(EXPLOSION, { move: true, empilhavel: true }), asset(MAGIC_WALL, { move: false, bloqueia: true }), asset(MW_RUNE, { move: true, empilhavel: true }), asset(CREATURE, { vida: 5000 })]);
   const game = mage('sorcerer', { enemies: [[8, 5, 0]] });
   game.player.skills.magic.lvl = 50;
   game.enemies[0].atk = 0;
@@ -282,4 +282,21 @@ test('exevo con flam (Explosive Arrow): paladino nível 25 troca 1 flecha por 8 
   const events = say(game, 'exevo con flam');
   assert.equal(player.mana, mana - 290);
   assert.ok(events.some(e => e.type === 'message'));
+});
+
+test('runas empilham: duas magias juntam na mesma pilha; a legada com `charges` vira pilha; a pilha é de até 100', () => {
+  setAssets([asset(BAG, { move: true, peso: 10, espacos: 4 }), asset(BLANK_RUNE, { move: true, empilhavel: true }), asset(LMM, { move: true, empilhavel: true }), asset(CREATURE, { vida: 500 })]);
+  const game = mage();
+  game.player.equip.mochila.items[0] = { uid: 'r1', type: BLANK_RUNE, count: 2 };
+  say(game, 'adori');
+  const end = game.time + SPELL_COOLDOWN_MS;
+  while (game.time < end) game.tick(game.time + TICK_MS);
+  say(game, 'adori');
+  const piles = game.player.equip.mochila.items.filter(item => item && item.type === LMM);
+  assert.equal(piles.length, 1);
+  assert.equal(piles[0].count, 10);
+  assert.ok(!game.player.equip.mochila.items.some(item => item && item.type === BLANK_RUNE));
+
+  assert.equal(fromPlain({ type: LMM, charges: 3 }, () => 'x').count, 3);
+  assert.equal(itemInfo(LMM).stack, 100);
 });

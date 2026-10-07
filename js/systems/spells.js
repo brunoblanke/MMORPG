@@ -175,15 +175,18 @@ export class SpellController {
 
   // ================================================================================================================================================================================================================================================
   // conjure
-  // A primeira blank rune que o player carrega vira a runa, com as cargas dela.
+  // Uma blank rune que o player carrega (da pilha, se for uma) vira as runas
+  // da magia: charges delas, que juntam na pilha da mesma runa.
 
   conjure(player, spell) {
     if (!getAsset(splitType(spell.rune).asset)) return 'Essa runa ainda não existe no gerador.';
     const found = this.findCarried(player, BLANK_RUNE);
     if (!found) return 'Você precisa de uma blank rune.';
-    const rune = newItem(this.sim.inventory.nextUid(), spell.rune);
-    rune.charges = RUNES[spell.rune].charges;
-    found.list[found.key] = rune;
+    const blank = found.list[found.key];
+    if ((blank.count || 1) > 1) blank.count--;
+    else found.list[found.key] = null;
+    giveItem(this.sim, player, spell.rune, RUNES[spell.rune].charges);
+    this.sim.inventory.compactAll(player);
     return null;
   }
 
@@ -230,8 +233,8 @@ export class SpellController {
   // ================================================================================================================================================================================================================================================
   // useRune
   // Runa usada com a mira no sqm target (até RUNE_RANGE, com linha de
-  // visão). Gasta uma carga; sem cargas, a runa some. Se não dá pra usar
-  // ali, avisa e não gasta.
+  // visão). Gasta uma runa da pilha (a última some). Se não dá pra usar ali,
+  // avisa e não gasta.
 
   useRune(player, src, rune, target) {
     const z = player.z || 0;
@@ -246,8 +249,8 @@ export class SpellController {
     const problem = this.runeEffect(player, rune, { x: target.x, y: target.y, z }, now);
     if (problem) return this.message(player, problem);
     player.useReadyAt = now + SPELL_COOLDOWN_MS;
-    src.item.charges = (src.item.charges ?? rune.charges) - 1;
-    if (src.item.charges <= 0) src.remove();
+    src.item.count = (src.item.count || 1) - 1;
+    if (src.item.count <= 0) src.remove();
   }
 
   // ================================================================================================================================================================================================================================================
