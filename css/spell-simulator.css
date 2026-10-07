@@ -11,4 +11,4 @@ label { display: flex; align-items: center; gap: 6px; }
 select, input { background: #2c2c33; color: #eee; border: 1px solid #555; border-radius: 3px; padding: 4px; }
 input[type="number"] { width: 56px; }
 #simCast { background: #d9531e; color: #fff; border: 0; border-radius: 4px; padding: 6px 16px; cursor: pointer; }
-canvas { width: min(100%, 1408px); image-rendering: pixelated; background: #14141a; }
+canvas { image-rendering: pixelated; background: #14141a; }

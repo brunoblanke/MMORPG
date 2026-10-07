@@ -3,30 +3,39 @@
 import { circleArea, AREAS, RUNES, WANDS } from './spells.js';
 import { MISSILES } from './effects.js';
 import { FIELDS } from './conditions.js';
-import { itemInfo } from './items.js';
+import { itemInfo, impactEffectName } from './items.js';
 import { AROUND, ringArea, lineTiles, waveOffsets, beamOffsets, sweepOffsets } from './spell-areas.js';
 
 // O que o simulador (simulador.html) desenha pra cada magia: os projéteis, os
 // efeitos e os campos, em sqms do campo de ARENA_WIDTH × ARENA_HEIGHT. Quem lança
-// fica sempre virado pra leste e os alvos pra oeste. Não há jogo por trás: só a
+// fica sempre virado pra leste e os alvos (sempre o dummy) pra oeste, DISTANCE sqm adiante. Não há jogo por trás: só a
 // forma e a animação de cada magia.
 // { missiles: [{ from, to, kind }], effects: [{ tiles, name }], fields: [{ type, tiles }] }
 
 export const ARENA_WIDTH = 20;
-export const ARENA_HEIGHT = 10;
-export const CASTER = { x: 5, y: 4 };
+export const ARENA_HEIGHT = 9;
+export const CASTER = { x: 7, y: 4 };
 export const CASTER_FACING = 'leste';
-const TARGET_X = ARENA_WIDTH - 1 - 5;
+const TARGET_X = ARENA_WIDTH - 1 - 7;
+export const DISTANCE = TARGET_X - CASTER.x;
+export const CHAIN_RANGE = 4;
 
 // ================================================================================================================================================================================================================================================
 // layoutFor
-// Onde ficam quem lança e os alvos: um alvo, uma fileira de 3 pro raio (beam) e 3 levemente desalinhados pra corrente (chain).
+// Onde ficam quem lança e os alvos (sempre o dummy). Um alvo a DISTANCE sqm; o surrounding o põe colado nela e o sweep põe 3 nos
+// 3 sqm da frente (norte, centro e sul); wave e beam com length o põem a length sqm à frente. No raio (beam) e na corrente (chain)
+// o alvo fica no lugar e há duas cópias, cada uma 1 sqm mais a oeste: no beam na mesma linha, na corrente uma 1 sqm ao norte e
+// a outra 1 sqm ao sul (a corrente começa pela cópia mais perto de quem lança). O alvo nunca se afasta de DISTANCE: só se aproxima
+// (length menor; a corrente, que atinge tudo a até CHAIN_RANGE sqm de quem lança).
 
-export function layoutFor(shape) {
-  const y = CASTER.y;
-  let targets = [{ x: TARGET_X, y }];
-  if (shape === 'beam') targets = [{ x: TARGET_X - 2, y }, { x: TARGET_X - 1, y }, { x: TARGET_X, y }];
-  if (shape === 'chain') targets = [{ x: TARGET_X - 3, y: y - 1 }, { x: TARGET_X, y: y + 1 }, { x: TARGET_X + 3, y: y - 1 }];
+export function layoutFor(shape, length = 0) {
+  const { x: cx, y } = CASTER;
+  const reach = length > 0 ? Math.min(length, DISTANCE) : DISTANCE;
+  let targets = [{ x: shape === 'wave' ? cx + reach : TARGET_X, y }];
+  if (shape === 'around') targets = [{ x: cx + 1, y }];
+  if (shape === 'sweep') targets = [{ x: cx + 1, y }, { x: cx + 1, y: y - 1 }, { x: cx + 1, y: y + 1 }];
+  if (shape === 'beam') targets = [0, 1, 2].map(back => ({ x: cx + reach - back, y })).filter(target => target.x > cx);
+  if (shape === 'chain') targets = [{ x: cx + CHAIN_RANGE - 2, y: y + 1 }, { x: cx + CHAIN_RANGE - 1, y: y - 1 }, { x: cx + CHAIN_RANGE, y }];
   return { caster: { ...CASTER }, targets };
 }
 
@@ -74,7 +83,7 @@ export function planCreatureAttack(attack, layout) {
   if (shape === 'chain') {
     const tiles = [];
     let from = caster;
-    for (const next of layout.targets.slice(0, Math.max(1, attack.jumps))) {
+    for (const next of layout.targets) {
       tiles.push(...lineTiles(from, next));
       from = next;
     }
@@ -115,7 +124,10 @@ export function planRune(type, layout) {
   const missile = missileTo(layout, rune.missile || rune.element);
   if (rune.kind === 'attack') return plan({ missiles: [missile], effects: [{ name: rune.effect, tiles: around(target, AREAS.single) }] });
   if (rune.kind === 'area') return plan({ missiles: [missile], effects: [{ name: rune.effect, tiles: around(target, AREAS[rune.area]) }] });
-  if (rune.kind === 'field') return plan({ fields: [{ type: rune.field, tiles: around(target, AREAS[rune.area]) }] });
+  if (rune.kind === 'field') {
+    const kind = FIELDS[rune.field] && FIELDS[rune.field].kind;
+    return plan({ missiles: kind ? [missileTo(layout, kind)] : [], fields: [{ type: rune.field, tiles: around(target, AREAS[rune.area]) }] });
+  }
   return plan({ effects: [{ name: rune.effect || 'heal', tiles: around(target, AREAS.single) }] });
 }
 
@@ -140,9 +152,10 @@ export function planAmmo(type, layout) {
   const target = layout.targets[0];
   const impact = itemInfo(type).impact;
   const missile = missileTo(layout, MISSILES[name] ? name : 'arrow');
-  if (!impact || !impact.effect && impact.kind !== 'area') return plan({ missiles: [missile] });
+  const effect = impactEffectName(impact) || (impact && impact.kind === 'area' ? 'explosion' : '');
+  if (!effect) return plan({ missiles: [missile] });
   const area = impact.kind === 'area' ? squareArea(impact.radius) : AREAS.single;
-  return plan({ missiles: [missile], effects: [{ name: impact.effect || 'explosion', tiles: around(target, area) }] });
+  return plan({ missiles: [missile], effects: [{ name: effect, tiles: around(target, area) }] });
 }
 
 // ================================================================================================================================================================================================================================================

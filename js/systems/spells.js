@@ -7,6 +7,7 @@ import { giveItem } from './trade.js';
 import { EQUIP_SLOTS, newItem, equipBonus } from '../../shared/items.js';
 import { addSkillTry } from '../../shared/skills.js';
 import { EFFECTS } from '../../shared/effects.js';
+import { FIELDS } from '../../shared/conditions.js';
 import { RUNES, AREAS, BLANK_RUNE, SPELL_COOLDOWN_MS, SPELL_RANGE, RUNE_RANGE, LIGHT_SPELL, findSpell, spellRange } from '../../shared/spells.js';
 
 // Magias e runas (shared/spells.js). A magia é dita no chat: se as palavras
@@ -285,6 +286,9 @@ export class SpellController {
       return null;
     }
     const placed = tiles.filter(([x, y]) => this.sim.conditions.placeField(rune.field, x, y, target.z, player));
-    return placed.length ? null : 'Não dá pra usar aí.';
+    if (!placed.length) return 'Não dá pra usar aí.';
+    const kind = FIELDS[rune.field] && FIELDS[rune.field].kind;
+    if (kind) this.sim.emit({ type: 'missile', fromX: player.x, fromY: player.y, toX: target.x, toY: target.y, z: player.z || 0, kind });
+    return null;
   }
 }

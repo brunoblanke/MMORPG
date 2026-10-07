@@ -1,6 +1,6 @@
 // js/views/spell-simulator.js
 
-import { loadAssets, listAssets, getAsset, creaturePowers, displayName, RESISTANCE_ELEMENTS } from '../../shared/assets.js';
+import { loadAssets, listAssets, getAsset, displayName, RESISTANCE_ELEMENTS } from '../../shared/assets.js';
 import { SPELLS, RUNES, WANDS } from '../../shared/spells.js';
 import { EFFECTS, MISSILES, effectUrl, missileUrl, missileDirection } from '../../shared/effects.js';
 import { ARENA_WIDTH, ARENA_HEIGHT, layoutFor, planCreatureAttack, planSpell, planRune, planAmmo, planWand } from '../../shared/spell-plan.js';
@@ -10,8 +10,8 @@ const PAD = 1;
 const MISSILE_MS = 280;
 const FIELD_MS = 200;
 const FLOOR = 'estrutura/pisos/piso-metal-1';
-const TARGET = 'criaturas/humanos/dummy';
 const PLAYER_SHEETS = ['personagens/players/player-masculino', 'personagens/players/player-feminino'];
+const NAMES = { creature: 'criatura', player: 'player', target: 'dummy' };
 const ROW = { leste: 2, oeste: 3 };
 const PLAYER_KINDS = [['spell', 'Spells'], ['rune', 'Runes'], ['ammo', 'Ammo'], ['wand', 'Wands and Rods']];
 const HIDDEN_SPELL_KINDS = ['conjure', 'ammo', 'light', 'haste'];
@@ -19,7 +19,7 @@ const SHAPES = [['shot', 'Strike'], ['ball', 'Ball'], ['wave', 'Wave'], ['beam',
 const FIELDS = ['itens/itens-encantados/fire-field', 'itens/itens-encantados/poison-field', 'itens/itens-encantados/energy-field'];
 const USED_BY_SHAPE = {
   shot: ['element'], ball: ['element', 'center', 'radius'], ring: ['element', 'center', 'radius'], cross: ['element'], around: ['element'], sweep: ['element'],
-  wave: ['element', 'length', 'spread'], beam: ['element', 'length'], chain: ['element', 'jumps'], field: ['field', 'radius'], slow: [], heal: []
+  wave: ['element', 'length', 'spread'], beam: ['element', 'length'], chain: ['element'], field: ['field', 'radius'], slow: [], heal: []
 };
 const NUMBERS = [['radius', 'Radius', 1, 6], ['length', 'Length', 8, 12], ['spread', 'Spread', 3, 6]];
 
@@ -29,7 +29,6 @@ const canvas = document.getElementById('simCanvas');
 const ctx = canvas.getContext('2d');
 const images = new Map();
 const state = { who: 'creature', cast: null };
-let creatures = [];
 
 // ================================================================================================================================================================================================================================================
 // loadImage
@@ -86,8 +85,7 @@ function shapeFields(shape) {
   return only('element', select('simElement', 'Element', RESISTANCE_ELEMENTS.map(item => [item, title(item)])))
     + only('center', select('simCenter', 'Center', [['target', 'On the target'], ['self', 'On the caster']]))
     + only('field', select('simField', 'Field', FIELDS.map(item => [item, displayName(item)])))
-    + NUMBERS.map(([key, label, fallback, max]) => only(key, `<label>${label}<input id="sim_${key}" type="number" min="0" max="${max}" value="${fallback}"></label>`)).join('')
-    + only('jumps', select('simJumps', 'Chain jumps to', [['1', '1 target'], ['2', '2 targets'], ['3', '3 targets']]));
+    + NUMBERS.map(([key, label, fallback, max]) => only(key, `<label>${label}<input id="sim_${key}" type="number" min="0" max="${max}" value="${fallback}"></label>`)).join('');
 }
 
 // ================================================================================================================================================================================================================================================
@@ -106,42 +104,8 @@ function customAttack() {
     spread: number('sim_spread', 6, 3),
     widths: [],
     center: value('simCenter') === 'self' ? 'self' : 'target',
-    field: used.includes('field') ? (value('simField') || FIELDS[0]) : '',
-    jumps: number('simJumps', 3, 3)
+    field: used.includes('field') ? (value('simField') || FIELDS[0]) : ''
   };
-}
-
-// ================================================================================================================================================================================================================================================
-// usersOf
-// As criaturas que têm uma magia com essa forma (e esse elemento ou campo, quando a forma usa).
-
-function usersOf(attack) {
-  return creatures.filter(asset => creaturePowers(asset.id).attacks.some(item => sameSpell(item, attack)));
-}
-
-// ================================================================================================================================================================================================================================================
-// sameSpell
-// A magia item é da mesma forma, elemento e campo que attack.
-
-function sameSpell(item, attack) {
-  const used = usedFields(attack.shape);
-  return item.shape === attack.shape && (!used.includes('element') || item.element === attack.element) && (!used.includes('field') || item.field === attack.field);
-}
-
-// ================================================================================================================================================================================================================================================
-// loadFrom
-// Põe nos campos os números da magia que a criatura tem dessa forma.
-
-function loadFrom(creature) {
-  const attack = creaturePowers(creature).attacks.find(item => sameSpell(item, customAttack()));
-  if (!attack) return;
-  const set = (id, number) => { const field = document.getElementById(id); if (field && number) field.value = Math.min(Number(field.max) || number, number); };
-  set('sim_radius', attack.radius);
-  set('sim_length', attack.length);
-  set('sim_spread', attack.spread);
-  set('simJumps', attack.jumps);
-  const center = document.getElementById('simCenter');
-  if (center) center.value = attack.center;
 }
 
 // ================================================================================================================================================================================================================================================
@@ -164,7 +128,7 @@ function renderFields() {
   const restore = () => {
     for (const [id, saved] of Object.entries(keep)) {
       const field = document.getElementById(id);
-      if (id !== 'simCreature' && field && (!field.options || [...field.options].some(option => option.value === saved))) field.value = saved;
+      if (field && (!field.options || [...field.options].some(option => option.value === saved))) field.value = saved;
     }
   };
   if (state.who === 'creature') {
@@ -173,13 +137,7 @@ function renderFields() {
     document.getElementById('simShape').value = shape;
     const element = document.getElementById('simElement');
     if (element) element.value = 'fire';
-    const jumps = document.getElementById('simJumps');
-    if (jumps) jumps.value = '3';
     restore();
-    const users = usersOf(customAttack());
-    fieldsBox.insertAdjacentHTML('beforeend', select('simCreature', 'Creature', users.length ? users.map(asset => [asset.id, displayName(asset.id)]) : [['', 'None uses it']]));
-    const creature = document.getElementById('simCreature');
-    if (users.some(asset => asset.id === keep.simCreature)) creature.value = keep.simCreature;
     return;
   }
   const kind = keep.simKind || 'spell';
@@ -194,7 +152,7 @@ function renderFields() {
 function planFor() {
   if (state.who === 'creature') {
     const attack = customAttack();
-    return { layout: layoutFor(attack.shape), make: (layout) => planCreatureAttack(attack, layout) };
+    return { layout: layoutFor(attack.shape, attack.length), make: (layout) => planCreatureAttack(attack, layout) };
   }
   const kind = value('simKind');
   const item = value('simItem');
@@ -231,11 +189,29 @@ function drawFrame(asset, column, row, x, y, size = null) {
 
 // ================================================================================================================================================================================================================================================
 // casterAsset
-// A sprite de quem lança: a criatura escolhida ou o player.
+// A sprite de quem lança: sempre a criatura "criatura" ou a "player" do gerador (sem elas, uma criatura qualquer ou a folha do player).
 
 function casterAsset() {
-  if (state.who === 'creature') return getAsset(value('simCreature')) || getAsset(TARGET);
+  const named = assetNamed(NAMES[state.who]);
+  if (named) return named;
+  if (state.who === 'creature') return creatureList()[0] || null;
   return PLAYER_SHEETS.map(id => getAsset(id)).find(Boolean) || null;
+}
+
+// ================================================================================================================================================================================================================================================
+// creatureList
+// Todas as criaturas do gerador.
+
+function creatureList() {
+  return listAssets('criaturas');
+}
+
+// ================================================================================================================================================================================================================================================
+// assetNamed
+// A criatura do gerador com esse nome (criatura, player ou dummy), ou null.
+
+function assetNamed(name) {
+  return creatureList().find(asset => asset.nome === name) || null;
 }
 
 // ================================================================================================================================================================================================================================================
@@ -262,7 +238,7 @@ function frame(now) {
     for (const [x, y] of field.tiles) drawFrame(asset, column, 0, x, y);
   }
   const caster = casterAsset();
-  const target = getAsset(TARGET);
+  const target = assetNamed(NAMES.target);
   if (target) for (const spot of layout.targets) drawFrame(target, 0, ROW.oeste, spot.x, spot.y);
   if (caster) drawFrame(caster, 0, ROW.leste, layout.caster.x, layout.caster.y);
   if (cast) drawCast(cast, now);
@@ -316,7 +292,9 @@ function setWho(who) {
 
 async function start() {
   await loadAssets();
-  creatures = listAssets('criaturas').filter(asset => creaturePowers(asset.id).attacks.length).sort((a, b) => displayName(a.id).localeCompare(displayName(b.id)));
+  for (const name of Object.keys(EFFECTS)) loadImage(effectUrl(name));
+  for (const name of Object.keys(MISSILES)) loadImage(missileUrl(name));
+  for (const type of FIELDS) { const field = getAsset(type); if (field) loadImage(field.url); }
   canvas.width = (ARENA_WIDTH + PAD * 2) * TILE;
   canvas.height = (ARENA_HEIGHT + PAD * 2) * TILE;
   for (const button of form.querySelectorAll('[data-who]')) button.addEventListener('click', () => { setWho(button.dataset.who); button.blur(); });
@@ -324,7 +302,6 @@ async function start() {
     state.cast = null;
     const id = event.target.id;
     if (['simShape', 'simElement', 'simField', 'simKind'].includes(id)) renderFields();
-    if (id === 'simShape' || id === 'simCreature') loadFrom(value('simCreature'));
     if (document.activeElement) document.activeElement.blur();
   });
   document.getElementById('simCast').addEventListener('click', () => { castNow(); document.getElementById('simCast').blur(); });
@@ -334,7 +311,6 @@ async function start() {
     castNow();
   });
   setWho('creature');
-  loadFrom(value('simCreature'));
   requestAnimationFrame(frame);
 }
 
