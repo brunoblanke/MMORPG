@@ -3,7 +3,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { setAssets } from '../shared/assets.js';
-import { layoutFor, planCreatureAttack, planSpell, planRune, planAmmo, planWand, ARENA_WIDTH, ARENA_HEIGHT, CASTER } from '../shared/spell-plan.js';
+import { layoutFor, planCreatureAttack, planSpell, planRune, planAmmo, planWand, ARENA_WIDTH, ARENA_HEIGHT, CASTER, DISTANCE } from '../shared/spell-plan.js';
 import { SPELLS } from '../shared/spells.js';
 
 const BURST = 'itens/municao/burst-arrow';
@@ -18,16 +18,14 @@ const blank = { range: 0, radius: 0, length: 0, spread: 0, widths: [], center: '
 const tilesOf = (plan) => plan.effects.flatMap(effect => effect.tiles);
 const inArena = ([x, y]) => x >= 0 && x < ARENA_WIDTH && y >= 0 && y < ARENA_HEIGHT;
 
-test('simulador: quem lança fica a 5 sqm da borda oeste e o alvo a 5 da leste; beam tem 3 alvos em linha e chain 3 desalinhados', () => {
+test('simulador: o alvo fica a 6 sqm de quem lança; beam e chain têm cópias 1 sqm a oeste cada, na linha ou 1 sqm ao norte e ao sul', () => {
   const single = layoutFor('wave');
   assert.equal(single.caster.x, 5);
-  assert.deepEqual(single.targets, [{ x: ARENA_WIDTH - 1 - 5, y: CASTER.y }]);
+  assert.deepEqual(single.targets, [{ x: CASTER.x + DISTANCE, y: CASTER.y }]);
   const beam = layoutFor('beam');
-  assert.equal(beam.targets.length, 3);
-  assert.ok(beam.targets.every(t => t.y === CASTER.y));
+  assert.deepEqual(beam.targets, [{ x: 11, y: CASTER.y }, { x: 10, y: CASTER.y }, { x: 9, y: CASTER.y }]);
   const chain = layoutFor('chain');
-  assert.equal(chain.targets.length, 3);
-  assert.equal(new Set(chain.targets.map(t => t.y)).size, 2);
+  assert.deepEqual(chain.targets.map(t => [t.x, t.y]).sort(), [[10, CASTER.y - 1], [11, CASTER.y], [9, CASTER.y + 1]].sort());
 });
 
 test('simulador: onda, raio e bola de criatura saem pra leste e ficam dentro do campo', () => {
@@ -46,7 +44,7 @@ test('simulador: onda, raio e bola de criatura saem pra leste e ficam dentro do 
 
 test('simulador: a corrente passa pelos alvos que pulam e o campo vira sprite no alvo', () => {
   const chain = planCreatureAttack({ ...blank, shape: 'chain', element: 'energy', jumps: 3 }, layoutFor('chain'));
-  assert.ok(chain.effects[0].tiles.length > 8);
+  assert.ok(chain.effects[0].tiles.length > 6);
   const one = planCreatureAttack({ ...blank, shape: 'chain', element: 'energy', jumps: 1 }, layoutFor('chain'));
   assert.ok(one.effects[0].tiles.length < chain.effects[0].tiles.length);
   const field = planCreatureAttack({ ...blank, shape: 'field', field: 'itens/itens-encantados/fire-field', radius: 1 }, layoutFor('field'));

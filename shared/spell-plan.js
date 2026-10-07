@@ -8,7 +8,7 @@ import { AROUND, ringArea, lineTiles, waveOffsets, beamOffsets, sweepOffsets } f
 
 // O que o simulador (simulador.html) desenha pra cada magia: os projéteis, os
 // efeitos e os campos, em sqms do campo de ARENA_WIDTH × ARENA_HEIGHT. Quem lança
-// fica sempre virado pra leste e os alvos pra oeste. Não há jogo por trás: só a
+// fica sempre virado pra leste e os alvos (sempre o dummy) pra oeste, DISTANCE sqm adiante. Não há jogo por trás: só a
 // forma e a animação de cada magia.
 // { missiles: [{ from, to, kind }], effects: [{ tiles, name }], fields: [{ type, tiles }] }
 
@@ -16,17 +16,20 @@ export const ARENA_WIDTH = 20;
 export const ARENA_HEIGHT = 10;
 export const CASTER = { x: 5, y: 4 };
 export const CASTER_FACING = 'leste';
-const TARGET_X = ARENA_WIDTH - 1 - 5;
+export const DISTANCE = 6;
+const TARGET_X = CASTER.x + DISTANCE;
 
 // ================================================================================================================================================================================================================================================
 // layoutFor
-// Onde ficam quem lança e os alvos: um alvo, uma fileira de 3 pro raio (beam) e 3 levemente desalinhados pra corrente (chain).
+// Onde ficam quem lança e os alvos: um alvo, ou, no raio (beam) e na corrente (chain), o alvo no lugar dele e
+// duas cópias cada uma 1 sqm mais a oeste: no beam na mesma linha, na corrente uma 1 sqm ao norte e a outra 1 sqm ao sul
+// (a corrente começa pela cópia mais perto de quem lança).
 
 export function layoutFor(shape) {
   const y = CASTER.y;
   let targets = [{ x: TARGET_X, y }];
-  if (shape === 'beam') targets = [{ x: TARGET_X - 2, y }, { x: TARGET_X - 1, y }, { x: TARGET_X, y }];
-  if (shape === 'chain') targets = [{ x: TARGET_X - 3, y: y - 1 }, { x: TARGET_X, y: y + 1 }, { x: TARGET_X + 3, y: y - 1 }];
+  if (shape === 'beam') targets = [{ x: TARGET_X, y }, { x: TARGET_X - 1, y }, { x: TARGET_X - 2, y }];
+  if (shape === 'chain') targets = [{ x: TARGET_X - 2, y: y + 1 }, { x: TARGET_X - 1, y: y - 1 }, { x: TARGET_X, y }];
   return { caster: { ...CASTER }, targets };
 }
 
