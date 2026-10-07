@@ -167,3 +167,62 @@ test('cura: a criatura que foge ferida também se cura', () => {
   sim.powers.update(enemy, sim.player, sim.time + 5000);
   assert.ok(enemy.currentHp > before);
 });
+
+// ================================================================================================================================================================================================================================================
+// shapeOf
+// Os sqms que a magia da forma dada alcança, com a criatura em (9, 9) e o player em (5, 9) (oeste dela).
+
+function shapeOf(attack, playerAt = [5, 9]) {
+  const sim = game({ ataque: 0, ataques: [{ elemento: 'fire', min: 1, max: 1, chance: 100, ...attack }] }, [[9, 9, 0]]);
+  const enemy = sim.enemies[0];
+  Object.assign(sim.player, { x: playerAt[0], y: playerAt[1] });
+  const powers = sim.powers;
+  const spell = { shape: ({ onda: 'wave', raio: 'beam', varredura: 'sweep', redor: 'around', anel: 'ring', cruz: 'cross', bola: 'ball' })[attack.forma], center: 'self', widths: attack.larguras || [], length: attack.larguras ? attack.larguras.length : attack.comprimento || 0, spread: attack.abertura || 0, radius: attack.raio || 0, range: attack.alcance || 0, element: 'fire' };
+  return { sim, enemy, area: powers.areaOf(enemy, sim.player, spell) };
+}
+
+test('onda com larguras 1-1-3-3 e 1-3-3-5 desenha as fileiras do Tibia', () => {
+  for (const [widths, expected] of [[[1, 1, 3, 3], [1, 1, 3, 3]], [[1, 3, 3, 5], [1, 3, 3, 5]]]) {
+    const { area } = shapeOf({ forma: 'onda', larguras: widths });
+    const rows = [1, 2, 3, 4].map(d => area.tiles.filter(([x]) => x === 9 - d).length);
+    assert.deepEqual(rows, expected);
+  }
+});
+
+test('raio: linha reta de comprimento sqm na direção do player', () => {
+  const { area } = shapeOf({ forma: 'raio', comprimento: 6 });
+  assert.deepEqual(area.tiles, [[8, 9], [7, 9], [6, 9], [5, 9], [4, 9], [3, 9]]);
+});
+
+test('varredura: os 3 sqms colados na frente; redor: os 8 colados nela', () => {
+  const sweep = shapeOf({ forma: 'varredura' }, [8, 9]);
+  assert.deepEqual(sweep.area.tiles.map(t => t.join(',')).sort(), ['8,10', '8,8', '8,9']);
+  const around = shapeOf({ forma: 'redor' }, [8, 10]);
+  assert.equal(around.area.tiles.length, 8);
+  assert.equal(shapeOf({ forma: 'redor' }, [5, 9]).area, null);
+});
+
+test('anel em volta dela: o aro de raio 3 fere quem está nele, não quem está dentro', () => {
+  const ring = shapeOf({ forma: 'anel', raio: 3 }, [6, 9]);
+  assert.ok(ring.area.tiles.some(([x, y]) => x === 6 && y === 9));
+  assert.ok(!ring.area.tiles.some(([x, y]) => x === 9 && y === 9));
+  assert.equal(shapeOf({ forma: 'anel', raio: 3 }, [8, 9]).area, null);
+});
+
+test('cruz: as 5 casas da explosion rune no player; bola de raio 1 é o 3×3 do dragon', () => {
+  const cross = shapeOf({ forma: 'cruz', alcance: 7 }, [6, 9]);
+  assert.equal(cross.area.tiles.length, 5);
+  const ball = shapeOf({ forma: 'bola', alcance: 7, raio: 1 }, [6, 9]);
+  assert.equal(ball.area.tiles.length, 9);
+});
+
+test('campo: a magia cria o campo no alvo e em volta, e o player entra nele sem ser ferido na hora', () => {
+  const FIELD = 'itens/itens-encantados/fire-field';
+  setAssets([creature(CREATURE, { vida: 300, xp: 100, ataque: 0, ataques: [{ forma: 'campo', campo: FIELD, chance: 100, alcance: 7, raio: 1 }] }), { id: FIELD, ferramenta: 'objetos', grupo: 'itens', pasta: 'itens-encantados', nome: 'fire-field', url: '/f.png', quadro: 32, quadros: 1, pecas: [], propriedades: { move: false } }]);
+  const sim = buildGame({ objects: floorRect(0, 19, 0, 19, 0), enemies: [[8, 5, 0]], player: { x: 5, y: 5, z: 0 } });
+  sim.player.hp = sim.player.currentHp = 100000;
+  runFor(sim, 2100);
+  const fields = sim.objects.filter(o => o.id.startsWith(FIELD));
+  assert.ok(fields.length >= 5);
+  assert.ok(fields.some(o => o.x === 5 && o.y === 5));
+});

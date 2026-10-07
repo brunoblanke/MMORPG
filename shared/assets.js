@@ -92,13 +92,18 @@ export function creatureStats(type) {
 // o veneno que o golpe deixa (dano por vez); summon, a criatura que ela invoca
 // ({ type, max }); respawn, o tempo pra renascer (ms; 0 = o padrão).
 //
-// Magias (propriedades.ataques, como no Tibia): forma 'tiro' (um alvo de longe,
-// alcance), 'bola' (tiro que explode em círculo de raio em volta do alvo),
-// 'onda' (leque pra frente, comprimento e abertura) e 'cura' (ela mesma).
-// A propriedade antiga `magia` vira um tiro.
+// Magias (propriedades.ataques, as do Tibia): forma 'tiro' (um alvo de longe,
+// alcance), 'bola' (tiro que explode em círculo de raio em volta do alvo; raio
+// 1 = 3×3), 'onda' (leque pra frente: comprimento e abertura, ou larguras, a
+// largura de cada fileira, ex. [1, 1, 3, 3]), 'raio' (linha reta de
+// comprimento sqm), 'cruz' (a cruz da explosion rune no alvo), 'anel' (o aro
+// de raio em volta dela, ou do alvo com centro 'alvo'), 'redor' (os 8 sqms
+// colados nela, como o Berserk), 'varredura' (os 3 sqms colados na frente,
+// como o Front Sweep), 'campo' (cria o campo `campo` no alvo e, com raio, em
+// volta) e 'cura' (ela mesma). A propriedade antiga `magia` vira um tiro.
 
 export const SPELL_ELEMENTS = ['fire', 'energy', 'poison', 'ice', 'earth', 'death', 'holy'];
-const ATTACK_SHAPES = { tiro: 'shot', bola: 'ball', onda: 'wave', cura: 'heal' };
+const ATTACK_SHAPES = { tiro: 'shot', bola: 'ball', onda: 'wave', cura: 'heal', raio: 'beam', cruz: 'cross', anel: 'ring', redor: 'around', varredura: 'sweep', campo: 'field' };
 
 // ================================================================================================================================================================================================================================================
 // creatureAttacks
@@ -111,23 +116,29 @@ function creatureAttacks(props) {
   const magic = props.magia || {};
   if (SPELL_ELEMENTS.includes(magic.tipo) && int(magic.dano) > 0) {
     const damage = int(magic.dano);
-    attacks.push({ shape: 'shot', element: magic.tipo, min: Math.ceil(damage / 2), max: damage, chance: Math.min(100, Math.max(1, int(magic.chance) || 20)), range: 0, radius: 0, length: 0, spread: 0 });
+    attacks.push({ shape: 'shot', element: magic.tipo, min: Math.ceil(damage / 2), max: damage, chance: Math.min(100, Math.max(1, int(magic.chance) || 20)), range: 0, radius: 0, length: 0, spread: 0, widths: [], center: 'self', field: '' });
   }
   for (const entry of Array.isArray(props.ataques) ? props.ataques : []) {
     const shape = ATTACK_SHAPES[entry && entry.forma];
     const element = entry && entry.elemento;
-    if (!shape || (shape !== 'heal' && !SPELL_ELEMENTS.includes(element)) || int(entry.max) <= 0) continue;
-    const max = int(entry.max);
+    const field = entry && typeof entry.campo === 'string' ? entry.campo : '';
+    const max = int(entry && entry.max);
+    if (!shape) continue;
+    if (shape === 'field' ? !field : (shape !== 'heal' && !SPELL_ELEMENTS.includes(element)) || max <= 0) continue;
+    const widths = Array.isArray(entry.larguras) ? entry.larguras.map(int).filter(w => w > 0).slice(0, 13) : [];
     attacks.push({
       shape,
-      element: shape === 'heal' ? null : element,
+      element: shape === 'heal' || shape === 'field' ? null : element,
       min: Math.min(max, int(entry.min)),
       max,
       chance: Math.min(100, Math.max(1, int(entry.chance) || 10)),
       range: int(entry.alcance),
       radius: Math.min(6, int(entry.raio)),
-      length: Math.min(12, int(entry.comprimento)),
-      spread: Math.min(6, int(entry.abertura))
+      length: widths.length || Math.min(12, int(entry.comprimento)),
+      spread: Math.min(6, int(entry.abertura)),
+      widths,
+      center: entry.centro === 'alvo' ? 'target' : 'self',
+      field
     });
   }
   return attacks;

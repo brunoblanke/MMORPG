@@ -51,7 +51,7 @@
     "velocidade": 172,
     "armadura": 25,
     "defesa": 25,
-    "ataque": 120,
+    "ataque": 130,
     "loot": [
       {
         "tipo": "itens/valiosos/gold-coin",
@@ -147,10 +147,10 @@
         "forma": "bola",
         "elemento": "fire",
         "min": 60,
-        "max": 140,
+        "max": 110,
         "chance": 15,
         "alcance": 7,
-        "raio": 3
+        "raio": 1
       },
       {
         "forma": "onda",
@@ -163,8 +163,8 @@
       },
       {
         "forma": "cura",
-        "min": 40,
-        "max": 70,
+        "min": 38,
+        "max": 72,
         "chance": 15
       }
     ]
