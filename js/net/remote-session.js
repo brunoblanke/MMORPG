@@ -6,6 +6,8 @@ import { applyState } from './protocol.js';
 import { decodeDelta } from './delta.js';
 
 const CONNECT_TIMEOUT_MS = 2000;
+const STALE_EVENT_MS = 1000;
+const VISUAL_EVENTS = new Set(['damage', 'heal', 'xp', 'speech', 'signText', 'missile', 'effect']);
 
 // Jogo pelo servidor: a simulação roda lá; aqui fica um espelho (mapa gerado
 // do mesmo data/map.json + jogadores, inimigos, cadáveres e itens recebidos a
@@ -144,6 +146,9 @@ export class RemoteSession {
   // Aplica os estados que chegaram desde o último quadro. Devolve os eventos.
   // Cada estado vale a partir da hora em que chegou (não da hora do quadro):
   // o passo já começa andando neste quadro, sem repetir a posição do anterior.
+  // Com a aba em segundo plano o navegador para os quadros e os estados se
+  // acumulam; os efeitos visuais (dano, fala, projétil…) de estados com mais de
+  // STALE_EVENT_MS são descartados, senão aparecem todos juntos na volta.
 
   update(timestamp) {
     const events = [];
@@ -154,7 +159,9 @@ export class RemoteSession {
       if (message.type !== 'state') continue;
       if (message.delta) this.lastState = decodeDelta(this.lastState, message.delta);
       applyState(this, { time: message.time, state: message.delta ? this.lastState : message.state }, this.playerId, Math.min(receivedAt, timestamp));
+      const stale = timestamp - receivedAt > STALE_EVENT_MS;
       for (const event of message.events) {
+        if (stale && VISUAL_EVENTS.has(event.type)) continue;
         events.push(event);
         if (event.type === 'damage') this.flash(event.targetId, timestamp);
       }
