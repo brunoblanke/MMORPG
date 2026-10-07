@@ -19,7 +19,7 @@ const SHAPES = [['shot', 'Strike'], ['ball', 'Ball'], ['wave', 'Wave'], ['beam',
 const FIELDS = ['itens/itens-encantados/fire-field', 'itens/itens-encantados/poison-field', 'itens/itens-encantados/energy-field'];
 const USED_BY_SHAPE = {
   shot: ['element'], ball: ['element', 'center', 'radius'], ring: ['element', 'center', 'radius'], cross: ['element'], around: ['element'], sweep: ['element'],
-  wave: ['element', 'length', 'spread'], beam: ['element', 'length'], chain: ['element', 'jumps'], field: ['field', 'radius'], slow: [], heal: []
+  wave: ['element', 'length', 'spread'], beam: ['element', 'length'], chain: ['element'], field: ['field', 'radius'], slow: [], heal: []
 };
 const NUMBERS = [['radius', 'Radius', 1, 6], ['length', 'Length', 8, 12], ['spread', 'Spread', 3, 6]];
 
@@ -85,8 +85,7 @@ function shapeFields(shape) {
   return only('element', select('simElement', 'Element', RESISTANCE_ELEMENTS.map(item => [item, title(item)])))
     + only('center', select('simCenter', 'Center', [['target', 'On the target'], ['self', 'On the caster']]))
     + only('field', select('simField', 'Field', FIELDS.map(item => [item, displayName(item)])))
-    + NUMBERS.map(([key, label, fallback, max]) => only(key, `<label>${label}<input id="sim_${key}" type="number" min="0" max="${max}" value="${fallback}"></label>`)).join('')
-    + only('jumps', select('simJumps', 'Chain jumps to', [['1', '1 target'], ['2', '2 targets'], ['3', '3 targets']]));
+    + NUMBERS.map(([key, label, fallback, max]) => only(key, `<label>${label}<input id="sim_${key}" type="number" min="0" max="${max}" value="${fallback}"></label>`)).join('');
 }
 
 // ================================================================================================================================================================================================================================================
@@ -105,8 +104,7 @@ function customAttack() {
     spread: number('sim_spread', 6, 3),
     widths: [],
     center: value('simCenter') === 'self' ? 'self' : 'target',
-    field: used.includes('field') ? (value('simField') || FIELDS[0]) : '',
-    jumps: number('simJumps', 3, 3)
+    field: used.includes('field') ? (value('simField') || FIELDS[0]) : ''
   };
 }
 
@@ -139,8 +137,6 @@ function renderFields() {
     document.getElementById('simShape').value = shape;
     const element = document.getElementById('simElement');
     if (element) element.value = 'fire';
-    const jumps = document.getElementById('simJumps');
-    if (jumps) jumps.value = '3';
     restore();
     return;
   }

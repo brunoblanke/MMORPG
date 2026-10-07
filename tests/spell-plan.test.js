@@ -3,7 +3,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { setAssets } from '../shared/assets.js';
-import { layoutFor, planCreatureAttack, planSpell, planRune, planAmmo, planWand, ARENA_WIDTH, ARENA_HEIGHT, CASTER, DISTANCE } from '../shared/spell-plan.js';
+import { layoutFor, planCreatureAttack, planSpell, planRune, planAmmo, planWand, ARENA_WIDTH, ARENA_HEIGHT, CASTER, DISTANCE, CHAIN_RANGE } from '../shared/spell-plan.js';
 import { SPELLS } from '../shared/spells.js';
 
 const BURST = 'itens/municao/burst-arrow';
@@ -27,7 +27,9 @@ test('simulador: quem lança e o alvo ficam a 7 sqm das bordas; beam e chain tê
   const beam = layoutFor('beam');
   assert.deepEqual(beam.targets, [{ x, y: CASTER.y }, { x: x - 1, y: CASTER.y }, { x: x - 2, y: CASTER.y }]);
   const chain = layoutFor('chain');
-  assert.deepEqual(chain.targets.map(t => [t.x, t.y]).sort(), [[x - 1, CASTER.y - 1], [x, CASTER.y], [x - 2, CASTER.y + 1]].sort());
+  const base = CASTER.x + CHAIN_RANGE;
+  assert.deepEqual(chain.targets.map(t => [t.x, t.y]).sort(), [[base - 1, CASTER.y - 1], [base, CASTER.y], [base - 2, CASTER.y + 1]].sort());
+  assert.ok(chain.targets.every(t => Math.max(Math.abs(t.x - CASTER.x), Math.abs(t.y - CASTER.y)) <= CHAIN_RANGE));
   assert.equal(DISTANCE, 5);
 });
 
@@ -38,6 +40,8 @@ test('simulador: surrounding e sweep têm o alvo colado, e wave e beam o põem a
   assert.deepEqual(sweep.targets.map(t => [t.x - CASTER.x, t.y - CASTER.y]).sort(), [[1, -1], [1, 0], [1, 1]].sort());
   assert.deepEqual(layoutFor('wave', 3).targets, [{ x: CASTER.x + 3, y: CASTER.y }]);
   assert.deepEqual(layoutFor('beam', 4).targets.map(t => t.x), [CASTER.x + 4, CASTER.x + 3, CASTER.x + 2]);
+  assert.deepEqual(layoutFor('wave', 8).targets, [{ x: CASTER.x + DISTANCE, y: CASTER.y }]);
+  assert.deepEqual(layoutFor('beam', 12).targets.map(t => t.x), [CASTER.x + DISTANCE, CASTER.x + DISTANCE - 1, CASTER.x + DISTANCE - 2]);
   assert.deepEqual(layoutFor('beam', 2).targets.map(t => t.x), [CASTER.x + 2, CASTER.x + 1]);
 });
 
@@ -55,13 +59,13 @@ test('simulador: onda, raio e bola de criatura saem pra leste e ficam dentro do 
   assert.equal(self.missiles.length, 0);
 });
 
-test('simulador: a corrente passa pelos alvos que pulam e o campo vira sprite no alvo', () => {
+test('simulador: a corrente passa por todos os alvos, o campo vira sprite no alvo e a runa de campo lança o projétil', () => {
   const chain = planCreatureAttack({ ...blank, shape: 'chain', element: 'energy', jumps: 3 }, layoutFor('chain'));
-  assert.ok(chain.effects[0].tiles.length >= 6);
-  const one = planCreatureAttack({ ...blank, shape: 'chain', element: 'energy', jumps: 1 }, layoutFor('chain'));
-  assert.ok(one.effects[0].tiles.length < chain.effects[0].tiles.length);
+  assert.ok(chain.effects[0].tiles.length >= 5);
   const field = planCreatureAttack({ ...blank, shape: 'field', field: 'itens/itens-encantados/fire-field', radius: 1 }, layoutFor('field'));
   assert.equal(field.fields[0].tiles.length, 9);
+  const rune = planRune('itens/runas/fire-field-rune', layoutFor(null));
+  assert.equal(rune.missiles[0].kind, 'fire');
 });
 
 test('simulador: magias, runas, munição e wands do player mostram o projétil e a área certos', () => {
