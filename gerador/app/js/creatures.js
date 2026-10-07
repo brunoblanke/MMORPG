@@ -28,6 +28,7 @@ const PREVIEW_CELL = 64;
 const WALK_FRAME_MS = 160;
 
 const creatures = {
+  attacks: [],
   outfit: null,
   colors: [...DEFAULT_COLORS],
   addons: [],
@@ -521,14 +522,16 @@ function statValues() {
 
 // ================================================================================================================================================================================================================================================
 // powerValues
-// O que a criatura faz além do golpe: magia de longe, veneno no golpe,
-// criatura que invoca e tempo de respawn (s).
+// O que a criatura faz além do golpe: magia de longe, as magias da lista
+// (propriedades.ataques, ainda sem tela: só são preservadas ao salvar), veneno
+// no golpe, criatura que invoca e tempo de respawn (s).
 
 function powerValues() {
   const int = (el) => Math.max(0, Math.floor(Number(el.value)) || 0);
   const f = POWER_FIELDS;
   return {
     magia: f.spell.value && int(f.spellDamage) ? { tipo: f.spell.value, dano: int(f.spellDamage), chance: Math.min(100, int(f.spellChance)) } : null,
+    ...(creatures.attacks.length ? { ataques: creatures.attacks } : {}),
     veneno: int(f.poison),
     invoca: f.summon.value && int(f.summonMax) ? { tipo: f.summon.value, max: Math.min(5, int(f.summonMax)) } : null,
     respawn: int(f.respawn)
@@ -542,6 +545,7 @@ function loadPowers(props) {
   const f = POWER_FIELDS;
   const magic = props.magia || {};
   const call = props.invoca || {};
+  creatures.attacks = Array.isArray(props.ataques) ? props.ataques : [];
   f.spell.value = magic.tipo || '';
   f.spellDamage.value = String(Number(magic.dano) || 0);
   f.spellChance.value = String(Number(magic.chance) || 20);

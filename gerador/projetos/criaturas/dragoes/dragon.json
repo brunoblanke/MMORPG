@@ -141,6 +141,32 @@
         "tipo": "itens/valiosos/life-crystal",
         "chance": 0.0012
       }
+    ],
+    "ataques": [
+      {
+        "forma": "bola",
+        "elemento": "fire",
+        "min": 60,
+        "max": 140,
+        "chance": 15,
+        "alcance": 7,
+        "raio": 3
+      },
+      {
+        "forma": "onda",
+        "elemento": "fire",
+        "min": 100,
+        "max": 170,
+        "chance": 10,
+        "comprimento": 8,
+        "abertura": 3
+      },
+      {
+        "forma": "cura",
+        "min": 40,
+        "max": 70,
+        "chance": 15
+      }
     ]
   }
 }

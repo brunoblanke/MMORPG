@@ -5,12 +5,19 @@ import { getLevel } from '../core/geometry.js';
 import { creaturePowers } from '../../shared/assets.js';
 import { CONFIG } from '../config.js';
 import { EFFECTS } from '../../shared/effects.js';
+import { circleArea } from '../../shared/spells.js';
 
 // O que a criatura faz além do golpe (shared/assets.js → creaturePowers),
 // enquanto persegue um player no mesmo andar e fora da zona segura:
-//   magia: a cada POWER_TRY_MS, com a chance dela, lança no player até
-//   CONFIG.mageRange sqm com linha livre (dano do tipo, sem defesa nem
-//   armadura; a de veneno deixa o player envenenado);
+//   magias: a cada POWER_TRY_MS, cada uma com a chance dela (no máximo uma de
+//   dano por vez; dano do tipo, sem defesa nem armadura; a de veneno deixa o
+//   player envenenado):
+//     tiro: num player até o alcance (CONFIG.mageRange se não disser) com
+//     linha livre;
+//     bola: tiro que explode num círculo em volta do player, e acerta todo
+//     player dentro dele;
+//     onda: leque pra frente dela (comprimento e abertura), pra quem está nele;
+//     cura: recupera vida dela mesma (se estiver ferida).
 //   invocar: a cada POWER_TRY_MS, com SUMMON_CHANCE, chama a criatura dela
 //   ao lado (até o máximo vivo). Invocada não dá XP nem loot, não renasce e
 //   morre junto com quem invocou.
@@ -40,22 +47,99 @@ export class CreaturePowers {
     enemy.powerReadyAt = now + POWER_TRY_MS;
     const powers = creaturePowers(enemy.creature);
     if (powers.summon && Math.random() < SUMMON_CHANCE) this.summon(enemy, powers.summon);
-    if (powers.spell && Math.random() * 100 < powers.spell.chance) this.cast(enemy, player, powers.spell, now);
+    let attacked = false;
+    for (const attack of powers.attacks) {
+      if (Math.random() * 100 >= attack.chance) continue;
+      if (attack.shape === 'heal') this.heal(enemy, attack);
+      else if (!attacked) attacked = this.cast(enemy, player, attack, now);
+    }
   }
 
   // ================================================================================================================================================================================================================================================
   // cast
+  // Lança a magia no player; devolve se saiu (alcance, linha livre e área).
 
-  cast(enemy, player, spell, now) {
-    const range = Math.max(Math.abs(enemy.x - player.x), Math.abs(enemy.y - player.y));
-    if (range > CONFIG.mageRange || !this.sim.movement.hasLineOfSight(enemy, player)) return false;
-    const damage = Math.ceil(spell.damage / 2) + Math.floor(Math.random() * (Math.floor(spell.damage / 2) + 1));
-    this.sim.emit({ type: 'missile', fromX: enemy.x, fromY: enemy.y, toX: player.x, toY: player.y, z: enemy.z || 0, kind: spell.kind });
-    this.sim.conditions.hurt(player, damage, spell.kind);
-    if (EFFECTS[spell.kind]) this.sim.emit({ type: 'effect', x: player.x, y: player.y, z: player.z || 0, tiles: [[player.x, player.y]], effect: spell.kind });
-    if (spell.kind === 'poison') this.sim.conditions.add(player, 'poison', { damage: Math.max(1, Math.floor(spell.damage / 4)), ticks: SPELL_POISON_TICKS });
+  cast(enemy, player, attack, now) {
+    let tiles;
+    if (attack.shape === 'wave') {
+      tiles = this.waveTiles(enemy, player, attack);
+      if (!tiles.some(([x, y]) => x === player.x && y === player.y)) return false;
+    } else {
+      const range = Math.max(Math.abs(enemy.x - player.x), Math.abs(enemy.y - player.y));
+      if (range > (attack.range || CONFIG.mageRange) || !this.sim.movement.hasLineOfSight(enemy, player)) return false;
+      this.sim.emit({ type: 'missile', fromX: enemy.x, fromY: enemy.y, toX: player.x, toY: player.y, z: enemy.z || 0, kind: attack.element });
+      tiles = attack.shape === 'ball' ? this.ballTiles(enemy, player, attack.radius) : [[player.x, player.y]];
+    }
+    this.strike(enemy, tiles, attack);
     enemy.lastAttackTime = now;
     return true;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // ballTiles
+  // O círculo de raio radius em volta do alvo, só o que a explosão alcança (sem
+  // atravessar parede).
+
+  ballTiles(enemy, center, radius) {
+    const origin = { x: center.x, y: center.y, z: enemy.z || 0 };
+    return circleArea(radius)
+      .map(([dx, dy]) => [center.x + dx, center.y + dy])
+      .filter(([x, y]) => this.sim.world.isInside(x, y) && this.sim.movement.hasLineOfSight(origin, { x, y }));
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // waveTiles
+  // O leque pra frente (o eixo mais perto do player): de 1 sqm de largura perto
+  // dela até 2 × abertura + 1 no fim do comprimento, sem atravessar parede.
+
+  waveTiles(enemy, player, attack) {
+    const dx = player.x - enemy.x;
+    const dy = player.y - enemy.y;
+    const horizontal = Math.abs(dx) >= Math.abs(dy);
+    const sign = (horizontal ? dx : dy) >= 0 ? 1 : -1;
+    const tiles = [];
+    for (let distance = 1; distance <= attack.length; distance++) {
+      const half = Math.min(attack.spread, Math.floor(distance / 2));
+      for (let side = -half; side <= half; side++) {
+        const x = enemy.x + (horizontal ? sign * distance : side);
+        const y = enemy.y + (horizontal ? side : sign * distance);
+        if (this.sim.world.isInside(x, y) && this.sim.movement.hasLineOfSight(enemy, { x, y })) tiles.push([x, y]);
+      }
+    }
+    return tiles;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // strike
+  // Fere todo player vivo nos sqms (fora da zona segura) e mostra o efeito do tipo.
+
+  strike(enemy, tiles, attack) {
+    const z = enemy.z || 0;
+    const keys = new Set(tiles.map(([x, y]) => `${x},${y}`));
+    for (const target of this.sim.players) {
+      if (!target.isAlive() || (target.z || 0) !== z || !keys.has(`${target.x},${target.y}`) || this.sim.world.isInSafeZone(target)) continue;
+      this.sim.conditions.hurt(target, this.roll(attack), attack.element);
+      if (attack.element === 'poison') this.sim.conditions.add(target, 'poison', { damage: Math.max(1, Math.floor(attack.max / 4)), ticks: SPELL_POISON_TICKS });
+    }
+    if (EFFECTS[attack.element]) this.sim.emit({ type: 'effect', x: enemy.x, y: enemy.y, z, tiles, effect: attack.element });
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // heal
+  // A criatura ferida recupera vida.
+
+  heal(enemy, attack) {
+    if (enemy.currentHp >= enemy.hp) return;
+    enemy.currentHp = Math.min(enemy.hp, enemy.currentHp + this.roll(attack));
+    this.sim.emit({ type: 'effect', x: enemy.x, y: enemy.y, z: enemy.z || 0, tiles: [[enemy.x, enemy.y]], effect: 'heal' });
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // roll
+  // Um valor de min a max da magia.
+
+  roll(attack) {
+    return attack.min + Math.floor(Math.random() * (attack.max - attack.min + 1));
   }
 
   // ================================================================================================================================================================================================================================================

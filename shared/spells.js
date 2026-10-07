@@ -101,7 +101,7 @@ export const AREAS = {
 // O círculo de raio r do Tibia (o da great fireball, r = 3: 37 sqms em
 // linhas de 3, 5, 7, 7, 7, 5 e 3).
 
-function circleArea(r) {
+export function circleArea(r) {
   const tiles = [];
   for (let dy = -r; dy <= r; dy++) {
     for (let dx = -r; dx <= r; dx++) {
