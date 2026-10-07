@@ -52,6 +52,12 @@
     "armadura": 0,
     "defesa": 0,
     "ataque": 8,
-    "loot": []
+    "loot": [],
+    "resistencias": {
+      "energy": 80,
+      "earth": 60,
+      "fire": 110,
+      "ice": 110
+    }
   }
 }

@@ -87,6 +87,20 @@
         "tipo": "itens/escudos/brass-shield",
         "chance": 0.0107
       }
-    ]
+    ],
+    "ataques": [
+      {
+        "forma": "tiro",
+        "elemento": "death",
+        "min": 7,
+        "max": 13,
+        "chance": 15,
+        "alcance": 1
+      }
+    ],
+    "resistencias": {
+      "holy": 125,
+      "death": 0
+    }
   }
 }

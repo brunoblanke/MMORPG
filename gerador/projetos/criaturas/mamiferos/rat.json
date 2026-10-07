@@ -63,6 +63,12 @@
         "tipo": "itens/comidas/cheese",
         "chance": 0.3941
       }
-    ]
+    ],
+    "resistencias": {
+      "earth": 80,
+      "ice": 110,
+      "holy": 80,
+      "death": 110
+    }
   }
 }

@@ -101,7 +101,8 @@ export function creatureStats(type) {
 // 1 = 3×3), 'onda' (leque pra frente: comprimento e abertura, ou larguras, a
 // largura de cada fileira, ex. [1, 1, 3, 3]), 'raio' (linha reta de
 // comprimento sqm), 'cruz' (a cruz da explosion rune no alvo), 'anel' (o aro
-// de raio em volta dela, ou do alvo com centro 'alvo'), 'redor' (os 8 sqms
+// de raio em volta dela, ou do alvo com centro 'alvo'; a bola também pode ter
+// centro 'si': a área em volta dela), 'redor' (os 8 sqms
 // colados nela, como o Berserk), 'varredura' (os 3 sqms colados na frente,
 // como o Front Sweep), 'campo' (cria o campo `campo` no alvo e, com raio, em
 // volta), 'corrente' (Chain: acerta o player e pula pros mais perto, até
@@ -112,6 +113,7 @@ export function creatureStats(type) {
 
 export const SPELL_ELEMENTS = ['fire', 'energy', 'poison', 'ice', 'earth', 'death', 'holy'];
 export const RESISTANCE_ELEMENTS = ['physical', ...SPELL_ELEMENTS];
+const ATTACK_ELEMENTS = RESISTANCE_ELEMENTS;
 const ATTACK_SHAPES = { tiro: 'shot', bola: 'ball', onda: 'wave', cura: 'heal', raio: 'beam', cruz: 'cross', anel: 'ring', redor: 'around', varredura: 'sweep', campo: 'field', corrente: 'chain', lentidao: 'slow' };
 const powersCache = new WeakMap();
 
@@ -136,7 +138,7 @@ function creatureAttacks(props) {
     const max = int(entry && entry.max);
     const speed = Math.trunc(Number(entry && entry.velocidade)) || 0;
     if (!shape) continue;
-    if (shape === 'field' ? !field : shape === 'slow' ? !speed : (shape !== 'heal' && !SPELL_ELEMENTS.includes(element)) || max <= 0) continue;
+    if (shape === 'field' ? !field : shape === 'slow' ? !speed : (shape !== 'heal' && !ATTACK_ELEMENTS.includes(element)) || max <= 0) continue;
     const widths = Array.isArray(entry.larguras) ? entry.larguras.map(int).filter(w => w > 0).slice(0, 13) : [];
     attacks.push({
       ...blank,
@@ -150,7 +152,7 @@ function creatureAttacks(props) {
       length: widths.length || Math.min(12, int(entry.comprimento)),
       spread: Math.min(6, int(entry.abertura)),
       widths,
-      center: entry.centro === 'alvo' ? 'target' : 'self',
+      center: entry.centro === 'alvo' ? 'target' : entry.centro === 'si' ? 'self' : shape === 'ball' ? 'target' : 'self',
       field,
       jumps: Math.min(10, int(entry.saltos) || 3),
       jumpRange: Math.min(10, int(entry.alcanceSalto) || 4),

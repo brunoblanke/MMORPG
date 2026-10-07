@@ -89,6 +89,30 @@
         "tipo": "itens/aneis/life-ring",
         "chance": 0.0019
       }
-    ]
+    ],
+    "ataques": [
+      {
+        "forma": "bola",
+        "elemento": "death",
+        "min": 15,
+        "max": 27,
+        "chance": 10,
+        "alcance": 1,
+        "raio": 1
+      },
+      {
+        "forma": "cura",
+        "min": 9,
+        "max": 15,
+        "chance": 5
+      }
+    ],
+    "resistencias": {
+      "energy": 70,
+      "earth": 80,
+      "ice": 90,
+      "holy": 125,
+      "death": 0
+    }
   }
 }

@@ -183,6 +183,62 @@
         "tipo": "itens/armaduras/magic-plate-armor",
         "chance": 0.0008
       }
-    ]
+    ],
+    "ataques": [
+      {
+        "forma": "bola",
+        "elemento": "fire",
+        "min": 150,
+        "max": 250,
+        "chance": 20,
+        "alcance": 7,
+        "raio": 6
+      },
+      {
+        "forma": "campo",
+        "campo": "itens/itens-encantados/fire-field",
+        "chance": 10,
+        "alcance": 7,
+        "raio": 1
+      },
+      {
+        "forma": "raio",
+        "elemento": "death",
+        "min": 300,
+        "max": 480,
+        "chance": 10,
+        "comprimento": 8
+      },
+      {
+        "forma": "tiro",
+        "elemento": "energy",
+        "min": 210,
+        "max": 300,
+        "chance": 10,
+        "alcance": 1
+      },
+      {
+        "forma": "lentidao",
+        "velocidade": -700,
+        "ms": 30000,
+        "chance": 15,
+        "alcance": 7
+      },
+      {
+        "forma": "cura",
+        "min": 80,
+        "max": 250,
+        "chance": 15
+      }
+    ],
+    "resistencias": {
+      "physical": 75,
+      "energy": 50,
+      "earth": 60,
+      "fire": 0,
+      "ice": 112,
+      "holy": 112,
+      "death": 80
+    }
   }
 }

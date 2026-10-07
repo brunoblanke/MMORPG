@@ -177,7 +177,7 @@ function shapeOf(attack, playerAt = [5, 9]) {
   const enemy = sim.enemies[0];
   Object.assign(sim.player, { x: playerAt[0], y: playerAt[1] });
   const powers = sim.powers;
-  const spell = { shape: ({ onda: 'wave', raio: 'beam', varredura: 'sweep', redor: 'around', anel: 'ring', cruz: 'cross', bola: 'ball' })[attack.forma], center: 'self', widths: attack.larguras || [], length: attack.larguras ? attack.larguras.length : attack.comprimento || 0, spread: attack.abertura || 0, radius: attack.raio || 0, range: attack.alcance || 0, element: 'fire' };
+  const spell = { shape: ({ onda: 'wave', raio: 'beam', varredura: 'sweep', redor: 'around', anel: 'ring', cruz: 'cross', bola: 'ball' })[attack.forma], center: attack.forma === 'bola' ? 'target' : 'self', widths: attack.larguras || [], length: attack.larguras ? attack.larguras.length : attack.comprimento || 0, spread: attack.abertura || 0, radius: attack.raio || 0, range: attack.alcance || 0, element: 'fire' };
   return { sim, enemy, area: powers.areaOf(enemy, sim.player, spell) };
 }
 

@@ -55,7 +55,10 @@
     "loot": [],
     "falas": [
       "Flap! Flap!"
-    ]
+    ],
+    "resistencias": {
+      "earth": 110
+    }
   },
   "ferramenta": "criaturas",
   "grupo": "criaturas",

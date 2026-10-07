@@ -63,6 +63,11 @@
         "tipo": "itens/produtos-de-criaturas/wolf-paw",
         "chance": 0.01
       }
-    ]
+    ],
+    "resistencias": {
+      "ice": 110,
+      "holy": 70,
+      "death": 105
+    }
   }
 }

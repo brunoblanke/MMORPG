@@ -83,8 +83,8 @@ const slotsEl = document.getElementById('corpseSlots');
 const lootEl = document.getElementById('creatureLoot');
 const attacksEl = document.getElementById('creatureAttacks');
 const resistEl = document.getElementById('creatureResistances');
-const ATTACK_ELEMENTS = [['fire', 'Fogo'], ['energy', 'Energia'], ['poison', 'Veneno'], ['ice', 'Gelo'], ['earth', 'Terra'], ['death', 'Morte'], ['holy', 'Sagrado']];
-const RESIST_ELEMENTS = [['physical', 'Físico'], ...ATTACK_ELEMENTS];
+const ATTACK_ELEMENTS = [['physical', 'Físico'], ['fire', 'Fogo'], ['energy', 'Energia'], ['poison', 'Veneno'], ['ice', 'Gelo'], ['earth', 'Terra'], ['death', 'Morte'], ['holy', 'Sagrado']];
+const RESIST_ELEMENTS = ATTACK_ELEMENTS;
 const ATTACK_FIELD_TYPES = [['itens/itens-encantados/fire-field', 'Campo de fogo'], ['itens/itens-encantados/poison-field', 'Campo de veneno'], ['itens/itens-encantados/energy-field', 'Campo de energia']];
 const ATTACK_SHAPES = [
   ['tiro', 'Tiro (um alvo)'], ['bola', 'Bola (área no alvo)'], ['onda', 'Onda (leque)'], ['raio', 'Raio (linha)'], ['cruz', 'Cruz (no alvo)'],
@@ -101,7 +101,7 @@ const ATTACK_FIELDS = {
   comprimento: { label: 'Comprimento', min: 0 },
   abertura: { label: 'Abertura', min: 0 },
   larguras: { label: 'Larguras (ex. 1,3,3,5)', text: true },
-  centro: { label: 'Centro', options: [['si', 'Nela'], ['alvo', 'No alvo']] },
+  centro: { label: 'Centro', options: [['alvo', 'No alvo'], ['si', 'Nela']] },
   campo: { label: 'Campo', options: ATTACK_FIELD_TYPES },
   saltos: { label: 'Players (total)', min: 1 },
   alcanceSalto: { label: 'Pulo (sqm)', min: 1 },
@@ -111,7 +111,7 @@ const ATTACK_FIELDS = {
 };
 const ATTACK_SHAPE_FIELDS = {
   tiro: ['elemento', 'min', 'max', 'chance', 'alcance'],
-  bola: ['elemento', 'min', 'max', 'chance', 'alcance', 'raio'],
+  bola: ['elemento', 'min', 'max', 'chance', 'alcance', 'raio', 'centro'],
   onda: ['elemento', 'min', 'max', 'chance', 'comprimento', 'abertura', 'larguras'],
   raio: ['elemento', 'min', 'max', 'chance', 'comprimento'],
   cruz: ['elemento', 'min', 'max', 'chance', 'alcance'],

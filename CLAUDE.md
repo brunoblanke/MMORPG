@@ -35,7 +35,7 @@ Jogo multiplayer estilo Tibia em JavaScript puro (sem framework), com editor de 
 - `shared/` — usado por jogo, editor e servidor: `assets.js` (folhas do gerador, tipos `pasta/nome#peça`, direções, estado ativo, padrão de piso), `map-format.js`, `items.js`, `spells.js`, `effects.js`, `stairs.js`.
 - `editor/` — editor de mapa (salva em `data/map.json`; R gira objetos; prévia do pincel; a ferramenta Bot de teste pinta players parados que renascem no lugar, `botData`).
 - `gerador/` — gerador de sprites (porta `GERADOR_PORT`, padrão 8100): `server.js`, `tibia-assets.js` (lê .spr/.dat), `app/` (Pisos, Criaturas, Paredes, Objetos, Classificar). Receitas em `gerador/projetos/**.json`, folhas prontas em `gerador/saida/**.png`. `taxonomia.json` define pastas; `classificacao.json` a classificação; `itens-antigos.json` a aba Old.
-- `ferramentas/` — scripts: `efeitos.js` (efeitos/projéteis), `itens-antigos.js`, `pre-classificar.js`, `mover-folhas.js`.
+- `ferramentas/` — scripts: `efeitos.js` (efeitos/projéteis), `itens-antigos.js`, `pre-classificar.js`, `mover-folhas.js`, `importar-ataques.js` (magias e resistências das criaturas, do Canary).
 - `tests/` — `node --test`; `tests/tibia-780/` é o cliente 7.80 usado nos testes e na comparação de sprites antigos.
 
 ## Conceitos importantes
@@ -46,6 +46,6 @@ Jogo multiplayer estilo Tibia em JavaScript puro (sem framework), com editor de 
 - Piso com padrão pela posição (`formato.padrao`), animado (`quadros`, `msPorQuadro`).
 - Escadas sobem para a direção delas (`shared/stairs.js`).
 - Munição: o efeito ao acertar vem da receita (`impacto` no gerador: explode em área, veneno ou dano extra de elemento), não do tipo da flecha. Arma de duas mãos (`duasMaos`) não equipa com escudo; aljava (pasta Aljavas, container) vai no espaço de munição e só guarda munição.
-- Magias das criaturas: lista `ataques` na receita (tiro, bola, onda, cura), valores do Canary; `magia` antiga vira um tiro.
+- Magias das criaturas: lista `ataques` na receita (tiro, bola, onda, raio, cruz, anel, redor, varredura, campo, corrente, lentidão, cura, reflexo), editada no gerador (aba Criaturas); `resistencias` = % do dano que a criatura leva por tipo (Canary: 100 − percent); `magia` antiga vira um tiro. Player ainda não tem resistência.
 - Dois players só dividem o sqm no respawn e ao cair em buraco; escada de usar com alguém em cima sai no sqm livre mais perto.
 - "Antigo" (aba Old) = sprite idêntico ao 7.80; o Tibia atual ainda usa muitos deles.

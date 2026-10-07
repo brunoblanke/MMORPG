@@ -96,7 +96,14 @@
       "Let me kiss your neck",
       "I smell warm blood!",
       "I call you, my bats! Come!"
-    ]
+    ],
+    "resistencias": {
+      "physical": 75,
+      "earth": 0,
+      "fire": 110,
+      "holy": 125,
+      "death": 0
+    }
   },
   "ferramenta": "criaturas",
   "grupo": "criaturas",

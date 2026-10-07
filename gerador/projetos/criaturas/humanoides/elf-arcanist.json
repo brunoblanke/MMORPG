@@ -129,7 +129,45 @@
         "tipo": "itens/valiosos/yellow-gem",
         "chance": 0.0005
       }
-    ]
+    ],
+    "ataques": [
+      {
+        "forma": "tiro",
+        "elemento": "physical",
+        "min": 0,
+        "max": 70,
+        "chance": 10,
+        "alcance": 7
+      },
+      {
+        "forma": "tiro",
+        "elemento": "energy",
+        "min": 30,
+        "max": 50,
+        "chance": 10,
+        "alcance": 7
+      },
+      {
+        "forma": "tiro",
+        "elemento": "death",
+        "min": 70,
+        "max": 85,
+        "chance": 10,
+        "alcance": 7
+      },
+      {
+        "forma": "cura",
+        "min": 40,
+        "max": 60,
+        "chance": 15
+      }
+    ],
+    "resistencias": {
+      "energy": 80,
+      "fire": 50,
+      "holy": 110,
+      "death": 80
+    }
   },
   "ferramenta": "criaturas",
   "grupo": "criaturas",

@@ -95,6 +95,12 @@
         "tipo": "itens/liquidos/health-potion",
         "chance": 0.0005
       }
-    ]
+    ],
+    "resistencias": {
+      "energy": 75,
+      "earth": 110,
+      "holy": 80,
+      "death": 110
+    }
   }
 }

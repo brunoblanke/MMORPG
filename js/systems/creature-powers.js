@@ -123,11 +123,11 @@ export class CreaturePowers {
 
   areaOf(enemy, player, attack) {
     const shape = attack.shape;
-    if (DIRECTIONAL.includes(shape) || shape === 'around' || (shape === 'ring' && attack.center === 'self')) {
+    if (DIRECTIONAL.includes(shape) || shape === 'around' || ((shape === 'ring' || shape === 'ball') && attack.center === 'self')) {
       const tiles = shape === 'wave' ? this.waveTiles(enemy, player, attack)
         : shape === 'beam' ? this.beamTiles(enemy, player, attack)
         : shape === 'sweep' ? this.sweepTiles(enemy, player)
-        : this.visibleTiles(enemy, shape === 'around' ? AROUND : ringArea(attack.radius));
+        : this.visibleTiles(enemy, shape === 'around' ? AROUND : shape === 'ball' ? circleArea(attack.radius) : ringArea(attack.radius));
       return tiles.some(([x, y]) => x === player.x && y === player.y) ? { tiles, missile: false } : null;
     }
     const range = Math.max(Math.abs(enemy.x - player.x), Math.abs(enemy.y - player.y));

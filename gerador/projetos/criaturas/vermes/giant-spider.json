@@ -107,7 +107,31 @@
         "tipo": "itens/amuletos-e-colares/platinum-amulet",
         "chance": 0.0028
       }
-    ]
+    ],
+    "ataques": [
+      {
+        "forma": "campo",
+        "campo": "itens/itens-encantados/poison-field",
+        "chance": 10,
+        "alcance": 7,
+        "raio": 1
+      },
+      {
+        "forma": "bola",
+        "elemento": "earth",
+        "min": 40,
+        "max": 70,
+        "chance": 10,
+        "alcance": 7,
+        "raio": 1
+      }
+    ],
+    "resistencias": {
+      "energy": 80,
+      "earth": 0,
+      "fire": 110,
+      "ice": 80
+    }
   },
   "ferramenta": "criaturas",
   "grupo": "criaturas",

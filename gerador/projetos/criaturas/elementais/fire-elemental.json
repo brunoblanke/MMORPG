@@ -48,7 +48,30 @@
     "armadura": 18,
     "defesa": 18,
     "ataque": 100,
-    "loot": []
+    "loot": [],
+    "ataques": [
+      {
+        "forma": "bola",
+        "elemento": "fire",
+        "min": 45,
+        "max": 160,
+        "chance": 20,
+        "alcance": 7,
+        "raio": 2
+      },
+      {
+        "forma": "campo",
+        "campo": "itens/itens-encantados/fire-field",
+        "chance": 25,
+        "alcance": 7,
+        "raio": 1
+      }
+    ],
+    "resistencias": {
+      "fire": 0,
+      "ice": 125,
+      "death": 0
+    }
   },
   "ferramenta": "criaturas",
   "grupo": "criaturas",

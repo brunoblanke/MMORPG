@@ -73,6 +73,11 @@
         "tipo": "itens/produtos-de-criaturas/honeycomb",
         "chance": 0.0046
       }
-    ]
+    ],
+    "resistencias": {
+      "ice": 110,
+      "holy": 90,
+      "death": 105
+    }
   }
 }

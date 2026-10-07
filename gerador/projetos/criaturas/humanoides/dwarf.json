@@ -99,6 +99,11 @@
         "tipo": "itens/valiosos/iron-ore",
         "chance": 0.001
       }
-    ]
+    ],
+    "resistencias": {
+      "earth": 90,
+      "fire": 105,
+      "death": 105
+    }
   }
 }

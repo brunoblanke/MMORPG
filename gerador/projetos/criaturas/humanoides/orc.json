@@ -83,6 +83,12 @@
         "tipo": "itens/capacetes/studded-helmet",
         "chance": 0.031
       }
-    ]
+    ],
+    "resistencias": {
+      "energy": 80,
+      "earth": 110,
+      "holy": 90,
+      "death": 110
+    }
   }
 }

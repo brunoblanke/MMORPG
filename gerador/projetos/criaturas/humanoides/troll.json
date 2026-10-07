@@ -95,6 +95,12 @@
         "tipo": "itens/amuletos-e-colares/silver-amulet",
         "chance": 0.0008
       }
-    ]
+    ],
+    "resistencias": {
+      "energy": 80,
+      "earth": 110,
+      "holy": 90,
+      "death": 110
+    }
   }
 }

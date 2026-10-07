@@ -99,6 +99,12 @@
         "tipo": "itens/amuletos-e-colares/bronze-amulet",
         "chance": 0.0011
       }
-    ]
+    ],
+    "resistencias": {
+      "fire": 80,
+      "ice": 110,
+      "holy": 90,
+      "death": 110
+    }
   }
 }
