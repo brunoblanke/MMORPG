@@ -23,6 +23,7 @@ import { CreaturePowers } from './systems/creature-powers.js';
 import { SocialController } from './systems/social.js';
 import { HouseController } from './systems/houses.js';
 import { MailController } from './systems/mail.js';
+import { SimulatorController } from './systems/simulator.js';
 import { objectIdType, doorState } from '../shared/assets.js';
 
 export { TICK_MS };
@@ -82,6 +83,7 @@ export class Simulation {
     this.savedCharacters = options.characters || {};
     this.houses = new HouseController(this, options.houses || {});
     this.mail = new MailController(this);
+    this.simulator = options.simulator ? new SimulatorController(this) : null;
     this.npcs = [];
     this.talk = new NpcController(this, options.npcs || []);
     this.spawnBots([...collectBotDescriptors(mapData), ...(options.bots || [])]);
@@ -380,7 +382,9 @@ export class Simulation {
       this.inventory.digest(player, now);
     }
 
+    if (this.simulator) this.simulator.update();
     for (const enemy of [...this.enemies]) {
+      if (enemy.dummy) continue;
       const player = this.closestPlayer(enemy);
       const bounds = player ? this.searchBoundsAround(player) : null;
       this.enemyAI.update(enemy, player, this.enemies, now, bounds);

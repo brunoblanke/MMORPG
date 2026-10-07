@@ -1,0 +1,5 @@
+.sim-panel { position: fixed; top: 10px; left: 50%; transform: translateX(-50%); z-index: 20; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 8px 12px; background: rgba(20, 20, 26, 0.92); border: 1px solid #555; border-radius: 6px; color: #ddd; font: 13px system-ui, sans-serif; max-width: 96vw; }
+.sim-panel[hidden] { display: none; }
+.sim-panel select { max-width: 280px; background: #2c2c33; color: #eee; border: 1px solid #555; padding: 3px; }
+.sim-panel button { background: #d9531e; color: #fff; border: 0; padding: 6px 14px; border-radius: 4px; cursor: pointer; }
+.sim-panel small { color: #999; flex-basis: 100%; }

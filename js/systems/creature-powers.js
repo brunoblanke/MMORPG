@@ -27,7 +27,7 @@ import { FIELDS } from '../../shared/conditions.js';
 // lineTiles
 // Os sqms da linha reta de a até b (sem o de a, com o de b).
 
-function lineTiles(a, b) {
+export function lineTiles(a, b) {
   const tiles = [];
   let x = a.x;
   let y = a.y;
@@ -49,13 +49,13 @@ export const POWER_TRY_MS = 2000;
 export const SUMMON_CHANCE = 0.25;
 const SPELL_POISON_TICKS = 5;
 const DIRECTIONAL = ['wave', 'beam', 'sweep'];
-const AROUND = [[-1, -1], [0, -1], [1, -1], [-1, 0], [1, 0], [-1, 1], [0, 1], [1, 1]];
+export const AROUND = [[-1, -1], [0, -1], [1, -1], [-1, 0], [1, 0], [-1, 1], [0, 1], [1, 1]];
 
 // ================================================================================================================================================================================================================================================
 // ringArea
 // O aro de raio r (os sqms a r sqm do centro, sem o miolo).
 
-function ringArea(r) {
+export function ringArea(r) {
   const tiles = [];
   for (let dy = -r; dy <= r; dy++) {
     for (let dx = -r; dx <= r; dx++) {

@@ -2,6 +2,9 @@
 
 import { CONFIG } from './config.js';
 import { LocalSession } from './net/local-session.js';
+import { SimulatorSession } from './net/simulator-session.js';
+import { SimulatorPanel } from './views/simulator-panel.js';
+import { buildArenaMap } from '../shared/simulator-map.js';
 import { RemoteSession, JoinError } from './net/remote-session.js';
 import { loadMapDataFromURL } from '../shared/map-format.js';
 import { Camera } from './services/camera.js';
@@ -89,11 +92,12 @@ export class GameController {
   boot() {
     const modal = new NameModal();
     const spritesReady = this.loadSprites(modal);
-    const mapReady = loadMapDataFromURL(CONFIG.mapDataUrl, CONFIG.mapFallbackUrl).catch((error) => {
+    const simulator = !!window.SIMULATOR;
+    const mapReady = simulator ? Promise.resolve(buildArenaMap()) : loadMapDataFromURL(CONFIG.mapDataUrl, CONFIG.mapFallbackUrl).catch((error) => {
       console.error('❌ Erro ao carregar mapa:', error);
       return {};
     });
-    const socketReady = RemoteSession.openSocket().catch((error) => {
+    const socketReady = simulator ? Promise.resolve(null) : RemoteSession.openSocket().catch((error) => {
       console.log(`🕹️ Sem servidor de jogo (${error.message}): jogando sozinho`);
       return null;
     });
@@ -106,6 +110,7 @@ export class GameController {
         this.joystick = new Joystick(this.inputController, this.canvas);
         this.inventoryUI = new InventoryUI(this);
         this.setupEventListeners();
+        if (simulator) this.simulatorPanel = new SimulatorPanel(this);
         this.start();
       });
   }
@@ -129,6 +134,10 @@ export class GameController {
   // antes de entrar): joga sozinho no navegador com esse nome.
 
   async openSession(modal, mapData, socket) {
+    if (window.SIMULATOR) {
+      modal.close('Simulator');
+      return new SimulatorSession(mapData);
+    }
     let again = takeRejoin();
     for (;;) {
       const { name, gender, password } = again || await modal.ask();
