@@ -40,7 +40,7 @@ const NUMBERS = [
   { key: 'regenVida', label: 'Equipado: recupera vida a cada 6 s', min: 0, step: 1 },
   { key: 'regenMana', label: 'Equipado: recupera mana a cada 6 s', min: 0, step: 1 }
 ];
-const DEFAULT_PROPERTIES = { bloqueia: false, move: true, altura: false, empilhavel: false, peso: 10, espacos: 0, atk: 0, def: 0, ml: 0, speed: 0, vidaMin: 0, vidaMax: 0, manaMin: 0, manaMax: 0, alimento: 0, luz: 0, duracao: 0, regenVida: 0, regenMana: 0, uso: '', ativoComo: '', comecaAtivo: false };
+const DEFAULT_PROPERTIES = { bloqueia: false, move: true, altura: false, empilhavel: false, duasMaos: false, peso: 10, espacos: 0, atk: 0, def: 0, ml: 0, speed: 0, vidaMin: 0, vidaMax: 0, manaMin: 0, manaMax: 0, alimento: 0, luz: 0, duracao: 0, regenVida: 0, regenMana: 0, uso: '', ativoComo: '', comecaAtivo: false };
 const USES = [
   ['', 'Nenhum'],
   ['placa', 'Placa (mostra um texto, escrito no editor)'],
@@ -60,7 +60,8 @@ const PROPERTIES = [
   { key: 'bloqueia', label: 'Bloqueia a passagem' },
   { key: 'move', label: 'Pode ser movido (arrastar)' },
   { key: 'altura', label: 'Tem altura (empilha e dá pra subir; escada: sobe ao pisar)' },
-  { key: 'empilhavel', label: 'Empilhável (pilha até 100)' }
+  { key: 'empilhavel', label: 'Empilhável (pilha até 100)' },
+  { key: 'duasMaos', label: 'Arma de duas mãos (arco, besta…): não usa com escudo' }
 ];
 
 const DIRECTIONS = [['norte', 'Norte'], ['leste', 'Leste'], ['sul', 'Sul'], ['oeste', 'Oeste']];

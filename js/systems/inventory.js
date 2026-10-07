@@ -4,7 +4,7 @@ import { PLAYER_LIGHT } from '../../shared/lighting.js';
 import { isPositionAdjacentTo } from '../utils/helpers.js';
 import { getAsset, splitType } from '../../shared/assets.js';
 import {
-  EQUIP_SLOTS, THROW_RANGE, STARTER_KIT, itemInfo, itemLight, fitsSlot, capacityFor, newItem, weightOf, contains, findInTree, fromPlain, equipBonus
+  EQUIP_SLOTS, THROW_RANGE, STARTER_KIT, itemInfo, itemLight, fitsSlot, isAmmo, isQuiver, capacityFor, newItem, weightOf, contains, findInTree, fromPlain, equipBonus
 } from '../../shared/items.js';
 import { SKILL_KEYS } from '../../shared/skills.js';
 import { consumableMethods } from './inventory/consumables.js';
@@ -184,7 +184,16 @@ export class InventoryController {
         return { kind: 'slot', container: bag, index: free, carried: true };
       }
       if (!fitsSlot(item.type, to.key)) return { error: 'Esse item não vai nesse espaço.' };
+      const handsError = this.handsError(player, item, to.key);
+      if (handsError) return { error: handsError };
       const worn = player.equip[to.key];
+      if (to.key === 'municao' && worn && worn.items && isQuiver(worn.type) && worn.uid !== item.uid && isAmmo(item.type)) {
+        const same = worn.items.find(inside => inside && inside.type === item.type && inside.count < itemInfo(item.type).stack);
+        if (same) return { kind: 'merge', target: same, carried: true };
+        const free = worn.items.indexOf(null);
+        if (free < 0) return { error: 'Sem espaço na aljava.' };
+        return { kind: 'slot', container: worn, index: free, carried: true };
+      }
       const stack = itemInfo(item.type).stack;
       if (stack && worn && worn.type === item.type && worn.uid !== item.uid) {
         if (worn.count >= stack) return { error: 'Essa pilha já está cheia.' };
@@ -198,10 +207,14 @@ export class InventoryController {
       const box = found.container;
       if (from.t === 'c' && from.uid === to.uid && from.i === to.i) return { error: null };
       if (item.uid === box.uid || contains(item, box)) return { error: 'Não dá pra pôr uma caixa dentro dela mesma.' };
+      const quiverError = this.quiverError(box, item);
+      if (quiverError) return { error: quiverError };
       const there = box.items[to.i];
       if (!there) return { kind: 'slot', container: box, index: to.i, carried: found.carried };
       if (there.items && there.uid !== item.uid && found.carried) {
         if (contains(item, there)) return { error: 'Não dá pra pôr uma caixa dentro dela mesma.' };
+        const nestedQuiverError = this.quiverError(there, item);
+        if (nestedQuiverError) return { error: nestedQuiverError };
         const free = there.items.indexOf(null);
         if (free < 0) return { error: `Sem espaço em ${itemInfo(there.type).name}.` };
         return { kind: 'slot', container: there, index: free, carried: found.carried };
@@ -216,6 +229,26 @@ export class InventoryController {
       return { kind: 'slot', container: box, index: free, carried: found.carried };
     }
     return { error: 'Destino inválido.' };
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // handsError
+  // Arma de duas mãos não usa com escudo (nem tocha ou livro de magia, que
+  // também ocupam a outra mão): devolve o aviso, ou null se pode equipar.
+
+  handsError(player, item, key) {
+    if (key === 'arma' && itemInfo(item.type).twoHanded && player.equip.escudo) return 'Arma de duas mãos: tire o que está na outra mão.';
+    const weapon = player.equip.arma;
+    if (key === 'escudo' && weapon && itemInfo(weapon.type).twoHanded) return 'Você está com uma arma de duas mãos.';
+    return null;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // quiverError
+  // A aljava só guarda munição: devolve o aviso, ou null.
+
+  quiverError(container, item) {
+    return isQuiver(container.type) && !isAmmo(item.type) ? 'Só munição vai na aljava.' : null;
   }
 
   // ================================================================================================================================================================================================================================================

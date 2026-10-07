@@ -5,7 +5,7 @@ import { getLevel } from '../core/geometry.js';
 import { AI_STATE } from '../models/enemy.js';
 import { creatureBehavior, creaturePowers } from '../../shared/assets.js';
 import { CONFIG } from '../config.js';
-import { equipBonus, itemInfo, newItem } from '../../shared/items.js';
+import { equipBonus, itemInfo, newItem, isAmmo, isQuiver } from '../../shared/items.js';
 import { addSkillTry } from '../../shared/skills.js';
 import { AMMO_CONDITIONS } from '../../shared/conditions.js';
 import { WANDS, WAND_RANGE } from '../../shared/spells.js';
@@ -204,7 +204,7 @@ export class CombatController {
 
   // ================================================================================================================================================================================================================================================
   // rangedWeapon
-  // A arma de distância do player: { range, attack, ammoKey, thrown }, a
+  // A arma de distância do player: { range, attack, ammo, thrown }, a
   // wand ou rod ({ range, wand }), ou { error } (sem munição; wand de outra
   // vocação, sem o nível ou sem mana), ou null (não é de distância).
 
@@ -219,11 +219,25 @@ export class CombatController {
       return { range: WAND_RANGE, wand };
     }
     if (!info || info.weaponSkill !== 'distance') return null;
-    if (info.stack) return { range: THROWN_RANGE, attack: info.atk, ammoKey: 'arma', thrown: true };
-    const ammo = player.equip.municao;
-    const ammoInfo = ammo ? itemInfo(ammo.type) : null;
-    if (!ammoInfo || ammoInfo.weaponSkill !== 'distance' || ammoInfo.slot !== 'municao') return { error: 'Você está sem munição.' };
-    return { range: LAUNCHER_RANGE, attack: info.atk + ammoInfo.atk, ammoKey: 'municao', thrown: false };
+    if (info.stack) return { range: THROWN_RANGE, attack: info.atk, ammo: { item: weapon, take: () => { player.equip.arma = null; } }, thrown: true };
+    const ammo = this.findAmmo(player);
+    if (!ammo) return { error: 'Você está sem munição.' };
+    return { range: LAUNCHER_RANGE, attack: info.atk + itemInfo(ammo.item.type).atk, ammo, thrown: false };
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // findAmmo
+  // A munição que sai no próximo tiro: a do espaço de munição ou a primeira
+  // pilha dentro da aljava que está nele. { item, take } (take tira a pilha
+  // quando acaba) ou null.
+
+  findAmmo(player) {
+    const slot = player.equip.municao;
+    if (!slot) return null;
+    if (isAmmo(slot.type)) return { item: slot, take: () => { player.equip.municao = null; } };
+    if (!isQuiver(slot.type) || !slot.items) return null;
+    const index = slot.items.findIndex(item => item && isAmmo(item.type));
+    return index < 0 ? null : { item: slot.items[index], take: () => { slot.items[index] = null; this.sim.inventory.compactAll(player); } };
   }
 
   // ================================================================================================================================================================================================================================================
@@ -245,9 +259,9 @@ export class CombatController {
   shoot(player, target, ranged, now) {
     if (now - player.lastAttackTime < CONFIG.attackCooldown || !target.isAlive()) return;
     if (ranged.wand) return this.zap(player, target, ranged.wand, now);
-    const ammo = player.equip[ranged.ammoKey];
+    const ammo = ranged.ammo.item;
     ammo.count = (ammo.count || 1) - 1;
-    if (ammo.count <= 0) player.equip[ranged.ammoKey] = null;
+    if (ammo.count <= 0) ranged.ammo.take();
     const ammoName = ammo.type.split('/').pop();
     const kind = MISSILES[ammoName] ? ammoName : ranged.thrown ? 'spear' : 'arrow';
     this.sim.emit({ type: 'missile', fromX: player.x, fromY: player.y, toX: target.x, toY: target.y, z: player.z || 0, kind });

@@ -82,7 +82,7 @@ const SLOT_BY_FOLDER = {
 // da luz (sqm) que ele dá equipado ou no chão (0 = não ilumina), burn os
 // segundos que ele dura em uso (aceso, ou equipado se regenera) até acabar
 // (0 = não gasta) e regen o que ele recupera equipado a cada REGEN_MS
-// (anel de cura).
+// (anel de cura) e twoHanded se a arma pede as duas mãos (não usa com escudo).
 
 export function itemInfo(type) {
   const asset = getAsset(splitType(type).asset);
@@ -107,8 +107,28 @@ export function itemInfo(type) {
     light: bonusValue(props.luz),
     burn: bonusValue(props.duracao),
     regen: { hp: bonusValue(props.regenVida), mana: bonusValue(props.regenMana) },
-    weaponSkill: SKILL_BY_WEAPON_FOLDER[folder] || null
+    weaponSkill: SKILL_BY_WEAPON_FOLDER[folder] || null,
+    twoHanded: !!props.duasMaos
   };
+}
+
+// ================================================================================================================================================================================================================================================
+// isAmmo
+// Munição de arma de distância (flecha, virote…): a que vai no espaço de
+// munição ou dentro da aljava.
+
+export function isAmmo(type) {
+  const info = itemInfo(type);
+  return info.slot === 'municao' && info.weaponSkill === 'distance' && !info.size;
+}
+
+// ================================================================================================================================================================================================================================================
+// isQuiver
+// Aljava: container que fica no espaço de munição e só guarda munição.
+
+export function isQuiver(type) {
+  const info = itemInfo(type);
+  return info.slot === 'municao' && info.size > 0;
 }
 
 // ================================================================================================================================================================================================================================================
