@@ -62,8 +62,8 @@ export const TEST_CHARACTERS = {
 
 // ================================================================================================================================================================================================================================================
 // buildTestCharacter
-// O personagem pronto pra gravar (o formato do characters.json), sem posição:
-// ele nasce no spawn do mapa.
+// O personagem pronto pra gravar (o formato do characters.json), sem posição
+// nem casa: ele nasce, e renasce ao morrer, no spawn do mapa.
 
 export function buildTestCharacter(name, model) {
   const player = new Player({ id: 'teste', name, x: 0, y: 0, z: 0, lvl: 100, vocation: model.vocation });
@@ -75,7 +75,7 @@ export function buildTestCharacter(name, model) {
   player.food = FOOD_MAX_SECONDS * 1000;
   const equip = Object.fromEntries(EQUIP_SLOTS.map(key => [key, model.equip[key] || null]));
   equip.mochila = { type: `${BASE}recipientes/backpack-azul`, items: model.mochila };
-  const { x, y, z, ...saved } = player.toSave();
+  const { x, y, z, home, ...saved } = player.toSave();
   return JSON.parse(JSON.stringify({ ...saved, equip }));
 }
 

@@ -52,6 +52,8 @@ test('personagens de teste: nível 100, skills 100, equipamento da vocação car
       const salvo = salvos[nome.toLowerCase()];
       const player = sim.addPlayer(`id-${nome}`, { name: nome, saved: salvo });
       jogadores[nome] = player;
+      assert.deepEqual([player.x, player.y, player.z], [5, 5, 0]);
+      assert.deepEqual([player.spawnX, player.spawnY, player.spawnZ], [5, 5, 0]);
       assert.equal(player.lvl, 100);
       assert.equal(player.vocation, nome.toLowerCase());
       assert.ok(Object.values(player.skills).every(skill => skill.lvl === 100));
