@@ -40,6 +40,8 @@ export class Simulation {
   // options.lootTable: o que cada criatura deixa cair (systems/inventory.js).
   // options.npcs: NPCs além dos do mapa (definições de shared/npcs.js).
   // options.houses: dono, convidados e itens guardados das casas (houses.js).
+  // options.characters: os personagens guardados ({ nome em minúsculas: dados }), onde o
+  // banco e o correio acham quem está offline.
   // options.bots: bots de teste além dos do mapa [{ name, x, y, z, lvl }] (spawnBots).
 
   constructor(mapData, options = {}) {
@@ -76,6 +78,7 @@ export class Simulation {
     this.conditions = new ConditionController(this);
     this.powers = new CreaturePowers(this);
     this.social = new SocialController(this);
+    this.savedCharacters = options.characters || {};
     this.houses = new HouseController(this, options.houses || {});
     this.npcs = [];
     this.talk = new NpcController(this, options.npcs || []);

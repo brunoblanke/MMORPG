@@ -2,8 +2,8 @@
 
 import { Npc } from '../models/npc.js';
 import { getMapSpawn } from '../../shared/map-format.js';
-import { DEFAULT_RADIUS, YES_WORDS, NO_WORDS, TRADE_WORDS, SELL_WORDS, MAX_SELL, VOCATION_LINES, SHOP_LINES, QUEST_LINES, normalizeSpeech, npcDefFromAsset, fillLine } from '../../shared/npcs.js';
-import { buy, sell } from './trade.js';
+import { DEFAULT_RADIUS, YES_WORDS, NO_WORDS, TRADE_WORDS, SELL_WORDS, MAX_SELL, VOCATION_LINES, SHOP_LINES, QUEST_LINES, BANK_LINES, BALANCE_WORDS, DEPOSIT_WORDS, WITHDRAW_WORDS, TRANSFER_WORDS, CHANGE_WORDS, ALL_WORDS, BANK_WORDS, MAX_BANK, normalizeSpeech, npcDefFromAsset, fillLine } from '../../shared/npcs.js';
+import { buy, sell, pay, give, moneyOf } from './trade.js';
 import { questState, startQuest, progressOf, progressText, completeQuest } from './quests.js';
 import { VOCATIONS, VOCATION_LEVEL } from '../../shared/vocations.js';
 import { getLevel } from '../core/geometry.js';
@@ -51,6 +51,7 @@ export class NpcController {
       npc.offering = new Map();
       npc.selling = new Set();
       npc.questOffer = new Map();
+      npc.banking = new Map();
       npc.home = { x: spot.x, y: spot.y, z };
       npc.homeX = spot.x;
       npc.homeY = spot.y;
@@ -105,7 +106,7 @@ export class NpcController {
     this.speak(player, text);
     const heard = normalizeSpeech(text);
     for (const npc of this.sim.npcs) {
-      if (this.distanceTo(npc, player) <= HEAR_RANGE) this.hear(npc, player, heard);
+      if (this.distanceTo(npc, player) <= HEAR_RANGE) this.hear(npc, player, heard, text);
     }
   }
 
@@ -114,7 +115,7 @@ export class NpcController {
   // Sem conversa: só o cumprimento começa uma. Em conversa: tchau encerra;
   // um tópico responde; o resto ele ignora.
 
-  hear(npc, player, text) {
+  hear(npc, player, text, raw = text) {
     const def = this.defs.get(npc.defId);
     if (!def) return;
     const talking = npc.focus.has(player.id);
@@ -128,14 +129,11 @@ export class NpcController {
     npc.focus.set(player.id, this.sim.time || 0);
     this.face(npc, player);
     if (this.hasWord(text, def.bye.words)) {
-      npc.focus.delete(player.id);
-      npc.choosing.delete(player.id);
-      npc.offering.delete(player.id);
-      npc.selling.delete(player.id);
-      npc.questOffer.delete(player.id);
+      this.forget(npc, player.id);
       this.npcSays(npc, player, def.bye.reply);
       return;
     }
+    if (def.bank && this.talkBank(npc, def, player, text, raw)) return;
     if (def.quests && def.quests.length && this.talkQuest(npc, def, player, text)) return;
     if (def.vocation && this.talkVocation(npc, def, player, text)) return;
     if (((def.shop && def.shop.length) || (def.buys && def.buys.length)) && this.talkShop(npc, def, player, text)) return;
@@ -286,6 +284,129 @@ export class NpcController {
   }
 
   // ================================================================================================================================================================================================================================================
+  // forget
+  // O NPC esquece a conversa com o player (e o que estava pendente).
+
+  forget(npc, playerId) {
+    for (const map of [npc.focus, npc.choosing, npc.offering, npc.questOffer, npc.banking]) map.delete(playerId);
+    npc.selling.delete(playerId);
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // talkBank
+  // Banqueiro: saldo; depositar, sacar e transferir (valor ou tudo) pedem a
+  // confirmação (sim fecha, não desiste); trocar junta as moedas do player nas
+  // maiores. O dinheiro do banco é player.bank (fica no personagem).
+  // Devolve true se a fala era dessa conversa.
+
+  talkBank(npc, def, player, text, raw) {
+    const lines = def.bankLines || Object.fromEntries(Object.entries(BANK_LINES).map(([k, v]) => [k, v.text]));
+    const say = (line, values = {}) => this.npcSays(npc, player, fillLine(line, { saldo: player.bank || 0, ...values }));
+    const pending = npc.banking.get(player.id);
+    if (pending && this.hasWord(text, YES_WORDS)) {
+      npc.banking.delete(player.id);
+      this.finishBank(player, pending, lines, say);
+      return true;
+    }
+    if (pending && this.hasWord(text, NO_WORDS)) {
+      npc.banking.delete(player.id);
+      say(lines.desistiu);
+      return true;
+    }
+    const action = this.hasWord(text, DEPOSIT_WORDS) ? 'deposit' : this.hasWord(text, WITHDRAW_WORDS) ? 'withdraw' : this.hasWord(text, TRANSFER_WORDS) ? 'transfer' : null;
+    if (action) return this.askBank(npc, player, action, text, raw, lines, say);
+    if (this.hasWord(text, BALANCE_WORDS)) {
+      say(lines.saldo);
+      return true;
+    }
+    if (this.hasWord(text, CHANGE_WORDS)) {
+      pay(player, 0, () => this.sim.inventory.nextUid());
+      say(lines.trocado);
+      return true;
+    }
+    if (this.hasWord(text, BANK_WORDS)) {
+      say(lines.ajuda);
+      return true;
+    }
+    return false;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // askBank
+  // O pedido de depósito, saque ou transferência: valida e pergunta.
+
+  askBank(npc, player, action, text, raw, lines, say) {
+    const number = Number((text.match(/\b\d+\b/) || [])[0]);
+    const all = this.hasWord(text, ALL_WORDS);
+    const carried = moneyOf(player);
+    const amount = all ? (action === 'deposit' ? carried : player.bank || 0) : Math.min(number, MAX_BANK);
+    if (!(amount > 0)) {
+      say(all ? (action === 'deposit' ? lines.semDinheiro : lines.semSaldo) : lines.semQuantia);
+      return true;
+    }
+    let to = null;
+    if (action === 'transfer') {
+      const name = (raw.match(/(?:\bpara\b|\bto\b)\s+(.+)$/i) || [])[1];
+      const target = name ? this.bankTarget(name.trim()) : null;
+      if (!target || target.name.toLowerCase() === player.name.toLowerCase()) {
+        say(lines.semDestino, { destino: name ? name.trim() : '?' });
+        return true;
+      }
+      to = target.name;
+    }
+    if (action === 'deposit' && amount > carried) {
+      say(lines.semDinheiro);
+      return true;
+    }
+    if (action !== 'deposit' && amount > (player.bank || 0)) {
+      say(lines.semSaldo);
+      return true;
+    }
+    npc.banking.set(player.id, { action, amount, to });
+    const asks = { deposit: lines.confirmarDeposito, withdraw: lines.confirmarSaque, transfer: lines.confirmarTransferencia };
+    say(asks[action], { quantidade: amount, destino: to });
+    return true;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // finishBank
+  // Faz o que o player confirmou, conferindo de novo o dinheiro e o destino.
+
+  finishBank(player, { action, amount, to }, lines, say) {
+    if (action === 'deposit') {
+      if (!pay(player, amount, () => this.sim.inventory.nextUid())) return say(lines.semDinheiro);
+      player.bank = (player.bank || 0) + amount;
+      return say(lines.depositado, { quantidade: amount });
+    }
+    if ((player.bank || 0) < amount) return say(lines.semSaldo);
+    if (action === 'withdraw') {
+      player.bank -= amount;
+      give(this.sim, player, amount);
+      return say(lines.sacado, { quantidade: amount });
+    }
+    const target = this.bankTarget(to);
+    if (!target) return say(lines.semDestino, { destino: to });
+    player.bank -= amount;
+    if (target.online) target.online.bank = (target.online.bank || 0) + amount;
+    else target.saved.bank = (target.saved.bank || 0) + amount;
+    if (target.online) this.sim.emit({ type: 'message', playerId: target.online.id, text: `${player.name} transferiu ${amount} moedas de ouro pra sua conta no banco.`, kind: 'info' });
+    return say(lines.transferido, { quantidade: amount, destino: target.name });
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // bankTarget
+  // Quem recebe a transferência pelo nome: { name, online } (no jogo) ou
+  // { name, saved } (guardado), ou null se não existe.
+
+  bankTarget(name) {
+    const lower = name.toLowerCase();
+    const online = this.sim.players.find(p => p.name.toLowerCase() === lower);
+    if (online) return { name: online.name, online };
+    const saved = this.sim.savedCharacters[lower];
+    return saved ? { name: saved.name || name, saved } : null;
+  }
+
+  // ================================================================================================================================================================================================================================================
   // face
   // O NPC vira pro player com quem fala.
 
@@ -321,15 +442,9 @@ export class NpcController {
       for (const [playerId, since] of npc.focus) {
         const player = this.sim.getPlayer(playerId);
         if (!player) {
-          npc.focus.delete(playerId);
-          npc.choosing.delete(playerId);
-          npc.offering.delete(playerId);
-          npc.selling.delete(playerId);
+          this.forget(npc, playerId);
         } else if (this.distanceTo(npc, player) > FOCUS_RANGE || now - since > FOCUS_IDLE_MS) {
-          npc.focus.delete(playerId);
-          npc.choosing.delete(playerId);
-          npc.offering.delete(playerId);
-          npc.selling.delete(playerId);
+          this.forget(npc, playerId);
           if (def) this.npcSays(npc, player, def.bye.reply);
         }
       }

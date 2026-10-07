@@ -42,13 +42,14 @@ export function moneyOf(player) {
 
 // ================================================================================================================================================================================================================================================
 // pay
-// Tira price em moedas e devolve o troco (false se não tem o bastante).
+// Tira price em moedas e devolve o troco, nas moedas maiores, nos lugares
+// das moedas e, se faltar, nos espaços vazios da mochila. false (sem mexer em
+// nada) se não tem o bastante ou se o troco não cabe.
 
 export function pay(player, price, nextUid) {
   const slots = coinSlots(player);
   const total = slots.reduce((sum, slot) => sum + slot.value * (slot.list[slot.key].count || 1), 0);
   if (total < price) return false;
-  for (const slot of slots) slot.list[slot.key] = null;
   let change = total - price;
   const stacks = [];
   for (const coin of COINS) {
@@ -61,10 +62,10 @@ export function pay(player, price, nextUid) {
       count -= item.count || 1;
     }
   }
-  stacks.forEach((item, i) => {
-    const slot = slots[i];
-    if (slot) slot.list[slot.key] = item;
-  });
+  const room = [...slots, ...bagSlots(player).filter(({ list, key }) => !list[key])];
+  if (stacks.length > room.length) return false;
+  for (const slot of slots) slot.list[slot.key] = null;
+  stacks.forEach((item, i) => { room[i].list[room[i].key] = item; });
   return true;
 }
 
@@ -80,11 +81,13 @@ export function buy(sim, player, type, price) {
   const bag = player.equip && player.equip.mochila;
   if (!bag || !bag.items) return 'bag';
   if (inventory.capUsed(player) + weightOf(item) > inventory.capMax(player)) return 'cap';
-  if (!bag.items.includes(null)) return 'space';
-  pay(player, price, () => inventory.nextUid());
   const free = bag.items.indexOf(null);
   if (free < 0) return 'space';
   bag.items[free] = item;
+  if (!pay(player, price, () => inventory.nextUid())) {
+    bag.items[free] = null;
+    return 'space';
+  }
   return 'ok';
 }
 

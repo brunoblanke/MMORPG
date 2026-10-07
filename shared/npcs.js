@@ -63,6 +63,34 @@ export const QUEST_LINES = {
 };
 export const MAX_QUEST_AMOUNT = 1000;
 
+// Banqueiro (gerador → NPC → É banqueiro): saldo, depositar, sacar,
+// transferir pra outro personagem e trocar moedas. {saldo} é o saldo do
+// player, {quantidade} o valor e {destino} o nome de quem recebe.
+export const BALANCE_WORDS = ['saldo', 'balance', 'extrato'];
+export const DEPOSIT_WORDS = ['depositar', 'deposit', 'guardar'];
+export const WITHDRAW_WORDS = ['sacar', 'withdraw', 'retirar'];
+export const TRANSFER_WORDS = ['transferir', 'transfer', 'transferencia'];
+export const CHANGE_WORDS = ['trocar', 'change', 'troco'];
+export const ALL_WORDS = ['tudo', 'all', 'todo'];
+export const BANK_WORDS = ['banco', 'conta', 'bank', 'ajuda', 'help'];
+export const MAX_BANK = 100000000;
+export const BANK_LINES = {
+  ajuda: { label: 'Ao falar do banco', text: 'Posso mostrar seu saldo, depositar, sacar, transferir ou trocar suas moedas.' },
+  saldo: { label: 'Saldo', text: 'Seu saldo é de {saldo} moedas de ouro.' },
+  confirmarDeposito: { label: 'Pergunta (depósito)', text: 'Quer depositar {quantidade} moedas de ouro? (sim / não)' },
+  depositado: { label: 'Depositado', text: 'Pronto, depositei {quantidade}. Seu saldo agora é de {saldo}.' },
+  semDinheiro: { label: 'Sem moedas consigo', text: 'Você não tem essa quantia com você.' },
+  confirmarSaque: { label: 'Pergunta (saque)', text: 'Quer sacar {quantidade} moedas de ouro? (sim / não)' },
+  sacado: { label: 'Sacado', text: 'Aqui estão {quantidade} moedas. Seu saldo agora é de {saldo}.' },
+  semSaldo: { label: 'Sem saldo', text: 'Seu saldo não chega a essa quantia.' },
+  confirmarTransferencia: { label: 'Pergunta (transferência)', text: 'Quer transferir {quantidade} moedas de ouro para {destino}? (sim / não)' },
+  transferido: { label: 'Transferido', text: 'Pronto, transferi {quantidade} moedas para {destino}.' },
+  semDestino: { label: 'Destino desconhecido', text: 'Não conheço ninguém com o nome {destino}.' },
+  trocado: { label: 'Moedas trocadas', text: 'Pronto, troquei suas moedas.' },
+  semQuantia: { label: 'Sem quantia', text: 'Diga quanto, por exemplo: depositar 100, ou depositar tudo.' },
+  desistiu: { label: 'Ao dizer não', text: 'Tudo bem.' }
+};
+
 // ================================================================================================================================================================================================================================================
 // normalizeSpeech
 // Minúsculas, sem acento nem pontuação, espaços simples.
@@ -101,7 +129,9 @@ export function npcDefFromAsset(type, pos) {
     buys: shopFrom(talk.compra),
     shopLines: linesFrom(SHOP_LINES, talk.falasVenda),
     quests: questsFrom(talk.missoes, asset.nome || type.split('/').pop()),
-    questLines: linesFrom(QUEST_LINES, talk.falasMissao)
+    questLines: linesFrom(QUEST_LINES, talk.falasMissao),
+    bank: !!talk.banco,
+    bankLines: linesFrom(BANK_LINES, talk.falasBanco)
   };
 }
 

@@ -267,15 +267,15 @@ async function iniciarJogo(servidorHttp) {
 
   const { validateWorld } = await import(pathToFileURL(path.join(PASTA_JOGO, 'js', 'core', 'validate.js')).href);
   const criarMundo = (casas = carregarCasas()) => {
-    const mundo = new Simulation(JSON.parse(fs.readFileSync(MAP_DATA_PATH, 'utf8')), { houses: casas });
+    const mundo = new Simulation(JSON.parse(fs.readFileSync(MAP_DATA_PATH, 'utf8')), { houses: casas, characters: personagens });
     const avisos = validateWorld(mundo);
     if (avisos.length) console.log(`\n⚠️  Conferência do mapa e do gerador (${avisos.length}):\n${avisos.map(a => `   • ${a}`).join('\n')}`);
     return mundo;
   };
-  let sim = criarMundo();
-  let geracao = 0;
   fazerBackup();
   const personagens = carregarPersonagens();
+  let sim = criarMundo();
+  let geracao = 0;
   const senhas = new PasswordStore(PASSWORDS_PATH);
   const guarda = new LoginGuard();
   const conexoes = new Map();

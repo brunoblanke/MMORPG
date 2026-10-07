@@ -157,6 +157,7 @@
           <div class="field"><label for="npcBye">Resposta ao tchau</label><input type="text" id="npcBye" maxlength="160" placeholder="ex.: Até mais, {nome}." /></div>
           <div class="field stat"><label for="npcRadius">Raio do passeio (sqm)</label><input type="number" id="npcRadius" min="0" max="10" step="1" value="2" /></div>
           <div class="field stat"><label for="npcVocation">Escolhe vocação</label><select id="npcVocation"><option value="">Não</option><option value="sim">Sim (nível 8)</option></select></div>
+          <div class="field stat"><label for="npcBank" title="Saldo, depositar, sacar, transferir e trocar moedas">É banqueiro</label><select id="npcBank"><option value="">Não</option><option value="sim">Sim</option></select></div>
           <div class="field npc-dest" id="npcDest" hidden><label>Leva pra (x · y · andar)</label><div class="npc-dest-row"><input type="number" id="npcDestX" step="1" /><input type="number" id="npcDestY" step="1" /><input type="number" id="npcDestZ" step="1" value="0" /></div></div>
         </div>
         <label>Tópicos · palavras separadas por vírgula e a resposta</label>
@@ -178,6 +179,10 @@
         <div class="npc-lines" id="npcQuestLines" hidden>
           <label>Falas das missões · vazio = a padrão · {missao}, {progresso} e {nome}</label>
           <div class="npc-lines-grid" id="npcQuestLinesGrid"></div>
+        </div>
+        <div class="npc-lines" id="npcBankLines" hidden>
+          <label>Falas do banco · vazio = a padrão · {saldo}, {quantidade}, {destino} e {nome}</label>
+          <div class="npc-lines-grid" id="npcBankLinesGrid"></div>
         </div>
         <div class="npc-lines" id="npcShopLines" hidden>
           <label>Falas da loja · vazio = a padrão · {item}, {preco}, {quantidade}, {lista} e {nome}</label>

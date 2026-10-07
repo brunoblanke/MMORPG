@@ -5,7 +5,7 @@ import { creatureInfo, itemCategory } from './picker.js';
 import { sourceUrl, sourceLabel, loadImage, isReady, drawAnchored, readPngFile, normalizeName, setStatus } from './common.js';
 import { refreshProjects } from './projects.js';
 import { fillFolderSelect, folderOf, setFolder, recipePath } from './folders.js';
-import { VOCATION_LINES, SHOP_LINES, QUEST_LINES } from '/shared/npcs.js';
+import { VOCATION_LINES, SHOP_LINES, QUEST_LINES, BANK_LINES } from '/shared/npcs.js';
 
 // Folha de criatura (quadros de 32 ou 64 px, o maior entre criatura e cadáver):
 //   linhas 1–4  sul, norte, leste, oeste — 1º quadro parado, depois andando
@@ -133,7 +133,8 @@ const NPC_FOLDER = 'personagens/npcs';
 const LINE_GROUPS = [
   { key: 'falasVocacao', defaults: VOCATION_LINES, box: document.getElementById('npcVocationLines'), grid: document.getElementById('npcVocationLinesGrid') },
   { key: 'falasVenda', defaults: SHOP_LINES, box: document.getElementById('npcShopLines'), grid: document.getElementById('npcShopLinesGrid') },
-  { key: 'falasMissao', defaults: QUEST_LINES, box: document.getElementById('npcQuestLines'), grid: document.getElementById('npcQuestLinesGrid') }
+  { key: 'falasMissao', defaults: QUEST_LINES, box: document.getElementById('npcQuestLines'), grid: document.getElementById('npcQuestLinesGrid') },
+  { key: 'falasBanco', defaults: BANK_LINES, box: document.getElementById('npcBankLines'), grid: document.getElementById('npcBankLinesGrid') }
 ];
 const npcQuestsEl = document.getElementById('npcQuests');
 const NPC_TEXT_FIELDS = [
@@ -143,6 +144,7 @@ const NPC_TEXT_FIELDS = [
 ];
 const npcRadiusEl = document.getElementById('npcRadius');
 const npcVocationEl = document.getElementById('npcVocation');
+const npcBankEl = document.getElementById('npcBank');
 const npcDestEl = document.getElementById('npcDest');
 const NPC_DEST_FIELDS = [['x', document.getElementById('npcDestX')], ['y', document.getElementById('npcDestY')], ['z', document.getElementById('npcDestZ')]];
 
@@ -170,6 +172,10 @@ function initCreatures() {
   for (const [, el] of NPC_TEXT_FIELDS) el.addEventListener('input', () => { creatures.dirty = true; });
   npcRadiusEl.addEventListener('input', () => { creatures.dirty = true; });
   npcVocationEl.addEventListener('change', () => {
+    creatures.dirty = true;
+    showNpcFields();
+  });
+  npcBankEl.addEventListener('change', () => {
     creatures.dirty = true;
     showNpcFields();
   });
@@ -938,6 +944,7 @@ function showNpcFields() {
   LINE_GROUPS[0].box.hidden = !npcVocationEl.value;
   LINE_GROUPS[1].box.hidden = !creatures.shop.length && !creatures.buys.length;
   LINE_GROUPS[2].box.hidden = !creatures.quests.length;
+  LINE_GROUPS[3].box.hidden = !npcBankEl.value;
   formEl.classList.toggle('is-npc', isNpc);
 }
 
@@ -984,6 +991,7 @@ function conversationValues() {
     const values = lineValues(group);
     if (Object.keys(values).length) talk[group.key] = values;
   }
+  if (npcBankEl.value) talk.banco = true;
   if (npcVocationEl.value) {
     const dest = Object.fromEntries(NPC_DEST_FIELDS.map(([key, el]) => [key, Math.floor(Number(el.value))]));
     talk.vocacao = { destino: NPC_DEST_FIELDS.every(([key, el]) => el.value !== '' && Number.isFinite(dest[key])) ? dest : null };
@@ -1085,6 +1093,7 @@ function openRecipe(recipe) {
   for (const [key, el] of NPC_TEXT_FIELDS) el.value = talk[key] || '';
   npcRadiusEl.value = String(Number.isFinite(Number(talk.raio)) && talk.raio !== undefined ? talk.raio : 2);
   npcVocationEl.value = talk.vocacao ? 'sim' : '';
+  npcBankEl.value = talk.banco ? 'sim' : '';
   const dest = (talk.vocacao && talk.vocacao.destino) || {};
   for (const [key, el] of NPC_DEST_FIELDS) el.value = Number.isFinite(dest[key]) ? String(dest[key]) : (key === 'z' ? '0' : '');
   creatures.topics = Array.isArray(talk.topicos) ? talk.topicos.map(t => ({ palavras: t.palavras || '', resposta: t.resposta || '' })) : [];
