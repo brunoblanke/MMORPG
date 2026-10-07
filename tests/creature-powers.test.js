@@ -51,7 +51,13 @@ test('veneno no golpe: o golpe que acerta deixa o player envenenado', () => {
 
 test('invocar: chama até o máximo; a invocada não dá XP nem renasce e morre junto com quem invocou', () => {
   const sim = game({ ataque: 0, invoca: { tipo: MINION, max: 2 } });
-  runFor(sim, 30000);
+  const random = Math.random;
+  Math.random = () => 0;
+  try {
+    runFor(sim, 30000);
+  } finally {
+    Math.random = random;
+  }
   const minions = sim.enemies.filter(e => e.summonedBy);
   assert.equal(minions.length, 2);
   assert.ok(minions.every(m => m.creature === MINION && m.xp === 0));
