@@ -150,12 +150,15 @@ test('cura: a criatura ferida se cura dentro da faixa; inteira, não faz nada', 
   assert.ok(!firstEffect(runFor(sim, 4100), 'heal'));
 });
 
-test('onda: sai também na diagonal (o dragon colado em diagonal acerta)', () => {
+test('onda: nunca sai na diagonal (o player na diagonal recebe o leque do norte, sul, leste ou oeste)', () => {
   const sim = game({ ataque: 0, ataques: [DRAGON_WAVE] }, [[6, 6, 0]]);
   const tiles = sim.powers.waveTiles(sim.enemies[0], sim.player, { length: 8, spread: 3 });
-  assert.ok(tiles.some(([x, y]) => x === 5 && y === 5));
-  assert.ok(tiles.some(([x, y]) => x === 3 && y === 3));
+  assert.ok(tiles.length > 0);
+  assert.ok(tiles.every(([x, y]) => x === 6 || y === 6 || Math.abs(x - 6) <= 3 || Math.abs(y - 6) <= 3));
+  assert.ok(!tiles.some(([x, y]) => x === 3 && y === 3));
   assert.ok(!tiles.some(([x, y]) => x === 9 && y === 9));
+  const { ux, uy } = sim.powers.direction(sim.enemies[0], sim.player);
+  assert.equal(Math.abs(ux) + Math.abs(uy), 1);
 });
 
 test('cura: a criatura que foge ferida também se cura', () => {

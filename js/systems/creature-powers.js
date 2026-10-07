@@ -15,7 +15,7 @@ import { FIELDS } from '../../shared/conditions.js';
 //   player envenenado):
 //     tiro: num player até o alcance (CONFIG.mageRange se não disser) com
 //     linha livre; bola, cruz, anel no alvo e campo: no alvo, em área;
-//     onda, raio e varredura: na direção dele (8 direções), pra quem está na
+//     onda, raio e varredura: na direção dele (4 direções), pra quem está na
 //     área; redor e anel: em volta dela; cura: recupera vida dela mesma (se
 //     estiver ferida), perseguindo ou fugindo.
 //   invocar: a cada POWER_TRY_MS, com SUMMON_CHANCE, chama a criatura dela
@@ -155,16 +155,16 @@ export class CreaturePowers {
 
   // ================================================================================================================================================================================================================================================
   // direction
-  // A direção (das 8, como passo de 45°) de enemy pra player: [ux, uy] e o passo.
+  // A direção (só norte, sul, leste ou oeste, passos de 90°) de enemy pra player: [ux, uy] e o passo (em 45°).
 
   direction(enemy, player) {
-    const step = Math.round(Math.atan2(player.y - enemy.y, player.x - enemy.x) / (Math.PI / 4));
+    const step = Math.round(Math.atan2(player.y - enemy.y, player.x - enemy.x) / (Math.PI / 2)) * 2;
     return { step, ux: Math.round(Math.cos(step * Math.PI / 4)), uy: Math.round(Math.sin(step * Math.PI / 4)) };
   }
 
   // ================================================================================================================================================================================================================================================
   // waveTiles
-  // O leque pra frente, na direção (das 8) mais perto do player: a largura de
+  // O leque pra frente, na direção (das 4) mais perto do player: a largura de
   // cada fileira vem de attack.widths (ex. 1-3-3-5) ou, sem elas, vai de 1 sqm
   // perto até 2 × abertura + 1; sem atravessar parede.
 
