@@ -1,0 +1,130 @@
+{
+  "formato": {
+    "quadro": 32,
+    "quadros": 1,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 127,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "apodrecendo": {
+      "tibia": {
+        "id": 4241,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 4246,
+        "variacao": 0
+      }
+    },
+    "fresco": {
+      "tibia": {
+        "id": 4240,
+        "variacao": 0
+      }
+    }
+  },
+  "propriedades": {
+    "comportamento": "normal",
+    "vida": 99999,
+    "xp": 0,
+    "velocidade": 0,
+    "armadura": 0,
+    "defesa": 99999,
+    "ataque": 1,
+    "magia": null,
+    "ataques": [
+      {
+        "forma": "tiro",
+        "elemento": "fire",
+        "min": 1,
+        "max": 1,
+        "chance": 99,
+        "alcance": 6
+      },
+      {
+        "forma": "tiro",
+        "elemento": "energy",
+        "min": 1,
+        "max": 1,
+        "chance": 99,
+        "alcance": 6
+      },
+      {
+        "forma": "tiro",
+        "elemento": "poison",
+        "min": 1,
+        "max": 1,
+        "chance": 99,
+        "alcance": 6
+      },
+      {
+        "forma": "tiro",
+        "elemento": "ice",
+        "min": 1,
+        "max": 1,
+        "chance": 99,
+        "alcance": 6
+      },
+      {
+        "forma": "tiro",
+        "elemento": "earth",
+        "min": 1,
+        "max": 1,
+        "chance": 99,
+        "alcance": 6
+      },
+      {
+        "forma": "tiro",
+        "elemento": "death",
+        "min": 1,
+        "max": 1,
+        "chance": 99,
+        "alcance": 6
+      },
+      {
+        "forma": "tiro",
+        "elemento": "holy",
+        "min": 1,
+        "max": 1,
+        "chance": 99,
+        "alcance": 6
+      },
+      {
+        "forma": "bola",
+        "elemento": "holy",
+        "min": 1,
+        "max": 1,
+        "chance": 99,
+        "alcance": 6,
+        "raio": 5,
+        "centro": "alvo"
+      }
+    ],
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
+    "loot": [],
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "humanos",
+  "nome": "dummy"
+}
