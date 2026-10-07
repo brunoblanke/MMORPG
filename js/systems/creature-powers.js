@@ -15,7 +15,8 @@ import { FIELDS } from '../../shared/conditions.js';
 //   player envenenado):
 //     tiro: num player até o alcance (CONFIG.mageRange se não disser) com
 //     linha livre; bola, cruz, anel no alvo e campo: no alvo, em área;
-//     onda, raio e varredura: na direção dele (4 direções), pra quem está na
+//     onda, raio e varredura: na direção em que ela está virada (ela vira pro
+//     player antes de lançar), pra quem está na
 //     área; redor e anel: em volta dela; cura: recupera vida dela mesma (se
 //     estiver ferida), perseguindo ou fugindo.
 //   invocar: a cada POWER_TRY_MS, com SUMMON_CHANCE, chama a criatura dela
@@ -49,6 +50,7 @@ export const POWER_TRY_MS = 2000;
 export const SUMMON_CHANCE = 0.25;
 const SPELL_POISON_TICKS = 5;
 const DIRECTIONAL = ['wave', 'beam', 'sweep'];
+const FACING = { norte: [0, -1], sul: [0, 1], leste: [1, 0], oeste: [-1, 0] };
 export const AROUND = [[-1, -1], [0, -1], [1, -1], [-1, 0], [1, 0], [-1, 1], [0, 1], [1, 1]];
 
 // ================================================================================================================================================================================================================================================
@@ -101,6 +103,7 @@ export class CreaturePowers {
   // Lança a magia no player; devolve se saiu (alcance, linha livre e área).
 
   cast(enemy, player, attack, now) {
+    if (DIRECTIONAL.includes(attack.shape)) this.sim.movement.faceTowards(enemy, player.x - enemy.x, player.y - enemy.y);
     const area = this.areaOf(enemy, player, attack);
     if (!area) return false;
     if (area.missile) {
@@ -124,9 +127,9 @@ export class CreaturePowers {
   areaOf(enemy, player, attack) {
     const shape = attack.shape;
     if (DIRECTIONAL.includes(shape) || shape === 'around' || ((shape === 'ring' || shape === 'ball') && attack.center === 'self')) {
-      const tiles = shape === 'wave' ? this.waveTiles(enemy, player, attack)
-        : shape === 'beam' ? this.beamTiles(enemy, player, attack)
-        : shape === 'sweep' ? this.sweepTiles(enemy, player)
+      const tiles = shape === 'wave' ? this.waveTiles(enemy, attack)
+        : shape === 'beam' ? this.beamTiles(enemy, attack)
+        : shape === 'sweep' ? this.sweepTiles(enemy)
         : this.visibleTiles(enemy, shape === 'around' ? AROUND : shape === 'ball' ? circleArea(attack.radius) : ringArea(attack.radius));
       return tiles.some(([x, y]) => x === player.x && y === player.y) ? { tiles, missile: false } : null;
     }
@@ -155,21 +158,21 @@ export class CreaturePowers {
 
   // ================================================================================================================================================================================================================================================
   // direction
-  // A direção (só norte, sul, leste ou oeste, passos de 90°) de enemy pra player: [ux, uy] e o passo (em 45°).
+  // Pra onde quem lança está virado (norte, sul, leste ou oeste): [ux, uy] e o passo (em 45°).
 
-  direction(enemy, player) {
-    const step = Math.round(Math.atan2(player.y - enemy.y, player.x - enemy.x) / (Math.PI / 2)) * 2;
-    return { step, ux: Math.round(Math.cos(step * Math.PI / 4)), uy: Math.round(Math.sin(step * Math.PI / 4)) };
+  direction(caster) {
+    const [ux, uy] = FACING[caster.direction] || FACING.sul;
+    return { step: Math.round(Math.atan2(uy, ux) / (Math.PI / 4)), ux, uy };
   }
 
   // ================================================================================================================================================================================================================================================
   // waveTiles
-  // O leque pra frente, na direção (das 4) mais perto do player: a largura de
+  // O leque pra frente, na direção em que a criatura está virada: a largura de
   // cada fileira vem de attack.widths (ex. 1-3-3-5) ou, sem elas, vai de 1 sqm
   // perto até 2 × abertura + 1; sem atravessar parede.
 
-  waveTiles(enemy, player, attack) {
-    const { ux, uy } = this.direction(enemy, player);
+  waveTiles(enemy, attack) {
+    const { ux, uy } = this.direction(enemy);
     const norm = ux * ux + uy * uy;
     const widths = attack.widths || [];
     const half = (along) => widths.length
@@ -191,10 +194,10 @@ export class CreaturePowers {
 
   // ================================================================================================================================================================================================================================================
   // beamTiles
-  // A linha reta de comprimento sqm na direção do player (a parede corta).
+  // A linha reta de comprimento sqm na direção em que a criatura está virada (a parede corta).
 
-  beamTiles(enemy, player, attack) {
-    const { ux, uy } = this.direction(enemy, player);
+  beamTiles(enemy, attack) {
+    const { ux, uy } = this.direction(enemy);
     const tiles = [];
     for (let k = 1; k <= attack.length; k++) {
       const x = enemy.x + ux * k;
@@ -207,10 +210,10 @@ export class CreaturePowers {
 
   // ================================================================================================================================================================================================================================================
   // sweepTiles
-  // Os 3 sqms colados na frente (a direção do player e as duas do lado).
+  // Os 3 sqms colados na frente (a direção em que está virada e as duas do lado).
 
-  sweepTiles(enemy, player) {
-    const { step } = this.direction(enemy, player);
+  sweepTiles(enemy) {
+    const { step } = this.direction(enemy);
     return [-1, 0, 1]
       .map(turn => [enemy.x + Math.round(Math.cos((step + turn) * Math.PI / 4)), enemy.y + Math.round(Math.sin((step + turn) * Math.PI / 4))])
       .filter(([x, y]) => this.sim.world.isInside(x, y) && this.sim.movement.hasLineOfSight(enemy, { x, y }));

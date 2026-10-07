@@ -108,17 +108,20 @@ test('onda: não sai pra quem está fora do alcance ou do leque', () => {
   far.player.hp = far.player.currentHp = 100000;
   assert.ok(!runFor(far, 1500).some(e => e.type === 'effect'));
   const side = game({ ataque: 0, ataques: [DRAGON_WAVE] }, [[7, 5, 0]]);
-  const wave = side.powers.waveTiles(side.enemies[0], { x: 7, y: 15 }, { length: 8, spread: 3 });
+  side.enemies[0].direction = 'sul';
+  const wave = side.powers.waveTiles(side.enemies[0], { length: 8, spread: 3 });
   assert.ok(wave.every(([x, y]) => y > 5 && Math.abs(x - 7) <= 3));
   assert.ok(!wave.some(([x, y]) => x === 5 && y === 5));
 });
 
 test('onda: parede segura o fogo', () => {
   const open = game({ ataque: 0, ataques: [DRAGON_WAVE] }, [[9, 5, 0]]);
-  assert.ok(open.powers.waveTiles(open.enemies[0], open.player, { length: 8, spread: 3 }).length > 8);
+  open.enemies[0].direction = 'oeste';
+  assert.ok(open.powers.waveTiles(open.enemies[0], { length: 8, spread: 3 }).length > 8);
   const walls = Array.from({ length: 20 }, (_, y) => wall(7, y)).flat();
   const closed = game({ ataque: 0, ataques: [DRAGON_WAVE] }, [[9, 5, 0]], walls);
-  assert.equal(closed.powers.waveTiles(closed.enemies[0], closed.player, { length: 8, spread: 3 }).length, 1);
+  closed.enemies[0].direction = 'oeste';
+  assert.equal(closed.powers.waveTiles(closed.enemies[0], { length: 8, spread: 3 }).length, 1);
 });
 
 test('bola: tiro que explode em círculo e fere todo player na área, não quem está fora dela', () => {
@@ -150,15 +153,24 @@ test('cura: a criatura ferida se cura dentro da faixa; inteira, não faz nada', 
   assert.ok(!firstEffect(runFor(sim, 4100), 'heal'));
 });
 
-test('onda: nunca sai na diagonal (o player na diagonal recebe o leque do norte, sul, leste ou oeste)', () => {
+test('onda: sai sempre na direção em que a criatura está virada, mesmo com o player na diagonal', () => {
   const sim = game({ ataque: 0, ataques: [DRAGON_WAVE] }, [[6, 6, 0]]);
-  const tiles = sim.powers.waveTiles(sim.enemies[0], sim.player, { length: 8, spread: 3 });
-  assert.ok(tiles.length > 0);
-  assert.ok(tiles.every(([x, y]) => x === 6 || y === 6 || Math.abs(x - 6) <= 3 || Math.abs(y - 6) <= 3));
-  assert.ok(!tiles.some(([x, y]) => x === 3 && y === 3));
-  assert.ok(!tiles.some(([x, y]) => x === 9 && y === 9));
-  const { ux, uy } = sim.powers.direction(sim.enemies[0], sim.player);
-  assert.equal(Math.abs(ux) + Math.abs(uy), 1);
+  const enemy = sim.enemies[0];
+  for (const [direction, inFront] of [['norte', [6, 3]], ['sul', [6, 9]], ['leste', [9, 6]], ['oeste', [3, 6]]]) {
+    enemy.direction = direction;
+    const tiles = sim.powers.waveTiles(enemy, { length: 8, spread: 3 });
+    assert.ok(tiles.some(([x, y]) => x === inFront[0] && y === inFront[1]), direction);
+    assert.ok(!tiles.some(([x, y]) => Math.abs(x - 6) === Math.abs(y - 6) && x !== 6));
+  }
+});
+
+test('lançar onda: a criatura vira pro player antes e o leque sai nessa direção', () => {
+  const sim = game({ ataque: 0, ataques: [DRAGON_WAVE] }, [[6, 6, 0]]);
+  const enemy = sim.enemies[0];
+  enemy.direction = 'norte';
+  Object.assign(sim.player, { x: 9, y: 6 });
+  assert.ok(sim.powers.cast(enemy, sim.player, { shape: 'wave', element: 'fire', min: 1, max: 1, length: 8, spread: 3, widths: [], center: 'self', range: 0, radius: 0 }, sim.time));
+  assert.equal(enemy.direction, 'leste');
 });
 
 test('cura: a criatura que foge ferida também se cura', () => {
@@ -178,6 +190,7 @@ test('cura: a criatura que foge ferida também se cura', () => {
 function shapeOf(attack, playerAt = [5, 9]) {
   const sim = game({ ataque: 0, ataques: [{ elemento: 'fire', min: 1, max: 1, chance: 100, ...attack }] }, [[9, 9, 0]]);
   const enemy = sim.enemies[0];
+  enemy.direction = 'oeste';
   Object.assign(sim.player, { x: playerAt[0], y: playerAt[1] });
   const powers = sim.powers;
   const spell = { shape: ({ onda: 'wave', raio: 'beam', varredura: 'sweep', redor: 'around', anel: 'ring', cruz: 'cross', bola: 'ball' })[attack.forma], center: attack.forma === 'bola' ? 'target' : 'self', widths: attack.larguras || [], length: attack.larguras ? attack.larguras.length : attack.comprimento || 0, spread: attack.abertura || 0, radius: attack.raio || 0, range: attack.alcance || 0, element: 'fire' };
@@ -192,7 +205,7 @@ test('onda com larguras 1-1-3-3 e 1-3-3-5 desenha as fileiras do Tibia', () => {
   }
 });
 
-test('raio: linha reta de comprimento sqm na direção do player', () => {
+test('raio: linha reta de comprimento sqm na direção em que a criatura está virada', () => {
   const { area } = shapeOf({ forma: 'raio', comprimento: 6 });
   assert.deepEqual(area.tiles, [[8, 9], [7, 9], [6, 9], [5, 9], [4, 9], [3, 9]]);
 });

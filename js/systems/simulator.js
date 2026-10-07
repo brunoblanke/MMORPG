@@ -231,9 +231,9 @@ export class SimulatorController {
     const around = (center, area) => powers.visibleTiles(center, area);
     const self = attack.center === 'self';
     switch (attack.shape) {
-      case 'wave': return powers.waveTiles(player, aim, attack);
-      case 'beam': return powers.beamTiles(player, aim, attack);
-      case 'sweep': return powers.sweepTiles(player, aim);
+      case 'wave': return powers.waveTiles(player, attack);
+      case 'beam': return powers.beamTiles(player, attack);
+      case 'sweep': return powers.sweepTiles(player);
       case 'around': return around(player, AROUND);
       case 'ball': return around(self ? player : at, circleArea(attack.radius));
       case 'ring': return around(self ? player : at, ringArea(attack.radius));
