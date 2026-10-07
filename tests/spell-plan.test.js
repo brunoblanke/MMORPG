@@ -12,7 +12,7 @@ const asset = (id, propriedades) => {
   return { id, ferramenta: 'objetos', grupo, pasta, nome, url: `/${nome}.png`, quadro: 32, quadros: 1, pecas: [], propriedades };
 };
 
-setAssets([asset(BURST, { move: true, empilhavel: true, impacto: { tipo: 'area', raio: 1, efeito: 'explosion' } }), asset('itens/municao/arrow', { move: true, empilhavel: true })]);
+setAssets([asset(BURST, { move: true, empilhavel: true, impacto: { tipo: 'area', raio: 1, efeito: 'explosion' } }), asset('itens/municao/arrow', { move: true, empilhavel: true }), asset('itens/municao/poison-arrow', { move: true, empilhavel: true, impacto: { tipo: 'veneno', dano: 3, ticks: 6 } })]);
 
 const blank = { range: 0, radius: 0, length: 0, spread: 0, widths: [], center: 'target', field: '', jumps: 3 };
 const tilesOf = (plan) => plan.effects.flatMap(effect => effect.tiles);
@@ -29,6 +29,16 @@ test('simulador: quem lança e o alvo ficam a 7 sqm das bordas; beam e chain tê
   const chain = layoutFor('chain');
   assert.deepEqual(chain.targets.map(t => [t.x, t.y]).sort(), [[x - 1, CASTER.y - 1], [x, CASTER.y], [x - 2, CASTER.y + 1]].sort());
   assert.equal(DISTANCE, 5);
+});
+
+test('simulador: surrounding e sweep têm o alvo colado, e wave e beam o põem a length sqm à frente', () => {
+  const around = layoutFor('around');
+  assert.deepEqual(around.targets, [{ x: CASTER.x + 1, y: CASTER.y }]);
+  const sweep = layoutFor('sweep');
+  assert.deepEqual(sweep.targets.map(t => [t.x - CASTER.x, t.y - CASTER.y]).sort(), [[1, -1], [1, 0], [1, 1]].sort());
+  assert.deepEqual(layoutFor('wave', 3).targets, [{ x: CASTER.x + 3, y: CASTER.y }]);
+  assert.deepEqual(layoutFor('beam', 4).targets.map(t => t.x), [CASTER.x + 4, CASTER.x + 3, CASTER.x + 2]);
+  assert.deepEqual(layoutFor('beam', 2).targets.map(t => t.x), [CASTER.x + 2, CASTER.x + 1]);
 });
 
 test('simulador: onda, raio e bola de criatura saem pra leste e ficam dentro do campo', () => {
@@ -64,5 +74,6 @@ test('simulador: magias, runas, munição e wands do player mostram o projétil 
   assert.equal(planRune('itens/runas/fire-bomb-rune', layout).fields[0].tiles.length, 9);
   assert.equal(planAmmo(BURST, layout).effects[0].tiles.length, 9);
   assert.equal(planAmmo('itens/municao/arrow', layout).effects.length, 0);
+  assert.equal(planAmmo('itens/municao/poison-arrow', layout).effects[0].name, 'poison');
   assert.equal(planWand('itens/wands/wand-of-inferno', layout).missiles[0].kind, 'fire');
 });

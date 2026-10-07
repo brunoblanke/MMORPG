@@ -116,6 +116,17 @@ export function itemInfo(type) {
 }
 
 // ================================================================================================================================================================================================================================================
+// impactEffectName
+// A animação que a munição mostra no alvo: a da receita ou, sem ela, a do veneno ou a do elemento do dano extra.
+
+export function impactEffectName(impact) {
+  if (!impact) return '';
+  if (impact.effect) return impact.effect;
+  if (impact.kind === 'poison') return 'poison';
+  return impact.kind === 'element' ? impact.element : '';
+}
+
+// ================================================================================================================================================================================================================================================
 // impactOf
 // O que a munição faz ao acertar (gerador → Objetos → munição, propriedade
 // `impacto`): { kind: 'area' (explode em volta do alvo, radius 1 = 3×3),

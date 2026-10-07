@@ -5,7 +5,7 @@ import { getLevel } from '../core/geometry.js';
 import { AI_STATE } from '../models/enemy.js';
 import { creatureBehavior, creaturePowers } from '../../shared/assets.js';
 import { CONFIG } from '../config.js';
-import { equipBonus, itemInfo, newItem, isAmmo, isQuiver } from '../../shared/items.js';
+import { equipBonus, itemInfo, newItem, isAmmo, isQuiver, impactEffectName } from '../../shared/items.js';
 import { addSkillTry } from '../../shared/skills.js';
 import { WANDS, WAND_RANGE } from '../../shared/spells.js';
 import { MISSILES } from '../../shared/effects.js';
@@ -301,7 +301,8 @@ export class CombatController {
   impactEffect(player, target, impact, now) {
     if (impact.kind === 'poison') this.sim.conditions.add(target, 'poison', { damage: Math.max(1, impact.damage), ticks: impact.ticks, source: player });
     else if (impact.kind === 'element' && impact.damage > 0) this.sim.spells.hurt(player, target, impact.damage, now, impact.element);
-    if (impact.effect) this.sim.spells.showEffect(target.x, target.y, impact.effect, undefined, target.z || 0);
+    const effect = impactEffectName(impact);
+    if (effect) this.sim.spells.showEffect(target.x, target.y, effect, undefined, target.z || 0);
   }
 
   // ================================================================================================================================================================================================================================================

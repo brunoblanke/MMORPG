@@ -156,7 +156,7 @@ function renderFields() {
 function planFor() {
   if (state.who === 'creature') {
     const attack = customAttack();
-    return { layout: layoutFor(attack.shape), make: (layout) => planCreatureAttack(attack, layout) };
+    return { layout: layoutFor(attack.shape, attack.length), make: (layout) => planCreatureAttack(attack, layout) };
   }
   const kind = value('simKind');
   const item = value('simItem');
@@ -296,6 +296,9 @@ function setWho(who) {
 
 async function start() {
   await loadAssets();
+  for (const name of Object.keys(EFFECTS)) loadImage(effectUrl(name));
+  for (const name of Object.keys(MISSILES)) loadImage(missileUrl(name));
+  for (const type of FIELDS) { const field = getAsset(type); if (field) loadImage(field.url); }
   canvas.width = (ARENA_WIDTH + PAD * 2) * TILE;
   canvas.height = (ARENA_HEIGHT + PAD * 2) * TILE;
   for (const button of form.querySelectorAll('[data-who]')) button.addEventListener('click', () => { setWho(button.dataset.who); button.blur(); });

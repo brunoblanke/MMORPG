@@ -3,7 +3,7 @@
 import { circleArea, AREAS, RUNES, WANDS } from './spells.js';
 import { MISSILES } from './effects.js';
 import { FIELDS } from './conditions.js';
-import { itemInfo } from './items.js';
+import { itemInfo, impactEffectName } from './items.js';
 import { AROUND, ringArea, lineTiles, waveOffsets, beamOffsets, sweepOffsets } from './spell-areas.js';
 
 // O que o simulador (simulador.html) desenha pra cada magia: os projéteis, os
@@ -21,14 +21,18 @@ export const DISTANCE = TARGET_X - CASTER.x;
 
 // ================================================================================================================================================================================================================================================
 // layoutFor
-// Onde ficam quem lança e os alvos: um alvo, ou, no raio (beam) e na corrente (chain), o alvo no lugar dele e
-// duas cópias cada uma 1 sqm mais a oeste: no beam na mesma linha, na corrente uma 1 sqm ao norte e a outra 1 sqm ao sul
-// (a corrente começa pela cópia mais perto de quem lança).
+// Onde ficam quem lança e os alvos (sempre o dummy). Um alvo a DISTANCE sqm; o surrounding o põe colado nela e o sweep põe 3 nos
+// 3 sqm da frente (norte, centro e sul); wave e beam com length o põem a length sqm à frente. No raio (beam) e na corrente (chain)
+// o alvo fica no lugar e há duas cópias, cada uma 1 sqm mais a oeste: no beam na mesma linha, na corrente uma 1 sqm ao norte e
+// a outra 1 sqm ao sul (a corrente começa pela cópia mais perto de quem lança).
 
-export function layoutFor(shape) {
-  const y = CASTER.y;
-  let targets = [{ x: TARGET_X, y }];
-  if (shape === 'beam') targets = [{ x: TARGET_X, y }, { x: TARGET_X - 1, y }, { x: TARGET_X - 2, y }];
+export function layoutFor(shape, length = 0) {
+  const { x: cx, y } = CASTER;
+  const reach = length > 0 ? Math.min(length, ARENA_WIDTH - 1 - cx) : DISTANCE;
+  let targets = [{ x: shape === 'wave' ? cx + reach : TARGET_X, y }];
+  if (shape === 'around') targets = [{ x: cx + 1, y }];
+  if (shape === 'sweep') targets = [{ x: cx + 1, y }, { x: cx + 1, y: y - 1 }, { x: cx + 1, y: y + 1 }];
+  if (shape === 'beam') targets = [0, 1, 2].map(back => ({ x: cx + reach - back, y })).filter(target => target.x > cx);
   if (shape === 'chain') targets = [{ x: TARGET_X - 2, y: y + 1 }, { x: TARGET_X - 1, y: y - 1 }, { x: TARGET_X, y }];
   return { caster: { ...CASTER }, targets };
 }
@@ -143,9 +147,10 @@ export function planAmmo(type, layout) {
   const target = layout.targets[0];
   const impact = itemInfo(type).impact;
   const missile = missileTo(layout, MISSILES[name] ? name : 'arrow');
-  if (!impact || !impact.effect && impact.kind !== 'area') return plan({ missiles: [missile] });
+  const effect = impactEffectName(impact) || (impact && impact.kind === 'area' ? 'explosion' : '');
+  if (!effect) return plan({ missiles: [missile] });
   const area = impact.kind === 'area' ? squareArea(impact.radius) : AREAS.single;
-  return plan({ missiles: [missile], effects: [{ name: impact.effect || 'explosion', tiles: around(target, area) }] });
+  return plan({ missiles: [missile], effects: [{ name: effect, tiles: around(target, area) }] });
 }
 
 // ================================================================================================================================================================================================================================================
