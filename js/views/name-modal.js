@@ -1,13 +1,14 @@
 // js/views/name-modal.js
 
-import { validateName, normalizeGender, NAME_MAX_LENGTH } from '../net/protocol.js';
+import { validateName, validatePassword, normalizeGender, NAME_MAX_LENGTH, PASSWORD_MAX_LENGTH } from '../net/protocol.js';
 
 const STORAGE_KEY = 'playerName';
 const GENDER_STORAGE_KEY = 'playerGender';
 
-// Janela que abre ao entrar no jogo pedindo o nome e o gênero do personagem
-// (markup em index.html, #nameModal). Lembra o último nome e gênero usados
-// neste navegador.
+// Janela que abre ao entrar no jogo pedindo o nome, o gênero e a senha do
+// personagem (markup em index.html, #nameModal). Lembra o último nome e gênero
+// usados neste navegador (a senha nunca é guardada). Um nome novo define a
+// senha dele na primeira vez.
 
 export class NameModal {
 
@@ -18,10 +19,12 @@ export class NameModal {
     this.root = document.getElementById('nameModal');
     this.form = document.getElementById('nameForm');
     this.input = document.getElementById('nameInput');
+    this.passwordInput = document.getElementById('passwordInput');
     this.error = document.getElementById('nameError');
     this.button = this.form.querySelector('button[type="submit"]');
     this.genderButtons = [...this.form.querySelectorAll('.gender-option')];
     this.input.maxLength = NAME_MAX_LENGTH;
+    this.passwordInput.maxLength = PASSWORD_MAX_LENGTH;
     this.input.value = this.loadName();
     this.pending = null;
     this.selectGender(normalizeGender(this.load(GENDER_STORAGE_KEY)));
@@ -83,7 +86,7 @@ export class NameModal {
 
   // ================================================================================================================================================================================================================================================
   // ask
-  // Mostra a janela e resolve com { name, gender } (nome já validado) ao confirmar.
+  // Mostra a janela e resolve com { name, gender, password } (já validados) ao confirmar.
 
   ask() {
     this.root.hidden = false;
@@ -105,12 +108,17 @@ export class NameModal {
       this.showError(result.error);
       return;
     }
+    const password = validatePassword(this.passwordInput.value);
+    if (password.error) {
+      this.showError(password.error);
+      return;
+    }
     this.input.value = result.name;
     this.showError('');
     this.setBusy(true);
     const resolve = this.pending;
     this.pending = null;
-    resolve({ name: result.name, gender: this.gender });
+    resolve({ name: result.name, gender: this.gender, password: password.password });
   }
 
   // ================================================================================================================================================================================================================================================
@@ -129,6 +137,7 @@ export class NameModal {
 
   setBusy(busy) {
     this.input.disabled = busy;
+    this.passwordInput.disabled = busy;
     for (const button of this.genderButtons) button.disabled = busy;
     this.button.disabled = busy;
     this.button.textContent = busy ? 'Entrando…' : 'Entrar';
@@ -147,6 +156,7 @@ export class NameModal {
   close(name) {
     this.save(STORAGE_KEY, name);
     this.save(GENDER_STORAGE_KEY, this.gender);
+    this.passwordInput.value = '';
     this.root.hidden = true;
   }
 }

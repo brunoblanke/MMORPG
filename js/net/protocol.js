@@ -12,10 +12,10 @@ import { objectIdType, doorState } from '../../shared/assets.js';
 // Mensagens entre navegador e servidor (JSON pelo WebSocket, em /ws):
 //
 //   navegador → servidor
-//     { type: 'join', name, gender }               entrar com o nome e o gênero ('male' | 'female')
+//     { type: 'join', name, gender, password }     entrar com o nome, o gênero ('male' | 'female') e a senha (a 1ª vez de um nome define a senha dele)
 //     { type: 'command', command }                 comando do jogador (player-control.js; say = falar)
 //   servidor → navegador
-//     { type: 'joinError', error }                 nome recusado (pode tentar de novo)
+//     { type: 'joinError', error }                 nome ou senha recusados (pode tentar de novo)
 //     { type: 'welcome', playerId }                entrou: quem você é
 //     { type: 'state', time, delta, events }       a cada tick: o que mudou no estado (delta.js) + eventos
 //
@@ -40,6 +40,8 @@ const STEP_SLACK_MS = TICK_MS;
 
 export const NAME_MIN_LENGTH = 3;
 export const NAME_MAX_LENGTH = 20;
+export const PASSWORD_MIN_LENGTH = 4;
+export const PASSWORD_MAX_LENGTH = 64;
 
 // ================================================================================================================================================================================================================================================
 // validateName
@@ -53,6 +55,18 @@ export function validateName(raw) {
   if (name.length > NAME_MAX_LENGTH) return { error: `O nome pode ter no máximo ${NAME_MAX_LENGTH} letras.` };
   if (!/^[\p{L}\p{N} _-]+$/u.test(name)) return { error: 'Use só letras, números, espaço, _ ou -.' };
   return { name };
+}
+
+// ================================================================================================================================================================================================================================================
+// validatePassword
+// Senha do personagem: de PASSWORD_MIN_LENGTH a PASSWORD_MAX_LENGTH caracteres
+// (espaços contam). Devolve { password } ou { error }.
+
+export function validatePassword(raw) {
+  const password = typeof raw === 'string' ? raw : '';
+  if (password.length < PASSWORD_MIN_LENGTH) return { error: `A senha precisa ter pelo menos ${PASSWORD_MIN_LENGTH} caracteres.` };
+  if (password.length > PASSWORD_MAX_LENGTH) return { error: `A senha pode ter no máximo ${PASSWORD_MAX_LENGTH} caracteres.` };
+  return { password };
 }
 
 // ================================================================================================================================================================================================================================================

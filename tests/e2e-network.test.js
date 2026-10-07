@@ -60,12 +60,12 @@ after(async () => {
 // connect
 // Um "navegador": entra com o nome e guarda o estado remontado e os eventos.
 
-function connect(name) {
+function connect(name, password = 'segredo') {
   return new Promise((resolve, reject) => {
     const socket = new WebSocket(`ws://localhost:${PORT}/ws`);
     const client = { socket, state: null, events: [], playerId: null, reloaded: false };
     socket.on('error', reject);
-    socket.on('open', () => socket.send(JSON.stringify({ type: 'join', name, gender: 'male' })));
+    socket.on('open', () => socket.send(JSON.stringify({ type: 'join', name, gender: 'male', password })));
     socket.on('message', (data) => {
       const message = JSON.parse(data);
       if (message.type === 'welcome') {
@@ -152,4 +152,26 @@ test('mapa salvo: o servidor recarrega sozinho, avisa o navegador e o personagem
   } finally {
     again.socket.close();
   }
+});
+
+// ================================================================================================================================================================================================================================================
+// leave
+// Fecha o "navegador" e espera o servidor liberar o nome.
+
+async function leave(client) {
+  client.socket.close();
+  await new Promise(resolve => setTimeout(resolve, 300));
+}
+
+test('senha: o 1º acesso define; senha errada ou curta é recusada; a certa entra de novo', async () => {
+  await leave(await connect('Senhado', 'abc123'));
+  await assert.rejects(connect('Senhado', 'errada'), /Senha incorreta/);
+  await assert.rejects(connect('Senhado', 'abc'), /pelo menos/);
+  await leave(await connect('Senhado', 'abc123'));
+});
+
+test('senha: depois de 5 erradas seguidas o servidor pede pra esperar, mesmo com a senha certa', async () => {
+  await leave(await connect('Travado', 'abc123'));
+  for (let i = 0; i < 5; i++) await assert.rejects(connect('Travado', 'errada'), /Senha incorreta/);
+  await assert.rejects(connect('Travado', 'abc123'), /Muitas tentativas/);
 });

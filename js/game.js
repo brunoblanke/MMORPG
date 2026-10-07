@@ -36,7 +36,7 @@ const DOUBLE_CLICK_MS = 250;
 // ================================================================================================================================================================================================================================================
 // saveRejoin / takeRejoin
 // Mapa ou gerador mudou no servidor: a página recarrega e entra de novo
-// sozinha com o mesmo nome e gênero (guardados só pra essa recarga).
+// sozinha com o mesmo nome, gênero e senha (guardados só pra essa recarga).
 
 const REJOIN_KEY = 'jogo-reentrar';
 const LONG_PRESS_MS = 500;
@@ -131,18 +131,18 @@ export class GameController {
   async openSession(modal, mapData, socket) {
     let again = takeRejoin();
     for (;;) {
-      const { name, gender } = again || await modal.ask();
+      const { name, gender, password } = again || await modal.ask();
       again = null;
       if (!socket) {
         modal.close(name);
         return new LocalSession(mapData, name, gender);
       }
       try {
-        const session = await RemoteSession.join(socket, mapData, name, gender);
+        const session = await RemoteSession.join(socket, mapData, name, gender, password);
         console.log(`🌐 Conectado ao servidor como ${name} (${session.playerId})`);
         session.onDisconnect = () => this.showMessage('Conexão com o servidor perdida — recarregue a página', performance.now(), 600000, 'danger');
         session.onReload = () => {
-          saveRejoin({ name, gender });
+          saveRejoin({ name, gender, password });
           location.reload();
         };
         modal.close(name);

@@ -14,6 +14,7 @@ const MAPA_INICIAL = path.join(PASTA_JOGO, 'data', 'map.json');
 let MAP_DATA_PATH = path.resolve(process.env.JOGO_MAPA || MAPA_INICIAL);
 const CHARACTERS_PATH = process.env.JOGO_PERSONAGENS || path.join(PASTA_JOGO, 'data', 'characters.json');
 const HOUSES_PATH = process.env.JOGO_CASAS || path.join(path.dirname(CHARACTERS_PATH), 'houses.json');
+const PASSWORDS_PATH = process.env.JOGO_SENHAS || path.join(path.dirname(CHARACTERS_PATH), 'passwords.json');
 const PASTA_PROJETOS = path.join(PASTA_JOGO, 'gerador', 'projetos');
 const PASTA_SAIDA = path.join(PASTA_JOGO, 'gerador', 'saida');
 const TAXONOMIA_PATH = path.join(PASTA_JOGO, 'gerador', 'taxonomia.json');
@@ -150,6 +151,7 @@ function salvarMapa(req, res) {
 
   try {
     copiarBackupDiario(MAP_DATA_PATH, 'map');
+  copiarBackupDiario(PASSWORDS_PATH, 'passwords');
     fs.writeFileSync(MAP_DATA_PATH, JSON.stringify(mapData, null, 2), 'utf8');
     console.log(`✅ Mapa salvo em ${MAP_DATA_PATH} (${mapData.objetosData.length} objetos)`);
     res.json({ success: true, message: 'Mapa salvo com sucesso!' });
@@ -255,8 +257,9 @@ function enderecosRede(porta) {
 
 async function iniciarJogo(servidorHttp) {
   const { Simulation, TICK_MS } = await import(pathToFileURL(path.join(PASTA_JOGO, 'js', 'simulation.js')).href);
-  const { serializeState, validateName, normalizeGender, VIEW_RANGE_X, VIEW_RANGE_Y } = await import(pathToFileURL(path.join(PASTA_JOGO, 'js', 'net', 'protocol.js')).href);
+  const { serializeState, validateName, validatePassword, normalizeGender, VIEW_RANGE_X, VIEW_RANGE_Y } = await import(pathToFileURL(path.join(PASTA_JOGO, 'js', 'net', 'protocol.js')).href);
   const { encodeDelta } = await import(pathToFileURL(path.join(PASTA_JOGO, 'js', 'net', 'delta.js')).href);
+  const { PasswordStore, LoginGuard } = await import(pathToFileURL(path.join(PASTA_JOGO, 'js', 'net', 'passwords.js')).href);
 
   const { setAssets } = await import(pathToFileURL(path.join(PASTA_JOGO, 'shared', 'assets.js')).href);
   setAssets(lerSprites());
@@ -272,6 +275,8 @@ async function iniciarJogo(servidorHttp) {
   let geracao = 0;
   fazerBackup();
   const personagens = carregarPersonagens();
+  const senhas = new PasswordStore(PASSWORDS_PATH);
+  const guarda = new LoginGuard();
   const conexoes = new Map();
   let proximoJogador = 1;
 
@@ -295,12 +300,55 @@ async function iniciarJogo(servidorHttp) {
   });
 
   const wss = new WebSocketServer({ server: servidorHttp, path: '/ws' });
-  wss.on('connection', (socket) => {
+  wss.on('connection', (socket, pedido) => {
+    const endereco = pedido.socket.remoteAddress;
     estado.conexoesTotal++;
     estado.online++;
     socket.on('close', () => { estado.online--; });
     let player = null;
+    let entrando = false;
     let minhaGeracao = geracao;
+
+    const recusar = (erro) => socket.send(JSON.stringify({ type: 'joinError', error: erro }));
+
+    const entrar = async (mensagem) => {
+      const erro = validarEntrada(sim, mensagem.name, validateName);
+      if (erro.error) return recusar(erro.error);
+      const chave = `${endereco}|${erro.name.toLowerCase()}`;
+      const espera = guarda.retryIn(chave);
+      if (espera) return recusar(`Muitas tentativas. Espere ${Math.ceil(espera / 1000)} segundos.`);
+      const senha = validatePassword(mensagem.password);
+      if (senha.error) return recusar(senha.error);
+      if (senhas.has(erro.name)) {
+        if (!await senhas.verify(erro.name, senha.password)) {
+          guarda.fail(chave);
+          return recusar('Senha incorreta.');
+        }
+        guarda.clear(chave);
+      } else if (!await senhas.claim(erro.name, senha.password)) {
+        return recusar('Senha incorreta.');
+      }
+      if (socket.readyState !== socket.OPEN) return;
+      if (minhaGeracao !== geracao) return recusar('O mapa foi atualizado. Tente entrar de novo.');
+      const emUso = validarEntrada(sim, erro.name, validateName);
+      if (emUso.error) return recusar(emUso.error);
+      const corpo = sim.findOffline(erro.name);
+      if (corpo) {
+        player = corpo;
+        player.offline = false;
+        conexoes.set(player.id, { socket, sent: null });
+        console.log(`🟢 ${player.name} voltou ao corpo que ficou no mapa (${conexoes.size} online)`);
+        socket.send(JSON.stringify({ type: 'welcome', playerId: player.id }));
+        return;
+      }
+      const playerId = `player${proximoJogador}`;
+      proximoJogador++;
+      const saved = personagens[erro.name.toLowerCase()];
+      player = sim.addPlayer(playerId, { name: erro.name, gender: normalizeGender(mensagem.gender), saved });
+      conexoes.set(playerId, { socket, sent: null });
+      console.log(`🟢 ${player.name} entrou ${saved ? `(nível ${player.lvl}) ` : '(novo) '}(${conexoes.size} online)`);
+      socket.send(JSON.stringify({ type: 'welcome', playerId }));
+    };
 
     socket.on('message', (dados) => {
       const mensagem = lerMensagem(dados);
@@ -308,29 +356,10 @@ async function iniciarJogo(servidorHttp) {
       if (player && minhaGeracao !== geracao) return;
 
       if (!player) {
+        if (entrando || mensagem.type !== 'join') return;
         minhaGeracao = geracao;
-        if (mensagem.type !== 'join') return;
-        const erro = validarEntrada(sim, mensagem.name, validateName);
-        if (erro.error) {
-          socket.send(JSON.stringify({ type: 'joinError', error: erro.error }));
-          return;
-        }
-        const corpo = sim.findOffline(erro.name);
-        if (corpo) {
-          player = corpo;
-          player.offline = false;
-          conexoes.set(player.id, { socket, sent: null });
-          console.log(`🟢 ${player.name} voltou ao corpo que ficou no mapa (${conexoes.size} online)`);
-          socket.send(JSON.stringify({ type: 'welcome', playerId: player.id }));
-          return;
-        }
-        const playerId = `player${proximoJogador}`;
-        proximoJogador++;
-        const saved = personagens[erro.name.toLowerCase()];
-        player = sim.addPlayer(playerId, { name: erro.name, gender: normalizeGender(mensagem.gender), saved });
-        conexoes.set(playerId, { socket, sent: null });
-        console.log(`🟢 ${player.name} entrou ${saved ? `(nível ${player.lvl}) ` : '(novo) '}(${conexoes.size} online)`);
-        socket.send(JSON.stringify({ type: 'welcome', playerId }));
+        entrando = true;
+        entrar(mensagem).catch(err => console.error('❌ Erro ao entrar:', err.message)).finally(() => { entrando = false; });
         return;
       }
 
@@ -415,9 +444,9 @@ function carregarPersonagens() {
 
 // ================================================================================================================================================================================================================================================
 // fazerBackup
-// Ao subir o servidor, uma cópia dos personagens e do mapa do dia em backups/
-// (ao lado de cada arquivo, fora do git: characters-AAAA-MM-DD.json e
-// map-AAAA-MM-DD.json). Ficam as BACKUP_DIAS mais novas.
+// Ao subir o servidor, uma cópia dos personagens, do mapa e das senhas do dia em backups/
+// (ao lado de cada arquivo, fora do git: characters-AAAA-MM-DD.json,
+// map-AAAA-MM-DD.json e passwords-AAAA-MM-DD.json). Ficam as BACKUP_DIAS mais novas.
 
 function fazerBackup() {
   copiarBackupDiario(CHARACTERS_PATH, 'characters');

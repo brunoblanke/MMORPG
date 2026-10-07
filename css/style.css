@@ -85,6 +85,10 @@ canvas {
   opacity: 0.6;
 }
 
+.password-input {
+  margin-top: 8px;
+}
+
 .name-row {
   display: flex;
   gap: 8px;

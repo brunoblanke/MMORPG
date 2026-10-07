@@ -8,3 +8,5 @@ data/houses.json
 data/houses.json.tmp
 data/characters.json.estragado-*
 gerador/tibia/atual
+data/passwords.json
+data/passwords.json.tmp
