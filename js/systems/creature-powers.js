@@ -23,6 +23,28 @@ import { FIELDS } from '../../shared/conditions.js';
 //   morre junto com quem invocou.
 // O veneno do golpe fica no combate (combat.js).
 
+// ================================================================================================================================================================================================================================================
+// lineTiles
+// Os sqms da linha reta de a até b (sem o de a, com o de b).
+
+function lineTiles(a, b) {
+  const tiles = [];
+  let x = a.x;
+  let y = a.y;
+  const dx = Math.abs(b.x - x);
+  const dy = Math.abs(b.y - y);
+  const sx = b.x > x ? 1 : -1;
+  const sy = b.y > y ? 1 : -1;
+  let err = dx - dy;
+  while (x !== b.x || y !== b.y) {
+    const e2 = 2 * err;
+    if (e2 > -dy) { err -= dy; x += sx; }
+    if (e2 < dx) { err += dx; y += sy; }
+    tiles.push([x, y]);
+  }
+  return tiles;
+}
+
 export const POWER_TRY_MS = 2000;
 export const SUMMON_CHANCE = 0.25;
 const SPELL_POISON_TICKS = 5;
@@ -86,7 +108,8 @@ export class CreaturePowers {
       this.sim.emit({ type: 'missile', fromX: enemy.x, fromY: enemy.y, toX: player.x, toY: player.y, z: enemy.z || 0, kind });
     }
     if (attack.shape === 'field') this.placeFields(enemy, area.tiles, attack);
-    else this.strike(enemy, area.tiles, attack);
+    else if (attack.shape === 'slow') this.slow(enemy, area.tiles, attack);
+    else this.strike(enemy, area.tiles, attack, area.victims);
     enemy.lastAttackTime = now;
     return true;
   }
@@ -109,12 +132,13 @@ export class CreaturePowers {
     }
     const range = Math.max(Math.abs(enemy.x - player.x), Math.abs(enemy.y - player.y));
     if (range > (attack.range || CONFIG.mageRange) || !this.sim.movement.hasLineOfSight(enemy, player)) return null;
+    if (shape === 'chain') return this.chainOf(enemy, player, attack);
     const around = shape === 'ball' ? circleArea(attack.radius)
       : shape === 'cross' ? AREAS.cross
       : shape === 'ring' ? ringArea(attack.radius)
       : shape === 'field' && attack.radius > 0 ? circleArea(attack.radius)
       : [[0, 0]];
-    return { tiles: this.visibleTiles({ x: player.x, y: player.y, z: enemy.z || 0 }, around), missile: true };
+    return { tiles: this.visibleTiles({ x: player.x, y: player.y, z: enemy.z || 0 }, around), missile: shape !== 'slow' };
   }
 
   // ================================================================================================================================================================================================================================================
@@ -193,6 +217,43 @@ export class CreaturePowers {
   }
 
   // ================================================================================================================================================================================================================================================
+  // chainOf
+  // A corrente: parte dela até o player e pula pro player mais perto do último
+  // (até alcanceSalto sqm, com linha livre), até saltos jogadores no total.
+  // Devolve os sqms do caminho e quem ela acerta.
+
+  chainOf(enemy, player, attack) {
+    const z = enemy.z || 0;
+    const victims = [player];
+    const tiles = lineTiles(enemy, player);
+    let from = player;
+    while (victims.length < attack.jumps) {
+      const next = this.sim.players
+        .filter(p => p.isAlive() && !victims.includes(p) && (p.z || 0) === z && !this.sim.world.isInSafeZone(p) && Math.max(Math.abs(p.x - from.x), Math.abs(p.y - from.y)) <= attack.jumpRange && this.sim.movement.hasLineOfSight(from, p))
+        .sort((a, b) => Math.hypot(a.x - from.x, a.y - from.y) - Math.hypot(b.x - from.x, b.y - from.y))[0];
+      if (!next) break;
+      tiles.push(...lineTiles(from, next));
+      victims.push(next);
+      from = next;
+    }
+    return { tiles, missile: false, victims };
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // slow
+  // Deixa o player nos sqms lento (speed negativa por ms).
+
+  slow(enemy, tiles, attack) {
+    const z = enemy.z || 0;
+    const keys = new Set(tiles.map(([x, y]) => `${x},${y}`));
+    for (const target of this.sim.players) {
+      if (!target.isAlive() || (target.z || 0) !== z || !keys.has(`${target.x},${target.y}`) || this.sim.world.isInSafeZone(target)) continue;
+      this.sim.conditions.add(target, 'slow', { speed: attack.speed, ms: attack.ms });
+      this.sim.emit({ type: 'effect', x: target.x, y: target.y, z, tiles: [[target.x, target.y]], effect: 'poff' });
+    }
+  }
+
+  // ================================================================================================================================================================================================================================================
   // placeFields
   // Cria o campo da magia nos sqms (menos zona segura).
 
@@ -205,13 +266,14 @@ export class CreaturePowers {
 
   // ================================================================================================================================================================================================================================================
   // strike
-  // Fere todo player vivo nos sqms (fora da zona segura) e mostra o efeito do tipo.
+  // Fere todo player vivo nos sqms (ou na lista victims), fora da zona
+  // segura, e mostra o efeito do tipo.
 
-  strike(enemy, tiles, attack) {
+  strike(enemy, tiles, attack, victims = null) {
     const z = enemy.z || 0;
     const keys = new Set(tiles.map(([x, y]) => `${x},${y}`));
-    for (const target of this.sim.players) {
-      if (!target.isAlive() || (target.z || 0) !== z || !keys.has(`${target.x},${target.y}`) || this.sim.world.isInSafeZone(target)) continue;
+    for (const target of victims || this.sim.players) {
+      if (!target.isAlive() || (target.z || 0) !== z || (!victims && !keys.has(`${target.x},${target.y}`)) || this.sim.world.isInSafeZone(target)) continue;
       this.sim.conditions.hurt(target, this.roll(attack), attack.element);
       if (attack.element === 'poison') this.sim.conditions.add(target, 'poison', { damage: Math.max(1, Math.floor(attack.max / 4)), ticks: SPELL_POISON_TICKS });
     }
@@ -223,6 +285,10 @@ export class CreaturePowers {
   // A criatura ferida recupera vida.
 
   heal(enemy, attack) {
+    if (enemy.conditions && enemy.conditions.slow) {
+      delete enemy.conditions.slow;
+      this.sim.conditions.applySpeed(enemy);
+    }
     if (enemy.currentHp >= enemy.hp) return;
     enemy.currentHp = Math.min(enemy.hp, enemy.currentHp + this.roll(attack));
     this.sim.emit({ type: 'effect', x: enemy.x, y: enemy.y, z: enemy.z || 0, tiles: [[enemy.x, enemy.y]], effect: 'heal' });
@@ -278,6 +344,29 @@ export class CreaturePowers {
       if (step !== null) return { x: px, y: py, step };
     }
     return null;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // resisted
+  // O dano depois da resistência da criatura ao tipo (100 = igual, 0 = imune);
+  // player não tem resistência (por enquanto).
+
+  resisted(entity, element, amount) {
+    if (entity.isPlayer || !entity.creature) return amount;
+    const percent = creaturePowers(entity.creature).resistances[element || 'physical'];
+    return percent === undefined ? amount : Math.round(amount * percent / 100);
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // reflect
+  // Parry: a criatura devolve parte do dano a quem bateu nela, com a chance
+  // dela (o golpe devolvido não reflete de novo).
+
+  reflect(attacker, defender, damage) {
+    if (!attacker.isPlayer || defender.isPlayer || !defender.creature || damage <= 0 || !attacker.isAlive()) return;
+    const reflect = creaturePowers(defender.creature).reflect;
+    if (!reflect || Math.random() * 100 >= reflect.chance) return;
+    this.sim.conditions.hurt(attacker, Math.max(1, Math.round(damage * reflect.percent / 100)), 'physical');
   }
 
   // ================================================================================================================================================================================================================================================

@@ -167,6 +167,15 @@
         "max": 72,
         "chance": 15
       }
-    ]
+    ],
+    "resistencias": {
+      "physical": 100,
+      "earth": 20,
+      "fire": 0,
+      "energy": 80,
+      "ice": 110,
+      "death": 100,
+      "holy": 100
+    }
   }
 }

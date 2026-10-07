@@ -27,7 +27,7 @@ export class ConditionController {
 
   add(entity, kind, { damage = 0, ticks = 0, source = null, speed = 0, ms = 0 } = {}) {
     const info = CONDITIONS[kind];
-    if (!info || !entity.isAlive()) return;
+    if (!info || !entity.isAlive() || (info.interval && this.sim.powers.resisted(entity, kind, 100) <= 0)) return;
     const now = this.sim.time || 0;
     const conditions = entity.conditions || (entity.conditions = {});
     if (info.interval) {
@@ -104,7 +104,8 @@ export class ConditionController {
   // hurt
   // Dano de estado ou de campo (sem defesa nem armadura), com a cor do tipo.
 
-  hurt(entity, amount, kind, sourceId = null) {
+  hurt(entity, rawAmount, kind, sourceId = null) {
+    const amount = this.sim.powers.resisted(entity, kind, rawAmount);
     if (amount <= 0 || !entity.isAlive()) return;
     const source = sourceId ? this.sim.getPlayer(sourceId) : null;
     if (source && !entity.isPlayer) this.sim.combat.recordDamage(entity, source, Math.min(amount, entity.currentHp));

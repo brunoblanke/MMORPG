@@ -90,7 +90,11 @@ export function creatureStats(type) {
 // O que a criatura faz além do golpe (gerador → Criaturas): attacks, as magias
 // (cada uma { shape, element, min, max, chance % a cada tentativa, … }); poison,
 // o veneno que o golpe deixa (dano por vez); summon, a criatura que ela invoca
-// ({ type, max }); respawn, o tempo pra renascer (ms; 0 = o padrão).
+// ({ type, max }); respawn, o tempo pra renascer (ms; 0 = o padrão);
+// resistances, quanto % do dano de cada tipo ela leva (100 = normal, 0 =
+// imune, mais que 100 = fraca; physical, fire, energy, poison, ice, earth,
+// death, holy); reflect, a chance % e a parte % do dano que ela devolve a
+// quem bate nela (Parry), ou null.
 //
 // Magias (propriedades.ataques, as do Tibia): forma 'tiro' (um alvo de longe,
 // alcance), 'bola' (tiro que explode em círculo de raio em volta do alvo; raio
@@ -100,35 +104,44 @@ export function creatureStats(type) {
 // de raio em volta dela, ou do alvo com centro 'alvo'), 'redor' (os 8 sqms
 // colados nela, como o Berserk), 'varredura' (os 3 sqms colados na frente,
 // como o Front Sweep), 'campo' (cria o campo `campo` no alvo e, com raio, em
-// volta) e 'cura' (ela mesma). A propriedade antiga `magia` vira um tiro.
+// volta), 'corrente' (Chain: acerta o player e pula pros mais perto, até
+// `saltos` vezes, cada pulo de até `alcanceSalto` sqm), 'lentidao' (deixa o
+// player lento: `velocidade` negativa por `ms`), 'cura' (ela mesma) e
+// 'reflexo' (Parry: `chance` e `porcentagem` do dano devolvido). A
+// propriedade antiga `magia` vira um tiro.
 
 export const SPELL_ELEMENTS = ['fire', 'energy', 'poison', 'ice', 'earth', 'death', 'holy'];
-const ATTACK_SHAPES = { tiro: 'shot', bola: 'ball', onda: 'wave', cura: 'heal', raio: 'beam', cruz: 'cross', anel: 'ring', redor: 'around', varredura: 'sweep', campo: 'field' };
+export const RESISTANCE_ELEMENTS = ['physical', ...SPELL_ELEMENTS];
+const ATTACK_SHAPES = { tiro: 'shot', bola: 'ball', onda: 'wave', cura: 'heal', raio: 'beam', cruz: 'cross', anel: 'ring', redor: 'around', varredura: 'sweep', campo: 'field', corrente: 'chain', lentidao: 'slow' };
+const powersCache = new WeakMap();
 
 // ================================================================================================================================================================================================================================================
 // creatureAttacks
 // As magias válidas da criatura: [{ shape, element, min, max, chance, range,
-// radius, length, spread }].
+// radius, length, spread, widths, center, field, jumps, jumpRange, speed, ms }].
 
 function creatureAttacks(props) {
   const int = (value) => Math.max(0, Math.floor(Number(value)) || 0);
   const attacks = [];
+  const blank = { range: 0, radius: 0, length: 0, spread: 0, widths: [], center: 'self', field: '', jumps: 0, jumpRange: 0, speed: 0, ms: 0 };
   const magic = props.magia || {};
   if (SPELL_ELEMENTS.includes(magic.tipo) && int(magic.dano) > 0) {
     const damage = int(magic.dano);
-    attacks.push({ shape: 'shot', element: magic.tipo, min: Math.ceil(damage / 2), max: damage, chance: Math.min(100, Math.max(1, int(magic.chance) || 20)), range: 0, radius: 0, length: 0, spread: 0, widths: [], center: 'self', field: '' });
+    attacks.push({ ...blank, shape: 'shot', element: magic.tipo, min: Math.ceil(damage / 2), max: damage, chance: Math.min(100, Math.max(1, int(magic.chance) || 20)) });
   }
   for (const entry of Array.isArray(props.ataques) ? props.ataques : []) {
     const shape = ATTACK_SHAPES[entry && entry.forma];
     const element = entry && entry.elemento;
     const field = entry && typeof entry.campo === 'string' ? entry.campo : '';
     const max = int(entry && entry.max);
+    const speed = Math.trunc(Number(entry && entry.velocidade)) || 0;
     if (!shape) continue;
-    if (shape === 'field' ? !field : (shape !== 'heal' && !SPELL_ELEMENTS.includes(element)) || max <= 0) continue;
+    if (shape === 'field' ? !field : shape === 'slow' ? !speed : (shape !== 'heal' && !SPELL_ELEMENTS.includes(element)) || max <= 0) continue;
     const widths = Array.isArray(entry.larguras) ? entry.larguras.map(int).filter(w => w > 0).slice(0, 13) : [];
     attacks.push({
+      ...blank,
       shape,
-      element: shape === 'heal' || shape === 'field' ? null : element,
+      element: shape === 'heal' || shape === 'field' || shape === 'slow' ? null : element,
       min: Math.min(max, int(entry.min)),
       max,
       chance: Math.min(100, Math.max(1, int(entry.chance) || 10)),
@@ -138,19 +151,42 @@ function creatureAttacks(props) {
       spread: Math.min(6, int(entry.abertura)),
       widths,
       center: entry.centro === 'alvo' ? 'target' : 'self',
-      field
+      field,
+      jumps: Math.min(10, int(entry.saltos) || 3),
+      jumpRange: Math.min(10, int(entry.alcanceSalto) || 4),
+      speed,
+      ms: int(entry.ms) || 10000
     });
   }
   return attacks;
 }
 
+// ================================================================================================================================================================================================================================================
+// creatureResistances
+// { elemento: % do dano que ela leva }, só os tipos que a receita muda.
+
+function creatureResistances(props) {
+  const resistances = {};
+  const source = props.resistencias && typeof props.resistencias === 'object' ? props.resistencias : {};
+  for (const element of RESISTANCE_ELEMENTS) {
+    const value = Number(source[element]);
+    if (Number.isFinite(value)) resistances[element] = Math.min(500, Math.max(0, Math.round(value)));
+  }
+  return resistances;
+}
+
 export function creaturePowers(type) {
   const asset = getAsset(type);
+  if (asset && powersCache.has(asset)) return powersCache.get(asset);
   const props = (asset && asset.propriedades) || {};
   const int = (value) => Math.max(0, Math.floor(Number(value)) || 0);
   const call = props.invoca || {};
   const summon = typeof call.tipo === 'string' && call.tipo && int(call.max) > 0 ? { type: call.tipo, max: Math.min(5, int(call.max)) } : null;
-  return { attacks: creatureAttacks(props), poison: int(props.veneno), summon, respawn: int(props.respawn) * 1000 };
+  const parry = (Array.isArray(props.ataques) ? props.ataques : []).find(entry => entry && entry.forma === 'reflexo');
+  const reflect = parry ? { chance: Math.min(100, Math.max(1, int(parry.chance) || 10)), percent: Math.min(100, Math.max(1, int(parry.porcentagem) || 50)) } : null;
+  const powers = { attacks: creatureAttacks(props), poison: int(props.veneno), summon, respawn: int(props.respawn) * 1000, resistances: creatureResistances(props), reflect };
+  if (asset) powersCache.set(asset, powers);
+  return powers;
 }
 
 // ================================================================================================================================================================================================================================================

@@ -162,13 +162,15 @@ export class SpellController {
   // hurt
   // Dano de magia na criatura (sem defesa nem armadura); conta pra XP.
 
-  hurt(player, enemy, amount, now, element = null) {
+  hurt(player, enemy, rawAmount, now, element = null) {
+    const amount = this.sim.powers.resisted(enemy, element, rawAmount);
     if (amount <= 0) return;
     this.sim.combat.markCombat(player, enemy, now);
     if (enemy.isPlayer) this.sim.social.onPlayerAttack(player, enemy, now);
     else this.sim.combat.recordDamage(enemy, player, Math.min(amount, enemy.currentHp));
     enemy.takeDamage(amount, now);
     this.sim.emit({ type: 'damage', targetId: enemy.id, x: enemy.x, y: enemy.y, z: enemy.z || 0, amount, element });
+    this.sim.powers.reflect(player, enemy, amount);
   }
 
   // ================================================================================================================================================================================================================================================

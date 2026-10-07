@@ -166,12 +166,14 @@ export class CombatController {
   // Tira a vida do golpe já calculado: conta pro PvP, pra XP da criatura, mostra
   // o número e deixa o veneno do golpe da criatura.
 
-  applyDamage(attacker, defender, damage, now, melee) {
+  applyDamage(attacker, defender, rawDamage, now, melee) {
+    const damage = this.sim.powers.resisted(defender, 'physical', rawDamage);
     if (attacker.isPlayer && defender.isPlayer) this.sim.social.onPlayerAttack(attacker, defender, now);
     if (damage <= 0) return defender.currentHp;
     if (attacker.isPlayer && !defender.isPlayer) this.recordDamage(defender, attacker, Math.min(damage, defender.currentHp));
     const hpLeft = defender.takeDamage(damage, now);
     this.sim.emit({ type: 'damage', targetId: defender.id, x: defender.x, y: defender.y, z: defender.z || 0, amount: damage });
+    this.sim.powers.reflect(attacker, defender, damage);
     const poison = attacker.isPlayer ? 0 : creaturePowers(attacker.creature).poison;
     if (poison && melee) this.sim.conditions.add(defender, 'poison', { damage: poison, ticks: POISON_HIT_TICKS });
     return hpLeft;

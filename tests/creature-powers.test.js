@@ -3,7 +3,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { buildGame, floorRect, wall, CREATURE } from './helpers/fixture.js';
-import { setAssets } from '../shared/assets.js';
+import { setAssets, creaturePowers } from '../shared/assets.js';
 import { TICK_MS } from '../js/simulation.js';
 import { CONFIG } from '../js/config.js';
 
@@ -225,4 +225,62 @@ test('campo: a magia cria o campo no alvo e em volta, e o player entra nele sem 
   const fields = sim.objects.filter(o => o.id.startsWith(FIELD));
   assert.ok(fields.length >= 5);
   assert.ok(fields.some(o => o.x === 5 && o.y === 5));
+});
+
+// ================================================================================================================================================================================================================================================
+// attackOf
+// A magia normalizada da criatura de teste.
+
+function attackOf(sim) {
+  return creaturePowers(sim.enemies[0].creature).attacks[0];
+}
+
+test('corrente: acerta o player e pula pros mais perto, até o limite de saltos e de distância', () => {
+  const sim = game({ ataque: 0, ataques: [{ forma: 'corrente', elemento: 'energy', min: 50, max: 50, chance: 100, alcance: 8, saltos: 3, alcanceSalto: 4 }] }, [[9, 5, 0]]);
+  const near = sim.addPlayer('player2', { name: 'Dois' });
+  const next = sim.addPlayer('player3', { name: 'Tres' });
+  const far = sim.addPlayer('player4', { name: 'Quatro' });
+  for (const [p, x, y] of [[near, 5, 8], [next, 5, 11], [far, 5, 18]]) {
+    sim.world.moveEntityTile(p, p.x, p.y, 0, x, y, 0);
+    Object.assign(p, { x, y, z: 0, step: 0 });
+  }
+  const players = [sim.player, near, next, far];
+  for (const p of players) p.hp = p.currentHp = 100000;
+  sim.powers.cast(sim.enemies[0], sim.player, attackOf(sim), sim.time);
+  const events = sim.drainEvents();
+  const hit = (p) => events.some(e => e.type === 'damage' && e.targetId === p.id && e.amount === 50);
+  assert.deepEqual(players.map(hit), [true, true, true, false]);
+  const effect = events.find(e => e.type === 'effect' && e.effect === 'energy');
+  assert.ok(effect.tiles.length >= 10);
+});
+
+test('lentidão: deixa o player lento pelo tempo dela', () => {
+  const sim = game({ ataque: 0, ataques: [{ forma: 'lentidao', velocidade: -100, ms: 5000, chance: 100, alcance: 8 }] }, [[8, 5, 0]]);
+  sim.powers.cast(sim.enemies[0], sim.player, attackOf(sim), sim.time);
+  assert.equal(sim.player.conditions.slow.speed, -100);
+});
+
+test('parry: a criatura devolve parte do dano a quem bate nela', () => {
+  const sim = game({ ataque: 0, ataques: [{ forma: 'reflexo', chance: 100, porcentagem: 50 }] }, [[6, 5, 0]]);
+  const player = sim.player;
+  player.hp = player.currentHp = 1000;
+  const random = Math.random;
+  Math.random = () => 0.5;
+  sim.combat.applyDamage(player, sim.enemies[0], 100, sim.time, true);
+  Math.random = random;
+  assert.equal(player.currentHp, 950);
+});
+
+test('resistências: imune não leva dano do tipo, fraca leva mais, o resto normal', () => {
+  const sim = game({ ataque: 0, resistencias: { fire: 0, ice: 200 } }, [[6, 5, 0]]);
+  const enemy = sim.enemies[0];
+  const before = enemy.currentHp;
+  sim.spells.hurt(sim.player, enemy, 50, sim.time, 'fire');
+  assert.equal(enemy.currentHp, before);
+  sim.spells.hurt(sim.player, enemy, 50, sim.time, 'ice');
+  assert.equal(enemy.currentHp, before - 100);
+  sim.spells.hurt(sim.player, enemy, 50, sim.time, 'energy');
+  assert.equal(enemy.currentHp, before - 150);
+  sim.conditions.add(enemy, 'fire', { damage: 5, ticks: 3 });
+  assert.equal(enemy.conditions && enemy.conditions.fire, undefined);
 });
