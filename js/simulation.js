@@ -95,7 +95,7 @@ export class Simulation {
     const position = player.loadSave(saved);
     this.inventory.setupPlayer(player, saved);
     const savedSpot = position && this.findSpotNear(position.x, position.y, position.z);
-    const spot = savedSpot || this.findFreeSpot(player.spawnX, player.spawnY, player.spawnZ);
+    const spot = savedSpot || this.findFreeSpot(player.spawnX, player.spawnY, player.spawnZ, { sharePlayers: true });
 
     player.x = spot.x;
     player.y = spot.y;
@@ -160,15 +160,17 @@ export class Simulation {
   // O sqm livre (pisável e sem ninguém) mais perto de (x, y, z), em anéis
   // cada vez maiores, com a altura em que se fica nele. null se não há
   // nenhum até o raio 10. avoidSafe: pula sqms de zona segura (inimigos).
+  // sharePlayers: sqm com player conta como livre (quem nasce divide o sqm).
 
-  findSpotNear(x, y, z, { avoidSafe = false } = {}) {
+  findSpotNear(x, y, z, { avoidSafe = false, sharePlayers = false } = {}) {
     for (let radius = 0; radius <= 10; radius++) {
       for (let dy = -radius; dy <= radius; dy++) {
         for (let dx = -radius; dx <= radius; dx++) {
           if (Math.max(Math.abs(dx), Math.abs(dy)) !== radius) continue;
           const px = x + dx;
           const py = y + dy;
-          if (!this.world.isInside(px, py) || this.world.isBlocked(px, py, z) || this.world.getTransitionAt(px, py, z)) continue;
+          const blocked = sharePlayers ? this.world.isBlockedExceptPlayers(px, py, z) : this.world.isBlocked(px, py, z);
+          if (!this.world.isInside(px, py) || blocked || this.world.getTransitionAt(px, py, z)) continue;
           if (avoidSafe && this.world.isSafe(px, py, z)) continue;
           const step = this.world.getPassableStep(px, py, z);
           if (step !== null) return { x: px, y: py, step };

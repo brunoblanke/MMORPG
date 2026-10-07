@@ -78,7 +78,7 @@ export class LifeCycleController {
     const corpse = this.createCorpse(player, 'player_corpse', now);
     this.sim.inventory.fillPlayerCorpse(corpse, player);
     player.lastCombatTime = -Infinity;
-    const spot = this.sim.findFreeSpot(player.spawnX, player.spawnY, player.spawnZ);
+    const spot = this.sim.findFreeSpot(player.spawnX, player.spawnY, player.spawnZ, { sharePlayers: true });
     world.moveEntityTile(player, player.x, player.y, player.z || 0, spot.x, spot.y, player.spawnZ);
     player.respawn(spot);
     player.step = spot.step;

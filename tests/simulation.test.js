@@ -190,20 +190,28 @@ test('o mapa real roda sem navegador: 2 minutos de jogo', () => {
   assert.ok(elapsed < 20000, `demorou ${elapsed.toFixed(0)} ms`);
 });
 
-test('jogadores entram e renascem em sqms livres, nunca um em cima do outro', () => {
+test('quem nasce (entrando ou renascendo) fica no sqm do spawn mesmo com outro player nele, até o primeiro passo', () => {
   const sim = buildGame({ objects: GROUND, player: { x: 5, y: 5, z: 0 } });
   const others = [sim.addPlayer('player2'), sim.addPlayer('player3')];
-  const spots = [sim.player, ...others].map(p => `${p.x},${p.y}`);
-  assert.equal(new Set(spots).size, 3);
-  assert.deepEqual([sim.player.x, sim.player.y], [5, 5]);
+  for (const p of [sim.player, ...others]) assert.deepEqual([p.x, p.y], [5, 5]);
+  assert.equal(sim.world.getTileEntities(5, 5, 0).filter(e => e.isPlayer).length, 3);
 
   sim.enqueue('player1', { type: 'walkTo', x: 12, y: 5, z: 0 });
   runFor(sim, 3000);
+  assert.notDeepEqual([sim.player.x, sim.player.y], [5, 5]);
   sim.player.currentHp = 0;
   runFor(sim, TICK_MS);
-  const after = [sim.player, ...others].map(p => `${p.x},${p.y}`);
-  assert.equal(new Set(after).size, 3);
-  assert.ok(Math.abs(sim.player.x - 5) <= 1 && Math.abs(sim.player.y - 5) <= 1);
+  assert.deepEqual([sim.player.x, sim.player.y], [5, 5]);
+  assert.equal(sim.world.getTileEntities(5, 5, 0).filter(e => e.isPlayer).length, 3);
+
+  sim.enqueue('player2', { type: 'walkTo', x: 5, y: 9, z: 0 });
+  runFor(sim, 2000);
+  assert.deepEqual([others[0].x, others[0].y], [5, 9]);
+});
+
+test('só player divide o sqm: inimigo no spawn faz o player nascer no sqm livre mais perto', () => {
+  const sim = buildGame({ objects: GROUND, enemies: [[5, 5, 0, 1]], player: { x: 5, y: 5, z: 0 } });
+  assert.ok(Math.max(Math.abs(sim.player.x - 5), Math.abs(sim.player.y - 5)) === 1);
 });
 
 test('spawn num andar acima do térreo: o jogador nasce e renasce nele', () => {

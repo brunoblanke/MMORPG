@@ -371,10 +371,11 @@ export class MovementController {
 
   // ================================================================================================================================================================================================================================================
   // useTransition
-  // Leva a entidade pro alvo da escada/buraco, se ele tiver piso. Devolve true
-  // se ela trocou de andar.
+  // Leva a entidade pro alvo da escada/buraco, se ele tiver piso, ou pra
+  // landing ({ x, y, step }, no mesmo andar do alvo) quando dão um sqm livre.
+  // Devolve true se ela trocou de andar.
 
-  useTransition(entity, transitionObj) {
+  useTransition(entity, transitionObj, landing = null) {
     const floor = entity.z || 0;
     const targetFloor = transitionObj.targetZ;
     if (!isValidFloor(targetFloor)) return false;
@@ -387,11 +388,13 @@ export class MovementController {
     const fromX = entity.x;
     const fromY = entity.y;
 
-    this.world.moveEntityTile(entity, fromX, fromY, floor, transitionObj.targetX, transitionObj.targetY, targetFloor);
-    entity.x = transitionObj.targetX;
-    entity.y = transitionObj.targetY;
+    const toX = landing ? landing.x : transitionObj.targetX;
+    const toY = landing ? landing.y : transitionObj.targetY;
+    this.world.moveEntityTile(entity, fromX, fromY, floor, toX, toY, targetFloor);
+    entity.x = toX;
+    entity.y = toY;
     entity.z = targetFloor;
-    entity.step = 0;
+    entity.step = landing ? landing.step : 0;
     entity.renderX = entity.x;
     entity.renderY = entity.y;
     entity.renderZ = entity.z;

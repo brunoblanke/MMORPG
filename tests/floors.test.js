@@ -2,7 +2,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { buildGame, buildMapData, floorRect } from './helpers/fixture.js';
+import { buildGame, buildMapData, floorRect, hole, placeAt } from './helpers/fixture.js';
 import { Simulation, TICK_MS } from '../js/simulation.js';
 import { setAssets } from '../shared/assets.js';
 
@@ -167,4 +167,60 @@ test('borda de piso com "Borda bloqueia": o sqm de grama com a borda da água n�
   assert.equal(sim.world.isBlocked(4, 4, 0), true);
   assert.equal(sim.world.isBlocked(6, 6, 0), false);
   assert.equal(sim.world.isBlocked(5, 4, 0), false);
+});
+
+// ================================================================================================================================================================================================================================================
+// stairsGame
+// Escada sem altura em (7, 7) e dois players: Ana e Bia.
+
+function stairsGame() {
+  const objects = [...floorRect(0, 14, 0, 14, 0), ...floorRect(0, 14, 0, 14, 1)];
+  const mapData = { version: 3, objetosData: objects, transicoesData: [[STAIRS_STRAIGHT, 7, 7, 0]], enemyData: [], safeZoneData: [], spawn: { x: 7, y: 11, z: 0 } };
+  const sim = new Simulation(mapData);
+  sim.time = 1000;
+  return { sim, ana: sim.addPlayer('p1', { name: 'Ana' }), bia: sim.addPlayer('p2', { name: 'Bia' }) };
+}
+
+test('escada com player em cima: o vizinho usa e sobe, inclusive na diagonal; quem está em cima fica', () => {
+  for (const [x, y] of [[7, 8], [8, 8], [6, 6], [8, 7]]) {
+    const { sim, ana, bia } = stairsGame();
+    placeAt(sim, ana, 7, 7, 0);
+    placeAt(sim, bia, x, y, 0);
+    sim.enqueue('p2', { type: 'useStairs', x: 7, y: 7, z: 0 });
+    run(sim, 200);
+    assert.deepEqual([bia.x, bia.y, bia.z], [6, 7, 1], `de (${x}, ${y})`);
+    assert.deepEqual([ana.x, ana.y, ana.z], [7, 7, 0]);
+  }
+});
+
+test('escada com player em cima, de longe: anda até um sqm livre colado nela e sobe', () => {
+  const { sim, ana, bia } = stairsGame();
+  placeAt(sim, ana, 7, 7, 0);
+  sim.enqueue('p2', { type: 'useStairs', x: 7, y: 7, z: 0 });
+  run(sim, 4000);
+  assert.deepEqual([bia.x, bia.y, bia.z], [6, 7, 1]);
+  assert.deepEqual([ana.x, ana.y, ana.z], [7, 7, 0]);
+});
+
+test('escada: chegada ocupada leva pro sqm livre mais perto (só buraco e respawn dividem o sqm)', () => {
+  const { sim, ana, bia } = stairsGame();
+  placeAt(sim, ana, 6, 7, 1);
+  placeAt(sim, bia, 7, 8, 0);
+  sim.enqueue('p2', { type: 'useStairs', x: 7, y: 7, z: 0 });
+  run(sim, 200);
+  assert.equal(bia.z, 1);
+  assert.equal(Math.max(Math.abs(bia.x - 6), Math.abs(bia.y - 7)), 1);
+  assert.equal(sim.world.getTileEntities(6, 7, 1).filter(e => e.isPlayer).length, 1);
+});
+
+test('buraco: quem cai no sqm de outro player fica no mesmo sqm', () => {
+  const objects = [...floorRect(0, 14, 0, 14, 0), ...floorRect(0, 14, 0, 14, 1), ...hole(5, 5, 1)];
+  const sim = buildGame({ objects, player: { x: 4, y: 5, z: 1 } });
+  sim.time = 1000;
+  const other = sim.addPlayer('player2', { name: 'Bia' });
+  placeAt(sim, other, 6, 6, 0);
+  sim.enqueue('player1', { type: 'walkDir', dx: 1, dy: 0 });
+  for (let i = 0; i < 40 && sim.player.z === 1; i++) run(sim, TICK_MS);
+  assert.deepEqual([sim.player.x, sim.player.y, sim.player.z], [6, 6, 0]);
+  assert.deepEqual([other.x, other.y, other.z], [6, 6, 0]);
 });

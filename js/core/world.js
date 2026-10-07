@@ -308,6 +308,16 @@ export class World {
   }
 
   // ================================================================================================================================================================================================================================================
+  // isBlockedExceptPlayers
+  // Como isBlocked, mas player vivo não conta: quem nasce no sqm de outro
+  // player fica no mesmo sqm até o primeiro passo.
+
+  isBlockedExceptPlayers(x, y, z) {
+    return this.hasBlockerAt(x, y, z) || this.isFloorBlocked(x, y, z) ||
+      this.getTileEntities(x, y, z).some(entity => isCreature(entity) && !entity.isPlayer && (!entity.isAlive || entity.isAlive()));
+  }
+
+  // ================================================================================================================================================================================================================================================
   // isFloorBlocked / floorDamageAt
   // Pelo piso de cima do sqm (gerador → Pisos → Comportamento) ou por uma
   // borda de piso marcado com "Borda bloqueia" (a da água por cima da grama).

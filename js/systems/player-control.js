@@ -338,33 +338,76 @@ export class PlayerControl {
 
   // ================================================================================================================================================================================================================================================
   // useStairs
-  // Comando useStairs (duplo clique no sqm de uma escada sem altura): em cima
-  // dela, sobe; longe, anda até o sqm dela e sobe ao chegar.
+  // Comando useStairs (duplo clique no sqm de uma escada sem altura): colado
+  // nela (em qualquer direção, inclusive na diagonal) ou em cima dela, sobe,
+  // mesmo com alguém em cima; longe, anda até o sqm dela (se estiver livre) ou
+  // até um sqm livre colado nela e sobe ao chegar.
 
   useStairs(player, x, y, z) {
     const stairs = this.sim.world.getTransitionAt(x, y, z);
     if (!stairs || !stairs.manualStairs) return;
-    if (player.x === x && player.y === y && (player.z || 0) === z) {
+    if (this.isNextTo(player, stairs)) {
       player.pendingStairs = null;
       this.clearWalk(player);
-      this.sim.movement.useTransition(player, stairs);
+      this.climb(player, stairs);
       return;
     }
+    const approach = this.stairsApproach(player, stairs);
+    if (!approach) return;
     player.pendingStairs = { x, y, z };
-    this.setWalkTarget(player, x, y, z);
+    this.setWalkTarget(player, approach.x, approach.y, z);
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // stairsApproach
+  // Pra onde andar até a escada: o sqm dela se estiver livre; ocupado, o sqm
+  // livre colado nela mais perto do player. null se não há.
+
+  stairsApproach(player, stairs) {
+    const world = this.sim.world;
+    const z = stairs.z || 0;
+    if (!world.isBlocked(stairs.x, stairs.y, z)) return { x: stairs.x, y: stairs.y };
+    let best = null;
+    let bestDist = Infinity;
+    for (const pos of getAdjacentPositions(stairs.x, stairs.y)) {
+      if (!world.isInside(pos.x, pos.y) || world.isBlocked(pos.x, pos.y, z) || world.getTransitionAt(pos.x, pos.y, z)) continue;
+      if (world.getPassableStep(pos.x, pos.y, z) === null) continue;
+      const d = Math.max(Math.abs(player.x - pos.x), Math.abs(player.y - pos.y));
+      if (d < bestDist) { bestDist = d; best = pos; }
+    }
+    return best;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // climb
+  // Leva o player pro alvo da escada. Alvo ocupado: o sqm livre mais perto dele
+  // (só buraco e respawn deixam dois players no mesmo sqm). Não entra em casa
+  // de outro dono.
+
+  climb(player, stairs) {
+    const world = this.sim.world;
+    const { targetX, targetY, targetZ } = stairs;
+    const occupied = world.hasFloorAt(targetX, targetY, targetZ) && world.isBlocked(targetX, targetY, targetZ);
+    const landing = occupied ? this.sim.findSpotNear(targetX, targetY, targetZ) : null;
+    if (occupied && !landing) return;
+    const spot = landing || { x: targetX, y: targetY };
+    if (!world.mayEnter(player, spot.x, spot.y, targetZ)) {
+      this.sim.emit({ type: 'message', playerId: player.id, text: 'Essa casa não é sua.', kind: 'warn' });
+      return;
+    }
+    this.sim.movement.useTransition(player, stairs, landing);
   }
 
   // ================================================================================================================================================================================================================================================
   // checkPendingStairs
-  // Chegou na escada do duplo clique: sobe. Parou em outro lugar: desiste.
+  // Chegou do lado da escada do duplo clique (ou nela): sobe. Parou longe: desiste.
 
   checkPendingStairs(player) {
     const pending = player.pendingStairs;
     if (!pending || this.isWalking(player)) return;
     player.pendingStairs = null;
-    if (player.x !== pending.x || player.y !== pending.y || (player.z || 0) !== pending.z) return;
     const stairs = this.sim.world.getTransitionAt(pending.x, pending.y, pending.z);
-    if (stairs && stairs.manualStairs) this.sim.movement.useTransition(player, stairs);
+    if (stairs && stairs.manualStairs && this.isNextTo(player, stairs)) this.climb(player, stairs);
   }
 
   // ================================================================================================================================================================================================================================================
