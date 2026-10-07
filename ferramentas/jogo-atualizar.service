@@ -1,0 +1,7 @@
+[Unit]
+Description=Atualiza o jogo a partir do GitHub
+
+[Service]
+Type=oneshot
+User=opc
+ExecStart=/bin/bash /home/opc/jogo/ferramentas/atualizar-servidor.sh
