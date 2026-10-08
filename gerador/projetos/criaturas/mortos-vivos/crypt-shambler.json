@@ -1,0 +1,89 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 100,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 6029,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "mortos-vivos",
+  "nome": "crypt-shambler",
+  "propriedades": {
+    "comportamento": "normal",
+    "vida": 330,
+    "xp": 195,
+    "velocidade": 140,
+    "armadura": 30,
+    "defesa": 25,
+    "ataque": 140,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.57,
+        "min": 1,
+        "max": 55
+      },
+      {
+        "tipo": "itens/produtos-de-criaturas/worm",
+        "chance": 0.09,
+        "min": 1,
+        "max": 10
+      },
+      {
+        "tipo": "itens/valiosos/small-diamond",
+        "chance": 0.0051
+      }
+    ],
+    "ataques": [
+      {
+        "forma": "tiro",
+        "elemento": "death",
+        "min": 28,
+        "max": 55,
+        "chance": 15,
+        "alcance": 1
+      }
+    ],
+    "resistencias": {
+      "earth": 0,
+      "holy": 125,
+      "death": 0
+    }
+  }
+}

@@ -40,7 +40,21 @@ const CLASSICAS = [
   ['amazon', 'humans', 'humanos'], ['valkyrie', 'humans', 'humanos'], ['hunter', 'humans', 'humanos'], ['witch', 'humans', 'humanos'],
   ['necromancer', 'humans', 'humanos'], ['bandit', 'humans', 'humanos'], ['dark_monk', 'humans', 'humanos'],
   ['stone_golem', 'constructs', 'constructos'], ['fire_devil', 'demons', 'demonios'], ['gargoyle', 'magicals', 'criaturas-magicas'],
-  ['crab', 'aquatics', 'aquaticos']
+  ['crab', 'aquatics', 'aquaticos'],
+  ['vampire', 'undeads', 'mortos-vivos'], ['crypt_shambler', 'undeads', 'mortos-vivos'], ['demon_skeleton', 'undeads', 'mortos-vivos'], ['lich', 'undeads', 'mortos-vivos'],
+  ['goblin_scavenger', 'humanoids', 'humanoides'], ['orc_rider', 'humanoids', 'humanoides'], ['orc_warlord', 'humanoids', 'humanoides'], 
+  
+  
+  ['frost_giant', 'giants', 'gigantes'], ['frost_giantess', 'giants', 'gigantes'], ['behemoth', 'giants', 'gigantes'],
+  ['tarantula', 'vermins', 'vermes'], ['ancient_scarab', 'vermins', 'vermes'], ['sandcrawler', 'vermins', 'vermes'], ['giant_spider', 'vermins', 'vermes'],
+  ['polar_bear', 'mammals', 'mamiferos'], ['mammoth', 'mammals', 'mamiferos'], ['panda', 'mammals', 'mamiferos'], ['boar', 'mammals', 'mamiferos'],
+  ['wild_warrior', 'humans', 'humanos'], ['pirate_cutthroat', 'humans', 'humanos'], ['pirate_buccaneer', 'humans', 'humanos'], ['pirate_corsair', 'humans', 'humanos'],
+  ['assassin', 'humans', 'humanos'], ['dark_apprentice', 'humans', 'humanos'],
+  ['water_elemental', 'elementals', 'elementais'], ['earth_elemental', 'elementals', 'elementais'], ['energy_elemental', 'elementals', 'elementais'],
+  ['massive_fire_elemental', 'elementals', 'elementais'], ['massive_water_elemental', 'elementals', 'elementais'],
+  ['massive_earth_elemental', 'elementals', 'elementais'], ['massive_energy_elemental', 'elementals', 'elementais'],
+  ['hellhound', 'demons', 'demonios'], ['hydra', 'dragons', 'dragoes'], ['ghastly_dragon', 'dragons', 'dragoes'],
+  ['lizard_templar', 'reptiles', 'repteis'], 
 ];
 
 // ================================================================================================================================================================================================================================================

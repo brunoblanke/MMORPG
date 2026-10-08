@@ -1,0 +1,110 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 68,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 6006,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "mortos-vivos",
+  "nome": "vampire",
+  "propriedades": {
+    "comportamento": "foge",
+    "vida": 475,
+    "xp": 305,
+    "velocidade": 238,
+    "armadura": 28,
+    "defesa": 30,
+    "ataque": 150,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.9023,
+        "min": 1,
+        "max": 60
+      },
+      {
+        "tipo": "itens/plantas-e-ervas/grave-flower",
+        "chance": 0.0191
+      },
+      {
+        "tipo": "itens/valiosos/black-pearl",
+        "chance": 0.018
+      },
+      {
+        "tipo": "itens/espadas/ice-rapier",
+        "chance": 0.0042
+      },
+      {
+        "tipo": "itens/amuletos-e-colares/bronze-amulet",
+        "chance": 0.0022
+      }
+    ],
+    "ataques": [
+      {
+        "forma": "tiro",
+        "elemento": "death",
+        "min": 50,
+        "max": 200,
+        "chance": 20,
+        "alcance": 1
+      },
+      {
+        "forma": "lentidao",
+        "velocidade": -400,
+        "ms": 60000,
+        "chance": 15,
+        "alcance": 1
+      },
+      {
+        "forma": "cura",
+        "min": 15,
+        "max": 25,
+        "chance": 15
+      }
+    ],
+    "resistencias": {
+      "physical": 75,
+      "earth": 0,
+      "fire": 110,
+      "holy": 125,
+      "death": 0
+    }
+  }
+}

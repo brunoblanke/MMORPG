@@ -1,0 +1,113 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 133,
+    "cores": [
+      78,
+      57,
+      95,
+      115
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 18082,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "humanos",
+  "nome": "dark-apprentice",
+  "propriedades": {
+    "comportamento": "mago",
+    "vida": 225,
+    "xp": 100,
+    "velocidade": 172,
+    "armadura": 16,
+    "defesa": 15,
+    "ataque": 60,
+    "loot": [
+      {
+        "tipo": "itens/runas/blank-rune",
+        "chance": 0.08125,
+        "min": 1,
+        "max": 3
+      },
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.075,
+        "min": 1,
+        "max": 45
+      },
+      {
+        "tipo": "itens/liquidos/mana-potion",
+        "chance": 0.0298
+      },
+      {
+        "tipo": "itens/liquidos/health-potion",
+        "chance": 0.029
+      }
+    ],
+    "ataques": [
+      {
+        "forma": "tiro",
+        "elemento": "fire",
+        "min": 2,
+        "max": 26,
+        "chance": 10,
+        "alcance": 7
+      },
+      {
+        "forma": "tiro",
+        "elemento": "energy",
+        "min": 10,
+        "max": 20,
+        "chance": 10,
+        "alcance": 7
+      },
+      {
+        "forma": "tiro",
+        "elemento": "physical",
+        "min": 0,
+        "max": 24,
+        "chance": 10,
+        "alcance": 7
+      },
+      {
+        "forma": "cura",
+        "min": 30,
+        "max": 40,
+        "chance": 15
+      }
+    ],
+    "resistencias": {
+      "death": 105
+    }
+  }
+}

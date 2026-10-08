@@ -1,0 +1,135 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 99,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 6028,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "mortos-vivos",
+  "nome": "lich",
+  "propriedades": {
+    "comportamento": "normal",
+    "vida": 880,
+    "xp": 900,
+    "velocidade": 210,
+    "armadura": 50,
+    "defesa": 25,
+    "ataque": 75,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 1,
+        "min": 1,
+        "max": 139
+      },
+      {
+        "tipo": "itens/valiosos/platinum-coin",
+        "chance": 0.1972
+      },
+      {
+        "tipo": "itens/valiosos/black-pearl",
+        "chance": 0.0596,
+        "min": 1,
+        "max": 3
+      },
+      {
+        "tipo": "itens/valiosos/white-pearl",
+        "chance": 0.05
+      },
+      {
+        "tipo": "itens/valiosos/small-emerald",
+        "chance": 0.0223,
+        "min": 1,
+        "max": 3
+      },
+      {
+        "tipo": "itens/valiosos/yellow-gem",
+        "chance": 0.0069
+      },
+      {
+        "tipo": "itens/amuletos-e-colares/platinum-amulet",
+        "chance": 0.0045
+      },
+      {
+        "tipo": "itens/armaduras/blue-robe",
+        "chance": 0.0015
+      }
+    ],
+    "ataques": [
+      {
+        "forma": "raio",
+        "elemento": "death",
+        "min": 140,
+        "max": 190,
+        "chance": 10,
+        "comprimento": 7
+      },
+      {
+        "forma": "tiro",
+        "elemento": "death",
+        "min": 200,
+        "max": 245,
+        "chance": 10,
+        "alcance": 1
+      },
+      {
+        "forma": "bola",
+        "elemento": "death",
+        "min": 130,
+        "max": 195,
+        "chance": 10,
+        "raio": 3,
+        "centro": "si"
+      },
+      {
+        "forma": "cura",
+        "min": 80,
+        "max": 100,
+        "chance": 15
+      }
+    ],
+    "resistencias": {
+      "energy": 20,
+      "earth": 0,
+      "holy": 120,
+      "death": 0
+    }
+  }
+}

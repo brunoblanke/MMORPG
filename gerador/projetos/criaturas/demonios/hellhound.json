@@ -1,0 +1,124 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 240,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 6331,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "demonios",
+  "nome": "hellhound",
+  "propriedades": {
+    "comportamento": "normal",
+    "vida": 7500,
+    "xp": 5440,
+    "velocidade": 360,
+    "armadura": 60,
+    "defesa": 40,
+    "ataque": 520,
+    "loot": [],
+    "ataques": [
+      {
+        "forma": "onda",
+        "elemento": "earth",
+        "min": 300,
+        "max": 700,
+        "chance": 5,
+        "comprimento": 8,
+        "abertura": 3
+      },
+      {
+        "forma": "tiro",
+        "elemento": "death",
+        "min": 395,
+        "max": 498,
+        "chance": 10,
+        "alcance": 7
+      },
+      {
+        "forma": "onda",
+        "elemento": "fire",
+        "min": 350,
+        "max": 660,
+        "chance": 10,
+        "comprimento": 8,
+        "abertura": 3
+      },
+      {
+        "forma": "onda",
+        "elemento": "death",
+        "min": 350,
+        "max": 976,
+        "chance": 10,
+        "comprimento": 8,
+        "abertura": 3
+      },
+      {
+        "forma": "bola",
+        "elemento": "fire",
+        "min": 200,
+        "max": 403,
+        "chance": 10,
+        "raio": 1,
+        "centro": "si"
+      },
+      {
+        "forma": "tiro",
+        "elemento": "earth",
+        "min": 300,
+        "max": 549,
+        "chance": 5,
+        "alcance": 7
+      },
+      {
+        "forma": "cura",
+        "min": 220,
+        "max": 425,
+        "chance": 20
+      }
+    ],
+    "resistencias": {
+      "energy": 90,
+      "earth": 80,
+      "fire": 0,
+      "ice": 105,
+      "holy": 105
+    }
+  }
+}

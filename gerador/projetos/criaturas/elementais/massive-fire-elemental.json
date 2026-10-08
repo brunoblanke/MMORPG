@@ -1,0 +1,130 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 242,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 6323,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "elementais",
+  "nome": "massive-fire-elemental",
+  "propriedades": {
+    "comportamento": "normal",
+    "vida": 1800,
+    "xp": 1400,
+    "velocidade": 238,
+    "armadura": 57,
+    "defesa": 30,
+    "ataque": 300,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.5,
+        "min": 1,
+        "max": 100
+      },
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.25,
+        "min": 1,
+        "max": 100
+      },
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.25,
+        "min": 1,
+        "max": 12
+      },
+      {
+        "tipo": "itens/valiosos/small-ruby",
+        "chance": 0.061,
+        "min": 1,
+        "max": 2
+      },
+      {
+        "tipo": "itens/wands/wand-of-inferno",
+        "chance": 0.0224
+      },
+      {
+        "tipo": "itens/espadas/fire-sword",
+        "chance": 0.0053
+      }
+    ],
+    "ataques": [
+      {
+        "forma": "campo",
+        "campo": "itens/itens-encantados/fire-field",
+        "chance": 10,
+        "alcance": 7,
+        "raio": 3
+      },
+      {
+        "forma": "campo",
+        "campo": "itens/itens-encantados/fire-field",
+        "chance": 10,
+        "alcance": 7,
+        "raio": 3
+      },
+      {
+        "forma": "raio",
+        "elemento": "fire",
+        "min": 200,
+        "max": 700,
+        "chance": 10,
+        "comprimento": 7
+      },
+      {
+        "forma": "bola",
+        "elemento": "fire",
+        "min": 60,
+        "max": 250,
+        "chance": 15,
+        "raio": 3,
+        "centro": "si"
+      }
+    ],
+    "resistencias": {
+      "physical": 50,
+      "energy": 70,
+      "fire": 0,
+      "ice": 115,
+      "death": 80
+    }
+  }
+}

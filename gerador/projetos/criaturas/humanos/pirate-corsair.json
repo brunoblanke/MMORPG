@@ -1,0 +1,85 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 98,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 18194,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "humanos",
+  "nome": "pirate-corsair",
+  "propriedades": {
+    "comportamento": "foge",
+    "vida": 675,
+    "xp": 350,
+    "velocidade": 238,
+    "armadura": 20,
+    "defesa": 35,
+    "ataque": 170,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.5,
+        "min": 1,
+        "max": 88
+      },
+      {
+        "tipo": "itens/espadas/sabre",
+        "chance": 0.1
+      }
+    ],
+    "ataques": [
+      {
+        "forma": "tiro",
+        "elemento": "physical",
+        "min": 0,
+        "max": 150,
+        "chance": 20,
+        "alcance": 3
+      }
+    ],
+    "resistencias": {
+      "earth": 80,
+      "fire": 110,
+      "ice": 105,
+      "holy": 90,
+      "death": 105
+    }
+  }
+}

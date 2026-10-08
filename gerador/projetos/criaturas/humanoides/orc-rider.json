@@ -1,0 +1,84 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 4,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 6010,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "humanoides",
+  "nome": "orc-rider",
+  "propriedades": {
+    "comportamento": "normal",
+    "vida": 180,
+    "xp": 110,
+    "velocidade": 260,
+    "armadura": 9,
+    "defesa": 15,
+    "ataque": 130,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.46,
+        "min": 1,
+        "max": 81
+      },
+      {
+        "tipo": "itens/comidas/meet",
+        "chance": 0.24,
+        "min": 1,
+        "max": 3
+      },
+      {
+        "tipo": "itens/escudos/battle-shield",
+        "chance": 0.099
+      },
+      {
+        "tipo": "itens/armaduras/scale-armor",
+        "chance": 0.0061
+      }
+    ],
+    "resistencias": {
+      "energy": 80,
+      "earth": 110,
+      "holy": 90,
+      "death": 110
+    }
+  }
+}

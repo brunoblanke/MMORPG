@@ -1,0 +1,109 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 37,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 5963,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "mortos-vivos",
+  "nome": "demon-skeleton",
+  "propriedades": {
+    "comportamento": "normal",
+    "vida": 400,
+    "xp": 240,
+    "velocidade": 180,
+    "armadura": 25,
+    "defesa": 30,
+    "ataque": 185,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.97,
+        "min": 1,
+        "max": 75
+      },
+      {
+        "tipo": "itens/liquidos/health-potion",
+        "chance": 0.1012,
+        "min": 1,
+        "max": 2
+      },
+      {
+        "tipo": "itens/liquidos/health-potion",
+        "chance": 0.1,
+        "min": 1,
+        "max": 2
+      },
+      {
+        "tipo": "itens/liquidos/mana-potion",
+        "chance": 0.053
+      },
+      {
+        "tipo": "itens/escudos/battle-shield",
+        "chance": 0.05
+      },
+      {
+        "tipo": "itens/valiosos/black-pearl",
+        "chance": 0.029
+      },
+      {
+        "tipo": "itens/valiosos/small-ruby",
+        "chance": 0.014
+      }
+    ],
+    "ataques": [
+      {
+        "forma": "bola",
+        "elemento": "death",
+        "min": 30,
+        "max": 50,
+        "chance": 10,
+        "alcance": 1,
+        "raio": 1
+      }
+    ],
+    "resistencias": {
+      "earth": 0,
+      "fire": 0,
+      "holy": 125,
+      "death": 0
+    }
+  }
+}

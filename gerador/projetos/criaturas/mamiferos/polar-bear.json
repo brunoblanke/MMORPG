@@ -1,0 +1,76 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 42,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 5987,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "mamiferos",
+  "nome": "polar-bear",
+  "propriedades": {
+    "comportamento": "foge",
+    "vida": 85,
+    "xp": 28,
+    "velocidade": 156,
+    "armadura": 7,
+    "defesa": 10,
+    "ataque": 30,
+    "loot": [
+      {
+        "tipo": "itens/comidas/meet",
+        "chance": 0.505,
+        "min": 1,
+        "max": 4
+      },
+      {
+        "tipo": "itens/comidas/ham",
+        "chance": 0.5032,
+        "min": 1,
+        "max": 2
+      }
+    ],
+    "resistencias": {
+      "energy": 105,
+      "fire": 90,
+      "ice": 80,
+      "death": 110
+    }
+  }
+}

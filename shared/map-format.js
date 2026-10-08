@@ -118,11 +118,21 @@ export function collectObjectDescriptors(mapData) {
 }
 
 // ================================================================================================================================================================================================================================================
+// currentCreatureType
+// Criatura trocada por outra no gerador: o mapa que ainda tem o nome antigo passa a usar o novo.
+
+const RENAMED_CREATURES = { 'criaturas/mortos-vivos/vamp': 'criaturas/mortos-vivos/vampire' };
+
+export function currentCreatureType(type) {
+  return RENAMED_CREATURES[type] || type;
+}
+
+// ================================================================================================================================================================================================================================================
 // collectEnemyDescriptors
 
 export function collectEnemyDescriptors(mapData) {
   return (mapData.enemyData || []).map(([x, y, z, lvl, spriteSize, type]) => ({
-    x, y, z, lvl, spriteSize, type
+    x, y, z, lvl, spriteSize, type: currentCreatureType(type)
   }));
 }
 
@@ -298,7 +308,7 @@ export function buildLayersFromMapData(mapData, GRID) {
   (mapData.enemyData || []).forEach(([x, y, z, lvl, spriteSize, type]) => {
     if (!inRange(x, y)) { stats.outOfRange++; return; }
     ensureLayer(z);
-    layers[z][`${x},${y}`].enemy = { type, lvl, spriteSize };
+    layers[z][`${x},${y}`].enemy = { type: currentCreatureType(type), lvl, spriteSize };
     stats.enemy++;
   });
 

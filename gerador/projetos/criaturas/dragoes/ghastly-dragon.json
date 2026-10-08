@@ -1,0 +1,115 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 351,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 10445,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "dragoes",
+  "nome": "ghastly-dragon",
+  "propriedades": {
+    "comportamento": "foge",
+    "vida": 7800,
+    "xp": 4600,
+    "velocidade": 320,
+    "armadura": 30,
+    "defesa": 35,
+    "ataque": 603,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.995,
+        "min": 1,
+        "max": 238
+      },
+      {
+        "tipo": "itens/calcas/plate-legs",
+        "chance": 0.5327
+      },
+      {
+        "tipo": "itens/valiosos/small-emerald",
+        "chance": 0.4121,
+        "min": 1,
+        "max": 5
+      },
+      {
+        "tipo": "itens/valiosos/platinum-coin",
+        "chance": 0.3317,
+        "min": 1,
+        "max": 2
+      }
+    ],
+    "ataques": [
+      {
+        "forma": "tiro",
+        "elemento": "death",
+        "min": 80,
+        "max": 230,
+        "chance": 15,
+        "alcance": 7
+      },
+      {
+        "forma": "bola",
+        "elemento": "death",
+        "min": 110,
+        "max": 180,
+        "chance": 15,
+        "raio": 4,
+        "centro": "si"
+      },
+      {
+        "forma": "lentidao",
+        "velocidade": -800,
+        "ms": 30000,
+        "chance": 20,
+        "alcance": 7
+      }
+    ],
+    "resistencias": {
+      "physical": 110,
+      "energy": 110,
+      "earth": 0,
+      "fire": 90,
+      "ice": 50,
+      "holy": 115,
+      "death": 0
+    }
+  }
+}

@@ -1,0 +1,104 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 152,
+    "cores": [
+      95,
+      95,
+      95,
+      95
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 18046,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "humanos",
+  "nome": "assassin",
+  "propriedades": {
+    "comportamento": "normal",
+    "vida": 175,
+    "xp": 105,
+    "velocidade": 224,
+    "armadura": 17,
+    "defesa": 15,
+    "ataque": 120,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.8321,
+        "min": 1,
+        "max": 50
+      },
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.0725,
+        "min": 1,
+        "max": 14
+      },
+      {
+        "tipo": "itens/capacetes/steel-helmet",
+        "chance": 0.0323
+      },
+      {
+        "tipo": "itens/escudos/plate-shield",
+        "chance": 0.019
+      },
+      {
+        "tipo": "itens/escudos/battle-shield",
+        "chance": 0.016
+      },
+      {
+        "tipo": "itens/escudos/steel-shield",
+        "chance": 0.0097
+      },
+      {
+        "tipo": "itens/valiosos/small-diamond",
+        "chance": 0.0022
+      }
+    ],
+    "ataques": [
+      {
+        "forma": "tiro",
+        "elemento": "physical",
+        "min": 0,
+        "max": 40,
+        "chance": 15,
+        "alcance": 7
+      }
+    ],
+    "resistencias": {
+      "physical": 110,
+      "death": 105
+    }
+  }
+}

@@ -1,0 +1,110 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 297,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 6002,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "humanoides",
+  "nome": "goblin-scavenger",
+  "propriedades": {
+    "comportamento": "foge",
+    "vida": 60,
+    "xp": 37,
+    "velocidade": 132,
+    "armadura": 7,
+    "defesa": 15,
+    "ataque": 15,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.5081,
+        "min": 1,
+        "max": 9
+      },
+      {
+        "tipo": "itens/capacetes/leather-helmet",
+        "chance": 0.1018
+      },
+      {
+        "tipo": "itens/espadas/short-sword",
+        "chance": 0.089
+      }
+    ],
+    "ataques": [
+      {
+        "forma": "tiro",
+        "elemento": "physical",
+        "min": 0,
+        "max": 30,
+        "chance": 10,
+        "alcance": 7
+      },
+      {
+        "forma": "tiro",
+        "elemento": "death",
+        "min": 22,
+        "max": 30,
+        "chance": 5,
+        "alcance": 7
+      },
+      {
+        "forma": "tiro",
+        "elemento": "death",
+        "min": 1,
+        "max": 30,
+        "chance": 5,
+        "alcance": 7
+      },
+      {
+        "forma": "cura",
+        "min": 10,
+        "max": 16,
+        "chance": 15
+      }
+    ],
+    "resistencias": {
+      "energy": 80,
+      "earth": 110,
+      "holy": 80,
+      "death": 110
+    }
+  }
+}

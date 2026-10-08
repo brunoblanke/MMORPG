@@ -1,0 +1,110 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 290,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 8138,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "elementais",
+  "nome": "massive-energy-elemental",
+  "propriedades": {
+    "comportamento": "foge",
+    "vida": 1100,
+    "xp": 950,
+    "velocidade": 430,
+    "armadura": 35,
+    "defesa": 20,
+    "ataque": 175,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.5,
+        "min": 1,
+        "max": 100
+      },
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.5,
+        "min": 1,
+        "max": 91
+      },
+      {
+        "tipo": "itens/valiosos/small-amethyst",
+        "chance": 0.0327,
+        "min": 1,
+        "max": 3
+      }
+    ],
+    "ataques": [
+      {
+        "forma": "bola",
+        "elemento": "energy",
+        "min": 270,
+        "max": 615,
+        "chance": 10,
+        "alcance": 7,
+        "raio": 2
+      },
+      {
+        "forma": "tiro",
+        "elemento": "energy",
+        "min": 175,
+        "max": 205,
+        "chance": 15,
+        "alcance": 7
+      },
+      {
+        "forma": "cura",
+        "min": 190,
+        "max": 250,
+        "chance": 5
+      }
+    ],
+    "resistencias": {
+      "physical": 50,
+      "energy": 0,
+      "earth": 105,
+      "fire": 0,
+      "ice": 0,
+      "holy": 80,
+      "death": 80
+    }
+  }
+}

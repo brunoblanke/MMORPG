@@ -1,0 +1,74 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 123,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 6049,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "mamiferos",
+  "nome": "panda",
+  "propriedades": {
+    "comportamento": "foge",
+    "vida": 80,
+    "xp": 23,
+    "velocidade": 156,
+    "armadura": 8,
+    "defesa": 10,
+    "ataque": 20,
+    "loot": [
+      {
+        "tipo": "itens/comidas/meet",
+        "chance": 0.705,
+        "min": 1,
+        "max": 4
+      },
+      {
+        "tipo": "itens/comidas/ham",
+        "chance": 0.39,
+        "min": 1,
+        "max": 2
+      }
+    ],
+    "resistencias": {
+      "earth": 0,
+      "fire": 110
+    }
+  }
+}
