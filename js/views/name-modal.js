@@ -27,8 +27,7 @@ export class NameModal {
     this.passwordInput.maxLength = PASSWORD_MAX_LENGTH;
     this.input.value = this.loadName();
     this.pending = null;
-    this.selectGender(normalizeGender(this.load(GENDER_STORAGE_KEY)));
-    this.setLoading(0);
+    this.selectGender(this.loadGender());
 
     for (const button of this.genderButtons) {
       button.addEventListener('click', () => {
@@ -122,14 +121,11 @@ export class NameModal {
   }
 
   // ================================================================================================================================================================================================================================================
-  // setLoading
-  // Enquanto o jogo carrega o botão fica parado mostrando a porcentagem (0 a 1);
-  // o nome já pode ser digitado. ask() libera o botão.
+  // loadGender
+  // O gênero que este navegador usou da última vez.
 
-  setLoading(fraction) {
-    if (this.pending) return;
-    this.button.disabled = true;
-    this.button.textContent = `Carregando… ${Math.round(Math.min(Math.max(fraction, 0), 1) * 100)}%`;
+  loadGender() {
+    return normalizeGender(this.load(GENDER_STORAGE_KEY));
   }
 
   // ================================================================================================================================================================================================================================================

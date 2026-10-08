@@ -1,71 +1,84 @@
 // js/views/loading-screen.js
 
+import { drawTibiaText } from './tibia-text.js';
+import { NAME_COLOR } from './entity-overlay.js';
+import { PLAYER_SPRITES, DEFAULT_GENDER } from '../../shared/catalog.js';
+import { getAsset } from '../../shared/assets.js';
+
+const FRAME_MS = 150;
+const SCALE = 2;
+const SIZE = 64;
+const WIDTH = 160;
+const HEIGHT = 110;
+
+// Tela de carregamento (markup em index.html, #loadingScreen): um player andando no
+// mesmo lugar no meio da tela e, embaixo dele, "Carregando… N%" no formato do nome do
+// player (verde, com contorno). Some quando o jogo termina de carregar e abre a janela
+// de entrada.
+
 export class LoadingScreen {
+
+  // ================================================================================================================================================================================================================================================
+  // constructor
+
   constructor() {
-    this.active = false;
-    this.progress = 0;
-    this.total = 0;
-  }
-
-  // ================================================================================================================================================================================================================================================
-  // show
-
-  show() {
+    this.root = document.getElementById('loadingScreen');
+    this.canvas = document.getElementById('loadingCanvas');
+    this.ctx = this.canvas.getContext('2d');
+    this.canvas.width = WIDTH;
+    this.canvas.height = HEIGHT;
+    this.fraction = 0;
+    this.sheet = null;
     this.active = true;
-    this.progress = 0;
-    this.total = 0;
-  }
-
-  // ================================================================================================================================================================================================================================================
-  // hide
-
-  hide() {
-    this.active = false;
+    this.draw = this.draw.bind(this);
+    requestAnimationFrame(this.draw);
   }
 
   // ================================================================================================================================================================================================================================================
   // setProgress
+  // Quanto já carregou (0 a 1).
 
-  setProgress(loaded, total) {
-    this.progress = loaded;
-    this.total = total;
+  setProgress(fraction) {
+    this.fraction = Math.min(Math.max(fraction, 0), 1);
   }
 
   // ================================================================================================================================================================================================================================================
-  // render
+  // setPlayer
+  // O player que anda na tela: a folha do gênero (a lista de sprites do gerador já veio).
 
-  render(ctx, canvas) {
+  setPlayer(gender) {
+    const asset = getAsset(PLAYER_SPRITES[gender] || PLAYER_SPRITES[DEFAULT_GENDER]) || getAsset(PLAYER_SPRITES[DEFAULT_GENDER]);
+    if (!asset) return;
+    const image = new Image();
+    image.src = asset.url;
+    this.sheet = { image, size: asset.quadro || SIZE, frames: asset.quadros || 1 };
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // hide
+  // Esconde a tela (carregou).
+
+  hide() {
+    this.active = false;
+    this.root.hidden = true;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // draw
+  // Um quadro: o player andando pra frente (os quadros de caminhada da linha sul) e o texto embaixo.
+
+  draw(now) {
     if (!this.active) return;
-
-    const width = canvas.width;
-    const height = canvas.height;
-
-    ctx.save();
-    ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
-    ctx.fillRect(0, 0, width, height);
-
-    const barWidth = 300;
-    const barHeight = 20;
-    const barX = (width - barWidth) / 2;
-    const barY = (height - barHeight) / 2 + 20;
-
-    ctx.fillStyle = "#333";
-    ctx.fillRect(barX, barY, barWidth, barHeight);
-
-    const progress = this.total > 0 ? this.progress / this.total : 0;
-    ctx.fillStyle = "#4CAF50";
-    ctx.fillRect(barX, barY, barWidth * progress, barHeight);
-
-    ctx.strokeStyle = "#666";
-    ctx.lineWidth = 2;
-    ctx.strokeRect(barX, barY, barWidth, barHeight);
-
-    ctx.fillStyle = "#FFF";
-    ctx.font = "16px Arial";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "bottom";
-    ctx.fillText(`Carregando... ${Math.round(progress * 100)}%`, width / 2, barY - 10);
-
-    ctx.restore();
+    const ctx = this.ctx;
+    ctx.clearRect(0, 0, WIDTH, HEIGHT);
+    ctx.imageSmoothingEnabled = false;
+    const sheet = this.sheet;
+    if (sheet && sheet.image.complete && sheet.image.naturalWidth) {
+      const walk = Math.max(1, sheet.frames - 1);
+      const column = sheet.frames > 1 ? 1 + Math.floor(now / FRAME_MS) % walk : 0;
+      ctx.drawImage(sheet.image, column * sheet.size, 0, sheet.size, sheet.size, (WIDTH - sheet.size) / 2, 8, sheet.size, sheet.size);
+    }
+    drawTibiaText(ctx, `Carregando… ${Math.round(this.fraction * 100)}%`, WIDTH / 2, SIZE + 28, NAME_COLOR);
+    requestAnimationFrame(this.draw);
   }
 }

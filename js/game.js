@@ -18,6 +18,7 @@ import { ParticleController } from './systems/particle-controller.js';
 import { InputController } from './input/input.js';
 import { Joystick } from './input/joystick.js';
 import { NameModal } from './views/name-modal.js';
+import { LoadingScreen } from './views/loading-screen.js';
 import { InventoryUI } from './views/inventory-ui.js';
 import { describeEntity, describeGroundObject } from './views/look.js';
 import { SpeechLayer } from './views/speech.js';
@@ -88,7 +89,8 @@ export class GameController {
 
   boot() {
     const modal = new NameModal();
-    const spritesReady = this.loadSprites(modal);
+    const loading = new LoadingScreen();
+    const spritesReady = this.loadSprites(loading, modal.loadGender());
     const mapReady = loadMapDataFromURL(CONFIG.mapDataUrl, CONFIG.mapFallbackUrl).catch((error) => {
       console.error('❌ Erro ao carregar mapa:', error);
       return {};
@@ -99,7 +101,10 @@ export class GameController {
     });
 
     Promise.all([spritesReady, mapReady, socketReady])
-      .then(([, mapData, socket]) => this.openSession(modal, mapData, socket))
+      .then(([, mapData, socket]) => {
+        loading.hide();
+        return this.openSession(modal, mapData, socket);
+      })
       .then((session) => {
         this.session = session;
         this.inputController = new InputController(this.canvas, this.renderer, this.camera, this.eventManager, this);
@@ -113,12 +118,15 @@ export class GameController {
   // ================================================================================================================================================================================================================================================
   // loadSprites
   // Primeiro a lista das folhas do gerador (/api/sprites), depois as imagens
-  // (o botão da janela de entrada mostra o andamento).
+  // (a tela de carregamento mostra o andamento).
 
-  loadSprites(modal) {
+  loadSprites(loading, gender) {
     return loadAssets()
       .catch((error) => console.error('❌ Erro ao listar os sprites:', error))
-      .then(() => this.spriteLoader.loadAll(getSpritePaths(), (done, total) => modal.setLoading(done / total)))
+      .then(() => {
+        loading.setPlayer(gender);
+        return this.spriteLoader.loadAll(getSpritePaths(), (done, total) => loading.setProgress(done / total));
+      })
       .catch((error) => console.error('❌ Erro ao carregar sprites:', error));
   }
 

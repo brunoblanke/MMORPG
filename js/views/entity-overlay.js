@@ -10,7 +10,7 @@ import { FOLLOW_ICONS } from './inventory-ui/icons.js';
 // arredondados, na cor da vida (healthColor: verde/amarela/vermelha).
 const HP_BAR_HEIGHT = 3;
 const HP_BAR_BACK = '#12151b';
-const NAME_COLOR = '#5fe35f';
+export const NAME_COLOR = '#5fe35f';
 const CORPSE_NAME_COLOR = '#a0a0a0';
 const SKULL_NAMES = { white: { color: '#ffffff', outline: '#000000' }, red: { color: '#ff3b3b', outline: '#000000' }, black: { color: '#000000', outline: '#ffffff' } };
 const COMBAT_ICON_COLOR = '#5fe35f';
