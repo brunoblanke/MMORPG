@@ -486,10 +486,11 @@ export class CombatController {
 
   // ================================================================================================================================================================================================================================================
   // isTargetLost
-  // Alvo em outro andar ou a mais de targetLoseRange sqms; player que não dá
+  // Alvo em outro andar ou a mais de targetLoseRange sqms; player na zona segura (ou alvo nela) larga o alvo; player que não dá
   // mais pra atacar (saiu, entrou na zona segura, na mesma party).
 
   isTargetLost(player, target) {
+    if (this.sim.world.isInSafeZone(player) || this.sim.world.isInSafeZone(target)) return true;
     if (target.isPlayer && !this.sim.social.canAttack(player, target)) return true;
     if (getLevel(player) !== getLevel(target)) return true;
     return distance(player.x, player.y, target.x, target.y) > CONFIG.targetLoseRange;

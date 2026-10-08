@@ -229,3 +229,16 @@ test('vocação: vida, mana e cap do Tibia por nível e ritmo próprio dos skill
   player.setVocation('knight');
   assert.deepEqual([player.vocation, player.maxHp, player.maxMana], ['knight', 365, 150]);
 });
+
+test('ao entrar na zona segura o player perde o alvo e não consegue marcar outro', () => {
+  const sim = buildGame({ objects: GROUND, enemies: [[4, 5, 0, 30]], safe: safeRect(6, 8, 4, 6), player: { x: 2, y: 5, z: 0 } });
+  const enemy = sim.enemies[0];
+  sim.control.setAttackTarget(sim.player, enemy.id);
+  assert.equal(sim.player.target, enemy);
+  sim.player.x = 7;
+  sim.player.y = 5;
+  runFor(sim, 200);
+  assert.equal(sim.player.target, null);
+  sim.control.setAttackTarget(sim.player, enemy.id);
+  assert.equal(sim.player.target, null);
+});
