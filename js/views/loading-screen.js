@@ -77,7 +77,7 @@ export class LoadingScreen {
     if (sheet && sheet.image.complete && sheet.image.naturalWidth) {
       const walk = Math.max(1, sheet.frames - 1);
       const column = sheet.frames > 1 ? 1 + Math.floor(now / FRAME_MS) % walk : 0;
-      ctx.drawImage(sheet.image, column * sheet.size, 0, sheet.size, sheet.size, (WIDTH + TILE) / 2 - sheet.size, TILE_TOP + TILE - sheet.size, sheet.size, sheet.size);
+      ctx.drawImage(sheet.image, column * sheet.size, 0, sheet.size, sheet.size, (WIDTH + TILE) / 2 - sheet.size - 7, TILE_TOP + TILE - sheet.size, sheet.size, sheet.size);
     }
     drawTibiaText(ctx, `Carregando… ${Math.round(this.fraction * 100)}%`, WIDTH / 2, TILE_TOP + TILE + 35, NAME_COLOR);
     requestAnimationFrame(this.draw);
