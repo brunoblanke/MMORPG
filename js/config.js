@@ -48,8 +48,9 @@ export const CONFIG = {
   // Patrulha: o bicho escolhe um sqm na área dele, anda até lá e para um
   // tempo. O lvl só muda a velocidade do passo (spd); pausas e intervalos são
   // os mesmos pra todo mundo.
-  patrolPauseMin: 1500,        // ms parado entre um passeio e outro
-  patrolPauseMax: 5000,
+  patrolPauseMin: 0,           // ms parado ao chegar no destino da patrulha, antes do próximo passeio (0 = nunca para)
+  patrolPauseMax: 0,
+  patrolRetryMs: 500,          // espera depois de um passeio travado (outra criatura no caminho) ou sem destino
   // Perseguição, colado no player: de vez em quando troca de lado.
   combatSidestepIntervalMin: 4445,   // ms colado no player até mudar de sqm em volta dele (bem mais raro que a patrulha)
   combatSidestepIntervalMax: 8888,

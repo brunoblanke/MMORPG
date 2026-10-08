@@ -5,7 +5,7 @@ import { drawEntityOverlay } from './entity-overlay.js';
 import { drawTileTooltip } from './tile-tooltip.js';
 import { prepareDrawables } from './draw-order.js';
 import { getEntityLevel } from '../core/geometry.js';
-import { getAsset, objectIdType, activeAs, splitType } from '../../shared/assets.js';
+import { getAsset, objectIdType, activeAs, splitType, creatureFlies } from '../../shared/assets.js';
 import { stackFrame } from '../../shared/items.js';
 import { drawTibiaText } from './tibia-text.js';
 import { LightingLayer } from './lighting-layer.js';
@@ -404,7 +404,7 @@ export class Renderer {
       const sheet = isPlayer && !(entity && entity.isNpc) ? this.sprites.getPlayerSheet(entity && entity.gender) : (entity ? this.sprites.getEnemySheet(entity.creature) : null);
       if (!isSheetReady(sheet)) return null;
 
-      const isWalking = entity && (entity.isMoving || this.frameTimestamp < (entity.walkingUntil || 0));
+      const isWalking = entity && (entity.isMoving || this.frameTimestamp < (entity.walkingUntil || 0) || (isEnemy && creatureFlies(entity.creature)));
       const direction = entity ? (entity.getFacing ? entity.getFacing() : entity.direction || 'sul') : 'sul';
       const frameDuration = entity && entity.getFrameDuration ? entity.getFrameDuration() : CONFIG.playerFrameDuration;
       const frameRect = isWalking

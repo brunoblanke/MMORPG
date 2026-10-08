@@ -287,7 +287,7 @@ test('alvo com seguir desligado: o player espera sem andar nem atacar e continua
   assert.deepEqual([sim.player.x, sim.player.y], [4, 5], 'com o modo seguir desligado, clicar no alvo não anda');
 
   sim.enqueue('player1', { type: 'toggleFollow' });
-  assert.ok(runFor(sim, 8000).some(e => e.type === 'damage'), 'religar o seguir volta a seguir e atacar');
+  assert.ok(runFor(sim, 20000).some(e => e.type === 'damage'), 'religar o seguir volta a seguir e atacar');
 });
 
 test('alvo longe demais é perdido, sem aviso', () => {

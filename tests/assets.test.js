@@ -63,3 +63,14 @@ test('piso com padrão usa o pedaço da posição (emenda sem costura); sem padr
   assert.deepEqual(spriteFrame('estrutura/pisos/areia#padrao-3-1'), { url: '/s.png', x: 96, y: 5 * 32, size: 32, frames: 1, ms: 0 });
   assert.match(floorMiddle('estrutura/pisos/grama', 5, 3, 0), /^meio-[1-4]$/);
 });
+
+test('creatureFlies: só a criatura marcada como voadora (Voa no gerador)', async () => {
+  const { setAssets, creatureFlies } = await import('../shared/assets.js');
+  setAssets([
+    { id: 'criaturas/mortos-vivos/bat', ferramenta: 'criaturas', grupo: 'criaturas', pasta: 'mortos-vivos', nome: 'bat', url: '/bat.png', quadro: 32, quadros: 1, pecas: [], propriedades: { voa: true } },
+    { id: 'criaturas/mamiferos/rat', ferramenta: 'criaturas', grupo: 'criaturas', pasta: 'mamiferos', nome: 'rat', url: '/rat.png', quadro: 32, quadros: 1, pecas: [], propriedades: {} }
+  ]);
+  assert.equal(creatureFlies('criaturas/mortos-vivos/bat'), true);
+  assert.equal(creatureFlies('criaturas/mamiferos/rat'), false);
+  assert.equal(creatureFlies('criaturas/nao/existe'), false);
+});

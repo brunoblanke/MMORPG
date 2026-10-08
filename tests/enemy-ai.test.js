@@ -179,3 +179,21 @@ test('inimigo não entra em zona segura, nem patrulhando nem cercando o player',
 
   assert.ok(adjacent > 0, 'nenhum inimigo chegou a cercar o player');
 });
+
+test('patrulha sem pausa: ao chegar, a criatura já sai pro próximo sqm e anda quase o tempo todo', () => {
+  const game = buildGame({ objects: GROUND, enemies: [[12, 12, 0]], player: { x: 0, y: 0, z: 0 } });
+  const enemy = game.enemies[0];
+  enemy.patrolRadius = 5;
+  enemy.detectionRadius = 0;
+  let moving = 0;
+  let samples = 0;
+  let last = `${enemy.x},${enemy.y}`;
+  run(game, 40000, (t) => {
+    if (t % 1000 !== 0) return;
+    samples++;
+    const now = `${enemy.x},${enemy.y}`;
+    if (now !== last) moving++;
+    last = now;
+  });
+  assert.ok(moving / samples >= 0.7, `andou em ${moving} de ${samples} segundos`);
+});

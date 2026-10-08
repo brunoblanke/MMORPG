@@ -58,7 +58,8 @@
     ],
     "resistencias": {
       "earth": 110
-    }
+    },
+    "voa": true
   },
   "ferramenta": "criaturas",
   "grupo": "criaturas",

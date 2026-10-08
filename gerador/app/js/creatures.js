@@ -57,6 +57,7 @@ const statusEl = document.getElementById('creatureStatus');
 const nameEl = document.getElementById('creatureName');
 const folderEl = document.getElementById('creatureFolder');
 const behaviorEl = document.getElementById('creatureBehavior');
+const fliesEl = document.getElementById('creatureFlies');
 const voicesEl = document.getElementById('creatureVoices');
 const STAT_FIELDS = [
   ['vida', document.getElementById('creatureHp')],
@@ -1052,7 +1053,7 @@ async function save() {
     cadaver: creatures.corpse,
     propriedades: behaviorEl.value === 'npc'
       ? { comportamento: 'npc', conversa: conversationValues() }
-      : { comportamento: behaviorEl.value, ...statValues(), ...powerValues(), loot: lootValues(), falas: voicesEl.value.split('\n').map(line => line.trim()).filter(Boolean) }
+      : { comportamento: behaviorEl.value, ...(fliesEl.value ? { voa: true } : {}), ...statValues(), ...powerValues(), loot: lootValues(), falas: voicesEl.value.split('\n').map(line => line.trim()).filter(Boolean) }
   };
 
   try {
@@ -1089,6 +1090,7 @@ function openRecipe(recipe) {
   creatures.colors = Array.isArray(saved.cores) && saved.cores.length === 4 ? [...saved.cores] : [...DEFAULT_COLORS];
   creatures.addons = Array.isArray(saved.addons) ? [...saved.addons] : [];
   behaviorEl.value = behaviorOf(recipe.propriedades || {});
+  fliesEl.value = (recipe.propriedades || {}).voa ? 'sim' : '';
   const talk = (recipe.propriedades || {}).conversa || {};
   for (const [key, el] of NPC_TEXT_FIELDS) el.value = talk[key] || '';
   npcRadiusEl.value = String(Number.isFinite(Number(talk.raio)) && talk.raio !== undefined ? talk.raio : 2);

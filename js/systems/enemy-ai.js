@@ -25,7 +25,8 @@ const SLOT_STALE_MS = 1500;
 // Mago (comportamento 'mago'), vendo o player, fica em chase mas não cola:
 // mantém entre mageKeepDistance e mageRange sqm e ataca de longe (combat.js).
 //
-// patrol: parado (ai.resumeAt) → anda até um sqm sorteado da área → para.
+// patrol: anda até um sqm sorteado da área e, ao chegar, já sorteia o próximo (a pausa
+// entre passeios, ai.resumeAt, é CONFIG.patrolPauseMin/Max: 0 = nunca para).
 // chase: vai pra um sqm livre colado no player (ai.slot), ataca dali e de
 // tempos em tempos troca de lado (ai.sidestepAt). Sem rota até o player
 // (parede, casa fechada), volta a patrulhar na hora e só tenta de novo em
@@ -436,8 +437,9 @@ export class EnemyAI {
 
   // ================================================================================================================================================================================================================================================
   // patrol
-  // Passeio natural: parado um tempo → escolhe um sqm na área de patrulha →
-  // anda até lá no mesmo passo da perseguição → para de novo.
+  // Passeio natural: escolhe um sqm na área de patrulha → anda até lá no mesmo
+  // passo da perseguição → escolhe o próximo (com CONFIG.patrolPauseMin/Max > 0,
+  // para um tempo antes).
   // O lvl só entra na velocidade do passo (spd); pausas são iguais pra todos.
 
   patrol(enemy, enemies, timestamp) {
@@ -452,15 +454,16 @@ export class EnemyAI {
     }
     if (timestamp < enemy.ai.resumeAt) return;
 
-    if (!this.pickPatrolPath(enemy, enemies)) this.pausePatrol(enemy, timestamp);
+    if (!this.pickPatrolPath(enemy, enemies)) this.pausePatrol(enemy, timestamp, { retry: true });
   }
 
   // ================================================================================================================================================================================================================================================
   // pausePatrol
 
-  pausePatrol(enemy, timestamp) {
+  pausePatrol(enemy, timestamp, { retry = false } = {}) {
     enemy.route.path = null;
-    enemy.ai.resumeAt = timestamp + randFloat(CONFIG.patrolPauseMin, CONFIG.patrolPauseMax);
+    const pause = randFloat(CONFIG.patrolPauseMin, CONFIG.patrolPauseMax);
+    enemy.ai.resumeAt = timestamp + (retry ? Math.max(pause, CONFIG.patrolRetryMs) : pause);
   }
 
   // ================================================================================================================================================================================================================================================
@@ -510,7 +513,7 @@ export class EnemyAI {
     const blocked = this.isOccupiedByOther(enemy, enemies, next.x, next.y) ||
       !this.movement.stepAlongPath(enemy, next, timestamp);
     if (blocked) {
-      this.pausePatrol(enemy, timestamp);
+      this.pausePatrol(enemy, timestamp, { retry: true });
       return;
     }
 

@@ -67,6 +67,15 @@ export function creatureBehavior(type) {
 }
 
 // ================================================================================================================================================================================================================================================
+// creatureFlies
+// A criatura voa (gerador → Criaturas → Voa): a sprite nunca para de animar, nem parada ou atacando (o bat bate as asas sempre).
+
+export function creatureFlies(type) {
+  const asset = getAsset(type);
+  return !!(asset && asset.propriedades && asset.propriedades.voa);
+}
+
+// ================================================================================================================================================================================================================================================
 // creatureStats
 // Números da criatura no gerador (Criaturas): vida, XP dado ao morrer,
 // velocidade (escala do Tibia: rat 134, player nível 1 = 220), armadura,
