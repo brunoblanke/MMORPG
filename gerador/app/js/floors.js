@@ -5,7 +5,7 @@ import { itemCategory, showSuggestions } from './picker.js';
 import { normalizeName } from './common.js';
 import { refreshProjects } from './projects.js';
 import { fillFolderSelect, folderOf, setFolder, recipePath } from './folders.js';
-import { rareVariantAt, MAX_RARE } from '/shared/floor-variants.js';
+import { rareVariantAt, randomIndexAt, MAX_RARE } from '/shared/floor-variants.js';
 
 // Folha de piso (128 × 128, 4 × 4 quadros de 32 px):
 //   linha 1  meio: as variações do piso cheio, lado a lado (até 4)
@@ -118,6 +118,7 @@ const damageEl = document.getElementById('floorDamage');
 const damageFieldEl = document.getElementById('floorDamageField');
 const edgeBlocksEl = document.getElementById('floorEdgeBlocks');
 const edgeThrowEl = document.getElementById('floorEdgeThrow');
+const patternRandomEl = document.getElementById('floorPatternRandom');
 const groundCanvas = document.getElementById('groundPreview');
 const sheetCanvas = document.getElementById('sheetPreview');
 
@@ -143,6 +144,11 @@ export function initFloors() {
   nameEl.addEventListener('input', () => { floors.dirty = true; });
   fillFolderSelect(folderEl, CATEGORY);
   folderEl.addEventListener('change', () => { floors.dirty = true; });
+  patternRandomEl.addEventListener('change', () => {
+    floors.patternRandom = patternRandomEl.checked;
+    floors.dirty = true;
+    render();
+  });
   edgeThrowEl.addEventListener('change', () => {
     floors.edgeThrow = edgeThrowEl.checked;
     floors.dirty = true;
@@ -525,7 +531,7 @@ function render() {
     button.querySelector('.slot-source').textContent = !source ? '' : source.png ? 'PNG' : `#${source.tibia.id}${source.tibia.variacao ? ` v${source.tibia.variacao + 1}` : ''}`;
   }
   const note = rowsEl.querySelector('.row-title span');
-  note.textContent = floors.pattern ? `Padrão ${floors.pattern[0]} × ${floors.pattern[1]} pela posição: cada sqm usa o pedaço dele.` : FLOOR_ROWS[0].note;
+  note.textContent = floors.pattern ? (floors.patternRandom ? `Padrão ${floors.pattern[0]} × ${floors.pattern[1]} sorteado: cada sqm usa uma peça do bloco.` : `Padrão ${floors.pattern[0]} × ${floors.pattern[1]} pela posição: cada sqm usa o pedaço dele.`) : FLOOR_ROWS[0].note;
   composeSheet(sheetCanvas, currentFrame());
   drawGroundPreview();
 }
@@ -631,8 +637,9 @@ function drawGroundPreview() {
         if (!middle.length) continue;
         const rareKeys = rareKeysInUse();
         const rare = rareVariantAt(x, y, 0, rareKeys.length, floors.rareChance);
+        const pick = floors.pattern && floors.patternRandom ? randomIndexAt(x, y, 0, floors.pattern[0] * floors.pattern[1]) : 0;
         const img = rare ? slotImage(rareKeys[rare - 1], frame) : floors.pattern
-          ? slotImage(`padrao-${x % floors.pattern[0]}-${y % floors.pattern[1]}`, frame)
+          ? slotImage(floors.patternRandom ? `padrao-${pick % floors.pattern[0]}-${Math.floor(pick / floors.pattern[0])}` : `padrao-${x % floors.pattern[0]}-${y % floors.pattern[1]}`, frame)
           : middle[hashTile(x, y) % middle.length];
         if (!img) continue;
         drawPiece(ctx, img, x * TILE, y * TILE);
@@ -683,6 +690,7 @@ async function save() {
       quadro: TILE,
       ...(frames > 1 ? { quadros: frames, msPorQuadro: frameMs() } : {}),
       ...(floors.pattern ? { padrao: floors.pattern } : {}),
+      ...(floors.pattern && floors.patternRandom ? { padraoSorteado: true } : {}),
       ...(rareKeysInUse().length ? { raras: rareKeysInUse().length, chanceRaras: floors.rareChance } : {}),
       linhas: [
         `meio: ${middleKeysInUse().length} variações`,
@@ -738,6 +746,7 @@ function openRecipe(recipe) {
   floors.damage = Math.max(1, Math.floor(Number(props.dano)) || 10);
   floors.edgeBlocks = props.bordaBloqueia === true;
   floors.edgeThrow = props.bordaBarraArremesso === true;
+  floors.patternRandom = !!(recipe.formato && recipe.formato.padraoSorteado);
   showBehavior();
   floors.path = recipePath(recipe, CATEGORY);
   setFolder(folderEl, recipe);
@@ -758,6 +767,7 @@ function showBehavior() {
   damageFieldEl.hidden = floors.behavior !== 'dano';
   edgeBlocksEl.checked = !!floors.edgeBlocks;
   edgeThrowEl.checked = !!floors.edgeThrow;
+  patternRandomEl.checked = !!floors.patternRandom;
 }
 
 // ================================================================================================================================================================================================================================================

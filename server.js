@@ -229,6 +229,7 @@ function descreverSprite(id, grupo, pasta, nome, receita) {
     sqms: formato.sqms === 2 ? 2 : 1,
     variacoes: receita.variacoesDoMeio || 0,
     padrao: Array.isArray(formato.padrao) ? formato.padrao : null,
+    padraoSorteado: formato.padraoSorteado === true,
     raras: Number(formato.raras) || 0,
     chanceRaras: Number(formato.chanceRaras) || 0,
     ordem: formato.pecas || null,

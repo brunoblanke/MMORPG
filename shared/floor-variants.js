@@ -15,3 +15,15 @@ export function rareVariantAt(x, y, z, count, chance) {
   if ((h % 1000) >= chance * 10) return 0;
   return ((h >>> 10) % count) + 1;
 }
+
+// ================================================================================================================================================================================================================================================
+// randomIndexAt
+// Um número de 0 a count - 1 sorteado pela posição (fixo): o piso com "Sortear o padrão" escolhe assim a peça do bloco em cada sqm.
+
+export function randomIndexAt(x, y, z, count) {
+  let h = (x * 374761393 + y * 668265263 + z * 2147483647 + 977) | 0;
+  h = (h ^ (h >>> 13)) * 1274126177;
+  h = (h ^ (h >>> 16)) * 2246822519;
+  h = (h ^ (h >>> 15)) >>> 0;
+  return h % Math.max(1, count);
+}

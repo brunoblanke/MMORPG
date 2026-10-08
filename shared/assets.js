@@ -7,7 +7,7 @@
 // folha é vem da pasta: pisos, escadas e entradas (buraco) têm regra própria.
 // A lista das folhas (setAssets) vem do servidor, em /api/sprites.
 
-import { rareVariantAt } from './floor-variants.js';
+import { rareVariantAt, randomIndexAt } from './floor-variants.js';
 
 export const SPRITES_URL = '/api/sprites';
 export const FLOOR_FOLDER = 'estrutura/pisos/';
@@ -556,7 +556,8 @@ export function extraSquares(type) {
 // floorMiddle
 // A peça do meio do piso no sqm: piso com padrão (gerador: chão do Tibia que
 // muda pela posição, ex. areia 4 × 4) usa o pedaço da posição
-// ('padrao-<coluna>-<linha>'), emendando sem costura; os outros sorteiam uma
+// ('padrao-<coluna>-<linha>'), emendando sem costura (ou, com "Sortear o padrão", uma peça
+// sorteada do bloco em cada sqm); os outros sorteiam uma
 // das variações do meio (interiorVariant). Em alguns sqms (chance das raras)
 // o desenho vira uma variação rara ('variante-<n>').
 
@@ -567,6 +568,10 @@ export function floorMiddle(type, x, y, z) {
   const pattern = asset && Array.isArray(asset.padrao) ? asset.padrao : null;
   if (!pattern) return interiorVariant(x, y, z, (asset && asset.variacoes) || 4);
   const [cols, rows] = pattern;
+  if (asset.padraoSorteado) {
+    const index = randomIndexAt(x, y, z, cols * rows);
+    return `padrao-${index % cols}-${Math.floor(index / cols)}`;
+  }
   return `padrao-${((x % cols) + cols) % cols}-${((y % rows) + rows) % rows}`;
 }
 

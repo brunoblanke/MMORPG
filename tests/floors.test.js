@@ -5,13 +5,14 @@ import assert from 'node:assert/strict';
 import { buildGame, buildMapData, floorRect, hole, placeAt } from './helpers/fixture.js';
 import { Simulation, TICK_MS } from '../js/simulation.js';
 import { setAssets, floorMiddle, spriteFrame } from '../shared/assets.js';
-import { rareVariantAt } from '../shared/floor-variants.js';
+import { rareVariantAt, randomIndexAt } from '../shared/floor-variants.js';
 
 const WATER = 'estrutura/pisos/agua';
 const POISON = 'estrutura/pisos/veneno';
 const LAKE = 'estrutura/pisos/lago';
 const CAVE = 'estrutura/pisos/caverna';
 const POND = 'estrutura/pisos/lagoa';
+const MIXED = 'estrutura/pisos/misto';
 const SWORD = 'itens/espadas/espada';
 const STAIRS_STRAIGHT = 'estrutura/escadas/reta';
 
@@ -24,6 +25,7 @@ setAssets([
   floor(LAKE, { comportamento: 'bloqueia', bordaBloqueia: true }),
   floor(CAVE, { bordaBloqueia: true, bordaBarraArremesso: true }),
   { ...floor(POND, null), padrao: [2, 3], raras: 5, chanceRaras: 12 },
+  { ...floor(MIXED, null), padrao: [2, 3], padraoSorteado: true },
   { id: STAIRS_STRAIGHT, ferramenta: 'objetos', grupo: 'estrutura', pasta: 'escadas', nome: 'reta', url: '/r.png', quadro: 64, quadros: 1, pecas: [], propriedades: { altura: false } },
   { id: SWORD, ferramenta: 'objetos', grupo: 'itens', pasta: 'espadas', nome: 'espada', url: '/e.png', quadro: 32, quadros: 1, pecas: [], propriedades: { move: true, peso: 30 } }
 ]);
@@ -269,4 +271,18 @@ test('variações raras: sorteio fixo pela posição, perto da chance configurad
   assert.equal(frame.x, 0);
   assert.equal(frame.y, (4 + 3 + 1) * 32);
   assert.equal(spriteFrame(`${POND}#variante-1`).y, (4 + 3) * 32);
+});
+
+test('padrão sorteado: cada sqm pega uma peça do bloco por sorteio fixo, usando todas; sem a opção, repete pela posição', () => {
+  const seen = new Set();
+  for (let x = 0; x < 20; x++) {
+    for (let y = 0; y < 20; y++) {
+      const piece = floorMiddle(MIXED, x, y, 0);
+      assert.equal(piece, floorMiddle(MIXED, x, y, 0));
+      assert.match(piece, /^padrao-[01]-[012]$/);
+      seen.add(piece);
+    }
+  }
+  assert.equal(seen.size, 6);
+  assert.equal(randomIndexAt(1, 2, 0, 1), 0);
 });
