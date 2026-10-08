@@ -19,6 +19,7 @@ function applyZoom(next, clientX, clientY) {
   const mapX = (clientX - before.left) / zoom;
   const mapY = (clientY - before.top) / zoom;
   zoom = value;
+  document.getElementById('zoomReset').textContent = `${Math.round(zoom * 100)}%`;
   canvas.style.width = `${canvas.width * zoom}px`;
   canvas.style.height = `${canvas.height * zoom}px`;
   const after = canvas.getBoundingClientRect();
@@ -48,6 +49,10 @@ export function initZoom() {
     event.preventDefault();
     applyZoom(zoom * (event.deltaY < 0 ? STEP : 1 / STEP), event.clientX, event.clientY);
   }, { passive: false });
+  document.getElementById('zoomReset').onclick = () => {
+    const box = canvasWrap.getBoundingClientRect();
+    applyZoom(1, box.left + box.width / 2, box.top + box.height / 2);
+  };
   let spaceHeld = false;
   let drag = null;
   const typing = (event) => /^(INPUT|TEXTAREA|SELECT)$/.test(event.target.tagName);
