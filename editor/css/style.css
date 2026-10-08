@@ -263,3 +263,6 @@ textarea{
 
 .export-btn.secondary{ background:transparent; color:var(--text); border:1px solid var(--line); text-decoration:none; display:inline-flex; align-items:center; justify-content:center; }
 .export-btn.secondary:hover{ border-color:var(--accent-dim); }
+
+.canvas-wrap.pan, .canvas-wrap.pan canvas{ cursor:grab; }
+.canvas-wrap.dragging, .canvas-wrap.dragging canvas{ cursor:grabbing; }
