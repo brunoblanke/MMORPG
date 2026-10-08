@@ -674,6 +674,7 @@ export class Renderer {
         for (const obj of group) this.drawDrawableOutline(obj);
       }
       for (const obj of group) if (!obj.isFloor) drawDrawable(obj);
+      if (gameState.drawEffects) gameState.drawEffects(level);
       if (isDark && level === playerLevel) {
         litOverlays = this.pendingOverlays;
         this.pendingOverlays = [];

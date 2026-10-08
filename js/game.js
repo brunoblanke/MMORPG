@@ -566,7 +566,8 @@ export class GameController {
       world: this.session.world,
       deadBodies: this.session.deadBodies,
       inputController: this.inputController,
-      statusMessage: this.statusMessage
+      statusMessage: this.statusMessage,
+      drawEffects: (level) => this.particleController.renderEffects(this.ctx, level)
     };
     this.renderer.render(gameState, this.ui);
     this.particleController.render(this.ctx);

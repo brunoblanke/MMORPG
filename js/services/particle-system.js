@@ -65,21 +65,21 @@ export class ParticleSystem {
   // Projétil do Tibia (shared/effects.js) que voa do sqm de origem até o de
   // destino, virado pra direção dele.
 
-  spawnMissile(fromX, fromY, toX, toY, renderer, kind = 'energy') {
+  spawnMissile(fromX, fromY, toX, toY, renderer, kind = 'energy', z = null) {
     const name = MISSILES[kind] ? kind : 'energy';
     this.missiles = this.missiles || [];
-    this.missiles.push({ fromX, fromY, toX, toY, renderer, img: loadImage(missileUrl(name)), size: MISSILES[name].size, dir: missileDirection(toX - fromX, toY - fromY), createdAt: performance.now(), duration: 280 });
+    this.missiles.push({ z, fromX, fromY, toX, toY, renderer, img: loadImage(missileUrl(name)), size: MISSILES[name].size, dir: missileDirection(toX - fromX, toY - fromY), createdAt: performance.now(), duration: 280 });
   }
 
   // ================================================================================================================================================================================================================================================
   // spawnEffect
   // Efeito do Tibia (shared/effects.js) animado em cada sqm de tiles.
 
-  spawnEffect(tiles, name, renderer) {
+  spawnEffect(tiles, name, renderer, z = null) {
     const info = EFFECTS[name];
     if (!info) return;
     this.effects = this.effects || [];
-    this.effects.push({ tiles, img: loadImage(effectUrl(name)), frames: info.frames, size: info.size, ms: info.ms, renderer, createdAt: performance.now(), duration: info.frames * info.ms });
+    this.effects.push({ z, tiles, img: loadImage(effectUrl(name)), frames: info.frames, size: info.size, ms: info.ms, renderer, createdAt: performance.now(), duration: info.frames * info.ms });
   }
 
   // ================================================================================================================================================================================================================================================
@@ -102,10 +102,15 @@ export class ParticleSystem {
   }
 
   // ================================================================================================================================================================================================================================================
-  // render
+  // renderEffects
+  // Efeitos e projéteis do andar level (desenhados junto do andar, pra o piso do andar de cima cobri-los). Sem level (render), os que
+  // não têm andar ou cujo andar não foi desenhado neste quadro.
 
-  render(ctx) {
-    for (const e of this.effects || []) {
+  renderEffects(ctx, level) {
+    this.drawnLevels = this.drawnLevels || new Set();
+    const wanted = (item) => (level === undefined ? item.z === null || item.z === undefined || !this.drawnLevels.has(item.z) : item.z === level);
+    if (level !== undefined) this.drawnLevels.add(level);
+    for (const e of (this.effects || []).filter(wanted)) {
       if (!e.img.complete || !e.img.naturalWidth) continue;
       const frame = Math.min(e.frames - 1, Math.floor((performance.now() - e.createdAt) / e.ms));
       const tile = e.renderer.camera.tileSize;
@@ -118,7 +123,7 @@ export class ParticleSystem {
       }
       ctx.restore();
     }
-    for (const m of this.missiles || []) {
+    for (const m of (this.missiles || []).filter(wanted)) {
       if (!m.img.complete || !m.img.naturalWidth) continue;
       const t = Math.max(0, Math.min(1, (performance.now() - m.createdAt) / m.duration));
       const tile = m.renderer.camera.tileSize;
@@ -132,6 +137,14 @@ export class ParticleSystem {
       ctx.drawImage(m.img, m.dir[0] * m.size, m.dir[1] * m.size, m.size, m.size, x + tile - size, y + tile - size, size, size);
       ctx.restore();
     }
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // render
+
+  render(ctx) {
+    this.renderEffects(ctx, undefined);
+    this.drawnLevels.clear();
     for (const p of this.particles) {
       ctx.save();
       ctx.globalAlpha = p.opacity;

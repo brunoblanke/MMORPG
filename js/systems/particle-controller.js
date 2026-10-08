@@ -34,14 +34,22 @@ export class ParticleController {
   // spawnMissile
 
   spawnMissile(event, renderer) {
-    this.particleSystem.spawnMissile(event.fromX, event.fromY, event.toX, event.toY, renderer, event.kind);
+    this.particleSystem.spawnMissile(event.fromX, event.fromY, event.toX, event.toY, renderer, event.kind, event.z ?? null);
   }
 
   // ================================================================================================================================================================================================================================================
   // spawnEffect
 
   spawnEffect(event, renderer) {
-    this.particleSystem.spawnEffect(event.tiles || [[event.x, event.y]], event.effect, renderer);
+    this.particleSystem.spawnEffect(event.tiles || [[event.x, event.y]], event.effect, renderer, event.z ?? null);
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // renderEffects
+  // Os efeitos e projéteis do andar level, desenhados junto dele.
+
+  renderEffects(ctx, level) {
+    this.particleSystem.renderEffects(ctx, level);
   }
 
   // ================================================================================================================================================================================================================================================
