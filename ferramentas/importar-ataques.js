@@ -19,7 +19,7 @@ const path = require('path');
 
 const RAIZ = path.join(__dirname, '..');
 const PASTA_CRIATURAS = path.join(RAIZ, 'gerador', 'projetos', 'criaturas');
-const NOMES_DO_CANARY = { vamp: 'vampire', beholder: 'beholder', tortuguita: 'tortuguita' };
+const NOMES_DO_CANARY = { vamp: 'vampire', tortuguita: 'tortuguita' };
 const ELEMENTO = {
   COMBAT_PHYSICALDAMAGE: 'physical', COMBAT_FIREDAMAGE: 'fire', COMBAT_ENERGYDAMAGE: 'energy', COMBAT_EARTHDAMAGE: 'earth',
   COMBAT_ICEDAMAGE: 'ice', COMBAT_DEATHDAMAGE: 'death', COMBAT_HOLYDAMAGE: 'holy', COMBAT_LIFEDRAIN: 'death'

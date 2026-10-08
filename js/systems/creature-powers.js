@@ -2,7 +2,7 @@
 
 import { Enemy, AI_STATE } from '../models/enemy.js';
 import { getLevel } from '../core/geometry.js';
-import { creaturePowers } from '../../shared/assets.js';
+import { creaturePowers, creatureBehavior } from '../../shared/assets.js';
 import { CONFIG } from '../config.js';
 import { EFFECTS } from '../../shared/effects.js';
 import { circleArea, AREAS } from '../../shared/spells.js';
@@ -29,6 +29,7 @@ export const POWER_TRY_MS = 2000;
 export const SUMMON_CHANCE = 0.25;
 const SPELL_POISON_TICKS = 5;
 const DIRECTIONAL = ['wave', 'beam', 'sweep'];
+const FROM_AFAR = ['shot', 'ball', 'cross', 'field', 'chain', 'slow', 'wave', 'beam'];
 
 export class CreaturePowers {
 
@@ -47,7 +48,9 @@ export class CreaturePowers {
     if (!enemy.isAlive() || !player || !player.isAlive()) return;
     const state = enemy.ai && enemy.ai.state;
     if ((state !== AI_STATE.CHASE && state !== AI_STATE.FLEE) || getLevel(enemy) !== getLevel(player)) return;
-    if (this.sim.world.isInSafeZone(player) || now < (enemy.powerReadyAt || 0)) return;
+    if (this.sim.world.isInSafeZone(player)) return;
+    if (state === AI_STATE.CHASE && !enemy.isMoving && this.shootsFromAfar(enemy)) this.sim.movement.faceTowards(enemy, player.x - enemy.x, player.y - enemy.y);
+    if (now < (enemy.powerReadyAt || 0)) return;
     enemy.powerReadyAt = now + POWER_TRY_MS;
     const powers = creaturePowers(enemy.creature);
     const chasing = state === AI_STATE.CHASE;
@@ -58,6 +61,14 @@ export class CreaturePowers {
       if (attack.shape === 'heal') this.heal(enemy, attack);
       else if (chasing && !attacked) attacked = this.cast(enemy, player, attack, now);
     }
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // shootsFromAfar
+  // A criatura ataca de longe (mago ou com magia de alvo, onda ou raio): parada, fica virada pro player.
+
+  shootsFromAfar(enemy) {
+    return creatureBehavior(enemy.creature) === 'mago' || creaturePowers(enemy.creature).attacks.some(attack => FROM_AFAR.includes(attack.shape));
   }
 
   // ================================================================================================================================================================================================================================================

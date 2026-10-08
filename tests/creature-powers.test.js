@@ -311,3 +311,20 @@ test('magias só alcançam sqms com chão no andar em que são lançadas (piso s
   assert.ok(tiles.every(([x, y]) => sim.world.hasFloorAt(x, y, 0)));
   assert.ok(sim.world.hasFloorAt(12, 6, 1) && !tiles.some(([x]) => x > 9));
 });
+
+test('quem ataca de longe, parado, fica virado pro player; quem só bate colado não vira', () => {
+  const ranged = game({ ataque: 0, ataques: [{ forma: 'tiro', elemento: 'fire', min: 1, max: 1, chance: 1, alcance: 6 }] }, [[8, 5, 0]]);
+  const enemy = ranged.enemies[0];
+  enemy.ai.state = 'chase';
+  enemy.isMoving = false;
+  enemy.direction = 'norte';
+  ranged.powers.update(enemy, ranged.player, ranged.time + 5000);
+  assert.equal(enemy.direction, 'oeste');
+  const melee = game({ ataque: 0, ataques: [] }, [[8, 5, 0]]);
+  const brute = melee.enemies[0];
+  brute.ai.state = 'chase';
+  brute.isMoving = false;
+  brute.direction = 'norte';
+  melee.powers.update(brute, melee.player, melee.time + 5000);
+  assert.equal(brute.direction, 'norte');
+});
