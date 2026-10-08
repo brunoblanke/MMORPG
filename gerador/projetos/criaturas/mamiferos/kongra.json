@@ -1,0 +1,79 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 116,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 6043,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "mamiferos",
+  "nome": "kongra",
+  "propriedades": {
+    "comportamento": "foge",
+    "vida": 340,
+    "xp": 115,
+    "velocidade": 184,
+    "armadura": 18,
+    "defesa": 20,
+    "ataque": 60,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.69,
+        "min": 1,
+        "max": 40
+      },
+      {
+        "tipo": "itens/armaduras/plate-armor",
+        "chance": 0.0095
+      },
+      {
+        "tipo": "itens/liquidos/health-potion",
+        "chance": 0.0057
+      }
+    ],
+    "resistencias": {
+      "energy": 95,
+      "earth": 90,
+      "fire": 80,
+      "ice": 115,
+      "death": 105
+    }
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 118,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 6045,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "mamiferos",
+  "nome": "sibang",
+  "propriedades": {
+    "comportamento": "mago",
+    "vida": 225,
+    "xp": 105,
+    "velocidade": 214,
+    "armadura": 15,
+    "defesa": 15,
+    "ataque": 40,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.56,
+        "min": 1,
+        "max": 35
+      },
+      {
+        "tipo": "itens/comidas/melon",
+        "chance": 0.01
+      }
+    ],
+    "ataques": [
+      {
+        "forma": "tiro",
+        "elemento": "physical",
+        "min": 0,
+        "max": 55,
+        "chance": 35,
+        "alcance": 7
+      }
+    ],
+    "resistencias": {
+      "fire": 75,
+      "ice": 115,
+      "holy": 90,
+      "death": 105
+    }
+  }
+}

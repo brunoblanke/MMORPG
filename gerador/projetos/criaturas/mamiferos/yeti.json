@@ -1,0 +1,104 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 110,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 6038,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "mamiferos",
+  "nome": "yeti",
+  "propriedades": {
+    "comportamento": "normal",
+    "vida": 950,
+    "xp": 460,
+    "velocidade": 250,
+    "armadura": 28,
+    "defesa": 33,
+    "ataque": 200,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 1,
+        "min": 1,
+        "max": 60
+      },
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 1,
+        "min": 1,
+        "max": 40
+      },
+      {
+        "tipo": "itens/comidas/meet",
+        "chance": 0.33333,
+        "min": 1,
+        "max": 4
+      },
+      {
+        "tipo": "itens/comidas/ham",
+        "chance": 0.1,
+        "min": 1,
+        "max": 5
+      }
+    ],
+    "ataques": [
+      {
+        "forma": "tiro",
+        "elemento": "physical",
+        "min": 0,
+        "max": 180,
+        "chance": 15,
+        "alcance": 7
+      },
+      {
+        "forma": "raio",
+        "elemento": "energy",
+        "min": 0,
+        "max": 175,
+        "chance": 12,
+        "comprimento": 3
+      }
+    ],
+    "resistencias": {
+      "energy": 108,
+      "fire": 110
+    }
+  }
+}
