@@ -150,7 +150,6 @@ canvas {
 .modal-box .gender-option.selected,
 .modal-box .gender-option.selected:hover:not(:disabled) {
   color: #ccff33;
-  border-color: #ccff33;
 }
 
 .modal-box .gender-option svg {
