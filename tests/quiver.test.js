@@ -20,10 +20,10 @@ const asset = (id, propriedades) => {
 };
 
 setAssets([
-  asset(BOW, { move: true, peso: 30, duasMaos: true }),
-  asset(CROSSBOW, { move: true, peso: 40, duasMaos: true }),
-  asset(ARROW, { move: true, peso: 0.7, empilhavel: true, atk: 25 }),
-  asset(BOLT, { move: true, peso: 0.7, empilhavel: true, atk: 30 }),
+  asset(BOW, { move: true, peso: 30, duasMaos: true, tipoMunicao: 'arrow' }),
+  asset(CROSSBOW, { move: true, peso: 40, duasMaos: true, tipoMunicao: 'bolt' }),
+  asset(ARROW, { move: true, peso: 0.7, empilhavel: true, atk: 25, tipoMunicao: 'arrow' }),
+  asset(BOLT, { move: true, peso: 0.7, empilhavel: true, atk: 30, tipoMunicao: 'bolt' }),
   asset(QUIVER, { move: true, peso: 5, espacos: 3 }),
   asset(SHIELD, { move: true, peso: 40, def: 20 }),
   asset(SWORD, { move: true, peso: 30, atk: 10 }),
@@ -121,4 +121,15 @@ test('aljava sem munição dentro: o arco avisa que está sem munição', () => 
   player.equip.arma = { uid: 'w1', type: BOW };
   player.equip.municao = { uid: 'q1', type: QUIVER, items: [null, null, null] };
   assert.ok(game.combat.rangedWeapon(player).error);
+});
+
+test('arco só dispara flecha e besta só virote: munição do outro tipo não conta', () => {
+  const { game, player } = archer();
+  player.equip.arma = { uid: 'b1', type: BOW };
+  player.equip.municao = { uid: 'a1', type: BOLT, amount: 5 };
+  assert.equal(game.combat.rangedWeapon(player).error, 'Você está sem munição.');
+  player.equip.municao = { uid: 'a2', type: ARROW, amount: 5 };
+  assert.equal(game.combat.rangedWeapon(player).error, undefined);
+  player.equip.arma = { uid: 'c1', type: CROSSBOW };
+  assert.equal(game.combat.rangedWeapon(player).error, 'Você está sem munição.');
 });

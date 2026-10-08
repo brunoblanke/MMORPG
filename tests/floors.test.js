@@ -4,12 +4,14 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { buildGame, buildMapData, floorRect, hole, placeAt } from './helpers/fixture.js';
 import { Simulation, TICK_MS } from '../js/simulation.js';
-import { setAssets } from '../shared/assets.js';
+import { setAssets, floorMiddle, spriteFrame } from '../shared/assets.js';
+import { rareVariantAt } from '../shared/floor-variants.js';
 
 const WATER = 'estrutura/pisos/agua';
 const POISON = 'estrutura/pisos/veneno';
 const LAKE = 'estrutura/pisos/lago';
 const CAVE = 'estrutura/pisos/caverna';
+const POND = 'estrutura/pisos/lagoa';
 const SWORD = 'itens/espadas/espada';
 const STAIRS_STRAIGHT = 'estrutura/escadas/reta';
 
@@ -21,6 +23,7 @@ setAssets([
   floor(POISON, { comportamento: 'dano', dano: 7 }),
   floor(LAKE, { comportamento: 'bloqueia', bordaBloqueia: true }),
   floor(CAVE, { bordaBloqueia: true, bordaBarraArremesso: true }),
+  { ...floor(POND, null), padrao: [2, 3], raras: 5, chanceRaras: 12 },
   { id: STAIRS_STRAIGHT, ferramenta: 'objetos', grupo: 'estrutura', pasta: 'escadas', nome: 'reta', url: '/r.png', quadro: 64, quadros: 1, pecas: [], propriedades: { altura: false } },
   { id: SWORD, ferramenta: 'objetos', grupo: 'itens', pasta: 'espadas', nome: 'espada', url: '/e.png', quadro: 32, quadros: 1, pecas: [], propriedades: { move: true, peso: 30 } }
 ]);
@@ -238,4 +241,32 @@ test('buraco: quem cai no sqm de outro player fica no mesmo sqm', () => {
   for (let i = 0; i < 40 && sim.player.z === 1; i++) run(sim, TICK_MS);
   assert.deepEqual([sim.player.x, sim.player.y, sim.player.z], [6, 6, 0]);
   assert.deepEqual([other.x, other.y, other.z], [6, 6, 0]);
+});
+
+test('variações raras: sorteio fixo pela posição, perto da chance configurada, e a peça fica nas linhas depois do padrão', () => {
+  assert.equal(rareVariantAt(3, 4, 0, 0, 12), 0);
+  assert.equal(rareVariantAt(3, 4, 0, 5, 0), 0);
+  let rares = 0;
+  const seen = new Set();
+  for (let x = 0; x < 100; x++) {
+    for (let y = 0; y < 100; y++) {
+      const rare = rareVariantAt(x, y, 0, 5, 12);
+      assert.equal(rare, rareVariantAt(x, y, 0, 5, 12));
+      if (rare) { rares++; seen.add(rare); }
+    }
+  }
+  assert.ok(rares > 1000 && rares < 1400);
+  assert.deepEqual([...seen].sort(), [1, 2, 3, 4, 5]);
+  let plain = null;
+  let variant = null;
+  for (let x = 0; x < 30 && !(plain && variant); x++) {
+    const piece = floorMiddle(POND, x, 0, 0);
+    if (piece.startsWith('variante-')) variant = piece;
+    else plain = piece;
+  }
+  assert.match(plain, /^padrao-\d-\d$/);
+  const frame = spriteFrame(`${POND}#variante-5`);
+  assert.equal(frame.x, 0);
+  assert.equal(frame.y, (4 + 3 + 1) * 32);
+  assert.equal(spriteFrame(`${POND}#variante-1`).y, (4 + 3) * 32);
 });

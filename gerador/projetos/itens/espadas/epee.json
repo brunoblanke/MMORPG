@@ -1,0 +1,33 @@
+{
+  "formato": {
+    "quadro": 32,
+    "quadros": 1
+  },
+  "objeto": {
+    "tibia": {
+      "id": 3326,
+      "variacao": 0
+    }
+  },
+  "propriedades": {
+    "bloqueia": false,
+    "move": true,
+    "altura": false,
+    "empilhavel": false,
+    "peso": 14.5,
+    "espacos": 0,
+    "atk": 37,
+    "def": 23,
+    "ml": 0,
+    "speed": 0,
+    "vidaMin": 0,
+    "vidaMax": 0,
+    "manaMin": 0,
+    "manaMax": 0,
+    "alimento": 0
+  },
+  "ferramenta": "objetos",
+  "grupo": "itens",
+  "pasta": "espadas",
+  "nome": "epee"
+}

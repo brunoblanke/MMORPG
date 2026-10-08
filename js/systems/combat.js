@@ -230,23 +230,24 @@ export class CombatController {
     }
     if (!info || info.weaponSkill !== 'distance') return null;
     if (info.stack) return { range: THROWN_RANGE, attack: info.atk, ammo: { item: weapon, take: () => { player.equip.arma = null; } }, thrown: true };
-    const ammo = this.findAmmo(player);
+    const ammo = this.findAmmo(player, info.ammoType);
     if (!ammo) return { error: 'Você está sem munição.' };
     return { range: LAUNCHER_RANGE, attack: info.atk + itemInfo(ammo.item.type).atk, ammo, thrown: false };
   }
 
   // ================================================================================================================================================================================================================================================
   // findAmmo
-  // A munição que sai no próximo tiro: a do espaço de munição ou a primeira
+  // A munição que sai no próximo tiro (do tipo que o arco aceita): a do espaço de munição ou a primeira
   // pilha dentro da aljava que está nele. { item, take } (take tira a pilha
   // quando acaba) ou null.
 
-  findAmmo(player) {
+  findAmmo(player, ammoType = '') {
     const slot = player.equip.municao;
     if (!slot) return null;
-    if (isAmmo(slot.type)) return { item: slot, take: () => { player.equip.municao = null; } };
+    const fits = (item) => item && isAmmo(item.type) && (!ammoType || !itemInfo(item.type).ammoType || itemInfo(item.type).ammoType === ammoType);
+    if (fits(slot)) return { item: slot, take: () => { player.equip.municao = null; } };
     if (!isQuiver(slot.type) || !slot.items) return null;
-    const index = slot.items.findIndex(item => item && isAmmo(item.type));
+    const index = slot.items.findIndex(fits);
     return index < 0 ? null : { item: slot.items[index], take: () => { slot.items[index] = null; this.sim.inventory.compactAll(player); } };
   }
 

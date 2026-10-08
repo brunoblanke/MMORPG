@@ -12,7 +12,7 @@ import { getAsset, splitType, spriteFrame, WALL_PIECES } from '../../../shared/a
 
 function sheetSize(asset) {
   const size = asset.quadro;
-  if (asset.ferramenta === 'pisos') return [4 * Math.max(1, asset.quadros || 1) * size, (4 + (asset.padrao ? asset.padrao[1] : 0)) * size];
+  if (asset.ferramenta === 'pisos') return [4 * Math.max(1, asset.quadros || 1) * size, (4 + (asset.padrao ? asset.padrao[1] : 0) + Math.ceil((asset.raras || 0) / 4)) * size];
   if (asset.ferramenta === 'paredes') return [4 * size, Math.ceil((asset.ordem || WALL_PIECES).length / 4) * size];
   if (asset.ferramenta === 'criaturas') return [Math.max(asset.quadros, 3) * size, 5 * size];
   return [Math.max(1, asset.quadros) * size, Math.max(1, (asset.direcoes || []).length) * size];

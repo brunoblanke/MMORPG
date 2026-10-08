@@ -1,6 +1,6 @@
 // gerador/app/js/objects.js
 
-import { spriteUrl, saveProject, fetchItemInfo, fetchProjects } from './api.js';
+import { spriteUrl, saveProject, fetchItemInfo, fetchProjects, fetchProject } from './api.js';
 import { loadImage, isReady, drawAnchored, readPngFile, normalizeName, setStatus } from './common.js';
 import { refreshProjects } from './projects.js';
 import { fillFolderSelect, folderOf, setFolder, recipePath } from './folders.js';
@@ -40,7 +40,8 @@ const NUMBERS = [
   { key: 'regenVida', label: 'Equipado: recupera vida a cada 6 s', min: 0, step: 1 },
   { key: 'regenMana', label: 'Equipado: recupera mana a cada 6 s', min: 0, step: 1 }
 ];
-const DEFAULT_PROPERTIES = { bloqueia: false, move: true, altura: false, empilhavel: false, duasMaos: false, postal: false, peso: 10, espacos: 0, atk: 0, def: 0, ml: 0, speed: 0, vidaMin: 0, vidaMax: 0, manaMin: 0, manaMax: 0, alimento: 0, luz: 0, duracao: 0, regenVida: 0, regenMana: 0, uso: '', ativoComo: '', comecaAtivo: false };
+const DEFAULT_PROPERTIES = { bloqueia: false, move: true, altura: false, empilhavel: false, duasMaos: false, tipoMunicao: '', postal: false, peso: 10, espacos: 0, atk: 0, def: 0, ml: 0, speed: 0, vidaMin: 0, vidaMax: 0, manaMin: 0, manaMax: 0, alimento: 0, luz: 0, duracao: 0, regenVida: 0, regenMana: 0, uso: '', ativoComo: '', comecaAtivo: false };
+const AMMO_TYPES = [['', 'Qualquer / não é munição'], ['arrow', 'Flecha (arco)'], ['bolt', 'Virote (besta)']];
 const USES = [
   ['', 'Nenhum'],
   ['placa', 'Placa (mostra um texto, escrito no editor)'],
@@ -109,6 +110,7 @@ const sheetCanvas = document.getElementById('objectSheet');
 
 function initObjects() {
   renderProperties();
+  document.getElementById('objectPendingBtn').addEventListener('click', generatePending);
   document.getElementById('objectSaveForm').addEventListener('submit', (evt) => {
     evt.preventDefault();
     save();
@@ -372,6 +374,18 @@ function renderProperties() {
     list.appendChild(label);
   }
   renderImpact(list);
+  const ammoLabel = document.createElement('label');
+  ammoLabel.className = 'numberline';
+  const ammoSelect = document.createElement('select');
+  ammoSelect.id = 'objectProp-tipoMunicao';
+  ammoSelect.innerHTML = AMMO_TYPES.map(([value, text]) => `<option value="${value}">${text}</option>`).join('');
+  ammoSelect.value = objects.properties.tipoMunicao || '';
+  ammoLabel.append('Tipo de munição (arco/besta e a munição dela)', ammoSelect);
+  list.appendChild(ammoLabel);
+  ammoSelect.onchange = () => {
+    objects.properties.tipoMunicao = ammoSelect.value;
+    objects.dirty = true;
+  };
   const useLabel = document.createElement('label');
   useLabel.className = 'numberline';
   const useSelect = document.createElement('select');
@@ -627,6 +641,35 @@ async function save() {
   } finally {
     objects.saving = false;
     document.getElementById('objectSaveBtn').disabled = false;
+  }
+}
+
+// ================================================================================================================================================================================================================================================
+// generatePending
+// Cria a folha (.png) de todo objeto que tem receita mas ainda não tem folha, um por um (os criados por ferramentas/criar-armas.js).
+
+async function generatePending() {
+  const button = document.getElementById('objectPendingBtn');
+  button.disabled = true;
+  try {
+    const pending = (await fetchProjects()).filter(project => project.ferramenta === CATEGORY && !project.temFolha);
+    if (!pending.length) return status('Nenhum objeto sem folha.', 'ok');
+    let done = 0;
+    for (const project of pending) {
+      status(`Gerando ${project.nome} (${done + 1} de ${pending.length})…`);
+      await openRecipe(await fetchProject(project.caminho));
+      const limit = Date.now() + 20000;
+      while (Date.now() < limit && slotKeys().some(key => objects.slots[key] && !sourceFrames(key).length)) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+      await save();
+      done++;
+    }
+    status(`${done} folha(s) gerada(s). Faça o commit de gerador/saida e gerador/projetos.`, 'ok');
+  } catch (error) {
+    status(`Parou: ${error.message}`, 'error');
+  } finally {
+    button.disabled = false;
   }
 }
 

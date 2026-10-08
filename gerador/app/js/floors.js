@@ -5,6 +5,7 @@ import { itemCategory, showSuggestions } from './picker.js';
 import { normalizeName } from './common.js';
 import { refreshProjects } from './projects.js';
 import { fillFolderSelect, folderOf, setFolder, recipePath } from './folders.js';
+import { rareVariantAt, MAX_RARE } from '/shared/floor-variants.js';
 
 // Folha de piso (128 × 128, 4 × 4 quadros de 32 px):
 //   linha 1  meio: as variações do piso cheio, lado a lado (até 4)
@@ -71,8 +72,13 @@ export const FLOOR_ROWS = [
   }
 ];
 
-const ALL_SLOTS = FLOOR_ROWS.flatMap(row => row.slots);
-const BORDER_KEYS = ALL_SLOTS.filter(slot => !slot.key.startsWith('meio')).map(slot => slot.key);
+const RARE_ROW = {
+  title: 'Raras', note: 'Trocam o desenho de alguns sqms (chance abaixo), quebrando a repetição do meio.',
+  slots: Array.from({ length: MAX_RARE }, (_, i) => ({ key: `raro-${i + 1}`, name: `${i + 1}`, floor: [[0, 0]] }))
+};
+const RARE_KEYS = RARE_ROW.slots.map(slot => slot.key);
+const ALL_SLOTS = [...FLOOR_ROWS.flatMap(row => row.slots), ...RARE_ROW.slots];
+const BORDER_KEYS = ALL_SLOTS.filter(slot => !slot.key.startsWith('meio') && !slot.key.startsWith('raro')).map(slot => slot.key);
 const MIDDLE_KEYS = ALL_SLOTS.filter(slot => slot.key.startsWith('meio')).map(slot => slot.key);
 
 // Chão da prévia: '#' é piso. Tem ponta, lado reto, canto de dentro e buraco.
@@ -93,6 +99,7 @@ const floors = {
   images: new Map(),
   frameMs: new Map(),
   pattern: null,
+  rareChance: 12,
   selected: 'meio-1',
   name: '',
   path: '',
@@ -175,12 +182,13 @@ function setStatus(text, kind = '') {
 
 function renderRows() {
   rowsEl.innerHTML = '';
-  for (const row of FLOOR_ROWS) {
+  for (const row of [...FLOOR_ROWS, RARE_ROW]) {
     const line = document.createElement('div');
     line.className = 'sheet-row';
     const title = document.createElement('div');
     title.className = 'row-title';
     title.innerHTML = `<b>${row.title}</b><span>${row.note}</span>`;
+    if (row === RARE_ROW) title.appendChild(rareChanceField());
     const slotsEl = document.createElement('div');
     slotsEl.className = 'slots';
 
@@ -189,7 +197,7 @@ function renderRows() {
       button.type = 'button';
       button.className = 'slot';
       button.dataset.key = slot.key;
-      button.title = slot.key.startsWith('meio') ? `Meio ${slot.name}` : `Borda ${slot.key}: o piso fica onde o diagrama está preenchido`;
+      button.title = slot.key.startsWith('meio') ? `Meio ${slot.name}` : slot.key.startsWith('raro') ? `Variação rara ${slot.name}` : `Borda ${slot.key}: o piso fica onde o diagrama está preenchido`;
       const canvas = document.createElement('canvas');
       canvas.width = TILE;
       canvas.height = TILE;
@@ -206,6 +214,24 @@ function renderRows() {
     line.append(title, slotsEl);
     rowsEl.appendChild(line);
   }
+}
+
+// ================================================================================================================================================================================================================================================
+// rareChanceField
+// O campo "Chance (%)" das variações raras (porcentagem dos sqms que usam uma delas).
+
+function rareChanceField() {
+  const label = document.createElement('label');
+  label.className = 'rare-chance';
+  label.append('Chance (%) ');
+  const input = document.createElement('input');
+  Object.assign(input, { type: 'number', min: 1, max: 50, step: 1, value: floors.rareChance });
+  input.addEventListener('input', () => {
+    floors.rareChance = Math.min(50, Math.max(1, Math.floor(Number(input.value)) || 1));
+    floors.dirty = true;
+  });
+  label.appendChild(input);
+  return label;
 }
 
 // ================================================================================================================================================================================================================================================
@@ -244,7 +270,7 @@ function selectSlot(key) {
 // bordas) recebem id+1, id+2… enquanto os itens forem da mesma categoria.
 
 export async function pickSprite(id, variation) {
-  const group = floors.selected.startsWith('meio') ? MIDDLE_KEYS : BORDER_KEYS;
+  const group = floors.selected.startsWith('meio') ? MIDDLE_KEYS : floors.selected.startsWith('raro') ? RARE_KEYS : BORDER_KEYS;
   const start = group.indexOf(floors.selected);
   const sequence = document.getElementById('fillSequence').checked && variation === 0;
   const category = itemCategory(id);
@@ -513,6 +539,14 @@ function middleKeysInUse() {
 }
 
 // ================================================================================================================================================================================================================================================
+// rareKeysInUse
+// Variações raras preenchidas, na ordem (na folha vão compactadas depois do padrão, 4 por linha).
+
+function rareKeysInUse() {
+  return RARE_KEYS.filter(key => floors.slots[key]);
+}
+
+// ================================================================================================================================================================================================================================================
 // composeSheet
 // A folha: meio compactado à esquerda da 1ª linha; bordas nas posições fixas.
 // Com frame, só aquele quadro da animação (a prévia, 4 × 4); sem, a folha
@@ -521,9 +555,11 @@ function middleKeysInUse() {
 function composeSheet(canvas, frame = null) {
   const count = frame === null ? sheetFrameCount() : 1;
   const patternRows = floors.pattern ? floors.pattern[1] : 0;
+  const rareKeys = rareKeysInUse();
+  const rows = 4 + patternRows + Math.ceil(rareKeys.length / 4);
   canvas.width = 4 * count * TILE;
-  canvas.height = (4 + patternRows) * TILE;
-  if (canvas === sheetCanvas) canvas.style.height = `${(4 + patternRows) * 64}px`;
+  canvas.height = rows * TILE;
+  if (canvas === sheetCanvas) canvas.style.height = `${rows * 64}px`;
   const ctx = canvas.getContext('2d');
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   const place = (key, column, row) => {
@@ -539,6 +575,7 @@ function composeSheet(canvas, frame = null) {
   for (let r = 0; r < patternRows; r++) {
     for (let c = 0; c < floors.pattern[0]; c++) place(`padrao-${c}-${r}`, c, 4 + r);
   }
+  rareKeys.forEach((key, i) => place(key, i % 4, 4 + patternRows + Math.floor(i / 4)));
 }
 
 // ================================================================================================================================================================================================================================================
@@ -592,7 +629,9 @@ function drawGroundPreview() {
     for (let x = 0; x < PREVIEW_SHAPE[y].length; x++) {
       if (isFloor(x, y)) {
         if (!middle.length) continue;
-        const img = floors.pattern
+        const rareKeys = rareKeysInUse();
+        const rare = rareVariantAt(x, y, 0, rareKeys.length, floors.rareChance);
+        const img = rare ? slotImage(rareKeys[rare - 1], frame) : floors.pattern
           ? slotImage(`padrao-${x % floors.pattern[0]}-${y % floors.pattern[1]}`, frame)
           : middle[hashTile(x, y) % middle.length];
         if (!img) continue;
@@ -644,6 +683,7 @@ async function save() {
       quadro: TILE,
       ...(frames > 1 ? { quadros: frames, msPorQuadro: frameMs() } : {}),
       ...(floors.pattern ? { padrao: floors.pattern } : {}),
+      ...(rareKeysInUse().length ? { raras: rareKeysInUse().length, chanceRaras: floors.rareChance } : {}),
       linhas: [
         `meio: ${middleKeysInUse().length} variações`,
         FLOOR_ROWS[1].slots.map(s => s.key).join(' '),
@@ -683,6 +723,9 @@ function openRecipe(recipe) {
   floors.images.clear();
   floors.frameMs.clear();
   floors.pattern = recipe.formato && Array.isArray(recipe.formato.padrao) ? recipe.formato.padrao : null;
+  floors.rareChance = Math.min(50, Math.max(1, Math.floor(Number(recipe.formato && recipe.formato.chanceRaras)) || 12));
+  const chanceInput = document.querySelector('.rare-chance input');
+  if (chanceInput) chanceInput.value = floors.rareChance;
   for (const [key, source] of Object.entries(recipe.slots || {})) {
     if (!ALL_SLOTS.some(slot => slot.key === key) && !PATTERN_KEY.test(key)) continue;
     floors.slots[key] = source;

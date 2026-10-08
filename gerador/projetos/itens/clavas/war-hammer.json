@@ -1,0 +1,34 @@
+{
+  "formato": {
+    "quadro": 32,
+    "quadros": 1
+  },
+  "objeto": {
+    "tibia": {
+      "id": 3279,
+      "variacao": 0
+    }
+  },
+  "propriedades": {
+    "bloqueia": false,
+    "move": true,
+    "altura": false,
+    "empilhavel": false,
+    "peso": 85,
+    "espacos": 0,
+    "atk": 45,
+    "def": 10,
+    "ml": 0,
+    "speed": 0,
+    "vidaMin": 0,
+    "vidaMax": 0,
+    "manaMin": 0,
+    "manaMax": 0,
+    "alimento": 0,
+    "duasMaos": true
+  },
+  "ferramenta": "objetos",
+  "grupo": "itens",
+  "pasta": "clavas",
+  "nome": "war-hammer"
+}
