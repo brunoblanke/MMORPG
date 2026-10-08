@@ -30,7 +30,7 @@ const CLASSICAS = [
   ['dwarf', 'humanoids', 'humanoides'], ['dwarf_soldier', 'humanoids', 'humanoides'], ['dwarf_guard', 'humanoids', 'humanoides'], ['dwarf_geomancer', 'humanoids', 'humanoides'],
   ['elf', 'humanoids', 'humanoides'], ['elf_scout', 'humanoids', 'humanoides'],
   ['minotaur', 'humanoids', 'humanoides'], ['minotaur_archer', 'humanoids', 'humanoides'], ['minotaur_mage', 'humanoids', 'humanoides'], ['minotaur_guard', 'humanoids', 'humanoides'],
-  ['cyclops', 'giants', 'gigantes'],
+  ['cyclops', 'giants', 'gigantes'], ['cyclops_drone', 'giants', 'gigantes'], ['cyclops_smith', 'giants', 'gigantes'],
   ['dragon', 'dragons', 'dragoes'], ['dragon_lord', 'dragons', 'dragoes'], ['dragon_hatchling', 'dragons', 'dragoes'], ['wyvern', 'reptiles', 'dragoes'],
   ['ghoul', 'undeads', 'mortos-vivos'], ['skeleton', 'undeads', 'mortos-vivos'], ['skeleton_warrior', 'undeads', 'mortos-vivos'], ['zombie', 'undeads', 'mortos-vivos'],
   ['mummy', 'undeads', 'mortos-vivos'], ['ghost', 'undeads', 'mortos-vivos'], ['bonebeast', 'undeads', 'mortos-vivos'],
