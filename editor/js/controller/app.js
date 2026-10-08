@@ -11,6 +11,7 @@ import { loadMapIntoState, saveMap, hasUnsavedChanges, markLoadFailed } from '..
 import { resetHistory, commitHistory, undo, redo } from '../model/history.js';
 import './canvas-input.js';
 import '../view/goto-field.js';
+import { initZoom } from '../view/zoom.js';
 
 // ================================================================================================================================================================================================================================================
 // Janela de ferramentas: tocar no título recolhe e abre (no celular ela começa
@@ -133,6 +134,7 @@ renderTools();
 onLayerChange();
 updateStats();
 scheduleRender();
+initZoom();
 restoreScroll();
 
 // Cadência de repaint pra manter as animações fluindo; o frame exibido em cada

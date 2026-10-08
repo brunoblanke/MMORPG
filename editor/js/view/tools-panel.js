@@ -12,23 +12,43 @@ import { rememberView } from './view-memory.js';
 
 // ================================================================================================================================================================================================================================================
 // renderLayerSelect
-// O andar que está sendo editado, num select: do mais fundo (-5) ao mais alto (+5); o que tem conteúdo ganha um ponto.
+// O andar que está sendo editado, num menu no estilo da barra: do mais alto (+5) ao mais fundo (-5); o que tem conteúdo ganha um ponto.
+
+let layerMenuOpen = false;
 
 export function renderLayerSelect() {
-  const select = document.getElementById('layerSelect');
-  select.innerHTML = '';
-  for (let z = FLOOR_MIN; z <= FLOOR_MAX; z++) {
-    const option = document.createElement('option');
-    option.value = String(z);
-    option.textContent = `Andar ${floorLabel(z)}${layerHasContent(z) ? ' •' : ''}`;
-    option.selected = z === state.activeZ;
-    select.appendChild(option);
-  }
-  select.onchange = () => {
-    state.activeZ = Number(select.value);
-    onLayerChange();
+  const wrap = document.getElementById('layerSelect');
+  wrap.innerHTML = '';
+  const button = document.createElement('div');
+  button.className = 'quick-btn layer-current' + (layerMenuOpen ? ' active' : '');
+  button.textContent = `Andar ${floorLabel(state.activeZ)}${layerHasContent(state.activeZ) ? ' •' : ''} ▾`;
+  button.onclick = () => {
+    layerMenuOpen = !layerMenuOpen;
+    renderLayerSelect();
   };
+  wrap.appendChild(button);
+  if (!layerMenuOpen) return;
+  const menu = document.createElement('div');
+  menu.className = 'layer-menu';
+  for (let z = FLOOR_MAX; z >= FLOOR_MIN; z--) {
+    const item = document.createElement('div');
+    item.className = 'layer-item' + (z === state.activeZ ? ' selected' : '');
+    item.textContent = `Andar ${floorLabel(z)}${layerHasContent(z) ? ' •' : ''}`;
+    item.onclick = () => {
+      layerMenuOpen = false;
+      state.activeZ = z;
+      onLayerChange();
+    };
+    menu.appendChild(item);
+  }
+  wrap.appendChild(menu);
 }
+
+document.addEventListener('mousedown', (event) => {
+  if (!layerMenuOpen || event.target.closest('#layerSelect')) return;
+  layerMenuOpen = false;
+  renderLayerSelect();
+});
 
 // ================================================================================================================================================================================================================================================
 // floorLabel
