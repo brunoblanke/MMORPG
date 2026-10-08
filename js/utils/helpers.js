@@ -1,6 +1,5 @@
 // js/utils/helpers.js
 
-import { CONFIG } from '../config.js';
 import { TICK_MS } from '../../shared/constants.js';
 import { vocationStats } from '../../shared/vocations.js';
 
@@ -63,11 +62,11 @@ export function calculateStats(level) {
 // ================================================================================================================================================================================================================================================
 // playerStats
 // Progressão do Tibia: vida, mana e cap pela vocação (shared/vocations.js) e
-// 220 de velocidade no nível 1, +2 por nível. Ataque e defesa vêm da arma, do
+// 220 de velocidade (110 do Tibia, dobrada) no nível 1, +4 por nível (+2 no Tibia). Ataque e defesa vêm da arma, do
 // escudo, da armadura e dos skills (js/systems/combat.js), não do nível.
 
 export function playerStats(level, vocation = 'none') {
-  return { ...vocationStats(level, vocation), spd: 220 + Math.max(0, level - 1) * 2 };
+  return { ...vocationStats(level, vocation), spd: 220 + Math.max(0, level - 1) * 4 };
 }
 
 // ================================================================================================================================================================================================================================================
@@ -80,13 +79,19 @@ export function roundUpToTick(ms) {
 
 // ================================================================================================================================================================================================================================================
 // calculateMoveDelay
-// Tempo entre passos pela velocidade na escala do Tibia: quanto mais speed,
-// mais rápido (220, o player nível 1, dá uns 360 ms; 67, o rat, 1,2 s).
+// Tempo entre passos pela velocidade, como no Tibia atual: a velocidade do jogo é o dobro da
+// do Tibia (player nível 1 = 220, rat = 134), vira a velocidade de passo pela fórmula do
+// servidor (857,36 · ln(speed + 261,29) − 4795,01) e o passo dura 1000 · 150 (chão de grama) /
+// essa velocidade em ms (player nível 1: 539 ms; troll: 925 ms; rat: 872 ms).
 
 export const STEP_FACTOR = 32000;
+export const GROUND_SPEED = 150;
+const MAX_STEP_MS = 3000;
 
 export function calculateMoveDelay(spd) {
-  return Math.max(50, STEP_FACTOR / Math.max(1, spd)) / CONFIG.speedScale;
+  const real = Math.max(1, spd) / 2;
+  const stepSpeed = Math.max(1, Math.floor(857.36 * Math.log(real + 261.29) - 4795.01 + 0.5));
+  return Math.min(MAX_STEP_MS, Math.max(50, Math.floor(1000 * GROUND_SPEED / stepSpeed)));
 }
 
 // ================================================================================================================================================================================================================================================

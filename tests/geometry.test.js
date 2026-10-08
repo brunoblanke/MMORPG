@@ -32,3 +32,11 @@ test('o deslize de um passo dura o intervalo real entre passos (múltiplo do tic
     }
   }
 });
+
+test('calculateMoveDelay: o passo dura como no Tibia atual (player nível 1 ~539 ms, troll ~925 ms, rat ~872 ms) e mais velocidade é mais rápido', () => {
+  assert.equal(calculateMoveDelay(220), 539);
+  assert.equal(calculateMoveDelay(126), 925);
+  assert.equal(calculateMoveDelay(134), 872);
+  assert.ok(calculateMoveDelay(300) < calculateMoveDelay(220));
+  assert.ok(calculateMoveDelay(1) <= 3000);
+});

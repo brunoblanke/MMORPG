@@ -20,7 +20,7 @@ export const CONFIG = {
   targetLoseRange: 25,         // alvo mais longe que isso (ou em outro andar) é perdido
   // Escalas globais (player e inimigos, sem mexer nos atributos por lvl):
   // 0.4 = 60% mais fraco / 60% mais lento.
-  speedScale: 0.4,    // divide o tempo de passo e das animações de andar
+  speedScale: 0.27,   // divide o tempo das animações de andar (o passo vem de calculateMoveDelay, a fórmula do Tibia)
   enemyRespawnTime: 60000,   // como no Tibia: 1 min depois de morrer
   // Corpo, como no Tibia (items.xml): cada estágio (fresco, apodrecendo,
   // ossos) dura 10 min no de criatura e 20 min no de player.
