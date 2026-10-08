@@ -1,0 +1,139 @@
+{
+  "formato": {
+    "quadro": 32,
+    "padrao": [
+      2,
+      3
+    ],
+    "linhas": [
+      "meio: 1 variações",
+      "s o n l",
+      "sl so nl no",
+      "int-sl int-so int-nl int-no"
+    ]
+  },
+  "variacoesDoMeio": 1,
+  "slots": {
+    "s": {
+      "tibia": {
+        "id": 20381,
+        "variacao": 0
+      }
+    },
+    "o": {
+      "tibia": {
+        "id": 20382,
+        "variacao": 0
+      }
+    },
+    "n": {
+      "tibia": {
+        "id": 20380,
+        "variacao": 0
+      }
+    },
+    "l": {
+      "tibia": {
+        "id": 20383,
+        "variacao": 0
+      }
+    },
+    "sl": {
+      "tibia": {
+        "id": 20390,
+        "variacao": 0
+      }
+    },
+    "so": {
+      "tibia": {
+        "id": 20391,
+        "variacao": 0
+      }
+    },
+    "nl": {
+      "tibia": {
+        "id": 20389,
+        "variacao": 0
+      }
+    },
+    "no": {
+      "tibia": {
+        "id": 20388,
+        "variacao": 0
+      }
+    },
+    "int-sl": {
+      "tibia": {
+        "id": 20386,
+        "variacao": 0
+      }
+    },
+    "int-so": {
+      "tibia": {
+        "id": 20387,
+        "variacao": 0
+      }
+    },
+    "int-nl": {
+      "tibia": {
+        "id": 20385,
+        "variacao": 0
+      }
+    },
+    "int-no": {
+      "tibia": {
+        "id": 20384,
+        "variacao": 0
+      }
+    },
+    "meio-1": {
+      "tibia": {
+        "id": 20374,
+        "variacao": 0
+      }
+    },
+    "padrao-0-0": {
+      "tibia": {
+        "id": 20374,
+        "variacao": 0
+      }
+    },
+    "padrao-1-0": {
+      "tibia": {
+        "id": 20375,
+        "variacao": 0
+      }
+    },
+    "padrao-0-1": {
+      "tibia": {
+        "id": 20376,
+        "variacao": 0
+      }
+    },
+    "padrao-1-1": {
+      "tibia": {
+        "id": 20377,
+        "variacao": 0
+      }
+    },
+    "padrao-0-2": {
+      "tibia": {
+        "id": 20378,
+        "variacao": 0
+      }
+    },
+    "padrao-1-2": {
+      "tibia": {
+        "id": 20379,
+        "variacao": 0
+      }
+    }
+  },
+  "propriedades": {
+    "comportamento": "normal"
+  },
+  "ferramenta": "pisos",
+  "grupo": "estrutura",
+  "pasta": "pisos",
+  "nome": "pedra-6"
+}

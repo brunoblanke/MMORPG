@@ -1,0 +1,140 @@
+{
+  "formato": {
+    "quadro": 32,
+    "padrao": [
+      3,
+      2
+    ],
+    "linhas": [
+      "meio: 1 variações",
+      "s o n l",
+      "sl so nl no",
+      "int-sl int-so int-nl int-no"
+    ]
+  },
+  "variacoesDoMeio": 1,
+  "slots": {
+    "s": {
+      "tibia": {
+        "id": 18796,
+        "variacao": 0
+      }
+    },
+    "o": {
+      "tibia": {
+        "id": 18807,
+        "variacao": 0
+      }
+    },
+    "n": {
+      "tibia": {
+        "id": 18806,
+        "variacao": 0
+      }
+    },
+    "l": {
+      "tibia": {
+        "id": 18797,
+        "variacao": 0
+      }
+    },
+    "sl": {
+      "tibia": {
+        "id": 18798,
+        "variacao": 0
+      }
+    },
+    "so": {
+      "tibia": {
+        "id": 18799,
+        "variacao": 0
+      }
+    },
+    "nl": {
+      "tibia": {
+        "id": 18800,
+        "variacao": 0
+      }
+    },
+    "no": {
+      "tibia": {
+        "id": 18801,
+        "variacao": 0
+      }
+    },
+    "int-sl": {
+      "tibia": {
+        "id": 18802,
+        "variacao": 0
+      }
+    },
+    "int-so": {
+      "tibia": {
+        "id": 18803,
+        "variacao": 0
+      }
+    },
+    "int-nl": {
+      "tibia": {
+        "id": 18804,
+        "variacao": 0
+      }
+    },
+    "int-no": {
+      "tibia": {
+        "id": 18805,
+        "variacao": 0
+      }
+    },
+    "meio-1": {
+      "tibia": {
+        "id": 18459,
+        "variacao": 0
+      }
+    },
+    "padrao-0-0": {
+      "tibia": {
+        "id": 18459,
+        "variacao": 0
+      }
+    },
+    "padrao-1-0": {
+      "tibia": {
+        "id": 18460,
+        "variacao": 0
+      }
+    },
+    "padrao-2-0": {
+      "tibia": {
+        "id": 18463,
+        "variacao": 0
+      }
+    },
+    "padrao-0-1": {
+      "tibia": {
+        "id": 18461,
+        "variacao": 0
+      }
+    },
+    "padrao-1-1": {
+      "tibia": {
+        "id": 18462,
+        "variacao": 0
+      }
+    },
+    "padrao-2-1": {
+      "tibia": {
+        "id": 18464,
+        "variacao": 0
+      }
+    }
+  },
+  "propriedades": {
+    "comportamento": "bloqueia",
+    "bordaBloqueia": true
+  },
+  "ferramenta": "pisos",
+  "grupo": "estrutura",
+  "pasta": "pisos",
+  "nome": "folhagem-1"
+}

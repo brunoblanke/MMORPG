@@ -1,0 +1,142 @@
+{
+  "formato": {
+    "quadro": 32,
+    "quadros": 20,
+    "msPorQuadro": 150,
+    "padrao": [
+      2,
+      3
+    ],
+    "linhas": [
+      "meio: 1 variações",
+      "s o n l",
+      "sl so nl no",
+      "int-sl int-so int-nl int-no"
+    ]
+  },
+  "variacoesDoMeio": 1,
+  "slots": {
+    "s": {
+      "tibia": {
+        "id": 14100,
+        "variacao": 0
+      }
+    },
+    "o": {
+      "tibia": {
+        "id": 14101,
+        "variacao": 0
+      }
+    },
+    "n": {
+      "tibia": {
+        "id": 14102,
+        "variacao": 0
+      }
+    },
+    "l": {
+      "tibia": {
+        "id": 14103,
+        "variacao": 0
+      }
+    },
+    "sl": {
+      "tibia": {
+        "id": 14106,
+        "variacao": 0
+      }
+    },
+    "so": {
+      "tibia": {
+        "id": 14107,
+        "variacao": 0
+      }
+    },
+    "nl": {
+      "tibia": {
+        "id": 14105,
+        "variacao": 0
+      }
+    },
+    "no": {
+      "tibia": {
+        "id": 14104,
+        "variacao": 0
+      }
+    },
+    "int-sl": {
+      "tibia": {
+        "id": 14110,
+        "variacao": 0
+      }
+    },
+    "int-so": {
+      "tibia": {
+        "id": 14111,
+        "variacao": 0
+      }
+    },
+    "int-nl": {
+      "tibia": {
+        "id": 14109,
+        "variacao": 0
+      }
+    },
+    "int-no": {
+      "tibia": {
+        "id": 14108,
+        "variacao": 0
+      }
+    },
+    "meio-1": {
+      "tibia": {
+        "id": 21477,
+        "variacao": 0
+      }
+    },
+    "padrao-0-0": {
+      "tibia": {
+        "id": 21477,
+        "variacao": 0
+      }
+    },
+    "padrao-1-0": {
+      "tibia": {
+        "id": 21478,
+        "variacao": 0
+      }
+    },
+    "padrao-0-1": {
+      "tibia": {
+        "id": 21481,
+        "variacao": 0
+      }
+    },
+    "padrao-1-1": {
+      "tibia": {
+        "id": 21482,
+        "variacao": 0
+      }
+    },
+    "padrao-0-2": {
+      "tibia": {
+        "id": 21480,
+        "variacao": 0
+      }
+    },
+    "padrao-1-2": {
+      "tibia": {
+        "id": 21479,
+        "variacao": 0
+      }
+    }
+  },
+  "propriedades": {
+    "comportamento": "bloqueia",
+    "bordaBloqueia": true
+  },
+  "ferramenta": "pisos",
+  "grupo": "estrutura",
+  "pasta": "pisos",
+  "nome": "lava-1"
+}

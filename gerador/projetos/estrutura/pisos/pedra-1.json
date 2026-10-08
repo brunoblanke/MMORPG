@@ -1,0 +1,121 @@
+{
+  "formato": {
+    "quadro": 32,
+    "padrao": [
+      1,
+      3
+    ],
+    "linhas": [
+      "meio: 1 variações",
+      "s o n l",
+      "sl so nl no",
+      "int-sl int-so int-nl int-no"
+    ]
+  },
+  "variacoesDoMeio": 1,
+  "slots": {
+    "s": {
+      "tibia": {
+        "id": 17482,
+        "variacao": 0
+      }
+    },
+    "o": {
+      "tibia": {
+        "id": 17483,
+        "variacao": 0
+      }
+    },
+    "n": {
+      "tibia": {
+        "id": 17481,
+        "variacao": 0
+      }
+    },
+    "l": {
+      "tibia": {
+        "id": 17484,
+        "variacao": 0
+      }
+    },
+    "sl": {
+      "tibia": {
+        "id": 17491,
+        "variacao": 0
+      }
+    },
+    "so": {
+      "tibia": {
+        "id": 17492,
+        "variacao": 0
+      }
+    },
+    "nl": {
+      "tibia": {
+        "id": 17490,
+        "variacao": 0
+      }
+    },
+    "no": {
+      "tibia": {
+        "id": 17489,
+        "variacao": 0
+      }
+    },
+    "int-sl": {
+      "tibia": {
+        "id": 17487,
+        "variacao": 0
+      }
+    },
+    "int-so": {
+      "tibia": {
+        "id": 17488,
+        "variacao": 0
+      }
+    },
+    "int-nl": {
+      "tibia": {
+        "id": 17486,
+        "variacao": 0
+      }
+    },
+    "int-no": {
+      "tibia": {
+        "id": 17485,
+        "variacao": 0
+      }
+    },
+    "meio-1": {
+      "tibia": {
+        "id": 17464,
+        "variacao": 0
+      }
+    },
+    "padrao-0-0": {
+      "tibia": {
+        "id": 17464,
+        "variacao": 0
+      }
+    },
+    "padrao-0-1": {
+      "tibia": {
+        "id": 17465,
+        "variacao": 0
+      }
+    },
+    "padrao-0-2": {
+      "tibia": {
+        "id": 17466,
+        "variacao": 0
+      }
+    }
+  },
+  "propriedades": {
+    "comportamento": "normal"
+  },
+  "ferramenta": "pisos",
+  "grupo": "estrutura",
+  "pasta": "pisos",
+  "nome": "pedra-1"
+}

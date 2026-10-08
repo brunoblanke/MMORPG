@@ -1,0 +1,128 @@
+{
+  "formato": {
+    "quadro": 32,
+    "padrao": [
+      2,
+      2
+    ],
+    "linhas": [
+      "meio: 1 variações",
+      "s o n l",
+      "sl so nl no",
+      "int-sl int-so int-nl int-no"
+    ]
+  },
+  "variacoesDoMeio": 1,
+  "slots": {
+    "s": {
+      "tibia": {
+        "id": 10162,
+        "variacao": 0
+      }
+    },
+    "o": {
+      "tibia": {
+        "id": 10161,
+        "variacao": 0
+      }
+    },
+    "n": {
+      "tibia": {
+        "id": 10162,
+        "variacao": 0
+      }
+    },
+    "l": {
+      "tibia": {
+        "id": 10163,
+        "variacao": 0
+      }
+    },
+    "sl": {
+      "tibia": {
+        "id": 10167,
+        "variacao": 0
+      }
+    },
+    "so": {
+      "tibia": {
+        "id": 10164,
+        "variacao": 0
+      }
+    },
+    "nl": {
+      "tibia": {
+        "id": 10166,
+        "variacao": 0
+      }
+    },
+    "no": {
+      "tibia": {
+        "id": 10165,
+        "variacao": 0
+      }
+    },
+    "int-sl": {
+      "tibia": {
+        "id": 10171,
+        "variacao": 0
+      }
+    },
+    "int-so": {
+      "tibia": {
+        "id": 10168,
+        "variacao": 0
+      }
+    },
+    "int-nl": {
+      "tibia": {
+        "id": 10170,
+        "variacao": 0
+      }
+    },
+    "int-no": {
+      "tibia": {
+        "id": 10169,
+        "variacao": 0
+      }
+    },
+    "meio-1": {
+      "tibia": {
+        "id": 10160,
+        "variacao": 0
+      }
+    },
+    "padrao-0-0": {
+      "tibia": {
+        "id": 10160,
+        "variacao": 0
+      }
+    },
+    "padrao-1-0": {
+      "tibia": {
+        "id": 10160,
+        "variacao": 1
+      }
+    },
+    "padrao-0-1": {
+      "tibia": {
+        "id": 10160,
+        "variacao": 2
+      }
+    },
+    "padrao-1-1": {
+      "tibia": {
+        "id": 10160,
+        "variacao": 3
+      }
+    }
+  },
+  "propriedades": {
+    "comportamento": "normal",
+    "bordaBloqueia": true
+  },
+  "ferramenta": "pisos",
+  "grupo": "estrutura",
+  "pasta": "pisos",
+  "nome": "terra-5"
+}
