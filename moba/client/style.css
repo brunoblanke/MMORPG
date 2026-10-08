@@ -1,0 +1,13 @@
+:root { color-scheme: dark; }
+html, body { margin: 0; height: 100%; background: #0b0d12; overflow: hidden; font-family: system-ui, sans-serif; color: #e8e8e8; }
+canvas { display: block; width: 100vw; height: 100vh; image-rendering: pixelated; }
+.lobby { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(8, 10, 14, 0.85); }
+.lobby[hidden] { display: none; }
+.lobby-box { width: min(420px, calc(100vw - 32px)); padding: 24px; background: #1b1e24; border-radius: 10px; text-align: center; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5); }
+.lobby-box h1 { margin: 0 0 8px; font-size: 22px; }
+.lobby-box p { margin: 0 0 16px; color: #aab; font-size: 14px; }
+.lobby-row { display: flex; gap: 8px; justify-content: center; margin-bottom: 14px; flex-wrap: wrap; }
+.lobby-box button { padding: 10px 18px; border: 1px solid #3a3f4a; border-radius: 6px; background: #11131a; color: #ddd; font-size: 15px; cursor: pointer; }
+.lobby-box button.on { background: #ccff33; color: #1b1e24; border-color: #ccff33; font-weight: bold; }
+.lobby-box button.ghost { border: 0; background: transparent; color: #8a8f99; }
+.lobby-box .message { min-height: 18px; margin: 8px 0 0; color: #ff6b6b; }

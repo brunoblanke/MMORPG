@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MOBA</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <canvas id="game"></canvas>
+  <div id="lobby" class="lobby">
+    <div class="lobby-box">
+      <h1>MOBA 4×4</h1>
+      <p>Escolha o time e a vocação. O resto da partida é de bots.</p>
+      <div class="lobby-row" id="teams">
+        <button data-team="blue" class="on">Azul</button>
+        <button data-team="red">Vermelho</button>
+      </div>
+      <div class="lobby-row" id="vocations">
+        <button data-vocation="knight">Knight</button>
+        <button data-vocation="paladin">Paladin</button>
+        <button data-vocation="sorcerer">Sorcerer</button>
+        <button data-vocation="druid">Druid</button>
+      </div>
+      <button id="spectate" class="ghost">Só assistir</button>
+      <p id="lobbyMessage" class="message"></p>
+    </div>
+  </div>
+  <script type="module" src="main.js"></script>
+</body>
+</html>
