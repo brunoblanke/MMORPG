@@ -1,7 +1,7 @@
 // ferramentas/criar-armas.js
 
 // Cria no gerador as receitas das armas e munições clássicas do Tibia 7.8
-// (espadas, machados, clavas, distância e munição) a partir do Canary: peso,
+// (espadas, machados, clavas, distância, munição e escudos) a partir do Canary: peso,
 // ataque, defesa, duas mãos e tipo de munição (flecha ou virote). O desenho
 // é o item de mesmo nome do Tibia atual. As folhas (.png) saem do gerador:
 // aba Objetos → "Gerar folhas pendentes". Receita que já existe fica como está
@@ -35,7 +35,14 @@ const ARMAS = {
   distancia: [
     'bow', 'crossbow', 'arbalest', 'spear', 'hunting spear', 'enchanted spear', 'throwing knife', 'throwing star', 'viper star', 'small stone', 'snowball'
   ],
-  municao: ['arrow', 'bolt', 'power bolt', 'poison arrow', 'burst arrow']
+  municao: ['arrow', 'bolt', 'power bolt', 'poison arrow', 'burst arrow'],
+  escudos: [
+    'steel shield', 'plate shield', 'brass shield', 'wooden shield', 'battle shield', 'mastermind shield', 'guardian shield', 'dragon shield',
+    'shield of honour', 'bonelord shield', 'crown shield', 'demon shield', 'dark shield', 'great shield', 'blessed shield', 'ornamented shield',
+    'dwarven shield', 'studded shield', 'rose shield', 'tower shield', 'black shield', 'copper shield', 'viking shield', 'ancient shield',
+    'griffin shield', 'vampire shield', 'castle shield', 'medusa shield', 'amazon shield', 'eagle shield', 'phoenix shield', 'scarab shield',
+    'bone shield', 'tempest shield', 'tusk shield', 'sentinel shield', 'salamander shield'
+  ]
 };
 const EMPILHAVEL = new Set(['spear', 'hunting spear', 'enchanted spear', 'throwing knife', 'throwing star', 'viper star', 'small stone', 'snowball', ...ARMAS.municao]);
 const MUNICAO_DO_ARCO = { bow: 'arrow', crossbow: 'bolt', arbalest: 'bolt' };
