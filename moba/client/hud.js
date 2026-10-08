@@ -1,6 +1,6 @@
 // moba/client/hud.js
 
-import { ARENA, HEROES } from '/engine/config.js';
+import { ARENA, HEROES } from './engine/config.js';
 
 const KEYS = ['Q', 'W', 'E'];
 const TEAM_COLOR = { blue: '#4aa3ff', red: '#ff5a5a' };

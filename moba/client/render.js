@@ -1,7 +1,7 @@
 // moba/client/render.js
 
-import { ARENA, HEROES } from '/engine/config.js';
-import { WALLS, SPAWNS } from '/engine/map.js';
+import { ARENA, HEROES } from './engine/config.js';
+import { WALLS, SPAWNS } from './engine/map.js';
 import { EFFECTS, MISSILES, effectUrl, missileUrl, missileDirection } from '/shared/effects.js';
 import { SHEETS, FLOOR, image, ready, directionOf } from './assets.js';
 

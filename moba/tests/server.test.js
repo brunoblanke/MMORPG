@@ -2,71 +2,87 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { spawn } from 'node:child_process';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { WebSocket } from 'ws';
-
-const AQUI = path.dirname(fileURLToPath(import.meta.url));
-const PORTA = 8310 + Math.floor(Math.random() * 80);
+import express from 'express';
+import http from 'node:http';
+import { mountMoba } from '../mount.js';
 
 // ================================================================================================================================================================================================================================================
 // open
-// Sobe o servidor do MOBA numa porta de teste e espera ele avisar que está de pé.
+// Sobe o MOBA montado num app qualquer (como o servidor do jogo faz) numa porta livre.
 
 function open() {
-  const child = spawn(process.execPath, [path.join(AQUI, '..', 'server.js')], { env: { ...process.env, MOBA_PORT: String(PORTA) }, stdio: ['ignore', 'pipe', 'inherit'] });
-  return new Promise((resolve, reject) => {
-    child.stdout.on('data', (chunk) => { if (String(chunk).includes('MOBA rodando')) resolve(child); });
-    child.on('error', reject);
-    setTimeout(() => reject(new Error('o servidor do MOBA não subiu')), 8000);
-  });
+  const app = express();
+  const host = mountMoba(app);
+  const server = http.createServer(app);
+  return new Promise(resolve => server.listen(0, () => resolve({ host, server, base: `http://127.0.0.1:${server.address().port}/moba` })));
 }
 
 // ================================================================================================================================================================================================================================================
-// waitFor
-// Espera uma mensagem do servidor que passe no teste.
+// stream
+// Abre o fluxo de eventos e devolve { id, next(test) } pra esperar uma mensagem de estado que passe no teste.
 
-function waitFor(socket, test, ms = 6000) {
-  return new Promise((resolve, reject) => {
-    const timer = setTimeout(() => reject(new Error('mensagem não chegou')), ms);
-    socket.on('message', function handler(raw) {
-      const message = JSON.parse(raw);
-      if (!test(message)) return;
-      clearTimeout(timer);
-      socket.off('message', handler);
-      resolve(message);
-    });
-  });
+async function stream(base) {
+  const controller = new AbortController();
+  const response = await fetch(`${base}/events`, { signal: controller.signal });
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+  let hello = null;
+  const read = async () => {
+    for (;;) {
+      const split = buffer.indexOf('\n\n');
+      if (split >= 0) {
+        const block = buffer.slice(0, split);
+        buffer = buffer.slice(split + 2);
+        const name = (block.match(/^event: (.+)$/m) || [])[1] || 'message';
+        return { name, data: JSON.parse(block.match(/^data: (.+)$/m)[1]) };
+      }
+      const { value, done } = await reader.read();
+      if (done) return null;
+      buffer += decoder.decode(value, { stream: true });
+    }
+  };
+  const first = await read();
+  hello = first.data;
+  return {
+    id: hello.id,
+    close: () => controller.abort(),
+    next: async (test) => {
+      for (let i = 0; i < 400; i++) {
+        const message = await read();
+        if (message && message.name === 'message' && test(message.data)) return message.data;
+      }
+      throw new Error('estado não chegou');
+    }
+  };
 }
 
-test('moba servidor: o jogador toma o herói, anda com a ordem de mover e o herói vira bot ao sair', async () => {
-  const server = await open();
+const post = (base, route, body) => fetch(`${base}/${route}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).then(response => response.json());
+
+test('moba em /moba: o jogador toma o herói, anda com a ordem de mover, outro não toma o mesmo e o herói vira bot ao sair', async () => {
+  const { host, server, base } = await open();
   try {
-    const socket = new WebSocket(`ws://localhost:${PORTA}/ws`);
-    await new Promise(resolve => socket.on('open', resolve));
-    const joined = waitFor(socket, message => message.type === 'joined');
-    socket.send(JSON.stringify({ type: 'join', team: 'blue', vocation: 'knight' }));
-    assert.equal((await joined).heroId, 'blue-knight');
-    const first = await waitFor(socket, message => message.type === 'state');
+    const page = await fetch(`${base}/`);
+    assert.equal(page.status, 200);
+    assert.equal((await fetch(`${base}/engine/config.js`)).status, 200);
+    const player = await stream(base);
+    assert.deepEqual(await post(base, 'join', { id: player.id, team: 'blue', vocation: 'knight' }), { ok: true, heroId: 'blue-knight' });
+    const first = await player.next(state => state.heroes.some(hero => hero.id === 'blue-knight' && hero.human));
     const before = first.heroes.find(hero => hero.id === 'blue-knight');
-    assert.equal(before.human, true);
-    socket.send(JSON.stringify({ type: 'command', command: { type: 'move', x: before.x + 6, y: before.y } }));
-    const moved = await waitFor(socket, message => message.type === 'state' && message.heroes.find(hero => hero.id === 'blue-knight').x > before.x + 2);
+    await post(base, 'command', { id: player.id, command: { type: 'move', x: before.x + 6, y: before.y } });
+    const moved = await player.next(state => state.heroes.find(hero => hero.id === 'blue-knight').x > before.x + 2);
     assert.ok(moved.heroes.find(hero => hero.id === 'blue-knight').x > before.x + 2);
-    const other = new WebSocket(`ws://localhost:${PORTA}/ws`);
-    await new Promise(resolve => other.on('open', resolve));
-    const refused = waitFor(other, message => message.type === 'refused');
-    other.send(JSON.stringify({ type: 'join', team: 'blue', vocation: 'knight' }));
-    await refused;
+    const other = await stream(base);
+    assert.equal((await post(base, 'join', { id: other.id, team: 'blue', vocation: 'knight' })).ok, false);
     other.close();
-    socket.close();
-    const released = new WebSocket(`ws://localhost:${PORTA}/ws`);
-    await new Promise(resolve => released.on('open', resolve));
-    const state = await waitFor(released, message => message.type === 'state' && message.heroes.find(hero => hero.id === 'blue-knight').human === false);
-    assert.equal(state.heroes.find(hero => hero.id === 'blue-knight').human, false);
-    released.close();
+    player.close();
+    await new Promise(resolve => setTimeout(resolve, 200));
+    assert.equal(host.sim.heroes.find(hero => hero.id === 'blue-knight').human, false);
   } finally {
-    server.kill();
+    for (const client of host.clients.values()) client.response.end();
+    clearInterval(host.timer);
+    clearTimeout(host.idleTimer);
+    server.closeAllConnections();
+    server.close();
   }
 });

@@ -1,6 +1,6 @@
 // moba/client/main.js
 
-import { ARENA } from '/engine/config.js';
+import { ARENA } from './engine/config.js';
 import { render, toWorld, pruneVisuals, effectTiles, TILE } from './render.js';
 import { drawHud as hud } from './hud.js';
 
@@ -10,7 +10,7 @@ const lobby = document.getElementById('lobby');
 const params = new URLSearchParams(location.search);
 const scene = { state: null, myId: null, myTeam: null, camera: { x: ARENA.width * TILE / 2, y: ARENA.height * TILE / 2 }, width: 0, height: 0, now: 0, effects: [], missiles: [], texts: [], mouse: { x: 0, y: 0 } };
 const choice = { team: params.get('team') || 'blue', vocation: params.get('vocation') || '' };
-let socket = null;
+let clientId = null;
 let rightHeld = false;
 
 // ================================================================================================================================================================================================================================================
@@ -23,11 +23,11 @@ function resize() {
 }
 
 // ================================================================================================================================================================================================================================================
-// send
-// Manda uma mensagem (objeto) pro servidor.
+// post
+// Manda um JSON pro servidor (as ordens e o pedido de herói vão por HTTP).
 
-function send(payload) {
-  if (socket && socket.readyState === 1) socket.send(JSON.stringify(payload));
+function post(path, body) {
+  return fetch(path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), keepalive: true }).then(response => response.json()).catch(() => ({ ok: false }));
 }
 
 // ================================================================================================================================================================================================================================================
@@ -35,7 +35,28 @@ function send(payload) {
 // Manda uma ordem pro herói do jogador.
 
 function command(payload) {
-  if (scene.myId) send({ type: 'command', command: payload });
+  if (scene.myId && clientId) post('command', { id: clientId, command: payload });
+}
+
+// ================================================================================================================================================================================================================================================
+// join
+// Pede o herói da vocação e do time escolhidos.
+
+async function join(team, vocation) {
+  if (!clientId) return;
+  const result = await post('join', { id: clientId, team, vocation });
+  if (result.ok) takeHero(result.heroId);
+  else document.getElementById('lobbyMessage').textContent = 'Esse herói já é de outro jogador.';
+}
+
+// ================================================================================================================================================================================================================================================
+// takeHero
+// O jogador agora controla o herói heroId.
+
+function takeHero(heroId) {
+  scene.myId = heroId;
+  scene.myTeam = heroId ? heroId.split('-')[0] : null;
+  if (heroId) lobby.hidden = true;
 }
 
 // ================================================================================================================================================================================================================================================
@@ -53,26 +74,23 @@ function takeEvents(events) {
 
 // ================================================================================================================================================================================================================================================
 // connect
-// Abre a conexão; cada mensagem de estado vira a cena atual.
+// Abre o fluxo de eventos do servidor; cada mensagem de estado vira a cena atual.
 
 function connect() {
-  socket = new WebSocket(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/ws`);
-  socket.addEventListener('open', () => {
-    if (choice.vocation) send({ type: 'join', team: choice.team, vocation: choice.vocation });
+  const stream = new EventSource('events');
+  stream.addEventListener('hello', (event) => {
+    clientId = JSON.parse(event.data).id;
+    if (choice.vocation) join(choice.team, choice.vocation);
   });
-  socket.addEventListener('message', (raw) => {
-    const message = JSON.parse(raw.data);
-    if (message.type === 'state') {
-      takeEvents(message.events || []);
-      scene.state = message;
-    } else if (message.type === 'joined') {
-      scene.myId = message.heroId;
-      scene.myTeam = message.heroId.split('-')[0];
-      lobby.hidden = true;
-    } else if (message.type === 'refused') {
-      document.getElementById('lobbyMessage').textContent = 'Esse herói já é de outro jogador.';
-    }
+  stream.addEventListener('joined', (event) => {
+    const message = JSON.parse(event.data);
+    if (message.id === clientId) takeHero(message.heroId);
   });
+  stream.onmessage = (event) => {
+    const state = JSON.parse(event.data);
+    takeEvents(state.events || []);
+    scene.state = state;
+  };
 }
 
 // ================================================================================================================================================================================================================================================
@@ -163,7 +181,7 @@ function setupLobby() {
     });
   }
   for (const button of document.querySelectorAll('#vocations button')) {
-    button.addEventListener('click', () => send({ type: 'join', team: choice.team, vocation: button.dataset.vocation }));
+    button.addEventListener('click', () => join(choice.team, button.dataset.vocation));
   }
   document.getElementById('spectate').addEventListener('click', () => { lobby.hidden = true; });
   if (choice.vocation) lobby.hidden = true;

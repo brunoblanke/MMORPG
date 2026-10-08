@@ -32,6 +32,7 @@ app.get('/api/map', enviarMapa);
 app.get('/api/status', enviarStatus);
 app.get('/api/sprites', listarSprites);
 app.use(express.static(PASTA_JOGO));
+import('./moba/mount.js').then(({ mountMoba }) => mountMoba(app)).catch((erro) => console.warn(`MOBA não carregou: ${erro.message}`));
 
 prepararMapa();
 const servidor = http.createServer(app);
