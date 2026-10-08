@@ -13,18 +13,12 @@
 <div class="app">
 
   <div class="side-col">
-    <div class="ed-win">
-      <div class="ed-head"><span class="ed-title">Editor de mapa</span></div>
-      <div class="ed-body">
-        <div class="tools" id="tools"></div>
-      </div>
-    </div>
-
+    <div class="tools" id="tools"></div>
   </div>
 
   <div class="main stats-hidden">
     <div class="quickbar" id="quickbar">
-      <div class="layer-tabs" id="layerTabs"></div>
+      <select class="layer-select" id="layerSelect" title="Andar que está editando"></select>
       <div class="quick-sep"></div>
       <div class="quick-tools" id="quickTools"></div>
       <div class="quick-sep"></div>
@@ -48,7 +42,6 @@
       </label>
       <div class="quick-sep"></div>
       <a class="export-btn secondary" id="simulatorBtn" href="../simulador.html" target="_blank" title="Play as a level 100 player and test every creature spell, spell, rune, ammunition and wand on training dummies">Simulator</a>
-      <a class="export-btn secondary" id="spellsBtn" href="magias.html" target="_blank" title="Shows every spell shape and the player spells, runes and wands">Spells</a>
       <button class="export-btn secondary" id="testPlayersBtn" title="Cria no servidor o Druid, Paladin, Knight e Sorcerer (nível 100, skills 100, senha 123456), com armas, munição e runas">Players de teste</button>
       <a class="export-btn secondary" id="downloadBtn" href="../api/map?baixar=1" download="map.json" title="Baixa o mapa do servidor (pra guardar no git)">Baixar</a>
       <button class="export-btn" id="saveBtn" title="Salva o mapa no servidor (Ctrl+S)">Salvar</button>

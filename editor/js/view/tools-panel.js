@@ -1,7 +1,7 @@
 // js/view/tools-panel.js
 
 import { state, TOOLS } from '../model/state.js';
-import { FLOOR_MIN, FLOOR_MAX, GROUND_FLOOR } from '../../../shared/constants.js';
+import { FLOOR_MIN, FLOOR_MAX } from '../../../shared/constants.js';
 import { canvas, scheduleRender } from './canvas-renderer.js';
 import { BORDER_VARIANTS } from '../../../shared/floor-borders.js';
 import { listAssets, creatureBehavior, pieceType, splitType, displayName, isStairsFolder, isEntranceFolder, isItemType, isWallType, objectDirections, objectDirection, rotateType, withDirection, WALL_PIECES, WALL_PIECE_NAMES } from '../../../shared/assets.js';
@@ -11,22 +11,23 @@ import { closeSelectPanel } from './forms.js';
 import { rememberView } from './view-memory.js';
 
 // ================================================================================================================================================================================================================================================
-// renderLayerTabs
+// renderLayerSelect
+// O andar que está sendo editado, num select: do mais fundo (-5) ao mais alto (+5); o que tem conteúdo ganha um ponto.
 
-// Andares numa linha só, na barra do topo: do mais fundo (-5) ao mais alto
-// (+5), com o térreo (0) no meio.
-
-export function renderLayerTabs() {
-  const wrap = document.getElementById('layerTabs');
-  wrap.innerHTML = '';
+export function renderLayerSelect() {
+  const select = document.getElementById('layerSelect');
+  select.innerHTML = '';
   for (let z = FLOOR_MIN; z <= FLOOR_MAX; z++) {
-    const btn = document.createElement('div');
-    const hasContent = layerHasContent(z);
-    btn.className = 'layer-tab' + (z === state.activeZ ? ' active' : '') + (hasContent ? ' has-content' : '') + (z === GROUND_FLOOR ? ' ground' : '');
-    btn.textContent = floorLabel(z);
-    btn.onclick = () => { state.activeZ = z; onLayerChange(); };
-    wrap.appendChild(btn);
+    const option = document.createElement('option');
+    option.value = String(z);
+    option.textContent = `Andar ${floorLabel(z)}${layerHasContent(z) ? ' •' : ''}`;
+    option.selected = z === state.activeZ;
+    select.appendChild(option);
   }
+  select.onchange = () => {
+    state.activeZ = Number(select.value);
+    onLayerChange();
+  };
 }
 
 // ================================================================================================================================================================================================================================================
@@ -55,7 +56,7 @@ function layerHasContent(z) {
 export function onLayerChange() {
   document.getElementById('layerLabel').textContent = 'Andar ' + floorLabel(state.activeZ);
   closeSelectPanel();
-  renderLayerTabs();
+  renderLayerSelect();
   updateStats();
   scheduleRender();
   rememberView();
@@ -232,31 +233,52 @@ export function renderTools() {
   quick.innerHTML = '';
   canvas.classList.toggle('select-mode', state.tool === 'select');
   TOOLS.forEach(t => {
-    const btn = document.createElement('div');
-    btn.className = (t.quick ? 'quick-btn' : 'tool-btn') + (t.id === state.tool ? ' active' : '');
-    btn.appendChild(toolSwatch(t));
+    const head = document.createElement('div');
+    head.className = t.quick ? 'quick-btn' + (t.id === state.tool ? ' active' : '') : 'ed-head';
+    head.appendChild(toolSwatch(t));
+    if (t.quick) head.title = t.label;
     const label = document.createElement('span');
+    label.className = 'ed-title';
     label.textContent = t.label;
-    btn.appendChild(label);
-
+    if (!t.quick) head.appendChild(label);
     if (t.paint) {
       const sub = document.createElement('span');
       sub.className = 'tool-sub';
       sub.textContent = paintLabel(t);
-      btn.appendChild(sub);
+      head.appendChild(sub);
     }
-
-    btn.onclick = () => {
+    head.onclick = () => {
       state.openAccordion = t.paint && state.openAccordion !== t.id ? t.id : null;
       state.tool = t.id;
       if (t.id !== 'select') closeSelectPanel();
       renderTools();
     };
-    (t.quick ? quick : wrap).appendChild(btn);
-
-    if (t.paint && state.openAccordion === t.id) wrap.appendChild(buildAccordion(t));
-    if (t.id === 'house' && state.tool === 'house') wrap.appendChild(buildHouseForm());
+    if (t.quick) {
+      quick.appendChild(head);
+      if (t.id === 'house' && state.tool === 'house') wrap.appendChild(houseWindow());
+      return;
+    }
+    const body = t.paint && state.openAccordion === t.id ? buildAccordion(t) : null;
+    const win = document.createElement('div');
+    win.className = 'ed-win' + (t.id === state.tool ? ' active' : '') + (body ? ' open' : '') + (t.paint ? ' has-body' : '');
+    win.appendChild(head);
+    if (body) win.appendChild(body);
+    wrap.appendChild(win);
   });
+}
+
+// ================================================================================================================================================================================================================================================
+// houseWindow
+// A janela da casa (nome e preço) que aparece à esquerda enquanto a ferramenta Casa está ativa.
+
+function houseWindow() {
+  const win = document.createElement('div');
+  win.className = 'ed-win open';
+  const head = document.createElement('div');
+  head.className = 'ed-head';
+  head.innerHTML = '<span class="ed-title">Casa</span>';
+  win.append(head, buildHouseForm());
+  return win;
 }
 
 // ================================================================================================================================================================================================================================================
@@ -296,6 +318,8 @@ const QUICK_ICONS = {
   select: svgIcon('0 0 16 22', '<path d="M.95.95v16.7l4.4-4.1 3.2 7.2 3-1.3-3.2-7h6.7L.95.95Z"/>', QUICK_ICON_SCALE),
   'border-eraser': svgIcon('0 0 22 22', '<path d="M.95 6.5V.95H6.5M15.5.95h5.55V6.5M21.05 15.5v5.55H15.5M6.5 21.05H.95V15.5"/><path d="M7.5 7.5l7 7M14.5 7.5l-7 7"/>', QUICK_ICON_SCALE),
   spawn: svgIcon('0 0 22 22', '<path d="M18.6 7.2A8.6 8.6 0 1 0 19.6 13"/><path d="M19.2 1.9v5.6h-5.6"/><circle cx="11" cy="11" r="2.4"/>', QUICK_ICON_SCALE),
+  safe: svgIcon('0 0 22 22', '<rect x="4.5" y="10" width="13" height="10" rx="2"/><path d="M7.5 10V7a3.5 3.5 0 0 1 7 0v3"/><path d="M11 14v2.5"/>', QUICK_ICON_SCALE),
+  house: svgIcon('0 0 22 22', '<path d="M2.5 10.5L11 3l8.5 7.5"/><path d="M4.5 9v10.5h13V9"/><path d="M9 19.5v-5.5h4v5.5"/>', QUICK_ICON_SCALE),
   eraser: svgIcon('0 0 22 22', '<path d="M8.2 20.05L1.95 13.8 13.1 2.65l7.25 7.25-10.15 10.15H8.2Z"/><path d="M6.4 9.3l7.25 7.25M8.2 20.05h12.85"/>', QUICK_ICON_SCALE)
 };
 

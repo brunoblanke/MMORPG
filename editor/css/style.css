@@ -41,17 +41,17 @@ body{
 }
 .side-col::-webkit-scrollbar{ display:none; }
 .side-col > *{ pointer-events:auto; }
-.ed-win{ flex-shrink:0; background:rgba(22, 25, 32, .82); border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+.ed-win{ flex-shrink:0; background:rgba(22, 25, 32, .82); border:1px solid var(--line); border-radius:8px; overflow:hidden; opacity:.8; }
+.ed-win:hover, .ed-win.active{ opacity:1; }
 .ed-head{
-  display:flex; align-items:center; gap:6px; padding:6px 8px; background:rgba(28, 32, 40, .82);
-  border-bottom:1px solid var(--line); user-select:none; font-size:12px;
+  display:flex; align-items:center; gap:8px; padding:6px 8px; background:rgba(28, 32, 40, .82);
+  user-select:none; font-size:12px; cursor:pointer;
 }
+.ed-win.open .ed-head{ border-bottom:1px solid var(--line); }
+.ed-win.active .ed-title{ color:var(--accent); }
 .ed-title{ flex:1; font-weight:500; }
-.ed-head{ cursor:pointer; }
-.ed-head::after{ content:'▾'; color:var(--muted); }
-.ed-win.collapsed .ed-head::after{ content:'▸'; }
-.ed-win.collapsed .ed-body{ display:none; }
-.ed-body{ padding:8px; }
+.ed-win.has-body .ed-head::after{ content:'▸'; color:var(--muted); }
+.ed-win.open .ed-head::after{ content:'▾'; }
 
 /* Barra flutuante no topo, no estilo da caixa de fala do jogo: andar e as
    ferramentas rápidas (selecionar, borracha, tirar borda, respawn). */
@@ -67,15 +67,11 @@ body{
 .statusbar[hidden]{ display:none; }
 .main.stats-hidden .quickbar.bottombar{ bottom:10px; }
 .bottombar .export-btn{ padding:6px 16px; }
-.layer-tabs{ display:flex; gap:3px; }
-.layer-tab{
-  min-width:26px; padding:4px 5px; text-align:center; border-radius:5px; border:1px solid transparent;
-  font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--muted); cursor:pointer; user-select:none;
+.layer-select{
+  padding:4px 7px; border-radius:5px; border:1px solid var(--line); background:rgba(0,0,0,.25); color:var(--text);
+  font-family:'IBM Plex Mono',monospace; font-size:11px; outline:none; cursor:pointer;
 }
-.layer-tab.ground{ font-weight:600; }
-.layer-tab.has-content:not(.active){ color:var(--text); }
-.layer-tab:hover{ border-color:var(--accent-dim); color:var(--text); }
-.layer-tab.active{ background:rgba(94,234,212,.12); border-color:var(--accent); color:var(--accent); }
+.layer-select:focus{ border-color:var(--accent); }
 .quick-tools{ display:flex; gap:4px; }
 .goto-input{
   width:92px; padding:4px 7px; border-radius:5px; border:1px solid var(--line); background:rgba(0,0,0,.25);
@@ -84,31 +80,20 @@ body{
 .goto-input:focus{ border-color:var(--accent); }
 .goto-input.invalid{ border-color:var(--danger); }
 .quick-btn{
-  display:flex; align-items:center; gap:6px; padding:4px 8px; border-radius:5px; border:1px solid transparent;
-  font-size:11.5px; color:var(--text); cursor:pointer; user-select:none;
+  display:flex; align-items:center; justify-content:center; padding:5px 7px; border-radius:5px; border:1px solid transparent;
+  color:var(--text); cursor:pointer; user-select:none;
 }
-.quick-btn .tool-swatch{ width:16px; height:16px; }
+.tool-swatch{ width:20px; height:20px; flex-shrink:0; background-size:cover; background-position:0 0; }
+.quick-btn .tool-swatch{ width:18px; height:18px; }
 .tool-swatch.icon{ display:flex; align-items:center; justify-content:center; background:transparent; color:var(--muted); }
 .quick-btn.active .tool-swatch.icon{ color:var(--accent); }
 .quick-btn:hover{ border-color:var(--accent-dim); }
 .quick-btn.active{ border-color:var(--accent); background:rgba(94,234,212,.12); }
 
-.tools{ display:flex; flex-direction:column; gap:4px; position:relative; }
-.tool-btn{
-  display:flex; align-items:center; gap:10px; padding:6px 8px; background:#12151b;
-  border:1px solid #222731; border-radius:5px; color:var(--text); cursor:pointer; font-size:12px; text-align:left;
-}
-.tool-btn:hover{ border-color:var(--accent-dim); }
-.tool-btn.active{ border-color:var(--accent); background:rgba(94,234,212,.08); }
-.tool-swatch{
-  width:20px;height:20px;flex-shrink:0; background-size:cover; background-position: 0 0;
-}
+.tools{ display:flex; flex-direction:column; gap:6px; position:relative; }
 .tool-sub{ margin-left:auto; font-size:10px; color:var(--muted); font-family:'IBM Plex Mono',monospace; }
 
-.tool-accordion{
-  display:none; flex-wrap:wrap; gap:6px; padding:8px 6px 4px 6px; margin:-4px 0 4px 0;
-  background:var(--panel-2); border:1px solid var(--line); border-radius:8px;
-}
+.tool-accordion{ display:none; flex-wrap:wrap; gap:4px; padding:8px 6px; max-height:50vh; overflow-y:auto; }
 .tool-accordion.show{ display:flex; }
 .tool-accordion [hidden]{ display:none !important; }
 .accordion-search{
@@ -118,19 +103,15 @@ body{
 .accordion-search:focus{ outline:none; border-color:var(--accent); }
 .floor-opt{
   width:56px; display:flex; flex-direction:column; align-items:center; gap:5px; cursor:pointer;
-  padding:5px; border-radius:6px; border:1px solid transparent;
+  padding:5px; border-radius:6px; opacity:.8;
 }
-.floor-opt:hover{ border-color:var(--accent-dim); }
-.floor-opt.selected{ border-color:var(--accent); background:rgba(94,234,212,.08); }
-.floor-opt .thumb{ width:36px; height:36px; background-size:cover; border-radius:4px; border:1px solid rgba(255,255,255,.15); }
-.border-accordion{ gap:4px; }
+.floor-opt:hover, .floor-opt.selected{ opacity:1; }
+.floor-opt.selected span{ color:var(--accent); }
+.floor-opt .thumb{ width:36px; height:36px; background-size:cover; }
 .border-accordion-title{ width:100%; font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin:2px 0 0 2px; }
-.border-opt{
-  width:32px; height:32px; background-color:#3c3826; background-size:cover; border-radius:4px;
-  border:1px solid rgba(255,255,255,.12); cursor:pointer; image-rendering:pixelated;
-}
-.border-opt:hover{ border-color:var(--accent-dim); }
-.border-opt.selected{ border-color:var(--accent); box-shadow:0 0 0 1px var(--accent); }
+.border-opt{ width:32px; height:32px; background-size:cover; cursor:pointer; image-rendering:pixelated; opacity:.8; border-bottom:2px solid transparent; }
+.border-opt:hover, .border-opt.selected{ opacity:1; }
+.border-opt.selected{ border-bottom-color:var(--accent); }
 .floor-opt span{ font-size:9px; color:var(--muted); text-align:center; line-height:1.2; }
 
 .origin-row{ display:flex; gap:8px; }

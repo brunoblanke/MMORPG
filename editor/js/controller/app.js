@@ -3,7 +3,7 @@
 import { state } from '../model/state.js';
 import { preloadAll } from '../view/image-cache.js';
 import { scheduleRender } from '../view/canvas-renderer.js';
-import { renderLayerTabs, renderTools, onLayerChange, updateStats, choosePaintDefaults, rotatePaint } from '../view/tools-panel.js';
+import { renderLayerSelect, renderTools, onLayerChange, updateStats, choosePaintDefaults, rotatePaint } from '../view/tools-panel.js';
 import { rotateSelected } from '../view/forms.js';
 import { restoreFloor, restoreScroll } from '../view/view-memory.js';
 import { loadAssets } from '../../../shared/assets.js';
@@ -16,9 +16,6 @@ import '../view/goto-field.js';
 // Janela de ferramentas: tocar no título recolhe e abre (no celular ela começa
 // recolhida, pra não cobrir a barra de andares).
 
-const toolsWindow = document.querySelector('.side-col .ed-win');
-toolsWindow.querySelector('.ed-head').onclick = () => toolsWindow.classList.toggle('collapsed');
-if (window.matchMedia('(max-width: 700px)').matches) toolsWindow.classList.add('collapsed');
 
 document.getElementById('ghostToggle').onchange = (evt) => { state.ghost = evt.target.checked; scheduleRender(); };
 document.getElementById('detailsToggle').onchange = (evt) => { state.showDetails = evt.target.checked; scheduleRender(); };
@@ -131,7 +128,7 @@ try {
 resetHistory();
 
 restoreFloor();
-renderLayerTabs();
+renderLayerSelect();
 renderTools();
 onLayerChange();
 updateStats();

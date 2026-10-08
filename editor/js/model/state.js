@@ -75,7 +75,7 @@ export const TOOLS = [
   { id:'npc', label:'NPC', paint:'npcPaint' },
   { id:'bot', label:'Bot de teste (player)', paint:'botPaint' },
   { id:'spawn', label:'Respawn', quick:true },
-  { id:'safe', label:'Zona segura (liga/desliga)' },
-  { id:'house', label:'Casa (liga/desliga)' },
+  { id:'safe', label:'Zona segura (liga/desliga)', quick:true },
+  { id:'house', label:'Casa (liga/desliga)', quick:true },
   { id:'eraser', label:'Borracha', quick:true }
 ];
