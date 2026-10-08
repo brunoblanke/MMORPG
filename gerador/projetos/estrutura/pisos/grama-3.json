@@ -1,9 +1,11 @@
 {
   "formato": {
     "quadro": 32,
-    "quadros": 14,
-    "msPorQuadro": 200,
-    "raras": 4,
+    "padrao": [
+      2,
+      2
+    ],
+    "raras": 5,
     "chanceRaras": 12,
     "linhas": [
       "meio: 1 variações",
@@ -16,113 +18,142 @@
   "slots": {
     "s": {
       "tibia": {
-        "id": 35675,
+        "id": 304,
         "variacao": 0
       }
     },
     "o": {
       "tibia": {
-        "id": 35674,
+        "id": 618,
         "variacao": 0
       }
     },
     "n": {
       "tibia": {
-        "id": 35673,
+        "id": 407,
         "variacao": 0
       }
     },
     "l": {
       "tibia": {
-        "id": 35676,
+        "id": 307,
         "variacao": 0
       }
     },
     "sl": {
       "tibia": {
-        "id": 35681,
+        "id": 308,
         "variacao": 0
       }
     },
     "so": {
       "tibia": {
-        "id": 35682,
+        "id": 309,
         "variacao": 0
       }
     },
     "nl": {
       "tibia": {
-        "id": 35683,
+        "id": 310,
         "variacao": 0
       }
     },
     "no": {
       "tibia": {
-        "id": 35684,
+        "id": 311,
         "variacao": 0
       }
     },
     "int-sl": {
       "tibia": {
-        "id": 35677,
+        "id": 312,
         "variacao": 0
       }
     },
     "int-so": {
       "tibia": {
-        "id": 35678,
+        "id": 313,
         "variacao": 0
       }
     },
     "int-nl": {
       "tibia": {
-        "id": 35679,
+        "id": 314,
         "variacao": 0
       }
     },
     "int-no": {
       "tibia": {
-        "id": 35680,
-        "variacao": 0
-      }
-    },
-    "meio-1": {
-      "tibia": {
-        "id": 35367,
+        "id": 315,
         "variacao": 0
       }
     },
     "raro-1": {
       "tibia": {
-        "id": 38504,
+        "id": 4516,
         "variacao": 0
       }
     },
     "raro-2": {
       "tibia": {
-        "id": 38505,
+        "id": 4523,
         "variacao": 0
       }
     },
     "raro-3": {
       "tibia": {
-        "id": 38506,
+        "id": 4530,
         "variacao": 0
       }
     },
     "raro-4": {
       "tibia": {
-        "id": 38507,
+        "id": 4527,
         "variacao": 0
+      }
+    },
+    "raro-5": {
+      "tibia": {
+        "id": 4526,
+        "variacao": 0
+      }
+    },
+    "meio-1": {
+      "tibia": {
+        "id": 4515,
+        "variacao": 0
+      }
+    },
+    "padrao-0-0": {
+      "tibia": {
+        "id": 4515,
+        "variacao": 0
+      }
+    },
+    "padrao-1-0": {
+      "tibia": {
+        "id": 4515,
+        "variacao": 1
+      }
+    },
+    "padrao-0-1": {
+      "tibia": {
+        "id": 4515,
+        "variacao": 2
+      }
+    },
+    "padrao-1-1": {
+      "tibia": {
+        "id": 4515,
+        "variacao": 3
       }
     }
   },
   "propriedades": {
-    "comportamento": "bloqueia",
-    "bordaBloqueia": true
+    "comportamento": "normal"
   },
   "ferramenta": "pisos",
   "grupo": "estrutura",
   "pasta": "pisos",
-  "nome": "agua-5"
+  "nome": "grama-3"
 }
