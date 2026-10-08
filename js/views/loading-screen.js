@@ -8,7 +8,7 @@ import { getAsset } from '../../shared/assets.js';
 const FRAME_MS = 150;
 const TILE = 32;
 const WIDTH = 160;
-const HEIGHT = 80;
+const HEIGHT = 90;
 const TILE_TOP = 12;
 
 // Tela de carregamento (markup em index.html, #loadingScreen): um player andando no
@@ -79,7 +79,7 @@ export class LoadingScreen {
       const column = sheet.frames > 1 ? 1 + Math.floor(now / FRAME_MS) % walk : 0;
       ctx.drawImage(sheet.image, column * sheet.size, 0, sheet.size, sheet.size, (WIDTH + TILE) / 2 - sheet.size, TILE_TOP + TILE - sheet.size, sheet.size, sheet.size);
     }
-    drawTibiaText(ctx, `Carregando… ${Math.round(this.fraction * 100)}%`, WIDTH / 2, TILE_TOP + TILE + 16, NAME_COLOR);
+    drawTibiaText(ctx, `Carregando… ${Math.round(this.fraction * 100)}%`, WIDTH / 2, TILE_TOP + TILE + 35, NAME_COLOR);
     requestAnimationFrame(this.draw);
   }
 }
