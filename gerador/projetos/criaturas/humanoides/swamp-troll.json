@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "humanoides",
-  "nome": "swamp-troll",
   "propriedades": {
     "comportamento": "foge",
     "vida": 55,
@@ -52,6 +48,14 @@
     "armadura": 6,
     "defesa": 15,
     "ataque": 13,
+    "magia": null,
+    "resistencias": {
+      "earth": 85,
+      "fire": 105
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/valiosos/gold-coin",
@@ -68,9 +72,10 @@
         "chance": 0.095
       }
     ],
-    "resistencias": {
-      "earth": 85,
-      "fire": 105
-    }
-  }
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "humanoides",
+  "nome": "swamp-troll"
 }

@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "humanoides",
-  "nome": "elf",
   "propriedades": {
     "comportamento": "normal",
     "vida": 100,
@@ -52,6 +48,24 @@
     "armadura": 6,
     "defesa": 10,
     "ataque": 15,
+    "magia": null,
+    "ataques": [
+      {
+        "forma": "tiro",
+        "elemento": "physical",
+        "min": 0,
+        "max": 25,
+        "chance": 10,
+        "alcance": 7
+      }
+    ],
+    "resistencias": {
+      "holy": 80,
+      "death": 110
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/valiosos/gold-coin",
@@ -86,19 +100,10 @@
         "max": 3
       }
     ],
-    "ataques": [
-      {
-        "forma": "tiro",
-        "elemento": "physical",
-        "min": 0,
-        "max": 25,
-        "chance": 10,
-        "alcance": 7
-      }
-    ],
-    "resistencias": {
-      "holy": 80,
-      "death": 110
-    }
-  }
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "humanoides",
+  "nome": "elf"
 }

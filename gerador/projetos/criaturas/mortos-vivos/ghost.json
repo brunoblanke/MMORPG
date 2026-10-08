@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "mortos-vivos",
-  "nome": "ghost",
   "propriedades": {
     "comportamento": "normal",
     "vida": 150,
@@ -52,12 +48,7 @@
     "armadura": 10,
     "defesa": 5,
     "ataque": 80,
-    "loot": [
-      {
-        "tipo": "itens/clavas/morning-star",
-        "chance": 0.1061
-      }
-    ],
+    "magia": null,
     "ataques": [
       {
         "forma": "tiro",
@@ -72,6 +63,20 @@
       "physical": 0,
       "earth": 0,
       "death": 0
-    }
-  }
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
+    "loot": [
+      {
+        "tipo": "itens/clavas/morning-star",
+        "chance": 0.1061
+      }
+    ],
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "mortos-vivos",
+  "nome": "ghost"
 }

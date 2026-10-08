@@ -1,7 +1,7 @@
 {
   "formato": {
     "quadro": 64,
-    "quadros": 9,
+    "quadros": 3,
     "linhas": [
       "sul",
       "norte",
@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "humanoides",
-  "nome": "frost-troll",
   "propriedades": {
     "comportamento": "foge",
     "vida": 55,
@@ -52,6 +48,17 @@
     "armadura": 6,
     "defesa": 15,
     "ataque": 20,
+    "magia": null,
+    "resistencias": {
+      "energy": 115,
+      "earth": 110,
+      "fire": 60,
+      "holy": 90,
+      "death": 110
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/valiosos/gold-coin",
@@ -64,12 +71,10 @@
         "chance": 0.215
       }
     ],
-    "resistencias": {
-      "energy": 115,
-      "earth": 110,
-      "fire": 60,
-      "holy": 90,
-      "death": 110
-    }
-  }
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "humanoides",
+  "nome": "frost-troll"
 }

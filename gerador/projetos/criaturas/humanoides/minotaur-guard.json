@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "humanoides",
-  "nome": "minotaur-guard",
   "propriedades": {
     "comportamento": "normal",
     "vida": 185,
@@ -52,6 +48,16 @@
     "armadura": 15,
     "defesa": 20,
     "ataque": 100,
+    "magia": null,
+    "resistencias": {
+      "fire": 80,
+      "ice": 110,
+      "holy": 90,
+      "death": 110
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/valiosos/gold-coin",
@@ -80,11 +86,10 @@
         "chance": 0.004
       }
     ],
-    "resistencias": {
-      "fire": 80,
-      "ice": 110,
-      "holy": 90,
-      "death": 110
-    }
-  }
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "humanoides",
+  "nome": "minotaur-guard"
 }

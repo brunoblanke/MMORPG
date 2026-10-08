@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "vermes",
-  "nome": "poison-spider",
   "propriedades": {
     "comportamento": "foge",
     "vida": 26,
@@ -52,6 +48,14 @@
     "armadura": 2,
     "defesa": 5,
     "ataque": 20,
+    "magia": null,
+    "resistencias": {
+      "earth": 0,
+      "fire": 110
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/valiosos/gold-coin",
@@ -60,9 +64,10 @@
         "max": 4
       }
     ],
-    "resistencias": {
-      "earth": 0,
-      "fire": 110
-    }
-  }
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "vermes",
+  "nome": "poison-spider"
 }

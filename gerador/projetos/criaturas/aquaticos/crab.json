@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "aquaticos",
-  "nome": "crab",
   "propriedades": {
     "comportamento": "normal",
     "vida": 55,
@@ -52,6 +48,16 @@
     "armadura": 28,
     "defesa": 10,
     "ataque": 20,
+    "magia": null,
+    "resistencias": {
+      "energy": 110,
+      "earth": 0,
+      "fire": 110,
+      "ice": 80
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/valiosos/gold-coin",
@@ -60,11 +66,10 @@
         "max": 10
       }
     ],
-    "resistencias": {
-      "energy": 110,
-      "earth": 0,
-      "fire": 110,
-      "ice": 80
-    }
-  }
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "aquaticos",
+  "nome": "crab"
 }

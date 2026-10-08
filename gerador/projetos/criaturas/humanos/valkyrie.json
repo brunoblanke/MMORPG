@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "humanos",
-  "nome": "valkyrie",
   "propriedades": {
     "comportamento": "foge",
     "vida": 190,
@@ -52,6 +48,27 @@
     "armadura": 12,
     "defesa": 12,
     "ataque": 70,
+    "magia": null,
+    "ataques": [
+      {
+        "forma": "tiro",
+        "elemento": "physical",
+        "min": 0,
+        "max": 50,
+        "chance": 15,
+        "alcance": 5
+      }
+    ],
+    "resistencias": {
+      "physical": 110,
+      "fire": 90,
+      "ice": 90,
+      "holy": 95,
+      "death": 105
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/distancia/spear",
@@ -90,22 +107,10 @@
         "chance": 0.0013
       }
     ],
-    "ataques": [
-      {
-        "forma": "tiro",
-        "elemento": "physical",
-        "min": 0,
-        "max": 50,
-        "chance": 15,
-        "alcance": 5
-      }
-    ],
-    "resistencias": {
-      "physical": 110,
-      "fire": 90,
-      "ice": 90,
-      "holy": 95,
-      "death": 105
-    }
-  }
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "humanos",
+  "nome": "valkyrie"
 }

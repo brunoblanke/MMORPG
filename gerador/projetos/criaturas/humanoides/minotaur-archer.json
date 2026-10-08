@@ -1,7 +1,7 @@
 {
   "formato": {
     "quadro": 64,
-    "quadros": 9,
+    "quadros": 8,
     "linhas": [
       "sul",
       "norte",
@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "humanoides",
-  "nome": "minotaur-archer",
   "propriedades": {
     "comportamento": "mago",
     "vida": 100,
@@ -52,6 +48,26 @@
     "armadura": 6,
     "defesa": 10,
     "ataque": 25,
+    "magia": null,
+    "ataques": [
+      {
+        "forma": "tiro",
+        "elemento": "physical",
+        "min": 0,
+        "max": 80,
+        "chance": 40,
+        "alcance": 7
+      }
+    ],
+    "resistencias": {
+      "fire": 80,
+      "ice": 110,
+      "holy": 90,
+      "death": 105
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/valiosos/gold-coin",
@@ -76,21 +92,10 @@
         "chance": 0.0053
       }
     ],
-    "ataques": [
-      {
-        "forma": "tiro",
-        "elemento": "physical",
-        "min": 0,
-        "max": 80,
-        "chance": 40,
-        "alcance": 7
-      }
-    ],
-    "resistencias": {
-      "fire": 80,
-      "ice": 110,
-      "holy": 90,
-      "death": 105
-    }
-  }
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "humanoides",
+  "nome": "minotaur-archer"
 }

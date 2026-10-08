@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "humanoides",
-  "nome": "dwarf-guard",
   "propriedades": {
     "comportamento": "normal",
     "vida": 245,
@@ -52,6 +48,16 @@
     "armadura": 15,
     "defesa": 30,
     "ataque": 140,
+    "magia": null,
+    "resistencias": {
+      "physical": 80,
+      "earth": 80,
+      "fire": 105,
+      "death": 105
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/comidas/white-mushroom",
@@ -98,11 +104,10 @@
         "chance": 0.0014
       }
     ],
-    "resistencias": {
-      "physical": 80,
-      "earth": 80,
-      "fire": 105,
-      "death": 105
-    }
-  }
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "humanoides",
+  "nome": "dwarf-guard"
 }

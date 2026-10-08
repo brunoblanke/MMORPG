@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "vermes",
-  "nome": "bug",
   "propriedades": {
     "comportamento": "normal",
     "vida": 29,
@@ -52,6 +48,13 @@
     "armadura": 2,
     "defesa": 5,
     "ataque": 23,
+    "magia": null,
+    "resistencias": {
+      "fire": 110
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/valiosos/gold-coin",
@@ -60,8 +63,10 @@
         "max": 6
       }
     ],
-    "resistencias": {
-      "fire": 110
-    }
-  }
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "vermes",
+  "nome": "bug"
 }

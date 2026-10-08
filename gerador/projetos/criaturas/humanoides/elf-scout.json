@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "humanoides",
-  "nome": "elf-scout",
   "propriedades": {
     "comportamento": "mago",
     "vida": 160,
@@ -52,6 +48,24 @@
     "armadura": 7,
     "defesa": 10,
     "ataque": 30,
+    "magia": null,
+    "ataques": [
+      {
+        "forma": "tiro",
+        "elemento": "physical",
+        "min": 0,
+        "max": 80,
+        "chance": 15,
+        "alcance": 7
+      }
+    ],
+    "resistencias": {
+      "holy": 80,
+      "death": 110
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/valiosos/gold-coin",
@@ -76,19 +90,10 @@
         "chance": 0.0118
       }
     ],
-    "ataques": [
-      {
-        "forma": "tiro",
-        "elemento": "physical",
-        "min": 0,
-        "max": 80,
-        "chance": 15,
-        "alcance": 7
-      }
-    ],
-    "resistencias": {
-      "holy": 80,
-      "death": 110
-    }
-  }
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "humanoides",
+  "nome": "elf-scout"
 }

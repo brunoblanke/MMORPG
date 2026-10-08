@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "vermes",
-  "nome": "larva",
   "propriedades": {
     "comportamento": "normal",
     "vida": 70,
@@ -52,6 +48,16 @@
     "armadura": 5,
     "defesa": 10,
     "ataque": 35,
+    "magia": null,
+    "resistencias": {
+      "energy": 90,
+      "earth": 0,
+      "fire": 110,
+      "ice": 105
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/valiosos/gold-coin",
@@ -61,14 +67,13 @@
       },
       {
         "tipo": "itens/comidas/meet",
-        "chance": 0.14666
+        "chance": 0.1467
       }
     ],
-    "resistencias": {
-      "energy": 90,
-      "earth": 0,
-      "fire": 110,
-      "ice": 105
-    }
-  }
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "vermes",
+  "nome": "larva"
 }

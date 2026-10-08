@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "humanoides",
-  "nome": "dwarf-soldier",
   "propriedades": {
     "comportamento": "normal",
     "vida": 135,
@@ -52,6 +48,25 @@
     "armadura": 9,
     "defesa": 15,
     "ataque": 70,
+    "magia": null,
+    "ataques": [
+      {
+        "forma": "tiro",
+        "elemento": "physical",
+        "min": 0,
+        "max": 60,
+        "chance": 10,
+        "alcance": 7
+      }
+    ],
+    "resistencias": {
+      "earth": 90,
+      "fire": 105,
+      "death": 105
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/comidas/white-mushroom",
@@ -78,20 +93,10 @@
         "chance": 0.003
       }
     ],
-    "ataques": [
-      {
-        "forma": "tiro",
-        "elemento": "physical",
-        "min": 0,
-        "max": 60,
-        "chance": 10,
-        "alcance": 7
-      }
-    ],
-    "resistencias": {
-      "earth": 90,
-      "fire": 105,
-      "death": 105
-    }
-  }
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "humanoides",
+  "nome": "dwarf-soldier"
 }

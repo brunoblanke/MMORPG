@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "constructos",
-  "nome": "stone-golem",
   "propriedades": {
     "comportamento": "normal",
     "vida": 270,
@@ -52,6 +48,18 @@
     "armadura": 30,
     "defesa": 20,
     "ataque": 110,
+    "magia": null,
+    "resistencias": {
+      "physical": 90,
+      "energy": 85,
+      "earth": 0,
+      "fire": 80,
+      "ice": 110,
+      "death": 80
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/valiosos/gold-coin",
@@ -64,13 +72,10 @@
         "chance": 0.0198
       }
     ],
-    "resistencias": {
-      "physical": 90,
-      "energy": 85,
-      "earth": 0,
-      "fire": 80,
-      "ice": 110,
-      "death": 80
-    }
-  }
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "constructos",
+  "nome": "stone-golem"
 }

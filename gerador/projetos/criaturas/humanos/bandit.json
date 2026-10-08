@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "humanos",
-  "nome": "bandit",
   "propriedades": {
     "comportamento": "foge",
     "vida": 245,
@@ -52,6 +48,14 @@
     "armadura": 11,
     "defesa": 15,
     "ataque": 45,
+    "magia": null,
+    "resistencias": {
+      "physical": 110,
+      "death": 105
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/valiosos/gold-coin",
@@ -76,9 +80,10 @@
         "chance": 0.101
       }
     ],
-    "resistencias": {
-      "physical": 110,
-      "death": 105
-    }
-  }
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "humanos",
+  "nome": "bandit"
 }

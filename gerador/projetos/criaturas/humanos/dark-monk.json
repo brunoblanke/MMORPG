@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "humanos",
-  "nome": "dark-monk",
   "propriedades": {
     "comportamento": "normal",
     "vida": 190,
@@ -52,6 +48,31 @@
     "armadura": 22,
     "defesa": 25,
     "ataque": 100,
+    "magia": null,
+    "ataques": [
+      {
+        "forma": "tiro",
+        "elemento": "death",
+        "min": 20,
+        "max": 50,
+        "chance": 15,
+        "alcance": 1
+      },
+      {
+        "forma": "cura",
+        "min": 25,
+        "max": 49,
+        "chance": 15
+      }
+    ],
+    "resistencias": {
+      "physical": 110,
+      "holy": 110,
+      "death": 60
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/comidas/bread",
@@ -76,26 +97,10 @@
         "chance": 0.0079
       }
     ],
-    "ataques": [
-      {
-        "forma": "tiro",
-        "elemento": "death",
-        "min": 20,
-        "max": 50,
-        "chance": 15,
-        "alcance": 1
-      },
-      {
-        "forma": "cura",
-        "min": 25,
-        "max": 49,
-        "chance": 15
-      }
-    ],
-    "resistencias": {
-      "physical": 110,
-      "holy": 110,
-      "death": 60
-    }
-  }
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "humanos",
+  "nome": "dark-monk"
 }

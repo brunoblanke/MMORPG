@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "mamiferos",
-  "nome": "cave-rat",
   "propriedades": {
     "comportamento": "foge",
     "vida": 30,
@@ -52,6 +48,13 @@
     "armadura": 1,
     "defesa": 5,
     "ataque": 10,
+    "magia": null,
+    "resistencias": {
+      "fire": 110
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/valiosos/gold-coin",
@@ -66,8 +69,10 @@
         "max": 2
       }
     ],
-    "resistencias": {
-      "fire": 110
-    }
-  }
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "mamiferos",
+  "nome": "cave-rat"
 }

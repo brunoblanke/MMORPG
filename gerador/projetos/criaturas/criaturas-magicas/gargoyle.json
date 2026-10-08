@@ -1,7 +1,7 @@
 {
   "formato": {
     "quadro": 64,
-    "quadros": 9,
+    "quadros": 3,
     "linhas": [
       "sul",
       "norte",
@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "criaturas-magicas",
-  "nome": "gargoyle",
   "propriedades": {
     "comportamento": "foge",
     "vida": 250,
@@ -52,6 +48,24 @@
     "armadura": 26,
     "defesa": 25,
     "ataque": 65,
+    "magia": null,
+    "ataques": [
+      {
+        "forma": "cura",
+        "min": 5,
+        "max": 15,
+        "chance": 20
+      }
+    ],
+    "resistencias": {
+      "physical": 80,
+      "earth": 0,
+      "fire": 110,
+      "death": 60
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/valiosos/gold-coin",
@@ -72,19 +86,10 @@
         "chance": 0.0085
       }
     ],
-    "ataques": [
-      {
-        "forma": "cura",
-        "min": 5,
-        "max": 15,
-        "chance": 20
-      }
-    ],
-    "resistencias": {
-      "physical": 80,
-      "earth": 0,
-      "fire": 110,
-      "death": 60
-    }
-  }
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "criaturas-magicas",
+  "nome": "gargoyle"
 }

@@ -1,7 +1,7 @@
 {
   "formato": {
     "quadro": 64,
-    "quadros": 9,
+    "quadros": 8,
     "linhas": [
       "sul",
       "norte",
@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "humanos",
-  "nome": "necromancer",
   "propriedades": {
     "comportamento": "mago",
     "vida": 580,
@@ -52,24 +48,7 @@
     "armadura": 50,
     "defesa": 25,
     "ataque": 80,
-    "loot": [
-      {
-        "tipo": "itens/valiosos/gold-coin",
-        "chance": 0.3005,
-        "min": 1,
-        "max": 90
-      },
-      {
-        "tipo": "itens/municao/poison-arrow",
-        "chance": 0.15,
-        "min": 1,
-        "max": 5
-      },
-      {
-        "tipo": "itens/botas/boots-of-haste",
-        "chance": 0.0021
-      }
-    ],
+    "magia": null,
     "ataques": [
       {
         "forma": "tiro",
@@ -102,6 +81,32 @@
       "ice": 90,
       "holy": 105,
       "death": 50
-    }
-  }
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.3005,
+        "min": 1,
+        "max": 90
+      },
+      {
+        "tipo": "itens/municao/poison-arrow",
+        "chance": 0.15,
+        "min": 1,
+        "max": 5
+      },
+      {
+        "tipo": "itens/botas/boots-of-haste",
+        "chance": 0.0021
+      }
+    ],
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "humanos",
+  "nome": "necromancer"
 }

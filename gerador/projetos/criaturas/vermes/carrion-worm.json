@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "vermes",
-  "nome": "carrion-worm",
   "propriedades": {
     "comportamento": "normal",
     "vida": 145,
@@ -52,6 +48,16 @@
     "armadura": 8,
     "defesa": 15,
     "ataque": 45,
+    "magia": null,
+    "resistencias": {
+      "energy": 90,
+      "earth": 80,
+      "fire": 105,
+      "ice": 105
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/valiosos/gold-coin",
@@ -72,11 +78,10 @@
         "max": 2
       }
     ],
-    "resistencias": {
-      "energy": 90,
-      "earth": 80,
-      "fire": 105,
-      "ice": 105
-    }
-  }
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "vermes",
+  "nome": "carrion-worm"
 }

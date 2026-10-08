@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "dragoes",
-  "nome": "wyvern",
   "propriedades": {
     "comportamento": "foge",
     "vida": 795,
@@ -52,6 +48,23 @@
     "armadura": 19,
     "defesa": 25,
     "ataque": 120,
+    "magia": null,
+    "ataques": [
+      {
+        "forma": "cura",
+        "min": 45,
+        "max": 65,
+        "chance": 15
+      }
+    ],
+    "resistencias": {
+      "energy": 80,
+      "earth": 0,
+      "ice": 90
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/valiosos/gold-coin",
@@ -70,18 +83,10 @@
         "chance": 0.0081
       }
     ],
-    "ataques": [
-      {
-        "forma": "cura",
-        "min": 45,
-        "max": 65,
-        "chance": 15
-      }
-    ],
-    "resistencias": {
-      "energy": 80,
-      "earth": 0,
-      "ice": 90
-    }
-  }
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "dragoes",
+  "nome": "wyvern"
 }

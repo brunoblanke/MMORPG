@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "humanoides",
-  "nome": "minotaur-mage",
   "propriedades": {
     "comportamento": "mago",
     "vida": 155,
@@ -52,6 +48,44 @@
     "armadura": 18,
     "defesa": 15,
     "ataque": 20,
+    "magia": null,
+    "ataques": [
+      {
+        "forma": "tiro",
+        "elemento": "energy",
+        "min": 20,
+        "max": 59,
+        "chance": 15,
+        "alcance": 7
+      },
+      {
+        "forma": "bola",
+        "elemento": "fire",
+        "min": 50,
+        "max": 105,
+        "chance": 15,
+        "alcance": 7,
+        "raio": 1,
+        "centro": "alvo"
+      },
+      {
+        "forma": "campo",
+        "campo": "itens/itens-encantados/energy-field",
+        "chance": 10,
+        "alcance": 7,
+        "raio": 1
+      }
+    ],
+    "resistencias": {
+      "energy": 80,
+      "earth": 80,
+      "ice": 110,
+      "holy": 90,
+      "death": 105
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/valiosos/gold-coin",
@@ -80,38 +114,10 @@
         "chance": 0.0049
       }
     ],
-    "ataques": [
-      {
-        "forma": "tiro",
-        "elemento": "energy",
-        "min": 20,
-        "max": 59,
-        "chance": 15,
-        "alcance": 7
-      },
-      {
-        "forma": "bola",
-        "elemento": "fire",
-        "min": 50,
-        "max": 105,
-        "chance": 15,
-        "alcance": 7,
-        "raio": 1
-      },
-      {
-        "forma": "campo",
-        "campo": "itens/itens-encantados/energy-field",
-        "chance": 10,
-        "alcance": 7,
-        "raio": 1
-      }
-    ],
-    "resistencias": {
-      "energy": 80,
-      "earth": 80,
-      "ice": 110,
-      "holy": 90,
-      "death": 105
-    }
-  }
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "humanoides",
+  "nome": "minotaur-mage"
 }

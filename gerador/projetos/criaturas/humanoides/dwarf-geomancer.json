@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "humanoides",
-  "nome": "dwarf-geomancer",
   "propriedades": {
     "comportamento": "mago",
     "vida": 380,
@@ -52,28 +48,7 @@
     "armadura": 15,
     "defesa": 15,
     "ataque": 0,
-    "loot": [
-      {
-        "tipo": "itens/comidas/white-mushroom",
-        "chance": 0.6,
-        "min": 1,
-        "max": 2
-      },
-      {
-        "tipo": "itens/valiosos/gold-coin",
-        "chance": 0.5,
-        "min": 1,
-        "max": 35
-      },
-      {
-        "tipo": "itens/runas/blank-rune",
-        "chance": 0.33
-      },
-      {
-        "tipo": "itens/valiosos/iron-ore",
-        "chance": 0.0012
-      }
-    ],
+    "magia": null,
     "ataques": [
       {
         "forma": "tiro",
@@ -97,6 +72,36 @@
       "ice": 105,
       "holy": 90,
       "death": 110
-    }
-  }
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
+    "loot": [
+      {
+        "tipo": "itens/comidas/white-mushroom",
+        "chance": 0.6,
+        "min": 1,
+        "max": 2
+      },
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.5,
+        "min": 1,
+        "max": 35
+      },
+      {
+        "tipo": "itens/runas/blank-rune",
+        "chance": 0.33
+      },
+      {
+        "tipo": "itens/valiosos/iron-ore",
+        "chance": 0.0012
+      }
+    ],
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "humanoides",
+  "nome": "dwarf-geomancer"
 }

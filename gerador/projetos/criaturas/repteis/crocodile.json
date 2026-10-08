@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "repteis",
-  "nome": "crocodile",
   "propriedades": {
     "comportamento": "foge",
     "vida": 105,
@@ -52,6 +48,17 @@
     "armadura": 13,
     "defesa": 15,
     "ataque": 40,
+    "magia": null,
+    "resistencias": {
+      "physical": 110,
+      "energy": 105,
+      "earth": 80,
+      "fire": 110,
+      "ice": 90
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/valiosos/gold-coin",
@@ -64,12 +71,10 @@
         "chance": 0.4
       }
     ],
-    "resistencias": {
-      "physical": 110,
-      "energy": 105,
-      "earth": 80,
-      "fire": 110,
-      "ice": 90
-    }
-  }
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "repteis",
+  "nome": "crocodile"
 }

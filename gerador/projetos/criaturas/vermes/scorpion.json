@@ -1,7 +1,7 @@
 {
   "formato": {
     "quadro": 64,
-    "quadros": 9,
+    "quadros": 3,
     "linhas": [
       "sul",
       "norte",
@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "vermes",
-  "nome": "scorpion",
   "propriedades": {
     "comportamento": "foge",
     "vida": 45,
@@ -52,12 +48,21 @@
     "armadura": 14,
     "defesa": 5,
     "ataque": 50,
-    "loot": [],
+    "magia": null,
     "resistencias": {
       "energy": 80,
       "earth": 0,
       "fire": 110,
       "ice": 110
-    }
-  }
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
+    "loot": [],
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "vermes",
+  "nome": "scorpion"
 }

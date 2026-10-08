@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "mortos-vivos",
-  "nome": "skeleton-warrior",
   "propriedades": {
     "comportamento": "normal",
     "vida": 65,
@@ -52,6 +48,24 @@
     "armadura": 5,
     "defesa": 15,
     "ataque": 30,
+    "magia": null,
+    "ataques": [
+      {
+        "forma": "tiro",
+        "elemento": "death",
+        "min": 7,
+        "max": 13,
+        "chance": 15,
+        "alcance": 1
+      }
+    ],
+    "resistencias": {
+      "holy": 125,
+      "death": 0
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/valiosos/gold-coin",
@@ -70,19 +84,10 @@
         "chance": 0.02
       }
     ],
-    "ataques": [
-      {
-        "forma": "tiro",
-        "elemento": "death",
-        "min": 7,
-        "max": 13,
-        "chance": 15,
-        "alcance": 1
-      }
-    ],
-    "resistencias": {
-      "holy": 125,
-      "death": 0
-    }
-  }
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "mortos-vivos",
+  "nome": "skeleton-warrior"
 }

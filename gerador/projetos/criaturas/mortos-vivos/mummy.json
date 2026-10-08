@@ -1,7 +1,7 @@
 {
   "formato": {
     "quadro": 64,
-    "quadros": 9,
+    "quadros": 8,
     "linhas": [
       "sul",
       "norte",
@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "mortos-vivos",
-  "nome": "mummy",
   "propriedades": {
     "comportamento": "normal",
     "vida": 240,
@@ -52,6 +48,33 @@
     "armadura": 14,
     "defesa": 15,
     "ataque": 85,
+    "magia": null,
+    "ataques": [
+      {
+        "forma": "tiro",
+        "elemento": "death",
+        "min": 30,
+        "max": 40,
+        "chance": 20,
+        "alcance": 1
+      },
+      {
+        "forma": "lentidao",
+        "velocidade": -226,
+        "ms": 10000,
+        "chance": 15,
+        "alcance": 7
+      }
+    ],
+    "resistencias": {
+      "earth": 0,
+      "ice": 80,
+      "holy": 125,
+      "death": 0
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/valiosos/gold-coin",
@@ -82,28 +105,10 @@
         "chance": 0.001
       }
     ],
-    "ataques": [
-      {
-        "forma": "tiro",
-        "elemento": "death",
-        "min": 30,
-        "max": 40,
-        "chance": 20,
-        "alcance": 1
-      },
-      {
-        "forma": "lentidao",
-        "velocidade": -226,
-        "ms": 10000,
-        "chance": 15,
-        "alcance": 7
-      }
-    ],
-    "resistencias": {
-      "earth": 0,
-      "ice": 80,
-      "holy": 125,
-      "death": 0
-    }
-  }
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "mortos-vivos",
+  "nome": "mummy"
 }

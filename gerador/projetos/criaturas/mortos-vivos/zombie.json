@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "mortos-vivos",
-  "nome": "zombie",
   "propriedades": {
     "comportamento": "normal",
     "vida": 500,
@@ -52,6 +48,35 @@
     "armadura": 20,
     "defesa": 15,
     "ataque": 130,
+    "magia": null,
+    "ataques": [
+      {
+        "forma": "tiro",
+        "elemento": "death",
+        "min": 15,
+        "max": 24,
+        "chance": 15,
+        "alcance": 7
+      },
+      {
+        "forma": "tiro",
+        "elemento": "death",
+        "min": 30,
+        "max": 49,
+        "chance": 15,
+        "alcance": 1
+      }
+    ],
+    "resistencias": {
+      "energy": 0,
+      "earth": 0,
+      "fire": 50,
+      "ice": 0,
+      "death": 0
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/valiosos/gold-coin",
@@ -84,30 +109,10 @@
         "chance": 0.0056
       }
     ],
-    "ataques": [
-      {
-        "forma": "tiro",
-        "elemento": "death",
-        "min": 15,
-        "max": 24,
-        "chance": 15,
-        "alcance": 7
-      },
-      {
-        "forma": "tiro",
-        "elemento": "death",
-        "min": 30,
-        "max": 49,
-        "chance": 15,
-        "alcance": 1
-      }
-    ],
-    "resistencias": {
-      "energy": 0,
-      "earth": 0,
-      "fire": 50,
-      "ice": 0,
-      "death": 0
-    }
-  }
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "mortos-vivos",
+  "nome": "zombie"
 }

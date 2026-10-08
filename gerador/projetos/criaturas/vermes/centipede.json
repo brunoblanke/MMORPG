@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "vermes",
-  "nome": "centipede",
   "propriedades": {
     "comportamento": "normal",
     "vida": 70,
@@ -52,6 +48,16 @@
     "armadura": 8,
     "defesa": 10,
     "ataque": 45,
+    "magia": null,
+    "resistencias": {
+      "energy": 90,
+      "earth": 0,
+      "fire": 115,
+      "ice": 80
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/valiosos/gold-coin",
@@ -60,11 +66,10 @@
         "max": 15
       }
     ],
-    "resistencias": {
-      "energy": 90,
-      "earth": 0,
-      "fire": 115,
-      "ice": 80
-    }
-  }
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "vermes",
+  "nome": "centipede"
 }
