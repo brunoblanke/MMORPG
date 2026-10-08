@@ -42,13 +42,14 @@
   },
   "propriedades": {
     "comportamento": "foge",
+    "voa": true,
     "vida": 280,
     "xp": 220,
     "velocidade": 190,
     "armadura": 18,
     "defesa": 18,
     "ataque": 100,
-    "loot": [],
+    "magia": null,
     "ataques": [
       {
         "forma": "bola",
@@ -57,7 +58,8 @@
         "max": 160,
         "chance": 20,
         "alcance": 7,
-        "raio": 2
+        "raio": 2,
+        "centro": "alvo"
       },
       {
         "forma": "campo",
@@ -71,7 +73,12 @@
       "fire": 0,
       "ice": 125,
       "death": 0
-    }
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
+    "loot": [],
+    "falas": []
   },
   "ferramenta": "criaturas",
   "grupo": "criaturas",

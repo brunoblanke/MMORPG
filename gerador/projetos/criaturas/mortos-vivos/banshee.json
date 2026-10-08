@@ -42,12 +42,50 @@
   },
   "propriedades": {
     "comportamento": "mago",
+    "voa": true,
     "vida": 1000,
     "xp": 900,
     "velocidade": 220,
     "armadura": 25,
     "defesa": 25,
     "ataque": 100,
+    "magia": null,
+    "ataques": [
+      {
+        "forma": "bola",
+        "elemento": "death",
+        "min": 100,
+        "max": 200,
+        "chance": 15,
+        "raio": 4,
+        "centro": "si"
+      },
+      {
+        "forma": "bola",
+        "elemento": "death",
+        "min": 55,
+        "max": 350,
+        "chance": 5,
+        "alcance": 1,
+        "raio": 1,
+        "centro": "alvo"
+      },
+      {
+        "forma": "cura",
+        "min": 120,
+        "max": 190,
+        "chance": 15
+      }
+    ],
+    "resistencias": {
+      "earth": 0,
+      "fire": 0,
+      "holy": 125,
+      "death": 0
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/fontes-de-luz/candlestick",
@@ -124,38 +162,7 @@
         "chance": 0.001
       }
     ],
-    "ataques": [
-      {
-        "forma": "bola",
-        "elemento": "death",
-        "min": 100,
-        "max": 200,
-        "chance": 15,
-        "raio": 4,
-        "centro": "si"
-      },
-      {
-        "forma": "bola",
-        "elemento": "death",
-        "min": 55,
-        "max": 350,
-        "chance": 5,
-        "alcance": 1,
-        "raio": 1
-      },
-      {
-        "forma": "cura",
-        "min": 120,
-        "max": 190,
-        "chance": 15
-      }
-    ],
-    "resistencias": {
-      "earth": 0,
-      "fire": 0,
-      "holy": 125,
-      "death": 0
-    }
+    "falas": []
   },
   "ferramenta": "criaturas",
   "grupo": "criaturas",

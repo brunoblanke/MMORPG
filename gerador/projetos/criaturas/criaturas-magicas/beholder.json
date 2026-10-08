@@ -40,18 +40,19 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "criaturas-magicas",
-  "nome": "beholder",
   "propriedades": {
     "comportamento": "mago",
+    "voa": true,
     "vida": 260,
     "xp": 170,
     "velocidade": 150,
     "armadura": 5,
     "defesa": 5,
     "ataque": 50,
+    "magia": null,
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/valiosos/gold-coin",
@@ -95,6 +96,11 @@
         "tipo": "itens/escudos/bonelord-shield",
         "chance": 0.0011
       }
-    ]
-  }
+    ],
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "criaturas-magicas",
+  "nome": "beholder"
 }
