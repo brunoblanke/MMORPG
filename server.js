@@ -7,6 +7,7 @@ const os = require('os');
 const path = require('path');
 const { pathToFileURL } = require('url');
 const { WebSocketServer } = require('ws');
+const { renomearArquivo } = require('./ferramentas/renomear-no-mapa.js');
 const app = express();
 
 const PASTA_JOGO = __dirname;
@@ -63,6 +64,8 @@ function prepararMapa() {
   try {
     if (fs.existsSync(MAP_DATA_PATH)) {
       JSON.parse(fs.readFileSync(MAP_DATA_PATH, 'utf8'));
+      const mudou = renomearArquivo(MAP_DATA_PATH);
+      if (mudou) console.log(`🗺️  ${mudou} item(ns) do mapa com nome antigo de folha trocados (gerador/renomeados.json)`);
       return;
     }
     fs.mkdirSync(path.dirname(MAP_DATA_PATH), { recursive: true });
