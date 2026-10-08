@@ -1,0 +1,35 @@
+{
+  "formato": {
+    "quadro": 32,
+    "quadros": 1
+  },
+  "objeto": {
+    "tibia": {
+      "id": 5803,
+      "variacao": 0
+    }
+  },
+  "propriedades": {
+    "bloqueia": false,
+    "move": true,
+    "altura": false,
+    "empilhavel": false,
+    "peso": 95,
+    "espacos": 0,
+    "atk": 2,
+    "def": 0,
+    "ml": 0,
+    "speed": 0,
+    "vidaMin": 0,
+    "vidaMax": 0,
+    "manaMin": 0,
+    "manaMax": 0,
+    "alimento": 0,
+    "duasMaos": true,
+    "tipoMunicao": "bolt"
+  },
+  "ferramenta": "objetos",
+  "grupo": "itens",
+  "pasta": "distancia",
+  "nome": "arbalest"
+}

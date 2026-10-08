@@ -1,0 +1,33 @@
+{
+  "formato": {
+    "quadro": 32,
+    "quadros": 1
+  },
+  "objeto": {
+    "tibia": {
+      "id": 3319,
+      "variacao": 0
+    }
+  },
+  "propriedades": {
+    "bloqueia": false,
+    "move": true,
+    "altura": false,
+    "empilhavel": false,
+    "peso": 99,
+    "espacos": 0,
+    "atk": 50,
+    "def": 30,
+    "ml": 0,
+    "speed": 0,
+    "vidaMin": 0,
+    "vidaMax": 0,
+    "manaMin": 0,
+    "manaMax": 0,
+    "alimento": 0
+  },
+  "ferramenta": "objetos",
+  "grupo": "itens",
+  "pasta": "machados",
+  "nome": "stonecutter-axe"
+}

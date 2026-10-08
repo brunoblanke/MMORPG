@@ -83,7 +83,8 @@ const SLOT_BY_FOLDER = {
 // segundos que ele dura em uso (aceso, ou equipado se regenera) até acabar
 // (0 = não gasta) e regen o que ele recupera equipado a cada REGEN_MS
 // (anel de cura), twoHanded se a arma pede as duas mãos (não usa com escudo) e
-// impact o que a munição faz ao acertar (impactOf).
+// impact o que a munição faz ao acertar (impactOf) e ammoType o tipo da munição
+// ('arrow', 'bolt'…): arco só dispara a do tipo dele ('' = qualquer).
 
 export function itemInfo(type) {
   const asset = getAsset(splitType(type).asset);
@@ -110,6 +111,7 @@ export function itemInfo(type) {
     regen: { hp: bonusValue(props.regenVida), mana: bonusValue(props.regenMana) },
     weaponSkill: SKILL_BY_WEAPON_FOLDER[folder] || null,
     twoHanded: !!props.duasMaos,
+    ammoType: typeof props.tipoMunicao === 'string' ? props.tipoMunicao : '',
     postal: !!props.postal,
     impact: impactOf(props)
   };

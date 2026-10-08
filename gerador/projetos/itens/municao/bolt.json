@@ -1,0 +1,35 @@
+{
+  "formato": {
+    "quadro": 32,
+    "quadros": 8,
+    "pilha": true
+  },
+  "objeto": {
+    "tibia": {
+      "id": 3446,
+      "variacao": 0
+    }
+  },
+  "propriedades": {
+    "bloqueia": false,
+    "move": true,
+    "altura": false,
+    "empilhavel": true,
+    "peso": 0.8,
+    "espacos": 0,
+    "atk": 30,
+    "def": 0,
+    "ml": 0,
+    "speed": 0,
+    "vidaMin": 0,
+    "vidaMax": 0,
+    "manaMin": 0,
+    "manaMax": 0,
+    "alimento": 0,
+    "tipoMunicao": "bolt"
+  },
+  "ferramenta": "objetos",
+  "grupo": "itens",
+  "pasta": "municao",
+  "nome": "bolt"
+}
