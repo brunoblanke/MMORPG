@@ -2,33 +2,15 @@
   "formato": {
     "quadro": 32,
     "linhas": [
-      "meio: 4 variações",
+      "meio: 1 variações",
       "s o n l",
       "sl so nl no",
       "int-sl int-so int-nl int-no"
     ]
   },
-  "variacoesDoMeio": 4,
+  "variacoesDoMeio": 1,
   "slots": {
     "meio-1": {
-      "tibia": {
-        "id": 1210,
-        "variacao": 0
-      }
-    },
-    "meio-2": {
-      "tibia": {
-        "id": 1210,
-        "variacao": 0
-      }
-    },
-    "meio-3": {
-      "tibia": {
-        "id": 1210,
-        "variacao": 0
-      }
-    },
-    "meio-4": {
       "tibia": {
         "id": 1210,
         "variacao": 0
