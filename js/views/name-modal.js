@@ -90,11 +90,22 @@ export class NameModal {
   ask() {
     this.root.hidden = false;
     this.setBusy(false);
-    this.input.focus();
-    this.input.select();
-    return new Promise((resolve) => {
+    const answer = new Promise((resolve) => {
       this.pending = resolve;
     });
+    this.focusName();
+    requestAnimationFrame(() => this.focusName());
+    return answer;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // focusName
+  // O cursor vai pro campo do nome (e seleciona o que já está escrito).
+
+  focusName() {
+    if (this.pending === null) return;
+    this.input.focus();
+    this.input.select();
   }
 
   // ================================================================================================================================================================================================================================================
