@@ -76,7 +76,9 @@ export async function refreshProjects() {
 // ================================================================================================================================================================================================================================================
 // thumbnail
 // O primeiro quadro da folha (quadro × quadro, no canto de cima à esquerda)
-// reduzido pra 32 × 32.
+// reduzido pra 32 × 32. A criatura vem recortada no que ela ocupa (a folha tem o
+// tamanho da maior entre ela e os cadáveres, e ela fica no canto de baixo à direita),
+// centralizada.
 
 function thumbnail(project) {
   const canvas = document.createElement('canvas');
@@ -87,8 +89,39 @@ function thumbnail(project) {
   img.onload = () => {
     const ctx = canvas.getContext('2d');
     ctx.imageSmoothingEnabled = false;
-    ctx.drawImage(img, 0, 0, project.quadro, project.quadro, 0, 0, 32, 32);
+    const box = project.ferramenta === 'criaturas' ? contentBox(img, project.quadro) : { x: 0, y: 0, w: project.quadro, h: project.quadro };
+    const scale = Math.min(32 / box.w, 32 / box.h);
+    const w = Math.max(1, Math.round(box.w * scale));
+    const h = Math.max(1, Math.round(box.h * scale));
+    ctx.drawImage(img, box.x, box.y, box.w, box.h, Math.floor((32 - w) / 2), Math.floor((32 - h) / 2), w, h);
   };
   img.src = `/saida/${project.caminho}.png?v=${Math.round(project.atualizado)}`;
   return canvas;
+}
+
+// ================================================================================================================================================================================================================================================
+// contentBox
+// O retângulo { x, y, w, h } que o desenho ocupa no primeiro quadro (size × size) da folha.
+
+function contentBox(img, size) {
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  ctx.drawImage(img, 0, 0, size, size, 0, 0, size, size);
+  const data = ctx.getImageData(0, 0, size, size).data;
+  let minX = size;
+  let minY = size;
+  let maxX = -1;
+  let maxY = -1;
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      if (data[(y * size + x) * 4 + 3] === 0) continue;
+      minX = Math.min(minX, x);
+      maxX = Math.max(maxX, x);
+      minY = Math.min(minY, y);
+      maxY = Math.max(maxY, y);
+    }
+  }
+  return maxX < 0 ? { x: 0, y: 0, w: size, h: size } : { x: minX, y: minY, w: maxX - minX + 1, h: maxY - minY + 1 };
 }
