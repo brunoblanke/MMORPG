@@ -166,4 +166,6 @@ function principal() {
   }
 }
 
-principal();
+if (require.main === module) principal();
+
+module.exports = { importar, linhasDe };

@@ -1,0 +1,109 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 65,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 6004,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "mortos-vivos",
+  "nome": "mummy",
+  "propriedades": {
+    "comportamento": "normal",
+    "vida": 240,
+    "xp": 150,
+    "velocidade": 150,
+    "armadura": 14,
+    "defesa": 15,
+    "ataque": 85,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.38,
+        "min": 1,
+        "max": 80
+      },
+      {
+        "tipo": "itens/produtos-de-criaturas/worm",
+        "chance": 0.19,
+        "min": 1,
+        "max": 3
+      },
+      {
+        "tipo": "itens/valiosos/silver-brooch",
+        "chance": 0.04
+      },
+      {
+        "tipo": "itens/valiosos/black-pearl",
+        "chance": 0.01
+      },
+      {
+        "tipo": "itens/espadas/poison-dagger",
+        "chance": 0.0045
+      },
+      {
+        "tipo": "itens/amuletos-e-colares/silver-amulet",
+        "chance": 0.001
+      }
+    ],
+    "ataques": [
+      {
+        "forma": "tiro",
+        "elemento": "death",
+        "min": 30,
+        "max": 40,
+        "chance": 20,
+        "alcance": 1
+      },
+      {
+        "forma": "lentidao",
+        "velocidade": -226,
+        "ms": 10000,
+        "chance": 15,
+        "alcance": 7
+      }
+    ],
+    "resistencias": {
+      "earth": 0,
+      "ice": 80,
+      "holy": 125,
+      "death": 0
+    }
+  }
+}

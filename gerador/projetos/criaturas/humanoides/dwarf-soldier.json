@@ -1,0 +1,97 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 71,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 6014,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "humanoides",
+  "nome": "dwarf-soldier",
+  "propriedades": {
+    "comportamento": "normal",
+    "vida": 135,
+    "xp": 70,
+    "velocidade": 176,
+    "armadura": 9,
+    "defesa": 15,
+    "ataque": 70,
+    "loot": [
+      {
+        "tipo": "itens/comidas/white-mushroom",
+        "chance": 0.4,
+        "min": 1,
+        "max": 3
+      },
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.28,
+        "min": 1,
+        "max": 12
+      },
+      {
+        "tipo": "itens/armaduras/chain-armor",
+        "chance": 0.08
+      },
+      {
+        "tipo": "itens/distancia/crossbow",
+        "chance": 0.03
+      },
+      {
+        "tipo": "itens/valiosos/iron-ore",
+        "chance": 0.003
+      }
+    ],
+    "ataques": [
+      {
+        "forma": "tiro",
+        "elemento": "physical",
+        "min": 0,
+        "max": 60,
+        "chance": 10,
+        "alcance": 7
+      }
+    ],
+    "resistencias": {
+      "earth": 90,
+      "fire": 105,
+      "death": 105
+    }
+  }
+}

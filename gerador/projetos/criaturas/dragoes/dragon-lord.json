@@ -1,0 +1,117 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 39,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 5984,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "dragoes",
+  "nome": "dragon-lord",
+  "propriedades": {
+    "comportamento": "foge",
+    "vida": 1900,
+    "xp": 2100,
+    "velocidade": 200,
+    "armadura": 34,
+    "defesa": 34,
+    "ataque": 230,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.953,
+        "min": 1,
+        "max": 237
+      },
+      {
+        "tipo": "itens/comidas/dragon-ham",
+        "chance": 0.7979,
+        "min": 1,
+        "max": 2
+      },
+      {
+        "tipo": "itens/valiosos/life-crystal",
+        "chance": 0.0065
+      },
+      {
+        "tipo": "itens/espadas/fire-sword",
+        "chance": 0.0035
+      }
+    ],
+    "ataques": [
+      {
+        "forma": "bola",
+        "elemento": "fire",
+        "min": 100,
+        "max": 220,
+        "chance": 30,
+        "alcance": 7,
+        "raio": 4
+      },
+      {
+        "forma": "campo",
+        "campo": "itens/itens-encantados/fire-field",
+        "chance": 10,
+        "alcance": 7,
+        "raio": 4
+      },
+      {
+        "forma": "onda",
+        "elemento": "fire",
+        "min": 150,
+        "max": 270,
+        "chance": 22,
+        "comprimento": 8,
+        "abertura": 3
+      },
+      {
+        "forma": "cura",
+        "min": 57,
+        "max": 93,
+        "chance": 15
+      }
+    ],
+    "resistencias": {
+      "energy": 80,
+      "earth": 20,
+      "fire": 0,
+      "ice": 110
+    }
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 239,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 6301,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "dragoes",
+  "nome": "wyvern",
+  "propriedades": {
+    "comportamento": "foge",
+    "vida": 795,
+    "xp": 515,
+    "velocidade": 186,
+    "armadura": 19,
+    "defesa": 25,
+    "ataque": 120,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 1,
+        "min": 1,
+        "max": 90
+      },
+      {
+        "tipo": "itens/comidas/dragon-ham",
+        "chance": 0.605,
+        "min": 1,
+        "max": 3
+      },
+      {
+        "tipo": "itens/wands/wand-of-inferno",
+        "chance": 0.0081
+      }
+    ],
+    "ataques": [
+      {
+        "forma": "cura",
+        "min": 45,
+        "max": 65,
+        "chance": 15
+      }
+    ],
+    "resistencias": {
+      "energy": 80,
+      "earth": 0,
+      "ice": 90
+    }
+  }
+}

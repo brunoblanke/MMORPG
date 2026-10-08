@@ -1,0 +1,82 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 8,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 5980,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "humanoides",
+  "nome": "orc-berserker",
+  "propriedades": {
+    "comportamento": "normal",
+    "vida": 210,
+    "xp": 195,
+    "velocidade": 250,
+    "armadura": 12,
+    "defesa": 15,
+    "ataque": 200,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.54,
+        "min": 1,
+        "max": 12
+      },
+      {
+        "tipo": "itens/comidas/ham",
+        "chance": 0.104
+      },
+      {
+        "tipo": "itens/machados/halberd",
+        "chance": 0.0728
+      },
+      {
+        "tipo": "itens/armaduras/chain-armor",
+        "chance": 0.0089
+      }
+    ],
+    "resistencias": {
+      "energy": 85,
+      "earth": 110,
+      "holy": 90,
+      "death": 110
+    }
+  }
+}

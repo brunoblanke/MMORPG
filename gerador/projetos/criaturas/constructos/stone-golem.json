@@ -1,0 +1,76 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 67,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 6005,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "constructos",
+  "nome": "stone-golem",
+  "propriedades": {
+    "comportamento": "normal",
+    "vida": 270,
+    "xp": 160,
+    "velocidade": 180,
+    "armadura": 30,
+    "defesa": 20,
+    "ataque": 110,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.9,
+        "min": 1,
+        "max": 40
+      },
+      {
+        "tipo": "itens/valiosos/iron-ore",
+        "chance": 0.0198
+      }
+    ],
+    "resistencias": {
+      "physical": 90,
+      "energy": 85,
+      "earth": 0,
+      "fire": 80,
+      "ice": 110,
+      "death": 80
+    }
+  }
+}

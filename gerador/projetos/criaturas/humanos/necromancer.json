@@ -1,0 +1,107 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 9,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 18174,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "humanos",
+  "nome": "necromancer",
+  "propriedades": {
+    "comportamento": "mago",
+    "vida": 580,
+    "xp": 580,
+    "velocidade": 188,
+    "armadura": 50,
+    "defesa": 25,
+    "ataque": 80,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.3005,
+        "min": 1,
+        "max": 90
+      },
+      {
+        "tipo": "itens/municao/poison-arrow",
+        "chance": 0.15,
+        "min": 1,
+        "max": 5
+      },
+      {
+        "tipo": "itens/botas/boots-of-haste",
+        "chance": 0.0021
+      }
+    ],
+    "ataques": [
+      {
+        "forma": "tiro",
+        "elemento": "death",
+        "min": 10,
+        "max": 120,
+        "chance": 20,
+        "alcance": 1
+      },
+      {
+        "forma": "tiro",
+        "elemento": "earth",
+        "min": 35,
+        "max": 95,
+        "chance": 20,
+        "alcance": 7
+      },
+      {
+        "forma": "cura",
+        "min": 42,
+        "max": 68,
+        "chance": 25
+      }
+    ],
+    "resistencias": {
+      "physical": 105,
+      "energy": 80,
+      "earth": 0,
+      "fire": 105,
+      "ice": 90,
+      "holy": 105,
+      "death": 50
+    }
+  }
+}

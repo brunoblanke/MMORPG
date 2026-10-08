@@ -1,0 +1,88 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 298,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 5972,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "mortos-vivos",
+  "nome": "skeleton-warrior",
+  "propriedades": {
+    "comportamento": "normal",
+    "vida": 65,
+    "xp": 45,
+    "velocidade": 154,
+    "armadura": 5,
+    "defesa": 15,
+    "ataque": 30,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.435,
+        "min": 1,
+        "max": 10
+      },
+      {
+        "tipo": "itens/comidas/white-mushroom",
+        "chance": 0.24,
+        "min": 1,
+        "max": 3
+      },
+      {
+        "tipo": "itens/clavas/mace",
+        "chance": 0.02
+      }
+    ],
+    "ataques": [
+      {
+        "forma": "tiro",
+        "elemento": "death",
+        "min": 7,
+        "max": 13,
+        "chance": 15,
+        "alcance": 1
+      }
+    ],
+    "resistencias": {
+      "holy": 125,
+      "death": 0
+    }
+  }
+}

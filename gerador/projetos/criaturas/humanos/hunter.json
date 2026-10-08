@@ -1,0 +1,92 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 129,
+    "cores": [
+      95,
+      116,
+      120,
+      115
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 18138,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "humanos",
+  "nome": "hunter",
+  "propriedades": {
+    "comportamento": "mago",
+    "vida": 150,
+    "xp": 150,
+    "velocidade": 210,
+    "armadura": 8,
+    "defesa": 15,
+    "ataque": 20,
+    "loot": [
+      {
+        "tipo": "itens/municao/arrow",
+        "chance": 0.82,
+        "min": 1,
+        "max": 22
+      },
+      {
+        "tipo": "itens/capacetes/brass-helmet",
+        "chance": 0.0505
+      },
+      {
+        "tipo": "itens/municao/poison-arrow",
+        "chance": 0.045,
+        "min": 1,
+        "max": 4
+      },
+      {
+        "tipo": "itens/valiosos/small-ruby",
+        "chance": 0.0015
+      }
+    ],
+    "ataques": [
+      {
+        "forma": "tiro",
+        "elemento": "physical",
+        "min": 0,
+        "max": 100,
+        "chance": 50,
+        "alcance": 7
+      }
+    ],
+    "resistencias": {
+      "physical": 105,
+      "holy": 80
+    }
+  }
+}

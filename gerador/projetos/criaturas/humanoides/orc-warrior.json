@@ -1,0 +1,86 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 7,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 5979,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "humanoides",
+  "nome": "orc-warrior",
+  "propriedades": {
+    "comportamento": "foge",
+    "vida": 125,
+    "xp": 50,
+    "velocidade": 190,
+    "armadura": 8,
+    "defesa": 15,
+    "ataque": 60,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.65,
+        "min": 1,
+        "max": 15
+      },
+      {
+        "tipo": "itens/comidas/meet",
+        "chance": 0.15
+      },
+      {
+        "tipo": "itens/armaduras/chain-armor",
+        "chance": 0.0736
+      },
+      {
+        "tipo": "itens/escudos/copper-shield",
+        "chance": 0.0056
+      },
+      {
+        "tipo": "itens/espadas/poison-dagger",
+        "chance": 0.0012
+      }
+    ],
+    "resistencias": {
+      "energy": 70,
+      "earth": 110,
+      "holy": 90,
+      "death": 110
+    }
+  }
+}

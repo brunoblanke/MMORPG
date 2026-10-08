@@ -1,0 +1,102 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 66,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 6015,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "humanoides",
+  "nome": "dwarf-geomancer",
+  "propriedades": {
+    "comportamento": "mago",
+    "vida": 380,
+    "xp": 265,
+    "velocidade": 200,
+    "armadura": 15,
+    "defesa": 15,
+    "ataque": 0,
+    "loot": [
+      {
+        "tipo": "itens/comidas/white-mushroom",
+        "chance": 0.6,
+        "min": 1,
+        "max": 2
+      },
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.5,
+        "min": 1,
+        "max": 35
+      },
+      {
+        "tipo": "itens/runas/blank-rune",
+        "chance": 0.33
+      },
+      {
+        "tipo": "itens/valiosos/iron-ore",
+        "chance": 0.0012
+      }
+    ],
+    "ataques": [
+      {
+        "forma": "tiro",
+        "elemento": "earth",
+        "min": 50,
+        "max": 110,
+        "chance": 20,
+        "alcance": 7
+      },
+      {
+        "forma": "cura",
+        "min": 75,
+        "max": 125,
+        "chance": 40
+      }
+    ],
+    "resistencias": {
+      "energy": 90,
+      "earth": 80,
+      "fire": 40,
+      "ice": 105,
+      "holy": 90,
+      "death": 110
+    }
+  }
+}

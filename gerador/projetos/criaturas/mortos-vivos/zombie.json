@@ -1,0 +1,113 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 311,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 8961,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "mortos-vivos",
+  "nome": "zombie",
+  "propriedades": {
+    "comportamento": "normal",
+    "vida": 500,
+    "xp": 280,
+    "velocidade": 180,
+    "armadura": 20,
+    "defesa": 15,
+    "ataque": 130,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.82,
+        "min": 1,
+        "max": 65
+      },
+      {
+        "tipo": "itens/capacetes/brass-helmet",
+        "chance": 0.094
+      },
+      {
+        "tipo": "itens/clavas/mace",
+        "chance": 0.0725
+      },
+      {
+        "tipo": "itens/capacetes/steel-helmet",
+        "chance": 0.046
+      },
+      {
+        "tipo": "itens/machados/halberd",
+        "chance": 0.0375
+      },
+      {
+        "tipo": "itens/liquidos/mana-potion",
+        "chance": 0.0074
+      },
+      {
+        "tipo": "itens/armaduras/simple-dress",
+        "chance": 0.0056
+      }
+    ],
+    "ataques": [
+      {
+        "forma": "tiro",
+        "elemento": "death",
+        "min": 15,
+        "max": 24,
+        "chance": 15,
+        "alcance": 7
+      },
+      {
+        "forma": "tiro",
+        "elemento": "death",
+        "min": 30,
+        "max": 49,
+        "chance": 15,
+        "alcance": 1
+      }
+    ],
+    "resistencias": {
+      "energy": 0,
+      "earth": 0,
+      "fire": 50,
+      "ice": 0,
+      "death": 0
+    }
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 48,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 5993,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "mortos-vivos",
+  "nome": "ghost",
+  "propriedades": {
+    "comportamento": "normal",
+    "vida": 150,
+    "xp": 120,
+    "velocidade": 160,
+    "armadura": 10,
+    "defesa": 5,
+    "ataque": 80,
+    "loot": [
+      {
+        "tipo": "itens/clavas/morning-star",
+        "chance": 0.1061
+      }
+    ],
+    "ataques": [
+      {
+        "forma": "tiro",
+        "elemento": "death",
+        "min": 20,
+        "max": 45,
+        "chance": 15,
+        "alcance": 1
+      }
+    ],
+    "resistencias": {
+      "physical": 0,
+      "earth": 0,
+      "death": 0
+    }
+  }
+}

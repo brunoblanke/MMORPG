@@ -1,0 +1,84 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 129,
+    "cores": [
+      58,
+      40,
+      24,
+      95
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 18050,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "humanos",
+  "nome": "bandit",
+  "propriedades": {
+    "comportamento": "foge",
+    "vida": 245,
+    "xp": 65,
+    "velocidade": 180,
+    "armadura": 11,
+    "defesa": 15,
+    "ataque": 45,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.49,
+        "min": 1,
+        "max": 30
+      },
+      {
+        "tipo": "itens/machados/axe",
+        "chance": 0.299
+      },
+      {
+        "tipo": "itens/escudos/brass-shield",
+        "chance": 0.168
+      },
+      {
+        "tipo": "itens/calcas/leather-legs",
+        "chance": 0.155
+      },
+      {
+        "tipo": "itens/clavas/mace",
+        "chance": 0.101
+      }
+    ],
+    "resistencias": {
+      "physical": 110,
+      "death": 105
+    }
+  }
+}

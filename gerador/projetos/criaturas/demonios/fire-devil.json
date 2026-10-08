@@ -1,0 +1,99 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 40,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 5985,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "demonios",
+  "nome": "fire-devil",
+  "propriedades": {
+    "comportamento": "mago",
+    "vida": 200,
+    "xp": 145,
+    "velocidade": 180,
+    "armadura": 13,
+    "defesa": 10,
+    "ataque": 35,
+    "loot": [
+      {
+        "tipo": "itens/runas/blank-rune",
+        "chance": 0.1095
+      },
+      {
+        "tipo": "itens/machados/double-axe",
+        "chance": 0.015
+      },
+      {
+        "tipo": "itens/valiosos/small-amethyst",
+        "chance": 0.003
+      }
+    ],
+    "ataques": [
+      {
+        "forma": "bola",
+        "elemento": "fire",
+        "min": 60,
+        "max": 90,
+        "chance": 20,
+        "alcance": 7,
+        "raio": 4
+      },
+      {
+        "forma": "bola",
+        "elemento": "fire",
+        "min": 20,
+        "max": 50,
+        "chance": 15,
+        "alcance": 7,
+        "raio": 2
+      }
+    ],
+    "resistencias": {
+      "physical": 90,
+      "energy": 70,
+      "earth": 80,
+      "fire": 0,
+      "ice": 120,
+      "holy": 110,
+      "death": 80
+    }
+  }
+}

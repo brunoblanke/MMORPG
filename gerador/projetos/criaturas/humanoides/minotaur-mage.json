@@ -1,0 +1,117 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 23,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 5981,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "humanoides",
+  "nome": "minotaur-mage",
+  "propriedades": {
+    "comportamento": "mago",
+    "vida": 155,
+    "xp": 150,
+    "velocidade": 170,
+    "armadura": 18,
+    "defesa": 15,
+    "ataque": 20,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.8578,
+        "min": 1,
+        "max": 35
+      },
+      {
+        "tipo": "itens/calcas/leather-legs",
+        "chance": 0.0519
+      },
+      {
+        "tipo": "itens/capacetes/leather-helmet",
+        "chance": 0.03
+      },
+      {
+        "tipo": "itens/produtos-de-criaturas/minotaur-leather",
+        "chance": 0.0229
+      },
+      {
+        "tipo": "itens/wands/wand-of-cosmic-energy",
+        "chance": 0.006
+      },
+      {
+        "tipo": "itens/liquidos/mana-potion",
+        "chance": 0.0049
+      }
+    ],
+    "ataques": [
+      {
+        "forma": "tiro",
+        "elemento": "energy",
+        "min": 20,
+        "max": 59,
+        "chance": 15,
+        "alcance": 7
+      },
+      {
+        "forma": "bola",
+        "elemento": "fire",
+        "min": 50,
+        "max": 105,
+        "chance": 15,
+        "alcance": 7,
+        "raio": 1
+      },
+      {
+        "forma": "campo",
+        "campo": "itens/itens-encantados/energy-field",
+        "chance": 10,
+        "alcance": 7,
+        "raio": 1
+      }
+    ],
+    "resistencias": {
+      "energy": 80,
+      "earth": 80,
+      "ice": 110,
+      "holy": 90,
+      "death": 105
+    }
+  }
+}

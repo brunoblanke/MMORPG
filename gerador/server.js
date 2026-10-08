@@ -306,7 +306,8 @@ function listarProjetos(req, res) {
       const atualizado = fs.statSync(path.join(pasta, arquivo)).mtimeMs;
       const receita = JSON.parse(fs.readFileSync(path.join(pasta, arquivo), 'utf8'));
       const quadro = (receita.formato && receita.formato.quadro) || 32;
-      projetos.push({ caminho: `${relativa}/${info.nome}`, ...info, quadro, atualizado });
+      const temFolha = fs.existsSync(path.join(PASTA_SAIDA, `${relativa}/${info.nome}.png`));
+      projetos.push({ caminho: `${relativa}/${info.nome}`, ...info, quadro, atualizado, temFolha });
     }
   };
   for (const ferramenta of FERRAMENTAS) lerPasta(ferramenta);

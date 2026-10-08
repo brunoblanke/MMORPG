@@ -1,0 +1,110 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 101,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 6030,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "mortos-vivos",
+  "nome": "bonebeast",
+  "propriedades": {
+    "comportamento": "normal",
+    "vida": 515,
+    "xp": 580,
+    "velocidade": 218,
+    "armadura": 40,
+    "defesa": 30,
+    "ataque": 200,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.5,
+        "min": 1,
+        "max": 90
+      },
+      {
+        "tipo": "itens/armaduras/plate-armor",
+        "chance": 0.08
+      },
+      {
+        "tipo": "itens/liquidos/health-potion",
+        "chance": 0.0054
+      }
+    ],
+    "ataques": [
+      {
+        "forma": "tiro",
+        "elemento": "earth",
+        "min": 50,
+        "max": 90,
+        "chance": 15,
+        "alcance": 7
+      },
+      {
+        "forma": "bola",
+        "elemento": "death",
+        "min": 25,
+        "max": 47,
+        "chance": 10,
+        "raio": 3,
+        "centro": "si"
+      },
+      {
+        "forma": "lentidao",
+        "velocidade": -600,
+        "ms": 13000,
+        "chance": 15,
+        "alcance": 7
+      },
+      {
+        "forma": "cura",
+        "min": 50,
+        "max": 60,
+        "chance": 15
+      }
+    ],
+    "resistencias": {
+      "earth": 0,
+      "fire": 110,
+      "holy": 125,
+      "death": 0
+    }
+  }
+}

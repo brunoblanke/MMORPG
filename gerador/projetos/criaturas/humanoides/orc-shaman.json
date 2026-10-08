@@ -1,0 +1,103 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 6,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 5978,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "humanoides",
+  "nome": "orc-shaman",
+  "propriedades": {
+    "comportamento": "mago",
+    "vida": 115,
+    "xp": 110,
+    "velocidade": 140,
+    "armadura": 8,
+    "defesa": 10,
+    "ataque": 15,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.9,
+        "min": 1,
+        "max": 5
+      },
+      {
+        "tipo": "itens/armaduras/chain-armor",
+        "chance": 0.0875
+      },
+      {
+        "tipo": "itens/distancia/spear",
+        "chance": 0.0485
+      }
+    ],
+    "ataques": [
+      {
+        "forma": "tiro",
+        "elemento": "energy",
+        "min": 20,
+        "max": 31,
+        "chance": 15,
+        "alcance": 7
+      },
+      {
+        "forma": "bola",
+        "elemento": "fire",
+        "min": 5,
+        "max": 43,
+        "chance": 5,
+        "alcance": 7,
+        "raio": 1
+      },
+      {
+        "forma": "cura",
+        "min": 27,
+        "max": 43,
+        "chance": 60
+      }
+    ],
+    "resistencias": {
+      "energy": 50,
+      "earth": 110,
+      "holy": 90,
+      "death": 105
+    }
+  }
+}

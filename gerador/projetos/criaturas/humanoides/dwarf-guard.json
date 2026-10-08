@@ -1,0 +1,108 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 70,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 6013,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "humanoides",
+  "nome": "dwarf-guard",
+  "propriedades": {
+    "comportamento": "normal",
+    "vida": 245,
+    "xp": 165,
+    "velocidade": 206,
+    "armadura": 15,
+    "defesa": 30,
+    "ataque": 140,
+    "loot": [
+      {
+        "tipo": "itens/comidas/white-mushroom",
+        "chance": 0.55,
+        "min": 1,
+        "max": 2
+      },
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.4,
+        "min": 1,
+        "max": 30
+      },
+      {
+        "tipo": "itens/botas/leather-boots",
+        "chance": 0.4
+      },
+      {
+        "tipo": "itens/armaduras/scale-armor",
+        "chance": 0.092
+      },
+      {
+        "tipo": "itens/escudos/battle-shield",
+        "chance": 0.06
+      },
+      {
+        "tipo": "itens/capacetes/steel-helmet",
+        "chance": 0.016
+      },
+      {
+        "tipo": "itens/machados/double-axe",
+        "chance": 0.006
+      },
+      {
+        "tipo": "itens/valiosos/iron-ore",
+        "chance": 0.0051
+      },
+      {
+        "tipo": "itens/liquidos/health-potion",
+        "chance": 0.0038
+      },
+      {
+        "tipo": "itens/valiosos/small-amethyst",
+        "chance": 0.0014
+      }
+    ],
+    "resistencias": {
+      "physical": 80,
+      "earth": 80,
+      "fire": 105,
+      "death": 105
+    }
+  }
+}

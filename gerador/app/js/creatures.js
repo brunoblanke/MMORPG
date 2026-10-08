@@ -1,6 +1,6 @@
 // gerador/app/js/creatures.js
 
-import { saveProject, fetchProjects } from './api.js';
+import { saveProject, fetchProjects, fetchProject } from './api.js';
 import { creatureInfo, itemCategory } from './picker.js';
 import { sourceUrl, sourceLabel, loadImage, isReady, drawAnchored, readPngFile, normalizeName, setStatus } from './common.js';
 import { refreshProjects } from './projects.js';
@@ -158,6 +158,7 @@ function initCreatures() {
     evt.preventDefault();
     save();
   });
+  document.getElementById('creaturePendingBtn').addEventListener('click', generatePending);
   document.getElementById('corpseClear').onclick = () => setCorpse(creatures.selectedStage, null);
   document.getElementById('corpseUpload').addEventListener('change', async (evt) => {
     const file = evt.target.files[0];
@@ -1068,6 +1069,35 @@ async function save() {
   } finally {
     creatures.saving = false;
     document.getElementById('creatureSaveBtn').disabled = false;
+  }
+}
+
+// ================================================================================================================================================================================================================================================
+// generatePending
+// Abre, uma por uma, as criaturas que têm receita mas não têm folha (.png) e salva cada uma (cria a folha).
+
+async function generatePending() {
+  const button = document.getElementById('creaturePendingBtn');
+  button.disabled = true;
+  try {
+    const pending = (await fetchProjects()).filter(project => project.ferramenta === CATEGORY && !project.temFolha);
+    if (!pending.length) return status('Nenhuma criatura sem folha.', 'ok');
+    let done = 0;
+    for (const project of pending) {
+      status(`Gerando ${project.nome} (${done + 1} de ${pending.length})…`);
+      openRecipe(await fetchProject(project.caminho));
+      const limit = Date.now() + 20000;
+      while (Date.now() < limit && (!isReady(creatures.sheetImage) || Object.keys(creatures.corpse).some(key => !corpseImage(key)))) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+      await save();
+      done++;
+    }
+    status(`${done} folha(s) gerada(s). Faça o commit de gerador/saida e gerador/projetos.`, 'ok');
+  } catch (error) {
+    status(`Parou: ${error.message}`, 'error');
+  } finally {
+    button.disabled = false;
   }
 }
 

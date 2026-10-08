@@ -1,0 +1,63 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 43,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 5988,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "vermes",
+  "nome": "scorpion",
+  "propriedades": {
+    "comportamento": "foge",
+    "vida": 45,
+    "xp": 45,
+    "velocidade": 150,
+    "armadura": 14,
+    "defesa": 5,
+    "ataque": 50,
+    "loot": [],
+    "resistencias": {
+      "energy": 80,
+      "earth": 0,
+      "fire": 110,
+      "ice": 110
+    }
+  }
+}

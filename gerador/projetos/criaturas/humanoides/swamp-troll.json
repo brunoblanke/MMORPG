@@ -1,0 +1,76 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 76,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 6018,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "humanoides",
+  "nome": "swamp-troll",
+  "propriedades": {
+    "comportamento": "foge",
+    "vida": 55,
+    "xp": 25,
+    "velocidade": 128,
+    "armadura": 6,
+    "defesa": 15,
+    "ataque": 13,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.503,
+        "min": 1,
+        "max": 5
+      },
+      {
+        "tipo": "itens/distancia/spear",
+        "chance": 0.13
+      },
+      {
+        "tipo": "itens/botas/leather-boots",
+        "chance": 0.095
+      }
+    ],
+    "resistencias": {
+      "earth": 85,
+      "fire": 105
+    }
+  }
+}

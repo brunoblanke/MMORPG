@@ -1,0 +1,111 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 139,
+    "cores": [
+      113,
+      38,
+      76,
+      96
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 18242,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "humanos",
+  "nome": "valkyrie",
+  "propriedades": {
+    "comportamento": "foge",
+    "vida": 190,
+    "xp": 85,
+    "velocidade": 176,
+    "armadura": 12,
+    "defesa": 12,
+    "ataque": 70,
+    "loot": [
+      {
+        "tipo": "itens/distancia/spear",
+        "chance": 0.55,
+        "min": 1,
+        "max": 3
+      },
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.32,
+        "min": 1,
+        "max": 12
+      },
+      {
+        "tipo": "itens/comidas/meet",
+        "chance": 0.3
+      },
+      {
+        "tipo": "itens/armaduras/chain-armor",
+        "chance": 0.1
+      },
+      {
+        "tipo": "itens/armaduras/plate-armor",
+        "chance": 0.0083
+      },
+      {
+        "tipo": "itens/liquidos/health-potion",
+        "chance": 0.005
+      },
+      {
+        "tipo": "itens/machados/double-axe",
+        "chance": 0.0043
+      },
+      {
+        "tipo": "itens/valiosos/small-diamond",
+        "chance": 0.0013
+      }
+    ],
+    "ataques": [
+      {
+        "forma": "tiro",
+        "elemento": "physical",
+        "min": 0,
+        "max": 50,
+        "chance": 15,
+        "alcance": 5
+      }
+    ],
+    "resistencias": {
+      "physical": 110,
+      "fire": 90,
+      "ice": 90,
+      "holy": 95,
+      "death": 105
+    }
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 54,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 18254,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "humanos",
+  "nome": "witch",
+  "propriedades": {
+    "comportamento": "mago",
+    "vida": 300,
+    "xp": 120,
+    "velocidade": 204,
+    "armadura": 8,
+    "defesa": 15,
+    "ataque": 20,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.64,
+        "min": 1,
+        "max": 40
+      },
+      {
+        "tipo": "itens/botas/leather-boots",
+        "chance": 0.0495
+      }
+    ],
+    "ataques": [
+      {
+        "forma": "tiro",
+        "elemento": "fire",
+        "min": 30,
+        "max": 75,
+        "chance": 20,
+        "alcance": 7
+      },
+      {
+        "forma": "campo",
+        "campo": "itens/itens-encantados/fire-field",
+        "chance": 10,
+        "alcance": 7,
+        "raio": 1
+      }
+    ],
+    "resistencias": {
+      "physical": 105,
+      "energy": 0,
+      "earth": 80,
+      "death": 105
+    }
+  }
+}

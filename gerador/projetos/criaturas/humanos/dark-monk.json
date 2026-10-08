@@ -1,0 +1,101 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 225,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 18281,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "humanos",
+  "nome": "dark-monk",
+  "propriedades": {
+    "comportamento": "normal",
+    "vida": 190,
+    "xp": 145,
+    "velocidade": 230,
+    "armadura": 22,
+    "defesa": 25,
+    "ataque": 100,
+    "loot": [
+      {
+        "tipo": "itens/comidas/bread",
+        "chance": 0.2055
+      },
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.146,
+        "min": 1,
+        "max": 18
+      },
+      {
+        "tipo": "itens/valiosos/life-crystal",
+        "chance": 0.0099
+      },
+      {
+        "tipo": "itens/botas/sandals",
+        "chance": 0.0089
+      },
+      {
+        "tipo": "itens/liquidos/mana-potion",
+        "chance": 0.0079
+      }
+    ],
+    "ataques": [
+      {
+        "forma": "tiro",
+        "elemento": "death",
+        "min": 20,
+        "max": 50,
+        "chance": 15,
+        "alcance": 1
+      },
+      {
+        "forma": "cura",
+        "min": 25,
+        "max": 49,
+        "chance": 15
+      }
+    ],
+    "resistencias": {
+      "physical": 110,
+      "holy": 110,
+      "death": 60
+    }
+  }
+}

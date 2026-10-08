@@ -1,0 +1,90 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 95,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 6027,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "criaturas-magicas",
+  "nome": "gargoyle",
+  "propriedades": {
+    "comportamento": "foge",
+    "vida": 250,
+    "xp": 150,
+    "velocidade": 200,
+    "armadura": 26,
+    "defesa": 25,
+    "ataque": 65,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.88,
+        "min": 1,
+        "max": 30
+      },
+      {
+        "tipo": "itens/clavas/morning-star",
+        "chance": 0.0215
+      },
+      {
+        "tipo": "itens/escudos/battle-shield",
+        "chance": 0.01
+      },
+      {
+        "tipo": "itens/capacetes/steel-helmet",
+        "chance": 0.0085
+      }
+    ],
+    "ataques": [
+      {
+        "forma": "cura",
+        "min": 5,
+        "max": 15,
+        "chance": 20
+      }
+    ],
+    "resistencias": {
+      "physical": 80,
+      "earth": 0,
+      "fire": 110,
+      "death": 60
+    }
+  }
+}

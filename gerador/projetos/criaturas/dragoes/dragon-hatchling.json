@@ -1,0 +1,104 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 271,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 269,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "dragoes",
+  "nome": "dragon-hatchling",
+  "propriedades": {
+    "comportamento": "foge",
+    "vida": 380,
+    "xp": 185,
+    "velocidade": 146,
+    "armadura": 15,
+    "defesa": 10,
+    "ataque": 55,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.9554,
+        "min": 1,
+        "max": 50
+      },
+      {
+        "tipo": "itens/comidas/dragon-ham",
+        "chance": 0.8304
+      },
+      {
+        "tipo": "itens/liquidos/health-potion",
+        "chance": 0.0047
+      }
+    ],
+    "ataques": [
+      {
+        "forma": "onda",
+        "elemento": "fire",
+        "min": 60,
+        "max": 90,
+        "chance": 10,
+        "comprimento": 5,
+        "abertura": 2
+      },
+      {
+        "forma": "bola",
+        "elemento": "fire",
+        "min": 30,
+        "max": 55,
+        "chance": 15,
+        "alcance": 7,
+        "raio": 4
+      },
+      {
+        "forma": "cura",
+        "min": 8,
+        "max": 33,
+        "chance": 15
+      }
+    ],
+    "resistencias": {
+      "energy": 105,
+      "earth": 25,
+      "fire": 0,
+      "ice": 110
+    }
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 119,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 6046,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "repteis",
+  "nome": "crocodile",
+  "propriedades": {
+    "comportamento": "foge",
+    "vida": 105,
+    "xp": 40,
+    "velocidade": 156,
+    "armadura": 13,
+    "defesa": 15,
+    "ataque": 40,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.5,
+        "min": 1,
+        "max": 10
+      },
+      {
+        "tipo": "itens/comidas/ham",
+        "chance": 0.4
+      }
+    ],
+    "resistencias": {
+      "physical": 110,
+      "energy": 105,
+      "earth": 80,
+      "fire": 110,
+      "ice": 90
+    }
+  }
+}
