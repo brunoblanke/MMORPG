@@ -1,0 +1,118 @@
+{
+  "formato": {
+    "quadro": 32,
+    "quadros": 14,
+    "msPorQuadro": 200,
+    "padrao": [
+      2,
+      3
+    ],
+    "linhas": [
+      "meio: 1 variações",
+      "s o n l",
+      "sl so nl no",
+      "int-sl int-so int-nl int-no"
+    ]
+  },
+  "variacoesDoMeio": 1,
+  "slots": {
+    "s": {
+      "tibia": {
+        "id": 4645,
+        "variacao": 0
+      }
+    },
+    "o": {
+      "tibia": {
+        "id": 4648,
+        "variacao": 0
+      }
+    },
+    "n": {
+      "tibia": {
+        "id": 4646,
+        "variacao": 0
+      }
+    },
+    "l": {
+      "tibia": {
+        "id": 4647,
+        "variacao": 0
+      }
+    },
+    "sl": {
+      "tibia": {
+        "id": 4649,
+        "variacao": 0
+      }
+    },
+    "so": {
+      "tibia": {
+        "id": 4652,
+        "variacao": 0
+      }
+    },
+    "nl": {
+      "tibia": {
+        "id": 4650,
+        "variacao": 0
+      }
+    },
+    "no": {
+      "tibia": {
+        "id": 4651,
+        "variacao": 0
+      }
+    },
+    "meio-1": {
+      "tibia": {
+        "id": 629,
+        "variacao": 0
+      }
+    },
+    "padrao-0-0": {
+      "tibia": {
+        "id": 629,
+        "variacao": 0
+      }
+    },
+    "padrao-1-0": {
+      "tibia": {
+        "id": 630,
+        "variacao": 0
+      }
+    },
+    "padrao-0-1": {
+      "tibia": {
+        "id": 631,
+        "variacao": 0
+      }
+    },
+    "padrao-1-1": {
+      "tibia": {
+        "id": 632,
+        "variacao": 0
+      }
+    },
+    "padrao-0-2": {
+      "tibia": {
+        "id": 633,
+        "variacao": 0
+      }
+    },
+    "padrao-1-2": {
+      "tibia": {
+        "id": 634,
+        "variacao": 0
+      }
+    }
+  },
+  "propriedades": {
+    "comportamento": "bloqueia",
+    "bordaBloqueia": true
+  },
+  "ferramenta": "pisos",
+  "grupo": "estrutura",
+  "pasta": "pisos",
+  "nome": "agua-9"
+}
