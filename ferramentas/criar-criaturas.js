@@ -54,7 +54,9 @@ const CLASSICAS = [
   ['massive_fire_elemental', 'elementals', 'elementais'], ['massive_water_elemental', 'elementals', 'elementais'],
   ['massive_earth_elemental', 'elementals', 'elementais'], ['massive_energy_elemental', 'elementals', 'elementais'],
   ['hellhound', 'demons', 'demonios'], ['hydra', 'dragons', 'dragoes'], ['ghastly_dragon', 'dragons', 'dragoes'],
-  ['lizard_templar', 'reptiles', 'repteis'], 
+  ['lizard_templar', 'reptiles', 'repteis'], ['lizard_sentinel', 'reptiles', 'repteis'], ['lizard_snakecharmer', 'reptiles', 'repteis'],
+  ['lizard_high_guard', 'reptiles', 'repteis'], ['lizard_legionnaire', 'reptiles', 'repteis'], ['lizard_dragon_priest', 'reptiles', 'repteis'], ['lizard_chosen', 'reptiles', 'repteis'],
+  ['bonelord', 'magicals', 'criaturas-magicas'], ['elder_bonelord', 'magicals', 'criaturas-magicas'], ['gazer', 'magicals', 'criaturas-magicas'],
 ];
 
 // ================================================================================================================================================================================================================================================

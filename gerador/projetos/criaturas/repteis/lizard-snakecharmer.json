@@ -1,0 +1,108 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 115,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 6041,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "repteis",
+  "nome": "lizard-snakecharmer",
+  "propriedades": {
+    "comportamento": "mago",
+    "vida": 325,
+    "xp": 210,
+    "velocidade": 344,
+    "armadura": 22,
+    "defesa": 15,
+    "ataque": 30,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.8374,
+        "min": 1,
+        "max": 55
+      },
+      {
+        "tipo": "itens/valiosos/life-crystal",
+        "chance": 0.0143
+      },
+      {
+        "tipo": "itens/rods/terra-rod",
+        "chance": 0.0092
+      },
+      {
+        "tipo": "itens/liquidos/mana-potion",
+        "chance": 0.0086
+      },
+      {
+        "tipo": "itens/valiosos/small-amethyst",
+        "chance": 0.0052
+      },
+      {
+        "tipo": "itens/valiosos/yellow-gem",
+        "chance": 0.0015
+      }
+    ],
+    "ataques": [
+      {
+        "forma": "bola",
+        "elemento": "earth",
+        "min": 50,
+        "max": 110,
+        "chance": 15,
+        "alcance": 7,
+        "raio": 1
+      },
+      {
+        "forma": "cura",
+        "min": 50,
+        "max": 100,
+        "chance": 50
+      }
+    ],
+    "resistencias": {
+      "physical": 110,
+      "energy": 80,
+      "earth": 0,
+      "fire": 110,
+      "ice": 80
+    }
+  }
+}

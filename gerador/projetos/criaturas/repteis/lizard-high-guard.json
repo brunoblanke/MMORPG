@@ -1,0 +1,101 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 337,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 10355,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "repteis",
+  "nome": "lizard-high-guard",
+  "propriedades": {
+    "comportamento": "normal",
+    "vida": 1800,
+    "xp": 1450,
+    "velocidade": 238,
+    "armadura": 40,
+    "defesa": 35,
+    "ataque": 306,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.32,
+        "min": 1,
+        "max": 100
+      },
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.32,
+        "min": 1,
+        "max": 100
+      },
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.32,
+        "min": 1,
+        "max": 27
+      },
+      {
+        "tipo": "itens/valiosos/platinum-coin",
+        "chance": 0.049,
+        "min": 1,
+        "max": 2
+      },
+      {
+        "tipo": "itens/valiosos/small-emerald",
+        "chance": 0.0252,
+        "min": 1,
+        "max": 4
+      }
+    ],
+    "ataques": [
+      {
+        "forma": "cura",
+        "min": 25,
+        "max": 75,
+        "chance": 10
+      }
+    ],
+    "resistencias": {
+      "earth": 0,
+      "fire": 55,
+      "ice": 110
+    }
+  }
+}

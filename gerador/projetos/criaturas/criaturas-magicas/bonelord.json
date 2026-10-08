@@ -1,0 +1,151 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 17,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 5992,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "criaturas-magicas",
+  "nome": "bonelord",
+  "propriedades": {
+    "comportamento": "mago",
+    "vida": 260,
+    "xp": 170,
+    "velocidade": 150,
+    "armadura": 5,
+    "defesa": 5,
+    "ataque": 5,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.994,
+        "min": 1,
+        "max": 48
+      },
+      {
+        "tipo": "itens/espadas/longsword",
+        "chance": 0.0906
+      },
+      {
+        "tipo": "itens/clavas/morning-star",
+        "chance": 0.0702
+      },
+      {
+        "tipo": "itens/escudos/steel-shield",
+        "chance": 0.0398
+      },
+      {
+        "tipo": "itens/espadas/two-handed-sword",
+        "chance": 0.0395
+      },
+      {
+        "tipo": "itens/produtos-de-criaturas/bonelord-eye",
+        "chance": 0.01
+      },
+      {
+        "tipo": "itens/rods/terra-rod",
+        "chance": 0.0051
+      },
+      {
+        "tipo": "itens/liquidos/mana-potion",
+        "chance": 0.003
+      },
+      {
+        "tipo": "itens/escudos/bonelord-shield",
+        "chance": 0.0011
+      }
+    ],
+    "ataques": [
+      {
+        "forma": "tiro",
+        "elemento": "energy",
+        "min": 15,
+        "max": 45,
+        "chance": 5,
+        "alcance": 7
+      },
+      {
+        "forma": "tiro",
+        "elemento": "fire",
+        "min": 25,
+        "max": 45,
+        "chance": 5,
+        "alcance": 7
+      },
+      {
+        "forma": "tiro",
+        "elemento": "death",
+        "min": 30,
+        "max": 50,
+        "chance": 5,
+        "alcance": 7
+      },
+      {
+        "forma": "tiro",
+        "elemento": "earth",
+        "min": 5,
+        "max": 45,
+        "chance": 5,
+        "alcance": 7
+      },
+      {
+        "forma": "tiro",
+        "elemento": "death",
+        "min": 5,
+        "max": 50,
+        "chance": 5,
+        "alcance": 7
+      },
+      {
+        "forma": "tiro",
+        "elemento": "death",
+        "min": 0,
+        "max": 45,
+        "chance": 5,
+        "alcance": 7
+      }
+    ],
+    "resistencias": {
+      "earth": 0,
+      "fire": 110,
+      "ice": 80
+    }
+  }
+}

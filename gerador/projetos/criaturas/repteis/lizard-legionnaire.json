@@ -1,0 +1,91 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 338,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 10359,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "repteis",
+  "nome": "lizard-legionnaire",
+  "propriedades": {
+    "comportamento": "mago",
+    "vida": 1400,
+    "xp": 1100,
+    "velocidade": 266,
+    "armadura": 30,
+    "defesa": 25,
+    "ataque": 180,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.54,
+        "min": 1,
+        "max": 65
+      },
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.44,
+        "min": 1,
+        "max": 100
+      },
+      {
+        "tipo": "itens/valiosos/small-diamond",
+        "chance": 0.01001,
+        "min": 1,
+        "max": 2
+      }
+    ],
+    "ataques": [
+      {
+        "forma": "tiro",
+        "elemento": "physical",
+        "min": 0,
+        "max": 200,
+        "chance": 40,
+        "alcance": 7
+      }
+    ],
+    "resistencias": {
+      "earth": 0,
+      "fire": 55,
+      "ice": 110
+    }
+  }
+}

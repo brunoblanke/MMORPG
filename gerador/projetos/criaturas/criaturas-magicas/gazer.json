@@ -1,0 +1,80 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 109,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 6036,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "criaturas-magicas",
+  "nome": "gazer",
+  "propriedades": {
+    "comportamento": "mago",
+    "vida": 120,
+    "xp": 90,
+    "velocidade": 140,
+    "armadura": 4,
+    "defesa": 4,
+    "ataque": 15,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.9935,
+        "min": 1,
+        "max": 16
+      }
+    ],
+    "ataques": [
+      {
+        "forma": "tiro",
+        "elemento": "death",
+        "min": 25,
+        "max": 35,
+        "chance": 15,
+        "alcance": 7
+      }
+    ],
+    "resistencias": {
+      "energy": 90,
+      "earth": 0,
+      "fire": 110,
+      "ice": 80
+    }
+  }
+}

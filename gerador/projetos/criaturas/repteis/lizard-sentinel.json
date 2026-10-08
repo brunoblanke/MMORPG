@@ -1,0 +1,106 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 114,
+    "cores": [
+      78,
+      69,
+      58,
+      76
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 6040,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4249,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 3987,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "repteis",
+  "nome": "lizard-sentinel",
+  "propriedades": {
+    "comportamento": "mago",
+    "vida": 265,
+    "xp": 110,
+    "velocidade": 180,
+    "armadura": 17,
+    "defesa": 15,
+    "ataque": 45,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.89,
+        "min": 1,
+        "max": 80
+      },
+      {
+        "tipo": "itens/distancia/spear",
+        "chance": 0.0875,
+        "min": 1,
+        "max": 3
+      },
+      {
+        "tipo": "itens/armaduras/chain-armor",
+        "chance": 0.0856
+      },
+      {
+        "tipo": "itens/armaduras/scale-armor",
+        "chance": 0.0773
+      },
+      {
+        "tipo": "itens/liquidos/health-potion",
+        "chance": 0.0059
+      },
+      {
+        "tipo": "itens/machados/halberd",
+        "chance": 0.0051
+      },
+      {
+        "tipo": "itens/valiosos/small-diamond",
+        "chance": 0.0019
+      }
+    ],
+    "ataques": [
+      {
+        "forma": "tiro",
+        "elemento": "physical",
+        "min": 0,
+        "max": 70,
+        "chance": 30,
+        "alcance": 7
+      }
+    ],
+    "resistencias": {
+      "energy": 90,
+      "earth": 0,
+      "fire": 110,
+      "ice": 80
+    }
+  }
+}
