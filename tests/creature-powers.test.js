@@ -316,15 +316,27 @@ test('quem ataca de longe, parado, fica virado pro player; quem só bate colado 
   const ranged = game({ ataque: 0, ataques: [{ forma: 'tiro', elemento: 'fire', min: 1, max: 1, chance: 1, alcance: 6 }] }, [[8, 5, 0]]);
   const enemy = ranged.enemies[0];
   enemy.ai.state = 'chase';
-  enemy.isMoving = false;
+  enemy.isMoving = true;
+  enemy.lastMoveTime = 0;
   enemy.direction = 'norte';
   ranged.powers.update(enemy, ranged.player, ranged.time + 5000);
   assert.equal(enemy.direction, 'oeste');
   const melee = game({ ataque: 0, ataques: [] }, [[8, 5, 0]]);
   const brute = melee.enemies[0];
   brute.ai.state = 'chase';
-  brute.isMoving = false;
+  brute.isMoving = true;
+  brute.lastMoveTime = 0;
   brute.direction = 'norte';
   melee.powers.update(brute, melee.player, melee.time + 5000);
   assert.equal(brute.direction, 'norte');
+});
+
+test('quem ataca de longe e acabou de dar um passo não vira antes de parar', () => {
+  const ranged = game({ ataque: 0, ataques: [{ forma: 'tiro', elemento: 'fire', min: 1, max: 1, chance: 1, alcance: 6 }] }, [[8, 5, 0]]);
+  const enemy = ranged.enemies[0];
+  enemy.ai.state = 'chase';
+  enemy.direction = 'norte';
+  enemy.lastMoveTime = ranged.time + 4900;
+  ranged.powers.update(enemy, ranged.player, ranged.time + 5000);
+  assert.equal(enemy.direction, 'norte');
 });

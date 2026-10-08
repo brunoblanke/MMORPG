@@ -49,7 +49,7 @@ export class CreaturePowers {
     const state = enemy.ai && enemy.ai.state;
     if ((state !== AI_STATE.CHASE && state !== AI_STATE.FLEE) || getLevel(enemy) !== getLevel(player)) return;
     if (this.sim.world.isInSafeZone(player)) return;
-    if (state === AI_STATE.CHASE && !enemy.isMoving && this.shootsFromAfar(enemy)) this.sim.movement.faceTowards(enemy, player.x - enemy.x, player.y - enemy.y);
+    if (state === AI_STATE.CHASE && now - (enemy.lastMoveTime || 0) > enemy.getStepInterval() && this.shootsFromAfar(enemy)) this.sim.movement.faceTowards(enemy, player.x - enemy.x, player.y - enemy.y);
     if (now < (enemy.powerReadyAt || 0)) return;
     enemy.powerReadyAt = now + POWER_TRY_MS;
     const powers = creaturePowers(enemy.creature);
@@ -65,7 +65,8 @@ export class CreaturePowers {
 
   // ================================================================================================================================================================================================================================================
   // shootsFromAfar
-  // A criatura ataca de longe (mago ou com magia de alvo, onda ou raio): parada, fica virada pro player.
+  // A criatura ataca de longe (mago ou com magia de alvo, onda ou raio): parada (sem andar há mais que um passo; no servidor isMoving
+  // não zera sozinho), fica virada pro player.
 
   shootsFromAfar(enemy) {
     return creatureBehavior(enemy.creature) === 'mago' || creaturePowers(enemy.creature).attacks.some(attack => FROM_AFAR.includes(attack.shape));
