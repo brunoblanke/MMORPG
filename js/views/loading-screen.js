@@ -6,13 +6,14 @@ import { PLAYER_SPRITES, DEFAULT_GENDER } from '../../shared/catalog.js';
 import { getAsset } from '../../shared/assets.js';
 
 const FRAME_MS = 150;
-const SCALE = 2;
-const SIZE = 64;
+const TILE = 32;
 const WIDTH = 160;
-const HEIGHT = 110;
+const HEIGHT = 80;
+const TILE_TOP = 12;
 
 // Tela de carregamento (markup em index.html, #loadingScreen): um player andando no
-// mesmo lugar no meio da tela e, embaixo dele, "Carregando… N%" no formato do nome do
+// mesmo lugar no meio da tela, no tamanho do jogo (sqm de 32 px; o quadro de 64 px fica
+// ancorado embaixo à direita do sqm, então é deslocado pra centralizar o sqm) e, embaixo dele, "Carregando… N%" no formato do nome do
 // player (verde, com contorno). Some quando o jogo termina de carregar e abre a janela
 // de entrada.
 
@@ -51,7 +52,7 @@ export class LoadingScreen {
     if (!asset) return;
     const image = new Image();
     image.src = asset.url;
-    this.sheet = { image, size: asset.quadro || SIZE, frames: asset.quadros || 1 };
+    this.sheet = { image, size: asset.quadro || TILE, frames: asset.quadros || 1 };
   }
 
   // ================================================================================================================================================================================================================================================
@@ -76,9 +77,9 @@ export class LoadingScreen {
     if (sheet && sheet.image.complete && sheet.image.naturalWidth) {
       const walk = Math.max(1, sheet.frames - 1);
       const column = sheet.frames > 1 ? 1 + Math.floor(now / FRAME_MS) % walk : 0;
-      ctx.drawImage(sheet.image, column * sheet.size, 0, sheet.size, sheet.size, (WIDTH - sheet.size) / 2, 8, sheet.size, sheet.size);
+      ctx.drawImage(sheet.image, column * sheet.size, 0, sheet.size, sheet.size, (WIDTH + TILE) / 2 - sheet.size, TILE_TOP + TILE - sheet.size, sheet.size, sheet.size);
     }
-    drawTibiaText(ctx, `Carregando… ${Math.round(this.fraction * 100)}%`, WIDTH / 2, SIZE + 28, NAME_COLOR);
+    drawTibiaText(ctx, `Carregando… ${Math.round(this.fraction * 100)}%`, WIDTH / 2, TILE_TOP + TILE + 16, NAME_COLOR);
     requestAnimationFrame(this.draw);
   }
 }

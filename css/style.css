@@ -41,8 +41,8 @@ canvas {
 }
 
 .loading-screen canvas {
-  width: 320px;
-  height: 220px;
+  width: 160px;
+  height: 80px;
   image-rendering: pixelated;
   background: transparent;
   margin: 0;
