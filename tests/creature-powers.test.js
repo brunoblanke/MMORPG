@@ -300,3 +300,14 @@ test('resistências: imune não leva dano do tipo, fraca leva mais, o resto norm
   sim.conditions.add(enemy, 'fire', { damage: 5, ticks: 3 });
   assert.equal(enemy.conditions && enemy.conditions.fire, undefined);
 });
+
+test('magias só alcançam sqms com chão no andar em que são lançadas (piso só no andar de cima não conta)', () => {
+  game({ ataque: 0, ataques: [DRAGON_WAVE] });
+  const sim = buildGame({ objects: [...floorRect(0, 9, 0, 19, 0), ...floorRect(7, 19, 0, 19, 1)], enemies: [[6, 6, 0]], player: { x: 5, y: 5, z: 0 } });
+  const enemy = sim.enemies[0];
+  enemy.direction = 'leste';
+  const tiles = sim.powers.waveTiles(enemy, { length: 8, spread: 3 });
+  assert.ok(tiles.length > 0);
+  assert.ok(tiles.every(([x, y]) => sim.world.hasFloorAt(x, y, 0)));
+  assert.ok(sim.world.hasFloorAt(12, 6, 1) && !tiles.some(([x]) => x > 9));
+});

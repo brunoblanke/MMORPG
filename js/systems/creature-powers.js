@@ -115,7 +115,7 @@ export class CreaturePowers {
     const from = { x: center.x, y: center.y, z: center.z || 0 };
     return area
       .map(([dx, dy]) => [center.x + dx, center.y + dy])
-      .filter(([x, y]) => this.sim.world.isInside(x, y) && this.sim.movement.hasLineOfSight(from, { x, y }));
+      .filter(([x, y]) => this.sim.world.isInside(x, y) && this.sim.world.hasFloorAt(x, y, from.z) && this.sim.movement.hasLineOfSight(from, { x, y }));
   }
 
   // ================================================================================================================================================================================================================================================
@@ -124,7 +124,7 @@ export class CreaturePowers {
 
   reach(enemy, offsets) {
     return offsets.map(([dx, dy]) => [enemy.x + dx, enemy.y + dy])
-      .filter(([x, y]) => this.sim.world.isInside(x, y) && this.sim.movement.hasLineOfSight(enemy, { x, y }));
+      .filter(([x, y]) => this.sim.world.isInside(x, y) && this.sim.world.hasFloorAt(x, y, enemy.z || 0) && this.sim.movement.hasLineOfSight(enemy, { x, y }));
   }
 
   // ================================================================================================================================================================================================================================================
@@ -142,7 +142,7 @@ export class CreaturePowers {
   beamTiles(enemy, attack) {
     const tiles = [];
     for (const [x, y] of beamOffsets(attack, enemy.direction).map(([dx, dy]) => [enemy.x + dx, enemy.y + dy])) {
-      if (!this.sim.world.isInside(x, y) || !this.sim.movement.hasLineOfSight(enemy, { x, y })) break;
+      if (!this.sim.world.isInside(x, y) || !this.sim.world.hasFloorAt(x, y, enemy.z || 0) || !this.sim.movement.hasLineOfSight(enemy, { x, y })) break;
       tiles.push([x, y]);
     }
     return tiles;

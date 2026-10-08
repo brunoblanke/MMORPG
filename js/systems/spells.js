@@ -268,7 +268,8 @@ export class SpellController {
       this.showEffect(who.x, who.y, rune.effect || 'heal', undefined, who.z || 0);
       return null;
     }
-    const tiles = AREAS[rune.area || 'single'].map(([dx, dy]) => [target.x + dx, target.y + dy]);
+    const tiles = AREAS[rune.area || 'single'].map(([dx, dy]) => [target.x + dx, target.y + dy])
+      .filter(([x, y]) => this.sim.world.hasFloorAt(x, y, target.z));
     if (rune.kind === 'attack') {
       const who = this.sim.enemies.find(at(target.x, target.y));
       if (!who) return 'Só dá pra usar em criaturas.';

@@ -320,7 +320,7 @@ export class CombatController {
       for (let dx = -impact.radius; dx <= impact.radius; dx++) {
         const x = target.x + dx;
         const y = target.y + dy;
-        if (world.isInside(x, y) && this.sim.movement.hasLineOfSight(origin, { x, y })) tiles.push([x, y]);
+        if (world.isInside(x, y) && world.hasFloorAt(x, y, z) && this.sim.movement.hasLineOfSight(origin, { x, y })) tiles.push([x, y]);
       }
     }
     const inArea = new Set(tiles.map(([x, y]) => `${x},${y}`));
