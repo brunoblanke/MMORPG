@@ -16,7 +16,9 @@
       "arco-y-norte",
       "arco-y-sul",
       "janela-x",
-      "janela-y"
+      "janela-y",
+      "passagem-x",
+      "passagem-y"
     ]
   },
   "pecas": {
@@ -68,18 +70,6 @@
         "variacao": 0
       }
     },
-    "janela-x": {
-      "tibia": {
-        "id": 1734,
-        "variacao": 0
-      }
-    },
-    "janela-y": {
-      "tibia": {
-        "id": 1735,
-        "variacao": 0
-      }
-    },
     "arco-x-oeste": {
       "tibia": {
         "id": 1634,
@@ -103,10 +93,22 @@
         "id": 1637,
         "variacao": 0
       }
+    },
+    "janela-x": {
+      "tibia": {
+        "id": 1734,
+        "variacao": 0
+      }
+    },
+    "janela-y": {
+      "tibia": {
+        "id": 1735,
+        "variacao": 0
+      }
     }
   },
   "ferramenta": "paredes",
   "grupo": "estrutura",
   "pasta": "paredes",
-  "nome": "parede-madeira-1"
+  "nome": "madeira-1"
 }

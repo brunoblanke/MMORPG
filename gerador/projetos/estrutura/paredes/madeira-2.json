@@ -1,0 +1,78 @@
+{
+  "formato": {
+    "quadro": 64,
+    "colunas": 4,
+    "pecas": [
+      "x",
+      "y",
+      "xy",
+      "yx",
+      "porta-x",
+      "porta-x-aberta",
+      "porta-y",
+      "porta-y-aberta",
+      "arco-x-oeste",
+      "arco-x-leste",
+      "arco-y-norte",
+      "arco-y-sul",
+      "janela-x",
+      "janela-y",
+      "passagem-x",
+      "passagem-y"
+    ]
+  },
+  "pecas": {
+    "x": {
+      "tibia": {
+        "id": 1598,
+        "variacao": 0
+      }
+    },
+    "y": {
+      "tibia": {
+        "id": 1606,
+        "variacao": 0
+      }
+    },
+    "xy": {
+      "tibia": {
+        "id": 1619,
+        "variacao": 0
+      }
+    },
+    "yx": {
+      "tibia": {
+        "id": 1600,
+        "variacao": 0
+      }
+    },
+    "arco-x-oeste": {
+      "tibia": {
+        "id": 1603,
+        "variacao": 0
+      }
+    },
+    "arco-x-leste": {
+      "tibia": {
+        "id": 1599,
+        "variacao": 0
+      }
+    },
+    "arco-y-norte": {
+      "tibia": {
+        "id": 1608,
+        "variacao": 0
+      }
+    },
+    "arco-y-sul": {
+      "tibia": {
+        "id": 1610,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "paredes",
+  "grupo": "estrutura",
+  "pasta": "paredes",
+  "nome": "madeira-2"
+}

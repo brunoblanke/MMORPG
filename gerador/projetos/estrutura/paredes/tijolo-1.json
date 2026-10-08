@@ -16,7 +16,9 @@
       "arco-y-norte",
       "arco-y-sul",
       "janela-x",
-      "janela-y"
+      "janela-y",
+      "passagem-x",
+      "passagem-y"
     ]
   },
   "pecas": {
@@ -68,18 +70,6 @@
         "variacao": 0
       }
     },
-    "janela-x": {
-      "tibia": {
-        "id": 1736,
-        "variacao": 0
-      }
-    },
-    "janela-y": {
-      "tibia": {
-        "id": 1737,
-        "variacao": 0
-      }
-    },
     "arco-x-oeste": {
       "tibia": {
         "id": 1626,
@@ -103,10 +93,22 @@
         "id": 1625,
         "variacao": 0
       }
+    },
+    "janela-x": {
+      "tibia": {
+        "id": 1736,
+        "variacao": 0
+      }
+    },
+    "janela-y": {
+      "tibia": {
+        "id": 1737,
+        "variacao": 0
+      }
     }
   },
   "ferramenta": "paredes",
   "grupo": "estrutura",
   "pasta": "paredes",
-  "nome": "parede-tijolos-1"
+  "nome": "tijolo-1"
 }

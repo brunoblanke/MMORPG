@@ -16,7 +16,9 @@
       "arco-y-norte",
       "arco-y-sul",
       "janela-x",
-      "janela-y"
+      "janela-y",
+      "passagem-x",
+      "passagem-y"
     ]
   },
   "pecas": {
@@ -60,5 +62,5 @@
   "ferramenta": "paredes",
   "grupo": "estrutura",
   "pasta": "cercas",
-  "nome": "parede-pedra-branca-1"
+  "nome": "mureta-branca-1"
 }
