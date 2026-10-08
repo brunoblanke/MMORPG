@@ -190,7 +190,8 @@
     }
   },
   "propriedades": {
-    "comportamento": "normal"
+    "comportamento": "normal",
+    "bordaBarraArremesso": true
   },
   "ferramenta": "pisos",
   "grupo": "estrutura",

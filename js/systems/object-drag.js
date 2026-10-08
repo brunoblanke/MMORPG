@@ -179,10 +179,10 @@ export class ObjectDragController {
 
   // ================================================================================================================================================================================================================================================
   // hasWallAt
-  // Parede no sqm (o que barra item jogado: shared/assets.js → blocksThrow).
+  // Parede (ou borda de caverna) no sqm: o que barra item jogado (shared/assets.js → blocksThrow).
 
   hasWallAt(x, y, z) {
-    return this.sim.world.getObjectsAt(x, y).some(o => (o.z || 0) === z && o.blocksMovement && blocksThrow(objectIdType(o.id)));
+    return this.sim.world.hasThrowBlockingEdge(x, y, z) || this.sim.world.getObjectsAt(x, y).some(o => (o.z || 0) === z && o.blocksMovement && blocksThrow(objectIdType(o.id)));
   }
 
   // ================================================================================================================================================================================================================================================

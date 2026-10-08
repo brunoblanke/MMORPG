@@ -283,7 +283,7 @@ export class MovementController {
 
   hasLineOfSight(from, to) {
     const z = from.z || 0;
-    const isWall = (x, y) => this.world.getObjectsAt(x, y).some(o => (o.z || 0) === z && o.blocksMovement && blocksThrow(objectIdType(o.id)));
+    const isWall = (x, y) => this.world.hasThrowBlockingEdge(x, y, z) || this.world.getObjectsAt(x, y).some(o => (o.z || 0) === z && o.blocksMovement && blocksThrow(objectIdType(o.id)));
     let x = from.x;
     let y = from.y;
     const dx = Math.abs(to.x - x);

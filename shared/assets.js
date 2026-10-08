@@ -319,7 +319,7 @@ export function floorBehavior(type) {
   const asset = getAsset(splitType(type).asset);
   const props = (asset && asset.propriedades) || {};
   const damage = props.comportamento === 'dano' ? Math.max(0, Math.floor(Number(props.dano)) || 0) : 0;
-  return { blocks: props.comportamento === 'bloqueia', damage, edgeBlocks: props.bordaBloqueia === true };
+  return { blocks: props.comportamento === 'bloqueia', damage, edgeBlocks: props.bordaBloqueia === true, edgeBlocksThrow: props.bordaBarraArremesso === true };
 }
 
 // ================================================================================================================================================================================================================================================

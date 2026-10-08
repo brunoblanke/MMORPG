@@ -9,6 +9,7 @@ import { setAssets } from '../shared/assets.js';
 const WATER = 'estrutura/pisos/agua';
 const POISON = 'estrutura/pisos/veneno';
 const LAKE = 'estrutura/pisos/lago';
+const CAVE = 'estrutura/pisos/caverna';
 const SWORD = 'itens/espadas/espada';
 const STAIRS_STRAIGHT = 'estrutura/escadas/reta';
 
@@ -19,6 +20,7 @@ setAssets([
   floor(WATER, { comportamento: 'bloqueia' }),
   floor(POISON, { comportamento: 'dano', dano: 7 }),
   floor(LAKE, { comportamento: 'bloqueia', bordaBloqueia: true }),
+  floor(CAVE, { bordaBloqueia: true, bordaBarraArremesso: true }),
   { id: STAIRS_STRAIGHT, ferramenta: 'objetos', grupo: 'estrutura', pasta: 'escadas', nome: 'reta', url: '/r.png', quadro: 64, quadros: 1, pecas: [], propriedades: { altura: false } },
   { id: SWORD, ferramenta: 'objetos', grupo: 'itens', pasta: 'espadas', nome: 'espada', url: '/e.png', quadro: 32, quadros: 1, pecas: [], propriedades: { move: true, peso: 30 } }
 ]);
@@ -167,6 +169,19 @@ test('borda de piso com "Borda bloqueia": o sqm de grama com a borda da água n�
   assert.equal(sim.world.isBlocked(4, 4, 0), true);
   assert.equal(sim.world.isBlocked(6, 6, 0), false);
   assert.equal(sim.world.isBlocked(5, 4, 0), false);
+});
+
+test('borda com "Borda barra arremesso" (caverna) barra item jogado e linha de visão; a do lago deixa passar', () => {
+  const objects = [
+    ...floorRect(0, 9, 0, 9),
+    [`Border:${CAVE}:n`, 5, 5, 0, 0, false, false, false],
+    [`Border:${LAKE}:n`, 5, 7, 0, 0, false, false, false]
+  ];
+  const sim = new Simulation({ ...buildMapData({ objects, spawn: { x: 1, y: 1, z: 0 } }), version: 2 });
+  assert.equal(sim.world.hasThrowBlockingEdge(5, 5, 0), true);
+  assert.equal(sim.world.hasThrowBlockingEdge(5, 7, 0), false);
+  assert.equal(sim.movement.hasLineOfSight({ x: 2, y: 5, z: 0 }, { x: 8, y: 5, z: 0 }), false);
+  assert.equal(sim.movement.hasLineOfSight({ x: 2, y: 7, z: 0 }, { x: 8, y: 7, z: 0 }), true);
 });
 
 // ================================================================================================================================================================================================================================================

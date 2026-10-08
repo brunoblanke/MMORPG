@@ -110,6 +110,7 @@ const behaviorEl = document.getElementById('floorBehavior');
 const damageEl = document.getElementById('floorDamage');
 const damageFieldEl = document.getElementById('floorDamageField');
 const edgeBlocksEl = document.getElementById('floorEdgeBlocks');
+const edgeThrowEl = document.getElementById('floorEdgeThrow');
 const groundCanvas = document.getElementById('groundPreview');
 const sheetCanvas = document.getElementById('sheetPreview');
 
@@ -135,6 +136,10 @@ export function initFloors() {
   nameEl.addEventListener('input', () => { floors.dirty = true; });
   fillFolderSelect(folderEl, CATEGORY);
   folderEl.addEventListener('change', () => { floors.dirty = true; });
+  edgeThrowEl.addEventListener('change', () => {
+    floors.edgeThrow = edgeThrowEl.checked;
+    floors.dirty = true;
+  });
   edgeBlocksEl.addEventListener('change', () => {
     floors.edgeBlocks = edgeBlocksEl.checked;
     floors.dirty = true;
@@ -650,7 +655,8 @@ async function save() {
     slots: floors.slots,
     propriedades: {
       ...(floors.behavior === 'dano' ? { comportamento: 'dano', dano: floors.damage } : { comportamento: floors.behavior }),
-      ...(floors.edgeBlocks ? { bordaBloqueia: true } : {})
+      ...(floors.edgeBlocks ? { bordaBloqueia: true } : {}),
+      ...(floors.edgeThrow ? { bordaBarraArremesso: true } : {})
     }
   };
 
@@ -688,6 +694,7 @@ function openRecipe(recipe) {
   floors.behavior = ['bloqueia', 'dano'].includes(props.comportamento) ? props.comportamento : 'normal';
   floors.damage = Math.max(1, Math.floor(Number(props.dano)) || 10);
   floors.edgeBlocks = props.bordaBloqueia === true;
+  floors.edgeThrow = props.bordaBarraArremesso === true;
   showBehavior();
   floors.path = recipePath(recipe, CATEGORY);
   setFolder(folderEl, recipe);
@@ -707,6 +714,7 @@ function showBehavior() {
   damageEl.value = floors.damage;
   damageFieldEl.hidden = floors.behavior !== 'dano';
   edgeBlocksEl.checked = !!floors.edgeBlocks;
+  edgeThrowEl.checked = !!floors.edgeThrow;
 }
 
 // ================================================================================================================================================================================================================================================

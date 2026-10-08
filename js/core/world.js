@@ -26,6 +26,7 @@ export class World {
     this.blockers = new Map();
     this.topFloors = new Map();
     this.blockingEdges = new Map();
+    this.throwBlockingEdges = new Set();
     this.objects = new Set();
     this.safeTiles = new Set();
     this.houses = new Map();
@@ -144,6 +145,7 @@ export class World {
       const key = this.getTileKey(obj.x, obj.y, obj.z || 0);
       this.blockingEdges.set(key, (this.blockingEdges.get(key) || 0) + 1);
     }
+    if (obj.isBorder && obj.floorType && floorBehavior(obj.floorType).edgeBlocksThrow) this.throwBlockingEdges.add(this.getTileKey(obj.x, obj.y, obj.z || 0));
     if (obj.inStack) this.addToTile(obj, obj.x, obj.y, obj.z || 0);
   }
 
@@ -335,6 +337,14 @@ export class World {
   }
 
   // ================================================================================================================================================================================================================================================
+  // hasThrowBlockingEdge
+  // O sqm tem borda de piso marcada com "Borda barra arremesso" (a da caverna): item jogado e ataque de longe não passam.
+
+  hasThrowBlockingEdge(x, y, z) {
+    return this.throwBlockingEdges.has(this.getTileKey(x, y, z));
+  }
+
+// ================================================================================================================================================================================================================================================
   // registerTransition / getTransitionAt
   // Escada, topo de escada e buraco: pisar no sqm leva a entidade pra
   // (targetX, targetY, targetZ). Um sqm com transição conta como pisável.
