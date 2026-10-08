@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "gigantes",
-  "nome": "behemoth",
   "propriedades": {
     "comportamento": "normal",
     "vida": 4000,
@@ -52,6 +48,29 @@
     "armadura": 50,
     "defesa": 45,
     "ataque": 450,
+    "magia": null,
+    "ataques": [
+      {
+        "forma": "tiro",
+        "elemento": "physical",
+        "min": 0,
+        "max": 200,
+        "chance": 15,
+        "alcance": 7
+      }
+    ],
+    "resistencias": {
+      "physical": 90,
+      "energy": 90,
+      "earth": 20,
+      "fire": 70,
+      "ice": 110,
+      "holy": 70,
+      "death": 105
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/valiosos/gold-coin",
@@ -91,27 +110,13 @@
       },
       {
         "tipo": "itens/espadas/giant-sword",
-        "chance": 0.01006
+        "chance": 0.0101
       }
     ],
-    "ataques": [
-      {
-        "forma": "tiro",
-        "elemento": "physical",
-        "min": 0,
-        "max": 200,
-        "chance": 15,
-        "alcance": 7
-      }
-    ],
-    "resistencias": {
-      "physical": 90,
-      "energy": 90,
-      "earth": 20,
-      "fire": 70,
-      "ice": 110,
-      "holy": 70,
-      "death": 105
-    }
-  }
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "gigantes",
+  "nome": "behemoth"
 }

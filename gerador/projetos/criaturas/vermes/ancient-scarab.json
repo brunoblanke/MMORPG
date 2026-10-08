@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "vermes",
-  "nome": "ancient-scarab",
   "propriedades": {
     "comportamento": "normal",
     "vida": 1000,
@@ -52,6 +48,27 @@
     "armadura": 36,
     "defesa": 30,
     "ataque": 130,
+    "magia": null,
+    "ataques": [
+      {
+        "forma": "tiro",
+        "elemento": "earth",
+        "min": 15,
+        "max": 145,
+        "chance": 20,
+        "alcance": 7
+      }
+    ],
+    "resistencias": {
+      "physical": 90,
+      "energy": 80,
+      "earth": 0,
+      "fire": 120,
+      "ice": 105
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/valiosos/gold-coin",
@@ -76,22 +93,10 @@
         "chance": 0.05
       }
     ],
-    "ataques": [
-      {
-        "forma": "tiro",
-        "elemento": "earth",
-        "min": 15,
-        "max": 145,
-        "chance": 20,
-        "alcance": 7
-      }
-    ],
-    "resistencias": {
-      "physical": 90,
-      "energy": 80,
-      "earth": 0,
-      "fire": 120,
-      "ice": 105
-    }
-  }
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "vermes",
+  "nome": "ancient-scarab"
 }

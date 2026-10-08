@@ -1,7 +1,7 @@
 {
   "formato": {
     "quadro": 64,
-    "quadros": 9,
+    "quadros": 3,
     "linhas": [
       "sul",
       "norte",
@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "demonios",
-  "nome": "hellhound",
   "propriedades": {
     "comportamento": "normal",
     "vida": 7500,
@@ -52,7 +48,7 @@
     "armadura": 60,
     "defesa": 40,
     "ataque": 520,
-    "loot": [],
+    "magia": null,
     "ataques": [
       {
         "forma": "onda",
@@ -119,6 +115,15 @@
       "fire": 0,
       "ice": 105,
       "holy": 105
-    }
-  }
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
+    "loot": [],
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "demonios",
+  "nome": "hellhound"
 }

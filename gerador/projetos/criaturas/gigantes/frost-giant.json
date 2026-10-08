@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "gigantes",
-  "nome": "frost-giant",
   "propriedades": {
     "comportamento": "normal",
     "vida": 270,
@@ -52,6 +48,23 @@
     "armadura": 22,
     "defesa": 20,
     "ataque": 110,
+    "magia": null,
+    "ataques": [
+      {
+        "forma": "tiro",
+        "elemento": "physical",
+        "min": 0,
+        "max": 90,
+        "chance": 15,
+        "alcance": 7
+      }
+    ],
+    "resistencias": {
+      "ice": 0
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/valiosos/gold-coin",
@@ -75,7 +88,7 @@
       },
       {
         "tipo": "itens/liquidos/health-potion",
-        "chance": 0.00819
+        "chance": 0.0082
       },
       {
         "tipo": "itens/machados/halberd",
@@ -86,18 +99,10 @@
         "chance": 0.0018
       }
     ],
-    "ataques": [
-      {
-        "forma": "tiro",
-        "elemento": "physical",
-        "min": 0,
-        "max": 90,
-        "chance": 15,
-        "alcance": 7
-      }
-    ],
-    "resistencias": {
-      "ice": 0
-    }
-  }
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "gigantes",
+  "nome": "frost-giant"
 }

@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "vermes",
-  "nome": "tarantula",
   "propriedades": {
     "comportamento": "normal",
     "vida": 225,
@@ -52,6 +48,16 @@
     "armadura": 20,
     "defesa": 10,
     "ataque": 90,
+    "magia": null,
+    "resistencias": {
+      "energy": 90,
+      "earth": 0,
+      "fire": 115,
+      "ice": 110
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/valiosos/gold-coin",
@@ -68,11 +74,10 @@
         "chance": 0.0099
       }
     ],
-    "resistencias": {
-      "energy": 90,
-      "earth": 0,
-      "fire": 115,
-      "ice": 110
-    }
-  }
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "vermes",
+  "nome": "tarantula"
 }

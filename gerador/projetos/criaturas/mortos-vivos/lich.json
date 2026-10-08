@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "mortos-vivos",
-  "nome": "lich",
   "propriedades": {
     "comportamento": "normal",
     "vida": 880,
@@ -52,6 +48,49 @@
     "armadura": 50,
     "defesa": 25,
     "ataque": 75,
+    "magia": null,
+    "ataques": [
+      {
+        "forma": "raio",
+        "elemento": "death",
+        "min": 140,
+        "max": 190,
+        "chance": 10,
+        "comprimento": 7
+      },
+      {
+        "forma": "tiro",
+        "elemento": "death",
+        "min": 200,
+        "max": 245,
+        "chance": 10,
+        "alcance": 1
+      },
+      {
+        "forma": "bola",
+        "elemento": "death",
+        "min": 130,
+        "max": 195,
+        "chance": 10,
+        "raio": 3,
+        "centro": "si"
+      },
+      {
+        "forma": "cura",
+        "min": 80,
+        "max": 100,
+        "chance": 15
+      }
+    ],
+    "resistencias": {
+      "energy": 20,
+      "earth": 0,
+      "holy": 120,
+      "death": 0
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/valiosos/gold-coin",
@@ -92,44 +131,10 @@
         "chance": 0.0015
       }
     ],
-    "ataques": [
-      {
-        "forma": "raio",
-        "elemento": "death",
-        "min": 140,
-        "max": 190,
-        "chance": 10,
-        "comprimento": 7
-      },
-      {
-        "forma": "tiro",
-        "elemento": "death",
-        "min": 200,
-        "max": 245,
-        "chance": 10,
-        "alcance": 1
-      },
-      {
-        "forma": "bola",
-        "elemento": "death",
-        "min": 130,
-        "max": 195,
-        "chance": 10,
-        "raio": 3,
-        "centro": "si"
-      },
-      {
-        "forma": "cura",
-        "min": 80,
-        "max": 100,
-        "chance": 15
-      }
-    ],
-    "resistencias": {
-      "energy": 20,
-      "earth": 0,
-      "holy": 120,
-      "death": 0
-    }
-  }
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "mortos-vivos",
+  "nome": "lich"
 }

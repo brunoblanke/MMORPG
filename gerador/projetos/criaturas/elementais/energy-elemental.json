@@ -1,7 +1,7 @@
 {
   "formato": {
     "quadro": 64,
-    "quadros": 9,
+    "quadros": 4,
     "linhas": [
       "sul",
       "norte",
@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "elementais",
-  "nome": "energy-elemental",
   "propriedades": {
     "comportamento": "normal",
     "vida": 500,
@@ -52,38 +48,7 @@
     "armadura": 25,
     "defesa": 15,
     "ataque": 175,
-    "loot": [
-      {
-        "tipo": "itens/valiosos/gold-coin",
-        "chance": 0.5,
-        "min": 1,
-        "max": 100
-      },
-      {
-        "tipo": "itens/valiosos/gold-coin",
-        "chance": 0.5,
-        "min": 1,
-        "max": 70
-      },
-      {
-        "tipo": "itens/liquidos/mana-potion",
-        "chance": 0.11711
-      },
-      {
-        "tipo": "itens/valiosos/small-amethyst",
-        "chance": 0.05,
-        "min": 1,
-        "max": 2
-      },
-      {
-        "tipo": "itens/amuletos-e-colares/silver-amulet",
-        "chance": 0.0102
-      },
-      {
-        "tipo": "itens/wands/wand-of-cosmic-energy",
-        "chance": 0.00636
-      }
-    ],
+    "magia": null,
     "ataques": [
       {
         "forma": "bola",
@@ -92,7 +57,8 @@
         "max": 252,
         "chance": 10,
         "alcance": 7,
-        "raio": 2
+        "raio": 2,
+        "centro": "alvo"
       },
       {
         "forma": "tiro",
@@ -117,6 +83,46 @@
       "ice": 0,
       "holy": 95,
       "death": 95
-    }
-  }
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.5,
+        "min": 1,
+        "max": 100
+      },
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.5,
+        "min": 1,
+        "max": 70
+      },
+      {
+        "tipo": "itens/liquidos/mana-potion",
+        "chance": 0.1171
+      },
+      {
+        "tipo": "itens/valiosos/small-amethyst",
+        "chance": 0.05,
+        "min": 1,
+        "max": 2
+      },
+      {
+        "tipo": "itens/amuletos-e-colares/silver-amulet",
+        "chance": 0.0102
+      },
+      {
+        "tipo": "itens/wands/wand-of-cosmic-energy",
+        "chance": 0.0064
+      }
+    ],
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "elementais",
+  "nome": "energy-elemental"
 }

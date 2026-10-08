@@ -1,7 +1,7 @@
 {
   "formato": {
     "quadro": 64,
-    "quadros": 9,
+    "quadros": 2,
     "linhas": [
       "sul",
       "norte",
@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "elementais",
-  "nome": "massive-fire-elemental",
   "propriedades": {
     "comportamento": "normal",
     "vida": 1800,
@@ -52,40 +48,7 @@
     "armadura": 57,
     "defesa": 30,
     "ataque": 300,
-    "loot": [
-      {
-        "tipo": "itens/valiosos/gold-coin",
-        "chance": 0.5,
-        "min": 1,
-        "max": 100
-      },
-      {
-        "tipo": "itens/valiosos/gold-coin",
-        "chance": 0.25,
-        "min": 1,
-        "max": 100
-      },
-      {
-        "tipo": "itens/valiosos/gold-coin",
-        "chance": 0.25,
-        "min": 1,
-        "max": 12
-      },
-      {
-        "tipo": "itens/valiosos/small-ruby",
-        "chance": 0.061,
-        "min": 1,
-        "max": 2
-      },
-      {
-        "tipo": "itens/wands/wand-of-inferno",
-        "chance": 0.0224
-      },
-      {
-        "tipo": "itens/espadas/fire-sword",
-        "chance": 0.0053
-      }
-    ],
+    "magia": null,
     "ataques": [
       {
         "forma": "campo",
@@ -125,6 +88,48 @@
       "fire": 0,
       "ice": 115,
       "death": 80
-    }
-  }
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.5,
+        "min": 1,
+        "max": 100
+      },
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.25,
+        "min": 1,
+        "max": 100
+      },
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.25,
+        "min": 1,
+        "max": 12
+      },
+      {
+        "tipo": "itens/valiosos/small-ruby",
+        "chance": 0.061,
+        "min": 1,
+        "max": 2
+      },
+      {
+        "tipo": "itens/wands/wand-of-inferno",
+        "chance": 0.0224
+      },
+      {
+        "tipo": "itens/espadas/fire-sword",
+        "chance": 0.0053
+      }
+    ],
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "elementais",
+  "nome": "massive-fire-elemental"
 }

@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "mamiferos",
-  "nome": "boar",
   "propriedades": {
     "comportamento": "foge",
     "vida": 198,
@@ -52,6 +48,10 @@
     "armadura": 10,
     "defesa": 35,
     "ataque": 50,
+    "magia": null,
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/valiosos/gold-coin",
@@ -59,6 +59,11 @@
         "min": 1,
         "max": 20
       }
-    ]
-  }
+    ],
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "mamiferos",
+  "nome": "boar"
 }

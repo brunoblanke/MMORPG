@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "mortos-vivos",
-  "nome": "vampire",
   "propriedades": {
     "comportamento": "foge",
     "vida": 475,
@@ -52,30 +48,7 @@
     "armadura": 28,
     "defesa": 30,
     "ataque": 150,
-    "loot": [
-      {
-        "tipo": "itens/valiosos/gold-coin",
-        "chance": 0.9023,
-        "min": 1,
-        "max": 60
-      },
-      {
-        "tipo": "itens/plantas-e-ervas/grave-flower",
-        "chance": 0.0191
-      },
-      {
-        "tipo": "itens/valiosos/black-pearl",
-        "chance": 0.018
-      },
-      {
-        "tipo": "itens/espadas/ice-rapier",
-        "chance": 0.0042
-      },
-      {
-        "tipo": "itens/amuletos-e-colares/bronze-amulet",
-        "chance": 0.0022
-      }
-    ],
+    "magia": null,
     "ataques": [
       {
         "forma": "tiro",
@@ -105,6 +78,38 @@
       "fire": 110,
       "holy": 125,
       "death": 0
-    }
-  }
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.9023,
+        "min": 1,
+        "max": 60
+      },
+      {
+        "tipo": "itens/plantas-e-ervas/grave-flower",
+        "chance": 0.0191
+      },
+      {
+        "tipo": "itens/valiosos/black-pearl",
+        "chance": 0.018
+      },
+      {
+        "tipo": "itens/espadas/ice-rapier",
+        "chance": 0.0042
+      },
+      {
+        "tipo": "itens/amuletos-e-colares/bronze-amulet",
+        "chance": 0.0022
+      }
+    ],
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "mortos-vivos",
+  "nome": "vampire"
 }

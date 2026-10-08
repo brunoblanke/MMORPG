@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "mamiferos",
-  "nome": "polar-bear",
   "propriedades": {
     "comportamento": "foge",
     "vida": 85,
@@ -52,6 +48,16 @@
     "armadura": 7,
     "defesa": 10,
     "ataque": 30,
+    "magia": null,
+    "resistencias": {
+      "energy": 105,
+      "fire": 90,
+      "ice": 80,
+      "death": 110
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/comidas/meet",
@@ -66,11 +72,10 @@
         "max": 2
       }
     ],
-    "resistencias": {
-      "energy": 105,
-      "fire": 90,
-      "ice": 80,
-      "death": 110
-    }
-  }
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "mamiferos",
+  "nome": "polar-bear"
 }

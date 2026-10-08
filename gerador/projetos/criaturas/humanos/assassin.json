@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "humanos",
-  "nome": "assassin",
   "propriedades": {
     "comportamento": "normal",
     "vida": 175,
@@ -52,6 +48,24 @@
     "armadura": 17,
     "defesa": 15,
     "ataque": 120,
+    "magia": null,
+    "ataques": [
+      {
+        "forma": "tiro",
+        "elemento": "physical",
+        "min": 0,
+        "max": 40,
+        "chance": 15,
+        "alcance": 7
+      }
+    ],
+    "resistencias": {
+      "physical": 110,
+      "death": 105
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/valiosos/gold-coin",
@@ -86,19 +100,10 @@
         "chance": 0.0022
       }
     ],
-    "ataques": [
-      {
-        "forma": "tiro",
-        "elemento": "physical",
-        "min": 0,
-        "max": 40,
-        "chance": 15,
-        "alcance": 7
-      }
-    ],
-    "resistencias": {
-      "physical": 110,
-      "death": 105
-    }
-  }
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "humanos",
+  "nome": "assassin"
 }

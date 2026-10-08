@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "humanos",
-  "nome": "pirate-cutthroat",
   "propriedades": {
     "comportamento": "normal",
     "vida": 325,
@@ -52,6 +48,29 @@
     "armadura": 15,
     "defesa": 25,
     "ataque": 170,
+    "magia": null,
+    "ataques": [
+      {
+        "forma": "bola",
+        "elemento": "physical",
+        "min": 0,
+        "max": 95,
+        "chance": 20,
+        "alcance": 3,
+        "raio": 1,
+        "centro": "alvo"
+      }
+    ],
+    "resistencias": {
+      "earth": 90,
+      "fire": 105,
+      "ice": 105,
+      "holy": 80,
+      "death": 105
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/valiosos/gold-coin",
@@ -68,23 +87,10 @@
         "chance": 0.028
       }
     ],
-    "ataques": [
-      {
-        "forma": "bola",
-        "elemento": "physical",
-        "min": 0,
-        "max": 95,
-        "chance": 20,
-        "alcance": 3,
-        "raio": 1
-      }
-    ],
-    "resistencias": {
-      "earth": 90,
-      "fire": 105,
-      "ice": 105,
-      "holy": 80,
-      "death": 105
-    }
-  }
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "humanos",
+  "nome": "pirate-cutthroat"
 }

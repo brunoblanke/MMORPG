@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "dragoes",
-  "nome": "hydra",
   "propriedades": {
     "comportamento": "foge",
     "vida": 2350,
@@ -52,42 +48,7 @@
     "armadura": 27,
     "defesa": 35,
     "ataque": 270,
-    "loot": [
-      {
-        "tipo": "itens/valiosos/gold-coin",
-        "chance": 0.8797,
-        "min": 1,
-        "max": 212
-      },
-      {
-        "tipo": "itens/comidas/ham",
-        "chance": 0.5951,
-        "min": 1,
-        "max": 3
-      },
-      {
-        "tipo": "itens/valiosos/platinum-coin",
-        "chance": 0.4991,
-        "min": 1,
-        "max": 3
-      },
-      {
-        "tipo": "itens/armaduras/knight-armor",
-        "chance": 0.0112
-      },
-      {
-        "tipo": "itens/valiosos/life-crystal",
-        "chance": 0.0093
-      },
-      {
-        "tipo": "itens/amuletos-e-colares/stone-skin-amulet",
-        "chance": 0.0075
-      },
-      {
-        "tipo": "itens/botas/boots-of-haste",
-        "chance": 0.0019
-      }
-    ],
+    "magia": null,
     "ataques": [
       {
         "forma": "lentidao",
@@ -127,6 +88,50 @@
       "earth": 0,
       "ice": 50,
       "holy": 70
-    }
-  }
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.8797,
+        "min": 1,
+        "max": 212
+      },
+      {
+        "tipo": "itens/comidas/ham",
+        "chance": 0.5951,
+        "min": 1,
+        "max": 3
+      },
+      {
+        "tipo": "itens/valiosos/platinum-coin",
+        "chance": 0.4991,
+        "min": 1,
+        "max": 3
+      },
+      {
+        "tipo": "itens/armaduras/knight-armor",
+        "chance": 0.0112
+      },
+      {
+        "tipo": "itens/valiosos/life-crystal",
+        "chance": 0.0093
+      },
+      {
+        "tipo": "itens/amuletos-e-colares/stone-skin-amulet",
+        "chance": 0.0075
+      },
+      {
+        "tipo": "itens/botas/boots-of-haste",
+        "chance": 0.0019
+      }
+    ],
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "dragoes",
+  "nome": "hydra"
 }

@@ -1,7 +1,7 @@
 {
   "formato": {
     "quadro": 64,
-    "quadros": 9,
+    "quadros": 3,
     "linhas": [
       "sul",
       "norte",
@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "elementais",
-  "nome": "massive-water-elemental",
   "propriedades": {
     "comportamento": "normal",
     "vida": 1250,
@@ -52,6 +48,35 @@
     "armadura": 45,
     "defesa": 25,
     "ataque": 220,
+    "magia": null,
+    "ataques": [
+      {
+        "forma": "tiro",
+        "elemento": "ice",
+        "min": 170,
+        "max": 210,
+        "chance": 20,
+        "alcance": 7
+      },
+      {
+        "forma": "cura",
+        "min": 120,
+        "max": 250,
+        "chance": 5
+      }
+    ],
+    "resistencias": {
+      "physical": 60,
+      "energy": 125,
+      "earth": 0,
+      "fire": 0,
+      "ice": 0,
+      "holy": 50,
+      "death": 50
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/valiosos/gold-coin",
@@ -78,30 +103,10 @@
         "max": 2
       }
     ],
-    "ataques": [
-      {
-        "forma": "tiro",
-        "elemento": "ice",
-        "min": 170,
-        "max": 210,
-        "chance": 20,
-        "alcance": 7
-      },
-      {
-        "forma": "cura",
-        "min": 120,
-        "max": 250,
-        "chance": 5
-      }
-    ],
-    "resistencias": {
-      "physical": 60,
-      "energy": 125,
-      "earth": 0,
-      "fire": 0,
-      "ice": 0,
-      "holy": 50,
-      "death": 50
-    }
-  }
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "elementais",
+  "nome": "massive-water-elemental"
 }

@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "gigantes",
-  "nome": "frost-giantess",
   "propriedades": {
     "comportamento": "mago",
     "vida": 275,
@@ -52,6 +48,27 @@
     "armadura": 15,
     "defesa": 15,
     "ataque": 60,
+    "magia": null,
+    "ataques": [
+      {
+        "forma": "tiro",
+        "elemento": "physical",
+        "min": 0,
+        "max": 90,
+        "chance": 30,
+        "alcance": 7
+      }
+    ],
+    "resistencias": {
+      "energy": 110,
+      "fire": 80,
+      "ice": 0,
+      "holy": 90,
+      "death": 103
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/valiosos/gold-coin",
@@ -82,22 +99,10 @@
         "chance": 0.0017
       }
     ],
-    "ataques": [
-      {
-        "forma": "tiro",
-        "elemento": "physical",
-        "min": 0,
-        "max": 90,
-        "chance": 30,
-        "alcance": 7
-      }
-    ],
-    "resistencias": {
-      "energy": 110,
-      "fire": 80,
-      "ice": 0,
-      "holy": 90,
-      "death": 103
-    }
-  }
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "gigantes",
+  "nome": "frost-giantess"
 }

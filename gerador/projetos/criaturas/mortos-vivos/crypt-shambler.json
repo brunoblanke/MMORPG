@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "mortos-vivos",
-  "nome": "crypt-shambler",
   "propriedades": {
     "comportamento": "normal",
     "vida": 330,
@@ -52,6 +48,25 @@
     "armadura": 30,
     "defesa": 25,
     "ataque": 140,
+    "magia": null,
+    "ataques": [
+      {
+        "forma": "tiro",
+        "elemento": "death",
+        "min": 28,
+        "max": 55,
+        "chance": 15,
+        "alcance": 1
+      }
+    ],
+    "resistencias": {
+      "earth": 0,
+      "holy": 125,
+      "death": 0
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/valiosos/gold-coin",
@@ -70,20 +85,10 @@
         "chance": 0.0051
       }
     ],
-    "ataques": [
-      {
-        "forma": "tiro",
-        "elemento": "death",
-        "min": 28,
-        "max": 55,
-        "chance": 15,
-        "alcance": 1
-      }
-    ],
-    "resistencias": {
-      "earth": 0,
-      "holy": 125,
-      "death": 0
-    }
-  }
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "mortos-vivos",
+  "nome": "crypt-shambler"
 }

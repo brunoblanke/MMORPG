@@ -1,7 +1,7 @@
 {
   "formato": {
     "quadro": 64,
-    "quadros": 9,
+    "quadros": 3,
     "linhas": [
       "sul",
       "norte",
@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "repteis",
-  "nome": "lizard-templar",
   "propriedades": {
     "comportamento": "normal",
     "vida": 410,
@@ -52,6 +48,16 @@
     "armadura": 26,
     "defesa": 20,
     "ataque": 70,
+    "magia": null,
+    "resistencias": {
+      "energy": 80,
+      "earth": 0,
+      "fire": 110,
+      "ice": 90
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/valiosos/gold-coin",
@@ -84,11 +90,10 @@
         "chance": 0.0025
       }
     ],
-    "resistencias": {
-      "energy": 80,
-      "earth": 0,
-      "fire": 110,
-      "ice": 90
-    }
-  }
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "repteis",
+  "nome": "lizard-templar"
 }
