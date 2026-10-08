@@ -7,6 +7,8 @@
 // folha é vem da pasta: pisos, escadas e entradas (buraco) têm regra própria.
 // A lista das folhas (setAssets) vem do servidor, em /api/sprites.
 
+import { rareVariantAt } from './floor-variants.js';
+
 export const SPRITES_URL = '/api/sprites';
 export const FLOOR_FOLDER = 'estrutura/pisos/';
 export const STAIRS_FOLDER = 'estrutura/escadas/';
@@ -555,10 +557,13 @@ export function extraSquares(type) {
 // A peça do meio do piso no sqm: piso com padrão (gerador: chão do Tibia que
 // muda pela posição, ex. areia 4 × 4) usa o pedaço da posição
 // ('padrao-<coluna>-<linha>'), emendando sem costura; os outros sorteiam uma
-// das variações do meio (interiorVariant).
+// das variações do meio (interiorVariant). Em alguns sqms (chance das raras)
+// o desenho vira uma variação rara ('variante-<n>').
 
 export function floorMiddle(type, x, y, z) {
   const asset = getAsset(splitType(type).asset);
+  const rare = asset ? rareVariantAt(x, y, z, asset.raras || 0, asset.chanceRaras || 0) : 0;
+  if (rare) return `variante-${rare}`;
   const pattern = asset && Array.isArray(asset.padrao) ? asset.padrao : null;
   if (!pattern) return interiorVariant(x, y, z, (asset && asset.variacoes) || 4);
   const [cols, rows] = pattern;
@@ -580,7 +585,9 @@ export function spriteFrame(type) {
   if (asset.ferramenta === 'pisos') {
     const middle = /^meio-(\d+)$/.exec(piece || 'meio-1');
     const pattern = /^padrao-(\d+)-(\d+)$/.exec(piece || '');
-    const [col, row] = pattern ? [Number(pattern[1]), 4 + Number(pattern[2])]
+    const rare = /^variante-(\d+)$/.exec(piece || '');
+    const rareAt = rare ? Number(rare[1]) - 1 : 0;
+    const [col, row] = rare ? [rareAt % 4, 4 + (asset.padrao ? asset.padrao[1] : 0) + Math.floor(rareAt / 4)] : pattern ? [Number(pattern[1]), 4 + Number(pattern[2])]
       : middle ? [Math.min(Number(middle[1]), asset.variacoes || 1) - 1, 0] : (FLOOR_CELLS[piece] || [0, 0]);
     const frames = asset.quadros || 1;
     return { url: asset.url, x: col * frames * size, y: row * size, size, frames, ms: asset.msPorQuadro || 0 };
