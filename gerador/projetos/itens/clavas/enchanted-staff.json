@@ -1,7 +1,7 @@
 {
   "formato": {
     "quadro": 32,
-    "quadros": 1
+    "quadros": 3
   },
   "objeto": {
     "tibia": {
@@ -14,6 +14,9 @@
     "move": true,
     "altura": false,
     "empilhavel": false,
+    "duasMaos": true,
+    "tipoMunicao": "",
+    "postal": false,
     "peso": 38,
     "espacos": 0,
     "atk": 39,
@@ -25,7 +28,13 @@
     "manaMin": 0,
     "manaMax": 0,
     "alimento": 0,
-    "duasMaos": true
+    "luz": 0,
+    "duracao": 0,
+    "regenVida": 0,
+    "regenMana": 0,
+    "uso": "",
+    "ativoComo": "",
+    "comecaAtivo": false
   },
   "ferramenta": "objetos",
   "grupo": "itens",
