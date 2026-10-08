@@ -729,8 +729,8 @@ async function loadLootItems() {
   try {
     const projects = await fetchProjects();
     creatures.lootItems = projects.filter(p => p.grupo === 'itens' && !p.nome.startsWith('respingo'))
-      .map(p => p.caminho).sort((a, b) => a.localeCompare(b, 'pt'));
-    creatures.creatureTypes = projects.filter(p => p.grupo === 'criaturas').map(p => p.caminho).sort((a, b) => a.localeCompare(b, 'pt'));
+      .map(p => p.caminho).sort(byName);
+    creatures.creatureTypes = projects.filter(p => p.grupo === 'criaturas').map(p => p.caminho).sort(byName);
   } catch {
     creatures.lootItems = [];
     creatures.creatureTypes = [];
@@ -1185,3 +1185,11 @@ export const creaturesView = {
   pick,
   useAll: () => {}
 };
+
+// ================================================================================================================================================================================================================================================
+// byName
+// Ordem alfabética pelo nome da folha (o último trecho do caminho), sem diferenciar acento e maiúscula.
+
+function byName(a, b) {
+  return a.split('/').pop().localeCompare(b.split('/').pop(), 'pt', { numeric: true, sensitivity: 'base' });
+}

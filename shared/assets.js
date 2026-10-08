@@ -286,7 +286,7 @@ export function getAsset(id) {
 export function listAssets(tool, filter = () => true) {
   return [...assets.values()]
     .filter(asset => asset.ferramenta === tool && filter(asset))
-    .sort((a, b) => a.rotulo.localeCompare(b.rotulo, 'pt') || a.nome.localeCompare(b.nome, 'pt'));
+    .sort((a, b) => a.rotulo.localeCompare(b.rotulo, 'pt', { numeric: true }) || a.nome.localeCompare(b.nome, 'pt', { numeric: true, sensitivity: 'base' }));
 }
 
 // ================================================================================================================================================================================================================================================

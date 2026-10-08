@@ -54,7 +54,7 @@ export async function refreshProjects() {
     head.className = 'folder-head';
     head.textContent = label;
     listEl.appendChild(head);
-    for (const project of groups.get(label)) {
+    for (const project of groups.get(label).sort((a, b) => a.nome.localeCompare(b.nome, 'pt', { numeric: true, sensitivity: 'base' }))) {
       const item = document.createElement('li');
       const button = document.createElement('button');
       button.type = 'button';

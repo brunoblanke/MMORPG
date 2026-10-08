@@ -215,7 +215,7 @@ export function openObjectDataForm(obj, clientX, clientY) {
 function renderObjectDataItems() {
   const box = document.getElementById('objectDataItems');
   box.innerHTML = '';
-  const items = listAssets('objetos', asset => asset.grupo === 'itens').map(asset => asset.id);
+  const items = listAssets('objetos', asset => asset.grupo === 'itens').map(asset => asset.id).sort((a, b) => displayName(a).localeCompare(displayName(b), 'pt', { numeric: true, sensitivity: 'base' }));
   pendingItems.forEach((entry, index) => {
     const row = document.createElement('div');
     row.className = 'row';
