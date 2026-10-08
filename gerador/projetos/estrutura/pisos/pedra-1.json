@@ -5,13 +5,13 @@
       1,
       3
     ],
+    "padraoSorteado": true,
     "linhas": [
       "meio: 1 variações",
       "s o n l",
       "sl so nl no",
       "int-sl int-so int-nl int-no"
-    ],
-    "padraoSorteado": true
+    ]
   },
   "variacoesDoMeio": 1,
   "slots": {

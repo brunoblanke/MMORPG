@@ -1,140 +1,140 @@
 {
   "formato": {
     "quadro": 32,
-    "raras": 5,
+    "raras": 8,
     "chanceRaras": 12,
     "linhas": [
-      "meio: 4 variações",
+      "meio: 1 variações",
       "s o n l",
       "sl so nl no",
       "int-sl int-so int-nl int-no"
     ]
   },
-  "variacoesDoMeio": 4,
+  "variacoesDoMeio": 1,
   "slots": {
     "s": {
       "tibia": {
-        "id": 38089,
+        "id": 20547,
         "variacao": 0
       }
     },
     "o": {
       "tibia": {
-        "id": 38090,
+        "id": 20548,
         "variacao": 0
       }
     },
     "n": {
       "tibia": {
-        "id": 38088,
+        "id": 20546,
         "variacao": 0
       }
     },
     "l": {
       "tibia": {
-        "id": 38091,
+        "id": 20549,
         "variacao": 0
       }
     },
     "sl": {
       "tibia": {
-        "id": 38095,
+        "id": 20556,
         "variacao": 0
       }
     },
     "so": {
       "tibia": {
-        "id": 38094,
+        "id": 20557,
         "variacao": 0
       }
     },
     "nl": {
       "tibia": {
-        "id": 38093,
+        "id": 20555,
         "variacao": 0
       }
     },
     "no": {
       "tibia": {
-        "id": 38092,
+        "id": 20554,
         "variacao": 0
       }
     },
     "int-sl": {
       "tibia": {
-        "id": 38099,
+        "id": 20552,
         "variacao": 0
       }
     },
     "int-so": {
       "tibia": {
-        "id": 38098,
+        "id": 20553,
         "variacao": 0
       }
     },
     "int-nl": {
       "tibia": {
-        "id": 38097,
+        "id": 20551,
         "variacao": 0
       }
     },
     "int-no": {
       "tibia": {
-        "id": 38096,
-        "variacao": 0
-      }
-    },
-    "raro-1": {
-      "tibia": {
-        "id": 38071,
-        "variacao": 0
-      }
-    },
-    "raro-2": {
-      "tibia": {
-        "id": 38072,
-        "variacao": 0
-      }
-    },
-    "raro-3": {
-      "tibia": {
-        "id": 38073,
-        "variacao": 0
-      }
-    },
-    "raro-4": {
-      "tibia": {
-        "id": 38074,
-        "variacao": 0
-      }
-    },
-    "raro-5": {
-      "tibia": {
-        "id": 38075,
+        "id": 20550,
         "variacao": 0
       }
     },
     "meio-1": {
       "tibia": {
-        "id": 38061,
+        "id": 20533,
         "variacao": 0
       }
     },
-    "meio-2": {
+    "raro-1": {
       "tibia": {
-        "id": 38062,
+        "id": 20534,
         "variacao": 0
       }
     },
-    "meio-3": {
+    "raro-2": {
       "tibia": {
-        "id": 38063,
+        "id": 20538,
         "variacao": 0
       }
     },
-    "meio-4": {
+    "raro-3": {
       "tibia": {
-        "id": 38064,
+        "id": 20539,
+        "variacao": 0
+      }
+    },
+    "raro-4": {
+      "tibia": {
+        "id": 20540,
+        "variacao": 0
+      }
+    },
+    "raro-5": {
+      "tibia": {
+        "id": 20541,
+        "variacao": 0
+      }
+    },
+    "raro-6": {
+      "tibia": {
+        "id": 20542,
+        "variacao": 0
+      }
+    },
+    "raro-7": {
+      "tibia": {
+        "id": 20544,
+        "variacao": 0
+      }
+    },
+    "raro-8": {
+      "tibia": {
+        "id": 20545,
         "variacao": 0
       }
     }
@@ -145,5 +145,5 @@
   "ferramenta": "pisos",
   "grupo": "estrutura",
   "pasta": "pisos",
-  "nome": "pedra-2"
+  "nome": "pedra-8"
 }

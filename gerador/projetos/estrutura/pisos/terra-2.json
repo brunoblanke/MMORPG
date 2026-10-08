@@ -5,6 +5,9 @@
       4,
       4
     ],
+    "padraoSorteado": true,
+    "raras": 5,
+    "chanceRaras": 12,
     "linhas": [
       "meio: 1 variações",
       "s o n l",
@@ -186,6 +189,36 @@
       "tibia": {
         "id": 351,
         "variacao": 15
+      }
+    },
+    "raro-1": {
+      "tibia": {
+        "id": 353,
+        "variacao": 0
+      }
+    },
+    "raro-4": {
+      "tibia": {
+        "id": 355,
+        "variacao": 5
+      }
+    },
+    "raro-5": {
+      "tibia": {
+        "id": 355,
+        "variacao": 15
+      }
+    },
+    "raro-2": {
+      "tibia": {
+        "id": 353,
+        "variacao": 0
+      }
+    },
+    "raro-3": {
+      "tibia": {
+        "id": 353,
+        "variacao": 6
       }
     }
   },

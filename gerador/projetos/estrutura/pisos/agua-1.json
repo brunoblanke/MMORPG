@@ -3,39 +3,22 @@
     "quadro": 32,
     "quadros": 14,
     "msPorQuadro": 200,
+    "padrao": [
+      2,
+      3
+    ],
+    "padraoSorteado": true,
+    "raras": 1,
+    "chanceRaras": 12,
     "linhas": [
-      "meio: 4 variações",
+      "meio: 1 variações",
       "s o n l",
       "sl so nl no",
       "int-sl int-so int-nl int-no"
     ]
   },
-  "variacoesDoMeio": 4,
+  "variacoesDoMeio": 1,
   "slots": {
-    "meio-1": {
-      "tibia": {
-        "id": 4597,
-        "variacao": 0
-      }
-    },
-    "meio-2": {
-      "tibia": {
-        "id": 4598,
-        "variacao": 0
-      }
-    },
-    "meio-3": {
-      "tibia": {
-        "id": 4599,
-        "variacao": 0
-      }
-    },
-    "meio-4": {
-      "tibia": {
-        "id": 4600,
-        "variacao": 0
-      }
-    },
     "s": {
       "tibia": {
         "id": 4633,
@@ -105,6 +88,54 @@
     "int-no": {
       "tibia": {
         "id": 4640,
+        "variacao": 0
+      }
+    },
+    "raro-1": {
+      "tibia": {
+        "id": 632,
+        "variacao": 0
+      }
+    },
+    "meio-1": {
+      "tibia": {
+        "id": 629,
+        "variacao": 0
+      }
+    },
+    "padrao-0-0": {
+      "tibia": {
+        "id": 629,
+        "variacao": 0
+      }
+    },
+    "padrao-1-0": {
+      "tibia": {
+        "id": 630,
+        "variacao": 0
+      }
+    },
+    "padrao-0-1": {
+      "tibia": {
+        "id": 631,
+        "variacao": 0
+      }
+    },
+    "padrao-1-1": {
+      "tibia": {
+        "id": 632,
+        "variacao": 0
+      }
+    },
+    "padrao-0-2": {
+      "tibia": {
+        "id": 633,
+        "variacao": 0
+      }
+    },
+    "padrao-1-2": {
+      "tibia": {
+        "id": 634,
         "variacao": 0
       }
     }

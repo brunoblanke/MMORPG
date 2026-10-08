@@ -1,8 +1,8 @@
 {
   "formato": {
     "quadro": 32,
-    "quadros": 8,
-    "msPorQuadro": 200,
+    "quadros": 6,
+    "msPorQuadro": 150,
     "linhas": [
       "meio: 1 variações",
       "s o n l",
@@ -86,7 +86,7 @@
     },
     "meio-1": {
       "tibia": {
-        "id": 622,
+        "id": 13988,
         "variacao": 0
       }
     }

@@ -1,149 +1,163 @@
 {
   "formato": {
     "quadro": 32,
-    "raras": 5,
+    "quadros": 14,
+    "msPorQuadro": 200,
+    "padrao": [
+      2,
+      3
+    ],
+    "padraoSorteado": true,
+    "raras": 3,
     "chanceRaras": 12,
     "linhas": [
-      "meio: 4 variações",
+      "meio: 1 variações",
       "s o n l",
       "sl so nl no",
       "int-sl int-so int-nl int-no"
     ]
   },
-  "variacoesDoMeio": 4,
+  "variacoesDoMeio": 1,
   "slots": {
     "s": {
       "tibia": {
-        "id": 38089,
+        "id": 35402,
         "variacao": 0
       }
     },
     "o": {
       "tibia": {
-        "id": 38090,
+        "id": 35403,
         "variacao": 0
       }
     },
     "n": {
       "tibia": {
-        "id": 38088,
+        "id": 35404,
         "variacao": 0
       }
     },
     "l": {
       "tibia": {
-        "id": 38091,
+        "id": 35405,
         "variacao": 0
       }
     },
     "sl": {
       "tibia": {
-        "id": 38095,
+        "id": 35410,
         "variacao": 0
       }
     },
     "so": {
       "tibia": {
-        "id": 38094,
+        "id": 35411,
         "variacao": 0
       }
     },
     "nl": {
       "tibia": {
-        "id": 38093,
+        "id": 35412,
         "variacao": 0
       }
     },
     "no": {
       "tibia": {
-        "id": 38092,
+        "id": 35413,
         "variacao": 0
       }
     },
     "int-sl": {
       "tibia": {
-        "id": 38099,
+        "id": 35406,
         "variacao": 0
       }
     },
     "int-so": {
       "tibia": {
-        "id": 38098,
+        "id": 35407,
         "variacao": 0
       }
     },
     "int-nl": {
       "tibia": {
-        "id": 38097,
+        "id": 35408,
         "variacao": 0
       }
     },
     "int-no": {
       "tibia": {
-        "id": 38096,
-        "variacao": 0
-      }
-    },
-    "raro-1": {
-      "tibia": {
-        "id": 38071,
-        "variacao": 0
-      }
-    },
-    "raro-2": {
-      "tibia": {
-        "id": 38072,
-        "variacao": 0
-      }
-    },
-    "raro-3": {
-      "tibia": {
-        "id": 38073,
-        "variacao": 0
-      }
-    },
-    "raro-4": {
-      "tibia": {
-        "id": 38074,
-        "variacao": 0
-      }
-    },
-    "raro-5": {
-      "tibia": {
-        "id": 38075,
+        "id": 35409,
         "variacao": 0
       }
     },
     "meio-1": {
       "tibia": {
-        "id": 38061,
+        "id": 35348,
         "variacao": 0
       }
     },
-    "meio-2": {
+    "padrao-0-0": {
       "tibia": {
-        "id": 38062,
+        "id": 35348,
         "variacao": 0
       }
     },
-    "meio-3": {
+    "padrao-1-0": {
       "tibia": {
-        "id": 38063,
+        "id": 35349,
         "variacao": 0
       }
     },
-    "meio-4": {
+    "padrao-0-1": {
       "tibia": {
-        "id": 38064,
+        "id": 35350,
+        "variacao": 0
+      }
+    },
+    "padrao-1-1": {
+      "tibia": {
+        "id": 35351,
+        "variacao": 0
+      }
+    },
+    "padrao-0-2": {
+      "tibia": {
+        "id": 35352,
+        "variacao": 0
+      }
+    },
+    "padrao-1-2": {
+      "tibia": {
+        "id": 35353,
+        "variacao": 0
+      }
+    },
+    "raro-2": {
+      "tibia": {
+        "id": 35355,
+        "variacao": 0
+      }
+    },
+    "raro-3": {
+      "tibia": {
+        "id": 35356,
+        "variacao": 0
+      }
+    },
+    "raro-4": {
+      "tibia": {
+        "id": 35357,
         "variacao": 0
       }
     }
   },
   "propriedades": {
-    "comportamento": "normal"
+    "comportamento": "bloqueia",
+    "bordaBloqueia": true
   },
   "ferramenta": "pisos",
   "grupo": "estrutura",
   "pasta": "pisos",
-  "nome": "pedra-2"
+  "nome": "agua-8"
 }

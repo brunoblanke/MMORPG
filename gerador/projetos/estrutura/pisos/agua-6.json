@@ -7,6 +7,9 @@
       2,
       3
     ],
+    "padraoSorteado": true,
+    "raras": 2,
+    "chanceRaras": 12,
     "linhas": [
       "meio: 1 variações",
       "s o n l",
@@ -127,6 +130,18 @@
     "padrao-1-2": {
       "tibia": {
         "id": 35353,
+        "variacao": 0
+      }
+    },
+    "raro-1": {
+      "tibia": {
+        "id": 35355,
+        "variacao": 0
+      }
+    },
+    "raro-2": {
+      "tibia": {
+        "id": 35351,
         "variacao": 0
       }
     }

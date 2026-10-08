@@ -7,7 +7,8 @@
       3,
       3
     ],
-    "raras": 4,
+    "padraoSorteado": true,
+    "raras": 6,
     "chanceRaras": 12,
     "linhas": [
       "meio: 1 variações",
@@ -20,73 +21,73 @@
   "slots": {
     "s": {
       "tibia": {
-        "id": 38713,
+        "id": 38112,
         "variacao": 0
       }
     },
     "o": {
       "tibia": {
-        "id": 38714,
+        "id": 38113,
         "variacao": 0
       }
     },
     "n": {
       "tibia": {
-        "id": 38712,
+        "id": 38115,
         "variacao": 0
       }
     },
     "l": {
       "tibia": {
-        "id": 38715,
+        "id": 38116,
         "variacao": 0
       }
     },
     "sl": {
       "tibia": {
-        "id": 38719,
+        "id": 38121,
         "variacao": 0
       }
     },
     "so": {
       "tibia": {
-        "id": 38718,
+        "id": 38122,
         "variacao": 0
       }
     },
     "nl": {
       "tibia": {
-        "id": 38717,
+        "id": 38123,
         "variacao": 0
       }
     },
     "no": {
       "tibia": {
-        "id": 38716,
+        "id": 38124,
         "variacao": 0
       }
     },
     "int-sl": {
       "tibia": {
-        "id": 38723,
+        "id": 38117,
         "variacao": 0
       }
     },
     "int-so": {
       "tibia": {
-        "id": 38722,
+        "id": 38118,
         "variacao": 0
       }
     },
     "int-nl": {
       "tibia": {
-        "id": 38721,
+        "id": 38119,
         "variacao": 0
       }
     },
     "int-no": {
       "tibia": {
-        "id": 13543,
+        "id": 38120,
         "variacao": 0
       }
     },
@@ -97,12 +98,6 @@
       }
     },
     "raro-2": {
-      "tibia": {
-        "id": 38049,
-        "variacao": 0
-      }
-    },
-    "raro-3": {
       "tibia": {
         "id": 38049,
         "variacao": 0
@@ -171,6 +166,24 @@
     "padrao-2-2": {
       "tibia": {
         "id": 38044,
+        "variacao": 0
+      }
+    },
+    "raro-3": {
+      "tibia": {
+        "id": 38054,
+        "variacao": 0
+      }
+    },
+    "raro-5": {
+      "tibia": {
+        "id": 38050,
+        "variacao": 0
+      }
+    },
+    "raro-6": {
+      "tibia": {
+        "id": 38052,
         "variacao": 0
       }
     }
