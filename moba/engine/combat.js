@@ -1,6 +1,6 @@
 // moba/engine/combat.js
 
-import { GOLD, XP, RESPAWN, FOUNTAIN } from './config.js';
+import { GOLD, XP, RESPAWN, FOUNTAIN, NEUTRALS, BUFFS } from './config.js';
 import { distance } from './geometry.js';
 import { grantXp } from './units.js';
 import { SPAWNS } from './map.js';
@@ -28,7 +28,7 @@ export function gap(a, b) {
 // Os inimigos vivos e atacáveis a até range da borda de unit, do mais perto pro mais longe.
 
 export function findEnemies(sim, unit, range) {
-  return sim.units().filter(other => other.team !== unit.team && isTargetable(sim, other) && gap(unit, other) <= range)
+  return sim.units().filter(other => other.team !== unit.team && (other.kind !== 'neutral' || unit.kind === 'hero') && (unit.kind !== 'neutral' || other.kind === 'hero') && isTargetable(sim, other) && gap(unit, other) <= range)
     .sort((a, b) => gap(unit, a) - gap(unit, b));
 }
 
@@ -41,6 +41,7 @@ export function dealDamage(sim, source, target, amount, element = 'physical') {
   const defense = element === 'physical' ? target.armor : target.magicResist;
   const dealt = Math.max(1, Math.round(amount * 100 / (100 + defense)));
   target.hp -= dealt;
+  if (target.kind === 'neutral' && source && source.kind === 'hero' && !target.targetId) target.targetId = source.id;
   sim.emit({ type: 'damage', x: target.x, y: target.y, amount: dealt, element, targetId: target.id });
   if (target.hp <= 0) kill(sim, source, target);
   return dealt;
@@ -78,6 +79,8 @@ export function kill(sim, source, target) {
     if (source && source.kind === 'hero') source.gold += GOLD.minion;
     const near = heroesNear(sim, enemyTeam, target.x, target.y);
     for (const hero of near) grantXp(hero, XP.minion / near.length);
+  } else if (target.kind === 'neutral') {
+    killNeutral(sim, source, target);
   } else if (target.kind === 'hero') {
     target.deaths++;
     target.respawnAt = sim.time + RESPAWN.base + RESPAWN.perLevel * target.level;
@@ -89,13 +92,33 @@ export function kill(sim, source, target) {
     }
     const near = heroesNear(sim, enemyTeam, target.x, target.y);
     for (const hero of near) grantXp(hero, (XP.hero * target.level) / near.length);
+    sim.emit({ type: 'feed', kind: 'kill', team: enemyTeam, killer: source ? source.id : null, victim: target.id });
   } else {
     for (const hero of sim.heroes) if (hero.team === enemyTeam) hero.gold += GOLD.tower;
+    sim.emit({ type: 'feed', kind: target.structure, team: enemyTeam, victim: target.id });
     if (target.structure === 'nexus') {
       sim.over = true;
       sim.winner = enemyTeam;
       sim.emit({ type: 'victory', team: enemyTeam });
     }
+  }
+}
+
+// ================================================================================================================================================================================================================================================
+// killNeutral
+// O neutro morreu: ouro pro herói que matou, XP pro time dele por perto, o buff do objetivo pro time todo e o tempo pra renascer.
+
+function killNeutral(sim, source, neutral) {
+  const stats = NEUTRALS[neutral.type];
+  neutral.respawnAt = sim.time + stats.respawn;
+  neutral.targetId = null;
+  if (!source || source.kind !== 'hero') return;
+  source.gold += stats.gold;
+  const near = heroesNear(sim, source.team, neutral.x, neutral.y);
+  for (const hero of near) grantXp(hero, stats.xp / near.length);
+  if (stats.buff) {
+    for (const hero of sim.heroes) if (hero.team === source.team) hero.buffs[stats.buff] = sim.time + BUFFS[stats.buff].seconds;
+    sim.emit({ type: 'feed', kind: 'boss', team: source.team, name: neutral.type, buff: stats.buff });
   }
 }
 
@@ -114,6 +137,7 @@ export function respawnHero(sim, hero) {
   hero.attackTargetId = null;
   hero.slowUntil = 0;
   hero.hasteUntil = 0;
+  hero.stunUntil = 0;
   sim.emit({ type: 'respawn', x: hero.x, y: hero.y, targetId: hero.id });
 }
 

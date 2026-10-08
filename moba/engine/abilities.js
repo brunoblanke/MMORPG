@@ -3,15 +3,15 @@
 import { HEROES } from './config.js';
 import { normalize, distance, distanceToSegment, inCone } from './geometry.js';
 import { dealDamage, heal, findEnemies, gap } from './combat.js';
-import { heroStat } from './units.js';
+import { abilityScale } from './stats.js';
 import { resolveTerrain } from './movement.js';
 
 // ================================================================================================================================================================================================================================================
 // damageOf
 // O dano (ou cura) da habilidade no nível do herói.
 
-function damageOf(ability, hero, key = 'damage') {
-  return ability[key] + (ability[`${key}PerLevel`] || 0) * (hero.level - 1);
+function damageOf(sim, ability, hero, key = 'damage') {
+  return (ability[key] + (ability[`${key}PerLevel`] || 0) * (hero.level - 1)) * abilityScale(sim, hero, ability);
 }
 
 // ================================================================================================================================================================================================================================================
@@ -20,7 +20,8 @@ function damageOf(ability, hero, key = 'damage') {
 
 function hit(sim, hero, ability, targets) {
   for (const target of targets) {
-    dealDamage(sim, hero, target, damageOf(ability, hero), ability.element);
+    dealDamage(sim, hero, target, damageOf(sim, ability, hero), ability.element);
+    if (ability.stun && target.kind !== 'structure' && target.alive) target.stunUntil = sim.time + ability.stun;
     if (ability.slow && target.kind === 'hero' && target.alive) {
       target.slowFactor = ability.slow.factor;
       target.slowUntil = sim.time + ability.slow.seconds;
@@ -51,7 +52,8 @@ function aimOf(hero, tx, ty) {
 
 export function cast(sim, hero, slot, tx, ty) {
   const ability = HEROES[hero.vocation].abilities[slot];
-  if (!ability || !hero.alive || sim.time < hero.cooldowns[slot] || hero.mana < ability.mana) return false;
+  if (!ability || !hero.alive || sim.time < hero.cooldowns[slot] || sim.time < hero.stunUntil || hero.mana < ability.mana) return false;
+  if (ability.unlock && hero.level < ability.unlock) return false;
   const aim = aimOf(hero, tx, ty);
   const done = RUNNERS[ability.kind](sim, hero, ability, aim, tx, ty);
   if (done === false) return false;
@@ -63,6 +65,14 @@ export function cast(sim, hero, slot, tx, ty) {
 }
 
 const RUNNERS = {
+  massHeal(sim, hero, ability) {
+    const allies = sim.heroes.filter(ally => ally.team === hero.team && ally.alive && distance(hero.x, hero.y, ally.x, ally.y) <= ability.radius);
+    for (const ally of allies) {
+      heal(sim, ally, damageOf(sim, ability, hero, 'amount'));
+      sim.emit({ type: 'effect', name: ability.effect, x: ally.x, y: ally.y, radius: 1 });
+    }
+  },
+
   around(sim, hero, ability) {
     sim.emit({ type: 'effect', name: ability.effect, x: hero.x, y: hero.y, radius: ability.radius });
     hit(sim, hero, ability, enemiesIn(sim, hero, enemy => gap(hero, enemy) <= ability.radius));
@@ -108,7 +118,7 @@ const RUNNERS = {
   heal(sim, hero, ability, aim, tx, ty) {
     const allies = sim.heroes.filter(ally => ally.team === hero.team && ally.alive && distance(hero.x, hero.y, ally.x, ally.y) <= ability.range);
     const target = allies.sort((a, b) => distance(a.x, a.y, tx, ty) - distance(b.x, b.y, tx, ty))[0] || hero;
-    heal(sim, target, damageOf(ability, hero, 'amount'));
+    heal(sim, target, damageOf(sim, ability, hero, 'amount'));
     sim.emit({ type: 'effect', name: ability.effect, x: target.x, y: target.y, radius: 1 });
   }
 };

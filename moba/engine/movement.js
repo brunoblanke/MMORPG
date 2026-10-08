@@ -3,13 +3,14 @@
 import { ARENA } from './config.js';
 import { clamp, normalize, pushOutOfRect, distance } from './geometry.js';
 import { WALLS } from './map.js';
+import { buffFactor } from './stats.js';
 
 // ================================================================================================================================================================================================================================================
 // speedOf
 // A velocidade do herói agora (base, com haste e lentidão).
 
 export function speedOf(sim, hero, base) {
-  let speed = base;
+  let speed = (base + hero.bonus.speed) * buffFactor(sim, hero, 'speed');
   if (sim.time < hero.hasteUntil) speed *= hero.hasteFactor;
   if (sim.time < hero.slowUntil) speed *= hero.slowFactor;
   return speed;

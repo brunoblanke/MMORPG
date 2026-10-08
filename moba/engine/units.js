@@ -1,7 +1,8 @@
 // moba/engine/units.js
 
-import { HEROES, MINIONS, STRUCTURES, MAX_LEVEL, GOLD } from './config.js';
+import { HEROES, MINIONS, STRUCTURES, NEUTRALS, MAX_LEVEL, GOLD } from './config.js';
 import { SPAWNS } from './map.js';
+import { bonusOf } from './stats.js';
 
 // ================================================================================================================================================================================================================================================
 // heroStat
@@ -32,6 +33,7 @@ export function createHero(id, team, vocation, offset = 0) {
     x: spawn.x, y: spawn.y + offset, radius: stats.radius, facing: { x: team === 'blue' ? 1 : -1, y: 0 },
     level: 1, xp: 0, gold: GOLD.start, kills: 0, deaths: 0,
     hp: stats.hp, maxHp: stats.hp, mana: stats.mana, maxMana: stats.mana, armor: stats.armor, magicResist: stats.magicResist,
+    items: [], bonus: bonusOf([]), buffs: {}, potionReadyAt: 0, stunUntil: 0,
     cooldowns: stats.abilities.map(() => 0), attackReadyAt: 0, respawnAt: 0,
     moveTarget: null, attackTargetId: null, slowUntil: 0, slowFactor: 1, hasteUntil: 0, hasteFactor: 1
   };
@@ -39,15 +41,19 @@ export function createHero(id, team, vocation, offset = 0) {
 
 // ================================================================================================================================================================================================================================================
 // applyLevel
-// Recalcula vida e mana máximas do nível atual, mantendo a mesma fração de cada uma.
+// Recalcula vida, mana, armadura e resistência do nível e dos itens atuais; o que cresceu entra na vida e na mana atuais.
 
 export function applyLevel(hero) {
-  const hpFraction = hero.hp / hero.maxHp;
-  const manaFraction = hero.mana / hero.maxMana;
-  hero.maxHp = Math.round(heroStat(hero.vocation, 'hp', hero.level));
-  hero.maxMana = Math.round(heroStat(hero.vocation, 'mana', hero.level));
-  hero.hp = Math.round(hero.maxHp * hpFraction);
-  hero.mana = Math.round(hero.maxMana * manaFraction);
+  hero.bonus = bonusOf(hero.items);
+  const stats = HEROES[hero.vocation];
+  const maxHp = Math.round(heroStat(hero.vocation, 'hp', hero.level) + hero.bonus.hp);
+  const maxMana = Math.round(heroStat(hero.vocation, 'mana', hero.level) + hero.bonus.mana);
+  hero.hp = Math.min(maxHp, hero.hp + Math.max(0, maxHp - hero.maxHp));
+  hero.mana = Math.min(maxMana, hero.mana + Math.max(0, maxMana - hero.maxMana));
+  hero.maxHp = maxHp;
+  hero.maxMana = maxMana;
+  hero.armor = stats.armor + hero.bonus.armor;
+  hero.magicResist = stats.magicResist + hero.bonus.magicResist;
 }
 
 // ================================================================================================================================================================================================================================================
@@ -73,7 +79,7 @@ export function createMinion(id, team, type, offset = 0) {
   const spawn = SPAWNS[team];
   return {
     id, kind: 'minion', team, type, alive: true, x: spawn.x + (team === 'blue' ? 3 : -3), y: spawn.y + offset, radius: stats.radius,
-    hp: stats.hp, maxHp: stats.hp, armor: stats.armor, magicResist: 0, pathIndex: 0, targetId: null, attackReadyAt: 0, nextThinkAt: 0
+    hp: stats.hp, maxHp: stats.hp, armor: stats.armor, magicResist: 0, pathIndex: 0, targetId: null, attackReadyAt: 0, nextThinkAt: 0, stunUntil: 0
   };
 }
 
@@ -86,5 +92,18 @@ export function createStructure(spec) {
   return {
     id: spec.id, kind: 'structure', structure: spec.kind, team: spec.team, order: spec.order, alive: true,
     x: spec.x, y: spec.y, radius: stats.radius, hp: stats.hp, maxHp: stats.hp, armor: stats.armor, magicResist: 0, attackReadyAt: 0
+  };
+}
+
+// ================================================================================================================================================================================================================================================
+// createNeutral
+// Uma criatura neutra do acampamento: começa morta e nasce quando chega o tempo da primeira vez.
+
+export function createNeutral(slot) {
+  const stats = NEUTRALS[slot.type];
+  return {
+    id: slot.id, kind: 'neutral', team: 'neutral', type: slot.type, camp: slot.camp, boss: slot.boss, alive: false,
+    x: slot.x, y: slot.y, home: { x: slot.x, y: slot.y }, radius: stats.radius, hp: stats.hp, maxHp: stats.hp, armor: stats.armor, magicResist: 0,
+    targetId: null, attackReadyAt: 0, respawnAt: stats.first, stunUntil: 0
   };
 }

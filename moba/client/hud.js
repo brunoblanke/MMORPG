@@ -1,10 +1,12 @@
 // moba/client/hud.js
 
-import { ARENA, HEROES } from './engine/config.js';
+import { ARENA, HEROES, BUFFS } from './engine/config.js';
+import { WALLS } from './engine/map.js';
+import { xpToLevel } from './engine/units.js';
 
-const KEYS = ['Q', 'W', 'E'];
+const KEYS = ['Q', 'W', 'E', 'R'];
 const TEAM_COLOR = { blue: '#4aa3ff', red: '#ff5a5a' };
-const MINIMAP = { width: 200, height: 60 };
+export const MINIMAP = { width: 240, height: 120, left: 12, bottom: 12 };
 
 // ================================================================================================================================================================================================================================================
 // clock
@@ -46,16 +48,17 @@ function drawTop(ctx, scene) {
 
 function drawAbilities(ctx, scene, me) {
   const abilities = HEROES[me.vocation].abilities;
-  const boxWidth = 124;
+  const boxWidth = 112;
   const left = scene.width / 2 - (abilities.length * (boxWidth + 8)) / 2;
-  const top = scene.height - 100;
+  const top = scene.height - 116;
   abilities.forEach((ability, slot) => {
     const x = left + slot * (boxWidth + 8);
     const wait = me.cooldowns[slot];
     const noMana = me.mana < ability.mana;
+    const locked = !!ability.unlock && me.level < ability.unlock;
     ctx.fillStyle = 'rgba(20, 22, 28, 0.9)';
     ctx.fillRect(x, top, boxWidth, 56);
-    ctx.strokeStyle = wait > 0 || noMana ? '#444' : '#ccff33';
+    ctx.strokeStyle = locked || wait > 0 || noMana ? '#444' : ability.unlock ? '#ff9cf0' : '#ccff33';
     ctx.lineWidth = 2;
     ctx.strokeRect(x, top, boxWidth, 56);
     ctx.textAlign = 'center';
@@ -65,7 +68,13 @@ function drawAbilities(ctx, scene, me) {
     ctx.font = '10px Verdana, sans-serif';
     ctx.fillStyle = noMana ? '#f87171' : '#9db8ff';
     ctx.fillText(`${ability.name} · ${ability.mana}`, x + boxWidth / 2, top + 46);
-    if (wait > 0) {
+    if (locked) {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+      ctx.fillRect(x, top, boxWidth, 56);
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 13px Verdana, sans-serif';
+      ctx.fillText(`Nível ${ability.unlock}`, x + boxWidth / 2, top + 36);
+    } else if (wait > 0) {
       ctx.fillStyle = 'rgba(0, 0, 0, 0.55)';
       ctx.fillRect(x, top, boxWidth, 56);
       ctx.fillStyle = '#fff';
@@ -85,26 +94,51 @@ function drawAbilities(ctx, scene, me) {
   };
   fill(top + 62, me.hp / me.maxHp, '#22c55e', `${me.hp} / ${me.maxHp}`);
   fill(top + 78, me.mana / me.maxMana, '#3b82f6', `${me.mana} / ${me.maxMana}`);
+  fill(top + 94, me.level >= 15 ? 1 : me.xp / xpToLevel(me.level), '#a855f7', me.level >= 15 ? 'nível máximo' : `XP ${me.xp} / ${xpToLevel(me.level)}`);
   ctx.textAlign = 'left';
   ctx.fillStyle = '#fff';
   ctx.font = 'bold 14px Verdana, sans-serif';
-  ctx.fillText(`${HEROES[me.vocation].name} · nível ${me.level} · ouro ${me.gold} · ${me.kills}/${me.deaths}`, left, top - 8);
+  ctx.fillText(`${HEROES[me.vocation].name} · nível ${me.level} · ouro ${me.gold} · ${me.kills}/${me.deaths}`, left, top - 24);
+  ctx.font = '12px Verdana, sans-serif';
+  ctx.fillStyle = '#c8cbd4';
+  ctx.fillText(`ATK +${me.bonus.attack} · PODER +${me.bonus.power}% · ARM ${me.bonus.armor} · RM ${me.bonus.magicResist}`, left, top - 8);
+  let buffX = left + barWidth;
+  ctx.textAlign = 'right';
+  for (const buff of me.buffs) {
+    ctx.fillStyle = buff.id === 'dragon' ? '#ff9a3c' : '#c07bff';
+    ctx.fillText(`${BUFFS[buff.id].name} ${clock(buff.left)}`, buffX, top - 8);
+    buffX -= 170;
+  }
 }
 
 // ================================================================================================================================================================================================================================================
 // drawMinimap
-// O mapa pequeno no canto de baixo à esquerda: estruturas, minions e heróis.
+// O mapa pequeno no canto de baixo à esquerda: pedras, estruturas, neutros (bosses em rosa; apagado quando mortos, com o tempo), minions e heróis.
 
 function drawMinimap(ctx, scene) {
-  const x0 = 12;
-  const y0 = scene.height - MINIMAP.height - 12;
+  const x0 = MINIMAP.left;
+  const y0 = scene.height - MINIMAP.height - MINIMAP.bottom;
   const scale = MINIMAP.width / ARENA.width;
-  ctx.fillStyle = 'rgba(20, 22, 28, 0.85)';
+  ctx.fillStyle = 'rgba(20, 32, 20, 0.88)';
   ctx.fillRect(x0 - 2, y0 - 2, MINIMAP.width + 4, MINIMAP.height + 4);
+  ctx.fillStyle = 'rgba(120, 100, 70, 0.55)';
+  ctx.fillRect(x0, y0 + (ARENA.height / 2 - 3.5) * scale, MINIMAP.width, 7 * scale);
+  ctx.fillStyle = '#5b5f68';
+  for (const wall of WALLS) ctx.fillRect(x0 + wall.x * scale, y0 + wall.y * scale, wall.w * scale, wall.h * scale);
   const dot = (x, y, size, color) => {
     ctx.fillStyle = color;
     ctx.fillRect(x0 + x * scale - size / 2, y0 + y * scale - size / 2, size, size);
   };
+  for (const neutral of scene.state.neutrals) {
+    if (neutral.alive) dot(neutral.x, neutral.y, neutral.boss ? 8 : 3, neutral.boss ? '#ff4fd8' : '#e0a030');
+    else if (neutral.boss) {
+      dot(neutral.x, neutral.y, 8, '#555');
+      ctx.fillStyle = '#fff';
+      ctx.font = '9px Verdana, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(String(neutral.respawnIn), x0 + neutral.x * scale, y0 + neutral.y * scale + 3);
+    }
+  }
   for (const structure of scene.state.structures) if (structure.alive) dot(structure.x, structure.y, structure.structure === 'nexus' ? 8 : 6, TEAM_COLOR[structure.team]);
   for (const minion of scene.state.minions) dot(minion.x, minion.y, 2, TEAM_COLOR[minion.team]);
   for (const hero of scene.state.heroes) if (hero.alive) dot(hero.x, hero.y, hero.id === scene.myId ? 7 : 5, hero.id === scene.myId ? '#ccff33' : TEAM_COLOR[hero.team]);

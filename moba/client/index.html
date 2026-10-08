@@ -8,10 +8,21 @@
 </head>
 <body>
   <canvas id="game"></canvas>
+  <div id="feed" class="feed"></div>
+  <div id="announce" class="announces"></div>
+  <div id="scoreboard" class="scoreboard" hidden></div>
+  <div id="bag" class="bag" hidden></div>
+  <button id="shopButton" class="shop-button" hidden>Loja (B)</button>
+  <div id="shop" class="shop" hidden>
+    <div class="shop-head"><b>Loja</b><span id="shopGold"></span><button id="shopClose">✕</button></div>
+    <p id="shopNote" class="shop-note"></p>
+    <div id="shopList" class="shop-list"></div>
+  </div>
   <div id="lobby" class="lobby">
     <div class="lobby-box">
       <h1>MOBA 4×4</h1>
       <p>Escolha o time e a vocação. O resto da partida é de bots.</p>
+      <p class="keys">Botão direito: andar/atacar · Q W E R: poderes (R libera no nível 6) · B: loja (na fonte) · 1-6: poções · Tab: placar · S: parar</p>
       <div class="lobby-row" id="teams">
         <button data-team="blue" class="on">Azul</button>
         <button data-team="red">Vermelho</button>

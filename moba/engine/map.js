@@ -1,20 +1,24 @@
 // moba/engine/map.js
 
-import { ARENA } from './config.js';
+import { ARENA, CAMPS, NEUTRALS } from './config.js';
+
+export const LANE_Y = ARENA.height / 2;
+export const SPAWNS = { blue: { x: 6, y: LANE_Y }, red: { x: ARENA.width - 6, y: LANE_Y } };
 
 // ================================================================================================================================================================================================================================================
-// Mapa do campo (aberto, 100 × 30 tiles): as bases nas pontas, a lane no meio (y = 15) e
-// pilares de pedra como obstáculos.
+// WALLS
+// O mapa (120 × 60): a lane no meio (y = 30) entre dois muros de pedra com aberturas pra selva; selva de cima e de baixo com os acampamentos; blocos de pedra nas pontas e no centro dos bosques.
 
-export const SPAWNS = { blue: { x: 4.5, y: 15 }, red: { x: ARENA.width - 4.5, y: 15 } };
 export const WALLS = [
-  { x: 30, y: 6, w: 2, h: 5 }, { x: 30, y: 19, w: 2, h: 5 },
-  { x: 68, y: 6, w: 2, h: 5 }, { x: 68, y: 19, w: 2, h: 5 },
-  { x: 48, y: 3, w: 4, h: 3 }, { x: 48, y: 24, w: 4, h: 3 }
+  { x: 20, y: 22, w: 18, h: 2.5 }, { x: 46, y: 22, w: 28, h: 2.5 }, { x: 82, y: 22, w: 18, h: 2.5 },
+  { x: 20, y: 35.5, w: 18, h: 2.5 }, { x: 46, y: 35.5, w: 28, h: 2.5 }, { x: 82, y: 35.5, w: 18, h: 2.5 },
+  { x: 0, y: 0, w: 20, h: 7 }, { x: 100, y: 0, w: 20, h: 7 }, { x: 0, y: 53, w: 20, h: 7 }, { x: 100, y: 53, w: 20, h: 7 },
+  { x: 38, y: 10, w: 3, h: 3 }, { x: 79, y: 10, w: 3, h: 3 }, { x: 38, y: 47, w: 3, h: 3 }, { x: 79, y: 47, w: 3, h: 3 },
+  { x: 58, y: 14, w: 4, h: 3 }, { x: 58, y: 43, w: 4, h: 3 }
 ];
 const STRUCTURE_SPOTS = {
-  blue: { nexus: { x: 6, y: 15 }, towers: [{ x: 26, y: 15 }, { x: 14, y: 15 }] },
-  red: { nexus: { x: ARENA.width - 6, y: 15 }, towers: [{ x: ARENA.width - 26, y: 15 }, { x: ARENA.width - 14, y: 15 }] }
+  blue: { nexus: { x: 8, y: LANE_Y }, towers: [{ x: 28, y: LANE_Y }, { x: 17, y: LANE_Y }] },
+  red: { nexus: { x: ARENA.width - 8, y: LANE_Y }, towers: [{ x: ARENA.width - 28, y: LANE_Y }, { x: ARENA.width - 17, y: LANE_Y }] }
 };
 
 // ================================================================================================================================================================================================================================================
@@ -34,7 +38,17 @@ export function structureLayout(team) {
 // Os pontos que os minions do time seguem, da base dele até o nexus inimigo.
 
 export function lanePath(team) {
-  const forward = [[10, 15], [26, 15], [42, 15], [58, 15], [74, 15], [ARENA.width - 10, 15]];
+  const forward = [[14, LANE_Y], [30, LANE_Y], [46, LANE_Y], [60, LANE_Y], [74, LANE_Y], [90, LANE_Y], [ARENA.width - 12, LANE_Y]];
   const points = team === 'blue' ? forward : [...forward].reverse();
   return points.map(([x, y]) => ({ x, y }));
+}
+
+// ================================================================================================================================================================================================================================================
+// campSlots
+// Os lugares dos neutros: [{ id, type, x, y }] (um por criatura do acampamento, lado a lado).
+
+export function campSlots() {
+  return CAMPS.flatMap(camp => Array.from({ length: camp.count }, (_, index) => ({
+    id: `${camp.id}-${index + 1}`, camp: camp.id, type: camp.type, x: camp.x + (index - (camp.count - 1) / 2) * 1.6, y: camp.y, boss: !!NEUTRALS[camp.type].buff
+  })));
 }

@@ -1,6 +1,7 @@
 // moba/engine/heroes.js
 
 import { HEROES, FOUNTAIN, GOLD } from './config.js';
+import { attackOf, cooldownOf } from './stats.js';
 import { moveToward, speedOf } from './movement.js';
 import { isTargetable, gap, attack, respawnHero, inFountain } from './combat.js';
 
@@ -15,15 +16,16 @@ export function updateHero(sim, hero, dt) {
   }
   const stats = HEROES[hero.vocation];
   const boost = inFountain(hero) ? FOUNTAIN : null;
-  hero.hp = Math.min(hero.maxHp, hero.hp + (boost ? boost.hpRegen : stats.hpRegen) * dt);
+  hero.hp = Math.min(hero.maxHp, hero.hp + (boost ? boost.hpRegen : stats.hpRegen + hero.bonus.hpRegen) * dt);
   hero.mana = Math.min(hero.maxMana, hero.mana + (boost ? boost.manaRegen : stats.manaRegen) * dt);
   hero.gold += GOLD.perSecond * dt;
+  if (sim.time < hero.stunUntil) return;
   const target = hero.attackTargetId ? sim.getUnit(hero.attackTargetId) : null;
   if (hero.attackTargetId && (!target || target.team === hero.team || !isTargetable(sim, target))) hero.attackTargetId = null;
   if (target && hero.attackTargetId) {
     if (gap(hero, target) <= stats.range) {
       hero.facing = { x: Math.sign(target.x - hero.x) || hero.facing.x, y: 0 };
-      if (sim.time >= hero.attackReadyAt) attack(sim, hero, target, stats.damage + stats.damagePerLevel * (hero.level - 1), stats.cooldown, stats.missile, stats.element);
+      if (sim.time >= hero.attackReadyAt) attack(sim, hero, target, attackOf(sim, hero), cooldownOf(hero, stats.cooldown), stats.missile, stats.element);
     } else {
       moveToward(sim, hero, target.x, target.y, speedOf(sim, hero, stats.speed), dt);
     }

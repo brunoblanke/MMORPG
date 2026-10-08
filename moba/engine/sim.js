@@ -1,13 +1,15 @@
 // moba/engine/sim.js
 
 import { TICK_MS, TEAMS, VOCATIONS, WAVE, ARENA } from './config.js';
-import { structureLayout } from './map.js';
-import { createHero, createStructure } from './units.js';
+import { structureLayout, campSlots } from './map.js';
+import { createHero, createStructure, createNeutral } from './units.js';
+import { updateNeutrals } from './neutrals.js';
+import { buy, sell, usePotion } from './shop.js';
 import { updateHero } from './heroes.js';
 import { updateMinion, spawnWave } from './minions.js';
 import { updateStructure } from './structures.js';
 import { separate } from './movement.js';
-import { isTargetable } from './combat.js';
+import { isTargetable, inFountain } from './combat.js';
 import { cast } from './abilities.js';
 import { runBots } from './bots.js';
 
@@ -32,6 +34,7 @@ export class MobaSim {
     this.nextWaveAt = WAVE.first;
     this.heroes = [];
     this.minions = [];
+    this.neutrals = campSlots().map(createNeutral);
     this.structures = TEAMS.flatMap(team => structureLayout(team).map(createStructure));
     TEAMS.forEach(team => VOCATIONS.forEach((vocation, index) => {
       this.heroes.push(createHero(`${team}-${vocation}`, team, vocation, (index - 1.5) * 1.1));
@@ -43,14 +46,14 @@ export class MobaSim {
   // Todas as unidades vivas (heróis, minions e estruturas).
 
   units() {
-    return [...this.heroes, ...this.minions, ...this.structures].filter(unit => unit.alive);
+    return [...this.heroes, ...this.minions, ...this.neutrals, ...this.structures].filter(unit => unit.alive);
   }
 
   // ================================================================================================================================================================================================================================================
   // getUnit
 
   getUnit(id) {
-    return [...this.heroes, ...this.minions, ...this.structures].find(unit => unit.id === id) || null;
+    return [...this.heroes, ...this.minions, ...this.neutrals, ...this.structures].find(unit => unit.id === id) || null;
   }
 
   // ================================================================================================================================================================================================================================================
@@ -71,7 +74,7 @@ export class MobaSim {
 
   // ================================================================================================================================================================================================================================================
   // command
-  // Ordem do jogador pro herói heroId: { type: 'move', x, y } | { type: 'attack', targetId } | { type: 'cast', slot, x, y } | { type: 'stop' }.
+  // Ordem do jogador pro herói heroId: { type: 'move', x, y } | { type: 'attack', targetId } | { type: 'cast', slot, x, y } | { type: 'stop' } | { type: 'buy', item } | { type: 'sell', slot } | { type: 'use', slot }.
 
   command(heroId, command) {
     const hero = this.heroes.find(item => item.id === heroId);
@@ -87,6 +90,12 @@ export class MobaSim {
       }
     } else if (command.type === 'cast') {
       cast(this, hero, command.slot, Number(command.x), Number(command.y));
+    } else if (command.type === 'buy') {
+      buy(this, hero, command.item);
+    } else if (command.type === 'sell') {
+      sell(this, hero, Number(command.slot));
+    } else if (command.type === 'use') {
+      usePotion(this, hero, Number(command.slot));
     } else if (command.type === 'stop') {
       hero.moveTarget = null;
       hero.attackTargetId = null;
@@ -107,7 +116,9 @@ export class MobaSim {
       this.nextWaveAt += WAVE.every;
     }
     if (this.bots) runBots(this);
-    for (const hero of this.heroes) updateHero(this, hero, dt);
+    const order = this.tickCount % 2 ? [...this.heroes].reverse() : this.heroes;
+    for (const hero of order) updateHero(this, hero, dt);
+    updateNeutrals(this, dt);
     for (const minion of this.minions) if (minion.alive) updateMinion(this, minion, dt);
     for (const structure of this.structures) updateStructure(this, structure);
     separate(this);
@@ -127,7 +138,14 @@ export class MobaSim {
         facing: hero.facing, hp: Math.round(hero.hp), maxHp: hero.maxHp, mana: Math.round(hero.mana), maxMana: hero.maxMana, level: hero.level,
         xp: Math.round(hero.xp), gold: Math.floor(hero.gold), kills: hero.kills, deaths: hero.deaths,
         cooldowns: hero.cooldowns.map(readyAt => round(Math.max(0, readyAt - this.time))), respawnIn: round(Math.max(0, hero.respawnAt - this.time)),
-        slowed: this.time < hero.slowUntil, hasted: this.time < hero.hasteUntil
+        slowed: this.time < hero.slowUntil, hasted: this.time < hero.hasteUntil, stunned: this.time < hero.stunUntil,
+        items: hero.items, potionIn: round(Math.max(0, hero.potionReadyAt - this.time)), inFountain: inFountain(hero),
+        bonus: { attack: hero.bonus.attack, power: hero.bonus.power, armor: hero.armor, magicResist: hero.magicResist },
+        buffs: Object.entries(hero.buffs).filter(([, until]) => this.time < until).map(([id, until]) => ({ id, left: Math.round(until - this.time) }))
+      })),
+      neutrals: this.neutrals.map(neutral => ({
+        id: neutral.id, type: neutral.type, boss: neutral.boss, alive: neutral.alive, x: round(neutral.x), y: round(neutral.y),
+        hp: Math.round(neutral.hp), maxHp: neutral.maxHp, respawnIn: neutral.alive ? 0 : Math.ceil(Math.max(0, neutral.respawnAt - this.time)), stunned: this.time < neutral.stunUntil
       })),
       minions: this.minions.map(minion => ({ id: minion.id, team: minion.team, type: minion.type, x: round(minion.x), y: round(minion.y), hp: Math.round(minion.hp), maxHp: minion.maxHp })),
       structures: this.structures.map(structure => ({

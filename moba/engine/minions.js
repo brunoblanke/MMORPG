@@ -25,6 +25,7 @@ export function spawnWave(sim) {
 // Um minion: ataca o inimigo mais perto no alcance; senão vai atrás de quem entrou no raio de aggro (heróis e minions); senão segue a lane.
 
 export function updateMinion(sim, minion, dt) {
+  if (sim.time < minion.stunUntil) return;
   const stats = MINIONS[minion.type];
   const inRange = findEnemies(sim, minion, stats.range);
   if (inRange.length) {

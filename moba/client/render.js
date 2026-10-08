@@ -1,9 +1,9 @@
 // moba/client/render.js
 
-import { ARENA, HEROES } from './engine/config.js';
-import { WALLS, SPAWNS } from './engine/map.js';
+import { ARENA, HEROES, NEUTRALS } from './engine/config.js';
+import { WALLS, SPAWNS, LANE_Y } from './engine/map.js';
 import { EFFECTS, MISSILES, effectUrl, missileUrl, missileDirection } from '/shared/effects.js';
-import { SHEETS, FLOOR, image, ready, directionOf } from './assets.js';
+import { SHEETS, FLOOR, image, ready, directionOf, sheetSize } from './assets.js';
 
 export const TILE = 32;
 export const ZOOM = 1.5;
@@ -45,9 +45,13 @@ function drawFloor(ctx, scene) {
     }
   }
   ctx.strokeStyle = 'rgba(255,255,255,0.08)';
-  const lane = toScreen(scene, 0, 13);
-  ctx.fillStyle = 'rgba(120, 100, 70, 0.28)';
-  ctx.fillRect(lane.x, lane.y, ARENA.width * TILE * ZOOM, 4 * TILE * ZOOM);
+  const lane = toScreen(scene, 0, LANE_Y - 3.5);
+  ctx.fillStyle = 'rgba(120, 100, 70, 0.3)';
+  ctx.fillRect(lane.x, lane.y, ARENA.width * TILE * ZOOM, 7 * TILE * ZOOM);
+  const jungle = toScreen(scene, 0, 0);
+  ctx.fillStyle = 'rgba(0, 30, 0, 0.18)';
+  ctx.fillRect(jungle.x, jungle.y, ARENA.width * TILE * ZOOM, (LANE_Y - 7.5) * TILE * ZOOM);
+  ctx.fillRect(jungle.x, jungle.y + (LANE_Y + 7.5) * TILE * ZOOM, ARENA.width * TILE * ZOOM, (LANE_Y - 7.5) * TILE * ZOOM);
   for (const team of ['blue', 'red']) {
     const base = toScreen(scene, SPAWNS[team].x, SPAWNS[team].y);
     ctx.beginPath();
@@ -134,29 +138,32 @@ function frameOf(unit, now, sheet) {
 function drawUnit(ctx, scene, unit, isHero) {
   const sheet = isHero ? SHEETS.hero : SHEETS[unit.type];
   const img = image(sheet.url);
+  const neutral = !isHero && !!NEUTRALS[unit.type];
   const at = toScreen(scene, unit.x, unit.y);
   const before = memory.get(unit.id);
-  const facing = isHero ? unit.facing : { x: unit.team === 'blue' ? 1 : -1, y: 0 };
+  const facing = isHero ? unit.facing : neutral ? { x: 0, y: 1 } : { x: unit.team === 'blue' ? 1 : -1, y: 0 };
   const moving = before ? { x: unit.x - before.x, y: unit.y - before.y } : null;
   const look = moving && Math.hypot(moving.x, moving.y) > 0.005 && !isHero ? moving : facing;
   ctx.beginPath();
   ctx.ellipse(at.x, at.y + 6 * ZOOM, 13 * ZOOM, 6 * ZOOM, 0, 0, Math.PI * 2);
-  ctx.strokeStyle = TEAM_COLOR[unit.team];
+  ctx.strokeStyle = neutral ? (unit.boss ? '#ff4fd8' : '#e0a030') : unit.buffs && unit.buffs.length ? '#ffd24a' : TEAM_COLOR[unit.team];
   ctx.lineWidth = 3;
   ctx.stroke();
   if (ready(img)) {
     const frame = frameOf(unit, scene.now, sheet);
-    const size = sheet.size * ZOOM;
+    const side = sheetSize(sheet, img);
+    const size = side * ZOOM;
     ctx.save();
-    if (isHero && unit.slowed) ctx.globalAlpha = 0.7;
-    ctx.drawImage(img, frame * sheet.size, directionOf(look) * sheet.size, sheet.size, sheet.size, at.x + 16 * ZOOM - size, at.y + 16 * ZOOM - size, size, size);
+    if (unit.slowed || unit.stunned) ctx.globalAlpha = 0.65;
+    ctx.drawImage(img, frame * side, directionOf(look) * side, side, side, at.x + 16 * ZOOM - size, at.y + 16 * ZOOM - size, size, size);
     ctx.restore();
   } else {
     ctx.fillStyle = TEAM_COLOR[unit.team];
     ctx.fillRect(at.x - 8, at.y - 8, 16, 16);
   }
   const width = (isHero ? 40 : 26) * ZOOM / 1.5;
-  bar(ctx, at.x, at.y - 26 * ZOOM, width, unit.hp / unit.maxHp, unit.team === scene.myTeam ? '#4ade80' : '#ef4444');
+  const lift = neutral && unit.boss ? 52 : 26;
+  bar(ctx, at.x, at.y - lift * ZOOM, neutral && unit.boss ? width * 2 : width, unit.hp / unit.maxHp, neutral ? '#e0a030' : unit.team === scene.myTeam ? '#4ade80' : '#ef4444');
   if (isHero) {
     if (unit.maxMana) bar(ctx, at.x, at.y - 26 * ZOOM + 6, width, unit.mana / unit.maxMana, '#60a5fa');
     ctx.font = 'bold 11px Verdana, sans-serif';
@@ -167,6 +174,15 @@ function drawUnit(ctx, scene, unit, isHero) {
     const label = `${HEROES[unit.vocation].name} ${unit.level}`;
     ctx.strokeText(label, at.x, at.y - 30 * ZOOM);
     ctx.fillText(label, at.x, at.y - 30 * ZOOM);
+  } else if (neutral && unit.boss) {
+    ctx.font = 'bold 12px Verdana, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#ff9cf0';
+    ctx.strokeStyle = '#000';
+    ctx.lineWidth = 3;
+    const label = unit.type.toUpperCase();
+    ctx.strokeText(label, at.x, at.y - lift * ZOOM - 6);
+    ctx.fillText(label, at.x, at.y - lift * ZOOM - 6);
   }
 }
 
@@ -263,6 +279,7 @@ export function render(ctx, scene) {
   if (!state) return;
   for (const structure of state.structures) drawStructure(ctx, scene, structure);
   const units = [
+    ...state.neutrals.filter(unit => unit.alive).map(unit => ({ unit, hero: false })),
     ...state.minions.map(unit => ({ unit, hero: false })),
     ...state.heroes.filter(hero => hero.alive).map(unit => ({ unit, hero: true }))
   ].sort((a, b) => a.unit.y - b.unit.y);

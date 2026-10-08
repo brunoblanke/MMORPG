@@ -1,8 +1,9 @@
 // moba/client/main.js
 
-import { ARENA } from './engine/config.js';
+import { ARENA, NEUTRALS } from './engine/config.js';
 import { render, toWorld, pruneVisuals, effectTiles, TILE } from './render.js';
-import { drawHud as hud } from './hud.js';
+import { drawHud as hud, MINIMAP } from './hud.js';
+import { initUi, updateUi, addFeed, toggleShop, showScoreboard } from './ui.js';
 
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
@@ -68,6 +69,7 @@ function takeEvents(events) {
     if (event.type === 'effect') scene.effects.push({ name: event.name, tiles: effectTiles(event), start: scene.now });
     else if (event.type === 'missile') scene.missiles.push({ kind: event.kind, fromX: event.fromX, fromY: event.fromY, toX: event.toX, toY: event.toY, start: scene.now });
     else if (event.type === 'damage') scene.texts.push({ x: event.x, y: event.y, amount: event.amount, element: event.element, start: scene.now });
+    else if (event.type === 'feed') addFeed(event);
     else if (event.type === 'heal') scene.texts.push({ x: event.x, y: event.y, amount: event.amount, heal: true, start: scene.now });
   }
 }
@@ -90,6 +92,7 @@ function connect() {
     const state = JSON.parse(event.data);
     takeEvents(state.events || []);
     scene.state = state;
+    updateUi(state, scene.myId);
   };
 }
 
@@ -120,6 +123,7 @@ function unitAt(point) {
   const candidates = [
     ...state.heroes.filter(hero => hero.alive).map(hero => ({ ...hero, radius: 0.6 })),
     ...state.minions.map(minion => ({ ...minion, radius: 0.6 })),
+    ...state.neutrals.filter(neutral => neutral.alive).map(neutral => ({ ...neutral, radius: NEUTRALS[neutral.type].radius + 0.2 })),
     ...state.structures.filter(structure => structure.alive).map(structure => ({ ...structure, radius: structure.structure === 'nexus' ? 1.8 : 1.1 }))
   ];
   return candidates.filter(unit => unit.team !== scene.myTeam && Math.hypot(unit.x - point.x, unit.y - point.y) <= unit.radius + 0.3)
@@ -137,6 +141,17 @@ function rightClick() {
 }
 
 // ================================================================================================================================================================================================================================================
+// minimapClick
+// Clique esquerdo no mapa pequeno: manda o herói andar até o ponto.
+
+function minimapClick(sx, sy) {
+  const left = MINIMAP.left;
+  const top = scene.height - MINIMAP.height - MINIMAP.bottom;
+  if (sx < left || sx > left + MINIMAP.width || sy < top || sy > top + MINIMAP.height) return;
+  command({ type: 'move', x: (sx - left) / MINIMAP.width * ARENA.width, y: (sy - top) / MINIMAP.height * ARENA.height });
+}
+
+// ================================================================================================================================================================================================================================================
 // setupInput
 // Mouse (botão direito anda ou ataca, segurado continua andando) e teclado (Q, W e E lançam no mouse; S para).
 
@@ -150,17 +165,35 @@ function setupInput() {
     if (event.button === 2) {
       rightHeld = true;
       rightClick();
-    }
+    } else if (event.button === 0) minimapClick(event.clientX, event.clientY);
   });
   window.addEventListener('mouseup', (event) => {
     if (event.button === 2) rightHeld = false;
   });
+  window.addEventListener('keyup', (event) => {
+    if (event.key === 'Tab') showScoreboard(false);
+  });
+  window.addEventListener('blur', () => showScoreboard(false));
   setInterval(() => {
     if (rightHeld) rightClick();
   }, 150);
   window.addEventListener('keydown', (event) => {
     if (event.repeat) return;
-    const slot = { q: 0, w: 1, e: 2 }[event.key.toLowerCase()];
+    const key = event.key.toLowerCase();
+    if (key === 'tab') {
+      event.preventDefault();
+      showScoreboard(true);
+      return;
+    }
+    if (key === 'b') {
+      toggleShop();
+      return;
+    }
+    if (/^[1-6]$/.test(key)) {
+      command({ type: 'use', slot: Number(key) - 1 });
+      return;
+    }
+    const slot = { q: 0, w: 1, e: 2, r: 3 }[key];
     if (slot !== undefined) {
       const point = toWorld(scene, scene.mouse.x, scene.mouse.y);
       command({ type: 'cast', slot, x: point.x, y: point.y });
@@ -202,6 +235,7 @@ function frame(now) {
 
 window.addEventListener('resize', resize);
 resize();
+initUi(command);
 setupInput();
 setupLobby();
 connect();
