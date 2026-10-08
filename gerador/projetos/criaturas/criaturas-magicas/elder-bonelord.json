@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "criaturas-magicas",
-  "nome": "elder-bonelord",
   "propriedades": {
     "comportamento": "mago",
     "vida": 500,
@@ -52,30 +48,7 @@
     "armadura": 13,
     "defesa": 13,
     "ataque": 55,
-    "loot": [
-      {
-        "tipo": "itens/valiosos/gold-coin",
-        "chance": 0.9929,
-        "min": 1,
-        "max": 86
-      },
-      {
-        "tipo": "itens/espadas/two-handed-sword",
-        "chance": 0.0298
-      },
-      {
-        "tipo": "itens/escudos/steel-shield",
-        "chance": 0.0204
-      },
-      {
-        "tipo": "itens/produtos-de-criaturas/bonelord-eye",
-        "chance": 0.0192
-      },
-      {
-        "tipo": "itens/escudos/bonelord-shield",
-        "chance": 0.0009
-      }
-    ],
+    "magia": null,
     "ataques": [
       {
         "forma": "tiro",
@@ -124,6 +97,38 @@
       "fire": 110,
       "ice": 70,
       "death": 70
-    }
-  }
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.9929,
+        "min": 1,
+        "max": 86
+      },
+      {
+        "tipo": "itens/espadas/two-handed-sword",
+        "chance": 0.0298
+      },
+      {
+        "tipo": "itens/escudos/steel-shield",
+        "chance": 0.0204
+      },
+      {
+        "tipo": "itens/produtos-de-criaturas/bonelord-eye",
+        "chance": 0.0192
+      },
+      {
+        "tipo": "itens/escudos/bonelord-shield",
+        "chance": 0.0009
+      }
+    ],
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "criaturas-magicas",
+  "nome": "elder-bonelord"
 }

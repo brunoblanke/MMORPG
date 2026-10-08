@@ -42,6 +42,7 @@
   },
   "propriedades": {
     "comportamento": "normal",
+    "voa": true,
     "vida": 30,
     "xp": 10,
     "velocidade": 320,
@@ -49,17 +50,16 @@
     "defesa": 2,
     "ataque": 8,
     "magia": null,
+    "resistencias": {
+      "earth": 110
+    },
     "veneno": 0,
     "invoca": null,
     "respawn": 0,
     "loot": [],
     "falas": [
       "Flap! Flap!"
-    ],
-    "resistencias": {
-      "earth": 110
-    },
-    "voa": true
+    ]
   },
   "ferramenta": "criaturas",
   "grupo": "criaturas",

@@ -82,7 +82,10 @@
           "palavras": "nome, quem, trabalho",
           "resposta": "Sou o Guia. Recebo os aventureiros que chegam por aqui."
         }
-      ]
+      ],
+      "vende": [],
+      "compra": [],
+      "missoes": []
     }
   },
   "ferramenta": "criaturas",

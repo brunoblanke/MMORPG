@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "mamiferos",
-  "nome": "wolf",
   "propriedades": {
     "comportamento": "foge",
     "vida": 25,
@@ -52,6 +48,15 @@
     "armadura": 1,
     "defesa": 1,
     "ataque": 17,
+    "magia": null,
+    "resistencias": {
+      "ice": 110,
+      "holy": 70,
+      "death": 105
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/comidas/meet",
@@ -64,10 +69,10 @@
         "chance": 0.01
       }
     ],
-    "resistencias": {
-      "ice": 110,
-      "holy": 70,
-      "death": 105
-    }
-  }
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "mamiferos",
+  "nome": "wolf"
 }

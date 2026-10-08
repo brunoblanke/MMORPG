@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "repteis",
-  "nome": "lizard-sentinel",
   "propriedades": {
     "comportamento": "mago",
     "vida": 265,
@@ -52,6 +48,26 @@
     "armadura": 17,
     "defesa": 15,
     "ataque": 45,
+    "magia": null,
+    "ataques": [
+      {
+        "forma": "tiro",
+        "elemento": "physical",
+        "min": 0,
+        "max": 70,
+        "chance": 30,
+        "alcance": 7
+      }
+    ],
+    "resistencias": {
+      "energy": 90,
+      "earth": 0,
+      "fire": 110,
+      "ice": 80
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/valiosos/gold-coin",
@@ -86,21 +102,10 @@
         "chance": 0.0019
       }
     ],
-    "ataques": [
-      {
-        "forma": "tiro",
-        "elemento": "physical",
-        "min": 0,
-        "max": 70,
-        "chance": 30,
-        "alcance": 7
-      }
-    ],
-    "resistencias": {
-      "energy": 90,
-      "earth": 0,
-      "fire": 110,
-      "ice": 80
-    }
-  }
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "repteis",
+  "nome": "lizard-sentinel"
 }

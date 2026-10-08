@@ -40,6 +40,21 @@
       }
     }
   },
+  "propriedades": {
+    "comportamento": "normal",
+    "vida": 0,
+    "xp": 0,
+    "velocidade": 0,
+    "armadura": 0,
+    "defesa": 0,
+    "ataque": 0,
+    "magia": null,
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
+    "loot": [],
+    "falas": []
+  },
   "ferramenta": "criaturas",
   "grupo": "personagens",
   "pasta": "players",

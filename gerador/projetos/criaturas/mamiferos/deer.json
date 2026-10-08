@@ -48,6 +48,10 @@
     "armadura": 2,
     "defesa": 2,
     "ataque": 1,
+    "magia": null,
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/comidas/meet",
@@ -61,7 +65,8 @@
         "min": 1,
         "max": 2
       }
-    ]
+    ],
+    "falas": []
   },
   "ferramenta": "criaturas",
   "grupo": "criaturas",

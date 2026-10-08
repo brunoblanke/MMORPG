@@ -112,6 +112,7 @@
           "palavras": "axe, machado"
         }
       ],
+      "missoes": [],
       "falasVenda": {
         "lista": "O que você deseja comprar?",
         "confirmar": "Quer comprar {item} por {preco}?",

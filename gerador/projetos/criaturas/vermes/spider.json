@@ -48,6 +48,13 @@
     "armadura": 2,
     "defesa": 2,
     "ataque": 9,
+    "magia": null,
+    "resistencias": {
+      "fire": 120
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/valiosos/gold-coin",
@@ -56,9 +63,7 @@
         "max": 5
       }
     ],
-    "resistencias": {
-      "fire": 120
-    }
+    "falas": []
   },
   "ferramenta": "criaturas",
   "grupo": "criaturas",

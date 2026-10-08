@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "repteis",
-  "nome": "snake",
   "propriedades": {
     "comportamento": "normal",
     "vida": 15,
@@ -52,12 +48,21 @@
     "armadura": 0,
     "defesa": 0,
     "ataque": 8,
-    "loot": [],
+    "magia": null,
     "resistencias": {
       "energy": 80,
       "earth": 60,
       "fire": 110,
       "ice": 110
-    }
-  }
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
+    "loot": [],
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "repteis",
+  "nome": "snake"
 }

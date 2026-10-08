@@ -48,6 +48,9 @@
       "tchau": "",
       "raio": 2,
       "topicos": [],
+      "vende": [],
+      "compra": [],
+      "missoes": [],
       "vocacao": {
         "destino": {
           "x": 155,

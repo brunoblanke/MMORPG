@@ -48,6 +48,35 @@
     "armadura": 30,
     "defesa": 30,
     "ataque": 300,
+    "magia": null,
+    "ataques": [
+      {
+        "forma": "campo",
+        "campo": "itens/itens-encantados/poison-field",
+        "chance": 10,
+        "alcance": 7,
+        "raio": 1
+      },
+      {
+        "forma": "bola",
+        "elemento": "earth",
+        "min": 40,
+        "max": 70,
+        "chance": 10,
+        "alcance": 7,
+        "raio": 1,
+        "centro": "alvo"
+      }
+    ],
+    "resistencias": {
+      "energy": 80,
+      "earth": 0,
+      "fire": 110,
+      "ice": 80
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/valiosos/gold-coin",
@@ -108,30 +137,7 @@
         "chance": 0.0028
       }
     ],
-    "ataques": [
-      {
-        "forma": "campo",
-        "campo": "itens/itens-encantados/poison-field",
-        "chance": 10,
-        "alcance": 7,
-        "raio": 1
-      },
-      {
-        "forma": "bola",
-        "elemento": "earth",
-        "min": 40,
-        "max": 70,
-        "chance": 10,
-        "alcance": 7,
-        "raio": 1
-      }
-    ],
-    "resistencias": {
-      "energy": 80,
-      "earth": 0,
-      "fire": 110,
-      "ice": 80
-    }
+    "falas": []
   },
   "ferramenta": "criaturas",
   "grupo": "criaturas",

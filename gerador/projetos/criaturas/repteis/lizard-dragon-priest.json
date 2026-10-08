@@ -1,7 +1,7 @@
 {
   "formato": {
     "quadro": 64,
-    "quadros": 9,
+    "quadros": 3,
     "linhas": [
       "sul",
       "norte",
@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "repteis",
-  "nome": "lizard-dragon-priest",
   "propriedades": {
     "comportamento": "mago",
     "vida": 1450,
@@ -52,6 +48,30 @@
     "armadura": 22,
     "defesa": 15,
     "ataque": 50,
+    "magia": null,
+    "ataques": [
+      {
+        "forma": "tiro",
+        "elemento": "fire",
+        "min": 125,
+        "max": 190,
+        "chance": 20,
+        "alcance": 7
+      },
+      {
+        "forma": "cura",
+        "min": 200,
+        "max": 300,
+        "chance": 30
+      }
+    ],
+    "resistencias": {
+      "earth": 0,
+      "fire": 15
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/valiosos/gold-coin",
@@ -83,32 +103,17 @@
       },
       {
         "tipo": "itens/rods/terra-rod",
-        "chance": 0.01001
+        "chance": 0.01
       },
       {
         "tipo": "itens/valiosos/yellow-gem",
         "chance": 0.01
       }
     ],
-    "ataques": [
-      {
-        "forma": "tiro",
-        "elemento": "fire",
-        "min": 125,
-        "max": 190,
-        "chance": 20,
-        "alcance": 7
-      },
-      {
-        "forma": "cura",
-        "min": 200,
-        "max": 300,
-        "chance": 30
-      }
-    ],
-    "resistencias": {
-      "earth": 0,
-      "fire": 15
-    }
-  }
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "repteis",
+  "nome": "lizard-dragon-priest"
 }

@@ -1,7 +1,7 @@
 {
   "formato": {
     "quadro": 64,
-    "quadros": 9,
+    "quadros": 3,
     "linhas": [
       "sul",
       "norte",
@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "repteis",
-  "nome": "lizard-legionnaire",
   "propriedades": {
     "comportamento": "mago",
     "vida": 1400,
@@ -52,6 +48,25 @@
     "armadura": 30,
     "defesa": 25,
     "ataque": 180,
+    "magia": null,
+    "ataques": [
+      {
+        "forma": "tiro",
+        "elemento": "physical",
+        "min": 0,
+        "max": 200,
+        "chance": 40,
+        "alcance": 7
+      }
+    ],
+    "resistencias": {
+      "earth": 0,
+      "fire": 55,
+      "ice": 110
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/valiosos/gold-coin",
@@ -67,25 +82,15 @@
       },
       {
         "tipo": "itens/valiosos/small-diamond",
-        "chance": 0.01001,
+        "chance": 0.01,
         "min": 1,
         "max": 2
       }
     ],
-    "ataques": [
-      {
-        "forma": "tiro",
-        "elemento": "physical",
-        "min": 0,
-        "max": 200,
-        "chance": 40,
-        "alcance": 7
-      }
-    ],
-    "resistencias": {
-      "earth": 0,
-      "fire": 55,
-      "ice": 110
-    }
-  }
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "repteis",
+  "nome": "lizard-legionnaire"
 }

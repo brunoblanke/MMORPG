@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "mamiferos",
-  "nome": "rat",
   "propriedades": {
     "comportamento": "foge",
     "vida": 20,
@@ -52,6 +48,16 @@
     "armadura": 1,
     "defesa": 1,
     "ataque": 8,
+    "magia": null,
+    "resistencias": {
+      "earth": 80,
+      "ice": 110,
+      "holy": 80,
+      "death": 110
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/valiosos/gold-coin",
@@ -64,11 +70,10 @@
         "chance": 0.3941
       }
     ],
-    "resistencias": {
-      "earth": 80,
-      "ice": 110,
-      "holy": 80,
-      "death": 110
-    }
-  }
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "mamiferos",
+  "nome": "rat"
 }

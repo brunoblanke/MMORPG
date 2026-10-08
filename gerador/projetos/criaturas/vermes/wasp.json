@@ -40,28 +40,33 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "vermes",
-  "nome": "wasp",
   "propriedades": {
     "comportamento": "normal",
+    "voa": true,
     "vida": 35,
     "xp": 24,
     "velocidade": 320,
     "armadura": 4,
     "defesa": 4,
     "ataque": 20,
+    "magia": null,
+    "resistencias": {
+      "earth": 0,
+      "fire": 110
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/produtos-de-criaturas/honeycomb",
         "chance": 0.03
       }
     ],
-    "resistencias": {
-      "earth": 0,
-      "fire": 110
-    },
-    "voa": true
-  }
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "vermes",
+  "nome": "wasp"
 }

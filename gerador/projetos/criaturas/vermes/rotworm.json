@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "vermes",
-  "nome": "rotworm",
   "propriedades": {
     "comportamento": "normal",
     "vida": 65,
@@ -52,6 +48,10 @@
     "armadura": 8,
     "defesa": 8,
     "ataque": 40,
+    "magia": null,
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/valiosos/gold-coin",
@@ -81,6 +81,11 @@
         "tipo": "itens/espadas/sword",
         "chance": 0.03
       }
-    ]
-  }
+    ],
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "vermes",
+  "nome": "rotworm"
 }

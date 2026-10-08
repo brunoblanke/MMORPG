@@ -1,7 +1,7 @@
 {
   "formato": {
     "quadro": 64,
-    "quadros": 9,
+    "quadros": 3,
     "linhas": [
       "sul",
       "norte",
@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "repteis",
-  "nome": "lizard-snakecharmer",
   "propriedades": {
     "comportamento": "mago",
     "vida": 325,
@@ -52,6 +48,35 @@
     "armadura": 22,
     "defesa": 15,
     "ataque": 30,
+    "magia": null,
+    "ataques": [
+      {
+        "forma": "bola",
+        "elemento": "earth",
+        "min": 50,
+        "max": 110,
+        "chance": 15,
+        "alcance": 7,
+        "raio": 1,
+        "centro": "alvo"
+      },
+      {
+        "forma": "cura",
+        "min": 50,
+        "max": 100,
+        "chance": 50
+      }
+    ],
+    "resistencias": {
+      "physical": 110,
+      "energy": 80,
+      "earth": 0,
+      "fire": 110,
+      "ice": 80
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/valiosos/gold-coin",
@@ -80,29 +105,10 @@
         "chance": 0.0015
       }
     ],
-    "ataques": [
-      {
-        "forma": "bola",
-        "elemento": "earth",
-        "min": 50,
-        "max": 110,
-        "chance": 15,
-        "alcance": 7,
-        "raio": 1
-      },
-      {
-        "forma": "cura",
-        "min": 50,
-        "max": 100,
-        "chance": 50
-      }
-    ],
-    "resistencias": {
-      "physical": 110,
-      "energy": 80,
-      "earth": 0,
-      "fire": 110,
-      "ice": 80
-    }
-  }
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "repteis",
+  "nome": "lizard-snakecharmer"
 }

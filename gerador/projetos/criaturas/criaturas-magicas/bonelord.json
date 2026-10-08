@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "criaturas-magicas",
-  "nome": "bonelord",
   "propriedades": {
     "comportamento": "mago",
     "vida": 260,
@@ -52,46 +48,7 @@
     "armadura": 5,
     "defesa": 5,
     "ataque": 5,
-    "loot": [
-      {
-        "tipo": "itens/valiosos/gold-coin",
-        "chance": 0.994,
-        "min": 1,
-        "max": 48
-      },
-      {
-        "tipo": "itens/espadas/longsword",
-        "chance": 0.0906
-      },
-      {
-        "tipo": "itens/clavas/morning-star",
-        "chance": 0.0702
-      },
-      {
-        "tipo": "itens/escudos/steel-shield",
-        "chance": 0.0398
-      },
-      {
-        "tipo": "itens/espadas/two-handed-sword",
-        "chance": 0.0395
-      },
-      {
-        "tipo": "itens/produtos-de-criaturas/bonelord-eye",
-        "chance": 0.01
-      },
-      {
-        "tipo": "itens/rods/terra-rod",
-        "chance": 0.0051
-      },
-      {
-        "tipo": "itens/liquidos/mana-potion",
-        "chance": 0.003
-      },
-      {
-        "tipo": "itens/escudos/bonelord-shield",
-        "chance": 0.0011
-      }
-    ],
+    "magia": null,
     "ataques": [
       {
         "forma": "tiro",
@@ -146,6 +103,54 @@
       "earth": 0,
       "fire": 110,
       "ice": 80
-    }
-  }
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.994,
+        "min": 1,
+        "max": 48
+      },
+      {
+        "tipo": "itens/espadas/longsword",
+        "chance": 0.0906
+      },
+      {
+        "tipo": "itens/clavas/morning-star",
+        "chance": 0.0702
+      },
+      {
+        "tipo": "itens/escudos/steel-shield",
+        "chance": 0.0398
+      },
+      {
+        "tipo": "itens/espadas/two-handed-sword",
+        "chance": 0.0395
+      },
+      {
+        "tipo": "itens/produtos-de-criaturas/bonelord-eye",
+        "chance": 0.01
+      },
+      {
+        "tipo": "itens/rods/terra-rod",
+        "chance": 0.0051
+      },
+      {
+        "tipo": "itens/liquidos/mana-potion",
+        "chance": 0.003
+      },
+      {
+        "tipo": "itens/escudos/bonelord-shield",
+        "chance": 0.0011
+      }
+    ],
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "criaturas-magicas",
+  "nome": "bonelord"
 }

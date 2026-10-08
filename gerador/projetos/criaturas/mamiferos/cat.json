@@ -29,6 +29,10 @@
     "armadura": 1,
     "defesa": 5,
     "ataque": 0,
+    "magia": null,
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [],
     "falas": [
       "Mew!",

@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "mortos-vivos",
-  "nome": "ghoul",
   "propriedades": {
     "comportamento": "normal",
     "vida": 100,
@@ -52,6 +48,35 @@
     "armadura": 8,
     "defesa": 8,
     "ataque": 70,
+    "magia": null,
+    "ataques": [
+      {
+        "forma": "bola",
+        "elemento": "death",
+        "min": 15,
+        "max": 27,
+        "chance": 10,
+        "alcance": 1,
+        "raio": 1,
+        "centro": "alvo"
+      },
+      {
+        "forma": "cura",
+        "min": 9,
+        "max": 15,
+        "chance": 5
+      }
+    ],
+    "resistencias": {
+      "energy": 70,
+      "earth": 80,
+      "ice": 90,
+      "holy": 125,
+      "death": 0
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/valiosos/gold-coin",
@@ -90,29 +115,10 @@
         "chance": 0.0019
       }
     ],
-    "ataques": [
-      {
-        "forma": "bola",
-        "elemento": "death",
-        "min": 15,
-        "max": 27,
-        "chance": 10,
-        "alcance": 1,
-        "raio": 1
-      },
-      {
-        "forma": "cura",
-        "min": 9,
-        "max": 15,
-        "chance": 5
-      }
-    ],
-    "resistencias": {
-      "energy": 70,
-      "earth": 80,
-      "ice": 90,
-      "holy": 125,
-      "death": 0
-    }
-  }
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "mortos-vivos",
+  "nome": "ghoul"
 }

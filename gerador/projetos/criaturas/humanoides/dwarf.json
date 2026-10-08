@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "humanoides",
-  "nome": "dwarf",
   "propriedades": {
     "comportamento": "normal",
     "vida": 90,
@@ -52,6 +48,15 @@
     "armadura": 8,
     "defesa": 8,
     "ataque": 30,
+    "magia": null,
+    "resistencias": {
+      "earth": 90,
+      "fire": 105,
+      "death": 105
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/comidas/white-mushroom",
@@ -100,10 +105,10 @@
         "chance": 0.001
       }
     ],
-    "resistencias": {
-      "earth": 90,
-      "fire": 105,
-      "death": 105
-    }
-  }
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "humanoides",
+  "nome": "dwarf"
 }

@@ -48,6 +48,10 @@
     "armadura": 0,
     "defesa": 0,
     "ataque": 10,
+    "magia": null,
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [],
     "falas": [
       "Ta fraco hein!",

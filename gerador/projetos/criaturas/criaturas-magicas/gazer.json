@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "criaturas-magicas",
-  "nome": "gazer",
   "propriedades": {
     "comportamento": "mago",
     "vida": 120,
@@ -52,14 +48,7 @@
     "armadura": 4,
     "defesa": 4,
     "ataque": 15,
-    "loot": [
-      {
-        "tipo": "itens/valiosos/gold-coin",
-        "chance": 0.9935,
-        "min": 1,
-        "max": 16
-      }
-    ],
+    "magia": null,
     "ataques": [
       {
         "forma": "tiro",
@@ -75,6 +64,22 @@
       "earth": 0,
       "fire": 110,
       "ice": 80
-    }
-  }
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
+    "loot": [
+      {
+        "tipo": "itens/valiosos/gold-coin",
+        "chance": 0.9935,
+        "min": 1,
+        "max": 16
+      }
+    ],
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "criaturas-magicas",
+  "nome": "gazer"
 }

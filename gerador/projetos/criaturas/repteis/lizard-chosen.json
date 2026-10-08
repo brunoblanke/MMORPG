@@ -1,7 +1,7 @@
 {
   "formato": {
     "quadro": 64,
-    "quadros": 9,
+    "quadros": 3,
     "linhas": [
       "sul",
       "norte",
@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "repteis",
-  "nome": "lizard-chosen",
   "propriedades": {
     "comportamento": "foge",
     "vida": 3050,
@@ -52,6 +48,42 @@
     "armadura": 28,
     "defesa": 45,
     "ataque": 360,
+    "magia": null,
+    "ataques": [
+      {
+        "forma": "bola",
+        "elemento": "earth",
+        "min": 190,
+        "max": 340,
+        "chance": 15,
+        "raio": 3,
+        "centro": "si"
+      },
+      {
+        "forma": "onda",
+        "elemento": "earth",
+        "min": 90,
+        "max": 180,
+        "chance": 10,
+        "comprimento": 8,
+        "abertura": 3
+      },
+      {
+        "forma": "cura",
+        "min": 75,
+        "max": 125,
+        "chance": 10
+      }
+    ],
+    "resistencias": {
+      "energy": 80,
+      "earth": 0,
+      "fire": 90,
+      "ice": 90
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/valiosos/gold-coin",
@@ -84,37 +116,10 @@
         "max": 5
       }
     ],
-    "ataques": [
-      {
-        "forma": "bola",
-        "elemento": "earth",
-        "min": 190,
-        "max": 340,
-        "chance": 15,
-        "raio": 3,
-        "centro": "si"
-      },
-      {
-        "forma": "onda",
-        "elemento": "earth",
-        "min": 90,
-        "max": 180,
-        "chance": 10,
-        "comprimento": 8,
-        "abertura": 3
-      },
-      {
-        "forma": "cura",
-        "min": 75,
-        "max": 125,
-        "chance": 10
-      }
-    ],
-    "resistencias": {
-      "energy": 80,
-      "earth": 0,
-      "fire": 90,
-      "ice": 90
-    }
-  }
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "repteis",
+  "nome": "lizard-chosen"
 }

@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "mamiferos",
-  "nome": "kongra",
   "propriedades": {
     "comportamento": "foge",
     "vida": 340,
@@ -52,6 +48,17 @@
     "armadura": 18,
     "defesa": 20,
     "ataque": 60,
+    "magia": null,
+    "resistencias": {
+      "energy": 95,
+      "earth": 90,
+      "fire": 80,
+      "ice": 115,
+      "death": 105
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/valiosos/gold-coin",
@@ -68,12 +75,10 @@
         "chance": 0.0057
       }
     ],
-    "resistencias": {
-      "energy": 95,
-      "earth": 90,
-      "fire": 80,
-      "ice": 115,
-      "death": 105
-    }
-  }
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "mamiferos",
+  "nome": "kongra"
 }

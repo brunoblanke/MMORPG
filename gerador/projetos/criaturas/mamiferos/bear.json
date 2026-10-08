@@ -40,10 +40,6 @@
       }
     }
   },
-  "ferramenta": "criaturas",
-  "grupo": "criaturas",
-  "pasta": "mamiferos",
-  "nome": "bear",
   "propriedades": {
     "comportamento": "foge",
     "vida": 80,
@@ -52,6 +48,15 @@
     "armadura": 6,
     "defesa": 6,
     "ataque": 25,
+    "magia": null,
+    "resistencias": {
+      "ice": 110,
+      "holy": 90,
+      "death": 105
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
     "loot": [
       {
         "tipo": "itens/comidas/meet",
@@ -74,10 +79,10 @@
         "chance": 0.0046
       }
     ],
-    "resistencias": {
-      "ice": 110,
-      "holy": 90,
-      "death": 105
-    }
-  }
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "mamiferos",
+  "nome": "bear"
 }
