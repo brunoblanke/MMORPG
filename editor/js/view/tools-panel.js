@@ -121,18 +121,6 @@ function paintThumbType(tool) {
 }
 
 // ================================================================================================================================================================================================================================================
-// paintLabel
-// Nome curto do que a ferramenta pinta (ao lado do botão).
-
-function paintLabel(tool) {
-  const value = state[tool.paint];
-  if (!value) return 'nenhum';
-  if (tool.id === 'border') return `${displayName(value.type)} ${value.variant}`;
-  if (tool.id === 'wall') return WALL_PIECE_NAMES[splitType(value).piece] || '';
-  return objectDirections(value).length > 1 ? `${displayName(value)} · ${objectDirection(value)} (R gira)` : displayName(value);
-}
-
-// ================================================================================================================================================================================================================================================
 // accordionGroups
 // O que a lista da ferramenta mostra: [{ title, compact, options: [{ value,
 // thumb, label }] }] e o texto pra quando não há folha.
@@ -261,12 +249,6 @@ export function renderTools() {
     label.className = 'ed-title';
     label.textContent = t.label;
     if (!t.quick) head.appendChild(label);
-    if (t.paint) {
-      const sub = document.createElement('span');
-      sub.className = 'tool-sub';
-      sub.textContent = paintLabel(t);
-      head.appendChild(sub);
-    }
     head.onclick = () => {
       state.openAccordion = t.paint && state.openAccordion !== t.id ? t.id : null;
       state.tool = t.id;

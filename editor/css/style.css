@@ -98,7 +98,6 @@ body{
 .quick-btn.active{ border-color:var(--accent); background:rgba(94,234,212,.12); }
 
 .tools{ display:flex; flex-direction:column; gap:6px; position:relative; }
-.tool-sub{ margin-left:auto; font-size:10px; color:var(--muted); font-family:'IBM Plex Mono',monospace; }
 
 .tool-accordion{ display:none; flex-wrap:wrap; gap:4px; padding:8px 6px; max-height:50vh; overflow-y:auto; }
 .tool-accordion.show{ display:flex; }
