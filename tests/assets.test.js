@@ -2,7 +2,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { setAssets, floorMiddle, spriteFrame, objectProps, isFloorType, isStairsType, isHoleType, isItemType, isWallType, displayName, interiorVariant, objectIdType, blocksThrow } from '../shared/assets.js';
+import { setAssets, floorMiddle, spriteFrame, objectProps, isFloorType, isStairsType, isHoleType, isItemType, isWallType, displayName, interiorVariant, objectIdType, blocksThrow, conjuntoPartes } from '../shared/assets.js';
 import { serializeMapFromLayers, buildLayersFromMapData } from '../shared/map-format.js';
 
 const GRID = 10;
@@ -102,4 +102,13 @@ test('mureta e peça extra: mureta não tem altura e deixa o arremesso passar; e
   assert.equal(blocksThrow('estrutura/paredes/familia#extra-1'), true);
   assert.equal(blocksThrow('estrutura/paredes/familia#mureta-no-2'), false);
   assert.equal(spriteFrame('estrutura/paredes/familia#mureta-x-norte').x, 64);
+});
+
+test('conjunto de partes: devolve as peças da direção do tipo, com deslocamento', () => {
+  const base = { ferramenta: 'objetos', grupo: 'estrutura', pasta: 'degraus', url: '/c.png', quadro: 64, quadros: 1, pecas: [] };
+  setAssets([{ ...base, id: 'estrutura/degraus/escada', nome: 'escada', direcoes: ['norte', 'leste'], conjunto: { norte: [{ tipo: 'a/b/baixo', dx: 0, dy: 1 }, { tipo: 'a/b/alto', dx: 0, dy: 0 }], leste: [{ tipo: 'a/b/baixo', dx: -1, dy: 0 }] } }, { ...base, id: 'estrutura/degraus/outro', nome: 'outro' }]);
+  assert.deepEqual(conjuntoPartes('estrutura/degraus/escada'), [{ type: 'a/b/baixo', dx: 0, dy: 1 }, { type: 'a/b/alto', dx: 0, dy: 0 }]);
+  assert.deepEqual(conjuntoPartes('estrutura/degraus/escada#leste'), [{ type: 'a/b/baixo', dx: -1, dy: 0 }]);
+  assert.deepEqual(conjuntoPartes('estrutura/degraus/outro'), []);
+  setAssets([]);
 });

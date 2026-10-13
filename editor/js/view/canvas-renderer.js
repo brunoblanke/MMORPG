@@ -5,7 +5,7 @@ import { GRID, TILE } from '../config.js';
 import { STACK_OFFSET, ANIMATION_CYCLE_MS } from '../../../shared/constants.js';
 import { pickFrameRect } from '../../../shared/sprite-sheet.js';
 import { PLAYER_SPRITES, DEFAULT_GENDER } from '../../../shared/catalog.js';
-import { getAsset, spriteFrame, pieceType, floorMiddle, displayName, isItemType, objectProps } from '../../../shared/assets.js';
+import { getAsset, spriteFrame, pieceType, floorMiddle, displayName, isItemType, objectProps, conjuntoPartes } from '../../../shared/assets.js';
 import { getStairTopKeys, getRopeTopKeys } from '../model/borders.js';
 import { state } from '../model/state.js';
 import { restackItems } from '../../../shared/map-format.js';
@@ -302,9 +302,20 @@ function drawPaintPreview(cells) {
   const layer = state.layers[state.activeZ];
   ctx.save();
   ctx.globalAlpha = PREVIEW_ALPHA;
-  for (const { x, y } of cells) {
+  const parts = conjuntoPartes(type);
+  const heightAt = (x, y) => {
     const cell = layer && layer[`${x},${y}`];
-    const height = cell && isItemType(type) ? cell.objects.filter(o => isItemType(o.type) && objectProps(o.type).hasVolume).reduce((sum, o) => sum + (objectProps(o.type).volume || 1), 0) : 0;
+    return cell ? cell.objects.filter(o => isItemType(o.type) && objectProps(o.type).hasVolume).reduce((sum, o) => sum + (objectProps(o.type).volume || 1), 0) : 0;
+  };
+  for (const { x, y } of cells) {
+    if (parts.length) {
+      for (const part of parts) {
+        const height = heightAt(x + part.dx, y + part.dy);
+        drawPiece(part.type, (x + part.dx) * TILE - height * STACK_OFFSET, (y + part.dy) * TILE - height * STACK_OFFSET);
+      }
+      continue;
+    }
+    const height = isItemType(type) ? heightAt(x, y) : 0;
     drawPiece(type, x * TILE - height * STACK_OFFSET, y * TILE - height * STACK_OFFSET);
   }
   ctx.restore();

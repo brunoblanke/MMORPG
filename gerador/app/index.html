@@ -319,6 +319,7 @@
         <select id="objectFolder"></select>
       </div>
       <button type="submit" class="primary-btn" id="objectSaveBtn">Salvar</button>
+      <button type="button" class="ghost-btn" id="objectSetBtn" title="Salva como conjunto de partes o que está escrito em 'Conjunto de partes' (sem usar o objeto escolhido)">Salvar como conjunto</button>
       <button type="button" class="ghost-btn" id="objectPendingBtn" title="Cria a folha (.png) de todo objeto que tem receita mas ainda não tem folha, um por um (ex.: as criadas por ferramentas/criar-armas.js)">Gerar folhas pendentes</button>
       <p class="status" id="objectStatus" role="status"></p>
     </form>
@@ -339,6 +340,10 @@
         <label class="checkline"><input type="checkbox" id="objectTwoSquares" />Ocupa 2 sqm (cama)</label>
       </div>
       <div class="slots" id="objectSlots" hidden></div>
+      <div class="field">
+        <label for="objectSet">Conjunto de partes (opcional): uma parte por linha, "direção tipo dx dy" — ex.: norte decoracao/escadas/degrau-baixo 0 1 · dx/dy são sqm a partir do clicado; o conjunto entra no editor com todas as partes juntas e gira com R</label>
+        <textarea id="objectSet" rows="5" spellcheck="false"></textarea>
+      </div>
       <div class="creature-info" id="objectInfo"></div>
       <div class="outfit-options">
         <div class="section-label">Propriedades no jogo</div>

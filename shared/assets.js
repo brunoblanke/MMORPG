@@ -567,6 +567,17 @@ export function withDirection(target, type) {
 }
 
 // ================================================================================================================================================================================================================================================
+// conjuntoPartes
+// Conjunto de partes (gerador → Conjuntos: escada de degraus, mesa comprida…): as peças que o editor põe juntas, na direção do tipo, como [{ type, dx, dy }] (posição relativa ao sqm clicado); [] se o tipo não é conjunto.
+
+export function conjuntoPartes(type) {
+  const asset = getAsset(splitType(type).asset);
+  if (!asset || !asset.conjunto) return [];
+  const parts = asset.conjunto[objectDirection(type)] || [];
+  return parts.filter(part => part && typeof part.tipo === 'string').map(part => ({ type: part.tipo, dx: Number(part.dx) || 0, dy: Number(part.dy) || 0 }));
+}
+
+// ================================================================================================================================================================================================================================================
 // extraSquares
 // Objeto de 2 sqm (cama): o sqm a mais em volta do sqm onde ele está, [dx,
 // dy]: em pé (norte/sul), o de cima; deitado (leste/oeste), o da esquerda.
