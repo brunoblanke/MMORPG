@@ -691,6 +691,7 @@ async function openRecipe(recipe) {
   const sources = recipe.direcoes
     ? recipe.direcoes
     : { [PLAIN]: recipe.objeto || null, ...(recipe.segundo ? { [PLAIN + SECOND]: recipe.segundo } : {}) };
+  let firstInfo = null;
   for (const [key, source] of Object.entries(sources)) {
     if (!source || !slotKeys().includes(key)) continue;
     let info = null;
@@ -703,6 +704,11 @@ async function openRecipe(recipe) {
       }
     }
     setSource(source, info, key);
+    if (info && !firstInfo) firstInfo = info;
+  }
+  if (recipe.propriedadesDoTibia && firstInfo) {
+    objects.properties = { ...objects.properties, bloqueia: firstInfo.bloqueia, move: firstInfo.move, altura: firstInfo.altura, empilhavel: !!firstInfo.empilhavel, espacos: firstInfo.container ? CONTAINER_SIZE : 0 };
+    renderProperties();
   }
   render();
   objects.dirty = false;
