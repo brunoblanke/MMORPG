@@ -13,10 +13,10 @@ import { fillFolderSelect, folderOf, setFolder, recipePath } from './folders.js'
 //   linha 4  janela x · janela y · passagem x · passagem y
 //   linha 5  muretas (a parede baixa do mesmo estilo): x · y · canto xy · pilar yx
 //   linha 6  arcos da mureta: x oeste · x leste · y norte · y sul
-//   linha 7  variações da parede (a mesma peça com um item extra: tocha, quadro…): x 2 · y 2 · xy 2 · yx 2
-//   linha 8  mais variações: x 3 · y 3 · janela x 2 · janela y 2
+//   linhas 7 e 8  peças extras (sobras da família, sem lugar fixo: variações de parede
+//   com tocha, quadro…): 8 espaços numerados, sem descrição
 // A folha só cresce até a última linha usada (as 4 primeiras são sempre salvas).
-// Mureta deixa passar item jogado; variação vale como a peça base.
+// Mureta deixa passar item jogado; peça extra vale como parede fechada.
 // O arco ocupa 2 sqm: o x tem a metade oeste e a leste; o y, a norte e a sul.
 // A passagem é só o topo da parede (no Tibia, "sempre por cima"): o vão onde
 // a parede continua em cima e dá pra passar por baixo.
@@ -62,21 +62,12 @@ const LOW_PIECES = [
   { key: 'mureta-arco-y-norte', name: 'Mureta arco Y · norte' },
   { key: 'mureta-arco-y-sul', name: 'Mureta arco Y · sul' }
 ];
-const VARIATION_PIECES = [
-  { key: 'x-2', name: 'X · variação 2' },
-  { key: 'y-2', name: 'Y · variação 2' },
-  { key: 'xy-2', name: 'XY · variação 2' },
-  { key: 'yx-2', name: 'YX · variação 2' },
-  { key: 'x-3', name: 'X · variação 3' },
-  { key: 'y-3', name: 'Y · variação 3' },
-  { key: 'janela-x-2', name: 'Janela X · variação 2' },
-  { key: 'janela-y-2', name: 'Janela Y · variação 2' }
-];
-const PIECES = [...WALL_PIECES, ...DOOR_PIECES, ...OPENING_PIECES, ...LOW_PIECES, ...VARIATION_PIECES];
+const EXTRA_PIECES = Array.from({ length: 8 }, (_, i) => ({ key: `extra-${i + 1}`, name: `${i + 1}` }));
+const PIECES = [...WALL_PIECES, ...DOOR_PIECES, ...OPENING_PIECES, ...LOW_PIECES, ...EXTRA_PIECES];
 const SECTIONS = [
   { title: 'Paredes, portas e aberturas', from: 0 },
   { title: 'Muretas do mesmo estilo (deixam passar item jogado)', from: 16 },
-  { title: 'Variações da parede (valem como a peça base)', from: 24 }
+  { title: 'Peças extras', from: 24 }
 ];
 const BASE_PIECES = 16;
 
@@ -153,13 +144,13 @@ function status(text, kind) {
 // ================================================================================================================================================================================================================================================
 // groupOf
 // Grupo da peça: paredes (sugere pelo material), portas (sugere pelo par),
-// aberturas (arco, janela e passagem), muretas ou variações (escolhidas à mão).
+// aberturas (arco, janela e passagem), muretas ou extras (escolhidas à mão).
 
 function groupOf(key) {
   if (DOOR_PIECES.some(piece => piece.key === key)) return 'door';
   if (OPENING_PIECES.some(piece => piece.key === key)) return 'opening';
   if (LOW_PIECES.some(piece => piece.key === key)) return 'low';
-  if (VARIATION_PIECES.some(piece => piece.key === key)) return 'variation';
+  if (EXTRA_PIECES.some(piece => piece.key === key)) return 'extra';
   return 'wall';
 }
 
