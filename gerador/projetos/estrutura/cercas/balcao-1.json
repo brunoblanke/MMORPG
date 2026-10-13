@@ -18,13 +18,28 @@
       "janela-x",
       "janela-y",
       "passagem-x",
-      "passagem-y"
+      "passagem-y",
+      "mureta-x-norte",
+      "mureta-x-sul",
+      "mureta-y-leste",
+      "mureta-y-oeste",
+      "mureta-no-1",
+      "mureta-no-2",
+      "mureta-se-1",
+      "mureta-se-2"
     ]
   },
   "pecas": {
     "x": {
       "tibia": {
         "id": 2323,
+        "variacao": 0
+      },
+      "subir": 8
+    },
+    "y": {
+      "tibia": {
+        "id": 2322,
         "variacao": 0
       },
       "subir": 8
@@ -57,64 +72,61 @@
       },
       "subir": 8
     },
-    "janela-x": {
-      "tibia": {
-        "id": 2326,
-        "variacao": 0
-      }
-    },
-    "janela-y": {
+    "mureta-x-norte": {
       "tibia": {
         "id": 2324,
-        "variacao": 0
-      }
-    },
-    "passagem-x": {
-      "tibia": {
-        "id": 2325,
-        "variacao": 0
-      }
-    },
-    "passagem-y": {
-      "tibia": {
-        "id": 2327,
-        "variacao": 0
-      }
-    },
-    "y": {
-      "tibia": {
-        "id": 2322,
         "variacao": 0
       },
       "subir": 8
     },
-    "arco-x-oeste": {
+    "mureta-x-sul": {
       "tibia": {
-        "id": 2330,
+        "id": 2325,
         "variacao": 0
       },
-      "subir": 0
+      "subir": 8
     },
-    "arco-x-leste": {
+    "mureta-y-leste": {
       "tibia": {
-        "id": 2331,
+        "id": 2326,
         "variacao": 0
       },
-      "subir": 0
+      "subir": 8
     },
-    "arco-y-norte": {
+    "mureta-y-oeste": {
+      "tibia": {
+        "id": 2327,
+        "variacao": 0
+      },
+      "subir": 8
+    },
+    "mureta-no-1": {
       "tibia": {
         "id": 2328,
         "variacao": 0
       },
-      "subir": 0
+      "subir": 8
     },
-    "arco-y-sul": {
+    "mureta-no-2": {
       "tibia": {
         "id": 2329,
         "variacao": 0
       },
-      "subir": 0
+      "subir": 8
+    },
+    "mureta-se-1": {
+      "tibia": {
+        "id": 2330,
+        "variacao": 0
+      },
+      "subir": 8
+    },
+    "mureta-se-2": {
+      "tibia": {
+        "id": 2331,
+        "variacao": 0
+      },
+      "subir": 8
     }
   },
   "ferramenta": "paredes",
