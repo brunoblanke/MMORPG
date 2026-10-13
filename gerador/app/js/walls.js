@@ -12,10 +12,10 @@ import { fillFolderSelect, folderOf, setFolder, recipePath } from './folders.js'
 //   linha 3  arco x oeste · arco x leste · arco y norte · arco y sul
 //   linha 4  janela x · janela y · passagem x · passagem y
 //   linha 5  muretas (a parede baixa do mesmo estilo), uma por lado: x norte · x sul · y leste · y oeste
-//   linhas 6 e 7  cantos da mureta, duas opções de cada (a mureta é mais baixa que a parede, então
-//   o deslocamento muda conforme o lado): NO 1 · NO 2 · NE 1 · NE 2 / SO 1 · SO 2 · SE 1 · SE 2
-//   linha 8  arcos da mureta: x oeste · x leste · y norte · y sul
-//   linhas 9 e 10  peças extras (sobras da família, sem lugar fixo: variações de parede
+//   linha 6  cantos da mureta (os dois da sala, como xy e yx), duas opções de cada (a mureta é mais
+//   baixa que a parede, então o deslocamento muda conforme o lado): NO 1 · NO 2 · SE 1 · SE 2
+//   linha 7  arcos da mureta: x oeste · x leste · y norte · y sul
+//   linhas 8 e 9  peças extras (sobras da família, sem lugar fixo: variações de parede
 //   com tocha, quadro…): 8 espaços numerados, sem descrição
 // A folha só cresce até a última linha usada (as 4 primeiras são sempre salvas).
 // Mureta deixa passar item jogado; peça extra vale como parede fechada.
@@ -61,10 +61,6 @@ const LOW_PIECES = [
   { key: 'mureta-y-oeste', name: 'Mureta Y · oeste' },
   { key: 'mureta-no-1', name: 'Canto NO · opção 1' },
   { key: 'mureta-no-2', name: 'Canto NO · opção 2' },
-  { key: 'mureta-ne-1', name: 'Canto NE · opção 1' },
-  { key: 'mureta-ne-2', name: 'Canto NE · opção 2' },
-  { key: 'mureta-so-1', name: 'Canto SO · opção 1' },
-  { key: 'mureta-so-2', name: 'Canto SO · opção 2' },
   { key: 'mureta-se-1', name: 'Canto SE · opção 1' },
   { key: 'mureta-se-2', name: 'Canto SE · opção 2' },
   { key: 'mureta-arco-x-oeste', name: 'Arco X · oeste' },
@@ -76,10 +72,11 @@ const EXTRA_PIECES = Array.from({ length: 8 }, (_, i) => ({ key: `extra-${i + 1}
 const PIECES = [...WALL_PIECES, ...DOOR_PIECES, ...OPENING_PIECES, ...LOW_PIECES, ...EXTRA_PIECES];
 const SECTIONS = [
   { title: 'Paredes, portas e aberturas', from: 0 },
-  { title: 'Muretas do mesmo estilo: um lado de cada e duas opções por canto (deixam passar item jogado)', from: 16 },
-  { title: 'Peças extras', from: 32 }
+  { title: 'Muretas do mesmo estilo: um lado de cada e duas opções nos cantos NO e SE (deixam passar item jogado)', from: 16 },
+  { title: 'Peças extras', from: 28 }
 ];
 const BASE_PIECES = 16;
+const LEGACY_KEYS = { 'mureta-ne-1': 'mureta-se-1', 'mureta-ne-2': 'mureta-se-2' };
 
 // Sala da prévia (como no Tibia): pilar em cima à esquerda, a parede x de
 // cima indo até o fim à direita, a y da esquerda até o fim embaixo, e o canto
@@ -442,8 +439,10 @@ async function save() {
 function openRecipe(recipe) {
   walls.slots = {};
   walls.images.clear();
+  const saved = { ...(recipe.pecas || {}) };
+  for (const [from, to] of Object.entries(LEGACY_KEYS)) if (saved[from] && !saved[to]) saved[to] = saved[from];
   for (const piece of PIECES) {
-    const source = (recipe.pecas || {})[piece.key];
+    const source = saved[piece.key];
     if (source) setPiece(piece.key, source, false);
   }
   walls.selected = 'x';
