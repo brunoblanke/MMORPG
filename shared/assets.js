@@ -335,17 +335,21 @@ export function floorHasPiece(type, piece) {
 
 // ================================================================================================================================================================================================================================================
 // blocksThrow
-// O que barra item jogado: parede (Estrutura › Paredes), menos janela,
-// passagem e porta aberta. Árvore, pedra e outros objetos que bloqueiam a passagem de player e
-// inimigos deixam o item passar por cima.
+// O que barra item jogado: peça de parede da ferramenta Paredes (as pastas
+// Paredes e Cercas, muretas incluídas), menos o que tem vão: janela, arco,
+// passagem e porta aberta. Parapeito (peças norte/sul/…), árvore, pedra e
+// outros objetos que bloqueiam a passagem de player e inimigos deixam o item
+// passar por cima.
 
 export const MAGIC_WALL = 'itens/itens-encantados/magic-wall';
 
 export function blocksThrow(type) {
   const { asset, piece } = splitType(type);
   if (asset === MAGIC_WALL) return true;
-  if (!asset.startsWith(WALL_FOLDER)) return false;
-  return !/^janela|^passagem|^porta-.*-aberta$/.test(piece || '');
+  const sheet = getAsset(asset);
+  const isWall = sheet ? sheet.ferramenta === 'paredes' : asset.startsWith(WALL_FOLDER);
+  if (!isWall || (piece && !WALL_PIECES.includes(piece))) return false;
+  return !/^janela|^arco|^passagem|^porta-.*-aberta$/.test(piece || '');
 }
 
 // ================================================================================================================================================================================================================================================

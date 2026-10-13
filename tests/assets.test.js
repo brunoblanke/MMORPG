@@ -2,7 +2,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { setAssets, floorMiddle, spriteFrame, objectProps, isFloorType, isStairsType, isHoleType, isItemType, isWallType, displayName, interiorVariant, objectIdType } from '../shared/assets.js';
+import { setAssets, floorMiddle, spriteFrame, objectProps, isFloorType, isStairsType, isHoleType, isItemType, isWallType, displayName, interiorVariant, objectIdType, blocksThrow } from '../shared/assets.js';
 import { serializeMapFromLayers, buildLayersFromMapData } from '../shared/map-format.js';
 
 const GRID = 10;
@@ -12,6 +12,8 @@ setAssets([
   { id: 'estrutura/pisos/agua', ferramenta: 'pisos', rotulo: 'Estrutura › Pisos', nome: 'agua', url: '/a.png', quadro: 32, quadros: 14, msPorQuadro: 200, variacoes: 4, pecas: [] },
   { id: 'estrutura/pisos/grama', ferramenta: 'pisos', rotulo: 'Estrutura › Pisos', nome: 'grama', url: '/g.png', quadro: 32, quadros: 1, variacoes: 4, pecas: [] },
   { id: 'estrutura/paredes/tijolo', ferramenta: 'paredes', rotulo: 'Estrutura › Paredes', nome: 'tijolo', url: '/t.png', quadro: 64, quadros: 1, ordem: null, pecas: ['x', 'porta-x-aberta'] },
+  { id: 'estrutura/cercas/mureta', ferramenta: 'paredes', rotulo: 'Estrutura › Cercas e parapeitos', nome: 'mureta', url: '/m.png', quadro: 64, quadros: 1, ordem: null, pecas: ['x', 'janela-x'] },
+  { id: 'estrutura/parapeitos/cerca', ferramenta: 'paredes', rotulo: 'Estrutura › Cercas e parapeitos', nome: 'cerca', url: '/p.png', quadro: 64, quadros: 1, ordem: ['norte', 'sul'], pecas: ['norte', 'sul'] },
   { id: 'itens/recipientes/caixa', ferramenta: 'objetos', rotulo: 'Itens › Recipientes', nome: 'caixa', url: '/c.png', quadro: 32, quadros: 2, propriedades: { bloqueia: false, move: true, altura: true } },
   { id: 'estrutura/escadas/escada', ferramenta: 'objetos', rotulo: 'Estrutura › Escadas', nome: 'escada', url: '/e.png', quadro: 64, quadros: 1, propriedades: {} }
 ]);
@@ -73,4 +75,14 @@ test('creatureFlies: só a criatura marcada como voadora (Voa no gerador)', asyn
   assert.equal(creatureFlies('criaturas/mortos-vivos/bat'), true);
   assert.equal(creatureFlies('criaturas/mamiferos/rat'), false);
   assert.equal(creatureFlies('criaturas/nao/existe'), false);
+});
+
+test('item jogado: peça fechada de parede e de mureta barra; janela, arco, passagem e porta aberta deixam passar; parapeito deixa passar', () => {
+  for (const sheet of ['estrutura/paredes/tijolo', 'estrutura/cercas/mureta']) {
+    assert.equal(blocksThrow(`${sheet}#x`), true);
+    assert.equal(blocksThrow(`${sheet}#xy`), true);
+    assert.equal(blocksThrow(`${sheet}#porta-x`), true);
+    for (const piece of ['janela-x', 'arco-x-oeste', 'passagem-y', 'porta-y-aberta']) assert.equal(blocksThrow(`${sheet}#${piece}`), false);
+  }
+  assert.equal(blocksThrow('estrutura/parapeitos/cerca#norte'), false);
 });
