@@ -226,6 +226,7 @@ function descreverSprite(id, grupo, pasta, nome, receita) {
     pilha: !!formato.pilha,
     respingo: !!formato.respingo,
     direcoes: Array.isArray(formato.direcoes) && formato.direcoes.length ? formato.direcoes : null,
+    conjunto: receita.conjunto && typeof receita.conjunto === 'object' ? receita.conjunto : null,
     sqms: formato.sqms === 2 ? 2 : 1,
     variacoes: receita.variacoesDoMeio || 0,
     padrao: Array.isArray(formato.padrao) ? formato.padrao : null,

@@ -6,7 +6,7 @@ import { updateStats } from '../view/tools-panel.js';
 import { openEnemyForm, openSelectPanel } from '../view/forms.js';
 import { addFloorToCell, restackItems } from '../../../shared/map-format.js';
 import { refreshBordersAt } from '../model/borders.js';
-import { isStairsFolder } from '../../../shared/assets.js';
+import { isStairsFolder, conjuntoPartes } from '../../../shared/assets.js';
 import { itemInfo } from '../../../shared/items.js';
 import { brushCells, MAX_BRUSH } from '../model/brush.js';
 
@@ -130,7 +130,15 @@ function paintCell(x, y) {
     cell.house = state.safePaintValue ? { name: house.name, price: house.price } : null;
   } else if (state.tool === 'item' || state.tool === 'deco') {
     const paint = state.tool === 'deco' ? state.decoPaint : state.itemPaint;
-    if (paint) {
+    const parts = paint ? conjuntoPartes(paint) : [];
+    if (parts.length) {
+      for (const part of parts) {
+        const target = layer[`${x + part.dx},${y + part.dy}`];
+        if (!target) continue;
+        target.objects.push({ type: part.type, step: 0 });
+        restackItems(target.objects);
+      }
+    } else if (paint) {
       const top = cell.objects[cell.objects.length - 1];
       const stack = itemInfo(paint).stack;
       if (stack && top && top.type === paint && (top.count || 1) < stack) {

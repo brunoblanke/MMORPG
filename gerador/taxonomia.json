@@ -11,6 +11,7 @@
             { "id": "paredes", "nome": "Paredes", "ferramenta": "paredes" },
             { "id": "cercas", "nome": "Cercas e parapeitos", "ferramenta": "paredes" },
             { "id": "escadas", "nome": "Escadas", "ferramenta": "objetos" },
+            { "id": "degraus", "nome": "Degraus e conjuntos", "ferramenta": "objetos" },
             { "id": "entradas", "nome": "Entradas", "ferramenta": "objetos" },
             { "id": "natureza", "nome": "Natureza", "ferramenta": "objetos" }
           ]

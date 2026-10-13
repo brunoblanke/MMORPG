@@ -24,6 +24,8 @@ const STACK_OFFSET = 7;
 // bônus de quem usa o item: atk, def e ml somam nos skills, speed na
 // velocidade.
 const NUMBERS = [
+  { key: 'volume', label: 'Altura em volumes (com "Tem altura": o topo do degrau; 1 é o comum, a escada grande vale 2…)', min: 1, step: 1 },
+  { key: 'passo', label: 'Passo (quantos volumes dá pra subir de uma vez pra entrar nele; 1 é o comum)', min: 1, step: 1 },
   { key: 'peso', label: 'Peso (oz)', min: 0, step: 0.1 },
   { key: 'espacos', label: 'Espaços (0 = não é container)', min: 0, step: 1 },
   { key: 'atk', label: 'Ataque (atk)', min: 0, step: 1 },
@@ -40,7 +42,7 @@ const NUMBERS = [
   { key: 'regenVida', label: 'Equipado: recupera vida a cada 6 s', min: 0, step: 1 },
   { key: 'regenMana', label: 'Equipado: recupera mana a cada 6 s', min: 0, step: 1 }
 ];
-const DEFAULT_PROPERTIES = { bloqueia: false, move: true, altura: false, empilhavel: false, duasMaos: false, tipoMunicao: '', postal: false, peso: 10, espacos: 0, atk: 0, def: 0, ml: 0, speed: 0, vidaMin: 0, vidaMax: 0, manaMin: 0, manaMax: 0, alimento: 0, luz: 0, duracao: 0, regenVida: 0, regenMana: 0, uso: '', ativoComo: '', comecaAtivo: false };
+const DEFAULT_PROPERTIES = { bloqueia: false, move: true, altura: false, volume: 1, passo: 1, empilhavel: false, duasMaos: false, tipoMunicao: '', postal: false, peso: 10, espacos: 0, atk: 0, def: 0, ml: 0, speed: 0, vidaMin: 0, vidaMax: 0, manaMin: 0, manaMax: 0, alimento: 0, luz: 0, duracao: 0, regenVida: 0, regenMana: 0, uso: '', ativoComo: '', comecaAtivo: false };
 const AMMO_TYPES = [['', 'Qualquer / não é munição'], ['arrow', 'Flecha (arco)'], ['bolt', 'Virote (besta)']];
 const USES = [
   ['', 'Nenhum'],
@@ -104,6 +106,7 @@ const infoEl = document.getElementById('objectInfo');
 const previewCanvas = document.getElementById('objectPreview');
 const slotsEl = document.getElementById('objectSlots');
 const sheetCanvas = document.getElementById('objectSheet');
+const setEl = document.getElementById('objectSet');
 
 // ================================================================================================================================================================================================================================================
 // initObjects
@@ -111,6 +114,7 @@ const sheetCanvas = document.getElementById('objectSheet');
 function initObjects() {
   renderProperties();
   document.getElementById('objectPendingBtn').addEventListener('click', generatePending);
+  document.getElementById('objectSetBtn').addEventListener('click', saveSet);
   document.getElementById('objectSaveForm').addEventListener('submit', (evt) => {
     evt.preventDefault();
     save();
@@ -124,6 +128,7 @@ function initObjects() {
     if (file) setSource({ png: await readPngFile(file) }, null);
   });
   nameEl.addEventListener('input', () => { objects.dirty = true; });
+  setEl.addEventListener('input', () => { objects.dirty = true; });
   fillFolderSelect(folderEl, CATEGORY);
   folderEl.addEventListener('change', () => { objects.dirty = true; });
   setInterval(() => {
@@ -645,6 +650,81 @@ async function save() {
 }
 
 // ================================================================================================================================================================================================================================================
+// parseSet
+// "direção tipo dx dy" por linha → { norte: [{ tipo, dx, dy }] }; null se alguma linha é inválida.
+
+function parseSet(text) {
+  const set = {};
+  for (const line of text.split('\n').map(item => item.trim()).filter(Boolean)) {
+    const [direction, type, dx, dy] = line.split(/\s+/);
+    if (!DIRECTIONS.some(([key]) => key === direction) || !type || !Number.isInteger(Number(dx)) || !Number.isInteger(Number(dy)) || dx === undefined || dy === undefined) return null;
+    (set[direction] = set[direction] || []).push({ tipo: type, dx: Number(dx), dy: Number(dy) });
+  }
+  return set;
+}
+
+// ================================================================================================================================================================================================================================================
+// saveSet
+// Salva o conjunto de partes: a receita guarda as partes por direção e a folha é a imagem das partes juntas, uma linha por direção.
+
+async function saveSet() {
+  if (objects.saving) return;
+  const name = normalizeName(nameEl.value);
+  const folder = folderOf(folderEl);
+  const set = parseSet(setEl.value);
+  if (!name || !folder) return status('Dê um nome e escolha a pasta.', 'error');
+  if (!set || !Object.keys(set).length) return status('Conjunto inválido: use "direção tipo dx dy" em cada linha.', 'error');
+  objects.saving = true;
+  try {
+    const projects = await fetchProjects();
+    const directions = DIRECTIONS.map(([key]) => key).filter(key => set[key]);
+    const frames = {};
+    let cells = 1;
+    for (const key of directions) {
+      const xs = set[key].map(part => part.dx);
+      const ys = set[key].map(part => part.dy);
+      frames[key] = { minX: Math.min(...xs), minY: Math.min(...ys), w: Math.max(...xs) - Math.min(...xs) + 1, h: Math.max(...ys) - Math.min(...ys) + 1 };
+      cells = Math.max(cells, frames[key].w, frames[key].h);
+    }
+    const size = cells * 32;
+    const canvas = document.createElement('canvas');
+    canvas.width = size;
+    canvas.height = size * directions.length;
+    const ctx = canvas.getContext('2d');
+    ctx.imageSmoothingEnabled = false;
+    for (const [row, key] of directions.entries()) {
+      for (const part of set[key]) {
+        const base = part.tipo.split('#')[0];
+        const project = projects.find(item => item.caminho === base);
+        if (!project) throw new Error(`Não achei a folha de ${base}.`);
+        const img = await new Promise((resolve, reject) => {
+          const image = new Image();
+          image.onload = () => resolve(image);
+          image.onerror = () => reject(new Error(`Não abriu ${base}.`));
+          image.src = `/saida/${base}.png?v=${Math.round(project.atualizado)}`;
+        });
+        const frame = project.quadro;
+        const x = (part.dx - frames[key].minX + 1) * 32 - frame;
+        const y = row * size + (part.dy - frames[key].minY + 1) * 32 - frame;
+        ctx.drawImage(img, 0, 0, frame, frame, x, y, frame, frame);
+      }
+    }
+    const properties = { ...DEFAULT_PROPERTIES, bloqueia: false, move: false };
+    const recipe = { formato: { quadro: size, quadros: 1, direcoes: directions }, conjunto: set, propriedades: properties };
+    const result = await saveProject(CATEGORY, folder, name, recipe, canvas.toDataURL('image/png'));
+    objects.name = name;
+    objects.path = result.caminho;
+    objects.dirty = false;
+    status(`Conjunto salvo em gerador/${result.arquivo}`, 'ok');
+    refreshProjects();
+  } catch (error) {
+    status(`Não deu pra salvar: ${error.message}`, 'error');
+  } finally {
+    objects.saving = false;
+  }
+}
+
+// ================================================================================================================================================================================================================================================
 // generatePending
 // Cria a folha (.png) de todo objeto que tem receita mas ainda não tem folha, um por um (os criados por ferramentas/criar-armas.js).
 
@@ -652,7 +732,7 @@ async function generatePending() {
   const button = document.getElementById('objectPendingBtn');
   button.disabled = true;
   try {
-    const pending = (await fetchProjects()).filter(project => project.ferramenta === CATEGORY && !project.temFolha);
+    const pending = (await fetchProjects()).filter(project => project.ferramenta === CATEGORY && !project.temFolha && !project.conjunto);
     if (!pending.length) return status('Nenhum objeto sem folha.', 'ok');
     let done = 0;
     for (const project of pending) {
@@ -684,6 +764,7 @@ async function openRecipe(recipe) {
   objects.properties = { ...DEFAULT_PROPERTIES, ...(recipe.propriedades || {}) };
   renderProperties();
   const formato = recipe.formato || {};
+  setEl.value = recipe.conjunto ? Object.entries(recipe.conjunto).flatMap(([dir, parts]) => parts.map(part => `${dir} ${part.tipo} ${part.dx} ${part.dy}`)).join('\n') : '';
   objects.rotates = !!recipe.direcoes;
   objects.twoSquares = formato.sqms === 2;
   objects.slots = {};

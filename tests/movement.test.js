@@ -3,6 +3,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { buildGame, floorRect, pile, hole, wall, placeAt } from './helpers/fixture.js';
+import { setAssets } from '../shared/assets.js';
 
 const GROUND = floorRect(0, 14, 0, 14, 0);
 const ROOF = floorRect(3, 8, 3, 8, 1);
@@ -147,4 +148,18 @@ test('porta: clique de longe anda até ela e abre; aberta deixa passar; clique d
   game.enqueue('player1', { type: 'useDoor', x: 7, y: 5, z: 0 });
   game.tick(game.time + 25);
   assert.ok(world.isBlocked(7, 5, 0), 'fechou de novo');
+});
+
+test('degrau com altura e passo: a escada de 2 partes (altura 2 com passo 2, depois altura 3) sobe pro andar de cima', () => {
+  const step = (id, props) => ({ id, ferramenta: 'objetos', grupo: 'decoracao', pasta: 'escadas', nome: id.split('/').pop(), url: '/d.png', quadro: 32, quadros: 1, pecas: [], propriedades: { move: false, altura: true, ...props } });
+  setAssets([step('decoracao/escadas/degrau-baixo', { volume: 2, passo: 2 }), step('decoracao/escadas/degrau-alto', { volume: 3, passo: 1 })]);
+  const game = building([['decoracao/escadas/degrau-baixo', 6, 11, 0, 0, 0, 1, 0]], [['decoracao/escadas/degrau-alto', 6, 10, 0, 0, 0, 1, 0]]);
+  assert.deepEqual(landing(game, 6, 12, 0, 0, 0, -1), { x: 6, y: 11, z: 0, step: 2 });
+  assert.deepEqual(landing(game, 6, 11, 0, 2, 0, -1), { x: 6, y: 10, z: 0, step: 3 });
+  assert.deepEqual(landing(game, 6, 10, 0, 3, 0, -1), { x: 5, y: 8, z: 1, step: 0 });
+  assert.deepEqual(landing(game, 6, 10, 0, 3, 0, 1), { x: 6, y: 11, z: 0, step: 2 });
+  assert.deepEqual(landing(game, 6, 11, 0, 2, 0, 1), { x: 6, y: 12, z: 0, step: 0 });
+  assert.equal(landing(game, 7, 10, 0, 0, -1, 0), null);
+  assert.equal(landing(game, 6, 9, 0, 0, 0, 1), null, 'o degrau alto não dá pra entrar do chão (passo 1)');
+  setAssets([]);
 });
