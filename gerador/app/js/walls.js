@@ -14,8 +14,7 @@ import { fillFolderSelect, folderOf, setFolder, recipePath } from './folders.js'
 //   linha 5  muretas (a parede baixa do mesmo estilo), uma por lado: x norte · x sul · y leste · y oeste
 //   linha 6  cantos da mureta (os dois da sala, como xy e yx), duas opções de cada (a mureta é mais
 //   baixa que a parede, então o deslocamento muda conforme o lado): NO 1 · NO 2 · SE 1 · SE 2
-//   linha 7  arcos da mureta: x oeste · x leste · y norte · y sul
-//   linhas 8 e 9  peças extras (sobras da família, sem lugar fixo: variações de parede
+//   linhas 7 e 8  peças extras (sobras da família, sem lugar fixo: variações de parede
 //   com tocha, quadro…): 8 espaços numerados, sem descrição
 // A folha só cresce até a última linha usada (as 4 primeiras são sempre salvas).
 // Mureta deixa passar item jogado; peça extra vale como parede fechada.
@@ -62,18 +61,14 @@ const LOW_PIECES = [
   { key: 'mureta-no-1', name: 'Canto NO · opção 1' },
   { key: 'mureta-no-2', name: 'Canto NO · opção 2' },
   { key: 'mureta-se-1', name: 'Canto SE · opção 1' },
-  { key: 'mureta-se-2', name: 'Canto SE · opção 2' },
-  { key: 'mureta-arco-x-oeste', name: 'Arco X · oeste' },
-  { key: 'mureta-arco-x-leste', name: 'Arco X · leste' },
-  { key: 'mureta-arco-y-norte', name: 'Arco Y · norte' },
-  { key: 'mureta-arco-y-sul', name: 'Arco Y · sul' }
+  { key: 'mureta-se-2', name: 'Canto SE · opção 2' }
 ];
 const EXTRA_PIECES = Array.from({ length: 8 }, (_, i) => ({ key: `extra-${i + 1}`, name: `${i + 1}` }));
 const PIECES = [...WALL_PIECES, ...DOOR_PIECES, ...OPENING_PIECES, ...LOW_PIECES, ...EXTRA_PIECES];
 const SECTIONS = [
   { title: 'Paredes, portas e aberturas', from: 0 },
   { title: 'Muretas do mesmo estilo: um lado de cada e duas opções nos cantos NO e SE (deixam passar item jogado)', from: 16 },
-  { title: 'Peças extras', from: 28 }
+  { title: 'Peças extras', from: 24 }
 ];
 const BASE_PIECES = 16;
 const LEGACY_KEYS = { 'mureta-ne-1': 'mureta-se-1', 'mureta-ne-2': 'mureta-se-2' };
