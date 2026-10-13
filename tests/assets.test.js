@@ -77,17 +77,8 @@ test('creatureFlies: só a criatura marcada como voadora (Voa no gerador)', asyn
   assert.equal(creatureFlies('criaturas/nao/existe'), false);
 });
 
-test('item jogado: peça fechada de parede e de mureta barra; janela, arco, passagem e porta aberta deixam passar; parapeito deixa passar', () => {
-  setAssets([
-    { id: 'estrutura/paredes/tijolo', ferramenta: 'paredes', nome: 'tijolo', pecas: ['x'] },
-    { id: 'estrutura/cercas/mureta', ferramenta: 'paredes', nome: 'mureta', pecas: ['x'] },
-    { id: 'estrutura/parapeitos/cerca', ferramenta: 'paredes', nome: 'cerca', pecas: ['norte'] }
-  ]);
-  for (const sheet of ['estrutura/paredes/tijolo', 'estrutura/cercas/mureta']) {
-    assert.equal(blocksThrow(`${sheet}#x`), true);
-    assert.equal(blocksThrow(`${sheet}#xy`), true);
-    assert.equal(blocksThrow(`${sheet}#porta-x`), true);
-    for (const piece of ['janela-x', 'arco-x-oeste', 'passagem-y', 'porta-y-aberta']) assert.equal(blocksThrow(`${sheet}#${piece}`), false);
-  }
-  assert.equal(blocksThrow('estrutura/parapeitos/cerca#norte'), false);
+test('item jogado: peça fechada da pasta Paredes barra; janela, arco, passagem e porta aberta deixam passar; muretas, grades e parapeitos deixam passar', () => {
+  for (const piece of ['x', 'y', 'xy', 'yx', 'porta-x']) assert.equal(blocksThrow(`estrutura/paredes/tijolo#${piece}`), true);
+  for (const piece of ['janela-x', 'arco-x-oeste', 'passagem-y', 'porta-y-aberta']) assert.equal(blocksThrow(`estrutura/paredes/tijolo#${piece}`), false);
+  for (const type of ['estrutura/cercas/mureta#x', 'estrutura/cercas/mureta#porta-x', 'estrutura/parapeitos/cerca#norte']) assert.equal(blocksThrow(type), false);
 });
