@@ -36,6 +36,14 @@ export async function fetchWallSuggestion(id) {
 }
 
 // ================================================================================================================================================================================================================================================
+// fetchWallFamilies
+// As famílias de parede do Tibia: [{ pecas: { x, y, xy, yx }, antiga }].
+
+export async function fetchWallFamilies() {
+  return (await requestJson('/api/familias-de-paredes')).familias;
+}
+
+// ================================================================================================================================================================================================================================================
 // fetchDoorSuggestion
 // As 4 portas a partir de uma porta: { pecas: { 'porta-x', 'porta-x-aberta', 'porta-y', 'porta-y-aberta' } } ou null.
 

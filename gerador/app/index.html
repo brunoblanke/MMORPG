@@ -280,7 +280,17 @@
           </label>
           <button type="button" class="ghost-btn" id="wallClear">Limpar peça</button>
           <button type="button" class="ghost-btn" id="wallSuggest" title="Escolhe as paredes pelo material da parede escolhida e as portas pela porta escolhida">Sugerir peças</button>
+          <button type="button" class="ghost-btn" id="wallFamiliesBtn" title="Mostra as famílias de parede do Tibia (x, y, xy e yx do mesmo material); clicar numa preenche as peças">Paredes do Tibia</button>
         </div>
+      </div>
+      <div class="wall-families" id="wallFamiliesPanel" hidden>
+        <div class="slot-actions">
+          <label class="checkline"><input type="checkbox" id="wallFamiliesComplete" checked /> Só as completas (as 4 peças)</label>
+          <label class="checkline"><input type="checkbox" id="wallFamiliesOld" checked /> Só as clássicas (7.8)</label>
+          <button type="button" class="ghost-btn" id="wallFamiliesCreate" title="Salva uma parede (parede-&lt;id&gt;) na pasta escolhida pra cada família da lista que ainda não foi salva">Criar as da lista</button>
+          <span class="dim" id="wallFamiliesCount"></span>
+        </div>
+        <div class="family-grid" id="wallFamiliesGrid"></div>
       </div>
       <div class="slots wall-slots" id="wallSlots"></div>
     </section>

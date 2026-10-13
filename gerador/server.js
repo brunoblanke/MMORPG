@@ -31,6 +31,7 @@ app.get('/api/sprite/:id/:variacao', spriteDoItem);
 app.get('/api/bordas-sugeridas', bordasSugeridas);
 app.get('/api/pisos-sugeridos', pisosSugeridos);
 app.get('/api/paredes-sugeridas', paredesSugeridas);
+app.get('/api/familias-de-paredes', familiasDeParedes);
 app.get('/api/portas-sugeridas', portasSugeridas);
 app.get('/api/item/:id', infoDoItem);
 app.get('/api/padrao/:id', padraoDeItens);
@@ -242,6 +243,19 @@ function padraoDeItens(req, res) {
 function paredesSugeridas(req, res) {
   try {
     res.json({ success: true, sugestao: arquivosTibia().sugerirParedes(parseInt(req.query.id, 10)) });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+}
+
+// ================================================================================================================================================================================================================================================
+// familiasDeParedes
+// { familias: [{ pecas: { x, y, xy, yx }, antiga }] }: as famílias de parede do Tibia; antiga = o desenho do x é o do Tibia antigo (as paredes clássicas).
+
+function familiasDeParedes(req, res) {
+  try {
+    const antigos = idsAntigos();
+    res.json({ success: true, familias: arquivosTibia().familiasDeParedes().map(pecas => ({ pecas, antiga: antigos.has(pecas.x) })) });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }

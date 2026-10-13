@@ -120,3 +120,12 @@ test('gerador acha as portas do Tibia e sugere as 4 (X e Y, fechada e aberta)', 
   assert.deepEqual(assets.sugerirPortas(1628).pecas, { 'porta-y': 1628, 'porta-y-aberta': 1630, 'porta-x': 1631, 'porta-x-aberta': 1633 });
   assert.equal(assets.sugerirPortas(1271), null);
 });
+
+test('gerador acha as famílias de parede do Tibia (x, y, xy, yx do mesmo material), sem repetir', () => {
+  const familias = new TibiaAssets(CLIENT).familiasDeParedes();
+  assert.ok(familias.length > 5, `famílias: ${familias.length}`);
+  assert.ok(familias.every(familia => familia.x && familia.y));
+  assert.deepEqual(familias.find(familia => familia.x === 1271), { x: 1271, y: 1270, xy: 1274, yx: 1272 });
+  const chaves = familias.map(familia => Object.values(familia).sort((a, b) => a - b).join(','));
+  assert.equal(new Set(chaves).size, chaves.length);
+});
