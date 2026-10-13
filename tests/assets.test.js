@@ -83,13 +83,14 @@ test('item jogado: peça fechada de parede e de mureta barra; janela, arco, pass
     { id: 'estrutura/cercas/mureta', ferramenta: 'paredes', nome: 'mureta', pecas: ['x'] },
     { id: 'estrutura/parapeitos/cerca', ferramenta: 'paredes', nome: 'cerca', pecas: ['norte'] }
   ]);
-  for (const sheet of ['estrutura/paredes/tijolo', 'estrutura/cercas/mureta']) {
+  for (const sheet of ['estrutura/paredes/tijolo']) {
     assert.equal(blocksThrow(`${sheet}#x`), true);
     assert.equal(blocksThrow(`${sheet}#xy`), true);
     assert.equal(blocksThrow(`${sheet}#porta-x`), true);
     for (const piece of ['janela-x', 'arco-x-oeste', 'passagem-y', 'porta-y-aberta']) assert.equal(blocksThrow(`${sheet}#${piece}`), false);
   }
   assert.equal(blocksThrow('estrutura/parapeitos/cerca#norte'), false);
+  for (const piece of ['x', 'xy', 'porta-x']) assert.equal(blocksThrow(`estrutura/cercas/mureta#${piece}`), false);
 });
 
 test('mureta e peça extra: mureta não tem altura e deixa o arremesso passar; extra vale como parede fechada', () => {

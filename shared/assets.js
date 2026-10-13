@@ -354,9 +354,13 @@ export function floorHasPiece(type, piece) {
 // blocksThrow
 // O que barra item jogado: peça fechada de parede da ferramenta Paredes, em
 // qualquer pasta (x, y, cantos, pilar, porta fechada e as peças extras).
+// Tudo da pasta Cercas e parapeitos (balcão, cerca, mureta…) deixa passar.
 // Janela, arco, passagem, porta aberta e mureta (as 'mureta-…') deixam
 // passar; parapeito (peças norte/sul…) também. Árvore, pedra e outros objetos
 // que bloqueiam a passagem de player e inimigos deixam o item passar por cima.
+
+const STRUCTURE_GROUP = 'estrutura';
+const LOW_FOLDER = 'cercas';
 
 export const MAGIC_WALL = 'itens/itens-encantados/magic-wall';
 
@@ -364,7 +368,7 @@ export function blocksThrow(type) {
   const { asset, piece } = splitType(type);
   if (asset === MAGIC_WALL) return true;
   const sheet = getAsset(asset);
-  const isWall = sheet ? sheet.ferramenta === 'paredes' : asset.startsWith(WALL_FOLDER);
+  const isWall = sheet ? sheet.ferramenta === 'paredes' && !asset.startsWith(`${STRUCTURE_GROUP}/${LOW_FOLDER}/`) : asset.startsWith(WALL_FOLDER);
   const base = String(piece || '');
   if (!isWall || (base && !WALL_PIECES.includes(base))) return false;
   return !/^mureta-|^janela|^arco|^passagem|^porta-.*-aberta$/.test(base);
