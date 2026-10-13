@@ -28,7 +28,10 @@ export const WALL_PIECES = [
   'x', 'y', 'xy', 'yx',
   'porta-x', 'porta-x-aberta', 'porta-y', 'porta-y-aberta',
   'arco-x-oeste', 'arco-x-leste', 'arco-y-norte', 'arco-y-sul',
-  'janela-x', 'janela-y', 'passagem-x', 'passagem-y'
+  'janela-x', 'janela-y', 'passagem-x', 'passagem-y',
+  'mureta-x', 'mureta-y', 'mureta-xy', 'mureta-yx',
+  'mureta-arco-x-oeste', 'mureta-arco-x-leste', 'mureta-arco-y-norte', 'mureta-arco-y-sul',
+  'x-2', 'y-2', 'xy-2', 'yx-2', 'x-3', 'y-3', 'janela-x-2', 'janela-y-2'
 ];
 export const WALL_PIECE_NAMES = {
   x: 'X', y: 'Y', xy: 'Canto XY', yx: 'Pilar YX',
@@ -37,7 +40,12 @@ export const WALL_PIECE_NAMES = {
   'arco-x-oeste': 'Arco X oeste', 'arco-x-leste': 'Arco X leste',
   'arco-y-norte': 'Arco Y norte', 'arco-y-sul': 'Arco Y sul',
   'janela-x': 'Janela X', 'janela-y': 'Janela Y',
-  'passagem-x': 'Passagem X', 'passagem-y': 'Passagem Y'
+  'passagem-x': 'Passagem X', 'passagem-y': 'Passagem Y',
+  'mureta-x': 'Mureta X', 'mureta-y': 'Mureta Y', 'mureta-xy': 'Mureta canto XY', 'mureta-yx': 'Mureta pilar YX',
+  'mureta-arco-x-oeste': 'Mureta arco X oeste', 'mureta-arco-x-leste': 'Mureta arco X leste',
+  'mureta-arco-y-norte': 'Mureta arco Y norte', 'mureta-arco-y-sul': 'Mureta arco Y sul',
+  'x-2': 'X variação 2', 'y-2': 'Y variação 2', 'xy-2': 'XY variação 2', 'yx-2': 'YX variação 2',
+  'x-3': 'X variação 3', 'y-3': 'Y variação 3', 'janela-x-2': 'Janela X variação 2', 'janela-y-2': 'Janela Y variação 2'
 };
 
 // Parede: bloqueia (menos porta aberta, arco e passagem); tem altura (dá
@@ -51,6 +59,16 @@ const WALL_PROPS = {
   'janela-x': [true, true], 'janela-y': [true, true],
   'passagem-x': [false, false], 'passagem-y': [false, false]
 };
+
+// ================================================================================================================================================================================================================================================
+// wallProps
+// [tem altura, bloqueia o passo] da peça de parede. Variação ('x-2', 'janela-x-2') vale como a peça base; mureta ('mureta-x') bloqueia como a parede mas não tem altura. Peça desconhecida (parapeito) bloqueia e tem altura.
+
+export function wallProps(piece) {
+  const base = String(piece || '').replace(/-\d+$/, '');
+  if (base.startsWith('mureta-')) return [false, (WALL_PROPS[base.slice(7)] || [true, true])[1]];
+  return WALL_PROPS[base] || [true, true];
+}
 
 const assets = new Map();
 
@@ -240,7 +258,7 @@ const DOOR_PIECE = /^porta-[xy](-aberta)?$/;
 export function doorState(type) {
   const { piece } = splitType(type);
   if (!DOOR_PIECE.test(piece || '')) return null;
-  const [hasVolume, blocksMovement] = WALL_PROPS[piece];
+  const [hasVolume, blocksMovement] = wallProps(piece);
   return { open: piece.endsWith('-aberta'), hasVolume, blocksMovement };
 }
 
@@ -335,11 +353,11 @@ export function floorHasPiece(type, piece) {
 
 // ================================================================================================================================================================================================================================================
 // blocksThrow
-// O que barra item jogado: peça de parede da ferramenta Paredes (as pastas
-// Paredes e Cercas, muretas incluídas), menos o que tem vão: janela, arco,
-// passagem e porta aberta. Parapeito (peças norte/sul/…), árvore, pedra e
-// outros objetos que bloqueiam a passagem de player e inimigos deixam o item
-// passar por cima.
+// O que barra item jogado: peça fechada de parede da ferramenta Paredes, em
+// qualquer pasta (x, y, cantos, pilar, porta fechada, e as variações delas).
+// Janela, arco, passagem, porta aberta e mureta (as 'mureta-…') deixam
+// passar; parapeito (peças norte/sul…) também. Árvore, pedra e outros objetos
+// que bloqueiam a passagem de player e inimigos deixam o item passar por cima.
 
 export const MAGIC_WALL = 'itens/itens-encantados/magic-wall';
 
@@ -348,8 +366,9 @@ export function blocksThrow(type) {
   if (asset === MAGIC_WALL) return true;
   const sheet = getAsset(asset);
   const isWall = sheet ? sheet.ferramenta === 'paredes' : asset.startsWith(WALL_FOLDER);
-  if (!isWall || (piece && !WALL_PIECES.includes(piece))) return false;
-  return !/^janela|^arco|^passagem|^porta-.*-aberta$/.test(piece || '');
+  const base = String(piece || '').replace(/-\d+$/, '');
+  if (!isWall || (base && !WALL_PIECES.includes(base))) return false;
+  return !/^mureta-|^janela|^arco|^passagem|^porta-.*-aberta$/.test(base);
 }
 
 // ================================================================================================================================================================================================================================================
@@ -427,7 +446,7 @@ export function objectProps(type) {
   const { asset: assetId, piece } = splitType(type);
   const asset = getAsset(assetId);
   if (asset && asset.ferramenta === 'paredes') {
-    const [hasVolume, blocksMovement] = WALL_PROPS[piece] || [true, true];
+    const [hasVolume, blocksMovement] = wallProps(piece);
     return { movable: false, hasVolume, blocksMovement };
   }
   const props = (asset && asset.propriedades) || {};
