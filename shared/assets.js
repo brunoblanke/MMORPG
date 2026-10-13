@@ -439,17 +439,21 @@ export function isItemType(type) {
 
 // ================================================================================================================================================================================================================================================
 // objectProps
-// { movable, hasVolume, blocksMovement } de uma parede ou objeto.
+// { movable, hasVolume, blocksMovement, volume, climb } de uma parede ou objeto: volume é a altura do topo do degrau em volumes (gerador → Objetos → Altura; 1 é o comum) e climb quantos volumes dá pra subir de uma vez pra entrar nele (Passo; 1 é o comum).
 
 export function objectProps(type) {
   const { asset: assetId, piece } = splitType(type);
   const asset = getAsset(assetId);
   if (asset && asset.ferramenta === 'paredes') {
     const [hasVolume, blocksMovement] = wallProps(piece);
-    return { movable: false, hasVolume, blocksMovement };
+    return { movable: false, hasVolume, blocksMovement, volume: hasVolume ? 1 : 0, climb: 1 };
   }
   const props = (asset && asset.propriedades) || {};
-  return { movable: !!props.move, hasVolume: !!props.altura, blocksMovement: !!props.bloqueia };
+  const hasVolume = !!props.altura;
+  return {
+    movable: !!props.move, hasVolume, blocksMovement: !!props.bloqueia,
+    volume: hasVolume ? Math.max(1, Math.floor(Number(props.volume)) || 1) : 0, climb: Math.max(1, Math.floor(Number(props.passo)) || 1)
+  };
 }
 
 // ================================================================================================================================================================================================================================================

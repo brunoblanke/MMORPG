@@ -41,9 +41,9 @@ test('cada peça sai do lugar certo da folha', () => {
 });
 
 test('parede e objeto gravam no mapa o comportamento deles', () => {
-  assert.deepEqual(objectProps('estrutura/paredes/tijolo#x'), { movable: false, hasVolume: true, blocksMovement: true });
-  assert.deepEqual(objectProps('estrutura/paredes/tijolo#porta-x-aberta'), { movable: false, hasVolume: false, blocksMovement: false });
-  assert.deepEqual(objectProps('itens/recipientes/caixa'), { movable: true, hasVolume: true, blocksMovement: false });
+  assert.deepEqual(objectProps('estrutura/paredes/tijolo#x'), { movable: false, hasVolume: true, blocksMovement: true, volume: 1, climb: 1 });
+  assert.deepEqual(objectProps('estrutura/paredes/tijolo#porta-x-aberta'), { movable: false, hasVolume: false, blocksMovement: false, volume: 0, climb: 1 });
+  assert.deepEqual(objectProps('itens/recipientes/caixa'), { movable: true, hasVolume: true, blocksMovement: false, volume: 1, climb: 1 });
 
   const { layers, layerOrder } = buildLayersFromMapData({ objetosData: [] }, GRID);
   layerOrder.push(0);

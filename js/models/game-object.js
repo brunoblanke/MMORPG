@@ -3,7 +3,7 @@
 import { randEnemyColor } from '../utils/helpers.js';
 import { Enemy } from './enemy.js';
 import { computeBorderPieces } from '../../shared/floor-variant.js';
-import { startsActive, isFloorType, isHoleType, isEntranceFolder, objectUse, objectIdType, splitType, pieceType, floorMiddle, getAsset, floorHasPiece, creatureBehavior } from '../../shared/assets.js';
+import { objectProps, startsActive, isFloorType, isHoleType, isEntranceFolder, objectUse, objectIdType, splitType, pieceType, floorMiddle, getAsset, floorHasPiece, creatureBehavior } from '../../shared/assets.js';
 import { collectObjectDescriptors, collectEnemyDescriptors } from '../../shared/map-format.js';
 import { getStairTop, getStairTopTarget, getHoleTarget } from '../../shared/stairs.js';
 import { parseBorderType, hasSavedBorders, mergeSavedInnerCorners } from '../../shared/floor-borders.js';
@@ -17,6 +17,9 @@ export class GameObject {
     this.step = data.step || 0;
     this.movable = data.movable !== undefined ? data.movable : true;
     this.hasVolume = data.hasVolume || false;
+    const props = this.hasVolume ? objectProps(objectIdType(this.id)) : null;
+    this.volume = this.hasVolume ? (props.volume || 1) : 0;
+    this.climb = this.hasVolume ? props.climb : 1;
     this.blocksMovement = data.blocksMovement || false;
     this.temporary = !!data.temporary;
     this.ownerId = data.ownerId || null;

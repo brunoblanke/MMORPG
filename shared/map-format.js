@@ -49,7 +49,8 @@ export function restackItems(objects) {
   for (const obj of objects) {
     if (!isItemType(obj.type)) continue;
     obj.step = height;
-    if (objectProps(obj.type).hasVolume) height++;
+    const props = objectProps(obj.type);
+    if (props.hasVolume) height += props.volume || 1;
   }
 }
 

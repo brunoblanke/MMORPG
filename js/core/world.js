@@ -241,6 +241,7 @@ export class World {
     obj.id = newType + oldId.slice(type.length);
     obj.blocksMovement = next.blocksMovement;
     obj.hasVolume = next.hasVolume;
+    obj.volume = next.hasVolume ? 1 : 0;
     return oldId;
   }
 
@@ -445,7 +446,7 @@ export class World {
     let maxStep = 0;
     for (const entity of this.getTileEntities(x, y, z)) {
       if (entity.hasVolume) {
-        const entityTop = (entity.step || 0) + 1;
+        const entityTop = (entity.step || 0) + (entity.volume || 1);
         maxStep = Math.max(maxStep, entityTop);
       }
     }
@@ -453,6 +454,16 @@ export class World {
   }
 
   // ================================================================================================================================================================================================================================================
+  // getClimb
+  // Quantos volumes dá pra subir de uma vez pra entrar no sqm (ou sair dele descendo): o maior "passo" dos objetos com volume dele; 1 se não tem.
+
+  getClimb(x, y, z) {
+    let climb = 1;
+    for (const entity of this.getTileEntities(x, y, z)) if (entity.hasVolume && entity.climb > climb) climb = entity.climb;
+    return climb;
+  }
+
+// ================================================================================================================================================================================================================================================
   // registerFloor
 
   registerFloor(x, y, z) {

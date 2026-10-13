@@ -11,12 +11,12 @@ export const DIRECTIONS = [
 
 // ================================================================================================================================================================================================================================================
 // hasStepToClimb
-// Subir 1 volume exige um vizinho do destino com no máximo 1 volume a menos.
+// Subir exige um vizinho do destino com no máximo climb volumes a menos (1, ou o passo do degrau).
 
-function hasStepToClimb(world, x, y, z, targetStep) {
+function hasStepToClimb(world, x, y, z, targetStep, climb = 1) {
   for (const { dx, dy } of DIRECTIONS) {
     const adjacentStep = world.getPassableStep(x + dx, y + dy, z, targetStep);
-    if (adjacentStep !== null && adjacentStep >= targetStep - 1) return true;
+    if (adjacentStep !== null && adjacentStep >= targetStep - climb) return true;
   }
   return false;
 }
@@ -24,7 +24,7 @@ function hasStepToClimb(world, x, y, z, targetStep) {
 // ================================================================================================================================================================================================================================================
 // stepOnSameFloor
 // Passo no mesmo andar: o destino precisa estar no mapa, livre, ter piso ou
-// volume, e a diferença de altura ser de no máximo 1 volume. Devolve o step
+// volume, e a diferença de altura ser de no máximo 1 volume (ou o passo do degrau). Devolve o step
 // em que a criatura fica, ou null.
 
 function stepOnSameFloor(world, from, toX, toY, enemiesPassable) {
@@ -35,8 +35,9 @@ function stepOnSameFloor(world, from, toX, toY, enemiesPassable) {
   if (step === null) return null;
 
   const stepDiff = Math.abs(step - from.step);
-  if (stepDiff > 1) return null;
-  if (step > from.step && !hasStepToClimb(world, toX, toY, from.z, step)) return null;
+  const climb = step > from.step ? world.getClimb(toX, toY, from.z) : world.getClimb(from.x, from.y, from.z);
+  if (stepDiff > climb) return null;
+  if (step > from.step && !hasStepToClimb(world, toX, toY, from.z, step, climb)) return null;
   return step;
 }
 

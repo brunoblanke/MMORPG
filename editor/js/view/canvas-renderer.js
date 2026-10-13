@@ -304,7 +304,7 @@ function drawPaintPreview(cells) {
   ctx.globalAlpha = PREVIEW_ALPHA;
   for (const { x, y } of cells) {
     const cell = layer && layer[`${x},${y}`];
-    const height = cell && isItemType(type) ? cell.objects.filter(o => isItemType(o.type) && objectProps(o.type).hasVolume).length : 0;
+    const height = cell && isItemType(type) ? cell.objects.filter(o => isItemType(o.type) && objectProps(o.type).hasVolume).reduce((sum, o) => sum + (objectProps(o.type).volume || 1), 0) : 0;
     drawPiece(type, x * TILE - height * STACK_OFFSET, y * TILE - height * STACK_OFFSET);
   }
   ctx.restore();

@@ -202,7 +202,7 @@ export class ObjectDragController {
   stepHeightWithout(obj, x, y, z) {
     let top = 0;
     for (const entity of this.sim.world.getTileEntities(x, y, z)) {
-      if (entity !== obj && entity.hasVolume) top = Math.max(top, (entity.step || 0) + 1);
+      if (entity !== obj && entity.hasVolume) top = Math.max(top, (entity.step || 0) + (entity.volume || 1));
     }
     return top;
   }
