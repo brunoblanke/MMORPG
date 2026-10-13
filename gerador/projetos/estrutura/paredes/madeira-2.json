@@ -18,55 +18,107 @@
       "janela-x",
       "janela-y",
       "passagem-x",
-      "passagem-y"
+      "passagem-y",
+      "mureta-x",
+      "mureta-y",
+      "mureta-xy",
+      "mureta-yx",
+      "mureta-arco-x-oeste",
+      "mureta-arco-x-leste",
+      "mureta-arco-y-norte",
+      "mureta-arco-y-sul",
+      "extra-1",
+      "extra-2",
+      "extra-3",
+      "extra-4",
+      "extra-5",
+      "extra-6",
+      "extra-7",
+      "extra-8"
     ]
   },
   "pecas": {
     "x": {
       "tibia": {
-        "id": 1598,
+        "id": 9310,
         "variacao": 0
       }
     },
     "y": {
       "tibia": {
-        "id": 1606,
+        "id": 9309,
         "variacao": 0
       }
     },
     "xy": {
       "tibia": {
-        "id": 1619,
+        "id": 9315,
         "variacao": 0
       }
     },
     "yx": {
       "tibia": {
-        "id": 1600,
+        "id": 9311,
         "variacao": 0
       }
     },
-    "arco-x-oeste": {
+    "janela-x": {
       "tibia": {
-        "id": 1603,
+        "id": 9349,
         "variacao": 0
       }
     },
-    "arco-x-leste": {
+    "janela-y": {
       "tibia": {
-        "id": 1599,
+        "id": 9350,
         "variacao": 0
       }
     },
-    "arco-y-norte": {
+    "extra-1": {
       "tibia": {
-        "id": 1608,
+        "id": 9320,
         "variacao": 0
       }
     },
-    "arco-y-sul": {
+    "extra-2": {
       "tibia": {
-        "id": 1610,
+        "id": 9322,
+        "variacao": 0
+      }
+    },
+    "extra-3": {
+      "tibia": {
+        "id": 9325,
+        "variacao": 0
+      }
+    },
+    "extra-4": {
+      "tibia": {
+        "id": 9328,
+        "variacao": 0
+      }
+    },
+    "extra-5": {
+      "tibia": {
+        "id": 9329,
+        "variacao": 0
+      }
+    },
+    "extra-6": {
+      "tibia": {
+        "id": 9330,
+        "variacao": 0
+      }
+    },
+    "extra-7": {
+      "tibia": {
+        "id": 9331,
+        "variacao": 0
+      }
+    },
+    "extra-8": {
+      "tibia": {
+        "id": 8238,
         "variacao": 0
       }
     }

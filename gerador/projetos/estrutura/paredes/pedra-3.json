@@ -1,0 +1,66 @@
+{
+  "formato": {
+    "quadro": 64,
+    "colunas": 4,
+    "pecas": [
+      "x",
+      "y",
+      "xy",
+      "yx",
+      "porta-x",
+      "porta-x-aberta",
+      "porta-y",
+      "porta-y-aberta",
+      "arco-x-oeste",
+      "arco-x-leste",
+      "arco-y-norte",
+      "arco-y-sul",
+      "janela-x",
+      "janela-y",
+      "passagem-x",
+      "passagem-y"
+    ]
+  },
+  "pecas": {
+    "x": {
+      "tibia": {
+        "id": 8454,
+        "variacao": 0
+      }
+    },
+    "y": {
+      "tibia": {
+        "id": 8455,
+        "variacao": 0
+      }
+    },
+    "xy": {
+      "tibia": {
+        "id": 8458,
+        "variacao": 0
+      }
+    },
+    "janela-x": {
+      "tibia": {
+        "id": 8467,
+        "variacao": 0
+      }
+    },
+    "janela-y": {
+      "tibia": {
+        "id": 8470,
+        "variacao": 0
+      }
+    },
+    "yx": {
+      "tibia": {
+        "id": 8456,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "paredes",
+  "grupo": "estrutura",
+  "pasta": "paredes",
+  "nome": "pedra-3"
+}

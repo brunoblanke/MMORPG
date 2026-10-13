@@ -18,7 +18,23 @@
       "janela-x",
       "janela-y",
       "passagem-x",
-      "passagem-y"
+      "passagem-y",
+      "mureta-x",
+      "mureta-y",
+      "mureta-xy",
+      "mureta-yx",
+      "mureta-arco-x-oeste",
+      "mureta-arco-x-leste",
+      "mureta-arco-y-norte",
+      "mureta-arco-y-sul",
+      "extra-1",
+      "extra-2",
+      "extra-3",
+      "extra-4",
+      "extra-5",
+      "extra-6",
+      "extra-7",
+      "extra-8"
     ]
   },
   "pecas": {
@@ -96,13 +112,55 @@
     },
     "janela-x": {
       "tibia": {
-        "id": 1734,
+        "id": 6437,
         "variacao": 0
       }
     },
     "janela-y": {
       "tibia": {
-        "id": 1735,
+        "id": 6438,
+        "variacao": 0
+      }
+    },
+    "extra-1": {
+      "tibia": {
+        "id": 1292,
+        "variacao": 0
+      }
+    },
+    "extra-2": {
+      "tibia": {
+        "id": 5151,
+        "variacao": 0
+      }
+    },
+    "extra-3": {
+      "tibia": {
+        "id": 5153,
+        "variacao": 0
+      }
+    },
+    "extra-4": {
+      "tibia": {
+        "id": 5152,
+        "variacao": 0
+      }
+    },
+    "extra-5": {
+      "tibia": {
+        "id": 5154,
+        "variacao": 0
+      }
+    },
+    "extra-6": {
+      "tibia": {
+        "id": 5145,
+        "variacao": 0
+      }
+    },
+    "extra-7": {
+      "tibia": {
+        "id": 5148,
         "variacao": 0
       }
     }
