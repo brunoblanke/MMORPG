@@ -2,6 +2,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { setAssets } from '../shared/assets.js';
 import { buildGame, floorRect, pile, wall, hole, placeAt } from './helpers/fixture.js';
 
 const GROUND = floorRect(0, 14, 0, 14, 0);
@@ -127,4 +128,17 @@ test('objeto jogado no pé da escada com volume sobe pro andar de cima', () => {
 
   game.objectDrag.moveObject(game.player, parcel, 7, 10, 0);
   assert.deepEqual([parcel.x, parcel.y, parcel.z], [6, 8, 1]);
+});
+
+test('balcão (pasta Balcões): o arremesso passa por cima e o item pousa nele; parede comum continua sem aceitar', () => {
+  const sheet = (id) => ({ id, ferramenta: 'paredes', grupo: 'estrutura', pasta: id.split('/')[1], nome: 'teste', url: '/d.png', quadro: 64, quadros: 1, pecas: ['x'] });
+  setAssets([sheet('estrutura/balcoes/teste')]);
+  const counter = ['estrutura/balcoes/teste#x', 6, 5, 0, 0, 0, 1, 1];
+  const game = setup(pile(3, 5, 1), [counter]);
+  placeAt(game, game.player, 4, 5, 0);
+  const parcel = box(game, 3, 5);
+  game.objectDrag.moveObject(game.player, parcel, 6, 5, 0);
+  assert.deepEqual([parcel.x, parcel.y, parcel.step], [6, 5, 1]);
+  assert.ok(game.world.isBlocked(6, 5, 0));
+  setAssets([]);
 });

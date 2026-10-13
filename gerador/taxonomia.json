@@ -10,6 +10,7 @@
             { "id": "pisos", "nome": "Pisos", "ferramenta": "pisos" },
             { "id": "paredes", "nome": "Paredes", "ferramenta": "paredes" },
             { "id": "cercas", "nome": "Cercas e parapeitos", "ferramenta": "paredes" },
+            { "id": "balcoes", "nome": "Balcões", "ferramenta": "paredes" },
             { "id": "escadas", "nome": "Escadas", "ferramenta": "objetos" },
             { "id": "degraus", "nome": "Degraus e conjuntos", "ferramenta": "objetos" },
             { "id": "entradas", "nome": "Entradas", "ferramenta": "objetos" },

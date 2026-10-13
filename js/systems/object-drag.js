@@ -4,7 +4,7 @@ import { CONFIG } from '../config.js';
 import { distance, getAdjacentPositions, isPositionAdjacentTo } from '../utils/helpers.js';
 import { toUpperLevel } from '../../shared/stairs.js';
 import { isValidFloor } from '../../shared/constants.js';
-import { objectIdType, blocksThrow } from '../../shared/assets.js';
+import { objectIdType, blocksThrow, supportsItems } from '../../shared/assets.js';
 import { itemInfo } from '../../shared/items.js';
 
 export class ObjectDragController {
@@ -187,11 +187,12 @@ export class ObjectDragController {
 
   // ================================================================================================================================================================================================================================================
   // hasOtherBlocker
-  // Há algo intransponível no sqm (x, y, z) além do próprio objeto arrastado?
+  // Há algo intransponível no sqm (x, y, z) além do próprio objeto arrastado? Balcão não conta: aceita item em cima.
 
   hasOtherBlocker(obj, x, y, z) {
     const own = obj.blocksMovement && obj.x === x && obj.y === y && (obj.z || 0) === z ? 1 : 0;
-    return this.sim.world.countBlockersAt(x, y, z) > own;
+    const counters = this.sim.world.getObjectsAt(x, y).filter(o => (o.z || 0) === z && o.blocksMovement && o !== obj && supportsItems(objectIdType(o.id))).length;
+    return this.sim.world.countBlockersAt(x, y, z) - counters > own;
   }
 
   // ================================================================================================================================================================================================================================================

@@ -2,7 +2,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { setAssets, floorMiddle, spriteFrame, objectProps, isFloorType, isStairsType, isHoleType, isItemType, isWallType, displayName, interiorVariant, objectIdType, blocksThrow, conjuntoPartes } from '../shared/assets.js';
+import { setAssets, floorMiddle, spriteFrame, objectProps, isFloorType, isStairsType, isHoleType, isItemType, isWallType, displayName, interiorVariant, objectIdType, blocksThrow, conjuntoPartes, supportsItems } from '../shared/assets.js';
 import { serializeMapFromLayers, buildLayersFromMapData } from '../shared/map-format.js';
 
 const GRID = 10;
@@ -111,5 +111,19 @@ test('conjunto de partes: devolve as peças da direção do tipo, com deslocamen
   assert.deepEqual(conjuntoPartes('estrutura/degraus/escada'), [{ type: 'a/b/baixo', dx: 0, dy: 1 }, { type: 'a/b/alto', dx: 0, dy: 0 }]);
   assert.deepEqual(conjuntoPartes('estrutura/degraus/escada#leste'), [{ type: 'a/b/baixo', dx: -1, dy: 0 }]);
   assert.deepEqual(conjuntoPartes('estrutura/degraus/outro'), []);
+  setAssets([]);
+});
+
+test('balcão: peça fechada deixa o arremesso passar e apoia item; porta aberta não apoia; cerca e parede comum não apoiam', () => {
+  setAssets([
+    { id: 'estrutura/balcoes/loja', ferramenta: 'paredes', nome: 'loja', pecas: ['x'] },
+    { id: 'estrutura/cercas/cerca', ferramenta: 'paredes', nome: 'cerca', pecas: ['x'] },
+    { id: 'estrutura/paredes/tijolo', ferramenta: 'paredes', nome: 'tijolo', pecas: ['x'] }
+  ]);
+  assert.equal(blocksThrow('estrutura/balcoes/loja#x'), false);
+  assert.equal(supportsItems('estrutura/balcoes/loja#x'), true);
+  assert.equal(supportsItems('estrutura/balcoes/loja#porta-x-aberta'), false);
+  assert.equal(supportsItems('estrutura/cercas/cerca#x'), false);
+  assert.equal(supportsItems('estrutura/paredes/tijolo#x'), false);
   setAssets([]);
 });
