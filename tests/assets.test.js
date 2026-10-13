@@ -78,6 +78,11 @@ test('creatureFlies: só a criatura marcada como voadora (Voa no gerador)', asyn
 });
 
 test('item jogado: peça fechada de parede e de mureta barra; janela, arco, passagem e porta aberta deixam passar; parapeito deixa passar', () => {
+  setAssets([
+    { id: 'estrutura/paredes/tijolo', ferramenta: 'paredes', nome: 'tijolo', pecas: ['x'] },
+    { id: 'estrutura/cercas/mureta', ferramenta: 'paredes', nome: 'mureta', pecas: ['x'] },
+    { id: 'estrutura/parapeitos/cerca', ferramenta: 'paredes', nome: 'cerca', pecas: ['norte'] }
+  ]);
   for (const sheet of ['estrutura/paredes/tijolo', 'estrutura/cercas/mureta']) {
     assert.equal(blocksThrow(`${sheet}#x`), true);
     assert.equal(blocksThrow(`${sheet}#xy`), true);
