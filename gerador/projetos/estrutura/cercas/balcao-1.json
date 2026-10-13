@@ -77,56 +77,56 @@
         "id": 2324,
         "variacao": 0
       },
-      "subir": 0
+      "subir": 8
     },
     "mureta-x-sul": {
       "tibia": {
         "id": 2325,
         "variacao": 0
       },
-      "subir": 0
+      "subir": 8
     },
     "mureta-y-leste": {
       "tibia": {
         "id": 2326,
         "variacao": 0
       },
-      "subir": 0
+      "subir": 8
     },
     "mureta-y-oeste": {
       "tibia": {
         "id": 2327,
         "variacao": 0
       },
-      "subir": 0
+      "subir": 8
     },
     "mureta-no-1": {
       "tibia": {
         "id": 2328,
         "variacao": 0
       },
-      "subir": 0
+      "subir": 8
     },
     "mureta-no-2": {
       "tibia": {
         "id": 2329,
         "variacao": 0
       },
-      "subir": 0
+      "subir": 8
     },
     "mureta-se-1": {
       "tibia": {
         "id": 2330,
         "variacao": 0
       },
-      "subir": 0
+      "subir": 8
     },
     "mureta-se-2": {
       "tibia": {
         "id": 2331,
         "variacao": 0
       },
-      "subir": 0
+      "subir": 8
     }
   },
   "ferramenta": "paredes",
