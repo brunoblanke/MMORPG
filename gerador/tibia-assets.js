@@ -202,7 +202,6 @@ class TibiaAssets {
       bloqueia: temFlag(thing, FLAG.UNPASSABLE),
       move: !temFlag(thing, FLAG.UNMOVEABLE),
       altura: temFlag(thing, FLAG.ELEVATION),
-      elevacao: typeof thing.flags[FLAG.ELEVATION] === 'number' ? thing.flags[FLAG.ELEVATION] : 0,
       pegavel: temFlag(thing, FLAG.PICKUPABLE),
       empilhavel: temFlag(thing, FLAG.STACKABLE),
       container: temFlag(thing, FLAG.CONTAINER)

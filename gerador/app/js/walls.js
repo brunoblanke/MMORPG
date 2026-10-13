@@ -1,6 +1,6 @@
 // gerador/app/js/walls.js
 
-import { spriteUrl, saveProject, fetchItemInfo, fetchWallSuggestion, fetchDoorSuggestion, fetchWallFamilies, fetchProjects } from './api.js';
+import { spriteUrl, saveProject, fetchWallSuggestion, fetchDoorSuggestion, fetchWallFamilies, fetchProjects } from './api.js';
 import { itemCategory } from './picker.js';
 import { sourceLabel, loadImage, isReady, drawAnchored, readPngFile, normalizeName, setStatus } from './common.js';
 import { refreshProjects } from './projects.js';
@@ -109,7 +109,6 @@ const walls = {
 
 const statusEl = document.getElementById('wallStatus');
 const nameEl = document.getElementById('wallName');
-const liftEl = document.getElementById('wallLift');
 const volumeEl = document.getElementById('wallVolume');
 const folderEl = document.getElementById('wallFolder');
 const slotsEl = document.getElementById('wallSlots');
@@ -121,13 +120,6 @@ const sheetCanvas = document.getElementById('wallSheet');
 
 function initWalls() {
   volumeEl.addEventListener('input', () => { walls.dirty = true; });
-  liftEl.addEventListener('input', () => {
-    const source = walls.slots[walls.selected];
-    if (!source) return;
-    source.subir = Math.max(0, Math.min(63, Math.round(Number(liftEl.value) || 0)));
-    walls.dirty = true;
-    render();
-  });
   renderSlots();
   document.getElementById('wallSaveForm').addEventListener('submit', (evt) => {
     evt.preventDefault();
@@ -288,40 +280,12 @@ function pick(kind, id, variation) {
   const othersEmpty = pieces.every(piece => piece.key === walls.selected || !walls.slots[piece.key]);
   const key = walls.selected;
   setPiece(key, { tibia: { id, variacao: variation } });
-  liftFromTibia(key, id);
   const next = PIECES[PIECES.findIndex(piece => piece.key === walls.selected) + 1];
   if (next) walls.selected = next.key;
   render();
   if (!suggests || !othersEmpty || category !== group) return;
   if (group === 'door') suggestDoors(id);
   else suggestPieces(id);
-}
-
-// ================================================================================================================================================================================================================================================
-// liftFromTibia
-// A elevação do item no Tibia.dat vira o "subir" da peça (porta aberta, prateleira…).
-
-async function liftFromTibia(key, id) {
-  try {
-    const info = await fetchItemInfo(id);
-    const source = walls.slots[key];
-    if (!source || !source.tibia || source.tibia.id !== id || !info.elevacao) return;
-    source.subir = info.elevacao;
-    syncLift();
-    render();
-  } catch (error) {
-    status(`Não deu pra ler a elevação do item ${id}: ${error.message}`, 'error');
-  }
-}
-
-// ================================================================================================================================================================================================================================================
-// syncLift
-// Mostra no campo o "subir" da peça selecionada.
-
-function syncLift() {
-  const source = walls.slots[walls.selected];
-  liftEl.value = source ? Number(source.subir) || 0 : 0;
-  liftEl.disabled = !source;
 }
 
 // ================================================================================================================================================================================================================================================
@@ -458,16 +422,13 @@ function pieceImage(key) {
 
 function drawPiece(ctx, key, x, y) {
   const img = pieceImage(key);
-  if (!img) return;
-  const lift = Number(walls.slots[key].subir) || 0;
-  drawAnchored(ctx, img, x - lift, y - lift, SIZE);
+  if (img) drawAnchored(ctx, img, x, y, SIZE);
 }
 
 // ================================================================================================================================================================================================================================================
 // render
 
 function render() {
-  syncLift();
   for (const button of slotsEl.querySelectorAll('.slot')) {
     const key = button.dataset.key;
     button.classList.toggle('selected', key === walls.selected);
@@ -577,7 +538,10 @@ function openRecipe(recipe) {
   for (const [from, to] of Object.entries(LEGACY_KEYS)) if (saved[from] && !saved[to]) saved[to] = saved[from];
   for (const piece of PIECES) {
     const source = saved[piece.key];
-    if (source) setPiece(piece.key, source, false);
+    if (source) {
+      delete source.subir;
+      setPiece(piece.key, source, false);
+    }
   }
   walls.selected = 'x';
   volumeEl.value = Math.max(1, Math.floor(Number((recipe.formato || {}).volume)) || 1);
