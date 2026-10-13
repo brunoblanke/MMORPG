@@ -1,0 +1,106 @@
+{
+  "formato": {
+    "quadro": 64,
+    "colunas": 4,
+    "pecas": [
+      "x",
+      "y",
+      "xy",
+      "yx",
+      "porta-x",
+      "porta-x-aberta",
+      "porta-y",
+      "porta-y-aberta",
+      "arco-x-oeste",
+      "arco-x-leste",
+      "arco-y-norte",
+      "arco-y-sul",
+      "janela-x",
+      "janela-y",
+      "passagem-x",
+      "passagem-y",
+      "mureta-x-norte",
+      "mureta-x-sul",
+      "mureta-y-leste",
+      "mureta-y-oeste",
+      "mureta-no-1",
+      "mureta-no-2",
+      "mureta-se-1",
+      "mureta-se-2",
+      "mureta-arco-x-oeste",
+      "mureta-arco-x-leste",
+      "mureta-arco-y-norte",
+      "mureta-arco-y-sul",
+      "extra-1",
+      "extra-2",
+      "extra-3",
+      "extra-4"
+    ]
+  },
+  "pecas": {
+    "x": {
+      "tibia": {
+        "id": 11972,
+        "variacao": 0
+      }
+    },
+    "y": {
+      "tibia": {
+        "id": 11971,
+        "variacao": 0
+      }
+    },
+    "xy": {
+      "tibia": {
+        "id": 11975,
+        "variacao": 0
+      }
+    },
+    "yx": {
+      "tibia": {
+        "id": 11973,
+        "variacao": 0
+      }
+    },
+    "janela-x": {
+      "tibia": {
+        "id": 11991,
+        "variacao": 0
+      }
+    },
+    "janela-y": {
+      "tibia": {
+        "id": 11990,
+        "variacao": 0
+      }
+    },
+    "mureta-x-norte": {
+      "tibia": {
+        "id": 11988,
+        "variacao": 0
+      }
+    },
+    "mureta-y-leste": {
+      "tibia": {
+        "id": 11985,
+        "variacao": 0
+      }
+    },
+    "extra-1": {
+      "tibia": {
+        "id": 11986,
+        "variacao": 0
+      }
+    },
+    "extra-2": {
+      "tibia": {
+        "id": 11989,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "paredes",
+  "grupo": "estrutura",
+  "pasta": "paredes",
+  "nome": "pedra-6"
+}

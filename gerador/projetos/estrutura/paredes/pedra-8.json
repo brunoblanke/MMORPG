@@ -1,0 +1,54 @@
+{
+  "formato": {
+    "quadro": 64,
+    "colunas": 4,
+    "pecas": [
+      "x",
+      "y",
+      "xy",
+      "yx",
+      "porta-x",
+      "porta-x-aberta",
+      "porta-y",
+      "porta-y-aberta",
+      "arco-x-oeste",
+      "arco-x-leste",
+      "arco-y-norte",
+      "arco-y-sul",
+      "janela-x",
+      "janela-y",
+      "passagem-x",
+      "passagem-y"
+    ]
+  },
+  "pecas": {
+    "x": {
+      "tibia": {
+        "id": 17064,
+        "variacao": 0
+      }
+    },
+    "y": {
+      "tibia": {
+        "id": 17063,
+        "variacao": 0
+      }
+    },
+    "xy": {
+      "tibia": {
+        "id": 17067,
+        "variacao": 0
+      }
+    },
+    "yx": {
+      "tibia": {
+        "id": 17065,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "paredes",
+  "grupo": "estrutura",
+  "pasta": "paredes",
+  "nome": "pedra-8"
+}

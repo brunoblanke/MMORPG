@@ -1,0 +1,146 @@
+{
+  "formato": {
+    "quadro": 64,
+    "colunas": 4,
+    "pecas": [
+      "x",
+      "y",
+      "xy",
+      "yx",
+      "porta-x",
+      "porta-x-aberta",
+      "porta-y",
+      "porta-y-aberta",
+      "arco-x-oeste",
+      "arco-x-leste",
+      "arco-y-norte",
+      "arco-y-sul",
+      "janela-x",
+      "janela-y",
+      "passagem-x",
+      "passagem-y",
+      "mureta-x-norte",
+      "mureta-x-sul",
+      "mureta-y-leste",
+      "mureta-y-oeste",
+      "mureta-no-1",
+      "mureta-no-2",
+      "mureta-se-1",
+      "mureta-se-2",
+      "mureta-arco-x-oeste",
+      "mureta-arco-x-leste",
+      "mureta-arco-y-norte",
+      "mureta-arco-y-sul",
+      "extra-1",
+      "extra-2",
+      "extra-3",
+      "extra-4",
+      "extra-5",
+      "extra-6",
+      "extra-7",
+      "extra-8"
+    ]
+  },
+  "pecas": {
+    "x": {
+      "tibia": {
+        "id": 20397,
+        "variacao": 0
+      }
+    },
+    "y": {
+      "tibia": {
+        "id": 20398,
+        "variacao": 0
+      }
+    },
+    "xy": {
+      "tibia": {
+        "id": 20399,
+        "variacao": 0
+      }
+    },
+    "yx": {
+      "tibia": {
+        "id": 20396,
+        "variacao": 0
+      }
+    },
+    "janela-x": {
+      "tibia": {
+        "id": 20442,
+        "variacao": 0
+      }
+    },
+    "janela-y": {
+      "tibia": {
+        "id": 20441,
+        "variacao": 0
+      }
+    },
+    "mureta-x-norte": {
+      "tibia": {
+        "id": 20411,
+        "variacao": 0
+      }
+    },
+    "mureta-y-leste": {
+      "tibia": {
+        "id": 20407,
+        "variacao": 0
+      }
+    },
+    "mureta-se-1": {
+      "tibia": {
+        "id": 20415,
+        "variacao": 0
+      }
+    },
+    "mureta-no-1": {
+      "tibia": {
+        "id": 20433,
+        "variacao": 0
+      }
+    },
+    "extra-8": {
+      "tibia": {
+        "id": 20420,
+        "variacao": 0
+      }
+    },
+    "extra-7": {
+      "tibia": {
+        "id": 20468,
+        "variacao": 0
+      }
+    },
+    "extra-6": {
+      "tibia": {
+        "id": 20467,
+        "variacao": 0
+      }
+    },
+    "extra-5": {
+      "tibia": {
+        "id": 20418,
+        "variacao": 0
+      }
+    },
+    "extra-4": {
+      "tibia": {
+        "id": 20414,
+        "variacao": 0
+      }
+    },
+    "extra-3": {
+      "tibia": {
+        "id": 20410,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "paredes",
+  "grupo": "estrutura",
+  "pasta": "paredes",
+  "nome": "pedra-9"
+}
