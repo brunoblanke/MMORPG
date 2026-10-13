@@ -93,11 +93,11 @@ test('item jogado: peça fechada de parede e de mureta barra; janela, arco, pass
 });
 
 test('mureta e peça extra: mureta não tem altura e deixa o arremesso passar; extra vale como parede fechada', () => {
-  setAssets([{ id: 'estrutura/paredes/familia', ferramenta: 'paredes', nome: 'familia', quadro: 64, quadros: 1, pecas: ['x'], ordem: ['x', 'mureta-x-norte', 'extra-1', 'mureta-arco-x-oeste'] }]);
+  setAssets([{ id: 'estrutura/paredes/familia', ferramenta: 'paredes', nome: 'familia', quadro: 64, quadros: 1, pecas: ['x'], ordem: ['x', 'mureta-x-norte', 'extra-1', 'mureta-no-1'] }]);
   const props = (piece) => objectProps(`estrutura/paredes/familia#${piece}`);
   assert.deepEqual([props('x').hasVolume, props('x').blocksMovement], [true, true]);
   assert.deepEqual([props('mureta-x-sul').hasVolume, props('mureta-x-sul').blocksMovement], [false, true]);
-  assert.deepEqual([props('mureta-arco-x-oeste').hasVolume, props('mureta-arco-x-oeste').blocksMovement], [false, false]);
+  assert.deepEqual([props('mureta-no-1').hasVolume, props('mureta-no-1').blocksMovement], [false, true]);
   assert.deepEqual([props('extra-1').hasVolume, props('extra-1').blocksMovement], [true, true]);
   assert.equal(blocksThrow('estrutura/paredes/familia#extra-1'), true);
   assert.equal(blocksThrow('estrutura/paredes/familia#mureta-no-2'), false);

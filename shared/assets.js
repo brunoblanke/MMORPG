@@ -31,7 +31,6 @@ export const WALL_PIECES = [
   'janela-x', 'janela-y', 'passagem-x', 'passagem-y',
   'mureta-x-norte', 'mureta-x-sul', 'mureta-y-leste', 'mureta-y-oeste',
   'mureta-no-1', 'mureta-no-2', 'mureta-se-1', 'mureta-se-2',
-  'mureta-arco-x-oeste', 'mureta-arco-x-leste', 'mureta-arco-y-norte', 'mureta-arco-y-sul',
   'extra-1', 'extra-2', 'extra-3', 'extra-4', 'extra-5', 'extra-6', 'extra-7', 'extra-8'
 ];
 export const WALL_PIECE_NAMES = {
@@ -44,8 +43,6 @@ export const WALL_PIECE_NAMES = {
   'passagem-x': 'Passagem X', 'passagem-y': 'Passagem Y',
   'mureta-x-norte': 'Mureta X norte', 'mureta-x-sul': 'Mureta X sul', 'mureta-y-leste': 'Mureta Y leste', 'mureta-y-oeste': 'Mureta Y oeste',
   'mureta-no-1': 'Mureta canto NO 1', 'mureta-no-2': 'Mureta canto NO 2', 'mureta-se-1': 'Mureta canto SE 1', 'mureta-se-2': 'Mureta canto SE 2',
-  'mureta-arco-x-oeste': 'Mureta arco X oeste', 'mureta-arco-x-leste': 'Mureta arco X leste',
-  'mureta-arco-y-norte': 'Mureta arco Y norte', 'mureta-arco-y-sul': 'Mureta arco Y sul',
   'extra-1': 'Extra 1', 'extra-2': 'Extra 2', 'extra-3': 'Extra 3', 'extra-4': 'Extra 4',
   'extra-5': 'Extra 5', 'extra-6': 'Extra 6', 'extra-7': 'Extra 7', 'extra-8': 'Extra 8'
 };
@@ -64,7 +61,7 @@ const WALL_PROPS = {
 
 // ================================================================================================================================================================================================================================================
 // wallProps
-// [tem altura, bloqueia o passo] da peça de parede. Mureta ('mureta-x-norte', cantos, arcos) bloqueia como a parede mas não tem altura; peça extra ('extra-3', as sobras sem lugar fixo) e peça desconhecida (parapeito) bloqueiam e têm altura.
+// [tem altura, bloqueia o passo] da peça de parede. Mureta ('mureta-x-norte' e cantos) bloqueia como a parede mas não tem altura; peça extra ('extra-3', as sobras sem lugar fixo) e peça desconhecida (parapeito) bloqueiam e têm altura.
 
 export function wallProps(piece) {
   const base = String(piece || '');
