@@ -440,6 +440,27 @@ class TibiaAssets {
   }
 
   // ================================================================================================================================================================================================================================================
+  // familiasDeParedes
+  // Todas as famílias de parede do Tibia (o conjunto x, y, xy e yx do mesmo material), achadas a partir de cada parede x pela mesma regra de sugerirParedes: [{ x, y, xy, yx }] (a peça que não achar fica de fora), na ordem do id do x. Só entra família com pelo menos x e y.
+
+  familiasDeParedes() {
+    if (this.cacheFamilias) return this.cacheFamilias;
+    const vistos = new Set();
+    const familias = [];
+    for (const [id, thing] of this.things.item) {
+      if (categoriaDoItem(thing) !== 'wall' || !this.temDesenho(thing) || this.pecaDeParede(id) !== 'x') continue;
+      const sugestao = this.sugerirParedes(id);
+      if (!sugestao || !sugestao.pecas.x || !sugestao.pecas.y) continue;
+      const chave = Object.values(sugestao.pecas).sort((a, b) => a - b).join(',');
+      if (vistos.has(chave)) continue;
+      vistos.add(chave);
+      familias.push(sugestao.pecas);
+    }
+    this.cacheFamilias = familias;
+    return familias;
+  }
+
+// ================================================================================================================================================================================================================================================
   // portas
   // Todas as portas do Tibia em pares, na ordem dos ids:
   // [{ fechada, aberta, ultima, orientacao: 'x' | 'y', lente }]. A orientação

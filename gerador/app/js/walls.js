@@ -1,6 +1,6 @@
 // gerador/app/js/walls.js
 
-import { spriteUrl, saveProject, fetchWallSuggestion, fetchDoorSuggestion } from './api.js';
+import { spriteUrl, saveProject, fetchWallSuggestion, fetchDoorSuggestion, fetchWallFamilies, fetchProjects } from './api.js';
 import { itemCategory } from './picker.js';
 import { sourceLabel, loadImage, isReady, drawAnchored, readPngFile, normalizeName, setStatus } from './common.js';
 import { refreshProjects } from './projects.js';
@@ -125,6 +125,10 @@ function initWalls() {
   });
   document.getElementById('wallClear').onclick = () => setPiece(walls.selected, null);
   document.getElementById('wallSuggest').onclick = suggestAll;
+  document.getElementById('wallFamiliesBtn').onclick = toggleFamilies;
+  document.getElementById('wallFamiliesComplete').onchange = renderFamilies;
+  document.getElementById('wallFamiliesOld').onchange = renderFamilies;
+  document.getElementById('wallFamiliesCreate').onclick = createFamilies;
   document.getElementById('wallUpload').addEventListener('change', async (evt) => {
     const file = evt.target.files[0];
     evt.target.value = '';
@@ -141,6 +145,99 @@ function initWalls() {
 
 function status(text, kind) {
   setStatus(statusEl, text, kind);
+}
+
+// ================================================================================================================================================================================================================================================
+// toggleFamilies
+// Mostra ou esconde a lista das famílias de parede do Tibia (busca na 1ª vez).
+
+async function toggleFamilies() {
+  const panel = document.getElementById('wallFamiliesPanel');
+  panel.hidden = !panel.hidden;
+  if (panel.hidden || walls.families) return;
+  try {
+    walls.families = await fetchWallFamilies();
+    renderFamilies();
+  } catch (error) {
+    status(`Não deu pra ler as paredes do Tibia: ${error.message}`, 'error');
+  }
+}
+
+// ================================================================================================================================================================================================================================================
+// shownFamilies
+// As famílias que passam nos filtros (completas = as 4 peças; clássicas = desenho do Tibia 7.8).
+
+function shownFamilies() {
+  const complete = document.getElementById('wallFamiliesComplete').checked;
+  const old = document.getElementById('wallFamiliesOld').checked;
+  return (walls.families || []).filter(family => (!complete || (family.pecas.xy && family.pecas.yx)) && (!old || family.antiga));
+}
+
+// ================================================================================================================================================================================================================================================
+// renderFamilies
+// Uma carta por família (o desenho do x e os ids); clicar põe as peças dela na folha.
+
+function renderFamilies() {
+  const grid = document.getElementById('wallFamiliesGrid');
+  const list = shownFamilies();
+  grid.innerHTML = '';
+  document.getElementById('wallFamiliesCount').textContent = `${list.length} família(s)`;
+  for (const family of list) {
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = 'family-card';
+    card.title = Object.entries(family.pecas).map(([key, id]) => `${key}: #${id}`).join(' · ');
+    const img = document.createElement('img');
+    img.loading = 'lazy';
+    img.src = spriteUrl(family.pecas.x, 0);
+    card.append(img, `#${family.pecas.x}`);
+    card.onclick = () => applyFamily(family.pecas);
+    grid.appendChild(card);
+  }
+}
+
+// ================================================================================================================================================================================================================================================
+// applyFamily
+// Põe as 4 peças da família nos espaços (o que ela não tem fica vazio).
+
+function applyFamily(pecas) {
+  for (const piece of WALL_PIECES) setPiece(piece.key, pecas[piece.key] ? { tibia: { id: pecas[piece.key], variacao: 0 } } : null, false);
+  walls.selected = 'x';
+  render();
+  status(`Família do item ${pecas.x} carregada; faltam as portas, os arcos e as janelas (à mão ou Sugerir peças).`, 'ok');
+}
+
+// ================================================================================================================================================================================================================================================
+// createFamilies
+// Salva uma parede (parede-<id do x>) na pasta escolhida pra cada família da lista que ainda não existe.
+
+async function createFamilies() {
+  const list = shownFamilies();
+  if (!list.length || !window.confirm(`Salvar até ${list.length} parede(s) na pasta escolhida (as que já existem ficam como estão)?`)) return;
+  const button = document.getElementById('wallFamiliesCreate');
+  button.disabled = true;
+  try {
+    const existing = new Set((await fetchProjects()).filter(project => project.ferramenta === CATEGORY).map(project => project.nome));
+    let done = 0;
+    for (const family of list) {
+      const name = `parede-${family.pecas.x}`;
+      if (existing.has(name)) continue;
+      status(`Criando ${name} (${done + 1})…`);
+      walls.slots = {};
+      walls.images.clear();
+      applyFamily(family.pecas);
+      nameEl.value = name;
+      const limit = Date.now() + 20000;
+      while (Date.now() < limit && PIECES.some(piece => walls.slots[piece.key] && !pieceImage(piece.key))) await new Promise(resolve => setTimeout(resolve, 100));
+      await save();
+      done++;
+    }
+    status(`${done} parede(s) criada(s). Faça o commit de gerador/saida e gerador/projetos.`, 'ok');
+  } catch (error) {
+    status(`Parou: ${error.message}`, 'error');
+  } finally {
+    button.disabled = false;
+  }
 }
 
 // ================================================================================================================================================================================================================================================
