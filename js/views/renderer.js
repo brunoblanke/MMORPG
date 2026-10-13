@@ -44,7 +44,6 @@ const TINT_HIT = { color: '#ff2a2a', alpha: 0.55 };
 const TINT_ENEMY_HOVER = { color: '#ff2a2a', alpha: 0.35 };
 const TARGET_OUTLINE = '#ff2a2a';
 const COMBAT_OUTLINE = '#ffd700';
-const PLAYER_DISPLACEMENT = 8;
 const TINT_HOVER = { color: '#3b82f6', alpha: 0.35 };
 const FLOOR_DARKEN = 0.2;
 
@@ -442,7 +441,7 @@ export class Renderer {
 
   // ================================================================================================================================================================================
   // getSpriteStackOffset
-  // Deslocamento visual pela altura (step) — o mesmo pro sprite e pro contorno amarelo. Player e NPC humanoide sobem 8 px pra cima e pra esquerda, como no Tibia (PLAYER_DISPLACEMENT).
+  // Deslocamento visual pela altura (step) — o mesmo pro sprite e pro contorno amarelo.
 
   getSpriteStackOffset(step, entity, hasVolume, movable, blocksMovement, isCorpse) {
     const isPlayer = isHumanoid(entity);
@@ -450,10 +449,8 @@ export class Renderer {
     const isVolumePiece = !isPlayer && !isEnemy && !isCorpse && hasVolume === true;
     const appliesStackOffset = isPlayer || isEnemy || isCorpse || hasVolume || blocksMovement || movable === true;
 
-    const displacement = isPlayer ? PLAYER_DISPLACEMENT : 0;
-    if (!appliesStackOffset || step === undefined || step === null) return { x: displacement, y: displacement };
-    const stack = this.getStackOffset(step, isVolumePiece);
-    return { x: stack.x + displacement, y: stack.y + displacement };
+    if (!appliesStackOffset || step === undefined || step === null) return { x: 0, y: 0 };
+    return this.getStackOffset(step, isVolumePiece);
   }
 
   // ================================================================================================================================================================================
