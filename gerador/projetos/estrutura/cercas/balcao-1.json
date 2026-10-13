@@ -18,47 +18,44 @@
       "janela-x",
       "janela-y",
       "passagem-x",
-      "passagem-y",
-      "mureta-x-norte",
-      "mureta-x-sul",
-      "mureta-y-leste",
-      "mureta-y-oeste",
-      "mureta-no-1",
-      "mureta-no-2",
-      "mureta-se-1",
-      "mureta-se-2"
+      "passagem-y"
     ]
   },
   "pecas": {
     "x": {
       "tibia": {
-        "id": 2340,
+        "id": 2323,
         "variacao": 0
-      }
+      },
+      "subir": 8
     },
     "porta-x": {
       "tibia": {
         "id": 2340,
         "variacao": 0
-      }
+      },
+      "subir": 8
     },
     "porta-x-aberta": {
       "tibia": {
         "id": 2341,
         "variacao": 0
-      }
+      },
+      "subir": 8
     },
     "porta-y": {
       "tibia": {
         "id": 2334,
         "variacao": 0
-      }
+      },
+      "subir": 8
     },
     "porta-y-aberta": {
       "tibia": {
         "id": 2335,
         "variacao": 0
-      }
+      },
+      "subir": 8
     },
     "janela-x": {
       "tibia": {
@@ -84,41 +81,40 @@
         "variacao": 0
       }
     },
-    "mureta-x-norte": {
-      "tibia": {
-        "id": 2323,
-        "variacao": 0
-      }
-    },
-    "mureta-x-sul": {
+    "y": {
       "tibia": {
         "id": 2322,
         "variacao": 0
-      }
+      },
+      "subir": 8
     },
-    "mureta-no-1": {
-      "tibia": {
-        "id": 2328,
-        "variacao": 0
-      }
-    },
-    "mureta-no-2": {
+    "arco-x-oeste": {
       "tibia": {
         "id": 2330,
         "variacao": 0
-      }
+      },
+      "subir": 0
     },
-    "mureta-se-1": {
+    "arco-x-leste": {
       "tibia": {
         "id": 2331,
         "variacao": 0
-      }
+      },
+      "subir": 0
     },
-    "mureta-se-2": {
+    "arco-y-norte": {
+      "tibia": {
+        "id": 2328,
+        "variacao": 0
+      },
+      "subir": 0
+    },
+    "arco-y-sul": {
       "tibia": {
         "id": 2329,
         "variacao": 0
-      }
+      },
+      "subir": 0
     }
   },
   "ferramenta": "paredes",
