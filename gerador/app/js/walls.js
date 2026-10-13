@@ -1,6 +1,6 @@
 // gerador/app/js/walls.js
 
-import { spriteUrl, saveProject, fetchWallSuggestion, fetchDoorSuggestion, fetchWallFamilies, fetchProjects } from './api.js';
+import { spriteUrl, saveProject, fetchItemInfo, fetchWallSuggestion, fetchDoorSuggestion, fetchWallFamilies, fetchProjects } from './api.js';
 import { itemCategory } from './picker.js';
 import { sourceLabel, loadImage, isReady, drawAnchored, readPngFile, normalizeName, setStatus } from './common.js';
 import { refreshProjects } from './projects.js';
@@ -109,6 +109,7 @@ const walls = {
 
 const statusEl = document.getElementById('wallStatus');
 const nameEl = document.getElementById('wallName');
+const liftEl = document.getElementById('wallLift');
 const folderEl = document.getElementById('wallFolder');
 const slotsEl = document.getElementById('wallSlots');
 const roomCanvas = document.getElementById('wallPreview');
@@ -118,6 +119,13 @@ const sheetCanvas = document.getElementById('wallSheet');
 // initWalls
 
 function initWalls() {
+  liftEl.addEventListener('input', () => {
+    const source = walls.slots[walls.selected];
+    if (!source) return;
+    source.subir = Math.max(0, Math.min(63, Math.round(Number(liftEl.value) || 0)));
+    walls.dirty = true;
+    render();
+  });
   renderSlots();
   document.getElementById('wallSaveForm').addEventListener('submit', (evt) => {
     evt.preventDefault();
@@ -276,13 +284,42 @@ function pick(kind, id, variation) {
   if (group === 'door' && category !== 'door') status(`O item ${id} não é porta; ficou na peça assim mesmo.`);
   if (group === 'wall' && category !== 'wall') status(`O item ${id} não é parede; ficou na peça assim mesmo.`);
   const othersEmpty = pieces.every(piece => piece.key === walls.selected || !walls.slots[piece.key]);
-  setPiece(walls.selected, { tibia: { id, variacao: variation } });
+  const key = walls.selected;
+  setPiece(key, { tibia: { id, variacao: variation } });
+  liftFromTibia(key, id);
   const next = PIECES[PIECES.findIndex(piece => piece.key === walls.selected) + 1];
   if (next) walls.selected = next.key;
   render();
   if (!suggests || !othersEmpty || category !== group) return;
   if (group === 'door') suggestDoors(id);
   else suggestPieces(id);
+}
+
+// ================================================================================================================================================================================================================================================
+// liftFromTibia
+// A elevação do item no Tibia.dat vira o "subir" da peça (porta aberta, prateleira…).
+
+async function liftFromTibia(key, id) {
+  try {
+    const info = await fetchItemInfo(id);
+    const source = walls.slots[key];
+    if (!source || !source.tibia || source.tibia.id !== id || !info.elevacao) return;
+    source.subir = info.elevacao;
+    syncLift();
+    render();
+  } catch (error) {
+    status(`Não deu pra ler a elevação do item ${id}: ${error.message}`, 'error');
+  }
+}
+
+// ================================================================================================================================================================================================================================================
+// syncLift
+// Mostra no campo o "subir" da peça selecionada.
+
+function syncLift() {
+  const source = walls.slots[walls.selected];
+  liftEl.value = source ? Number(source.subir) || 0 : 0;
+  liftEl.disabled = !source;
 }
 
 // ================================================================================================================================================================================================================================================
@@ -419,13 +456,16 @@ function pieceImage(key) {
 
 function drawPiece(ctx, key, x, y) {
   const img = pieceImage(key);
-  if (img) drawAnchored(ctx, img, x, y, SIZE);
+  if (!img) return;
+  const lift = Number(walls.slots[key].subir) || 0;
+  drawAnchored(ctx, img, x - lift, y - lift, SIZE);
 }
 
 // ================================================================================================================================================================================================================================================
 // render
 
 function render() {
+  syncLift();
   for (const button of slotsEl.querySelectorAll('.slot')) {
     const key = button.dataset.key;
     button.classList.toggle('selected', key === walls.selected);
