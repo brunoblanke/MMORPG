@@ -459,7 +459,7 @@ export function objectProps(type) {
   const asset = getAsset(assetId);
   if (asset && asset.ferramenta === 'paredes') {
     const [hasVolume, blocksMovement] = wallProps(piece);
-    return { movable: false, hasVolume, blocksMovement, volume: hasVolume ? 1 : 0, climb: 1 };
+    return { movable: false, hasVolume, blocksMovement, volume: hasVolume ? Math.max(1, Math.floor(Number(asset.volumePecas)) || 1) : 0, climb: 1 };
   }
   const props = (asset && asset.propriedades) || {};
   const hasVolume = !!props.altura;

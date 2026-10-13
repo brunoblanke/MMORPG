@@ -110,6 +110,7 @@ const walls = {
 const statusEl = document.getElementById('wallStatus');
 const nameEl = document.getElementById('wallName');
 const liftEl = document.getElementById('wallLift');
+const volumeEl = document.getElementById('wallVolume');
 const folderEl = document.getElementById('wallFolder');
 const slotsEl = document.getElementById('wallSlots');
 const roomCanvas = document.getElementById('wallPreview');
@@ -119,6 +120,7 @@ const sheetCanvas = document.getElementById('wallSheet');
 // initWalls
 
 function initWalls() {
+  volumeEl.addEventListener('input', () => { walls.dirty = true; });
   liftEl.addEventListener('input', () => {
     const source = walls.slots[walls.selected];
     if (!source) return;
@@ -546,7 +548,7 @@ async function save() {
   canvas.height = (count / COLUMNS) * SIZE;
   composeSheet(canvas);
   const recipe = {
-    formato: { quadro: SIZE, colunas: COLUMNS, pecas: PIECES.slice(0, count).map(piece => piece.key) },
+    formato: { quadro: SIZE, colunas: COLUMNS, pecas: PIECES.slice(0, count).map(piece => piece.key), ...(Number(volumeEl.value) > 1 ? { volume: Math.min(3, Math.floor(Number(volumeEl.value))) } : {}) },
     pecas: walls.slots
   };
 
@@ -578,6 +580,7 @@ function openRecipe(recipe) {
     if (source) setPiece(piece.key, source, false);
   }
   walls.selected = 'x';
+  volumeEl.value = Math.max(1, Math.floor(Number((recipe.formato || {}).volume)) || 1);
   walls.name = recipe.nome || '';
   nameEl.value = walls.name;
   walls.path = recipePath(recipe, CATEGORY);

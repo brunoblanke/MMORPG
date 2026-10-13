@@ -2,7 +2,7 @@
 
 import { CONFIG } from '../config.js';
 import { isCreature } from './geometry.js';
-import { floorBehavior, objectIdType, doorState, doorType } from '../../shared/assets.js';
+import { floorBehavior, objectIdType, doorState, doorType, objectProps } from '../../shared/assets.js';
 
 export class World {
 
@@ -241,7 +241,7 @@ export class World {
     obj.id = newType + oldId.slice(type.length);
     obj.blocksMovement = next.blocksMovement;
     obj.hasVolume = next.hasVolume;
-    obj.volume = next.hasVolume ? 1 : 0;
+    obj.volume = next.hasVolume ? objectProps(newType).volume : 0;
     return oldId;
   }
 

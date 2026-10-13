@@ -127,3 +127,14 @@ test('balcão: peça fechada deixa o arremesso passar e apoia item; porta aberta
   assert.equal(supportsItems('estrutura/paredes/tijolo#x'), false);
   setAssets([]);
 });
+
+test('volume das peças de parede vem da folha (balcão mais alto vale 2)', () => {
+  setAssets([
+    { id: 'estrutura/balcoes/alto', ferramenta: 'paredes', nome: 'alto', pecas: ['x'], volumePecas: 2 },
+    { id: 'estrutura/balcoes/baixo', ferramenta: 'paredes', nome: 'baixo', pecas: ['x'] }
+  ]);
+  assert.equal(objectProps('estrutura/balcoes/alto#x').volume, 2);
+  assert.equal(objectProps('estrutura/balcoes/alto#porta-x-aberta').volume, 0);
+  assert.equal(objectProps('estrutura/balcoes/baixo#x').volume, 1);
+  setAssets([]);
+});
