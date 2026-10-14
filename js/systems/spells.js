@@ -6,7 +6,7 @@ import { getAsset, splitType, displayName } from '../../shared/assets.js';
 import { giveItem } from './trade.js';
 import { EQUIP_SLOTS, newItem, equipBonus } from '../../shared/items.js';
 import { addSkillTry } from '../../shared/skills.js';
-import { EFFECTS } from '../../shared/effects.js';
+import { isEffect } from '../../shared/effects.js';
 import { FIELDS } from '../../shared/conditions.js';
 import { RUNES, AREAS, BLANK_RUNE, SPELL_COOLDOWN_MS, SPELL_RANGE, RUNE_RANGE, LIGHT_SPELL, findSpell, spellRange } from '../../shared/spells.js';
 
@@ -147,7 +147,7 @@ export class SpellController {
   // A animação do Tibia (shared/effects.js) no sqm, ou em cada sqm de tiles.
 
   showEffect(x, y, name, tiles = [[x, y]], z = 0) {
-    if (EFFECTS[name]) this.sim.emit({ type: 'effect', x, y, z, tiles, effect: name });
+    if (isEffect(name)) this.sim.emit({ type: 'effect', x, y, z, tiles, effect: name });
   }
 
   // ================================================================================================================================================================================================================================================

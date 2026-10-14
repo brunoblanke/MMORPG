@@ -100,7 +100,7 @@ export class ObjectDragController {
     targetY = landing.y;
     const floor = landing.z;
     if (world.isFloorBlocked(targetX, targetY, floor)) {
-      this.sink(player, obj);
+      this.sink(player, obj, targetX, targetY, floor);
       return;
     }
     if (this.hasOtherBlocker(obj, targetX, targetY, floor)) {
@@ -211,10 +211,11 @@ export class ObjectDragController {
   // ================================================================================================================================================================================================================================================
   // sink
   // Item ou cadáver jogado em piso que bloqueia (água, lava…) afunda e some,
-  // com o que tiver dentro.
+  // com o que tiver dentro, e as ondas da água se abrem no sqm onde caiu.
 
-  sink(player, obj) {
+  sink(player, obj, x = obj.x, y = obj.y, z = obj.z || 0) {
     const name = obj.isCorpse ? 'O corpo' : itemInfo(objectIdType(obj.id)).name;
+    this.sim.spells.showEffect(x, y, 'ripple', undefined, z);
     if (obj.isCorpse) this.sim.lifeCycle.removeCorpse(obj);
     else this.sim.inventory.removeGroundObject(obj);
     if (player) this.sim.emit({ type: 'message', playerId: player.id, text: `${name} afundou.`, kind: 'info' });

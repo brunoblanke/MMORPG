@@ -65,7 +65,9 @@ test('item jogado na água afunda e some; por cima dela, o arremesso passa', () 
   sim.player.equip.arma = { uid: 'w1', type: SWORD };
   sim.enqueue('player1', { type: 'moveInv', from: { t: 'e', key: 'arma' }, to: { t: 'w', x: 6, y: 5, z: 0 } });
   sim.tick(sim.time + TICK_MS);
-  const texts = sim.drainEvents().filter(e => e.type === 'message').map(e => e.text);
+  const events = sim.drainEvents();
+  const texts = events.filter(e => e.type === 'message').map(e => e.text);
+  assert.ok(events.some(e => e.type === 'effect' && e.effect === 'ripple' && e.x === 6 && e.y === 5), 'as ondas da água abrem onde caiu');
   assert.equal(sim.player.equip.arma, null);
   assert.equal(sim.objects.some(o => o.itemData && o.itemData.uid === 'w1'), false);
   assert.ok(texts.some(t => t.endsWith('afundou.')));

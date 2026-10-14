@@ -53,7 +53,7 @@ test('vara na água pescável: gasta uma minhoca, mostra o respingo e treina o f
   const tries = sim.player.skills.fishing.tries;
   const events = cast(sim, 9, 5);
   assert.equal(count(sim, WORM), 1);
-  assert.ok(events.some(e => e.type === 'effect' && e.effect === 'splash' && e.x === 9 && e.y === 5));
+  assert.ok(events.some(e => e.type === 'effect' && e.effect === 'ripple' && e.x === 9 && e.y === 5));
   assert.ok(sim.player.skills.fishing.tries > tries || sim.player.skills.fishing.lvl > 10);
 });
 

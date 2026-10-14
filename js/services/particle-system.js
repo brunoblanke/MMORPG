@@ -1,6 +1,6 @@
 // js/services/particle-system.js
 
-import { EFFECTS, MISSILES, effectUrl, missileUrl, missileDirection } from '../../shared/effects.js';
+import { EFFECTS, MISSILES, RIPPLE, effectUrl, missileUrl, missileDirection } from '../../shared/effects.js';
 import { getImage } from '../../shared/image-loader.js';
 
 export class ParticleSystem {
@@ -61,10 +61,37 @@ export class ParticleSystem {
   // Efeito do Tibia (shared/effects.js) animado em cada sqm de tiles.
 
   spawnEffect(tiles, name, renderer, z = null) {
+    this.effects = this.effects || [];
+    if (name === RIPPLE.name) {
+      this.effects.push({ z, tiles, ripple: true, renderer, createdAt: performance.now(), duration: RIPPLE.ringMs + (RIPPLE.rings - 1) * RIPPLE.delay });
+      return;
+    }
     const info = EFFECTS[name];
     if (!info) return;
-    this.effects = this.effects || [];
     this.effects.push({ z, tiles, img: getImage(effectUrl(name)), frames: info.frames, size: info.size, ms: info.ms, renderer, createdAt: performance.now(), duration: info.frames * info.ms });
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // drawRipple
+  // Ondas na água: RIPPLE.rings círculos só de contorno que nascem pequenos, crescem e somem, um depois do outro.
+
+  drawRipple(ctx, effect) {
+    const age = performance.now() - effect.createdAt;
+    const tile = effect.renderer.camera.tileSize;
+    ctx.save();
+    ctx.lineWidth = Math.max(1, tile / 20);
+    for (let ring = 0; ring < RIPPLE.rings; ring++) {
+      const progress = (age - ring * RIPPLE.delay) / RIPPLE.ringMs;
+      if (progress <= 0 || progress >= 1) continue;
+      ctx.strokeStyle = `rgba(215, 238, 255, ${0.85 * (1 - progress)})`;
+      for (const [x, y] of effect.tiles) {
+        const pos = effect.renderer.gridToScreenWithOffset(x, y);
+        ctx.beginPath();
+        ctx.arc(pos.x + tile / 2, pos.y + tile / 2, tile * (0.1 + 0.42 * progress), 0, Math.PI * 2);
+        ctx.stroke();
+      }
+    }
+    ctx.restore();
   }
 
   // ================================================================================================================================================================================================================================================
@@ -96,6 +123,10 @@ export class ParticleSystem {
     const wanted = (item) => (level === undefined ? item.z === null || item.z === undefined || !this.drawnLevels.has(item.z) : item.z === level);
     if (level !== undefined) this.drawnLevels.add(level);
     for (const e of (this.effects || []).filter(wanted)) {
+      if (e.ripple) {
+        this.drawRipple(ctx, e);
+        continue;
+      }
       if (!e.img.complete || !e.img.naturalWidth) continue;
       const frame = Math.min(e.frames - 1, Math.floor((performance.now() - e.createdAt) / e.ms));
       const tile = e.renderer.camera.tileSize;
