@@ -2,7 +2,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { setAssets, floorMiddle, spriteFrame, objectProps, isFloorType, isStairsType, isHoleType, isItemType, isWallType, displayName, interiorVariant, objectIdType, blocksThrow, conjuntoPartes, supportsItems } from '../shared/assets.js';
+import { setAssets, floorMiddle, spriteFrame, objectProps, isFloorType, isStairsType, isHoleType, isItemType, isWallType, displayName, interiorVariant, objectIdType, blocksThrow, conjuntoPartes, supportsItems, WALL_PIECES } from '../shared/assets.js';
 import { serializeMapFromLayers, buildLayersFromMapData } from '../shared/map-format.js';
 
 const GRID = 10;
@@ -136,5 +136,17 @@ test('volume das peças de parede vem da folha (balcão mais alto vale 2)', () =
   assert.equal(objectProps('estrutura/balcoes/alto#x').volume, 2);
   assert.equal(objectProps('estrutura/balcoes/alto#porta-x-aberta').volume, 0);
   assert.equal(objectProps('estrutura/balcoes/baixo#x').volume, 1);
+  setAssets([]);
+});
+
+test('janelas interna e externa (X e Y): ficam na folha depois das extras, bloqueiam o passo, têm altura e deixam o arremesso passar', () => {
+  setAssets([{ id: 'estrutura/paredes/familia', ferramenta: 'paredes', nome: 'familia', quadro: 64, quadros: 1, pecas: ['x'], ordem: null }]);
+  const pieces = ['janela-x-interna', 'janela-y-interna', 'janela-x-externa', 'janela-y-externa'];
+  assert.deepEqual(WALL_PIECES.slice(32), pieces);
+  for (const piece of pieces) {
+    const props = objectProps(`estrutura/paredes/familia#${piece}`);
+    assert.deepEqual([props.hasVolume, props.blocksMovement], [true, true], piece);
+    assert.equal(blocksThrow(`estrutura/paredes/familia#${piece}`), false, piece);
+  }
   setAssets([]);
 });
