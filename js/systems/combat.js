@@ -164,12 +164,16 @@ export class CombatController {
   // ================================================================================================================================================================================================================================================
   // applyDamage
   // Tira a vida do golpe já calculado: conta pro PvP, pra XP da criatura, mostra
-  // o número e deixa o veneno do golpe da criatura.
+  // o número e deixa o veneno do golpe da criatura. Golpe que não tira vida
+  // (errou ou foi bloqueado) levanta a fumacinha do Tibia (poff) no alvo.
 
   applyDamage(attacker, defender, rawDamage, now, melee) {
     const damage = this.sim.powers.resisted(defender, 'physical', rawDamage);
     if (attacker.isPlayer && defender.isPlayer) this.sim.social.onPlayerAttack(attacker, defender, now);
-    if (damage <= 0) return defender.currentHp;
+    if (damage <= 0) {
+      this.sim.spells.showEffect(defender.x, defender.y, 'poff', undefined, defender.z || 0);
+      return defender.currentHp;
+    }
     if (attacker.isPlayer && !defender.isPlayer) this.recordDamage(defender, attacker, Math.min(damage, defender.currentHp));
     const hpLeft = defender.takeDamage(damage, now);
     this.sim.emit({ type: 'damage', targetId: defender.id, x: defender.x, y: defender.y, z: defender.z || 0, amount: damage });

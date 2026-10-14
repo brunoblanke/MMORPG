@@ -340,3 +340,19 @@ test('quem ataca de longe e acabou de dar um passo não vira antes de parar', ()
   ranged.powers.update(enemy, ranged.player, ranged.time + 5000);
   assert.equal(enemy.direction, 'norte');
 });
+
+test('golpe que não tira vida (do player ou da criatura) levanta a fumacinha no alvo; o que acerta mostra o dano', () => {
+  const sim = game({ ataque: 0 });
+  const enemy = sim.enemies[0];
+  sim.drainEvents();
+  sim.combat.applyDamage(sim.player, enemy, 0, sim.time, true);
+  const missed = sim.drainEvents();
+  assert.ok(missed.some(e => e.type === 'effect' && e.effect === 'poff' && e.x === enemy.x && e.y === enemy.y));
+  assert.ok(!missed.some(e => e.type === 'damage'));
+  sim.combat.applyDamage(enemy, sim.player, 0, sim.time, true);
+  assert.ok(sim.drainEvents().some(e => e.type === 'effect' && e.effect === 'poff' && e.x === sim.player.x && e.y === sim.player.y));
+  sim.combat.applyDamage(enemy, sim.player, 5, sim.time, true);
+  const hit = sim.drainEvents();
+  assert.ok(hit.some(e => e.type === 'damage' && e.amount === 5));
+  assert.ok(!hit.some(e => e.type === 'effect' && e.effect === 'poff'));
+});
