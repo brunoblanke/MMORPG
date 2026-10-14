@@ -1,0 +1,166 @@
+{
+  "formato": {
+    "quadro": 32,
+    "padrao": [
+      2,
+      3
+    ],
+    "padraoSorteado": true,
+    "raras": 4,
+    "chanceRaras": 12,
+    "linhas": [
+      "meio: 1 variações",
+      "s o n l",
+      "sl so nl no",
+      "int-sl int-so int-nl int-no"
+    ]
+  },
+  "variacoesDoMeio": 1,
+  "slots": {
+    "s": {
+      "tibia": {
+        "id": 44794,
+        "variacao": 0
+      }
+    },
+    "o": {
+      "tibia": {
+        "id": 44795,
+        "variacao": 0
+      }
+    },
+    "n": {
+      "tibia": {
+        "id": 44793,
+        "variacao": 0
+      }
+    },
+    "l": {
+      "tibia": {
+        "id": 44796,
+        "variacao": 0
+      }
+    },
+    "sl": {
+      "tibia": {
+        "id": 44800,
+        "variacao": 0
+      }
+    },
+    "so": {
+      "tibia": {
+        "id": 44799,
+        "variacao": 0
+      }
+    },
+    "nl": {
+      "tibia": {
+        "id": 44798,
+        "variacao": 0
+      }
+    },
+    "no": {
+      "tibia": {
+        "id": 44797,
+        "variacao": 0
+      }
+    },
+    "int-sl": {
+      "tibia": {
+        "id": 44804,
+        "variacao": 0
+      }
+    },
+    "int-so": {
+      "tibia": {
+        "id": 44803,
+        "variacao": 0
+      }
+    },
+    "int-nl": {
+      "tibia": {
+        "id": 44802,
+        "variacao": 0
+      }
+    },
+    "int-no": {
+      "tibia": {
+        "id": 44801,
+        "variacao": 0
+      }
+    },
+    "raro-2": {
+      "tibia": {
+        "id": 44790,
+        "variacao": 0
+      }
+    },
+    "raro-3": {
+      "tibia": {
+        "id": 44791,
+        "variacao": 0
+      }
+    },
+    "raro-4": {
+      "tibia": {
+        "id": 44792,
+        "variacao": 0
+      }
+    },
+    "meio-1": {
+      "tibia": {
+        "id": 44783,
+        "variacao": 0
+      }
+    },
+    "padrao-0-0": {
+      "tibia": {
+        "id": 44783,
+        "variacao": 0
+      }
+    },
+    "padrao-1-0": {
+      "tibia": {
+        "id": 44783,
+        "variacao": 1
+      }
+    },
+    "padrao-0-1": {
+      "tibia": {
+        "id": 44783,
+        "variacao": 2
+      }
+    },
+    "padrao-1-1": {
+      "tibia": {
+        "id": 44783,
+        "variacao": 3
+      }
+    },
+    "padrao-0-2": {
+      "tibia": {
+        "id": 44783,
+        "variacao": 4
+      }
+    },
+    "padrao-1-2": {
+      "tibia": {
+        "id": 44783,
+        "variacao": 5
+      }
+    },
+    "raro-1": {
+      "tibia": {
+        "id": 44789,
+        "variacao": 0
+      }
+    }
+  },
+  "propriedades": {
+    "comportamento": "normal"
+  },
+  "ferramenta": "pisos",
+  "grupo": "estrutura",
+  "pasta": "pisos",
+  "nome": "grama-4"
+}
