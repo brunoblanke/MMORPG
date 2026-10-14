@@ -83,7 +83,7 @@ export class ParticleSystem {
     for (let ring = 0; ring < RIPPLE.rings; ring++) {
       const progress = (age - ring * RIPPLE.delay) / RIPPLE.ringMs;
       if (progress <= 0 || progress >= 1) continue;
-      ctx.strokeStyle = `rgba(215, 238, 255, ${0.85 * (1 - progress)})`;
+      ctx.strokeStyle = `rgba(215, 238, 255, ${0.5 * (1 - progress)})`;
       for (const [x, y] of effect.tiles) {
         const pos = effect.renderer.gridToScreenWithOffset(x, y);
         ctx.beginPath();

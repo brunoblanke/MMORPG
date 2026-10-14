@@ -19,7 +19,7 @@ export const EFFECTS = {
 // Efeito desenhado pelo código (sem imagem): círculos só de contorno que
 // crescem e somem, como algo caindo na água (pesca, item jogado na água).
 // `rings` círculos, um a cada `delay` ms, cada um durando `ringMs`.
-export const RIPPLE = { name: 'ripple', rings: 3, delay: 230, ringMs: 750 };
+export const RIPPLE = { name: 'ripple', rings: 2, delay: 177, ringMs: 577 };
 
 // Projéteis do Tibia (gerador/saida/projeteis): as 9 direções em 3×3 de
 // `size` px. A chave é o tipo do dano, a munição ou a runa.
