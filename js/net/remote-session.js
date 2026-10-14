@@ -163,18 +163,8 @@ export class RemoteSession {
       for (const event of message.events) {
         if (stale && VISUAL_EVENTS.has(event.type)) continue;
         events.push(event);
-        if (event.type === 'damage') this.flash(event.targetId, timestamp);
       }
     }
     return events;
-  }
-
-  // ================================================================================================================================================================================================================================================
-  // flash
-  // Pisca a criatura que tomou dano (no jogo local isso vem da simulação).
-
-  flash(entityId, timestamp) {
-    const entity = this.players.find(p => p.id === entityId) || this.enemies.find(e => e.id === entityId);
-    if (entity) entity.flashUntil = timestamp + 150;
   }
 }

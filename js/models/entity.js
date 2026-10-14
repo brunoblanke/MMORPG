@@ -42,8 +42,6 @@ export class Entity {
     this.inCombat = false;
     
     this.isTarget = false;
-    this.hitFlash = false;
-    this.flashUntil = 0;
     
     this.isMoving = false;
     this.moveDirection = null;
@@ -61,7 +59,6 @@ export class Entity {
 
   takeDamage(amount, now) {
     this.currentHp = Math.max(0, this.currentHp - amount);
-    this.flashUntil = now + 150;
     return this.currentHp;
   }
 
@@ -131,7 +128,6 @@ export class Entity {
       this.renderStep = this.step || 0;
     }
 
-    this.hitFlash = timestamp < this.flashUntil;
   }
 
   // ================================================================================================================================================================================================================================================
