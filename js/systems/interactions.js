@@ -3,7 +3,7 @@
 import { GameObject } from '../models/game-object.js';
 import { objectIdType, objectUse, activeAs, togglesOnUse, displayName, getAsset, splitType, isEntranceFolder, floorBehavior, WORM_TYPE } from '../../shared/assets.js';
 import { itemInfo, newItem, weightOf, POTION_RANGE, USE_COOLDOWN_MS } from '../../shared/items.js';
-import { takeFromBag, giveItem } from './trade.js';
+import { takeFromBag } from './trade.js';
 import { getHoleTarget, toLowerLevel, toUpperLevel } from '../../shared/stairs.js';
 
 // Objetos do mapa que se usam (gerador → Objetos → Uso):
@@ -135,7 +135,7 @@ export class InteractionController {
 
   // ================================================================================================================================================================================================================================================
   // fish
-  // Vara de pescar no sqm de água (piso com peixes, gerador → Pisos → Pescável) até POTION_RANGE e com linha de visão: gasta a isca da vara (a minhoca), mostra as ondas na água (efeito ripple), treina o fishing e, com chance que sobe com o skill (10% + 0,597% por nível acima de 10, de 10% a 50%, como no Tibia), dá um dos peixes do piso que o skill alcança (fishLevel); quanto mais o skill passa do nível de um peixe, mais comum ele fica (peso de 1 até 20), então os melhores aparecem mais com o skill. Sem a isca, nada acontece. Espera USE_COOLDOWN_MS até a próxima. Devolve true se pescou (gastou isca).
+  // Vara de pescar no sqm de água (piso com peixes, gerador → Pisos → Pescável) até POTION_RANGE e com linha de visão: gasta a isca da vara (a minhoca), mostra as ondas na água (efeito ripple), treina o fishing e, com chance que sobe com o skill (10% + 0,597% por nível acima de 10, de 10% a 50%, como no Tibia), dá um dos peixes do piso que o skill alcança (fishLevel), que cai no chão ao lado do player, do lado da água (dropBeside); quanto mais o skill passa do nível de um peixe, mais comum ele fica (peso de 1 até 20), então os melhores aparecem mais com o skill. Sem a isca, nada acontece. Espera USE_COOLDOWN_MS até a próxima. Devolve true se pescou (gastou isca).
 
   fish(player, rod, target) {
     const { world, movement } = this.sim;
@@ -159,13 +159,33 @@ export class InteractionController {
     if (total <= 0) return true;
     let roll = Math.random() * total;
     const index = weights.findIndex(weight => (roll -= weight) < 0);
-    giveItem(this.sim, player, fish[index < 0 ? fish.length - 1 : index], 1);
+    this.dropBeside(player, fish[index < 0 ? fish.length - 1 : index], target);
     return true;
   }
 
   // ================================================================================================================================================================================================================================================
+  // dropBeside
+  // O item cai no chão ao lado do player: o sqm em volta dele (ou o dele, se não houver) livre e firme mais perto de towards (pra onde ele pescou).
+
+  dropBeside(player, type, towards) {
+    const { world, movement, inventory } = this.sim;
+    const z = player.z || 0;
+    const around = [];
+    for (let dx = -1; dx <= 1; dx++) {
+      for (let dy = -1; dy <= 1; dy++) {
+        const x = player.x + dx;
+        const y = player.y + dy;
+        if ((dx || dy) && movement.isInsideMap(x, y) && world.hasFloorAt(x, y, z) && !world.isFloorBlocked(x, y, z) && !movement.isBlocked(x, y, z)) around.push({ x, y });
+      }
+    }
+    around.sort((a, b) => Math.hypot(a.x - towards.x, a.y - towards.y) - Math.hypot(b.x - towards.x, b.y - towards.y));
+    const spot = around[0] || { x: player.x, y: player.y };
+    inventory.mergeGroundStack(inventory.spawnGroundItem(newItem(inventory.nextUid(), type, 1), spot.x, spot.y, z));
+  }
+
+  // ================================================================================================================================================================================================================================================
   // digWorm
-  // Pá num sqm de piso sem nada pra cavar, ao lado do player (ou nele): se o piso tem minhocas (gerador → Pisos → Minhocas), a chance dele dá uma minhoca; sem sorte, sobe a fumacinha (efeito poff). Espera USE_COOLDOWN_MS até o próximo uso. Devolve true se achou.
+  // Pá num sqm de piso sem nada pra cavar, ao lado do player (ou nele): se o piso tem minhocas (gerador → Pisos → Minhocas), a chance dele dá uma minhoca; a minhoca cai no chão, no sqm cavado; sem sorte, sobe a fumacinha (efeito poff). Espera USE_COOLDOWN_MS até o próximo uso. Devolve true se achou.
 
   digWorm(player, target) {
     const { world } = this.sim;
@@ -180,7 +200,8 @@ export class InteractionController {
       this.sim.spells.showEffect(target.x, target.y, 'poff', undefined, z);
       return false;
     }
-    giveItem(this.sim, player, WORM_TYPE, 1);
+    const { inventory } = this.sim;
+    inventory.mergeGroundStack(inventory.spawnGroundItem(newItem(inventory.nextUid(), WORM_TYPE, 1), target.x, target.y, z));
     return true;
   }
 

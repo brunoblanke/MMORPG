@@ -46,7 +46,8 @@ function cast(sim, x, y) {
   return sim.drainEvents();
 }
 
-const count = (sim, type) => sim.player.equip.mochila.items.reduce((sum, item) => sum + (item && item.type === type ? item.count || 1 : 0), 0);
+const onGroundOf = (sim, type) => sim.objects.filter(o => o.itemData && o.itemData.type === type).map(o => [o.x, o.y]);
+const count = (sim, type) => sim.player.equip.mochila.items.reduce((sum, item) => sum + (item && item.type === type ? item.count || 1 : 0), 0) + (type === WORM ? 0 : onGroundOf(sim, type).length);
 
 test('vara na água pescável: gasta uma minhoca, mostra o respingo e treina o fishing', () => {
   const sim = game();
@@ -63,7 +64,8 @@ test('com a sorte, o peixe vem de um dos peixes do piso; sem a sorte, só a isca
   Math.random = () => 0;
   cast(lucky, 9, 5);
   Math.random = random;
-  assert.equal(count(lucky, FISH) + count(lucky, PIKE), 1);
+  assert.deepEqual(onGroundOf(lucky, FISH), [[7, 5]], 'o peixe cai no chão ao lado do player, do lado da água');
+  assert.equal(lucky.player.equip.mochila.items.some(item => item && (item.type === FISH || item.type === PIKE)), false, 'e não vai pra mochila');
 
   const unlucky = game();
   Math.random = () => 0.99;
@@ -126,18 +128,19 @@ test('pá num piso com minhocas: ao lado do player, pela chance do piso, dá uma
     sim.enqueue('player1', { type: 'useItem', from: { t: 'c', uid: 'bag0', i: 0 }, target: { x, y, z: 0 } });
     sim.tick(sim.time + TICK_MS);
   };
+  const onGround = () => sim.objects.filter(o => o.itemData && o.itemData.type === WORM).map(o => [o.x, o.y]);
   dig(7, 5);
-  assert.equal(count(sim, WORM), 1);
+  assert.deepEqual(onGround(), [[7, 5]], 'a minhoca cai no chão, no sqm cavado');
+  assert.equal(count(sim, WORM), 0, 'e não vai pra mochila');
   dig(8, 3);
-  assert.equal(count(sim, WORM), 1, 'longe');
   dig(6, 7);
-  assert.equal(count(sim, WORM), 1, 'piso sem minhocas');
+  assert.equal(onGround().length, 1, 'longe ou em piso sem minhocas, nada');
   const random = Math.random;
   Math.random = () => 0.999;
   setAssets([asset(LAND, { minhocas: 50 }, 'pisos'), asset(SHOVEL, { move: true, peso: 35, uso: 'ferramenta-pa' }), asset(WORM, { move: true, peso: 0.05, empilhavel: true }), asset(BAG, { move: true, peso: 8, espacos: 4 })]);
   sim.drainEvents();
   dig(7, 5);
   Math.random = random;
-  assert.equal(count(sim, WORM), 1, 'sem sorte');
+  assert.equal(onGround().length, 1, 'sem sorte');
   assert.ok(sim.drainEvents().some(e => e.type === 'effect' && e.effect === 'poff' && e.x === 7 && e.y === 5), 'sobe a fumacinha');
 });

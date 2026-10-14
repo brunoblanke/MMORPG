@@ -40,7 +40,6 @@ function hideCovered(drawables) {
 
 export const MESSAGE_COLORS = { info: '#5fe35f', warn: '#ffd84a', danger: '#ff4a4a', blue: '#6cb6ff', private: '#7dd3fc' };
 
-const TINT_HIT = { color: '#ff2a2a', alpha: 0.55 };
 const TINT_ENEMY_HOVER = { color: '#ff2a2a', alpha: 0.35 };
 const TARGET_OUTLINE = '#ff2a2a';
 const COMBAT_OUTLINE = '#ffd700';
@@ -285,7 +284,6 @@ export class Renderer {
   // vermelha (drawOutline), não um tom.
 
   getTint(entity, isHovered, isPlayer, isEnemy) {
-    if (entity && entity.hitFlash) return TINT_HIT;
     if (isEnemy && isHovered) return TINT_ENEMY_HOVER;
     if (isHovered && !isPlayer && !isEnemy) return TINT_HOVER;
     return null;
