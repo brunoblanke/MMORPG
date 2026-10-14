@@ -135,7 +135,9 @@ test('pá num piso com minhocas: ao lado do player, pela chance do piso, dá uma
   const random = Math.random;
   Math.random = () => 0.999;
   setAssets([asset(LAND, { minhocas: 50 }, 'pisos'), asset(SHOVEL, { move: true, peso: 35, uso: 'ferramenta-pa' }), asset(WORM, { move: true, peso: 0.05, empilhavel: true }), asset(BAG, { move: true, peso: 8, espacos: 4 })]);
+  sim.drainEvents();
   dig(7, 5);
   Math.random = random;
   assert.equal(count(sim, WORM), 1, 'sem sorte');
+  assert.ok(sim.drainEvents().some(e => e.type === 'effect' && e.effect === 'poff' && e.x === 7 && e.y === 5), 'sobe a fumacinha');
 });
