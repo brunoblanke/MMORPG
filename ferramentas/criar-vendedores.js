@@ -23,7 +23,16 @@ const VENDEDORES = [
   { nome: 'ferreiro', canary: 'sam', boasVindas: 'O melhor aço da região!', oi: 'Olá, {nome}! Vendo e compro armas e armaduras.' },
   { nome: 'taverneiro', canary: 'frodo', boasVindas: 'Comida quentinha!', oi: 'Olá, {nome}! Posso te vender comida.' },
   { nome: 'runeiro', canary: 'rachel', boasVindas: 'Runas e magia!', oi: 'Olá, {nome}! Vendo runas.' },
-  { nome: 'joalheira', canary: 'hanna', boasVindas: 'Joias e pedras preciosas!', oi: 'Olá, {nome}! Compro e vendo joias.' }
+  { nome: 'joalheira', canary: 'hanna', boasVindas: 'Joias e pedras preciosas!', oi: 'Olá, {nome}! Compro e vendo joias.' },
+  {
+    nome: 'gorn', canary: 'gorn', boasVindas: 'Equipamento pra qualquer aventura!', oi: 'Olá, {nome}! Vendo e compro equipamentos.',
+    vende: [{ tipo: 'itens/ferramentas/rope', preco: 50, palavras: 'rope, corda' }, { tipo: 'itens/ferramentas/shovel', preco: 50, palavras: 'shovel, pa' }, { tipo: 'itens/fontes-de-luz/torch', preco: 10, palavras: 'torch, tocha' }],
+    compra: [{ tipo: 'itens/ferramentas/rope', preco: 15, palavras: 'rope, corda' }, { tipo: 'itens/ferramentas/shovel', preco: 8, palavras: 'shovel, pa' }, { tipo: 'itens/fontes-de-luz/torch', preco: 2, palavras: 'torch, tocha' }]
+  },
+  {
+    nome: 'lily', canary: 'lily', boasVindas: 'Poções pra curar o que dói!', oi: 'Olá, {nome}! Vendo poções.',
+    vende: [{ tipo: 'itens/liquidos/health-potion', preco: 50, palavras: 'health potion, pocao de vida' }, { tipo: 'itens/liquidos/mana-potion', preco: 56, palavras: 'mana potion, pocao de mana' }]
+  }
 ];
 
 const FALAS_VENDA = {
@@ -87,6 +96,15 @@ function linhas(itens, mapa, chave) {
 }
 
 // ================================================================================================================================================================================================================================================
+// juntar
+// A lista do Canary mais os itens que o NPC ganha de reforço (o do Canary vale quando o tipo se repete).
+
+function juntar(lista, extras = []) {
+  const tipos = new Set(lista.map(linha => linha.tipo));
+  return [...lista, ...extras.filter(linha => !tipos.has(linha.tipo) && fs.existsSync(path.join(PASTA_ITENS, '..', `${linha.tipo}.json`)))];
+}
+
+// ================================================================================================================================================================================================================================================
 // main
 
 function main() {
@@ -103,8 +121,8 @@ function main() {
       continue;
     }
     const npc = lerNpc(path.join(canary, 'data-otservbr-global', 'npc', `${vendedor.canary}.lua`));
-    const vende = linhas(npc.itens, mapa, 'compra');
-    const compra = linhas(npc.itens, mapa, 'venda');
+    const vende = juntar(linhas(npc.itens, mapa, 'compra'), vendedor.vende);
+    const compra = juntar(linhas(npc.itens, mapa, 'venda'), vendedor.compra);
     const receita = {
       formato: modelo.formato,
       criatura: { id: npc.roupa, cores: npc.cores, addons: [] },

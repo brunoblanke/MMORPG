@@ -1,0 +1,159 @@
+{
+  "formato": {
+    "quadro": 32,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 129,
+    "cores": [
+      58,
+      68,
+      101,
+      95
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 4240,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4241,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 4245,
+        "variacao": 0
+      }
+    }
+  },
+  "propriedades": {
+    "comportamento": "npc",
+    "conversa": {
+      "boasVindas": "Equipamento pra qualquer aventura!",
+      "oi": "Olá, {nome}! Vendo e compro equipamentos.",
+      "tchau": "Volte sempre, {nome}.",
+      "raio": 2,
+      "topicos": [],
+      "vende": [
+        {
+          "tipo": "itens/ferramentas/balde",
+          "preco": 4,
+          "palavras": "bucket"
+        },
+        {
+          "tipo": "itens/fontes-de-luz/candlestick",
+          "preco": 2,
+          "palavras": "candlestick"
+        },
+        {
+          "tipo": "itens/clavas/crowbar",
+          "preco": 260,
+          "palavras": "crowbar"
+        },
+        {
+          "tipo": "itens/documentos-e-papeis/inkwell",
+          "preco": 10,
+          "palavras": "inkwell"
+        },
+        {
+          "tipo": "itens/espadas/machete",
+          "preco": 35,
+          "palavras": "machete"
+        },
+        {
+          "tipo": "itens/ferramentas/pick",
+          "preco": 50,
+          "palavras": "pick"
+        },
+        {
+          "tipo": "itens/ferramentas/rope",
+          "preco": 50,
+          "palavras": "rope"
+        },
+        {
+          "tipo": "itens/livros/scroll",
+          "preco": 5,
+          "palavras": "scroll"
+        },
+        {
+          "tipo": "itens/fontes-de-luz/torch",
+          "preco": 2,
+          "palavras": "torch"
+        },
+        {
+          "tipo": "itens/produtos-de-criaturas/worm",
+          "preco": 1,
+          "palavras": "worm"
+        },
+        {
+          "tipo": "itens/ferramentas/shovel",
+          "preco": 50,
+          "palavras": "shovel, pa"
+        }
+      ],
+      "compra": [
+        {
+          "tipo": "itens/clavas/crowbar",
+          "preco": 50,
+          "palavras": "crowbar"
+        },
+        {
+          "tipo": "itens/documentos-e-papeis/inkwell",
+          "preco": 8,
+          "palavras": "inkwell"
+        },
+        {
+          "tipo": "itens/espadas/machete",
+          "preco": 6,
+          "palavras": "machete"
+        },
+        {
+          "tipo": "itens/ferramentas/pick",
+          "preco": 15,
+          "palavras": "pick"
+        },
+        {
+          "tipo": "itens/ferramentas/rope",
+          "preco": 15,
+          "palavras": "rope"
+        },
+        {
+          "tipo": "itens/ferramentas/shovel",
+          "preco": 8,
+          "palavras": "shovel, pa"
+        },
+        {
+          "tipo": "itens/fontes-de-luz/torch",
+          "preco": 2,
+          "palavras": "torch, tocha"
+        }
+      ],
+      "missoes": [],
+      "falasVenda": {
+        "lista": "O que você deseja comprar?",
+        "confirmar": "Quer comprar {item} por {preco}?",
+        "listaCompra": "O que você deseja vender?",
+        "queVender": "O que você deseja vender?",
+        "confirmarCompra": "Quer me vender {quantidade} {item} por {preco}?"
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "personagens",
+  "pasta": "npcs",
+  "nome": "gorn"
+}
