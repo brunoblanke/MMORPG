@@ -165,7 +165,7 @@ export class InteractionController {
 
   // ================================================================================================================================================================================================================================================
   // digWorm
-  // Pá num sqm de piso sem nada pra cavar, ao lado do player (ou nele): se o piso tem minhocas (gerador → Pisos → Minhocas), a chance dele dá uma minhoca; sem sorte, sobe a fumacinha (efeito poff). Espera USE_COOLDOWN_MS até o próximo uso. Devolve true se achou.
+  // Pá num sqm de piso sem nada pra cavar, ao lado do player (ou nele): se o piso tem minhocas (gerador → Pisos → Minhocas), a chance dele dá uma minhoca; a minhoca cai no chão, no sqm cavado; sem sorte, sobe a fumacinha (efeito poff). Espera USE_COOLDOWN_MS até o próximo uso. Devolve true se achou.
 
   digWorm(player, target) {
     const { world } = this.sim;
@@ -180,7 +180,8 @@ export class InteractionController {
       this.sim.spells.showEffect(target.x, target.y, 'poff', undefined, z);
       return false;
     }
-    giveItem(this.sim, player, WORM_TYPE, 1);
+    const { inventory } = this.sim;
+    inventory.mergeGroundStack(inventory.spawnGroundItem(newItem(inventory.nextUid(), WORM_TYPE, 1), target.x, target.y, z));
     return true;
   }
 
