@@ -1,0 +1,127 @@
+{
+  "formato": {
+    "quadro": 32,
+    "padrao": [
+      2,
+      2
+    ],
+    "linhas": [
+      "meio: 1 variações",
+      "s o n l",
+      "sl so nl no",
+      "int-sl int-so int-nl int-no"
+    ]
+  },
+  "variacoesDoMeio": 1,
+  "slots": {
+    "meio-1": {
+      "tibia": {
+        "id": 30701,
+        "variacao": 0
+      }
+    },
+    "padrao-0-0": {
+      "tibia": {
+        "id": 30701,
+        "variacao": 0
+      }
+    },
+    "padrao-1-0": {
+      "tibia": {
+        "id": 30701,
+        "variacao": 1
+      }
+    },
+    "padrao-0-1": {
+      "tibia": {
+        "id": 30701,
+        "variacao": 2
+      }
+    },
+    "padrao-1-1": {
+      "tibia": {
+        "id": 30701,
+        "variacao": 3
+      }
+    },
+    "s": {
+      "tibia": {
+        "id": 30707,
+        "variacao": 0
+      }
+    },
+    "o": {
+      "tibia": {
+        "id": 30708,
+        "variacao": 0
+      }
+    },
+    "n": {
+      "tibia": {
+        "id": 30706,
+        "variacao": 0
+      }
+    },
+    "l": {
+      "tibia": {
+        "id": 30709,
+        "variacao": 0
+      }
+    },
+    "sl": {
+      "tibia": {
+        "id": 30713,
+        "variacao": 0
+      }
+    },
+    "so": {
+      "tibia": {
+        "id": 30712,
+        "variacao": 0
+      }
+    },
+    "nl": {
+      "tibia": {
+        "id": 30711,
+        "variacao": 0
+      }
+    },
+    "no": {
+      "tibia": {
+        "id": 30710,
+        "variacao": 0
+      }
+    },
+    "int-sl": {
+      "tibia": {
+        "id": 30717,
+        "variacao": 0
+      }
+    },
+    "int-so": {
+      "tibia": {
+        "id": 30716,
+        "variacao": 0
+      }
+    },
+    "int-nl": {
+      "tibia": {
+        "id": 30715,
+        "variacao": 0
+      }
+    },
+    "int-no": {
+      "tibia": {
+        "id": 30714,
+        "variacao": 0
+      }
+    }
+  },
+  "propriedades": {
+    "comportamento": "normal"
+  },
+  "ferramenta": "pisos",
+  "grupo": "estrutura",
+  "pasta": "pisos",
+  "nome": "grama-5"
+}
