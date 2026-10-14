@@ -4,40 +4,48 @@
     "quadros": 1,
     "direcoes": [
       "norte",
+      "leste",
+      "sul",
       "oeste"
     ]
   },
-  "conjunto": {
-    "norte": [
-      {
-        "tipo": "estrutura/degraus/degrau-baixo-madeira#norte",
-        "dx": 0,
-        "dy": 1
-      },
-      {
-        "tipo": "estrutura/degraus/degrau-alto-madeira#norte",
-        "dx": 0,
-        "dy": 0
+  "objeto": {
+    "tibia": {
+      "id": 13722,
+      "variacao": 0
+    }
+  },
+  "direcoes": {
+    "norte": {
+      "tibia": {
+        "id": 13722,
+        "variacao": 0
       }
-    ],
-    "oeste": [
-      {
-        "tipo": "estrutura/degraus/degrau-baixo-madeira#oeste",
-        "dx": 1,
-        "dy": 0
-      },
-      {
-        "tipo": "estrutura/degraus/degrau-alto-madeira#oeste",
-        "dx": 0,
-        "dy": 0
+    },
+    "leste": {
+      "tibia": {
+        "id": 13716,
+        "variacao": 0
       }
-    ]
+    },
+    "sul": {
+      "tibia": {
+        "id": 13722,
+        "variacao": 0
+      }
+    },
+    "oeste": {
+      "tibia": {
+        "id": 13718,
+        "variacao": 0
+      }
+    }
   },
   "propriedades": {
     "bloqueia": false,
     "move": false,
-    "altura": false,
-    "volume": 1,
+    "altura": true,
+    "volume": 3,
     "passo": 1,
     "nivelPesca": 0,
     "empilhavel": false,
@@ -46,7 +54,7 @@
     "isca": "",
     "resistencias": {},
     "postal": false,
-    "peso": 10,
+    "peso": 9999,
     "espacos": 0,
     "atk": 0,
     "def": 0,
@@ -68,5 +76,5 @@
   "ferramenta": "objetos",
   "grupo": "estrutura",
   "pasta": "degraus",
-  "nome": "escada-madeira"
+  "nome": "degrau-alto-pedra-1"
 }

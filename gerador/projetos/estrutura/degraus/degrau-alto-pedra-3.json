@@ -3,19 +3,40 @@
     "quadro": 64,
     "quadros": 1,
     "direcoes": [
-      "norte"
+      "norte",
+      "leste",
+      "sul",
+      "oeste"
     ]
   },
   "objeto": {
     "tibia": {
-      "id": 10206,
+      "id": 1956,
       "variacao": 0
     }
   },
   "direcoes": {
     "norte": {
       "tibia": {
-        "id": 10206,
+        "id": 1956,
+        "variacao": 0
+      }
+    },
+    "leste": {
+      "tibia": {
+        "id": 1950,
+        "variacao": 0
+      }
+    },
+    "sul": {
+      "tibia": {
+        "id": 1956,
+        "variacao": 0
+      }
+    },
+    "oeste": {
+      "tibia": {
+        "id": 1952,
         "variacao": 0
       }
     }
@@ -55,5 +76,5 @@
   "ferramenta": "objetos",
   "grupo": "estrutura",
   "pasta": "degraus",
-  "nome": "degrau-alto-pedra"
+  "nome": "degrau-alto-pedra-3"
 }

@@ -4,25 +4,39 @@
     "quadros": 1,
     "direcoes": [
       "norte",
+      "leste",
+      "sul",
       "oeste"
     ]
   },
   "objeto": {
     "tibia": {
-      "id": 1947,
+      "id": 13723,
       "variacao": 0
     }
   },
   "direcoes": {
     "norte": {
       "tibia": {
-        "id": 1947,
+        "id": 13723,
+        "variacao": 0
+      }
+    },
+    "leste": {
+      "tibia": {
+        "id": 13717,
+        "variacao": 0
+      }
+    },
+    "sul": {
+      "tibia": {
+        "id": 13721,
         "variacao": 0
       }
     },
     "oeste": {
       "tibia": {
-        "id": 5257,
+        "id": 13719,
         "variacao": 0
       }
     }
@@ -31,8 +45,8 @@
     "bloqueia": false,
     "move": false,
     "altura": true,
-    "volume": 3,
-    "passo": 1,
+    "volume": 2,
+    "passo": 2,
     "nivelPesca": 0,
     "empilhavel": false,
     "duasMaos": false,
@@ -62,5 +76,5 @@
   "ferramenta": "objetos",
   "grupo": "estrutura",
   "pasta": "degraus",
-  "nome": "degrau-alto-madeira"
+  "nome": "degrau-baixo-pedra-1"
 }
