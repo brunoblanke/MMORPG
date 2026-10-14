@@ -68,6 +68,16 @@
           "tipo": "itens/liquidos/health-potion",
           "preco": 50,
           "palavras": "potion, pocao, poção"
+        },
+        {
+          "tipo": "itens/ferramentas/fishing-rod",
+          "preco": 150,
+          "palavras": "fishing rod, vara, vara de pescar"
+        },
+        {
+          "tipo": "itens/produtos-de-criaturas/worm",
+          "preco": 1,
+          "palavras": "worm, minhoca, isca"
         }
       ],
       "compra": [
@@ -110,6 +120,11 @@
           "tipo": "itens/machados/hand-axe",
           "preco": 15,
           "palavras": "axe, machado"
+        },
+        {
+          "tipo": "itens/ferramentas/fishing-rod",
+          "preco": 40,
+          "palavras": "fishing rod, vara, vara de pescar"
         }
       ],
       "missoes": [],

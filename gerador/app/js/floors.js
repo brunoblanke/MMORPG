@@ -106,6 +106,7 @@ const floors = {
   behavior: 'normal',
   damage: 10,
   fish: [],
+  worms: 0,
   dirty: false,
   saving: false
 };
@@ -120,6 +121,7 @@ const damageFieldEl = document.getElementById('floorDamageField');
 const edgeBlocksEl = document.getElementById('floorEdgeBlocks');
 const edgeThrowEl = document.getElementById('floorEdgeThrow');
 const fishListEl = document.getElementById('floorFishList');
+const wormsEl = document.getElementById('floorWorms');
 let fishChoices = [];
 const patternRandomEl = document.getElementById('floorPatternRandom');
 const groundCanvas = document.getElementById('groundPreview');
@@ -154,6 +156,10 @@ export function initFloors() {
   });
   edgeThrowEl.addEventListener('change', () => {
     floors.edgeThrow = edgeThrowEl.checked;
+    floors.dirty = true;
+  });
+  wormsEl.addEventListener('change', () => {
+    floors.worms = Math.min(100, Math.max(0, Math.floor(Number(wormsEl.value)) || 0));
     floors.dirty = true;
   });
   fetchProjects().then((projects) => {
@@ -704,7 +710,8 @@ async function save() {
       ...(floors.behavior === 'dano' ? { comportamento: 'dano', dano: floors.damage } : { comportamento: floors.behavior }),
       ...(floors.edgeBlocks ? { bordaBloqueia: true } : {}),
       ...(floors.edgeThrow ? { bordaBarraArremesso: true } : {}),
-      ...(floors.fish.length ? { pescavel: floors.fish } : {})
+      ...(floors.fish.length ? { pescavel: floors.fish } : {}),
+      ...(floors.worms ? { minhocas: floors.worms } : {})
     }
   };
 
@@ -746,6 +753,7 @@ function openRecipe(recipe) {
   floors.damage = Math.max(1, Math.floor(Number(props.dano)) || 10);
   floors.edgeBlocks = props.bordaBloqueia === true;
   floors.edgeThrow = props.bordaBarraArremesso === true;
+  floors.worms = Math.min(100, Math.max(0, Math.floor(Number(props.minhocas)) || 0));
   floors.fish = Array.isArray(props.pescavel) ? props.pescavel.filter(type => typeof type === 'string') : [];
   floors.patternRandom = !!(recipe.formato && recipe.formato.padraoSorteado);
   showBehavior();
@@ -769,6 +777,7 @@ function showBehavior() {
   edgeBlocksEl.checked = !!floors.edgeBlocks;
   edgeThrowEl.checked = !!floors.edgeThrow;
   patternRandomEl.checked = !!floors.patternRandom;
+  wormsEl.value = floors.worms;
   renderFish();
 }
 

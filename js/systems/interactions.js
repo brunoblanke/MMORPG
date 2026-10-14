@@ -1,7 +1,7 @@
 // js/systems/interactions.js
 
 import { GameObject } from '../models/game-object.js';
-import { objectIdType, objectUse, activeAs, togglesOnUse, displayName, getAsset, splitType, isEntranceFolder, floorBehavior } from '../../shared/assets.js';
+import { objectIdType, objectUse, activeAs, togglesOnUse, displayName, getAsset, splitType, isEntranceFolder, floorBehavior, WORM_TYPE } from '../../shared/assets.js';
 import { itemInfo, newItem, weightOf, POTION_RANGE, USE_COOLDOWN_MS } from '../../shared/items.js';
 import { takeFromBag, giveItem } from './trade.js';
 import { getHoleTarget, toLowerLevel, toUpperLevel } from '../../shared/stairs.js';
@@ -123,6 +123,7 @@ export class InteractionController {
     const here = this.sim.world.getObjectsAt(target.x, target.y).filter(o => (o.z || 0) === z);
     const hole = tool === 'ferramenta-corda' ? here.find(o => this.isOpening(o)) : null;
     const obj = here.find(o => wanted.includes(objectUse(objectIdType(o.id)))) || hole;
+    if (!obj && tool === 'ferramenta-pa') return this.digWorm(player, target);
     if (!obj) return false;
     if (!this.sim.inventory.isNear(player, obj)) {
       if (from) this.sim.inventory.walkNextTo(player, obj, { type: 'useItem', from, target });
@@ -159,6 +160,24 @@ export class InteractionController {
     let roll = Math.random() * total;
     const index = weights.findIndex(weight => (roll -= weight) < 0);
     giveItem(this.sim, player, fish[index < 0 ? fish.length - 1 : index], 1);
+    return true;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // digWorm
+  // Pá num sqm de piso sem nada pra cavar, ao lado do player (ou nele): se o piso tem minhocas (gerador → Pisos → Minhocas), a chance dele dá uma minhoca. Espera USE_COOLDOWN_MS até o próximo uso. Devolve true se achou.
+
+  digWorm(player, target) {
+    const { world } = this.sim;
+    const z = player.z || 0;
+    const floor = world.topFloors.get(world.getTileKey(target.x, target.y, z));
+    const chance = floor ? floorBehavior(floor.floorType).worms : 0;
+    if (!chance || Math.max(Math.abs(target.x - player.x), Math.abs(target.y - player.y)) > 1) return false;
+    const now = this.sim.time || 0;
+    if (now < (player.useReadyAt || 0)) return false;
+    player.useReadyAt = now + USE_COOLDOWN_MS;
+    if (Math.random() * 100 >= chance) return false;
+    giveItem(this.sim, player, WORM_TYPE, 1);
     return true;
   }
 

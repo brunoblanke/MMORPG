@@ -7,12 +7,13 @@ import { setAssets } from '../shared/assets.js';
 import { TICK_MS } from '../js/simulation.js';
 
 const ROD = 'itens/ferramentas/vara';
-const WORM = 'itens/produtos-de-criaturas/minhoca';
+const WORM = 'itens/produtos-de-criaturas/worm';
 const FISH = 'itens/peixes/peixe';
 const PIKE = 'itens/peixes/lucio';
 const BAG = 'itens/recipientes/bolsa';
 const WATER = 'estrutura/pisos/agua-teste';
 const LAND = 'estrutura/pisos/terra-teste';
+const SHOVEL = 'itens/ferramentas/pa';
 
 const asset = (id, propriedades, ferramenta = 'objetos') => {
   const [grupo, pasta, nome] = id.split('/');
@@ -26,7 +27,8 @@ setAssets([
   asset(PIKE, { move: true, peso: 8, empilhavel: true, alimento: 145, nivelPesca: 20 }),
   asset(BAG, { move: true, peso: 8, espacos: 4 }),
   asset(WATER, { comportamento: 'bloqueia', pescavel: [FISH, PIKE] }, 'pisos'),
-  asset(LAND, {}, 'pisos')
+  asset(LAND, { minhocas: 100 }, 'pisos'),
+  asset(SHOVEL, { move: true, peso: 35, uso: 'ferramenta-pa' })
 ]);
 
 function game(worms = 2) {
@@ -111,4 +113,29 @@ test('peixe melhor pede skill e fica mais comum quanto mais o skill passa dele',
   assert.deepEqual(pick(25, 0.9), [0, 1], 'no 25 o lúcio já sai (peso 6 de 26)');
   assert.deepEqual(pick(25, 0.5), [1, 0]);
   assert.deepEqual(pick(60, 0.99), [0, 1], 'no 60 os dois pesam igual');
+});
+
+test('pá num piso com minhocas: ao lado do player, pela chance do piso, dá uma minhoca; longe ou em piso sem minhocas, nada', () => {
+  const dirt = [];
+  for (let x = 5; x <= 8; x++) for (let y = 3; y <= 6; y++) dirt.push([LAND, x, y, 0, 0, false, false, false]);
+  const sim = buildGame({ objects: [...floorRect(0, 20, 0, 20, 0), ...dirt], player: { x: 6, y: 5, z: 0 } });
+  sim.player.equip.mochila = { uid: 'bag0', type: BAG, items: [{ uid: 's0', type: SHOVEL }, null, null, null] };
+  sim.time = 1000;
+  const dig = (x, y) => {
+    sim.player.useReadyAt = 0;
+    sim.enqueue('player1', { type: 'useItem', from: { t: 'c', uid: 'bag0', i: 0 }, target: { x, y, z: 0 } });
+    sim.tick(sim.time + TICK_MS);
+  };
+  dig(7, 5);
+  assert.equal(count(sim, WORM), 1);
+  dig(8, 3);
+  assert.equal(count(sim, WORM), 1, 'longe');
+  dig(6, 7);
+  assert.equal(count(sim, WORM), 1, 'piso sem minhocas');
+  const random = Math.random;
+  Math.random = () => 0.999;
+  setAssets([asset(LAND, { minhocas: 50 }, 'pisos'), asset(SHOVEL, { move: true, peso: 35, uso: 'ferramenta-pa' }), asset(WORM, { move: true, peso: 0.05, empilhavel: true }), asset(BAG, { move: true, peso: 8, espacos: 4 })]);
+  dig(7, 5);
+  Math.random = random;
+  assert.equal(count(sim, WORM), 1, 'sem sorte');
 });

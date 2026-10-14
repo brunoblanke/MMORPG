@@ -27,8 +27,8 @@ const VENDEDORES = [
   { nome: 'joalheira', canary: 'hanna', boasVindas: 'Joias e pedras preciosas!', oi: 'Olá, {nome}! Compro e vendo joias.' },
   {
     nome: 'gorn', canary: 'gorn', boasVindas: 'Equipamento pra qualquer aventura!', oi: 'Olá, {nome}! Vendo e compro equipamentos.',
-    vende: [{ tipo: 'itens/ferramentas/rope', preco: 50, palavras: 'rope, corda' }, { tipo: 'itens/ferramentas/shovel', preco: 50, palavras: 'shovel, pa' }, { tipo: 'itens/fontes-de-luz/torch', preco: 10, palavras: 'torch, tocha' }],
-    compra: [{ tipo: 'itens/ferramentas/rope', preco: 15, palavras: 'rope, corda' }, { tipo: 'itens/ferramentas/shovel', preco: 8, palavras: 'shovel, pa' }, { tipo: 'itens/fontes-de-luz/torch', preco: 2, palavras: 'torch, tocha' }]
+    vende: [{ tipo: 'itens/ferramentas/rope', preco: 50, palavras: 'rope, corda' }, { tipo: 'itens/ferramentas/shovel', preco: 50, palavras: 'shovel, pa' }, { tipo: 'itens/fontes-de-luz/torch', preco: 10, palavras: 'torch, tocha' }, { tipo: 'itens/ferramentas/fishing-rod', preco: 150, palavras: 'fishing rod, vara, vara de pescar' }, { tipo: 'itens/produtos-de-criaturas/worm', preco: 1, palavras: 'worm, minhoca, isca' }],
+    compra: [{ tipo: 'itens/ferramentas/fishing-rod', preco: 40, palavras: 'fishing rod, vara, vara de pescar' }, { tipo: 'itens/ferramentas/rope', preco: 15, palavras: 'rope, corda' }, { tipo: 'itens/ferramentas/shovel', preco: 8, palavras: 'shovel, pa' }, { tipo: 'itens/fontes-de-luz/torch', preco: 2, palavras: 'torch, tocha' }]
   },
   {
     nome: 'lily', canary: 'lily', boasVindas: 'Poções pra curar o que dói!', oi: 'Olá, {nome}! Vendo poções.',
