@@ -46,7 +46,8 @@ function cast(sim, x, y) {
   return sim.drainEvents();
 }
 
-const count = (sim, type) => sim.player.equip.mochila.items.reduce((sum, item) => sum + (item && item.type === type ? item.count || 1 : 0), 0);
+const onGroundOf = (sim, type) => sim.objects.filter(o => o.itemData && o.itemData.type === type).map(o => [o.x, o.y]);
+const count = (sim, type) => sim.player.equip.mochila.items.reduce((sum, item) => sum + (item && item.type === type ? item.count || 1 : 0), 0) + (type === WORM ? 0 : onGroundOf(sim, type).length);
 
 test('vara na água pescável: gasta uma minhoca, mostra o respingo e treina o fishing', () => {
   const sim = game();
@@ -63,7 +64,8 @@ test('com a sorte, o peixe vem de um dos peixes do piso; sem a sorte, só a isca
   Math.random = () => 0;
   cast(lucky, 9, 5);
   Math.random = random;
-  assert.equal(count(lucky, FISH) + count(lucky, PIKE), 1);
+  assert.deepEqual(onGroundOf(lucky, FISH), [[7, 5]], 'o peixe cai no chão ao lado do player, do lado da água');
+  assert.equal(lucky.player.equip.mochila.items.some(item => item && (item.type === FISH || item.type === PIKE)), false, 'e não vai pra mochila');
 
   const unlucky = game();
   Math.random = () => 0.99;
