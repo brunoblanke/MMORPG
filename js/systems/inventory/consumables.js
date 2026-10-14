@@ -84,8 +84,8 @@ export const consumableMethods = {
       this.sim.interactions.readBook(player, src.item);
       return;
     }
-    if (use === 'ferramenta-corda' || use === 'ferramenta-pa') {
-      this.sim.interactions.useTool(player, use, target, from);
+    if (use === 'ferramenta-corda' || use === 'ferramenta-pa' || use === 'ferramenta-pesca') {
+      this.sim.interactions.useTool(player, use, target, from, src.item);
       return;
     }
     if (!info.food && !info.heal) return;

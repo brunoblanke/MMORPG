@@ -1,8 +1,9 @@
 // js/systems/interactions.js
 
 import { GameObject } from '../models/game-object.js';
-import { objectIdType, objectUse, activeAs, togglesOnUse, displayName, getAsset, splitType, isEntranceFolder } from '../../shared/assets.js';
-import { itemInfo, newItem, weightOf } from '../../shared/items.js';
+import { objectIdType, objectUse, activeAs, togglesOnUse, displayName, getAsset, splitType, isEntranceFolder, floorBehavior } from '../../shared/assets.js';
+import { itemInfo, newItem, weightOf, POTION_RANGE, USE_COOLDOWN_MS } from '../../shared/items.js';
+import { takeFromBag, giveItem } from './trade.js';
 import { getHoleTarget, toLowerLevel, toUpperLevel } from '../../shared/stairs.js';
 
 // Objetos do mapa que se usam (gerador → Objetos → Uso):
@@ -108,15 +109,16 @@ export class InteractionController {
 
   // ================================================================================================================================================================================================================================================
   // useTool
-  // Corda ou pá usada com a mira no sqm target (no mesmo andar): corda na
+  // Corda, pá ou vara de pescar usada com a mira no sqm target (no mesmo andar): corda na
   // marca de corda sobe; corda num buraco ou bueiro puxa quem está embaixo
   // dele; pá no monte abre o buraco. Longe, o player anda até o lado e usa ao
   // chegar (from: de onde veio a ferramenta). Devolve true se a ferramenta
   // fez algo.
 
-  useTool(player, tool, target, from = null) {
+  useTool(player, tool, target, from = null, item = null) {
     const z = player.z || 0;
     if (!target || !Number.isInteger(target.x) || !Number.isInteger(target.y) || (target.z ?? z) !== z) return false;
+    if (tool === 'ferramenta-pesca') return this.fish(player, item, target);
     const wanted = tool === 'ferramenta-corda' ? ['corda'] : SHOVEL_USES;
     const here = this.sim.world.getObjectsAt(target.x, target.y).filter(o => (o.z || 0) === z);
     const hole = tool === 'ferramenta-corda' ? here.find(o => this.isOpening(o)) : null;
@@ -128,6 +130,30 @@ export class InteractionController {
     }
     if (obj === hole) return this.pullUp(hole);
     return tool === 'ferramenta-corda' ? this.climb(player, obj) : this.dig(player, obj);
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // fish
+  // Vara de pescar no sqm de água (piso com peixes, gerador → Pisos → Pescável) até POTION_RANGE e com linha de visão: gasta a isca da vara (a minhoca), mostra o respingo, treina o fishing e, com chance que sobe com o skill (10% + 0,597% por nível acima de 10, de 10% a 50%, como no Tibia), dá um dos peixes do piso. Sem a isca, nada acontece. Espera USE_COOLDOWN_MS até a próxima. Devolve true se pescou (gastou isca).
+
+  fish(player, rod, target) {
+    const { world, movement } = this.sim;
+    const z = player.z || 0;
+    const floor = world.topFloors.get(world.getTileKey(target.x, target.y, z));
+    const fish = floor ? floorBehavior(floor.floorType).fish : [];
+    if (!rod || !fish.length || !movement.isInsideMap(target.x, target.y)) return false;
+    if (Math.max(Math.abs(target.x - player.x), Math.abs(target.y - player.y)) > POTION_RANGE || !movement.hasLineOfSight(player, target)) return false;
+    const now = this.sim.time || 0;
+    if (now < (player.useReadyAt || 0)) return false;
+    const bait = itemInfo(rod.type).bait;
+    if (bait && !takeFromBag(player, bait, 1)) return false;
+    player.useReadyAt = now + USE_COOLDOWN_MS;
+    this.sim.spells.showEffect(target.x, target.y, 'splash', undefined, z);
+    this.sim.combat.trainSkill(player, 'fishing');
+    const level = player.skills && player.skills.fishing ? player.skills.fishing.lvl : 10;
+    const chance = Math.min(50, Math.max(10, 10 + (level - 10) * 0.597));
+    if (Math.random() * 100 < chance) giveItem(this.sim, player, fish[Math.floor(Math.random() * fish.length)], 1);
+    return true;
   }
 
   // ================================================================================================================================================================================================================================================

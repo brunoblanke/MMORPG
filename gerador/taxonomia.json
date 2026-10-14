@@ -87,6 +87,7 @@
           "nome": "Plantas, produtos de animais, comidas e bebidas",
           "pastas": [
             { "id": "comidas", "nome": "Comidas", "ferramenta": "objetos" },
+            { "id": "peixes", "nome": "Peixes", "ferramenta": "objetos" },
             { "id": "liquidos", "nome": "Líquidos", "ferramenta": "objetos" },
             { "id": "plantas-e-ervas", "nome": "Plantas e ervas", "ferramenta": "objetos" },
             { "id": "produtos-de-criaturas", "nome": "Produtos de criaturas", "ferramenta": "objetos" }

@@ -325,13 +325,15 @@ export function objectIdType(id) {
 // ================================================================================================================================================================================================================================================
 // floorBehavior
 // O que o piso faz com quem pisa (gerador → Pisos → Comportamento): blocks,
-// ninguém pisa e item jogado afunda; damage, vida que tira a cada segundo.
+// ninguém pisa e item jogado afunda; damage, vida que tira a cada segundo;
+// fish, os peixes que dá pra pescar nele (gerador → Pisos → Pescável).
 
 export function floorBehavior(type) {
   const asset = getAsset(splitType(type).asset);
   const props = (asset && asset.propriedades) || {};
   const damage = props.comportamento === 'dano' ? Math.max(0, Math.floor(Number(props.dano)) || 0) : 0;
-  return { blocks: props.comportamento === 'bloqueia', damage, edgeBlocks: props.bordaBloqueia === true, edgeBlocksThrow: props.bordaBarraArremesso === true };
+  const fish = Array.isArray(props.pescavel) ? props.pescavel.filter(type => typeof type === 'string') : [];
+  return { blocks: props.comportamento === 'bloqueia', damage, edgeBlocks: props.bordaBloqueia === true, edgeBlocksThrow: props.bordaBarraArremesso === true, fish };
 }
 
 // ================================================================================================================================================================================================================================================
@@ -469,10 +471,10 @@ export function objectProps(type) {
 // 'corda' (marca de corda: sobe um andar com a corda), 'pa' (monte que a pá
 // abre em buraco), 'pa-cai' (a pá abre e o player já cai; o desenho não
 // muda), 'descer' (bueiro: usar leva pro andar de baixo),
-// 'ferramenta-corda', 'ferramenta-pa', 'correio' (caixa: recebe o que se joga nela) ou 'deposito' (abre o depósito do
+// 'ferramenta-corda', 'ferramenta-pa', 'ferramenta-pesca' (vara de pescar), 'correio' (caixa: recebe o que se joga nela) ou 'deposito' (abre o depósito do
 // player); null se nenhum.
 
-export const OBJECT_USES = ['placa', 'livro', 'bau-quest', 'corda', 'pa', 'pa-cai', 'descer', 'ferramenta-corda', 'ferramenta-pa', 'deposito', 'correio'];
+export const OBJECT_USES = ['placa', 'livro', 'bau-quest', 'corda', 'pa', 'pa-cai', 'descer', 'ferramenta-corda', 'ferramenta-pa', 'ferramenta-pesca', 'deposito', 'correio'];
 
 export function objectUse(type) {
   const asset = getAsset(splitType(type).asset);

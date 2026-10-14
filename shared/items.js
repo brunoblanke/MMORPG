@@ -86,7 +86,8 @@ const SLOT_BY_FOLDER = {
 // impact o que a munição faz ao acertar (impactOf) e ammoType o tipo da munição
 // ('arrow', 'bolt'…): arco só dispara a do tipo dele ('' = qualquer) e
 // resist o quanto ele corta do dano de cada elemento, em % (negativo =
-// fraqueza), { fire: 10, ice: -5 }.
+// fraqueza), { fire: 10, ice: -5 }, e bait o item que a vara de pescar gasta
+// a cada pesca ('' = nenhum).
 
 export function itemInfo(type) {
   const asset = getAsset(splitType(type).asset);
@@ -112,6 +113,7 @@ export function itemInfo(type) {
     burn: bonusValue(props.duracao),
     regen: { hp: bonusValue(props.regenVida), mana: bonusValue(props.regenMana) },
     resist: resistOf(props),
+    bait: typeof props.isca === 'string' ? props.isca : '',
     weaponSkill: SKILL_BY_WEAPON_FOLDER[folder] || null,
     twoHanded: !!props.duasMaos,
     ammoType: typeof props.tipoMunicao === 'string' ? props.tipoMunicao : '',

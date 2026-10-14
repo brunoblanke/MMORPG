@@ -30,9 +30,9 @@ export const MAP_USES = ['placa', 'livro', 'bau-quest', 'corda', 'pa', 'pa-cai',
 
 // ================================================================================================================================================================================================================================================
 // aimsWith
-// Item usado com a mira: potion (em player ou no chão), runa, corda e pá.
+// Item usado com a mira: potion (em player ou no chão), runa, corda, pá e vara de pescar.
 
 export function aimsWith(type) {
   const use = objectUse(type);
-  return !!itemInfo(type).heal || !!RUNES[type] || use === 'ferramenta-corda' || use === 'ferramenta-pa';
+  return !!itemInfo(type).heal || !!RUNES[type] || use === 'ferramenta-corda' || use === 'ferramenta-pa' || use === 'ferramenta-pesca';
 }

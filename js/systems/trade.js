@@ -125,6 +125,24 @@ export function countInBag(player, type) {
 }
 
 // ================================================================================================================================================================================================================================================
+// takeFromBag
+// Tira count do item da mochila (das pilhas, uma a uma). false, sem mexer em nada, se não tem o bastante.
+
+export function takeFromBag(player, type, count = 1) {
+  if (countInBag(player, type) < count) return false;
+  let left = count;
+  for (const { list, key } of bagSlots(player)) {
+    if (left <= 0) break;
+    if (!sellable(list[key], type)) continue;
+    const take = Math.min(left, list[key].count || 1);
+    left -= take;
+    if ((list[key].count || 1) - take > 0) list[key].count = (list[key].count || 1) - take;
+    else list[key] = null;
+  }
+  return true;
+}
+
+// ================================================================================================================================================================================================================================================
 // sellable
 
 function sellable(item, type) {

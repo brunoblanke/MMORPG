@@ -1,6 +1,6 @@
 // gerador/app/js/floors.js
 
-import { spriteUrl, saveProject, fetchBorderSuggestion, fetchFloorSuggestion, fetchItemInfo, fetchPattern } from './api.js';
+import { spriteUrl, saveProject, fetchBorderSuggestion, fetchFloorSuggestion, fetchItemInfo, fetchPattern, fetchProjects } from './api.js';
 import { itemCategory, showSuggestions } from './picker.js';
 import { normalizeName, statusOf } from './common.js';
 import { refreshProjects } from './projects.js';
@@ -105,6 +105,7 @@ const floors = {
   path: '',
   behavior: 'normal',
   damage: 10,
+  fish: [],
   dirty: false,
   saving: false
 };
@@ -118,6 +119,8 @@ const damageEl = document.getElementById('floorDamage');
 const damageFieldEl = document.getElementById('floorDamageField');
 const edgeBlocksEl = document.getElementById('floorEdgeBlocks');
 const edgeThrowEl = document.getElementById('floorEdgeThrow');
+const fishListEl = document.getElementById('floorFishList');
+let fishChoices = [];
 const patternRandomEl = document.getElementById('floorPatternRandom');
 const groundCanvas = document.getElementById('groundPreview');
 const sheetCanvas = document.getElementById('sheetPreview');
@@ -153,6 +156,10 @@ export function initFloors() {
     floors.edgeThrow = edgeThrowEl.checked;
     floors.dirty = true;
   });
+  fetchProjects().then((projects) => {
+    fishChoices = projects.filter(project => project.ferramenta === 'objetos' && project.grupo === 'itens' && project.pasta === 'peixes').map(project => project.caminho).sort();
+    renderFish();
+  }).catch(() => {});
   edgeBlocksEl.addEventListener('change', () => {
     floors.edgeBlocks = edgeBlocksEl.checked;
     floors.dirty = true;
@@ -696,7 +703,8 @@ async function save() {
     propriedades: {
       ...(floors.behavior === 'dano' ? { comportamento: 'dano', dano: floors.damage } : { comportamento: floors.behavior }),
       ...(floors.edgeBlocks ? { bordaBloqueia: true } : {}),
-      ...(floors.edgeThrow ? { bordaBarraArremesso: true } : {})
+      ...(floors.edgeThrow ? { bordaBarraArremesso: true } : {}),
+      ...(floors.fish.length ? { pescavel: floors.fish } : {})
     }
   };
 
@@ -738,6 +746,7 @@ function openRecipe(recipe) {
   floors.damage = Math.max(1, Math.floor(Number(props.dano)) || 10);
   floors.edgeBlocks = props.bordaBloqueia === true;
   floors.edgeThrow = props.bordaBarraArremesso === true;
+  floors.fish = Array.isArray(props.pescavel) ? props.pescavel.filter(type => typeof type === 'string') : [];
   floors.patternRandom = !!(recipe.formato && recipe.formato.padraoSorteado);
   showBehavior();
   floors.path = recipePath(recipe, CATEGORY);
@@ -760,6 +769,33 @@ function showBehavior() {
   edgeBlocksEl.checked = !!floors.edgeBlocks;
   edgeThrowEl.checked = !!floors.edgeThrow;
   patternRandomEl.checked = !!floors.patternRandom;
+  renderFish();
+}
+
+// ================================================================================================================================================================================================================================================
+// renderFish
+// A lista de peixes do piso: um checkbox por item da pasta Peixes (mais os que a receita já tem e não existem mais).
+
+function renderFish() {
+  fishListEl.innerHTML = '';
+  const types = [...new Set([...fishChoices, ...floors.fish])];
+  if (!types.length) {
+    fishListEl.textContent = 'Nenhum peixe criado ainda (itens → Peixes).';
+    return;
+  }
+  for (const type of types) {
+    const label = document.createElement('label');
+    label.className = 'checkline';
+    const input = document.createElement('input');
+    input.type = 'checkbox';
+    input.checked = floors.fish.includes(type);
+    input.onchange = () => {
+      floors.fish = input.checked ? [...floors.fish, type] : floors.fish.filter(item => item !== type);
+      floors.dirty = true;
+    };
+    label.append(input, type.split('/').pop());
+    fishListEl.appendChild(label);
+  }
 }
 
 // ================================================================================================================================================================================================================================================

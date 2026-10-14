@@ -42,7 +42,7 @@ const NUMBERS = [
   { key: 'regenVida', label: 'Equipado: recupera vida a cada 6 s', min: 0, step: 1 },
   { key: 'regenMana', label: 'Equipado: recupera mana a cada 6 s', min: 0, step: 1 }
 ];
-const DEFAULT_PROPERTIES = { bloqueia: false, move: true, altura: false, volume: 1, passo: 1, empilhavel: false, duasMaos: false, tipoMunicao: '', resistencias: {}, postal: false, peso: 10, espacos: 0, atk: 0, def: 0, ml: 0, speed: 0, vidaMin: 0, vidaMax: 0, manaMin: 0, manaMax: 0, alimento: 0, luz: 0, duracao: 0, regenVida: 0, regenMana: 0, uso: '', ativoComo: '', comecaAtivo: false };
+const DEFAULT_PROPERTIES = { bloqueia: false, move: true, altura: false, volume: 1, passo: 1, empilhavel: false, duasMaos: false, tipoMunicao: '', isca: '', resistencias: {}, postal: false, peso: 10, espacos: 0, atk: 0, def: 0, ml: 0, speed: 0, vidaMin: 0, vidaMax: 0, manaMin: 0, manaMax: 0, alimento: 0, luz: 0, duracao: 0, regenVida: 0, regenMana: 0, uso: '', ativoComo: '', comecaAtivo: false };
 const RESISTANCES = [['physical', 'Físico'], ['fire', 'Fogo'], ['energy', 'Energia'], ['ice', 'Gelo'], ['earth', 'Terra'], ['poison', 'Veneno'], ['death', 'Morte'], ['holy', 'Sagrado']];
 const AMMO_TYPES = [['', 'Qualquer / não é munição'], ['arrow', 'Flecha (arco)'], ['bolt', 'Virote (besta)']];
 const USES = [
@@ -57,7 +57,8 @@ const USES = [
   ['deposito', 'Depósito (cada player guarda os itens dele)'],
   ['correio', 'Caixa de correio (recebe cartas e encomendas: !enviar NOME)'],
   ['ferramenta-corda', 'Ferramenta: corda'],
-  ['ferramenta-pa', 'Ferramenta: pá']
+  ['ferramenta-pa', 'Ferramenta: pá'],
+  ['ferramenta-pesca', 'Ferramenta: vara de pescar (usar na água; gasta a isca)']
 ];
 // O que a munição faz ao acertar (receita: impacto). Cada tipo usa só alguns
 // dos campos: explosão (elemento, raio e animação), veneno (dano por vez e
@@ -395,6 +396,24 @@ function renderProperties() {
   list.appendChild(useLabel);
   useSelect.onchange = () => {
     objects.properties.uso = useSelect.value;
+    objects.dirty = true;
+  };
+  const baitLabel = document.createElement('label');
+  baitLabel.className = 'numberline';
+  const baitSelect = document.createElement('select');
+  baitSelect.id = 'objectProp-isca';
+  const fillBait = (paths) => {
+    const current = objects.properties.isca || '';
+    const options = current && !paths.includes(current) ? [current, ...paths] : paths;
+    baitSelect.innerHTML = '<option value="">— nenhuma —</option>' + options.map(p => `<option value="${p}">${p}</option>`).join('');
+    baitSelect.value = current;
+  };
+  fillBait([]);
+  fetchProjects().then(projects => fillBait(projects.filter(p => p.ferramenta === 'objetos' && p.grupo === 'itens').map(p => p.caminho).sort())).catch(() => {});
+  baitLabel.append('Isca (vara de pescar: o item que ela gasta a cada pesca, ex.: a minhoca)', baitSelect);
+  list.appendChild(baitLabel);
+  baitSelect.onchange = () => {
+    objects.properties.isca = baitSelect.value;
     objects.dirty = true;
   };
   for (const number of NUMBERS) {

@@ -13,7 +13,8 @@ export const EFFECTS = {
   poison: { id: 21, frames: 12, size: 32, ms: 50 },
   ice: { id: 43, frames: 15, size: 64, ms: 75 },
   earth: { id: 46, frames: 12, size: 64, ms: 86 },
-  holy: { id: 40, frames: 7, size: 64, ms: 100 }
+  holy: { id: 40, frames: 7, size: 64, ms: 100 },
+  splash: { id: 54, frames: 8, size: 32, ms: 70 }
 };
 
 // Projéteis do Tibia (gerador/saida/projeteis): as 9 direções em 3×3 de
