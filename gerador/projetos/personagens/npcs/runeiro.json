@@ -1,0 +1,159 @@
+{
+  "formato": {
+    "quadro": 32,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 136,
+    "cores": [
+      58,
+      84,
+      86,
+      114
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 4240,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4241,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 4245,
+        "variacao": 0
+      }
+    }
+  },
+  "propriedades": {
+    "comportamento": "npc",
+    "conversa": {
+      "boasVindas": "Runas e magia!",
+      "oi": "Olá, {nome}! Vendo runas.",
+      "tchau": "Volte sempre, {nome}.",
+      "raio": 2,
+      "topicos": [],
+      "vende": [
+        {
+          "tipo": "itens/runas/blank-rune",
+          "preco": 10,
+          "palavras": "blank rune"
+        },
+        {
+          "tipo": "itens/runas/cure-poison-rune",
+          "preco": 65,
+          "palavras": "cure poison rune"
+        },
+        {
+          "tipo": "itens/runas/energy-field-rune",
+          "preco": 38,
+          "palavras": "energy field rune"
+        },
+        {
+          "tipo": "itens/runas/explosion-rune",
+          "preco": 31,
+          "palavras": "explosion rune"
+        },
+        {
+          "tipo": "itens/runas/fire-bomb-rune",
+          "preco": 147,
+          "palavras": "fire bomb rune"
+        },
+        {
+          "tipo": "itens/runas/fire-field-rune",
+          "preco": 28,
+          "palavras": "fire field rune"
+        },
+        {
+          "tipo": "itens/runas/great-fireball-rune",
+          "preco": 64,
+          "palavras": "great fireball rune"
+        },
+        {
+          "tipo": "itens/runas/heavy-magic-missile-rune",
+          "preco": 12,
+          "palavras": "heavy magic missile rune"
+        },
+        {
+          "tipo": "itens/runas/intense-healing-rune",
+          "preco": 95,
+          "palavras": "intense healing rune"
+        },
+        {
+          "tipo": "itens/runas/light-magic-missile-rune",
+          "preco": 4,
+          "palavras": "light magic missile rune"
+        },
+        {
+          "tipo": "itens/runas/poison-field-rune",
+          "preco": 21,
+          "palavras": "poison field rune"
+        },
+        {
+          "tipo": "itens/runas/sudden-death-rune",
+          "preco": 162,
+          "palavras": "sudden death rune"
+        },
+        {
+          "tipo": "itens/runas/ultimate-healing-rune",
+          "preco": 175,
+          "palavras": "ultimate healing rune"
+        },
+        {
+          "tipo": "itens/rods/terra-rod",
+          "preco": 10000,
+          "palavras": "terra rod"
+        },
+        {
+          "tipo": "itens/wands/wand-of-cosmic-energy",
+          "preco": 10000,
+          "palavras": "wand of cosmic energy"
+        },
+        {
+          "tipo": "itens/spellbooks/spellbook",
+          "preco": 150,
+          "palavras": "spellbook"
+        }
+      ],
+      "compra": [
+        {
+          "tipo": "itens/liquidos/health-potion",
+          "preco": 5,
+          "palavras": "vial"
+        },
+        {
+          "tipo": "itens/valiosos/talon",
+          "preco": 320,
+          "palavras": "talon"
+        }
+      ],
+      "missoes": [],
+      "falasVenda": {
+        "lista": "O que você deseja comprar?",
+        "confirmar": "Quer comprar {item} por {preco}?",
+        "listaCompra": "O que você deseja vender?",
+        "queVender": "O que você deseja vender?",
+        "confirmarCompra": "Quer me vender {quantidade} {item} por {preco}?"
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "personagens",
+  "pasta": "npcs",
+  "nome": "runeiro"
+}

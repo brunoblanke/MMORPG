@@ -1,0 +1,179 @@
+{
+  "formato": {
+    "quadro": 32,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 131,
+    "cores": [
+      19,
+      63,
+      96,
+      38
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 4240,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4241,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 4245,
+        "variacao": 0
+      }
+    }
+  },
+  "propriedades": {
+    "comportamento": "npc",
+    "conversa": {
+      "boasVindas": "Armas boas e baratas!",
+      "oi": "Olá, {nome}! Vendo e compro armas.",
+      "tchau": "Volte sempre, {nome}.",
+      "raio": 2,
+      "topicos": [],
+      "vende": [
+        {
+          "tipo": "itens/machados/axe",
+          "preco": 20,
+          "palavras": "axe"
+        },
+        {
+          "tipo": "itens/espadas/dagger",
+          "preco": 5,
+          "palavras": "dagger"
+        },
+        {
+          "tipo": "itens/machados/hand-axe",
+          "preco": 8,
+          "palavras": "hand axe"
+        },
+        {
+          "tipo": "itens/espadas/rapier",
+          "preco": 15,
+          "palavras": "rapier"
+        },
+        {
+          "tipo": "itens/espadas/sabre",
+          "preco": 25,
+          "palavras": "sabre"
+        },
+        {
+          "tipo": "itens/espadas/short-sword",
+          "preco": 30,
+          "palavras": "short sword"
+        },
+        {
+          "tipo": "itens/machados/sickle",
+          "preco": 8,
+          "palavras": "sickle"
+        },
+        {
+          "tipo": "itens/distancia/spear",
+          "preco": 10,
+          "palavras": "spear"
+        }
+      ],
+      "compra": [
+        {
+          "tipo": "itens/machados/axe",
+          "preco": 7,
+          "palavras": "axe"
+        },
+        {
+          "tipo": "itens/clavas/bone-club",
+          "preco": 5,
+          "palavras": "bone club"
+        },
+        {
+          "tipo": "itens/espadas/dagger",
+          "preco": 2,
+          "palavras": "dagger"
+        },
+        {
+          "tipo": "itens/machados/hand-axe",
+          "preco": 4,
+          "palavras": "hand axe"
+        },
+        {
+          "tipo": "itens/machados/hatchet",
+          "preco": 25,
+          "palavras": "hatchet"
+        },
+        {
+          "tipo": "itens/espadas/katana",
+          "preco": 35,
+          "palavras": "katana"
+        },
+        {
+          "tipo": "itens/clavas/mace",
+          "preco": 30,
+          "palavras": "mace"
+        },
+        {
+          "tipo": "itens/espadas/machete",
+          "preco": 6,
+          "palavras": "machete"
+        },
+        {
+          "tipo": "itens/espadas/rapier",
+          "preco": 5,
+          "palavras": "rapier"
+        },
+        {
+          "tipo": "itens/espadas/sabre",
+          "preco": 12,
+          "palavras": "sabre"
+        },
+        {
+          "tipo": "itens/espadas/short-sword",
+          "preco": 10,
+          "palavras": "short sword"
+        },
+        {
+          "tipo": "itens/machados/sickle",
+          "preco": 2,
+          "palavras": "sickle"
+        },
+        {
+          "tipo": "itens/distancia/spear",
+          "preco": 3,
+          "palavras": "spear"
+        },
+        {
+          "tipo": "itens/espadas/sword",
+          "preco": 25,
+          "palavras": "sword"
+        }
+      ],
+      "missoes": [],
+      "falasVenda": {
+        "lista": "O que você deseja comprar?",
+        "confirmar": "Quer comprar {item} por {preco}?",
+        "listaCompra": "O que você deseja vender?",
+        "queVender": "O que você deseja vender?",
+        "confirmarCompra": "Quer me vender {quantidade} {item} por {preco}?"
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "personagens",
+  "pasta": "npcs",
+  "nome": "armeiro"
+}

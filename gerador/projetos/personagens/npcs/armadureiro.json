@@ -1,0 +1,159 @@
+{
+  "formato": {
+    "quadro": 32,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 136,
+    "cores": [
+      96,
+      99,
+      76,
+      115
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 4240,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4241,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 4245,
+        "variacao": 0
+      }
+    }
+  },
+  "propriedades": {
+    "comportamento": "npc",
+    "conversa": {
+      "boasVindas": "Proteção pra sua jornada!",
+      "oi": "Olá, {nome}! Vendo e compro armaduras e escudos.",
+      "tchau": "Volte sempre, {nome}.",
+      "raio": 2,
+      "topicos": [],
+      "vende": [
+        {
+          "tipo": "itens/armaduras/jacket",
+          "preco": 10,
+          "palavras": "jacket"
+        },
+        {
+          "tipo": "itens/capacetes/leather-helmet",
+          "preco": 12,
+          "palavras": "leather helmet"
+        },
+        {
+          "tipo": "itens/calcas/leather-legs",
+          "preco": 10,
+          "palavras": "leather legs"
+        },
+        {
+          "tipo": "itens/capacetes/studded-helmet",
+          "preco": 63,
+          "palavras": "studded helmet"
+        },
+        {
+          "tipo": "itens/escudos/studded-shield",
+          "preco": 50,
+          "palavras": "studded shield"
+        },
+        {
+          "tipo": "itens/escudos/wooden-shield",
+          "preco": 15,
+          "palavras": "wooden shield"
+        }
+      ],
+      "compra": [
+        {
+          "tipo": "itens/capacetes/brass-helmet",
+          "preco": 22,
+          "palavras": "brass helmet"
+        },
+        {
+          "tipo": "itens/escudos/brass-shield",
+          "preco": 25,
+          "palavras": "brass shield"
+        },
+        {
+          "tipo": "itens/armaduras/chain-armor",
+          "preco": 40,
+          "palavras": "chain armor"
+        },
+        {
+          "tipo": "itens/escudos/copper-shield",
+          "preco": 50,
+          "palavras": "copper shield"
+        },
+        {
+          "tipo": "itens/botas/leather-boots",
+          "preco": 2,
+          "palavras": "leather boots"
+        },
+        {
+          "tipo": "itens/capacetes/leather-helmet",
+          "preco": 3,
+          "palavras": "leather helmet"
+        },
+        {
+          "tipo": "itens/calcas/leather-legs",
+          "preco": 2,
+          "palavras": "leather legs"
+        },
+        {
+          "tipo": "itens/escudos/plate-shield",
+          "preco": 40,
+          "palavras": "plate shield"
+        },
+        {
+          "tipo": "itens/armaduras/studded-armor",
+          "preco": 10,
+          "palavras": "studded armor"
+        },
+        {
+          "tipo": "itens/capacetes/studded-helmet",
+          "preco": 20,
+          "palavras": "studded helmet"
+        },
+        {
+          "tipo": "itens/escudos/studded-shield",
+          "preco": 16,
+          "palavras": "studded shield"
+        },
+        {
+          "tipo": "itens/capacetes/viking-helmet",
+          "preco": 25,
+          "palavras": "viking helmet"
+        }
+      ],
+      "missoes": [],
+      "falasVenda": {
+        "lista": "O que você deseja comprar?",
+        "confirmar": "Quer comprar {item} por {preco}?",
+        "listaCompra": "O que você deseja vender?",
+        "queVender": "O que você deseja vender?",
+        "confirmarCompra": "Quer me vender {quantidade} {item} por {preco}?"
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "personagens",
+  "pasta": "npcs",
+  "nome": "armadureiro"
+}

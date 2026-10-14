@@ -1,0 +1,84 @@
+{
+  "formato": {
+    "quadro": 32,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 138,
+    "cores": [
+      78,
+      101,
+      86,
+      115
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 4240,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4241,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 4245,
+        "variacao": 0
+      }
+    }
+  },
+  "propriedades": {
+    "comportamento": "npc",
+    "conversa": {
+      "boasVindas": "Poções pra curar o que dói!",
+      "oi": "Olá, {nome}! Vendo poções.",
+      "tchau": "Volte sempre, {nome}.",
+      "raio": 2,
+      "topicos": [],
+      "vende": [
+        {
+          "tipo": "itens/liquidos/health-potion",
+          "preco": 50,
+          "palavras": "health potion, pocao de vida"
+        },
+        {
+          "tipo": "itens/liquidos/mana-potion",
+          "preco": 56,
+          "palavras": "mana potion, pocao de mana"
+        }
+      ],
+      "compra": [
+        {
+          "tipo": "itens/liquidos/health-potion",
+          "preco": 5,
+          "palavras": "vial"
+        }
+      ],
+      "missoes": [],
+      "falasVenda": {
+        "lista": "O que você deseja comprar?",
+        "confirmar": "Quer comprar {item} por {preco}?",
+        "listaCompra": "O que você deseja vender?",
+        "queVender": "O que você deseja vender?",
+        "confirmarCompra": "Quer me vender {quantidade} {item} por {preco}?"
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "personagens",
+  "pasta": "npcs",
+  "nome": "lily"
+}

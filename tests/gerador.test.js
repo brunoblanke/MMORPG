@@ -5,6 +5,8 @@ import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
+const fs = require('node:fs');
+const path = require('node:path');
 const { TibiaAssets } = require('../gerador/tibia-assets.js');
 const CLIENT = new URL('./tibia-780', import.meta.url).pathname;
 
@@ -128,4 +130,17 @@ test('gerador acha as famílias de parede do Tibia (x, y, xy, yx do mesmo materi
   assert.deepEqual(familias.find(familia => familia.x === 1271), { x: 1271, y: 1270, xy: 1274, yx: 1272 });
   const chaves = familias.map(familia => Object.values(familia).sort((a, b) => a - b).join(','));
   assert.equal(new Set(chaves).size, chaves.length);
+});
+
+test('NPCs vendedores clássicos: só vendem e compram itens que existem no gerador', () => {
+  const raiz = path.join(new URL('..', import.meta.url).pathname, 'gerador', 'projetos');
+  for (const nome of ['armeiro', 'armadureiro', 'ferreiro', 'taverneiro', 'runeiro', 'joalheira', 'gorn', 'lily']) {
+    const receita = JSON.parse(fs.readFileSync(path.join(raiz, 'personagens', 'npcs', `${nome}.json`), 'utf8'));
+    const conversa = receita.propriedades.conversa;
+    assert.ok(conversa.vende.length + conversa.compra.length > 0, nome);
+    for (const linha of [...conversa.vende, ...conversa.compra]) {
+      assert.ok(fs.existsSync(path.join(raiz, `${linha.tipo}.json`)), `${nome}: ${linha.tipo}`);
+      assert.ok(linha.preco > 0);
+    }
+  }
 });

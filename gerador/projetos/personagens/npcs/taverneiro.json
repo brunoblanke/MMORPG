@@ -1,0 +1,88 @@
+{
+  "formato": {
+    "quadro": 32,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 128,
+    "cores": [
+      58,
+      68,
+      109,
+      115
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 4240,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4241,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 4245,
+        "variacao": 0
+      }
+    }
+  },
+  "propriedades": {
+    "comportamento": "npc",
+    "conversa": {
+      "boasVindas": "Comida quentinha!",
+      "oi": "Olá, {nome}! Posso te vender comida.",
+      "tchau": "Volte sempre, {nome}.",
+      "raio": 2,
+      "topicos": [],
+      "vende": [
+        {
+          "tipo": "itens/comidas/bread",
+          "preco": 4,
+          "palavras": "bread"
+        },
+        {
+          "tipo": "itens/comidas/cheese",
+          "preco": 6,
+          "palavras": "cheese"
+        },
+        {
+          "tipo": "itens/comidas/ham",
+          "preco": 8,
+          "palavras": "ham"
+        },
+        {
+          "tipo": "itens/comidas/meet",
+          "preco": 5,
+          "palavras": "meat"
+        }
+      ],
+      "compra": [],
+      "missoes": [],
+      "falasVenda": {
+        "lista": "O que você deseja comprar?",
+        "confirmar": "Quer comprar {item} por {preco}?",
+        "listaCompra": "O que você deseja vender?",
+        "queVender": "O que você deseja vender?",
+        "confirmarCompra": "Quer me vender {quantidade} {item} por {preco}?"
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "personagens",
+  "pasta": "npcs",
+  "nome": "taverneiro"
+}

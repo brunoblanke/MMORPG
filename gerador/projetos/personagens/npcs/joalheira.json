@@ -1,0 +1,139 @@
+{
+  "formato": {
+    "quadro": 32,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 136,
+    "cores": [
+      96,
+      65,
+      0,
+      96
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 4240,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4241,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 4245,
+        "variacao": 0
+      }
+    }
+  },
+  "propriedades": {
+    "comportamento": "npc",
+    "conversa": {
+      "boasVindas": "Joias e pedras preciosas!",
+      "oi": "Olá, {nome}! Compro e vendo joias.",
+      "tchau": "Volte sempre, {nome}.",
+      "raio": 2,
+      "topicos": [],
+      "vende": [
+        {
+          "tipo": "itens/valiosos/black-pearl",
+          "preco": 560,
+          "palavras": "black pearl"
+        },
+        {
+          "tipo": "itens/valiosos/small-amethyst",
+          "preco": 400,
+          "palavras": "small amethyst"
+        },
+        {
+          "tipo": "itens/valiosos/small-diamond",
+          "preco": 600,
+          "palavras": "small diamond"
+        },
+        {
+          "tipo": "itens/valiosos/small-emerald",
+          "preco": 500,
+          "palavras": "small emerald"
+        },
+        {
+          "tipo": "itens/valiosos/small-ruby",
+          "preco": 500,
+          "palavras": "small ruby"
+        },
+        {
+          "tipo": "itens/aneis/wedding-ring",
+          "preco": 990,
+          "palavras": "wedding ring"
+        },
+        {
+          "tipo": "itens/valiosos/white-pearl",
+          "preco": 320,
+          "palavras": "white pearl"
+        }
+      ],
+      "compra": [
+        {
+          "tipo": "itens/valiosos/black-pearl",
+          "preco": 280,
+          "palavras": "black pearl"
+        },
+        {
+          "tipo": "itens/valiosos/small-amethyst",
+          "preco": 200,
+          "palavras": "small amethyst"
+        },
+        {
+          "tipo": "itens/valiosos/small-diamond",
+          "preco": 300,
+          "palavras": "small diamond"
+        },
+        {
+          "tipo": "itens/valiosos/small-emerald",
+          "preco": 250,
+          "palavras": "small emerald"
+        },
+        {
+          "tipo": "itens/valiosos/small-ruby",
+          "preco": 250,
+          "palavras": "small ruby"
+        },
+        {
+          "tipo": "itens/aneis/wedding-ring",
+          "preco": 100,
+          "palavras": "wedding ring"
+        },
+        {
+          "tipo": "itens/valiosos/white-pearl",
+          "preco": 160,
+          "palavras": "white pearl"
+        }
+      ],
+      "missoes": [],
+      "falasVenda": {
+        "lista": "O que você deseja comprar?",
+        "confirmar": "Quer comprar {item} por {preco}?",
+        "listaCompra": "O que você deseja vender?",
+        "queVender": "O que você deseja vender?",
+        "confirmarCompra": "Quer me vender {quantidade} {item} por {preco}?"
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "personagens",
+  "pasta": "npcs",
+  "nome": "joalheira"
+}
