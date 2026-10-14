@@ -2,7 +2,7 @@
 
 import { spriteUrl, saveProject, fetchWallSuggestion, fetchDoorSuggestion, fetchWallFamilies, fetchProjects } from './api.js';
 import { itemCategory } from './picker.js';
-import { sourceLabel, loadImage, isReady, drawAnchored, readPngFile, normalizeName, setStatus } from './common.js';
+import { sourceLabel, loadImage, isReady, drawAnchored, readPngFile, normalizeName, statusOf } from './common.js';
 import { refreshProjects } from './projects.js';
 import { fillFolderSelect, folderOf, setFolder, recipePath } from './folders.js';
 
@@ -106,7 +106,7 @@ const walls = {
   saving: false
 };
 
-const statusEl = document.getElementById('wallStatus');
+const status = statusOf('wallStatus');
 const nameEl = document.getElementById('wallName');
 const volumeEl = document.getElementById('wallVolume');
 const folderEl = document.getElementById('wallFolder');
@@ -139,13 +139,6 @@ function initWalls() {
   fillFolderSelect(folderEl, CATEGORY);
   folderEl.addEventListener('change', () => { walls.dirty = true; });
   render();
-}
-
-// ================================================================================================================================================================================================================================================
-// status
-
-function status(text, kind) {
-  setStatus(statusEl, text, kind);
 }
 
 // ================================================================================================================================================================================================================================================

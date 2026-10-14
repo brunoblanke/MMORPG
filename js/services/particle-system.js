@@ -1,22 +1,7 @@
 // js/services/particle-system.js
 
 import { EFFECTS, MISSILES, effectUrl, missileUrl, missileDirection } from '../../shared/effects.js';
-
-// As imagens dos efeitos e projéteis do Tibia, carregadas na primeira vez
-// que aparecem.
-const images = new Map();
-
-// ================================================================================================================================================================================================================================================
-// loadImage
-
-function loadImage(url) {
-  if (!images.has(url)) {
-    const img = new Image();
-    img.src = url;
-    images.set(url, img);
-  }
-  return images.get(url);
-}
+import { getImage } from '../../shared/image-loader.js';
 
 export class ParticleSystem {
   constructor() {
@@ -68,7 +53,7 @@ export class ParticleSystem {
   spawnMissile(fromX, fromY, toX, toY, renderer, kind = 'energy', z = null) {
     const name = MISSILES[kind] ? kind : 'energy';
     this.missiles = this.missiles || [];
-    this.missiles.push({ z, fromX, fromY, toX, toY, renderer, img: loadImage(missileUrl(name)), size: MISSILES[name].size, dir: missileDirection(toX - fromX, toY - fromY), createdAt: performance.now(), duration: 280 });
+    this.missiles.push({ z, fromX, fromY, toX, toY, renderer, img: getImage(missileUrl(name)), size: MISSILES[name].size, dir: missileDirection(toX - fromX, toY - fromY), createdAt: performance.now(), duration: 280 });
   }
 
   // ================================================================================================================================================================================================================================================
@@ -79,7 +64,7 @@ export class ParticleSystem {
     const info = EFFECTS[name];
     if (!info) return;
     this.effects = this.effects || [];
-    this.effects.push({ z, tiles, img: loadImage(effectUrl(name)), frames: info.frames, size: info.size, ms: info.ms, renderer, createdAt: performance.now(), duration: info.frames * info.ms });
+    this.effects.push({ z, tiles, img: getImage(effectUrl(name)), frames: info.frames, size: info.size, ms: info.ms, renderer, createdAt: performance.now(), duration: info.frames * info.ms });
   }
 
   // ================================================================================================================================================================================================================================================

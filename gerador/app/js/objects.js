@@ -1,7 +1,7 @@
 // gerador/app/js/objects.js
 
-import { spriteUrl, saveProject, fetchItemInfo, fetchProjects, fetchProject } from './api.js';
-import { loadImage, isReady, drawAnchored, readPngFile, normalizeName, setStatus } from './common.js';
+import { spriteUrl, saveProject, fetchItemInfo, fetchProjects } from './api.js';
+import { loadImage, isReady, drawAnchored, readPngFile, normalizeName, statusOf, generatePendingSheets } from './common.js';
 import { refreshProjects } from './projects.js';
 import { fillFolderSelect, folderOf, setFolder, recipePath } from './folders.js';
 
@@ -99,7 +99,7 @@ const objects = {
   saving: false
 };
 
-const statusEl = document.getElementById('objectStatus');
+const status = statusOf('objectStatus');
 const nameEl = document.getElementById('objectName');
 const folderEl = document.getElementById('objectFolder');
 const infoEl = document.getElementById('objectInfo');
@@ -136,13 +136,6 @@ function initObjects() {
     drawPreview();
   }, FRAME_MS);
   render();
-}
-
-// ================================================================================================================================================================================================================================================
-// status
-
-function status(text, kind) {
-  setStatus(statusEl, text, kind);
 }
 
 // ================================================================================================================================================================================================================================================
@@ -728,29 +721,17 @@ async function saveSet() {
 // generatePending
 // Cria a folha (.png) de todo objeto que tem receita mas ainda não tem folha, um por um (os criados por ferramentas/criar-armas.js).
 
-async function generatePending() {
-  const button = document.getElementById('objectPendingBtn');
-  button.disabled = true;
-  try {
-    const pending = (await fetchProjects()).filter(project => project.ferramenta === CATEGORY && !project.temFolha && !project.conjunto);
-    if (!pending.length) return status('Nenhum objeto sem folha.', 'ok');
-    let done = 0;
-    for (const project of pending) {
-      status(`Gerando ${project.nome} (${done + 1} de ${pending.length})…`);
-      await openRecipe(await fetchProject(project.caminho));
-      const limit = Date.now() + 20000;
-      while (Date.now() < limit && slotKeys().some(key => objects.slots[key] && !sourceFrames(key).length)) {
-        await new Promise(resolve => setTimeout(resolve, 100));
-      }
-      await save();
-      done++;
-    }
-    status(`${done} folha(s) gerada(s). Faça o commit de gerador/saida e gerador/projetos.`, 'ok');
-  } catch (error) {
-    status(`Parou: ${error.message}`, 'error');
-  } finally {
-    button.disabled = false;
-  }
+function generatePending() {
+  return generatePendingSheets({
+    category: CATEGORY,
+    button: document.getElementById('objectPendingBtn'),
+    status,
+    emptyText: 'Nenhum objeto sem folha.',
+    filter: project => !project.conjunto,
+    open: openRecipe,
+    ready: () => !slotKeys().some(key => objects.slots[key] && !sourceFrames(key).length),
+    save
+  });
 }
 
 // ================================================================================================================================================================================================================================================

@@ -13,11 +13,11 @@
 
 const fs = require('fs');
 const path = require('path');
+const { listarReceitas } = require('./receitas.js');
 const { importar, linhasDe } = require('./importar-ataques.js');
 
 const RAIZ = path.join(__dirname, '..');
 const PASTA_CRIATURAS = path.join(RAIZ, 'gerador', 'projetos', 'criaturas');
-const PASTA_ITENS = path.join(RAIZ, 'gerador', 'projetos', 'itens');
 const CADAVER_PADRAO = { apodrecendo: 4249, ossos: 3987 };
 const CORES_PADRAO = [78, 69, 58, 76];
 const APELIDOS_DE_ITEM = { meat: 'meet' };
@@ -65,16 +65,7 @@ const CLASSICAS = [
 // Os itens que existem no gerador: { nome com hífen: 'itens/pasta/nome' }.
 
 function itensDoGerador() {
-  const itens = {};
-  for (const pasta of fs.readdirSync(PASTA_ITENS)) {
-    const dir = path.join(PASTA_ITENS, pasta);
-    if (!fs.statSync(dir).isDirectory()) continue;
-    for (const arquivo of fs.readdirSync(dir).filter(f => f.endsWith('.json'))) {
-      const nome = arquivo.replace(/\.json$/, '');
-      itens[nome] = `itens/${pasta}/${nome}`;
-    }
-  }
-  return itens;
+  return Object.fromEntries(listarReceitas(path.join(RAIZ, 'gerador', 'projetos'), 'itens').map(({ tipo, nome }) => [nome, tipo]));
 }
 
 // ================================================================================================================================================================================================================================================

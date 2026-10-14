@@ -12,9 +12,10 @@
 
 const fs = require('fs');
 const path = require('path');
+const { listarReceitas, tiposPorIdDoTibia } = require('./receitas.js');
 
 const RAIZ = path.join(__dirname, '..');
-const PASTA_ITENS = path.join(RAIZ, 'gerador', 'projetos', 'itens');
+const PASTA_PROJETOS = path.join(RAIZ, 'gerador', 'projetos');
 const PASTA_NPCS = path.join(RAIZ, 'gerador', 'projetos', 'personagens', 'npcs');
 
 const VENDEDORES = [
@@ -42,26 +43,6 @@ const FALAS_VENDA = {
   queVender: 'O que você deseja vender?',
   confirmarCompra: 'Quer me vender {quantidade} {item} por {preco}?'
 };
-
-// ================================================================================================================================================================================================================================================
-// itensDoGerador
-// Id do desenho do Tibia → tipo do item no gerador ('itens/pasta/nome').
-
-function itensDoGerador() {
-  const mapa = new Map();
-  for (const pasta of fs.readdirSync(PASTA_ITENS)) {
-    const dir = path.join(PASTA_ITENS, pasta);
-    if (!fs.statSync(dir).isDirectory()) continue;
-    for (const arquivo of fs.readdirSync(dir).filter(nome => nome.endsWith('.json'))) {
-      const receita = JSON.parse(fs.readFileSync(path.join(dir, arquivo), 'utf8'));
-      const fontes = [receita.objeto, ...Object.values(receita.direcoes || {})];
-      for (const fonte of fontes) {
-        if (fonte && fonte.tibia && !mapa.has(fonte.tibia.id)) mapa.set(fonte.tibia.id, `itens/${pasta}/${arquivo.replace(/\.json$/, '')}`);
-      }
-    }
-  }
-  return mapa;
-}
 
 // ================================================================================================================================================================================================================================================
 // lerNpc
@@ -101,7 +82,7 @@ function linhas(itens, mapa, chave) {
 
 function juntar(lista, extras = []) {
   const tipos = new Set(lista.map(linha => linha.tipo));
-  return [...lista, ...extras.filter(linha => !tipos.has(linha.tipo) && fs.existsSync(path.join(PASTA_ITENS, '..', `${linha.tipo}.json`)))];
+  return [...lista, ...extras.filter(linha => !tipos.has(linha.tipo) && fs.existsSync(path.join(PASTA_PROJETOS, `${linha.tipo}.json`)))];
 }
 
 // ================================================================================================================================================================================================================================================
@@ -111,7 +92,7 @@ function main() {
   const canary = process.argv[2];
   if (!canary) throw new Error('Passe a pasta do canary (com data-otservbr-global/npc).');
   const modelo = JSON.parse(fs.readFileSync(path.join(PASTA_NPCS, 'vendedor.json'), 'utf8'));
-  const mapa = itensDoGerador();
+  const mapa = tiposPorIdDoTibia(listarReceitas(PASTA_PROJETOS, 'itens'));
   fs.mkdirSync(PASTA_NPCS, { recursive: true });
 
   for (const vendedor of VENDEDORES) {

@@ -1,8 +1,8 @@
 // gerador/app/js/creatures.js
 
-import { saveProject, fetchProjects, fetchProject } from './api.js';
+import { saveProject, fetchProjects } from './api.js';
 import { creatureInfo, itemCategory } from './picker.js';
-import { sourceUrl, sourceLabel, loadImage, isReady, drawAnchored, readPngFile, normalizeName, setStatus } from './common.js';
+import { sourceUrl, sourceLabel, loadImage, isReady, drawAnchored, readPngFile, normalizeName, statusOf, generatePendingSheets } from './common.js';
 import { refreshProjects } from './projects.js';
 import { fillFolderSelect, folderOf, setFolder, recipePath } from './folders.js';
 import { VOCATION_LINES, SHOP_LINES, QUEST_LINES, BANK_LINES } from '/shared/npcs.js';
@@ -53,7 +53,7 @@ const creatures = {
   creatureTypes: []
 };
 
-const statusEl = document.getElementById('creatureStatus');
+const status = statusOf('creatureStatus');
 const nameEl = document.getElementById('creatureName');
 const folderEl = document.getElementById('creatureFolder');
 const behaviorEl = document.getElementById('creatureBehavior');
@@ -230,13 +230,6 @@ function initCreatures() {
     drawWalkPreview();
   }, WALK_FRAME_MS);
   render();
-}
-
-// ================================================================================================================================================================================================================================================
-// status
-
-function status(text, kind) {
-  setStatus(statusEl, text, kind);
 }
 
 // ================================================================================================================================================================================================================================================
@@ -1076,29 +1069,16 @@ async function save() {
 // generatePending
 // Abre, uma por uma, as criaturas que têm receita mas não têm folha (.png) e salva cada uma (cria a folha).
 
-async function generatePending() {
-  const button = document.getElementById('creaturePendingBtn');
-  button.disabled = true;
-  try {
-    const pending = (await fetchProjects()).filter(project => project.ferramenta === CATEGORY && !project.temFolha);
-    if (!pending.length) return status('Nenhuma criatura sem folha.', 'ok');
-    let done = 0;
-    for (const project of pending) {
-      status(`Gerando ${project.nome} (${done + 1} de ${pending.length})…`);
-      openRecipe(await fetchProject(project.caminho));
-      const limit = Date.now() + 20000;
-      while (Date.now() < limit && (!isReady(creatures.sheetImage) || Object.keys(creatures.corpse).some(key => !corpseImage(key)))) {
-        await new Promise(resolve => setTimeout(resolve, 100));
-      }
-      await save();
-      done++;
-    }
-    status(`${done} folha(s) gerada(s). Faça o commit de gerador/saida e gerador/projetos.`, 'ok');
-  } catch (error) {
-    status(`Parou: ${error.message}`, 'error');
-  } finally {
-    button.disabled = false;
-  }
+function generatePending() {
+  return generatePendingSheets({
+    category: CATEGORY,
+    button: document.getElementById('creaturePendingBtn'),
+    status,
+    emptyText: 'Nenhuma criatura sem folha.',
+    open: openRecipe,
+    ready: () => isReady(creatures.sheetImage) && Object.keys(creatures.corpse).every(key => corpseImage(key)),
+    save
+  });
 }
 
 // ================================================================================================================================================================================================================================================

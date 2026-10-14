@@ -13,6 +13,7 @@
 // (pasta com data/items/items.xml)
 
 const fs = require('fs');
+const { listarReceitas, idsDoTibia } = require('./receitas.js');
 const path = require('path');
 
 const RAIZ = path.join(__dirname, '..');
@@ -94,35 +95,12 @@ function montarReceita(grupoPasta, nome, id, proximo) {
 }
 
 // ================================================================================================================================================================================================================================================
-// idsExistentes
-// Os ids do Tibia que já têm receita (pra não repetir).
-
-function idsExistentes() {
-  const ids = new Set();
-  const visitar = (pasta) => {
-    for (const nome of fs.readdirSync(pasta)) {
-      const caminho = path.join(pasta, nome);
-      if (fs.statSync(caminho).isDirectory()) visitar(caminho);
-      else if (nome.endsWith('.json')) {
-        const receita = JSON.parse(fs.readFileSync(caminho, 'utf8'));
-        if (receita.objeto && receita.objeto.tibia) ids.add(receita.objeto.tibia.id);
-        for (const fonte of Object.values(receita.direcoes || {})) if (fonte && fonte.tibia) ids.add(fonte.tibia.id);
-      }
-    }
-  };
-  visitar(path.join(PASTA_PROJETOS, 'estrutura'));
-  visitar(path.join(PASTA_PROJETOS, 'decoracao'));
-  visitar(path.join(PASTA_PROJETOS, 'itens'));
-  return ids;
-}
-
-// ================================================================================================================================================================================================================================================
 // criar
 // Cria as receitas que faltam e devolve a lista das criadas.
 
 function criar(pastaCanary) {
   const proximo = lerRotacoes(path.join(pastaCanary, 'data', 'items', 'items.xml'));
-  const existentes = idsExistentes();
+  const existentes = idsDoTibia(listarReceitas(PASTA_PROJETOS, 'estrutura', 'decoracao', 'itens'));
   const criadas = [];
   for (const [grupoPasta, itens] of Object.entries(CENARIO)) {
     for (const [nome, id] of Object.entries(itens)) {

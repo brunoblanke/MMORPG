@@ -3,6 +3,7 @@
 import { loadAssets, listAssets, getAsset, displayName, RESISTANCE_ELEMENTS } from '../../shared/assets.js';
 import { SPELLS, RUNES, WANDS } from '../../shared/spells.js';
 import { EFFECTS, MISSILES, effectUrl, missileUrl, missileDirection } from '../../shared/effects.js';
+import { getImage } from '../../shared/image-loader.js';
 import { ARENA_WIDTH, ARENA_HEIGHT, layoutFor, planCreatureAttack, planSpell, planRune, planAmmo, planWand } from '../../shared/spell-plan.js';
 
 const TILE = 32;
@@ -27,21 +28,7 @@ const form = document.getElementById('simForm');
 const fieldsBox = document.getElementById('simFields');
 const canvas = document.getElementById('simCanvas');
 const ctx = canvas.getContext('2d');
-const images = new Map();
 const state = { who: 'creature', cast: null };
-
-// ================================================================================================================================================================================================================================================
-// loadImage
-// A imagem de uma folha do gerador (guardada).
-
-function loadImage(url) {
-  if (!images.has(url)) {
-    const image = new Image();
-    image.src = url;
-    images.set(url, image);
-  }
-  return images.get(url);
-}
 
 // ================================================================================================================================================================================================================================================
 // title
@@ -178,7 +165,7 @@ function castNow() {
 // Desenha uma imagem de sheet (coluna, linha) com o canto de baixo à direita no sqm (x, y), como o jogo.
 
 function drawFrame(asset, column, row, x, y, size = null) {
-  const image = loadImage(asset.url || asset);
+  const image = getImage(asset.url || asset);
   if (!image.complete || !image.naturalWidth) return;
   const frame = size || asset.quadro || TILE;
   const rows = Math.max(1, Math.floor(image.naturalHeight / frame));
@@ -222,7 +209,7 @@ function frame(now) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.imageSmoothingEnabled = false;
   const floor = getAsset(FLOOR);
-  const floorImage = floor && loadImage(floor.url);
+  const floorImage = floor && getImage(floor.url);
   for (let y = 0; y < ARENA_HEIGHT; y++) {
     for (let x = 0; x < ARENA_WIDTH; x++) {
       if (floorImage && floorImage.complete && floorImage.naturalWidth) ctx.drawImage(floorImage, 0, 0, TILE, TILE, (x + PAD) * TILE, (y + PAD) * TILE, TILE, TILE);
@@ -254,7 +241,7 @@ function drawCast(cast, now) {
   const delay = cast.plan.missiles.length ? MISSILE_MS : 0;
   for (const missile of cast.plan.missiles) {
     const info = MISSILES[missile.kind] || MISSILES.energy;
-    const image = loadImage(missileUrl(MISSILES[missile.kind] ? missile.kind : 'energy'));
+    const image = getImage(missileUrl(MISSILES[missile.kind] ? missile.kind : 'energy'));
     if (age >= MISSILE_MS || !image.complete || !image.naturalWidth) continue;
     const t = age / MISSILE_MS;
     const [dx, dy] = missileDirection(missile.to[0] - missile.from[0], missile.to[1] - missile.from[1]);
@@ -267,7 +254,7 @@ function drawCast(cast, now) {
     if (!info) continue;
     const column = Math.floor((age - delay) / info.ms);
     if (age < delay || column >= info.frames) continue;
-    const image = loadImage(effectUrl(effect.name));
+    const image = getImage(effectUrl(effect.name));
     if (!image.complete || !image.naturalWidth) continue;
     for (const [x, y] of effect.tiles) {
       ctx.drawImage(image, column * info.size, 0, info.size, info.size, (x + PAD) * TILE + TILE - info.size, (y + PAD) * TILE + TILE - info.size, info.size, info.size);
@@ -292,9 +279,9 @@ function setWho(who) {
 
 async function start() {
   await loadAssets();
-  for (const name of Object.keys(EFFECTS)) loadImage(effectUrl(name));
-  for (const name of Object.keys(MISSILES)) loadImage(missileUrl(name));
-  for (const type of FIELDS) { const field = getAsset(type); if (field) loadImage(field.url); }
+  for (const name of Object.keys(EFFECTS)) getImage(effectUrl(name));
+  for (const name of Object.keys(MISSILES)) getImage(missileUrl(name));
+  for (const type of FIELDS) { const field = getAsset(type); if (field) getImage(field.url); }
   canvas.width = (ARENA_WIDTH + PAD * 2) * TILE;
   canvas.height = (ARENA_HEIGHT + PAD * 2) * TILE;
   for (const button of form.querySelectorAll('[data-who]')) button.addEventListener('click', () => { setWho(button.dataset.who); button.blur(); });

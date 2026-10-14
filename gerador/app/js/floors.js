@@ -2,7 +2,7 @@
 
 import { spriteUrl, saveProject, fetchBorderSuggestion, fetchFloorSuggestion, fetchItemInfo, fetchPattern } from './api.js';
 import { itemCategory, showSuggestions } from './picker.js';
-import { normalizeName } from './common.js';
+import { normalizeName, statusOf } from './common.js';
 import { refreshProjects } from './projects.js';
 import { fillFolderSelect, folderOf, setFolder, recipePath } from './folders.js';
 import { rareVariantAt, randomIndexAt, MAX_RARE } from '/shared/floor-variants.js';
@@ -110,7 +110,7 @@ const floors = {
 };
 
 const rowsEl = document.getElementById('sheetRows');
-const statusEl = document.getElementById('status');
+const setStatus = statusOf('status');
 const nameEl = document.getElementById('projectName');
 const folderEl = document.getElementById('floorFolder');
 const behaviorEl = document.getElementById('floorBehavior');
@@ -172,14 +172,6 @@ export function initFloors() {
     drawGroundPreview();
   }, 50);
   render();
-}
-
-// ================================================================================================================================================================================================================================================
-// setStatus
-
-function setStatus(text, kind = '') {
-  statusEl.textContent = text;
-  statusEl.className = 'status' + (kind ? ` ${kind}` : '');
 }
 
 // ================================================================================================================================================================================================================================================

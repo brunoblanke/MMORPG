@@ -1,6 +1,6 @@
 // gerador/app/js/common.js
 
-import { spriteUrl } from './api.js';
+import { spriteUrl, fetchProjects, fetchProject } from './api.js';
 
 // Pedaços usados por mais de uma categoria: de onde vem a imagem de um
 // espaço (item do Tibia ou PNG enviado), desenho ancorado e nome de arquivo.
@@ -80,4 +80,39 @@ export function normalizeName(text) {
 export function setStatus(el, text, kind = '') {
   el.textContent = text;
   el.className = 'status' + (kind ? ` ${kind}` : '');
+}
+
+// ================================================================================================================================================================================================================================================
+// statusOf
+// A função que escreve no aviso da tela (o elemento de id dado): status(texto, tipo).
+
+export function statusOf(id) {
+  const el = document.getElementById(id);
+  return (text, kind = '') => setStatus(el, text, kind);
+}
+
+// ================================================================================================================================================================================================================================================
+// generatePendingSheets
+// "Gerar folhas pendentes": abre, uma por uma, as receitas da ferramenta que não têm folha (.png) e salva cada uma. open abre a receita, ready diz se as imagens dela já carregaram (espera até 20 s) e save salva; filter tira as que não entram; emptyText é o aviso de quando não há nenhuma.
+
+export async function generatePendingSheets({ category, button, status, emptyText, filter = () => true, open, ready, save }) {
+  button.disabled = true;
+  try {
+    const pending = (await fetchProjects()).filter(project => project.ferramenta === category && !project.temFolha && filter(project));
+    if (!pending.length) return status(emptyText, 'ok');
+    let done = 0;
+    for (const project of pending) {
+      status(`Gerando ${project.nome} (${done + 1} de ${pending.length})…`);
+      await open(await fetchProject(project.caminho));
+      const limit = Date.now() + 20000;
+      while (Date.now() < limit && !ready()) await new Promise(resolve => setTimeout(resolve, 100));
+      await save();
+      done++;
+    }
+    status(`${done} folha(s) gerada(s). Faça o commit de gerador/saida e gerador/projetos.`, 'ok');
+  } catch (error) {
+    status(`Parou: ${error.message}`, 'error');
+  } finally {
+    button.disabled = false;
+  }
 }

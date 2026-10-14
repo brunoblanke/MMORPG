@@ -12,6 +12,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { listarReceitas, idsDoTibia } = require('./receitas.js');
 
 const RAIZ = path.join(__dirname, '..');
 const PASTA_ITENS = path.join(RAIZ, 'gerador', 'projetos', 'itens');
@@ -64,23 +65,6 @@ function lerItens(arquivo) {
 }
 
 // ================================================================================================================================================================================================================================================
-// receitasExistentes
-// Os ids do Tibia e os nomes que já têm receita em gerador/projetos/itens.
-
-function receitasExistentes() {
-  const ids = new Set();
-  const nomes = new Set();
-  for (const pasta of fs.readdirSync(PASTA_ITENS)) {
-    for (const arquivo of fs.readdirSync(path.join(PASTA_ITENS, pasta)).filter(nome => nome.endsWith('.json'))) {
-      const receita = JSON.parse(fs.readFileSync(path.join(PASTA_ITENS, pasta, arquivo), 'utf8'));
-      if (receita.objeto && receita.objeto.tibia) ids.add(receita.objeto.tibia.id);
-      nomes.add(receita.nome);
-    }
-  }
-  return { ids, nomes };
-}
-
-// ================================================================================================================================================================================================================================================
 // montarReceita
 // A receita do item (propriedades do jogo a partir dos atributos do Canary).
 
@@ -110,7 +94,9 @@ function montarReceita(pasta, nome, item) {
 
 function criar(pastaCanary) {
   const itens = lerItens(path.join(pastaCanary, 'data', 'items', 'items.xml'));
-  const { ids, nomes } = receitasExistentes();
+  const receitas = listarReceitas(path.join(RAIZ, 'gerador', 'projetos'), 'itens');
+  const ids = idsDoTibia(receitas);
+  const nomes = new Set(receitas.map(({ receita }) => receita.nome));
   const criadas = [];
   const faltando = [];
   for (const [pasta, lista] of Object.entries(ARMAS)) {
