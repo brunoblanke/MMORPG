@@ -135,7 +135,7 @@ export class InteractionController {
 
   // ================================================================================================================================================================================================================================================
   // fish
-  // Vara de pescar no sqm de água (piso com peixes, gerador → Pisos → Pescável) até FISH_RANGE (6 sqm) e com linha de visão: gasta a isca da vara (a minhoca), mostra as ondas na água (efeito ripple), treina o fishing e, com chance que sobe com o skill (10% + 0,597% por nível acima de 10, de 10% a 50%, como no Tibia), dá um dos peixes do piso que o skill alcança (fishLevel), que cai no chão ao lado do player, do lado da água (dropBeside); quanto mais o skill passa do nível de um peixe, mais comum ele fica (peso de 1 até 20), então os melhores aparecem mais com o skill. Sem a isca, nada acontece. Espera USE_COOLDOWN_MS até a próxima. Devolve true se pescou (gastou isca).
+  // Vara de pescar no sqm de água (piso com peixes, gerador → Pisos → Pescável) até FISH_RANGE (6 sqm) e com linha de visão: gasta a isca da vara (a minhoca), mostra as ondas na água (efeito ripple), treina o fishing e, com chance que sobe com o skill (10% + 0,597% por nível acima de 10, de 10% a 50%, como no Tibia), dá um dos peixes do piso que o skill alcança (fishLevel), que cai no chão ao lado do player, do lado da água (dropBeside); quanto mais o skill passa do nível de um peixe, mais comum ele fica (peso de 1 até 20), então os melhores aparecem mais com o skill. Sem a isca, avisa "Você não tem isca.". Espera USE_COOLDOWN_MS até a próxima. Devolve true se pescou (gastou isca).
 
   fish(player, rod, target) {
     const { world, movement } = this.sim;
@@ -147,7 +147,10 @@ export class InteractionController {
     const now = this.sim.time || 0;
     if (now < (player.useReadyAt || 0)) return false;
     const bait = itemInfo(rod.type).bait;
-    if (bait && !takeFromBag(player, bait, 1)) return false;
+    if (bait && !takeFromBag(player, bait, 1)) {
+      this.sim.emit({ type: 'message', playerId: player.id, text: 'Você não tem isca.', kind: 'warn' });
+      return false;
+    }
     player.useReadyAt = now + USE_COOLDOWN_MS;
     this.sim.spells.showEffect(target.x, target.y, 'ripple', undefined, z);
     this.sim.combat.trainSkill(player, 'fishing');

@@ -79,6 +79,7 @@ test('sem minhoca, em terra firme ou fora do alcance nada acontece', () => {
   const none = game(0);
   const events = cast(none, 9, 5);
   assert.deepEqual(events.filter(e => e.type === 'effect'), []);
+  assert.deepEqual(events.filter(e => e.type === 'message').map(e => e.text), ['Você não tem isca.']);
 
   const sim = game();
   cast(sim, 6, 8);
