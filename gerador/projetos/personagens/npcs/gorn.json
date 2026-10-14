@@ -103,6 +103,11 @@
           "tipo": "itens/ferramentas/shovel",
           "preco": 50,
           "palavras": "shovel, pa"
+        },
+        {
+          "tipo": "itens/ferramentas/fishing-rod",
+          "preco": 150,
+          "palavras": "fishing rod, vara, vara de pescar"
         }
       ],
       "compra": [
@@ -140,6 +145,11 @@
           "tipo": "itens/fontes-de-luz/torch",
           "preco": 2,
           "palavras": "torch, tocha"
+        },
+        {
+          "tipo": "itens/ferramentas/fishing-rod",
+          "preco": 40,
+          "palavras": "fishing rod, vara, vara de pescar"
         }
       ],
       "missoes": [],
