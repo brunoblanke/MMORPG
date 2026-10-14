@@ -191,7 +191,8 @@
   },
   "propriedades": {
     "comportamento": "bloqueia",
-    "bordaBloqueia": true
+    "bordaBloqueia": true,
+    "minhocas": 50
   },
   "ferramenta": "pisos",
   "grupo": "estrutura",

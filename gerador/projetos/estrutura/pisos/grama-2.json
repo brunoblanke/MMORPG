@@ -108,7 +108,8 @@
     }
   },
   "propriedades": {
-    "comportamento": "normal"
+    "comportamento": "normal",
+    "minhocas": 50
   },
   "ferramenta": "pisos",
   "grupo": "estrutura",
