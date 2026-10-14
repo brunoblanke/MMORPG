@@ -237,6 +237,8 @@ export function rotatePaint(step = 1) {
 export function renderTools() {
   const wrap = document.getElementById('tools');
   const quick = document.getElementById('quickTools');
+  const openBody = wrap.querySelector('.tool-accordion');
+  const scroll = { wrap: wrap.scrollTop, body: openBody ? openBody.scrollTop : 0, tool: state.openAccordion };
   wrap.innerHTML = '';
   quick.innerHTML = '';
   canvas.classList.toggle('select-mode', state.tool === 'select');
@@ -267,6 +269,9 @@ export function renderTools() {
     if (body) win.appendChild(body);
     wrap.appendChild(win);
   });
+  wrap.scrollTop = scroll.wrap;
+  const body = wrap.querySelector('.tool-accordion');
+  if (body && scroll.body && state.openAccordion === scroll.tool) body.scrollTop = scroll.body;
 }
 
 // ================================================================================================================================================================================================================================================
