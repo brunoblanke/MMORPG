@@ -9,7 +9,7 @@ import { TICK_MS } from '../js/simulation.js';
 
 const GROUND = floorRect(0, 29, 0, 29, 0);
 
-setAssets([{ id: CREATURE, ferramenta: 'criaturas', grupo: 'criaturas', pasta: 'mamiferos', nome: 'teste', url: '/t.png', quadro: 32, quadros: 3, pecas: [], propriedades: { foge: 20 } }]);
+setAssets([{ id: CREATURE, ferramenta: 'criaturas', grupo: 'criaturas', pasta: 'mamiferos', nome: 'teste', url: '/t.png', quadro: 32, quadros: 3, pecas: [], propriedades: { comportamento: 'foge', foge: 20 } }]);
 
 // ================================================================================================================================================================================================================================================
 // runFor

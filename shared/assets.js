@@ -76,13 +76,12 @@ const assets = new Map();
 // Comportamento da criatura (gerador → Criaturas): 'normal' persegue e ataca
 // colado; 'foge' igual, mas foge com a vida baixa; 'mago' ataca de longe e
 // mantém distância; 'npc' é um NPC (conversa, não luta: shared/npcs.js).
-// Receita antiga com foge > 0 vale 'foge'.
 
 export function creatureBehavior(type) {
   const asset = getAsset(type);
   const props = (asset && asset.propriedades) || {};
   if (['normal', 'foge', 'mago', 'pacifico', 'npc'].includes(props.comportamento)) return props.comportamento;
-  return Number(props.foge) > 0 ? 'foge' : 'normal';
+  return 'normal';
 }
 
 // ================================================================================================================================================================================================================================================
@@ -136,8 +135,7 @@ export function creatureStats(type) {
 // volta), 'corrente' (Chain: acerta o player e pula pros mais perto, até
 // `saltos` vezes, cada pulo de até `alcanceSalto` sqm), 'lentidao' (deixa o
 // player lento: `velocidade` negativa por `ms`), 'cura' (ela mesma) e
-// 'reflexo' (Parry: `chance` e `porcentagem` do dano devolvido). A
-// propriedade antiga `magia` vira um tiro.
+// 'reflexo' (Parry: `chance` e `porcentagem` do dano devolvido).
 
 export const SPELL_ELEMENTS = ['fire', 'energy', 'poison', 'ice', 'earth', 'death', 'holy'];
 export const RESISTANCE_ELEMENTS = ['physical', ...SPELL_ELEMENTS];
@@ -154,11 +152,6 @@ function creatureAttacks(props) {
   const int = (value) => Math.max(0, Math.floor(Number(value)) || 0);
   const attacks = [];
   const blank = { range: 0, radius: 0, length: 0, spread: 0, widths: [], center: 'self', field: '', jumps: 0, jumpRange: 0, speed: 0, ms: 0 };
-  const magic = props.magia || {};
-  if (SPELL_ELEMENTS.includes(magic.tipo) && int(magic.dano) > 0) {
-    const damage = int(magic.dano);
-    attacks.push({ ...blank, shape: 'shot', element: magic.tipo, min: Math.ceil(damage / 2), max: damage, chance: Math.min(100, Math.max(1, int(magic.chance) || 20)) });
-  }
   for (const entry of Array.isArray(props.ataques) ? props.ataques : []) {
     const shape = ATTACK_SHAPES[entry && entry.forma];
     const element = entry && entry.elemento;

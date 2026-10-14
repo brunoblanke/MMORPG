@@ -3,8 +3,10 @@
 // Muda folhas do gerador de pasta sem quebrar nada: move a receita
 // (gerador/projetos) e o PNG (gerador/saida), acerta grupo/pasta/nome dentro
 // da receita e troca o caminho antigo pelo novo em tudo que aponta pra ele —
-// mapa (objetos, NPCs, criaturas), outras receitas (vendas, loot,
-// "abre como", "aceso como") e o código (shared, js, editor).
+// outras receitas (vendas, loot,
+// "abre como", "aceso como") e o código (shared, js, editor). O mapa ao vivo
+// fica no servidor: acrescente o par em gerador/renomeados.json, que o servidor
+// aplica nele ao subir.
 //
 // Uso: node ferramentas/mover-folhas.js de para [de para …]
 //   ex.: node ferramentas/mover-folhas.js estrutura/natureza/fogueira decoracao/iluminacao/fogueira
@@ -92,7 +94,6 @@ function main() {
   const pares = lerPares(process.argv.slice(2));
   for (const [de, para] of pares) moverFolha(de, para);
   const alvos = [
-    path.join(RAIZ, 'data', 'map.json'),
     ...arquivos(PROJETOS, '.json'),
     ...PASTAS_DE_CODIGO.flatMap(pasta => arquivos(path.join(RAIZ, pasta), '.js'))
   ];

@@ -2,11 +2,10 @@
 
 import { randEnemyColor } from '../utils/helpers.js';
 import { Enemy } from './enemy.js';
-import { computeBorderPieces } from '../../shared/floor-variant.js';
-import { objectProps, startsActive, isFloorType, isHoleType, isEntranceFolder, objectUse, objectIdType, splitType, pieceType, floorMiddle, getAsset, floorHasPiece, creatureBehavior } from '../../shared/assets.js';
+import { objectProps, startsActive, isFloorType, isHoleType, isEntranceFolder, objectUse, objectIdType, splitType, pieceType, floorMiddle, getAsset, creatureBehavior } from '../../shared/assets.js';
 import { collectObjectDescriptors, collectEnemyDescriptors } from '../../shared/map-format.js';
 import { getStairTop, getStairTopTarget, getHoleTarget } from '../../shared/stairs.js';
-import { parseBorderType, hasSavedBorders, mergeSavedInnerCorners } from '../../shared/floor-borders.js';
+import { parseBorderType, mergeSavedInnerCorners } from '../../shared/floor-borders.js';
 
 export class GameObject {
   constructor(data) {
@@ -52,8 +51,7 @@ export class GameObject {
 
 // ================================================================================================================================================================================================================================================
 // generateObjects
-// Bordas: as gravadas no mapa (versão 2 em diante, editáveis no editor) ou,
-// em mapa antigo, geradas aqui pelos pisos (generateFloorBorders).
+// Bordas: as gravadas no mapa (editáveis no editor).
 
 export function generateObjects(mapData) {
   let objs = [];
@@ -82,8 +80,8 @@ export function generateObjects(mapData) {
   }
 
   objs = applyTransitions(objs);
-  const visibleFloorsByZ = applyFloorVariants(objs);
-  objs.push(...(hasSavedBorders(mapData) ? savedBorders : generateFloorBorders(objs, visibleFloorsByZ)));
+  applyFloorVariants(objs);
+  objs.push(...savedBorders);
   assignGroundOrder(objs);
 
   return objs;
@@ -191,89 +189,22 @@ function assignGroundOrder(objs) {
 // Até 2 pisos por célula, igual ao editor (cell.floor / cell.floorTop): a 1ª
 // entrada de piso numa célula é a de baixo, a 2ª é a de cima. Todo piso é
 // ladrilho cheio (uma das variações do meio da folha, sorteada pela posição);
-// as bordas ficam pra fora, em generateFloorBorders.
-// Devolve Map<z, Map<'x,y', { type, seq }>> com o piso VISÍVEL de cada célula.
+// as bordas são as gravadas no mapa.
 
 function applyFloorVariants(objs) {
-  const visibleFloorsByZ = new Map();
   const layerCountByKey = new Map();
   const counters = {};
 
   for (const obj of objs) {
     if (!obj.floorType) continue;
-    if (!visibleFloorsByZ.has(obj.z)) visibleFloorsByZ.set(obj.z, new Map());
-
     const key = `${obj.x},${obj.y}`;
     const layerIndex = layerCountByKey.get(`${key},${obj.z}`) || 0;
     if (layerIndex > 1) continue;
     layerCountByKey.set(`${key},${obj.z}`, layerIndex + 1);
-    visibleFloorsByZ.get(obj.z).set(key, { type: obj.floorType, seq: obj.seq });
 
     counters[obj.floorType] = (counters[obj.floorType] || 0) + 1;
     obj.id = `${pieceType(obj.floorType, floorMiddle(obj.floorType, obj.x, obj.y, obj.z))}_${counters[obj.floorType]}`;
   }
-
-  return visibleFloorsByZ;
-}
-
-// ================================================================================================================================================================================================================================================
-// generateFloorBorders
-//
-// Cria as peças de borda pra fora de cada piso visível (por z), usando a
-// MESMA função (computeBorderPieces) que o editor usa em canvas-renderer.js:
-// a borda de um piso só aparece sobre célula vazia ou sobre piso colocado
-// antes dele. Uma célula pode receber várias peças (ex.: canto interno = n + o).
-// São apenas decorativas: não bloqueiam movimento nem entram no
-// pilha do World — só dá pra pisar numa borda se houver piso embaixo dela.
-
-function generateFloorBorders(objs, visibleFloorsByZ) {
-  // Andares diferentes são desenhados na mesma posição de tela, do z menor
-  // pro maior. Por isso a borda de um andar de cima pode (e deve) avançar
-  // sobre o piso do andar de baixo. Topo de escada não impede borda; buraco
-  // sim: o sqm do buraco fica sem borda, pra dar pra ver o andar de baixo
-  // por dentro dele.
-  const borderObjs = [];
-  let borderCounter = 0;
-  const holeKeys = new Set(objs
-    .filter(obj => isHoleType(objectIdType(obj.id)))
-    .map(obj => `${obj.x},${obj.y},${obj.z}`));
-
-  for (const [z, visibleFloors] of visibleFloorsByZ) {
-    const candidates = new Set();
-    for (const key of visibleFloors.keys()) {
-      const [fx, fy] = key.split(',').map(Number);
-      for (let dx = -1; dx <= 1; dx++) {
-        for (let dy = -1; dy <= 1; dy++) {
-          candidates.add(`${fx + dx},${fy + dy}`);
-        }
-      }
-    }
-
-    const getFloor = (x, y) => visibleFloors.get(`${x},${y}`) || null;
-
-    for (const key of candidates) {
-      const [x, y] = key.split(',').map(Number);
-      if (holeKeys.has(`${x},${y},${z}`)) continue;
-      for (const piece of computeBorderPieces(x, y, getFloor, getFloor(x, y), floorHasPiece)) {
-        borderCounter++;
-        const border = new GameObject({
-          id: `${pieceType(piece.type, piece.variant)}_${borderCounter}`,
-          x: x,
-          y: y,
-          z: z,
-          step: 0,
-          order: 0,
-          movable: false,
-          hasVolume: false,
-          blocksMovement: false
-        });
-        border.isBorder = true;
-        borderObjs.push(border);
-      }
-    }
-  }
-
-  return borderObjs;
 }
 
 // ================================================================================================================================================================================================================================================

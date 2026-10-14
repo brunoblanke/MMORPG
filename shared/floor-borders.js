@@ -8,11 +8,9 @@ import { isFloorType, isStairsType, floorHasPiece } from './assets.js';
 // apagar piso, buraco ou escada, recalcula os 3×3 em volta) e dá pra tirar
 // ou pôr uma a uma. No map.json cada borda é uma entrada 'Border:<piso>:<peça>'
 // (o piso é a folha, ex.: 'Border:estrutura/pisos/piso-grama-1:n').
-// Mapas até a versão 1 não tinham bordas gravadas: o jogo as gerava na hora.
 
 export const BORDER_PREFIX = 'Border:';
 export const BORDER_VARIANTS = ['n', 's', 'l', 'o', 'nl', 'no', 'sl', 'so', 'int-nl', 'int-no', 'int-sl', 'int-so'];
-export const BORDERS_SAVED_SINCE_VERSION = 2;
 
 // ================================================================================================================================================================================================================================================
 // borderEntryType
@@ -31,14 +29,6 @@ export function parseBorderType(type) {
   const [floorType, variant] = type.slice(BORDER_PREFIX.length).split(':');
   if (!isFloorType(floorType) || !BORDER_VARIANTS.includes(variant)) return null;
   return { type: floorType, variant };
-}
-
-// ================================================================================================================================================================================================================================================
-// hasSavedBorders
-// O mapa já traz as bordas (versão 2 em diante)?
-
-export function hasSavedBorders(mapData) {
-  return (mapData.version || 1) >= BORDERS_SAVED_SINCE_VERSION;
 }
 
 // ================================================================================================================================================================================================================================================

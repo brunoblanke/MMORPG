@@ -6,6 +6,7 @@ import { spawn } from 'node:child_process';
 import { mkdtempSync, rmSync, mkdirSync, writeFileSync, readdirSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
+import { testMapData } from './helpers/map.js';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 import { decodeDelta } from '../js/net/delta.js';
@@ -27,7 +28,7 @@ let tempDir = null;
 before(async () => {
   tempDir = mkdtempSync(path.join(tmpdir(), 'jogo-e2e-'));
   writeFileSync(path.join(tempDir, 'characters.json'), '{}');
-  writeFileSync(path.join(tempDir, 'map.json'), readFileSync(path.join(ROOT, 'data', 'map.json')));
+  writeFileSync(path.join(tempDir, 'map.json'), JSON.stringify(testMapData()));
   mkdirSync(path.join(tempDir, 'backups'));
   for (let day = 1; day <= 8; day++) writeFileSync(path.join(tempDir, 'backups', `characters-2020-01-0${day}.json`), '{}');
   server = spawn(process.execPath, ['server.js'], {

@@ -33,7 +33,7 @@ function runFor(sim, ms) {
 }
 
 test('magia de longe: a criatura que persegue lança a magia do tipo dela no player', () => {
-  const sim = game({ ataque: 0, magia: { tipo: 'fire', dano: 40, chance: 100 } });
+  const sim = game({ ataque: 0, ataques: [{ forma: 'tiro', elemento: 'fire', min: 20, max: 40, chance: 100, alcance: 7 }] });
   const hp = sim.player.currentHp;
   const events = runFor(sim, 3000);
   assert.ok(events.some(e => e.type === 'missile' && e.kind === 'fire'));

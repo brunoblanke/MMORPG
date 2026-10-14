@@ -284,7 +284,7 @@ test('exevo con flam (Explosive Arrow): paladino nível 25 troca 1 flecha por 8 
   assert.ok(events.some(e => e.type === 'message'));
 });
 
-test('runas empilham: duas magias juntam na mesma pilha; a legada com `charges` vira pilha; a pilha é de até 100', () => {
+test('runas empilham: duas magias juntam na mesma pilha; a pilha é de até 100', () => {
   setAssets([asset(BAG, { move: true, peso: 10, espacos: 4 }), asset(BLANK_RUNE, { move: true, empilhavel: true }), asset(LMM, { move: true, empilhavel: true }), asset(CREATURE, { vida: 500 })]);
   const game = mage();
   game.player.equip.mochila.items[0] = { uid: 'r1', type: BLANK_RUNE, count: 2 };
@@ -297,6 +297,5 @@ test('runas empilham: duas magias juntam na mesma pilha; a legada com `charges` 
   assert.equal(piles[0].count, 10);
   assert.ok(!game.player.equip.mochila.items.some(item => item && item.type === BLANK_RUNE));
 
-  assert.equal(fromPlain({ type: LMM, charges: 3 }, () => 'x').count, 3);
   assert.equal(itemInfo(LMM).stack, 100);
 });

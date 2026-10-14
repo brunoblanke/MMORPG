@@ -19,7 +19,7 @@ function floors(type, minX, maxX, minY, maxY, z, firstSeq) {
 
 // ================================================================================================================================================================================================================================================
 // oldMap
-// Mapa de antes das bordas gravadas (versão 1): Piso 1 e Piso 2 se cruzando,
+// Mapa sem bordas gravadas: Piso 1 e Piso 2 se cruzando,
 // um buraco e uma escada com o topo no andar de cima.
 
 function oldMap() {
@@ -36,7 +36,7 @@ function oldMap() {
 
 // ================================================================================================================================================================================================================================================
 // migrate
-// O que o editor faz ao abrir um mapa antigo: gera as bordas de todos os andares.
+// Gera as bordas de todos os andares, como o editor faz ao pintar.
 
 function migrate(mapData) {
   const { layers, layerOrder } = buildLayersFromMapData(mapData, GRID);
@@ -58,15 +58,14 @@ function bordersOf(objs) {
   return byTile;
 }
 
-test('mapa antigo convertido tem no jogo exatamente as mesmas bordas que o jogo gerava', () => {
-  const before = bordersOf(generateObjects(oldMap()));
+test('as bordas gravadas no mapa são as bordas do jogo (nenhuma é gerada sozinha)', () => {
+  assert.equal(Object.keys(bordersOf(generateObjects(oldMap()))).length, 0);
   const { map } = migrate(oldMap());
   assert.equal(map.version, 3);
   const after = bordersOf(generateObjects(map));
 
-  assert.ok(Object.keys(before).length > 30);
-  assert.deepEqual(after, before);
-  assert.equal(before['12,7,0'], undefined);
+  assert.ok(Object.keys(after).length > 30);
+  assert.equal(after['12,7,0'], undefined);
 });
 
 test('borda tirada ou posta à mão fica assim no jogo', () => {

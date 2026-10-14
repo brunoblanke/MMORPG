@@ -175,10 +175,8 @@ test('mesmo mapa, mesmos comandos e mesmo sorteio: mesmo resultado', () => {
   assert.equal(play(), play());
 });
 
-test('o mapa real roda sem navegador: 2 minutos de jogo', () => {
-  const mapData = JSON.parse(fs.readFileSync(new URL('../data/map.json', import.meta.url), 'utf8'));
-  const sim = new Simulation(mapData);
-  sim.addPlayer('player1');
+test('o jogo roda sem navegador: 2 minutos de jogo', () => {
+  const sim = buildGame({ objects: floorRect(0, 59, 0, 59, 0), enemies: Array.from({ length: 20 }, (_, i) => [10 + (i % 10) * 4, 10 + Math.floor(i / 10) * 4, 0]), player: { x: 5, y: 5, z: 0 } });
   sim.time = 1000;
 
   const started = performance.now();

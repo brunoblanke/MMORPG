@@ -71,7 +71,6 @@ const SECTIONS = [
   { title: 'Peças extras', from: 24 }
 ];
 const BASE_PIECES = 16;
-const LEGACY_KEYS = { 'mureta-ne-1': 'mureta-se-1', 'mureta-ne-2': 'mureta-se-2' };
 
 // Sala da prévia (como no Tibia): pilar em cima à esquerda, a parede x de
 // cima indo até o fim à direita, a y da esquerda até o fim embaixo, e o canto
@@ -535,7 +534,6 @@ function openRecipe(recipe) {
   walls.slots = {};
   walls.images.clear();
   const saved = { ...(recipe.pecas || {}) };
-  for (const [from, to] of Object.entries(LEGACY_KEYS)) if (saved[from] && !saved[to]) saved[to] = saved[from];
   for (const piece of PIECES) {
     const source = saved[piece.key];
     if (source) {

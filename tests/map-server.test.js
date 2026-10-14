@@ -7,6 +7,7 @@ import { mkdtempSync, rmSync, existsSync, readFileSync, readdirSync, writeFileSy
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { testMapData } from './helpers/map.js';
 
 // O mapa ao vivo fica fora do deploy (JOGO_MAPA): sem o arquivo, o servidor
 // cria uma cópia do mapa do repositório; /api/map entrega o mapa; salvar
@@ -44,9 +45,11 @@ after(async () => {
   if (tempDir) rmSync(tempDir, { recursive: true, force: true, maxRetries: 5 });
 });
 
-test('sem o mapa ao vivo, o servidor cria uma cópia do mapa do repositório', () => {
+test('sem o mapa ao vivo, o servidor cria um mapa vazio', () => {
   assert.ok(existsSync(mapFile));
-  assert.equal(readFileSync(mapFile, 'utf8'), readFileSync(path.join(ROOT, 'data', 'map.json'), 'utf8'));
+  const map = JSON.parse(readFileSync(mapFile, 'utf8'));
+  assert.deepEqual(map.objetosData, []);
+  assert.equal(map.version, 3);
 });
 
 test('/api/map entrega o mapa do servidor e, com ?baixar=1, como arquivo', async () => {
@@ -69,7 +72,9 @@ test('salvar grava no mapa do servidor e o /api/map devolve o salvo; o backup do
 });
 
 test('salvar um mapa vazio por cima de um mapa com conteúdo é recusado', async () => {
-  const map = await (await fetch(`http://localhost:${PORT}/api/map`)).json();
+  const map = testMapData();
+  const first = await fetch(`http://localhost:${PORT}/api/save-map`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(map) });
+  assert.equal(first.status, 200);
   const empty = { ...map, objetosData: [], transicoesData: [], enemyData: [] };
   const saved = await fetch(`http://localhost:${PORT}/api/save-map`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(empty) });
   assert.equal(saved.status, 400);
@@ -77,38 +82,24 @@ test('salvar um mapa vazio por cima de um mapa com conteúdo é recusado', async
   assert.ok(again.objetosData.length > 0);
 });
 
-test('com o JOGO_MAPA num caminho que não dá pra usar, o servidor cai pro mapa do repositório e segue de pé', async () => {
-  const port = PORT + 1;
+test('com o JOGO_MAPA num caminho que não dá pra usar, o servidor avisa e não sobe', async () => {
   writeFileSync(path.join(tempDir, 'arquivo-comum'), 'não é uma pasta');
   const other = spawn(process.execPath, ['server.js'], {
     cwd: ROOT,
-    env: { ...process.env, PORT: String(port), JOGO_MAPA: path.join(tempDir, 'arquivo-comum', 'map.json'), JOGO_PERSONAGENS: path.join(tempDir, 'outros', 'characters.json') },
+    env: { ...process.env, PORT: String(PORT + 1), JOGO_MAPA: path.join(tempDir, 'arquivo-comum', 'map.json'), JOGO_PERSONAGENS: path.join(tempDir, 'outros', 'characters.json') },
     stdio: ['ignore', 'pipe', 'pipe']
   });
-  try {
-    await new Promise((resolve, reject) => {
-      const timer = setTimeout(() => reject(new Error('servidor não subiu')), 60000);
-      other.stdout.on('data', (chunk) => {
-        if (String(chunk).includes('Servidor rodando')) {
-          clearTimeout(timer);
-          resolve();
-        }
-      });
-      other.on('exit', (code) => reject(new Error(`servidor saiu (${code})`)));
-    });
-    const res = await fetch(`http://localhost:${port}/api/map`);
-    assert.equal(res.status, 200);
-    assert.ok(Array.isArray((await res.json()).objetosData));
-  } finally {
-    await new Promise((resolve) => { other.once('exit', resolve); other.kill(); });
-  }
+  let errors = '';
+  other.stderr.on('data', (chunk) => { errors += chunk; });
+  const code = await new Promise((resolve) => { other.once('exit', resolve); });
+  assert.equal(code, 1);
+  assert.match(errors, /Não deu pra usar o mapa/);
 });
 
 test('/api/status mostra o mapa em uso e as conexões do jogo', async () => {
   const status = await (await fetch(`http://localhost:${PORT}/api/status`)).json();
   assert.equal(status.ok, true);
   assert.equal(status.mapa.arquivo, mapFile);
-  assert.equal(status.mapa.doRepositorio, false);
   assert.equal(status.mapa.variavelJogoMapa, true);
   assert.equal(status.jogo.conexoesTotal, 0);
 });

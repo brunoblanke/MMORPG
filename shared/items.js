@@ -337,13 +337,11 @@ export function toPlain(item) {
 // ================================================================================================================================================================================================================================================
 // fromPlain
 // Item gravado de volta, com uids novos (nextUid()). Tipo que não existe mais
-// some; a runa gravada com `charges` (formato antigo) vira a pilha com essa
-// quantidade; container gravado maior ou menor que a folha atual se ajusta.
+// some; container gravado maior ou menor que a folha atual se ajusta.
 
 export function fromPlain(plain, nextUid) {
   if (!plain || typeof plain.type !== 'string' || !getAsset(splitType(plain.type).asset)) return null;
-  const legacyCharges = Number.isInteger(plain.charges) && plain.charges > 0 ? plain.charges : 0;
-  const item = newItem(nextUid(), plain.type, Number(plain.count) || legacyCharges || 1);
+  const item = newItem(nextUid(), plain.type, Number(plain.count) || 1);
   if (item.items && Array.isArray(plain.items)) {
     plain.items.slice(0, item.items.length).forEach((child, i) => { item.items[i] = fromPlain(child, nextUid); });
   }
