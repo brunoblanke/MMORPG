@@ -26,6 +26,7 @@ export class MovementController {
   constructor(world) {
     this.world = world;
     this.onNoPath = null;
+    this.onFall = null;
     this.enemiesPassable = false;
   }
 
@@ -373,7 +374,8 @@ export class MovementController {
   // useTransition
   // Leva a entidade pro alvo da escada/buraco, se ele tiver piso, ou pra
   // landing ({ x, y, step }, no mesmo andar do alvo) quando dão um sqm livre.
-  // Devolve true se ela trocou de andar.
+  // Devolve true se ela trocou de andar. O player que desce por um buraco
+  // avisa onFall (a simulação mostra a fumacinha do Tibia, poff, onde ele cai).
 
   useTransition(entity, transitionObj, landing = null) {
     const floor = entity.z || 0;
@@ -403,6 +405,7 @@ export class MovementController {
 
     const who = entity.isPlayer ? 'Player' : `Inimigo ${entity.id}`;
     const via = transitionObj.stairDirection === 'up' ? 'escada' : 'buraco';
+    if (entity.isPlayer && via === 'buraco' && targetFloor < floor && this.onFall) this.onFall(entity, toX, toY, targetFloor);
     console.log(`🪜 ${who} usou ${via} (${transitionObj.id}): (${fromX},${fromY}) andar ${floor} → (${entity.x},${entity.y}) andar ${targetFloor}`);
     return true;
   }

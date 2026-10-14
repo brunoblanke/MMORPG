@@ -82,8 +82,10 @@ test('moveEntity troca de andar pela pilha e checkFloorTransitions aplica o bura
   assert.deepEqual(game.world.getTileEntities(5, 8, 1), [player]);
 
   assert.equal(movementController.moveEntity(player, 0, -1, 5000), true);
+  game.drainEvents();
   movementController.checkFloorTransitions([player]);
   assert.deepEqual([player.x, player.y, player.z], [6, 8, 0]);
+  assert.ok(game.drainEvents().some(e => e.type === 'effect' && e.effect === 'poff' && e.x === 6 && e.y === 8 && e.z === 0), 'a fumacinha sobe onde ele cai');
 });
 
 test('criatura bloqueia o passo; parede também', () => {
