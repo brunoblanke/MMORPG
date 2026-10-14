@@ -24,7 +24,8 @@
     "vidaMax": 0,
     "manaMin": 0,
     "manaMax": 0,
-    "alimento": 144
+    "alimento": 144,
+    "nivelPesca": 50
   },
   "ferramenta": "objetos",
   "grupo": "itens",

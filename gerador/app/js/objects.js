@@ -25,6 +25,7 @@ const STACK_OFFSET = 7;
 // velocidade.
 const NUMBERS = [
   { key: 'volume', label: 'Altura em volumes (com "Tem altura": o topo do degrau; 1 é o comum, a escada grande vale 2…)', min: 1, step: 1 },
+  { key: 'nivelPesca', label: 'Nível de fishing pra pescar (peixe: só sai com esse skill ou mais; os melhores ficam mais comuns conforme o skill sobe; 0 = qualquer)', min: 0, step: 1 },
   { key: 'passo', label: 'Passo (quantos volumes dá pra subir de uma vez pra entrar nele; 1 é o comum)', min: 1, step: 1 },
   { key: 'peso', label: 'Peso (oz)', min: 0, step: 0.1 },
   { key: 'espacos', label: 'Espaços (0 = não é container)', min: 0, step: 1 },
@@ -42,7 +43,7 @@ const NUMBERS = [
   { key: 'regenVida', label: 'Equipado: recupera vida a cada 6 s', min: 0, step: 1 },
   { key: 'regenMana', label: 'Equipado: recupera mana a cada 6 s', min: 0, step: 1 }
 ];
-const DEFAULT_PROPERTIES = { bloqueia: false, move: true, altura: false, volume: 1, passo: 1, empilhavel: false, duasMaos: false, tipoMunicao: '', isca: '', resistencias: {}, postal: false, peso: 10, espacos: 0, atk: 0, def: 0, ml: 0, speed: 0, vidaMin: 0, vidaMax: 0, manaMin: 0, manaMax: 0, alimento: 0, luz: 0, duracao: 0, regenVida: 0, regenMana: 0, uso: '', ativoComo: '', comecaAtivo: false };
+const DEFAULT_PROPERTIES = { bloqueia: false, move: true, altura: false, volume: 1, passo: 1, nivelPesca: 0, empilhavel: false, duasMaos: false, tipoMunicao: '', isca: '', resistencias: {}, postal: false, peso: 10, espacos: 0, atk: 0, def: 0, ml: 0, speed: 0, vidaMin: 0, vidaMax: 0, manaMin: 0, manaMax: 0, alimento: 0, luz: 0, duracao: 0, regenVida: 0, regenMana: 0, uso: '', ativoComo: '', comecaAtivo: false };
 const RESISTANCES = [['physical', 'Físico'], ['fire', 'Fogo'], ['energy', 'Energia'], ['ice', 'Gelo'], ['earth', 'Terra'], ['poison', 'Veneno'], ['death', 'Morte'], ['holy', 'Sagrado']];
 const AMMO_TYPES = [['', 'Qualquer / não é munição'], ['arrow', 'Flecha (arco)'], ['bolt', 'Virote (besta)']];
 const USES = [

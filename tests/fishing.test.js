@@ -23,7 +23,7 @@ setAssets([
   asset(ROD, { move: true, peso: 8, uso: 'ferramenta-pesca', isca: WORM }),
   asset(WORM, { move: true, peso: 0.05, empilhavel: true }),
   asset(FISH, { move: true, peso: 5, empilhavel: true, alimento: 144 }),
-  asset(PIKE, { move: true, peso: 8, empilhavel: true, alimento: 145 }),
+  asset(PIKE, { move: true, peso: 8, empilhavel: true, alimento: 145, nivelPesca: 20 }),
   asset(BAG, { move: true, peso: 8, espacos: 4 }),
   asset(WATER, { comportamento: 'bloqueia', pescavel: [FISH, PIKE] }, 'pisos'),
   asset(LAND, {}, 'pisos')
@@ -94,4 +94,21 @@ test('a chance sobe com o skill (10% no 10, até 50%)', () => {
     Math.random = random;
     assert.equal(count(sim, FISH) + count(sim, PIKE) === 1, caught, `${level}/${value}`);
   }
+});
+
+test('peixe melhor pede skill e fica mais comum quanto mais o skill passa dele', () => {
+  const random = Math.random;
+  const pick = (level, roll) => {
+    const sim = game();
+    sim.player.skills.fishing.lvl = level;
+    const values = [0, roll];
+    Math.random = () => (values.length ? values.shift() : 0.5);
+    cast(sim, 9, 5);
+    Math.random = random;
+    return [count(sim, FISH), count(sim, PIKE)];
+  };
+  assert.deepEqual(pick(15, 0.99), [1, 0], 'abaixo do nível o lúcio não sai');
+  assert.deepEqual(pick(25, 0.9), [0, 1], 'no 25 o lúcio já sai (peso 6 de 26)');
+  assert.deepEqual(pick(25, 0.5), [1, 0]);
+  assert.deepEqual(pick(60, 0.99), [0, 1], 'no 60 os dois pesam igual');
 });

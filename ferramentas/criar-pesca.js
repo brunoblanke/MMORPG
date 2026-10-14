@@ -2,7 +2,8 @@
 
 // Cria no gerador as receitas da pesca: a vara de pescar (itens/ferramentas,
 // Uso "vara de pescar", isca: a minhoca) e os peixes (itens/peixes: fish,
-// northern pike, green perch e rainbow trout, comida). O peso vem do Canary;
+// northern pike, green perch e rainbow trout, comida; cada um pede um nível de
+// fishing: 0, 20, 35 e 50). O peso vem do Canary;
 // as folhas (.png) saem do gerador: aba Objetos → "Gerar folhas pendentes".
 // Receita que já existe fica como está. Os peixes que cada piso de água dá se
 // marcam no gerador (Pisos → Pescável).
@@ -18,10 +19,10 @@ const PASTA_ITENS = path.join(RAIZ, 'gerador', 'projetos', 'itens');
 
 const ITENS = [
   { pasta: 'ferramentas', nome: 'fishing-rod', id: 3483, extra: { uso: 'ferramenta-pesca', isca: 'itens/produtos-de-criaturas/worm' } },
-  { pasta: 'peixes', nome: 'fish', id: 3578, extra: { alimento: 144, empilhavel: true } },
-  { pasta: 'peixes', nome: 'northern-pike', id: 3580, extra: { alimento: 145, empilhavel: true } },
-  { pasta: 'peixes', nome: 'green-perch', id: 7159, extra: { alimento: 100, empilhavel: true } },
-  { pasta: 'peixes', nome: 'rainbow-trout', id: 7158, extra: { alimento: 144, empilhavel: true } }
+  { pasta: 'peixes', nome: 'fish', id: 3578, extra: { alimento: 144, empilhavel: true, nivelPesca: 0 } },
+  { pasta: 'peixes', nome: 'northern-pike', id: 3580, extra: { alimento: 145, empilhavel: true, nivelPesca: 20 } },
+  { pasta: 'peixes', nome: 'green-perch', id: 7159, extra: { alimento: 100, empilhavel: true, nivelPesca: 35 } },
+  { pasta: 'peixes', nome: 'rainbow-trout', id: 7158, extra: { alimento: 144, empilhavel: true, nivelPesca: 50 } }
 ];
 
 // ================================================================================================================================================================================================================================================

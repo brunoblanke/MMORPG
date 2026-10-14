@@ -134,7 +134,7 @@ export class InteractionController {
 
   // ================================================================================================================================================================================================================================================
   // fish
-  // Vara de pescar no sqm de água (piso com peixes, gerador → Pisos → Pescável) até POTION_RANGE e com linha de visão: gasta a isca da vara (a minhoca), mostra o respingo, treina o fishing e, com chance que sobe com o skill (10% + 0,597% por nível acima de 10, de 10% a 50%, como no Tibia), dá um dos peixes do piso. Sem a isca, nada acontece. Espera USE_COOLDOWN_MS até a próxima. Devolve true se pescou (gastou isca).
+  // Vara de pescar no sqm de água (piso com peixes, gerador → Pisos → Pescável) até POTION_RANGE e com linha de visão: gasta a isca da vara (a minhoca), mostra o respingo, treina o fishing e, com chance que sobe com o skill (10% + 0,597% por nível acima de 10, de 10% a 50%, como no Tibia), dá um dos peixes do piso que o skill alcança (fishLevel); quanto mais o skill passa do nível de um peixe, mais comum ele fica (peso de 1 até 20), então os melhores aparecem mais com o skill. Sem a isca, nada acontece. Espera USE_COOLDOWN_MS até a próxima. Devolve true se pescou (gastou isca).
 
   fish(player, rod, target) {
     const { world, movement } = this.sim;
@@ -152,7 +152,13 @@ export class InteractionController {
     this.sim.combat.trainSkill(player, 'fishing');
     const level = player.skills && player.skills.fishing ? player.skills.fishing.lvl : 10;
     const chance = Math.min(50, Math.max(10, 10 + (level - 10) * 0.597));
-    if (Math.random() * 100 < chance) giveItem(this.sim, player, fish[Math.floor(Math.random() * fish.length)], 1);
+    if (Math.random() * 100 >= chance) return true;
+    const weights = fish.map(type => (level >= itemInfo(type).fishLevel ? Math.min(20, 1 + level - itemInfo(type).fishLevel) : 0));
+    const total = weights.reduce((sum, weight) => sum + weight, 0);
+    if (total <= 0) return true;
+    let roll = Math.random() * total;
+    const index = weights.findIndex(weight => (roll -= weight) < 0);
+    giveItem(this.sim, player, fish[index < 0 ? fish.length - 1 : index], 1);
     return true;
   }
 
