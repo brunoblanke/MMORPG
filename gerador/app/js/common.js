@@ -93,13 +93,13 @@ export function statusOf(id) {
 
 // ================================================================================================================================================================================================================================================
 // generatePendingSheets
-// "Gerar folhas pendentes": abre, uma por uma, as receitas da ferramenta que não têm folha (.png) e salva cada uma. open abre a receita, ready diz se as imagens dela já carregaram (espera até 20 s) e save salva; filter tira as que não entram; emptyText é o aviso de quando não há nenhuma.
+// "Gerar folhas pendentes": abre, uma por uma, as receitas da ferramenta que não têm folha (.png) e salva cada uma. open abre a receita, ready diz se as imagens dela já carregaram (espera até 20 s) e save salva; filter tira as que não entram; emptyText é o aviso de quando não há nenhuma (sem ele, fica quieto).
 
 export async function generatePendingSheets({ category, button, status, emptyText, filter = () => true, open, ready, save }) {
   button.disabled = true;
   try {
     const pending = (await fetchProjects()).filter(project => project.ferramenta === category && !project.temFolha && filter(project));
-    if (!pending.length) return status(emptyText, 'ok');
+    if (!pending.length) return emptyText ? status(emptyText, 'ok') : undefined;
     let done = 0;
     for (const project of pending) {
       status(`Gerando ${project.nome} (${done + 1} de ${pending.length})…`);

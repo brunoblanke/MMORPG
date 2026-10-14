@@ -144,3 +144,21 @@ test('NPCs vendedores clássicos: só vendem e compram itens que existem no gera
     }
   }
 });
+
+test('conjuntos de degraus: cada parte aponta pra um degrau que existe, e os buracos têm desenho do Tibia', () => {
+  const raiz = path.join(new URL('..', import.meta.url).pathname, 'gerador', 'projetos');
+  const pasta = path.join(raiz, 'estrutura', 'degraus');
+  const conjuntos = fs.readdirSync(pasta).map(nome => JSON.parse(fs.readFileSync(path.join(pasta, nome), 'utf8'))).filter(receita => receita.conjunto);
+  assert.ok(conjuntos.length >= 2);
+  for (const receita of conjuntos) {
+    for (const [direcao, partes] of Object.entries(receita.conjunto)) {
+      assert.ok(receita.formato.direcoes.includes(direcao));
+      for (const parte of partes) assert.ok(fs.existsSync(path.join(raiz, `${parte.tipo.split('#')[0]}.json`)), parte.tipo);
+    }
+  }
+  const entradas = path.join(raiz, 'estrutura', 'entradas');
+  for (const nome of fs.readdirSync(entradas)) {
+    const receita = JSON.parse(fs.readFileSync(path.join(entradas, nome), 'utf8'));
+    assert.ok(receita.objeto && (receita.objeto.tibia || receita.objeto.png), nome);
+  }
+});

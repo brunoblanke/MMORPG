@@ -1,0 +1,47 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 1,
+    "direcoes": [
+      "norte",
+      "oeste"
+    ]
+  },
+  "objeto": {
+    "tibia": {
+      "id": 1947,
+      "variacao": 0
+    }
+  },
+  "direcoes": {
+    "norte": {
+      "tibia": {
+        "id": 1947,
+        "variacao": 0
+      }
+    },
+    "oeste": {
+      "tibia": {
+        "id": 5257,
+        "variacao": 0
+      }
+    }
+  },
+  "propriedades": {
+    "bloqueia": false,
+    "move": false,
+    "altura": true,
+    "volume": 3,
+    "passo": 1,
+    "empilhavel": false,
+    "peso": 9999,
+    "espacos": 0,
+    "atk": 0,
+    "def": 0,
+    "ml": 0
+  },
+  "ferramenta": "objetos",
+  "grupo": "estrutura",
+  "pasta": "degraus",
+  "nome": "degrau-alto-madeira"
+}

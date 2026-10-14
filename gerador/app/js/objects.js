@@ -761,18 +761,28 @@ async function saveSet() {
 
 // ================================================================================================================================================================================================================================================
 // generatePending
-// Cria a folha (.png) de todo objeto que tem receita mas ainda não tem folha, um por um (os criados por ferramentas/criar-armas.js).
+// Cria a folha (.png) de todo objeto que tem receita mas ainda não tem folha, um por um (os criados por ferramentas/criar-armas.js); os conjuntos de partes vêm depois, porque a folha deles junta as folhas das partes.
 
-function generatePending() {
-  return generatePendingSheets({
+async function generatePending() {
+  const button = document.getElementById('objectPendingBtn');
+  await generatePendingSheets({
     category: CATEGORY,
-    button: document.getElementById('objectPendingBtn'),
+    button,
     status,
     emptyText: 'Nenhum objeto sem folha.',
     filter: project => !project.conjunto,
     open: openRecipe,
     ready: () => !slotKeys().some(key => objects.slots[key] && !sourceFrames(key).length),
     save
+  });
+  await generatePendingSheets({
+    category: CATEGORY,
+    button,
+    status,
+    filter: project => project.conjunto,
+    open: openRecipe,
+    ready: () => true,
+    save: saveSet
   });
 }
 
