@@ -88,6 +88,17 @@ test('sem minhoca, em terra firme ou fora do alcance nada acontece', () => {
   assert.equal(count(sim, WORM), 2, 'longe ou sem água');
 });
 
+test('só pesca até 6 sqm de distância da água', () => {
+  const near = game();
+  near.player.x = 3;
+  cast(near, 9, 5);
+  assert.equal(count(near, WORM), 1, '6 sqm: pesca');
+  const far = game();
+  far.player.x = 2;
+  cast(far, 9, 5);
+  assert.equal(count(far, WORM), 2, '7 sqm: nada acontece');
+});
+
 test('a chance sobe com o skill (10% no 10, até 50%)', () => {
   const random = Math.random;
   for (const [level, value, caught] of [[10, 0.099, true], [10, 0.101, false], [100, 0.499, true], [100, 0.501, false]]) {
