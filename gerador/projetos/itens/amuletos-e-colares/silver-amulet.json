@@ -24,7 +24,10 @@
     "vidaMax": 0,
     "manaMin": 0,
     "manaMax": 0,
-    "alimento": 0
+    "alimento": 0,
+    "resistencias": {
+      "poison": 10
+    }
   },
   "ferramenta": "objetos",
   "grupo": "itens",

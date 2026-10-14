@@ -6,6 +6,8 @@ import { itemInfo, weightOf } from '../../shared/items.js';
 // Shift + clique: o que o player vê no item, na criatura ou no player (vai
 // pro centro da tela como mensagem verde).
 
+const ELEMENT_NAMES = { physical: 'físico', fire: 'fogo', energy: 'energia', ice: 'gelo', earth: 'terra', poison: 'veneno', death: 'morte', holy: 'sagrado' };
+
 // ================================================================================================================================================================================================================================================
 // describeItem
 // item: { type, count?, items? } (do inventário, de um container ou do chão).
@@ -21,6 +23,8 @@ export function describeItem(item) {
     info.size && `Vol ${info.size}`
   ].filter(Boolean);
   const lines = [`${name}${attrs.length ? ` (${attrs.join(', ')})` : ''}`];
+  const resist = Object.entries(info.resist).map(([element, percent]) => `${ELEMENT_NAMES[element]} ${percent > 0 ? '+' : ''}${percent}%`);
+  if (resist.length) lines.push(`Proteção: ${resist.join(', ')}.`);
   if (info.burn) {
     const left = Math.ceil((item.fuel ?? info.burn * 1000) / 60000);
     lines.push(info.light ? `${item.lit ? 'Acesa' : 'Apagada'}, queima por mais ${left} min.` : `Dura mais ${left} min em uso.`);

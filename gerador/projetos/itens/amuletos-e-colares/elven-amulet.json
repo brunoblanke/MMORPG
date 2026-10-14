@@ -24,7 +24,16 @@
     "vidaMax": 0,
     "manaMin": 0,
     "manaMax": 0,
-    "alimento": 0
+    "alimento": 0,
+    "resistencias": {
+      "physical": 5,
+      "fire": 5,
+      "poison": 5,
+      "energy": 5,
+      "ice": 5,
+      "holy": 5,
+      "death": 5
+    }
   },
   "ferramenta": "objetos",
   "grupo": "itens",

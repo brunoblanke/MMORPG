@@ -1,6 +1,6 @@
 // shared/items.js
 
-import { getAsset, displayName, splitType } from './assets.js';
+import { getAsset, displayName, splitType, RESISTANCE_ELEMENTS } from './assets.js';
 import { vocationStats } from './vocations.js';
 
 // Regras dos itens que o player carrega (inventário e containers). Um item é
@@ -84,7 +84,9 @@ const SLOT_BY_FOLDER = {
 // (0 = não gasta) e regen o que ele recupera equipado a cada REGEN_MS
 // (anel de cura), twoHanded se a arma pede as duas mãos (não usa com escudo) e
 // impact o que a munição faz ao acertar (impactOf) e ammoType o tipo da munição
-// ('arrow', 'bolt'…): arco só dispara a do tipo dele ('' = qualquer).
+// ('arrow', 'bolt'…): arco só dispara a do tipo dele ('' = qualquer) e
+// resist o quanto ele corta do dano de cada elemento, em % (negativo =
+// fraqueza), { fire: 10, ice: -5 }.
 
 export function itemInfo(type) {
   const asset = getAsset(splitType(type).asset);
@@ -109,6 +111,7 @@ export function itemInfo(type) {
     light: bonusValue(props.luz),
     burn: bonusValue(props.duracao),
     regen: { hp: bonusValue(props.regenVida), mana: bonusValue(props.regenMana) },
+    resist: resistOf(props),
     weaponSkill: SKILL_BY_WEAPON_FOLDER[folder] || null,
     twoHanded: !!props.duasMaos,
     ammoType: typeof props.tipoMunicao === 'string' ? props.tipoMunicao : '',
@@ -222,6 +225,20 @@ function healOf(props) {
 }
 
 // ================================================================================================================================================================================================================================================
+// resistOf
+// As resistências da receita (gerador → Objetos → Resistências): { elemento: % } sem os zeros, de -100 a 100.
+
+function resistOf(props) {
+  const source = props.resistencias && typeof props.resistencias === 'object' ? props.resistencias : {};
+  const resist = {};
+  for (const element of RESISTANCE_ELEMENTS) {
+    const percent = Math.round(Number(source[element]));
+    if (Number.isFinite(percent) && percent !== 0) resist[element] = Math.max(-100, Math.min(100, percent));
+  }
+  return resist;
+}
+
+// ================================================================================================================================================================================================================================================
 // bonusValue
 
 function bonusValue(value) {
@@ -249,6 +266,22 @@ export function equipBonus(equip) {
     if (key === 'arma' && info.weaponSkill) bonus.atkSkill = info.weaponSkill;
   }
   return bonus;
+}
+
+// ================================================================================================================================================================================================================================================
+// equipDamageFactor
+// Quanto do dano do elemento o player leva com o equipamento (1 = tudo, 0,5 = metade). Como no Tibia, cada item corta do que sobrou do item anterior (as resistências se multiplicam); item no espaço errado ou na mochila não conta.
+
+export function equipDamageFactor(equip, element) {
+  let factor = 1;
+  if (!equip) return factor;
+  for (const key of EQUIP_SLOTS) {
+    const item = equip[key];
+    if (!item) continue;
+    const percent = itemInfo(item.type).resist[element];
+    if (percent) factor *= 1 - percent / 100;
+  }
+  return factor;
 }
 
 // ================================================================================================================================================================================================================================================

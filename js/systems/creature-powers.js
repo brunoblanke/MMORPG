@@ -3,6 +3,7 @@
 import { Enemy, AI_STATE } from '../models/enemy.js';
 import { getLevel } from '../core/geometry.js';
 import { creaturePowers, creatureBehavior } from '../../shared/assets.js';
+import { equipDamageFactor } from '../../shared/items.js';
 import { CONFIG } from '../config.js';
 import { EFFECTS } from '../../shared/effects.js';
 import { circleArea, AREAS } from '../../shared/spells.js';
@@ -300,11 +301,12 @@ export class CreaturePowers {
 
   // ================================================================================================================================================================================================================================================
   // resisted
-  // O dano depois da resistência da criatura ao tipo (100 = igual, 0 = imune);
-  // player não tem resistência (por enquanto).
+  // O dano depois da resistência ao tipo: da criatura (100 = igual, 0 = imune)
+  // ou, no player, a dos itens que ele veste (equipDamageFactor).
 
   resisted(entity, element, amount) {
-    if (entity.isPlayer || !entity.creature) return amount;
+    if (entity.isPlayer) return Math.round(amount * equipDamageFactor(entity.equip, element || 'physical'));
+    if (!entity.creature) return amount;
     const percent = creaturePowers(entity.creature).resistances[element || 'physical'];
     return percent === undefined ? amount : Math.round(amount * percent / 100);
   }

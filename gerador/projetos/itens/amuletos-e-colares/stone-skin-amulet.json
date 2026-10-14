@@ -24,7 +24,11 @@
     "vidaMax": 0,
     "manaMin": 0,
     "manaMax": 0,
-    "alimento": 0
+    "alimento": 0,
+    "resistencias": {
+      "physical": 80,
+      "death": 80
+    }
   },
   "ferramenta": "objetos",
   "grupo": "itens",

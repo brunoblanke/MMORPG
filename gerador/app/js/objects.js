@@ -42,7 +42,8 @@ const NUMBERS = [
   { key: 'regenVida', label: 'Equipado: recupera vida a cada 6 s', min: 0, step: 1 },
   { key: 'regenMana', label: 'Equipado: recupera mana a cada 6 s', min: 0, step: 1 }
 ];
-const DEFAULT_PROPERTIES = { bloqueia: false, move: true, altura: false, volume: 1, passo: 1, empilhavel: false, duasMaos: false, tipoMunicao: '', postal: false, peso: 10, espacos: 0, atk: 0, def: 0, ml: 0, speed: 0, vidaMin: 0, vidaMax: 0, manaMin: 0, manaMax: 0, alimento: 0, luz: 0, duracao: 0, regenVida: 0, regenMana: 0, uso: '', ativoComo: '', comecaAtivo: false };
+const DEFAULT_PROPERTIES = { bloqueia: false, move: true, altura: false, volume: 1, passo: 1, empilhavel: false, duasMaos: false, tipoMunicao: '', resistencias: {}, postal: false, peso: 10, espacos: 0, atk: 0, def: 0, ml: 0, speed: 0, vidaMin: 0, vidaMax: 0, manaMin: 0, manaMax: 0, alimento: 0, luz: 0, duracao: 0, regenVida: 0, regenMana: 0, uso: '', ativoComo: '', comecaAtivo: false };
+const RESISTANCES = [['physical', 'Físico'], ['fire', 'Fogo'], ['energy', 'Energia'], ['ice', 'Gelo'], ['earth', 'Terra'], ['poison', 'Veneno'], ['death', 'Morte'], ['holy', 'Sagrado']];
 const AMMO_TYPES = [['', 'Qualquer / não é munição'], ['arrow', 'Flecha (arco)'], ['bolt', 'Virote (besta)']];
 const USES = [
   ['', 'Nenhum'],
@@ -410,6 +411,27 @@ function renderProperties() {
       objects.dirty = true;
     };
     label.append(number.label, input);
+    list.appendChild(label);
+  }
+  for (const [element, name] of RESISTANCES) {
+    const label = document.createElement('label');
+    label.className = 'numberline';
+    const input = document.createElement('input');
+    input.type = 'number';
+    input.id = `objectProp-resistencia-${element}`;
+    input.min = -100;
+    input.max = 100;
+    input.step = 1;
+    input.value = (objects.properties.resistencias || {})[element] || 0;
+    input.onchange = () => {
+      const percent = Math.max(-100, Math.min(100, Math.round(Number(input.value) || 0)));
+      const resistencias = { ...(objects.properties.resistencias || {}) };
+      if (percent) resistencias[element] = percent;
+      else delete resistencias[element];
+      objects.properties.resistencias = resistencias;
+      objects.dirty = true;
+    };
+    label.append(`Resistência a ${name.toLowerCase()} (%, equipado; negativo = fraqueza)`, input);
     list.appendChild(label);
   }
   const activeLabel = document.createElement('label');
