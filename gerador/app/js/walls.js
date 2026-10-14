@@ -64,11 +64,18 @@ const LOW_PIECES = [
   { key: 'mureta-se-2', name: 'Canto SE · opção 2' }
 ];
 const EXTRA_PIECES = Array.from({ length: 8 }, (_, i) => ({ key: `extra-${i + 1}`, name: `${i + 1}` }));
-const PIECES = [...WALL_PIECES, ...DOOR_PIECES, ...OPENING_PIECES, ...LOW_PIECES, ...EXTRA_PIECES];
+const WINDOW_PIECES = [
+  { key: 'janela-x-interna', name: 'Janela X · interna' },
+  { key: 'janela-y-interna', name: 'Janela Y · interna' },
+  { key: 'janela-x-externa', name: 'Janela X · externa' },
+  { key: 'janela-y-externa', name: 'Janela Y · externa' }
+];
+const PIECES = [...WALL_PIECES, ...DOOR_PIECES, ...OPENING_PIECES, ...LOW_PIECES, ...EXTRA_PIECES, ...WINDOW_PIECES];
 const SECTIONS = [
   { title: 'Paredes, portas e aberturas', from: 0 },
   { title: 'Muretas do mesmo estilo: um lado de cada e duas opções nos cantos NO e SE (deixam passar item jogado)', from: 16 },
-  { title: 'Peças extras', from: 24 }
+  { title: 'Peças extras', from: 24 },
+  { title: 'Janelas vistas de dentro (interna) e de fora (externa), X e Y', from: 32 }
 ];
 const BASE_PIECES = 16;
 
@@ -241,7 +248,7 @@ async function createFamilies() {
 
 function groupOf(key) {
   if (DOOR_PIECES.some(piece => piece.key === key)) return 'door';
-  if (OPENING_PIECES.some(piece => piece.key === key)) return 'opening';
+  if (OPENING_PIECES.some(piece => piece.key === key) || WINDOW_PIECES.some(piece => piece.key === key)) return 'opening';
   if (LOW_PIECES.some(piece => piece.key === key)) return 'low';
   if (EXTRA_PIECES.some(piece => piece.key === key)) return 'extra';
   return 'wall';

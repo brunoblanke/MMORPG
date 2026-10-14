@@ -1,0 +1,77 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 1,
+    "direcoes": [
+      "norte",
+      "leste",
+      "sul",
+      "oeste"
+    ]
+  },
+  "conjunto": {
+    "norte": [
+      {
+        "tipo": "estrutura/degraus/degrau-baixo-pedra-3#norte",
+        "dx": 0,
+        "dy": 1
+      },
+      {
+        "tipo": "estrutura/degraus/degrau-alto-pedra-3#norte",
+        "dx": 0,
+        "dy": 0
+      }
+    ],
+    "leste": [
+      {
+        "tipo": "estrutura/degraus/degrau-baixo-pedra-3#leste",
+        "dx": -1,
+        "dy": 0
+      },
+      {
+        "tipo": "estrutura/degraus/degrau-alto-pedra-3#leste",
+        "dx": 0,
+        "dy": 0
+      }
+    ],
+    "sul": [
+      {
+        "tipo": "estrutura/degraus/degrau-baixo-pedra-3#sul",
+        "dx": 0,
+        "dy": -1
+      },
+      {
+        "tipo": "estrutura/degraus/degrau-alto-pedra-3#sul",
+        "dx": 0,
+        "dy": 0
+      }
+    ],
+    "oeste": [
+      {
+        "tipo": "estrutura/degraus/degrau-baixo-pedra-3#oeste",
+        "dx": 1,
+        "dy": 0
+      },
+      {
+        "tipo": "estrutura/degraus/degrau-alto-pedra-3#oeste",
+        "dx": 0,
+        "dy": 0
+      }
+    ]
+  },
+  "propriedades": {
+    "bloqueia": false,
+    "move": false,
+    "altura": false,
+    "empilhavel": false,
+    "peso": 9999,
+    "espacos": 0,
+    "atk": 0,
+    "def": 0,
+    "ml": 0
+  },
+  "ferramenta": "objetos",
+  "grupo": "estrutura",
+  "pasta": "degraus",
+  "nome": "escada-pedra-3"
+}

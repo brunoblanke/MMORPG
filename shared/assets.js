@@ -31,7 +31,8 @@ export const WALL_PIECES = [
   'janela-x', 'janela-y', 'passagem-x', 'passagem-y',
   'mureta-x-norte', 'mureta-x-sul', 'mureta-y-leste', 'mureta-y-oeste',
   'mureta-no-1', 'mureta-no-2', 'mureta-se-1', 'mureta-se-2',
-  'extra-1', 'extra-2', 'extra-3', 'extra-4', 'extra-5', 'extra-6', 'extra-7', 'extra-8'
+  'extra-1', 'extra-2', 'extra-3', 'extra-4', 'extra-5', 'extra-6', 'extra-7', 'extra-8',
+  'janela-x-interna', 'janela-y-interna', 'janela-x-externa', 'janela-y-externa'
 ];
 export const WALL_PIECE_NAMES = {
   x: 'X', y: 'Y', xy: 'Canto XY', yx: 'Pilar YX',
@@ -44,7 +45,8 @@ export const WALL_PIECE_NAMES = {
   'mureta-x-norte': 'Mureta X norte', 'mureta-x-sul': 'Mureta X sul', 'mureta-y-leste': 'Mureta Y leste', 'mureta-y-oeste': 'Mureta Y oeste',
   'mureta-no-1': 'Mureta canto NO 1', 'mureta-no-2': 'Mureta canto NO 2', 'mureta-se-1': 'Mureta canto SE 1', 'mureta-se-2': 'Mureta canto SE 2',
   'extra-1': 'Extra 1', 'extra-2': 'Extra 2', 'extra-3': 'Extra 3', 'extra-4': 'Extra 4',
-  'extra-5': 'Extra 5', 'extra-6': 'Extra 6', 'extra-7': 'Extra 7', 'extra-8': 'Extra 8'
+  'extra-5': 'Extra 5', 'extra-6': 'Extra 6', 'extra-7': 'Extra 7', 'extra-8': 'Extra 8',
+  'janela-x-interna': 'Janela X interna', 'janela-y-interna': 'Janela Y interna', 'janela-x-externa': 'Janela X externa', 'janela-y-externa': 'Janela Y externa'
 };
 
 // Parede: bloqueia (menos porta aberta, arco e passagem); tem altura (dá
@@ -56,6 +58,7 @@ const WALL_PROPS = {
   'arco-x-oeste': [false, false], 'arco-x-leste': [false, false],
   'arco-y-norte': [false, false], 'arco-y-sul': [false, false],
   'janela-x': [true, true], 'janela-y': [true, true],
+  'janela-x-interna': [true, true], 'janela-y-interna': [true, true], 'janela-x-externa': [true, true], 'janela-y-externa': [true, true],
   'passagem-x': [false, false], 'passagem-y': [false, false]
 };
 
