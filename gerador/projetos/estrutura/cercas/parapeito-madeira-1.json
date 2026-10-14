@@ -1,0 +1,92 @@
+{
+  "formato": {
+    "quadro": 64,
+    "colunas": 4,
+    "pecas": [
+      "x",
+      "y",
+      "xy",
+      "yx",
+      "porta-x",
+      "porta-x-aberta",
+      "porta-y",
+      "porta-y-aberta",
+      "arco-x-oeste",
+      "arco-x-leste",
+      "arco-y-norte",
+      "arco-y-sul",
+      "janela-x",
+      "janela-y",
+      "passagem-x",
+      "passagem-y",
+      "mureta-x-norte",
+      "mureta-x-sul",
+      "mureta-y-leste",
+      "mureta-y-oeste",
+      "mureta-no-1",
+      "mureta-no-2",
+      "mureta-se-1",
+      "mureta-se-2"
+    ]
+  },
+  "pecas": {
+    "mureta-x-norte": {
+      "tibia": {
+        "id": 2154,
+        "variacao": 0
+      }
+    },
+    "mureta-x-sul": {
+      "tibia": {
+        "id": 2155,
+        "variacao": 0
+      }
+    },
+    "mureta-y-leste": {
+      "tibia": {
+        "id": 2156,
+        "variacao": 0
+      }
+    },
+    "mureta-y-oeste": {
+      "tibia": {
+        "id": 2157,
+        "variacao": 0
+      }
+    },
+    "mureta-no-1": {
+      "tibia": {
+        "id": 2158,
+        "variacao": 0
+      }
+    },
+    "mureta-no-2": {
+      "tibia": {
+        "id": 2159,
+        "variacao": 0
+      }
+    },
+    "mureta-se-1": {
+      "tibia": {
+        "id": 2160,
+        "variacao": 0
+      }
+    },
+    "mureta-se-2": {
+      "tibia": {
+        "id": 2161,
+        "variacao": 0
+      }
+    },
+    "x": {
+      "tibia": {
+        "id": 2154,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "paredes",
+  "grupo": "estrutura",
+  "pasta": "cercas",
+  "nome": "parapeito-madeira-1"
+}
