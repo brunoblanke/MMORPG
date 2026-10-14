@@ -13,7 +13,17 @@
     "bloqueia": false,
     "move": true,
     "altura": false,
+    "volume": 1,
+    "passo": 1,
+    "nivelPesca": 0,
     "empilhavel": false,
+    "duasMaos": false,
+    "tipoMunicao": "",
+    "isca": "",
+    "resistencias": {
+      "fire": 2
+    },
+    "postal": false,
     "peso": 18,
     "espacos": 8,
     "atk": 0,
@@ -25,9 +35,13 @@
     "manaMin": 0,
     "manaMax": 0,
     "alimento": 0,
-    "resistencias": {
-      "fire": 2
-    }
+    "luz": 0,
+    "duracao": 0,
+    "regenVida": 0,
+    "regenMana": 0,
+    "uso": "",
+    "ativoComo": "",
+    "comecaAtivo": false
   },
   "ferramenta": "objetos",
   "grupo": "itens",

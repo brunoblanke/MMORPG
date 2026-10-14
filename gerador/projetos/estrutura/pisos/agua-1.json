@@ -142,7 +142,10 @@
   },
   "propriedades": {
     "comportamento": "bloqueia",
-    "bordaBloqueia": true
+    "bordaBloqueia": true,
+    "pescavel": [
+      "itens/peixes/fish"
+    ]
   },
   "ferramenta": "pisos",
   "grupo": "estrutura",

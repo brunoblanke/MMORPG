@@ -160,7 +160,10 @@
   },
   "propriedades": {
     "comportamento": "bloqueia",
-    "bordaBloqueia": true
+    "bordaBloqueia": true,
+    "pescavel": [
+      "itens/peixes/northern-pike"
+    ]
   },
   "ferramenta": "pisos",
   "grupo": "estrutura",

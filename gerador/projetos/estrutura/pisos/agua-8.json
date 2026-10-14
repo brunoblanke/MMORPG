@@ -154,7 +154,13 @@
   },
   "propriedades": {
     "comportamento": "bloqueia",
-    "bordaBloqueia": true
+    "bordaBloqueia": true,
+    "pescavel": [
+      "itens/peixes/fish",
+      "itens/peixes/green-perch",
+      "itens/peixes/northern-pike",
+      "itens/peixes/rainbow-trout"
+    ]
   },
   "ferramenta": "pisos",
   "grupo": "estrutura",

@@ -148,7 +148,10 @@
   },
   "propriedades": {
     "comportamento": "bloqueia",
-    "bordaBloqueia": true
+    "bordaBloqueia": true,
+    "pescavel": [
+      "itens/peixes/rainbow-trout"
+    ]
   },
   "ferramenta": "pisos",
   "grupo": "estrutura",

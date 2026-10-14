@@ -1,7 +1,7 @@
 {
   "formato": {
     "quadro": 32,
-    "quadros": 1
+    "quadros": 7
   },
   "objeto": {
     "tibia": {
@@ -13,7 +13,15 @@
     "bloqueia": false,
     "move": true,
     "altura": false,
+    "volume": 1,
+    "passo": 1,
+    "nivelPesca": 0,
     "empilhavel": false,
+    "duasMaos": false,
+    "tipoMunicao": "",
+    "isca": "",
+    "resistencias": {},
+    "postal": false,
     "peso": 20,
     "espacos": 12,
     "atk": 0,
@@ -24,7 +32,14 @@
     "vidaMax": 0,
     "manaMin": 0,
     "manaMax": 0,
-    "alimento": 0
+    "alimento": 0,
+    "luz": 0,
+    "duracao": 0,
+    "regenVida": 0,
+    "regenMana": 0,
+    "uso": "",
+    "ativoComo": "",
+    "comecaAtivo": false
   },
   "ferramenta": "objetos",
   "grupo": "itens",
