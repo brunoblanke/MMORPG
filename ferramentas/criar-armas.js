@@ -1,7 +1,7 @@
 // ferramentas/criar-armas.js
 
 // Cria no gerador as receitas das armas e munições clássicas do Tibia 7.8
-// (espadas, machados, clavas, distância, munição e escudos) a partir do Canary: peso,
+// (espadas, machados, clavas, distância, munição, aljavas e escudos) a partir do Canary: peso,
 // ataque, defesa, duas mãos e tipo de munição (flecha ou virote). O desenho
 // é o item de mesmo nome do Tibia atual. As folhas (.png) saem do gerador:
 // aba Objetos → "Gerar folhas pendentes". Receita que já existe fica como está
@@ -37,6 +37,7 @@ const ARMAS = {
     'bow', 'crossbow', 'arbalest', 'spear', 'hunting spear', 'enchanted spear', 'throwing knife', 'throwing star', 'viper star', 'small stone', 'snowball'
   ],
   municao: ['arrow', 'bolt', 'power bolt', 'poison arrow', 'burst arrow'],
+  aljavas: ['quiver', 'blue quiver', 'red quiver', 'jungle quiver', 'eldritch quiver', 'alicorn quiver', 'naga quiver', 'candy-coated quiver'],
   escudos: [
     'steel shield', 'plate shield', 'brass shield', 'wooden shield', 'battle shield', 'mastermind shield', 'guardian shield', 'dragon shield',
     'shield of honour', 'bonelord shield', 'crown shield', 'demon shield', 'dark shield', 'great shield', 'blessed shield', 'ornamented shield',
@@ -74,10 +75,13 @@ function montarReceita(pasta, nome, item) {
   const propriedades = {
     bloqueia: false, move: true, altura: false, empilhavel,
     peso: Math.round((Number(a.weight) || 0) / 10) / 10,
-    espacos: 0, atk: Number(a.attack) || 0, def: Number(a.defense) || 0, ml: 0, speed: 0,
+    espacos: Number(a.containersize) || 0, atk: Number(a.attack) || 0, def: Number(a.defense) || 0, ml: 0, speed: 0,
     vidaMin: 0, vidaMax: 0, manaMin: 0, manaMax: 0, alimento: 0
   };
   if (a.slotType === 'two-handed') propriedades.duasMaos = true;
+  const resistencias = {};
+  for (const elemento of ['physical', 'fire', 'energy', 'ice', 'earth', 'poison', 'death', 'holy']) if (Number(a[`absorbpercent${elemento}`])) resistencias[elemento] = Number(a[`absorbpercent${elemento}`]);
+  if (Object.keys(resistencias).length) propriedades.resistencias = resistencias;
   const tipo = a.ammotype || MUNICAO_DO_ARCO[nome];
   if (tipo === 'arrow' || tipo === 'bolt') propriedades.tipoMunicao = tipo;
   return {
