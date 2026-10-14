@@ -70,6 +70,23 @@ function compareDrawables(a, b) {
 }
 
 // ================================================================================================================================================================================================================================================
+// objectsOnScreen
+// Os objetos que estão na área visível: lê só as colunas dessa área no mundo, em vez de percorrer todos os objetos do mapa a cada quadro. Sem mundo ou sem área, todos.
+
+function objectsOnScreen(gameState) {
+  const area = gameState.visibleArea;
+  const world = gameState.world;
+  if (!area || !world || !world.getObjectsAt) return gameState.objects;
+  const found = [];
+  for (let x = Math.ceil(area.startX); x < area.endX; x++) {
+    for (let y = Math.ceil(area.startY); y < area.endY; y++) {
+      for (const obj of world.getObjectsAt(x, y)) found.push(obj);
+    }
+  }
+  return found;
+}
+
+// ================================================================================================================================================================================================================================================
 // prepareDrawables
 
 export function prepareDrawables(gameState) {
@@ -86,7 +103,7 @@ export function prepareDrawables(gameState) {
     drawables.push(drawable);
   };
 
-  for (const obj of gameState.objects) {
+  for (const obj of objectsOnScreen(gameState)) {
     if (obj.type === "enemy" || obj.hidden) continue;
 
     push({

@@ -41,3 +41,21 @@ test('a passagem (topo da parede sobre o vão) fica por cima de quem passa por b
   assert.ok(index(d => d.id === lintel.id) > index(d => d.entity && d.entity.id === 'p1'));
   assert.ok(index(d => d.id === wall.id) < index(d => d.entity && d.entity.id === 'e1'));
 });
+
+test('com a área visível, só os objetos dela entram, os mesmos de quando se olha o mapa todo', async () => {
+  const { World } = await import('../js/core/world.js');
+  const real = new World();
+  const objects = [];
+  for (let x = 0; x < 30; x++) {
+    for (let y = 0; y < 30; y++) objects.push({ id: `Box_${x}_${y}`, x, y, z: x % 2, step: 0, order: 0, hasVolume: false });
+  }
+  objects.forEach(obj => real.addObject(obj));
+  const base = stateWith(objects);
+  base.world = real;
+  const all = prepareDrawables({ ...base, visibleArea: null }).map(d => d.id).filter(Boolean);
+  const area = { startX: 4, endX: 12, startY: 6, endY: 15 };
+  const inArea = prepareDrawables({ ...base, visibleArea: area }).map(d => d.id).filter(Boolean);
+  const expected = all.filter(id => { const [, x, y] = id.split('_').map(Number); return x >= area.startX && x < area.endX && y >= area.startY && y < area.endY; });
+  assert.equal(inArea.length, 8 * 9);
+  assert.deepEqual([...inArea].sort(), [...expected].sort());
+});

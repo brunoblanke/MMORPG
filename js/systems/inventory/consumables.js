@@ -41,9 +41,11 @@ export const consumableMethods = {
         if (burn(item, !!item && itemInfo(item.type).slot === key)) player.equip[key] = null;
       }
     }
-    for (const obj of [...this.sim.objects]) {
-      if (obj.itemData && burn(obj.itemData)) this.removeGroundObject(obj);
+    const burned = [];
+    for (const obj of this.sim.objects) {
+      if (obj.itemData && burn(obj.itemData)) burned.push(obj);
     }
+    for (const obj of burned) this.removeGroundObject(obj);
     for (const corpse of this.sim.deadBodies) burn(corpse.itemData);
   },
 
