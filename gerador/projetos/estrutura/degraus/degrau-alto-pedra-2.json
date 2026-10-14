@@ -11,14 +11,14 @@
   },
   "objeto": {
     "tibia": {
-      "id": 28359,
+      "id": 28357,
       "variacao": 0
     }
   },
   "direcoes": {
     "norte": {
       "tibia": {
-        "id": 28359,
+        "id": 28357,
         "variacao": 0
       }
     },
@@ -30,7 +30,7 @@
     },
     "sul": {
       "tibia": {
-        "id": 28357,
+        "id": 28363,
         "variacao": 0
       }
     },
