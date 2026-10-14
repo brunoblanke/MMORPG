@@ -1,0 +1,529 @@
+{
+  "formato": {
+    "quadro": 32,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 131,
+    "cores": [
+      38,
+      113,
+      67,
+      95
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 4240,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4241,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 4245,
+        "variacao": 0
+      }
+    }
+  },
+  "propriedades": {
+    "comportamento": "npc",
+    "conversa": {
+      "boasVindas": "O melhor aço da região!",
+      "oi": "Olá, {nome}! Vendo e compro armas e armaduras.",
+      "tchau": "Volte sempre, {nome}.",
+      "raio": 2,
+      "topicos": [],
+      "vende": [
+        {
+          "tipo": "itens/machados/axe",
+          "preco": 20,
+          "palavras": "axe"
+        },
+        {
+          "tipo": "itens/machados/battle-axe",
+          "preco": 235,
+          "palavras": "battle axe"
+        },
+        {
+          "tipo": "itens/clavas/battle-hammer",
+          "preco": 350,
+          "palavras": "battle hammer"
+        },
+        {
+          "tipo": "itens/espadas/bone-sword",
+          "preco": 75,
+          "palavras": "bone sword"
+        },
+        {
+          "tipo": "itens/capacetes/brass-helmet",
+          "preco": 120,
+          "palavras": "brass helmet"
+        },
+        {
+          "tipo": "itens/escudos/brass-shield",
+          "preco": 65,
+          "palavras": "brass shield"
+        },
+        {
+          "tipo": "itens/espadas/carlin-sword",
+          "preco": 473,
+          "palavras": "carlin sword"
+        },
+        {
+          "tipo": "itens/armaduras/chain-armor",
+          "preco": 200,
+          "palavras": "chain armor"
+        },
+        {
+          "tipo": "itens/clavas/club",
+          "preco": 5,
+          "palavras": "club"
+        },
+        {
+          "tipo": "itens/clavas/crowbar",
+          "preco": 260,
+          "palavras": "crowbar"
+        },
+        {
+          "tipo": "itens/espadas/dagger",
+          "preco": 5,
+          "palavras": "dagger"
+        },
+        {
+          "tipo": "itens/escudos/dwarven-shield",
+          "preco": 500,
+          "palavras": "dwarven shield"
+        },
+        {
+          "tipo": "itens/machados/hand-axe",
+          "preco": 8,
+          "palavras": "hand axe"
+        },
+        {
+          "tipo": "itens/armaduras/jacket",
+          "preco": 12,
+          "palavras": "jacket"
+        },
+        {
+          "tipo": "itens/botas/leather-boots",
+          "preco": 10,
+          "palavras": "leather boots"
+        },
+        {
+          "tipo": "itens/capacetes/leather-helmet",
+          "preco": 12,
+          "palavras": "leather helmet"
+        },
+        {
+          "tipo": "itens/calcas/leather-legs",
+          "preco": 10,
+          "palavras": "leather legs"
+        },
+        {
+          "tipo": "itens/espadas/longsword",
+          "preco": 160,
+          "palavras": "longsword"
+        },
+        {
+          "tipo": "itens/clavas/mace",
+          "preco": 90,
+          "palavras": "mace"
+        },
+        {
+          "tipo": "itens/clavas/morning-star",
+          "preco": 430,
+          "palavras": "morning star"
+        },
+        {
+          "tipo": "itens/armaduras/plate-armor",
+          "preco": 1200,
+          "palavras": "plate armor"
+        },
+        {
+          "tipo": "itens/escudos/plate-shield",
+          "preco": 125,
+          "palavras": "plate shield"
+        },
+        {
+          "tipo": "itens/espadas/rapier",
+          "preco": 15,
+          "palavras": "rapier"
+        },
+        {
+          "tipo": "itens/espadas/sabre",
+          "preco": 35,
+          "palavras": "sabre"
+        },
+        {
+          "tipo": "itens/armaduras/scale-armor",
+          "preco": 260,
+          "palavras": "scale armor"
+        },
+        {
+          "tipo": "itens/espadas/short-sword",
+          "preco": 26,
+          "palavras": "short sword"
+        },
+        {
+          "tipo": "itens/machados/sickle",
+          "preco": 7,
+          "palavras": "sickle"
+        },
+        {
+          "tipo": "itens/espadas/spike-sword",
+          "preco": 8000,
+          "palavras": "spike sword"
+        },
+        {
+          "tipo": "itens/capacetes/steel-helmet",
+          "preco": 580,
+          "palavras": "steel helmet"
+        },
+        {
+          "tipo": "itens/escudos/steel-shield",
+          "preco": 240,
+          "palavras": "steel shield"
+        },
+        {
+          "tipo": "itens/armaduras/studded-armor",
+          "preco": 90,
+          "palavras": "studded armor"
+        },
+        {
+          "tipo": "itens/capacetes/studded-helmet",
+          "preco": 63,
+          "palavras": "studded helmet"
+        },
+        {
+          "tipo": "itens/escudos/studded-shield",
+          "preco": 50,
+          "palavras": "studded shield"
+        },
+        {
+          "tipo": "itens/espadas/sword",
+          "preco": 85,
+          "palavras": "sword"
+        },
+        {
+          "tipo": "itens/distancia/throwing-knife",
+          "preco": 25,
+          "palavras": "throwing knife"
+        },
+        {
+          "tipo": "itens/espadas/two-handed-sword",
+          "preco": 950,
+          "palavras": "two handed sword"
+        },
+        {
+          "tipo": "itens/capacetes/viking-helmet",
+          "preco": 265,
+          "palavras": "viking helmet"
+        },
+        {
+          "tipo": "itens/escudos/viking-shield",
+          "preco": 260,
+          "palavras": "viking shield"
+        },
+        {
+          "tipo": "itens/clavas/war-hammer",
+          "preco": 10000,
+          "palavras": "war hammer"
+        },
+        {
+          "tipo": "itens/escudos/wooden-shield",
+          "preco": 15,
+          "palavras": "wooden shield"
+        }
+      ],
+      "compra": [
+        {
+          "tipo": "itens/machados/axe",
+          "preco": 7,
+          "palavras": "axe"
+        },
+        {
+          "tipo": "itens/machados/battle-axe",
+          "preco": 80,
+          "palavras": "battle axe"
+        },
+        {
+          "tipo": "itens/clavas/battle-hammer",
+          "preco": 120,
+          "palavras": "battle hammer"
+        },
+        {
+          "tipo": "itens/escudos/battle-shield",
+          "preco": 95,
+          "palavras": "battle shield"
+        },
+        {
+          "tipo": "itens/clavas/bone-club",
+          "preco": 5,
+          "palavras": "bone club"
+        },
+        {
+          "tipo": "itens/espadas/bone-sword",
+          "preco": 20,
+          "palavras": "bone sword"
+        },
+        {
+          "tipo": "itens/capacetes/brass-helmet",
+          "preco": 30,
+          "palavras": "brass helmet"
+        },
+        {
+          "tipo": "itens/escudos/brass-shield",
+          "preco": 25,
+          "palavras": "brass shield"
+        },
+        {
+          "tipo": "itens/espadas/carlin-sword",
+          "preco": 118,
+          "palavras": "carlin sword"
+        },
+        {
+          "tipo": "itens/armaduras/chain-armor",
+          "preco": 70,
+          "palavras": "chain armor"
+        },
+        {
+          "tipo": "itens/clavas/club",
+          "preco": 1,
+          "palavras": "club"
+        },
+        {
+          "tipo": "itens/escudos/copper-shield",
+          "preco": 50,
+          "palavras": "copper shield"
+        },
+        {
+          "tipo": "itens/clavas/crowbar",
+          "preco": 50,
+          "palavras": "crowbar"
+        },
+        {
+          "tipo": "itens/espadas/dagger",
+          "preco": 2,
+          "palavras": "dagger"
+        },
+        {
+          "tipo": "itens/machados/double-axe",
+          "preco": 260,
+          "palavras": "double axe"
+        },
+        {
+          "tipo": "itens/escudos/dwarven-shield",
+          "preco": 100,
+          "palavras": "dwarven shield"
+        },
+        {
+          "tipo": "itens/espadas/fire-sword",
+          "preco": 1000,
+          "palavras": "fire sword"
+        },
+        {
+          "tipo": "itens/machados/halberd",
+          "preco": 400,
+          "palavras": "halberd"
+        },
+        {
+          "tipo": "itens/machados/hand-axe",
+          "preco": 4,
+          "palavras": "hand axe"
+        },
+        {
+          "tipo": "itens/machados/hatchet",
+          "preco": 25,
+          "palavras": "hatchet"
+        },
+        {
+          "tipo": "itens/armaduras/jacket",
+          "preco": 1,
+          "palavras": "jacket"
+        },
+        {
+          "tipo": "itens/espadas/katana",
+          "preco": 35,
+          "palavras": "katana"
+        },
+        {
+          "tipo": "itens/botas/leather-boots",
+          "preco": 2,
+          "palavras": "leather boots"
+        },
+        {
+          "tipo": "itens/capacetes/leather-helmet",
+          "preco": 4,
+          "palavras": "leather helmet"
+        },
+        {
+          "tipo": "itens/calcas/leather-legs",
+          "preco": 9,
+          "palavras": "leather legs"
+        },
+        {
+          "tipo": "itens/espadas/longsword",
+          "preco": 51,
+          "palavras": "longsword"
+        },
+        {
+          "tipo": "itens/clavas/mace",
+          "preco": 30,
+          "palavras": "mace"
+        },
+        {
+          "tipo": "itens/armaduras/magic-plate-armor",
+          "preco": 6400,
+          "palavras": "magic plate armor"
+        },
+        {
+          "tipo": "itens/clavas/morning-star",
+          "preco": 100,
+          "palavras": "morning star"
+        },
+        {
+          "tipo": "itens/machados/orcish-axe",
+          "preco": 350,
+          "palavras": "orcish axe"
+        },
+        {
+          "tipo": "itens/armaduras/plate-armor",
+          "preco": 400,
+          "palavras": "plate armor"
+        },
+        {
+          "tipo": "itens/calcas/plate-legs",
+          "preco": 115,
+          "palavras": "plate legs"
+        },
+        {
+          "tipo": "itens/escudos/plate-shield",
+          "preco": 45,
+          "palavras": "plate shield"
+        },
+        {
+          "tipo": "itens/espadas/rapier",
+          "preco": 5,
+          "palavras": "rapier"
+        },
+        {
+          "tipo": "itens/espadas/sabre",
+          "preco": 12,
+          "palavras": "sabre"
+        },
+        {
+          "tipo": "itens/armaduras/scale-armor",
+          "preco": 75,
+          "palavras": "scale armor"
+        },
+        {
+          "tipo": "itens/espadas/short-sword",
+          "preco": 10,
+          "palavras": "short sword"
+        },
+        {
+          "tipo": "itens/machados/sickle",
+          "preco": 3,
+          "palavras": "sickle"
+        },
+        {
+          "tipo": "itens/espadas/spike-sword",
+          "preco": 240,
+          "palavras": "spike sword"
+        },
+        {
+          "tipo": "itens/capacetes/steel-helmet",
+          "preco": 293,
+          "palavras": "steel helmet"
+        },
+        {
+          "tipo": "itens/escudos/steel-shield",
+          "preco": 80,
+          "palavras": "steel shield"
+        },
+        {
+          "tipo": "itens/armaduras/studded-armor",
+          "preco": 25,
+          "palavras": "studded armor"
+        },
+        {
+          "tipo": "itens/clavas/studded-club",
+          "preco": 10,
+          "palavras": "studded club"
+        },
+        {
+          "tipo": "itens/capacetes/studded-helmet",
+          "preco": 20,
+          "palavras": "studded helmet"
+        },
+        {
+          "tipo": "itens/escudos/studded-shield",
+          "preco": 16,
+          "palavras": "studded shield"
+        },
+        {
+          "tipo": "itens/espadas/sword",
+          "preco": 25,
+          "palavras": "sword"
+        },
+        {
+          "tipo": "itens/distancia/throwing-knife",
+          "preco": 2,
+          "palavras": "throwing knife"
+        },
+        {
+          "tipo": "itens/espadas/two-handed-sword",
+          "preco": 450,
+          "palavras": "two handed sword"
+        },
+        {
+          "tipo": "itens/capacetes/viking-helmet",
+          "preco": 66,
+          "palavras": "viking helmet"
+        },
+        {
+          "tipo": "itens/escudos/viking-shield",
+          "preco": 85,
+          "palavras": "viking shield"
+        },
+        {
+          "tipo": "itens/clavas/war-hammer",
+          "preco": 470,
+          "palavras": "war hammer"
+        },
+        {
+          "tipo": "itens/escudos/wooden-shield",
+          "preco": 5,
+          "palavras": "wooden shield"
+        }
+      ],
+      "missoes": [],
+      "falasVenda": {
+        "lista": "O que você deseja comprar?",
+        "confirmar": "Quer comprar {item} por {preco}?",
+        "listaCompra": "O que você deseja vender?",
+        "queVender": "O que você deseja vender?",
+        "confirmarCompra": "Quer me vender {quantidade} {item} por {preco}?"
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "personagens",
+  "pasta": "npcs",
+  "nome": "ferreiro"
+}
