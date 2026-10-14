@@ -1,0 +1,122 @@
+{
+  "formato": {
+    "quadro": 64,
+    "colunas": 4,
+    "pecas": [
+      "x",
+      "y",
+      "xy",
+      "yx",
+      "porta-x",
+      "porta-x-aberta",
+      "porta-y",
+      "porta-y-aberta",
+      "arco-x-oeste",
+      "arco-x-leste",
+      "arco-y-norte",
+      "arco-y-sul",
+      "janela-x",
+      "janela-y",
+      "passagem-x",
+      "passagem-y",
+      "mureta-x-norte",
+      "mureta-x-sul",
+      "mureta-y-leste",
+      "mureta-y-oeste",
+      "mureta-no-1",
+      "mureta-no-2",
+      "mureta-se-1",
+      "mureta-se-2"
+    ]
+  },
+  "pecas": {
+    "x": {
+      "tibia": {
+        "id": 2323,
+        "variacao": 0
+      }
+    },
+    "y": {
+      "tibia": {
+        "id": 2322,
+        "variacao": 0
+      }
+    },
+    "porta-x": {
+      "tibia": {
+        "id": 2340,
+        "variacao": 0
+      }
+    },
+    "porta-x-aberta": {
+      "tibia": {
+        "id": 2341,
+        "variacao": 0
+      }
+    },
+    "porta-y": {
+      "tibia": {
+        "id": 2334,
+        "variacao": 0
+      }
+    },
+    "porta-y-aberta": {
+      "tibia": {
+        "id": 2335,
+        "variacao": 0
+      }
+    },
+    "mureta-x-norte": {
+      "tibia": {
+        "id": 2324,
+        "variacao": 0
+      }
+    },
+    "mureta-x-sul": {
+      "tibia": {
+        "id": 2325,
+        "variacao": 0
+      }
+    },
+    "mureta-y-leste": {
+      "tibia": {
+        "id": 2326,
+        "variacao": 0
+      }
+    },
+    "mureta-y-oeste": {
+      "tibia": {
+        "id": 2327,
+        "variacao": 0
+      }
+    },
+    "mureta-no-1": {
+      "tibia": {
+        "id": 2328,
+        "variacao": 0
+      }
+    },
+    "mureta-no-2": {
+      "tibia": {
+        "id": 2329,
+        "variacao": 0
+      }
+    },
+    "mureta-se-1": {
+      "tibia": {
+        "id": 2330,
+        "variacao": 0
+      }
+    },
+    "mureta-se-2": {
+      "tibia": {
+        "id": 2331,
+        "variacao": 0
+      }
+    }
+  },
+  "ferramenta": "paredes",
+  "grupo": "estrutura",
+  "pasta": "balcoes",
+  "nome": "balcao-2"
+}
