@@ -132,6 +132,23 @@ export class GameController {
   }
 
   // ================================================================================================================================================================================================================================================
+  // reconnectWhenBack
+  // A conexão caiu (celular em segundo plano, servidor reiniciando): tenta abrir o servidor de dois em dois segundos e, quando ele responde, recarrega e entra de novo sozinho com o mesmo personagem.
+
+  async reconnectWhenBack(data) {
+    for (;;) {
+      try {
+        (await RemoteSession.openSocket()).close();
+        break;
+      } catch {
+        await new Promise(resolve => setTimeout(resolve, 2000));
+      }
+    }
+    saveRejoin(data);
+    location.reload();
+  }
+
+  // ================================================================================================================================================================================================================================================
   // openSession
   // Pede o nome e o gênero na janela e entra no servidor de jogo. Nome recusado (em uso,
   // inválido): mostra o motivo e pede de novo. Sem servidor (ou se ele cair
@@ -149,7 +166,7 @@ export class GameController {
       try {
         const session = await RemoteSession.join(socket, mapData, name, gender, password);
         console.log(`🌐 Conectado ao servidor como ${name} (${session.playerId})`);
-        session.onDisconnect = () => this.showMessage('Conexão com o servidor perdida — recarregue a página', performance.now(), 600000, 'danger');
+        session.onDisconnect = () => this.reconnectWhenBack({ name, gender, password });
         session.onReload = () => {
           saveRejoin({ name, gender, password });
           location.reload();

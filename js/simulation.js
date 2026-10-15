@@ -22,6 +22,7 @@ import { ConditionController } from './systems/conditions.js';
 import { CreaturePowers } from './systems/creature-powers.js';
 import { SocialController } from './systems/social.js';
 import { HouseController } from './systems/houses.js';
+import { DroppedItems } from './systems/dropped-items.js';
 import { MailController } from './systems/mail.js';
 import { objectIdType, doorState } from '../shared/assets.js';
 
@@ -43,10 +44,13 @@ export class Simulation {
   // options.houses: dono, convidados e itens guardados das casas (houses.js).
   // options.characters: os personagens guardados ({ nome em minúsculas: dados }), onde o
   // banco e o correio acham quem está offline.
+  // options.dropped: itens jogados no chão guardados (dropped-items.js).
+  // options.clock: a hora de verdade em ms (padrão Date.now; os testes trocam).
   // options.bots: bots de teste além dos do mapa [{ name, x, y, z, lvl }] (spawnBots).
 
   constructor(mapData, options = {}) {
     this.mapData = mapData;
+    this.wallClock = options.clock || Date.now;
     this.world = new World();
     this.objects = generateObjects(mapData);
     this.enemies = generateEnemies(mapData);
@@ -82,6 +86,7 @@ export class Simulation {
     this.social = new SocialController(this);
     this.savedCharacters = options.characters || {};
     this.houses = new HouseController(this, options.houses || {});
+    this.dropped = new DroppedItems(this, options.dropped || []);
     this.mail = new MailController(this);
     this.npcs = [];
     this.talk = new NpcController(this, options.npcs || []);
@@ -398,6 +403,7 @@ export class Simulation {
     this.conditions.update(now);
     this.social.update(now);
     this.houses.update();
+    this.dropped.update();
     this.releaseOffline(now);
     for (const player of this.players) player.inCombat = this.inCombat(player, now);
 

@@ -94,6 +94,7 @@ export const groundMethods = {
       blocksMovement: props.blocksMovement
     });
     obj.itemData = item;
+    obj.droppedAt = this.sim.wallClock();
     objects.push(obj);
     objectsById.set(obj.id, obj);
     world.addObject(obj);
