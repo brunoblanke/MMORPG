@@ -1,7 +1,7 @@
 // js/systems/inventory/corpses.js
 
 import { getAsset, splitType, creatureLoot } from '../../../shared/assets.js';
-import { LOOT_EFFECT } from '../../../shared/effects.js';
+import { DROP_EFFECT } from '../../../shared/effects.js';
 import { EQUIP_SLOTS, DEATH_DROP_CHANCE, newItem } from '../../../shared/items.js';
 import { PLAYER_SPRITES, DEFAULT_GENDER } from '../../../shared/catalog.js';
 
@@ -9,7 +9,6 @@ import { PLAYER_SPRITES, DEFAULT_GENDER } from '../../../shared/catalog.js';
 // cadáveres: o loot da criatura (solto no chão) e o que o player deixa ao morrer.
 
 const CORPSE_SIZE = 8;
-const LOOT_RADIUS = 2;
 
 export const corpseMethods = {
 
@@ -30,15 +29,16 @@ export const corpseMethods = {
 
   // ================================================================================================================================================================================================================================================
   // lootSpots
-  // Os sqms livres e firmes até LOOT_RADIUS (2) sqm em volta da criatura, no andar dela.
+  // Os sqms livres e firmes dentro do raio de patrulha da criatura, no andar dela.
 
   lootSpots(enemy) {
     const { world, movement } = this.sim;
     const z = enemy.z || 0;
+    const reach = Math.ceil(enemy.patrolRadius);
     const spots = [];
-    for (let x = enemy.x - LOOT_RADIUS; x <= enemy.x + LOOT_RADIUS; x++) {
-      for (let y = enemy.y - LOOT_RADIUS; y <= enemy.y + LOOT_RADIUS; y++) {
-        if (movement.isInsideMap(x, y) && world.hasFloorAt(x, y, z) && !world.isFloorBlocked(x, y, z) && !movement.isBlocked(x, y, z)) spots.push({ x, y });
+    for (let x = Math.floor(enemy.patrolCenterX) - reach; x <= enemy.patrolCenterX + reach; x++) {
+      for (let y = Math.floor(enemy.patrolCenterY) - reach; y <= enemy.patrolCenterY + reach; y++) {
+        if (enemy.isInPatrolZone(x, y) && movement.isInsideMap(x, y) && world.hasFloorAt(x, y, z) && !world.isFloorBlocked(x, y, z) && !movement.isBlocked(x, y, z)) spots.push({ x, y });
       }
     }
     return spots;
@@ -46,7 +46,7 @@ export const corpseMethods = {
 
   // ================================================================================================================================================================================================================================================
   // scatterLoot
-  // O loot não fica no cadáver (vazio): cada item cai num sqm sorteado a até 2 sqm em volta da criatura, com o brilho LOOT_EFFECT; sem sqm livre, cai onde ela morreu.
+  // O loot não fica no cadáver (vazio): cada item cai num sqm sorteado do raio de patrulha da criatura, com o brilho DROP_EFFECT; sem sqm livre, cai onde ela morreu.
 
   scatterLoot(corpse, enemy) {
     const z = enemy.z || 0;
@@ -54,7 +54,7 @@ export const corpseMethods = {
     for (const item of this.rollLoot(enemy)) {
       const spot = spots.length ? spots[Math.floor(Math.random() * spots.length)] : { x: enemy.x, y: enemy.y };
       this.mergeGroundStack(this.spawnGroundItem(item, spot.x, spot.y, z));
-      this.sim.spells.showEffect(spot.x, spot.y, LOOT_EFFECT, undefined, z);
+      this.sim.spells.showEffect(spot.x, spot.y, DROP_EFFECT, undefined, z);
     }
     corpse.itemData = { uid: this.nextUid(), type: enemy.creature, items: new Array(CORPSE_SIZE).fill(null) };
   },

@@ -49,7 +49,7 @@ test('corpo no último estágio (ossos) não abre mais: o loot some', async () =
   assert.equal(sim.inventory.isOpenable(corpse), false);
 });
 
-test('o loot cai solto a até 2 sqm da criatura, com o brilho, e o cadáver fica vazio', async () => {
+test('o loot cai solto no raio de patrulha da criatura, com o brilho, e o cadáver fica vazio', async () => {
   const { buildGame, floorRect } = await import('./helpers/fixture.js');
   const sim = buildGame({ objects: floorRect(0, 20, 0, 20, 0), enemies: [[10, 10, 0]], player: { x: 2, y: 2, z: 0 } });
   const enemy = sim.enemies[0];
@@ -60,7 +60,7 @@ test('o loot cai solto a até 2 sqm da criatura, com o brilho, e o cadáver fica
   sim.tick(sim.time + 50);
   const dropped = sim.objects.filter(o => o.itemData && [COIN, CHEESE].includes(o.itemData.type));
   assert.ok(dropped.length >= 2);
-  for (const obj of dropped) assert.ok(Math.max(Math.abs(obj.x - 10), Math.abs(obj.y - 10)) <= 2, 'a até 2 sqm');
+  for (const obj of dropped) assert.ok(Math.hypot(obj.x - 10, obj.y - 10) <= enemy.patrolRadius, 'dentro do raio de patrulha');
   assert.equal(sim.deadBodies[0].itemData.items.filter(Boolean).length, 0);
-  assert.ok(sim.drainEvents().filter(e => e.type === 'effect' && e.effect === 'firework-yellow').length >= 3);
+  assert.ok(sim.drainEvents().filter(e => e.type === 'effect' && e.effect === 'rings-yellow').length >= 3);
 });
