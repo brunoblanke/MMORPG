@@ -2,7 +2,6 @@
 
 import { displayName } from '../../shared/assets.js';
 import { drawTibiaText, healthColor } from './tibia-text.js';
-import { FOLLOW_ICONS } from './inventory-ui/icons.js';
 
 // Nome no estilo do Tibia (negrito, contorno preto), verde (player com
 // caveira: branco, vermelho ou preto, pela caveira), e barra
@@ -13,9 +12,13 @@ const HP_BAR_BACK = '#12151b';
 export const NAME_COLOR = '#5fe35f';
 const CORPSE_NAME_COLOR = '#a0a0a0';
 const SKULL_NAMES = { white: { color: '#ffffff', outline: '#000000' }, red: { color: '#ff3b3b', outline: '#000000' }, black: { color: '#000000', outline: '#ffffff' } };
-const COMBAT_ICON_COLOR = '#5fe35f';
-const COMBAT_ICON_SIZE = 10;
-let combatIcon = null;
+const STATUS_ICON_SIZE = 10;
+const ICON_SHAPES = {
+  skull: '<path d="M10 2.2C5.8 2.2 3 5 3 8.7c0 2.2 1 3.6 2.4 4.4V16h2.2v-1.7h1.2V16h2.4v-1.7h1.2V16h2.2v-2.9c1.4-.8 2.4-2.2 2.4-4.4C17 5 14.2 2.2 10 2.2z"/><circle cx="7.1" cy="9" r="1.9" fill="#000" stroke="none"/><circle cx="12.9" cy="9" r="1.9" fill="#000" stroke="none"/><path d="M10 11.2l-.9 1.8h1.8z" fill="#000" stroke="none"/>',
+  shield: '<path d="M10 2l7 2.6v5.2c0 3.9-2.8 6.6-7 8.2-4.2-1.6-7-4.3-7-8.2V4.6z"/>',
+  swords: '<path d="M2 1.5l12.8 12.8M18 1.5L5.2 14.3M11.6 16.8l4.6-4.6M3.8 12.2l4.6 4.6M15.4 15.4l2.9 2.9M4.6 15.4l-2.9 2.9" fill="none"/>'
+};
+const statusIcons = {};
 
 // ================================================================================================================================================================================================================================================
 // roundRect
@@ -38,34 +41,35 @@ function getEntityName(entity, isPlayer, isEnemy, isCorpse) {
 }
 
 // ================================================================================================================================================================================================================================================
-// getCombatIcon
-// O ícone do auto ataque (espadas cruzadas das janelas), em verde, pronto
-// pro canvas.
+// getStatusIcon
+// Ícone de status (caveira, escudo da party, espadas do combate): branco com contorno preto, como o nome, pronto pro canvas.
 
-function getCombatIcon() {
-  if (!combatIcon) {
-    const svg = FOLLOW_ICONS.attack.replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg"').replace(/currentColor/g, COMBAT_ICON_COLOR);
-    combatIcon = new Image();
-    combatIcon.src = 'data:image/svg+xml;base64,' + btoa(svg);
+function getStatusIcon(name) {
+  if (!statusIcons[name]) {
+    const shapes = ICON_SHAPES[name];
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="-1.5 -1.5 23 23" stroke-linejoin="round" stroke-linecap="round"><g fill="#000" stroke="#000" stroke-width="3.6">${shapes}</g><g fill="#fff" stroke="#fff" stroke-width="1.4">${shapes}</g></svg>`;
+    const image = new Image();
+    image.src = 'data:image/svg+xml;base64,' + btoa(svg);
+    statusIcons[name] = image;
   }
-  return combatIcon;
+  return statusIcons[name];
 }
 
 // ================================================================================================================================================================================================================================================
-// drawCombatIcon
-// Player em combate (não sai do jogo): o ícone no topo do sqm, encostado na
-// borda direita, por fora dele.
+// drawStatusIcons
+// Os ícones de status em coluna no topo do sqm, encostados na borda direita, por fora dele: caveira em cima (por enquanto sempre; depois só PK), escudo no meio (na party do jogador) e espadas embaixo (jogador em combate).
 
-function drawCombatIcon(ctx, left, top, size) {
-  const icon = getCombatIcon();
-  if (!icon.complete) return;
-  ctx.drawImage(icon, left + size, top, COMBAT_ICON_SIZE, COMBAT_ICON_SIZE);
+function drawStatusIcons(ctx, left, top, size, names) {
+  names.forEach((name, i) => {
+    const icon = getStatusIcon(name);
+    if (icon.complete) ctx.drawImage(icon, left + size, top + i * STATUS_ICON_SIZE, STATUS_ICON_SIZE, STATUS_ICON_SIZE);
+  });
 }
 
 // ================================================================================================================================================================================================================================================
 // drawEntityOverlay
 
-export function drawEntityOverlay(ctx, entity, base, stackOffsetX, stackOffsetY, size, devMode, isSelf = false) {
+export function drawEntityOverlay(ctx, entity, base, stackOffsetX, stackOffsetY, size, devMode, isSelf = false, inParty = false) {
   if (!entity) return;
   if (entity.floorType) return;
 
@@ -87,7 +91,12 @@ export function drawEntityOverlay(ctx, entity, base, stackOffsetX, stackOffsetY,
 
   const skull = isPlayer ? SKULL_NAMES[entity.skull] : null;
   drawTibiaText(ctx, name, centerX, barY - 3, skull ? skull.color : (isCorpse ? CORPSE_NAME_COLOR : NAME_COLOR), skull ? skull.outline : undefined);
-  if (isPlayer && isSelf && entity.inCombat) drawCombatIcon(ctx, barX, base.y - stackOffsetY, size);
+  if (isPlayer) {
+    const icons = ['skull'];
+    if (inParty) icons.push('shield');
+    if (isSelf && entity.inCombat) icons.push('swords');
+    drawStatusIcons(ctx, barX, base.y - stackOffsetY, size, icons);
+  }
 
   if (hasHp && !isCorpse) {
     ctx.save();

@@ -42,7 +42,6 @@ export const MESSAGE_COLORS = { info: '#5fe35f', warn: '#ffd84a', danger: '#ff4a
 
 const TINT_ENEMY_HOVER = { color: '#ff2a2a', alpha: 0.35 };
 const TARGET_OUTLINE = '#ff2a2a';
-const COMBAT_OUTLINE = '#ffd700';
 const PLAYER_DISPLACEMENT = 8;
 const TINT_HOVER = { color: '#3b82f6', alpha: 0.35 };
 const FLOOR_DARKEN = 0.2;
@@ -60,6 +59,7 @@ export class Renderer {
     this.frameTimestamp = 0;
     this.pendingOverlays = [];
     this.localPlayer = null;
+    this.partyIds = new Set();
     this.lighting = new LightingLayer();
     this.floorCache = new FloorCache(this.sprites);
 
@@ -512,8 +512,7 @@ export class Renderer {
       if (frame) {
         const isSelf = isPlayer && entity === this.localPlayer;
         const isTargeted = entity && (entity === this.selectedTarget || (isSelf && entity.isTarget));
-        const inCombat = isSelf && entity.inCombat;
-        const outline = isTargeted ? TARGET_OUTLINE : (inCombat ? COMBAT_OUTLINE : null);
+        const outline = isTargeted ? TARGET_OUTLINE : null;
         this.drawAnchoredSprite(frame.image, frame.frameRect, base, size, stackOffsetX, stackOffsetY, tint, outline);
       } else {
         const color = entity && entity.color ? entity.color : "#888888";
@@ -557,7 +556,7 @@ export class Renderer {
 
   flushOverlays() {
     for (const o of this.pendingOverlays) {
-      drawEntityOverlay(this.ctx, o.entity, o.base, o.stackOffsetX, o.stackOffsetY, o.size, this.devMode, o.entity === this.localPlayer);
+      drawEntityOverlay(this.ctx, o.entity, o.base, o.stackOffsetX, o.stackOffsetY, o.size, this.devMode, o.entity === this.localPlayer, this.partyIds.has(o.entity.id));
     }
     this.pendingOverlays = [];
   }
@@ -581,6 +580,7 @@ export class Renderer {
     this.frameTimestamp = performance.now();
     this.selectedTarget = gameState.player.target || null;
     this.localPlayer = gameState.player;
+    this.partyIds = gameState.partyIds || new Set();
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.ctx.imageSmoothingEnabled = false;
     this.camera.update(gameState.player);

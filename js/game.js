@@ -598,6 +598,7 @@ export class GameController {
       deadBodies: this.session.deadBodies,
       inputController: this.inputController,
       statusMessage: this.statusMessage,
+      partyIds: new Set(((this.session.inventoryView && this.session.inventoryView.social) || { party: [] }).party.map(member => member.id)),
       drawEffects: (level) => this.particleController.renderEffects(this.ctx, level)
     };
     this.renderer.render(gameState, this.ui);
