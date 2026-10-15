@@ -14,7 +14,23 @@ export const EFFECTS = {
   ice: { id: 43, frames: 15, size: 64, ms: 75 },
   earth: { id: 46, frames: 12, size: 64, ms: 86 },
   holy: { id: 40, frames: 7, size: 64, ms: 100 },
-  'rings-yellow': { id: 8, frames: 8, size: 32, ms: 60 }
+  teleport: { id: 11, frames: 11, size: 32, ms: 60 },
+  'rings-yellow': { id: 8, frames: 8, size: 32, ms: 60 },
+  'rings-green': { id: 9, frames: 8, size: 32, ms: 60 },
+  'magic-red': { id: 14, frames: 22, size: 32, ms: 40 },
+  'magic-green': { id: 15, frames: 22, size: 32, ms: 40 },
+  'sound-green': { id: 19, frames: 11, size: 32, ms: 60 },
+  'sound-red': { id: 20, frames: 11, size: 32, ms: 60 },
+  'sound-yellow': { id: 22, frames: 11, size: 32, ms: 60 },
+  'sound-purple': { id: 23, frames: 11, size: 32, ms: 60 },
+  'sound-blue': { id: 24, frames: 11, size: 32, ms: 60 },
+  'sound-white': { id: 25, frames: 11, size: 32, ms: 60 },
+  bubbles: { id: 26, frames: 11, size: 32, ms: 60 },
+  craps: { id: 27, frames: 12, size: 32, ms: 60 },
+  'gift-wraps': { id: 28, frames: 12, size: 64, ms: 60 },
+  'firework-yellow': { id: 29, frames: 10, size: 32, ms: 70 },
+  'firework-red': { id: 30, frames: 10, size: 32, ms: 70 },
+  'firework-blue': { id: 31, frames: 10, size: 32, ms: 70 }
 };
 
 // Efeito desenhado pelo código (sem imagem): círculos só de contorno que
