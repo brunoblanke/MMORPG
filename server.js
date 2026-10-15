@@ -366,6 +366,7 @@ async function iniciarJogo(servidorHttp) {
         }
         console.log(`🟢 ${player.name} voltou ao corpo que ficou no mapa (${conexoes.size} online)`);
         socket.send(JSON.stringify({ type: 'welcome', playerId: player.id }));
+        sim.announceEntry(player);
         return;
       }
       const playerId = `player${proximoJogador}`;
@@ -375,6 +376,7 @@ async function iniciarJogo(servidorHttp) {
       conexoes.set(playerId, { socket, sent: null });
       console.log(`🟢 ${player.name} entrou ${saved ? `(nível ${player.lvl}) ` : '(novo) '}(${conexoes.size} online)`);
       socket.send(JSON.stringify({ type: 'welcome', playerId }));
+      sim.announceEntry(player);
     };
 
     socket.on('message', (dados) => {

@@ -35,8 +35,11 @@ export const EFFECTS = {
   'firework-blue': { id: 31, frames: 10, size: 32, ms: 70 }
 };
 
+// Efeito em cima do player quando ele entra no jogo.
+export const ENTER_EFFECT = 'holy';
+
 // Efeito que abre na água quando algo cai nela (pesca, item jogado na água).
-export const WATER_EFFECT = 'bubbles';
+export const WATER_EFFECT = 'rings-blue';
 
 // Efeito desenhado pelo código (sem imagem): círculos só de contorno que
 // crescem e somem, como algo caindo na água (pesca, item jogado na água).

@@ -22,6 +22,7 @@ import { ConditionController } from './systems/conditions.js';
 import { CreaturePowers } from './systems/creature-powers.js';
 import { SocialController } from './systems/social.js';
 import { HouseController } from './systems/houses.js';
+import { ENTER_EFFECT } from '../shared/effects.js';
 import { DroppedItems } from './systems/dropped-items.js';
 import { MailController } from './systems/mail.js';
 import { objectIdType, doorState } from '../shared/assets.js';
@@ -244,6 +245,14 @@ export class Simulation {
     player.offlineSince = this.time;
     this.control.clearWalk(player);
     return false;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // announceEntry
+  // O player acabou de entrar (ou de voltar ao corpo): o efeito ENTER_EFFECT acende em cima dele.
+
+  announceEntry(player) {
+    this.spells.showEffect(player.x, player.y, ENTER_EFFECT, undefined, player.z || 0);
   }
 
   // ================================================================================================================================================================================================================================================

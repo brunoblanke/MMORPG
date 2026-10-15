@@ -430,3 +430,11 @@ test('o player só mantém um corpo: ao morrer de novo o anterior some na hora',
   assert.notEqual(corpses[0], first);
   assert.ok(!sim.deadBodies.includes(first));
 });
+
+test('ao entrar, o efeito de entrada acende em cima do player', () => {
+  const sim = buildGame({ objects: GROUND, player: { x: 4, y: 5, z: 0 } });
+  sim.drainEvents();
+  sim.announceEntry(sim.player);
+  const events = sim.drainEvents();
+  assert.ok(events.some(e => e.type === 'effect' && e.effect === 'holy' && e.x === 4 && e.y === 5));
+});
