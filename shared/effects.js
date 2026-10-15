@@ -1,7 +1,8 @@
 // shared/effects.js
 
 // Efeitos mágicos do Tibia (gerador/saida/efeitos, gerados por
-// ferramentas/efeitos.js): `frames` quadros de `size` px lado a lado, um a
+// ferramentas/efeitos.js; os que têm `file` em vez de `id` são imagens feitas à mão em
+// gerador/saida/efeitos-extras/<file>.png, que o script não mexe): `frames` quadros de `size` px lado a lado, um a
 // cada `ms`. Os de 64 px saem do sqm pra cima e pra esquerda.
 export const EFFECTS = {
   poff: { id: 3, frames: 8, size: 32, ms: 50 },
@@ -16,6 +17,7 @@ export const EFFECTS = {
   holy: { id: 40, frames: 7, size: 64, ms: 100 },
   teleport: { id: 11, frames: 11, size: 32, ms: 60 },
   'rings-yellow': { id: 8, frames: 8, size: 32, ms: 60 },
+  'rings-blue': { file: 'rings-blue', frames: 8, size: 32, ms: 60 },
   'rings-green': { id: 9, frames: 8, size: 32, ms: 60 },
   'magic-red': { id: 14, frames: 22, size: 32, ms: 40 },
   'magic-green': { id: 15, frames: 22, size: 32, ms: 40 },
@@ -73,7 +75,9 @@ export function isEffect(name) {
 // effectUrl
 
 export function effectUrl(name) {
-  return EFFECTS[name] ? `/gerador/saida/efeitos/efeito-${EFFECTS[name].id}.png` : null;
+  const info = EFFECTS[name];
+  if (!info) return null;
+  return info.file ? `/gerador/saida/efeitos-extras/${info.file}.png` : `/gerador/saida/efeitos/efeito-${info.id}.png`;
 }
 
 // ================================================================================================================================================================================================================================================
