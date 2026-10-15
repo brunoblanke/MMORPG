@@ -21,9 +21,7 @@ test('loot vem da criatura no gerador: chance e quantidade de cada item', () => 
   const inventory = new InventoryController({});
   let cheese = 0;
   for (let i = 0; i < 2000; i++) {
-    const corpse = {};
-    inventory.fillCorpse(corpse, { creature: RAT });
-    const items = corpse.itemData.items.filter(Boolean);
+    const items = inventory.rollLoot({ creature: RAT });
     const coins = items.find(it => it.type === COIN);
     assert.ok(coins && coins.count >= 1 && coins.count <= 4);
     if (items.some(it => it.type === CHEESE)) cheese++;
@@ -49,4 +47,20 @@ test('corpo no último estágio (ossos) não abre mais: o loot some', async () =
   assert.equal(sim.inventory.isOpenable(corpse), true, 'apodrecendo ainda abre');
   sim.lifeCycle.processCorpseDecay(corpse.deathTime + CONFIG.corpseFrameDuration * (CONFIG.corpseFrameCount - 1));
   assert.equal(sim.inventory.isOpenable(corpse), false);
+});
+
+test('o loot cai solto no raio de patrulha da criatura, com o brilho, e o cadáver fica vazio', async () => {
+  const { buildGame, floorRect } = await import('./helpers/fixture.js');
+  const sim = buildGame({ objects: floorRect(0, 20, 0, 20, 0), enemies: [[10, 10, 0]], player: { x: 2, y: 2, z: 0 } });
+  const enemy = sim.enemies[0];
+  enemy.creature = RAT;
+  sim.inventory.lootTable = { [RAT]: [{ tipo: COIN, chance: 1, min: 1, max: 1 }, { tipo: CHEESE, chance: 1 }, { tipo: COIN, chance: 1, min: 1, max: 1 }] };
+  sim.drainEvents();
+  enemy.currentHp = 0;
+  sim.tick(sim.time + 50);
+  const dropped = sim.objects.filter(o => o.itemData && [COIN, CHEESE].includes(o.itemData.type));
+  assert.ok(dropped.length >= 2);
+  for (const obj of dropped) assert.ok(Math.hypot(obj.x - 10, obj.y - 10) <= enemy.patrolRadius, 'dentro do raio de patrulha');
+  assert.equal(sim.deadBodies[0].itemData.items.filter(Boolean).length, 0);
+  assert.ok(sim.drainEvents().filter(e => e.type === 'effect' && e.effect === 'rings-yellow').length >= 3);
 });

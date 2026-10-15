@@ -114,7 +114,7 @@ export class LifeCycleController {
     const sim = this.sim;
     const corpse = this.createCorpse(enemy, 'enemy_corpse', now);
     if (!enemy.summonedBy) {
-      sim.inventory.fillCorpse(corpse, enemy);
+      sim.inventory.scatterLoot(corpse, enemy);
       this.shareXp(enemy);
       countKill(sim, enemy);
       sim.powers.dismissSummons(enemy);

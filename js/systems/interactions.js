@@ -3,11 +3,9 @@
 import { GameObject } from '../models/game-object.js';
 import { objectIdType, objectUse, activeAs, togglesOnUse, displayName, getAsset, splitType, isEntranceFolder, floorBehavior, WORM_TYPE } from '../../shared/assets.js';
 import { itemInfo, newItem, weightOf, FISH_RANGE, USE_COOLDOWN_MS } from '../../shared/items.js';
+import { DROP_EFFECT } from '../../shared/effects.js';
 import { takeFromBag } from './trade.js';
 import { getHoleTarget, toLowerLevel, toUpperLevel } from '../../shared/stairs.js';
-
-// Efeito que brilha no sqm onde o item pescado ou a minhoca cai no chão.
-const DROP_EFFECT = 'rings-yellow';
 
 // Objetos do mapa que se usam (gerador → Objetos → Uso):
 //   placa     → o texto (editor) aparece em cima dela, na cor escolhida no editor;
