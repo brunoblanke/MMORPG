@@ -75,7 +75,13 @@ async function gerarTudo() {
     fs.mkdirSync(path.join(SAIDA, pasta), { recursive: true });
   }
   const efeitos = {};
-  for (const [nome, { id }] of Object.entries(EFFECTS)) efeitos[nome] = { id, ...gerarEfeito(tibia, id) };
+  for (const [nome, { id }] of Object.entries(EFFECTS)) {
+    try {
+      efeitos[nome] = { id, ...gerarEfeito(tibia, id) };
+    } catch (erro) {
+      efeitos[nome] = { id, erro: 'não achei esse efeito no Tibia.dat' };
+    }
+  }
   const projeteis = {};
   for (const [nome, { id }] of Object.entries(MISSILES)) projeteis[nome] = { id, ...gerarProjetil(tibia, id) };
   console.log(JSON.stringify({ efeitos, projeteis }, null, 1));

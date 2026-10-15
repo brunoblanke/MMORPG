@@ -3,6 +3,7 @@
 import { calculateMoveDelay, getAdjacentPositions, directionFromDelta } from '../utils/helpers.js';
 import { getStairTop } from '../../shared/stairs.js';
 import { isEntranceFolder, objectIdType } from '../../shared/assets.js';
+import { effectCommand } from './effect-command.js';
 
 // Comandos que um jogador manda pra simulação (hoje pelo teclado/mouse; no
 // multiplayer, pela rede). Todos têm `type`:
@@ -49,7 +50,7 @@ export class PlayerControl {
       case 'saveLayout': return this.sim.inventory.saveLayout(player, command.layout);
       case 'useStairs': return this.useStairs(player, command.x, command.y, command.z);
       case 'useDoor': return this.useDoor(player, command.x, command.y, command.z);
-      case 'say': return this.sim.spells.cast(player, command.text) || this.sim.houses.command(player, command.text) || this.sim.mail.command(player, command.text) || this.sim.talk.playerSays(player, command.text);
+      case 'say': return this.sim.spells.cast(player, command.text) || this.sim.houses.command(player, command.text) || this.sim.mail.command(player, command.text) || effectCommand(this.sim, player, command.text) || this.sim.talk.playerSays(player, command.text);
       case 'turn': return this.turn(player, command.dx, command.dy);
       case 'partyInvite': return this.sim.social.invite(player, command.targetId);
       case 'partyJoin': return this.sim.social.join(player, command.leaderId);
