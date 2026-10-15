@@ -225,7 +225,7 @@ export class GameController {
         return;
       }
 
-      if (self.trySelectPlayerAtMouse(!!(data.event && data.event.ctrlKey))) return;
+      if (self.trySelectPlayerAtMouse(!!(data.event && data.event.ctrlKey), data.event)) return;
 
       const clickData = self.inputController.handleClick(data.event);
 
@@ -455,11 +455,12 @@ export class GameController {
 
   // ================================================================================================================================================================================================================================================
   // trySelectPlayerAtMouse
-  // Ctrl + clique, ou dois cliques/toques seguidos (até PLAYER_DOUBLE_CLICK_MS),
-  // em outro player escolhem (ou tiram) o alvo, como na Battle. O 1º clique no
-  // player não anda. Retorna true se o clique era em um player.
+  // Ctrl + clique, ou dois cliques seguidos (até PLAYER_DOUBLE_CLICK_MS), em
+  // outro player escolhem (ou tiram) o alvo, como na Battle. No celular, dois
+  // toques seguidos são o botão direito: abrem o menu do player. O 1º clique
+  // no player não anda. Retorna true se o clique era em um player.
 
-  trySelectPlayerAtMouse(immediate = false) {
+  trySelectPlayerAtMouse(immediate = false, evt = null) {
     const other = this.playerMenu.playerAtMouse();
     const last = this.lastPlayerClick;
     const now = performance.now();
@@ -472,6 +473,10 @@ export class GameController {
       return true;
     }
     this.lastPlayerClick = null;
+    if (this.lastPointerType === 'touch' && !immediate && evt) {
+      this.playerMenu.openAt(evt);
+      return true;
+    }
     this.send({ type: 'attack', targetId: this.player.target === other ? null : other.id });
     return true;
   }
