@@ -360,6 +360,7 @@ async function iniciarJogo(servidorHttp) {
       if (corpo) {
         player = corpo;
         player.offline = false;
+        player.offlineSince = null;
         conexoes.set(player.id, { socket, sent: null });
         console.log(`🟢 ${player.name} voltou ao corpo que ficou no mapa (${conexoes.size} online)`);
         socket.send(JSON.stringify({ type: 'welcome', playerId: player.id }));
@@ -397,7 +398,7 @@ async function iniciarJogo(servidorHttp) {
       guardarPersonagens(personagens, [player]);
       conexoes.delete(player.id);
       const saiu = sim.leaveGame(player.id);
-      console.log(saiu ? `🔴 ${player.name} saiu (${conexoes.size} online)` : `🟠 ${player.name} caiu em combate: o corpo fica no mapa (${conexoes.size} online)`);
+      console.log(saiu ? `🔴 ${player.name} saiu (${conexoes.size} online)` : `🟠 ${player.name} caiu: o corpo fica no mapa esperando (${conexoes.size} online)`);
     });
   });
 

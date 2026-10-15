@@ -74,6 +74,7 @@ export class LifeCycleController {
     const { world, control } = this.sim;
     this.sim.social.onPlayerDeath(player, now);
     if (player.isBot) return this.reviveBot(player);
+    if (player.offline) player.offlineSince = -Infinity;
     this.removePlayerCorpses(player);
     const corpse = this.createCorpse(player, 'player_corpse', now);
     this.sim.inventory.fillPlayerCorpse(corpse, player);

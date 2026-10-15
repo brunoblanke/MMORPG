@@ -14,10 +14,16 @@ function run(game, ms) {
   while (game.time < end) game.tick(game.time + TICK_MS);
 }
 
-test('fora de combate, sair tira o player do mapa na hora', () => {
+CONFIG.disconnectGraceMs = 10000;
+
+test('fora de combate, o corpo espera disconnectGraceMs pelo dono e depois sai', () => {
   const game = buildGame({ objects: floorRect(0, 10, 0, 10, 0), player: { x: 5, y: 5, z: 0 } });
-  assert.equal(game.leaveGame('player1'), true);
+  assert.equal(game.leaveGame('player1'), false);
+  run(game, CONFIG.disconnectGraceMs - 2 * TICK_MS);
+  assert.equal(game.findOffline(game.player.name), game.player, 'o dono volta e assume o corpo');
+  run(game, 4 * TICK_MS);
   assert.equal(game.getPlayer('player1'), null);
+  assert.deepEqual(game.drainLoggedOut().map(p => p.id), ['player1']);
 });
 
 test('em combate, o corpo fica no mapa e só sai depois de logoutCombatMs sem golpe', () => {
@@ -47,10 +53,12 @@ test('o corpo offline que apanha continua em combate e quem volta assume ele', (
   assert.equal(game.findOffline(game.player.name), null);
 });
 
-test('em zona segura o corpo offline sai mesmo em combate', () => {
+test('em zona segura o corpo offline sai depois da espera, mesmo em combate', () => {
   const game = buildGame({ objects: floorRect(0, 10, 0, 10, 0), safe: [[5, 5, 0]], player: { x: 5, y: 5, z: 0 } });
   game.player.lastCombatTime = game.time;
-  assert.equal(game.leaveGame('player1'), true);
+  assert.equal(game.leaveGame('player1'), false);
+  run(game, CONFIG.disconnectGraceMs + 4 * TICK_MS);
+  assert.equal(game.getPlayer('player1'), null);
 });
 
 test('morrer offline tira o corpo logo depois', () => {
@@ -85,8 +93,10 @@ test('com o auto ataque ligado o corpo fica no mapa sem limite e sai quando o au
   assert.equal(game.getPlayer('player1'), null);
 });
 
-test('em zona segura o auto ataque não segura o corpo', () => {
+test('em zona segura o auto ataque não segura o corpo depois da espera', () => {
   const game = buildGame({ objects: floorRect(0, 10, 0, 10, 0), safe: [[5, 5, 0]], player: { x: 5, y: 5, z: 0 } });
   game.player.attackMode = true;
-  assert.equal(game.leaveGame('player1'), true);
+  game.leaveGame('player1');
+  run(game, CONFIG.disconnectGraceMs + 4 * TICK_MS);
+  assert.equal(game.getPlayer('player1'), null);
 });

@@ -15,6 +15,7 @@ export const CONFIG = {
   mageKeepDistance: 3,         // mago se afasta se o player chega a menos de 3 sqm
   starveHpPercent: 1,          // sem comida nenhuma, o player perde esse % da vida máxima a cada tique do veneno (0 desliga)
   logoutCombatMs: 30000,       // sair em combate deixa o corpo no mapa até passar esse tempo sem golpe dado ou levado
+  disconnectGraceMs: 300000,   // conexão que cai (celular em segundo plano): o corpo espera esse tempo no mapa pelo dono voltar
   attackCooldown: 2000,       // como no Tibia: um golpe a cada 2 s
   targetLoseRange: 25,         // alvo mais longe que isso (ou em outro andar) é perdido
   // Escalas globais (player e inimigos, sem mexer nos atributos por lvl):
