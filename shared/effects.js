@@ -33,6 +33,9 @@ export const EFFECTS = {
   'firework-blue': { id: 31, frames: 10, size: 32, ms: 70 }
 };
 
+// Efeito que abre na água quando algo cai nela (pesca, item jogado na água).
+export const WATER_EFFECT = 'bubbles';
+
 // Efeito desenhado pelo código (sem imagem): círculos só de contorno que
 // crescem e somem, como algo caindo na água (pesca, item jogado na água).
 // `rings` círculos, um a cada `delay` ms, cada um durando `ringMs`.

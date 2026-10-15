@@ -6,6 +6,7 @@ import { toUpperLevel } from '../../shared/stairs.js';
 import { isValidFloor } from '../../shared/constants.js';
 import { objectIdType, blocksThrow, supportsItems } from '../../shared/assets.js';
 import { itemInfo } from '../../shared/items.js';
+import { WATER_EFFECT } from '../../shared/effects.js';
 
 export class ObjectDragController {
 
@@ -215,7 +216,7 @@ export class ObjectDragController {
 
   sink(player, obj, x = obj.x, y = obj.y, z = obj.z || 0) {
     const name = obj.isCorpse ? 'O corpo' : itemInfo(objectIdType(obj.id)).name;
-    this.sim.spells.showEffect(x, y, 'ripple', undefined, z);
+    this.sim.spells.showEffect(x, y, WATER_EFFECT, undefined, z);
     if (obj.isCorpse) this.sim.lifeCycle.removeCorpse(obj);
     else this.sim.inventory.removeGroundObject(obj);
     if (player) this.sim.emit({ type: 'message', playerId: player.id, text: `${name} afundou.`, kind: 'info' });

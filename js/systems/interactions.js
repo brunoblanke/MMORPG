@@ -4,6 +4,7 @@ import { GameObject } from '../models/game-object.js';
 import { objectIdType, objectUse, activeAs, togglesOnUse, displayName, getAsset, splitType, isEntranceFolder, floorBehavior, WORM_TYPE } from '../../shared/assets.js';
 import { itemInfo, newItem, weightOf, FISH_RANGE, USE_COOLDOWN_MS } from '../../shared/items.js';
 import { takeFromBag } from './trade.js';
+import { WATER_EFFECT } from '../../shared/effects.js';
 import { isValidFloor } from '../../shared/constants.js';
 import { getHoleTarget, toLowerLevel, toUpperLevel } from '../../shared/stairs.js';
 
@@ -160,7 +161,7 @@ export class InteractionController {
 
   // ================================================================================================================================================================================================================================================
   // fish
-  // Vara de pescar no sqm de água (piso com peixes, gerador → Pisos → Pescável) até FISH_RANGE (6 sqm) e com linha de visão: gasta a isca da vara (a minhoca), mostra as ondas na água (efeito ripple), treina o fishing e, com chance que sobe com o skill (10% + 0,597% por nível acima de 10, de 10% a 50%, como no Tibia), dá um dos peixes do piso que o skill alcança (fishLevel), que cai no chão ao lado do player, do lado da água (dropBeside); quanto mais o skill passa do nível de um peixe, mais comum ele fica (peso de 1 até 20), então os melhores aparecem mais com o skill. Sem a isca, avisa "Você não tem isca.". Espera USE_COOLDOWN_MS até a próxima. Devolve true se pescou (gastou isca).
+  // Vara de pescar no sqm de água (piso com peixes, gerador → Pisos → Pescável) até FISH_RANGE (6 sqm) e com linha de visão: gasta a isca da vara (a minhoca), mostra o efeito da água (WATER_EFFECT), treina o fishing e, com chance que sobe com o skill (10% + 0,597% por nível acima de 10, de 10% a 50%, como no Tibia), dá um dos peixes do piso que o skill alcança (fishLevel), que cai no chão ao lado do player, do lado da água (dropBeside); quanto mais o skill passa do nível de um peixe, mais comum ele fica (peso de 1 até 20), então os melhores aparecem mais com o skill. Sem a isca, avisa "Você não tem isca.". Espera USE_COOLDOWN_MS até a próxima. Devolve true se pescou (gastou isca).
 
   fish(player, rod, target) {
     const { world, movement } = this.sim;
@@ -177,7 +178,7 @@ export class InteractionController {
       return false;
     }
     player.useReadyAt = now + USE_COOLDOWN_MS;
-    this.sim.spells.showEffect(target.x, target.y, 'ripple', undefined, z);
+    this.sim.spells.showEffect(target.x, target.y, WATER_EFFECT, undefined, z);
     this.sim.combat.trainSkill(player, 'fishing');
     const level = player.skills && player.skills.fishing ? player.skills.fishing.lvl : 10;
     const chance = Math.min(50, Math.max(10, 10 + (level - 10) * 0.597));
