@@ -132,15 +132,17 @@ export class GameController {
   }
 
   // ================================================================================================================================================================================================================================================
-  // reconnectWhenBack
-  // A conexão caiu (celular em segundo plano, servidor reiniciando): tenta abrir o servidor de dois em dois segundos e, quando ele responde, recarrega e entra de novo sozinho com o mesmo personagem.
+  // reconnect
+  // A conexão caiu (celular em segundo plano, rede, servidor reiniciando): tenta abrir o servidor de dois em dois segundos e reentra no mesmo personagem sem recarregar a página (session.reattach). Se o servidor reiniciou, o mapa mudou ou o corpo já saiu, recarrega e entra de novo sozinho.
 
-  async reconnectWhenBack(data) {
+  async reconnect(session, data) {
     for (;;) {
       try {
-        (await RemoteSession.openSocket()).close();
+        const socket = await RemoteSession.openSocket();
+        if (await session.reattach(socket, data.name, data.gender, data.password)) return;
         break;
-      } catch {
+      } catch (error) {
+        if (error instanceof JoinError) break;
         await new Promise(resolve => setTimeout(resolve, 2000));
       }
     }
@@ -166,7 +168,7 @@ export class GameController {
       try {
         const session = await RemoteSession.join(socket, mapData, name, gender, password);
         console.log(`🌐 Conectado ao servidor como ${name} (${session.playerId})`);
-        session.onDisconnect = () => this.reconnectWhenBack({ name, gender, password });
+        session.onDisconnect = () => this.reconnect(session, { name, gender, password });
         session.onReload = () => {
           saveRejoin({ name, gender, password });
           location.reload();

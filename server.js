@@ -286,6 +286,8 @@ async function iniciarJogo(servidorHttp) {
   const personagens = carregarPersonagens();
   let sim = criarMundo();
   let geracao = 0;
+  const ligadoEm = Date.now();
+  const versao = () => `${ligadoEm}:${geracao}`;
   const senhas = new PasswordStore(PASSWORDS_PATH);
   const guarda = new LoginGuard();
   const conexoes = new Map();
@@ -336,7 +338,7 @@ async function iniciarJogo(servidorHttp) {
     const recusar = (erro) => socket.send(JSON.stringify({ type: 'joinError', error: erro }));
 
     const entrar = async (mensagem) => {
-      const erro = validarEntrada(sim, mensagem.name, validateName);
+      const erro = validateName(mensagem.name);
       if (erro.error) return recusar(erro.error);
       const chave = `${endereco}|${erro.name.toLowerCase()}`;
       const espera = guarda.retryIn(chave);
@@ -354,16 +356,17 @@ async function iniciarJogo(servidorHttp) {
       }
       if (socket.readyState !== socket.OPEN) return;
       if (minhaGeracao !== geracao) return recusar('O mapa foi atualizado. Tente entrar de novo.');
-      const emUso = validarEntrada(sim, erro.name, validateName);
-      if (emUso.error) return recusar(emUso.error);
-      const corpo = sim.findOffline(erro.name);
+      const corpo = sim.players.find(p => p.name.toLowerCase() === erro.name.toLowerCase());
+      if (corpo && corpo.isBot) return recusar('Esse nome já está em uso. Escolha outro.');
       if (corpo) {
+        const antiga = conexoes.get(corpo.id);
         player = corpo;
         player.offline = false;
         player.offlineSince = null;
         conexoes.set(player.id, { socket, sent: null });
+        if (antiga && antiga.socket !== socket) antiga.socket.close();
         console.log(`🟢 ${player.name} voltou ao corpo que ficou no mapa (${conexoes.size} online)`);
-        socket.send(JSON.stringify({ type: 'welcome', playerId: player.id }));
+        socket.send(JSON.stringify({ type: 'welcome', playerId: player.id, version: versao() }));
         return;
       }
       const playerId = `player${proximoJogador}`;
@@ -372,7 +375,7 @@ async function iniciarJogo(servidorHttp) {
       player = sim.addPlayer(playerId, { name: erro.name, gender: normalizeGender(mensagem.gender), saved });
       conexoes.set(playerId, { socket, sent: null });
       console.log(`🟢 ${player.name} entrou ${saved ? `(nível ${player.lvl}) ` : '(novo) '}(${conexoes.size} online)`);
-      socket.send(JSON.stringify({ type: 'welcome', playerId }));
+      socket.send(JSON.stringify({ type: 'welcome', playerId, version: versao() }));
     };
 
     socket.on('message', (dados) => {
@@ -395,6 +398,8 @@ async function iniciarJogo(servidorHttp) {
 
     socket.on('close', () => {
       if (!player || minhaGeracao !== geracao) return;
+      const atual = conexoes.get(player.id);
+      if (!atual || atual.socket !== socket) return;
       guardarPersonagens(personagens, [player]);
       conexoes.delete(player.id);
       const saiu = sim.leaveGame(player.id);
@@ -586,20 +591,6 @@ function lerMensagem(dados) {
   } catch {
     return null;
   }
-}
-
-// ================================================================================================================================================================================================================================================
-// validarEntrada
-// Nome válido (validateName) e que nenhum jogador online esteja usando (o
-// corpo que ficou no mapa em combate não conta: quem volta assume ele).
-// Devolve { name } ou { error }.
-
-function validarEntrada(sim, nome, validateName) {
-  const resultado = validateName(nome);
-  if (resultado.error) return resultado;
-  const emUso = sim.players.some(p => !p.offline && p.name.toLowerCase() === resultado.name.toLowerCase());
-  if (emUso) return { error: 'Esse nome já está em uso. Escolha outro.' };
-  return resultado;
 }
 
 // ================================================================================================================================================================================================================================================
