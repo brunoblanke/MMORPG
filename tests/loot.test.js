@@ -62,5 +62,5 @@ test('o loot cai solto a até 2 sqm da criatura, com o brilho, e o cadáver fica
   assert.ok(dropped.length >= 2);
   for (const obj of dropped) assert.ok(Math.max(Math.abs(obj.x - 10), Math.abs(obj.y - 10)) <= 2, 'a até 2 sqm');
   assert.equal(sim.deadBodies[0].itemData.items.filter(Boolean).length, 0);
-  assert.ok(sim.drainEvents().filter(e => e.type === 'effect' && e.effect === 'firework-yellow').length >= 3);
+  assert.ok(sim.drainEvents().filter(e => e.type === 'effect' && e.effect === 'rings-yellow').length >= 3);
 });
