@@ -13,12 +13,21 @@ export const NAME_COLOR = '#5fe35f';
 const CORPSE_NAME_COLOR = '#a0a0a0';
 const SKULL_NAMES = { white: { color: '#ffffff', outline: '#000000' }, red: { color: '#ff3b3b', outline: '#000000' }, black: { color: '#000000', outline: '#ffffff' } };
 const STATUS_ICON_SIZE = 10;
+const ICON_VIEW = 23;
+const ICON_MARGIN = 1.5;
 const ICON_SHAPES = {
-  skull: '<path d="M10 2.2C5.8 2.2 3 5 3 8.7c0 2.2 1 3.6 2.4 4.4V16h2.2v-1.7h1.2V16h2.4v-1.7h1.2V16h2.2v-2.9c1.4-.8 2.4-2.2 2.4-4.4C17 5 14.2 2.2 10 2.2z"/><circle cx="7.1" cy="9" r="1.9" fill="#000" stroke="none"/><circle cx="12.9" cy="9" r="1.9" fill="#000" stroke="none"/><path d="M10 11.2l-.9 1.8h1.8z" fill="#000" stroke="none"/>',
-  shield: '<path d="M10 2l7 2.6v5.2c0 3.9-2.8 6.6-7 8.2-4.2-1.6-7-4.3-7-8.2V4.6z"/>',
-  swords: '<path d="M2 1.5l12.8 12.8M18 1.5L5.2 14.3M11.6 16.8l4.6-4.6M3.8 12.2l4.6 4.6M15.4 15.4l2.9 2.9M4.6 15.4l-2.9 2.9" fill="none"/>'
+  skull: [
+    { path: 'M10 2.2C5.8 2.2 3 5 3 8.7c0 2.2 1 3.6 2.4 4.4V16h2.2v-1.7h1.2V16h2.4v-1.7h1.2V16h2.2v-2.9c1.4-.8 2.4-2.2 2.4-4.4C17 5 14.2 2.2 10 2.2z', filled: true },
+    { path: 'M5.2 9a1.9 1.9 0 1 0 3.8 0a1.9 1.9 0 1 0-3.8 0zM11 9a1.9 1.9 0 1 0 3.8 0a1.9 1.9 0 1 0-3.8 0zM10 11.2l-.9 1.8h1.8z', hole: true }
+  ],
+  shield: [
+    { path: 'M10 2l7 2.6v5.2c0 3.9-2.8 6.6-7 8.2-4.2-1.6-7-4.3-7-8.2V4.6z', filled: true }
+  ],
+  swords: [
+    { path: 'M2 1.5l12.8 12.8M18 1.5L5.2 14.3M11.6 16.8l4.6-4.6M3.8 12.2l4.6 4.6M15.4 15.4l2.9 2.9M4.6 15.4l-2.9 2.9' }
+  ]
 };
-const statusIcons = {};
+let iconPaths = null;
 
 // ================================================================================================================================================================================================================================================
 // roundRect
@@ -41,18 +50,35 @@ function getEntityName(entity, isPlayer, isEnemy, isCorpse) {
 }
 
 // ================================================================================================================================================================================================================================================
-// getStatusIcon
-// Ícone de status (caveira, escudo da party, espadas do combate): branco com contorno preto, como o nome, pronto pro canvas.
+// drawStatusIcon
+// Desenha um ícone de status direto no canvas, em vetor no tamanho exato (nítido, sem imagem): branco com contorno preto, como o nome.
 
-function getStatusIcon(name) {
-  if (!statusIcons[name]) {
-    const shapes = ICON_SHAPES[name];
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="-1.5 -1.5 23 23" stroke-linejoin="round" stroke-linecap="round"><g fill="#000" stroke="#000" stroke-width="3.6">${shapes}</g><g fill="#fff" stroke="#fff" stroke-width="1.4">${shapes}</g></svg>`;
-    const image = new Image();
-    image.src = 'data:image/svg+xml;base64,' + btoa(svg);
-    statusIcons[name] = image;
+function drawStatusIcon(ctx, name, left, top, size) {
+  iconPaths = iconPaths || Object.fromEntries(Object.entries(ICON_SHAPES).map(([key, shapes]) => [key, shapes.map(shape => ({ ...shape, path2d: new Path2D(shape.path) }))]));
+  const shapes = iconPaths[name];
+  ctx.save();
+  ctx.translate(Math.round(left), Math.round(top));
+  ctx.scale(size / ICON_VIEW, size / ICON_VIEW);
+  ctx.translate(ICON_MARGIN, ICON_MARGIN);
+  ctx.lineJoin = 'round';
+  ctx.lineCap = 'round';
+  for (const [color, outer, inner] of [['#000000', 3.6, 5.2], ['#ffffff', 1.4, 2.8]]) {
+    ctx.fillStyle = color;
+    ctx.strokeStyle = color;
+    for (const shape of shapes) {
+      ctx.lineWidth = shape.filled ? outer : inner;
+      if (shape.hole) {
+        if (color === '#ffffff') {
+          ctx.fillStyle = '#000000';
+          ctx.fill(shape.path2d);
+        }
+        continue;
+      }
+      if (shape.filled) ctx.fill(shape.path2d);
+      ctx.stroke(shape.path2d);
+    }
   }
-  return statusIcons[name];
+  ctx.restore();
 }
 
 // ================================================================================================================================================================================================================================================
@@ -60,10 +86,7 @@ function getStatusIcon(name) {
 // Os ícones de status em coluna no topo do sqm, encostados na borda direita, por fora dele: caveira em cima (por enquanto sempre; depois só PK), escudo no meio (na party do jogador) e espadas embaixo (jogador em combate).
 
 function drawStatusIcons(ctx, left, top, size, names) {
-  names.forEach((name, i) => {
-    const icon = getStatusIcon(name);
-    if (icon.complete) ctx.drawImage(icon, left + size, top + i * STATUS_ICON_SIZE, STATUS_ICON_SIZE, STATUS_ICON_SIZE);
-  });
+  names.forEach((name, i) => drawStatusIcon(ctx, name, left + size, top + i * STATUS_ICON_SIZE, STATUS_ICON_SIZE));
 }
 
 // ================================================================================================================================================================================================================================================
