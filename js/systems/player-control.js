@@ -13,6 +13,7 @@ import { isEntranceFolder, objectIdType } from '../../shared/assets.js';
 //   { type: 'attack', targetId }         escolher inimigo como alvo (null tira)
 //   { type: 'toggleFollow' }             liga/desliga seguir o alvo
 //   { type: 'toggleAttackMode' }         alterna auto ataque / defesa
+//   { type: 'respawn' }                 aceita a morte e volta ao jogo (janela de morte)
 //   { type: 'togglePvp' }                liga/desliga atacar players (caveira)
 //   { type: 'moveItem', itemId, x, y, z } arrastar item/cadáver pro sqm
 //   { type: 'moveInv', from, to, amount } mover item do inventário, de um
@@ -35,6 +36,7 @@ export class PlayerControl {
   // handle
 
   handle(player, command) {
+    if (player.dead && command.type !== 'respawn') return;
     switch (command.type) {
       case 'walkDir': return this.setWalkDir(player, command.dx || 0, command.dy || 0);
       case 'walkTo': return this.walkTo(player, command.x, command.y, command.z);
@@ -42,6 +44,7 @@ export class PlayerControl {
       case 'toggleFollow': return this.toggleFollow(player);
       case 'toggleAttackMode': return this.toggleAttackMode(player);
       case 'togglePvp': return this.togglePvp(player);
+      case 'respawn': return this.respawn(player);
       case 'moveItem': return this.moveItem(player, command.itemId, command.x, command.y, command.z);
       case 'moveInv': return this.sim.inventory.move(player, command.from, command.to, command.amount);
       case 'openContainer': return this.sim.inventory.open(player, command.itemId);
@@ -272,6 +275,17 @@ export class PlayerControl {
   toggleAttackMode(player) {
     player.attackMode = !player.attackMode;
     console.log("⚔️ Modo: " + (player.attackMode ? 'AUTO ATAQUE' : 'DEFESA'));
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // respawn
+  // O player morto aceitou a morte: volta com vida e mana cheias no spawn onde já está.
+
+  respawn(player) {
+    if (!player.dead) return;
+    player.dead = false;
+    player.currentHp = player.hp;
+    player.mana = player.maxMana;
   }
 
   // ================================================================================================================================================================================================================================================

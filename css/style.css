@@ -217,3 +217,24 @@ canvas {
 .chat-send:hover {
   color: #e8e8e8;
 }
+
+.death-box p {
+  margin: 0 0 20px;
+  line-height: 1.45;
+  text-align: center;
+}
+
+.death-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.death-actions button {
+  margin: 0;
+}
+
+.death-actions button.secondary {
+  background: #2a2e37;
+  color: #e8e8e8;
+}

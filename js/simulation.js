@@ -236,6 +236,10 @@ export class Simulation {
   leaveGame(id) {
     const player = this.getPlayer(id);
     if (!player) return true;
+    if (player.dead) {
+      this.removePlayer(id);
+      return true;
+    }
     player.offline = true;
     player.offlineSince = this.time;
     this.control.clearWalk(player);

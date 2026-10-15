@@ -290,7 +290,9 @@ test('player morto: o corpo fica com a mochila e, por sorteio, outros itens; ele
   assert.equal(player.equip.mochila, null);
   assert.equal(player.equip.arma, null);
   assert.equal(player.equip.pes.uid, 'w2');
+  assert.equal(player.dead, true);
 
+  sim.enqueue('player1', { type: 'respawn' });
   sim.enqueue('player1', { type: 'openContainer', itemId: corpse.id });
   run(sim, 4000);
   const opened = sim.inventory.viewFor(player).opened;

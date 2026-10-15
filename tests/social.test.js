@@ -152,6 +152,7 @@ test('PvP: na zona segura ou abaixo do nível 8 não dá pra atacar player', () 
 // Ana ataca Bia (sem justificativa) e Bia morre logo depois.
 
 function killWithoutReason(sim, ana, bia) {
+  bia.dead = false;
   bia.skullUntil = 0;
   bia.pvpAttacked = null;
   ana.pvpAttacked = null;

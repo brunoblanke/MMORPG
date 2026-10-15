@@ -146,7 +146,7 @@ export function prepareDrawables(gameState) {
     }, corpse);
   }
 
-  for (const other of gameState.players || [player]) {
+  for (const other of (gameState.players || [player]).filter(p => !p.dead)) {
     push({
       x: other.renderX,
       y: other.renderY,

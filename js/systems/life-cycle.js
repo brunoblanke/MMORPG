@@ -67,8 +67,9 @@ export class LifeCycleController {
   // ================================================================================================================================================================================================================================================
   // handlePlayerDeath
   // O corpo fica com a mochila e, por sorteio, outros itens do inventário
-  // (inventory.fillPlayerCorpse); o player volta no spawn sem eles. Cada player
-  // só tem um corpo: o anterior some na hora (com o que tinha dentro).
+  // (inventory.fillPlayerCorpse); o player perde XP e skills e vai pro spawn, mas
+  // fica morto (dead, invisível e sem agir) até pedir respawn (a janela de morte).
+  // Cada player só tem um corpo: o anterior some na hora (com o que tinha dentro).
 
   handlePlayerDeath(player, now) {
     const { world, control } = this.sim;
@@ -82,6 +83,8 @@ export class LifeCycleController {
     const spot = this.sim.findFreeSpot(player.spawnX, player.spawnY, player.spawnZ, { sharePlayers: true });
     world.moveEntityTile(player, player.x, player.y, player.z || 0, spot.x, spot.y, player.spawnZ);
     player.respawn(spot);
+    player.currentHp = 0;
+    player.dead = true;
     player.step = spot.step;
     player.renderStep = spot.step;
     control.clearWalk(player);
@@ -192,7 +195,7 @@ export class LifeCycleController {
 
   processDeaths(now) {
     for (const player of this.sim.players) {
-      if (!player.isAlive()) this.handlePlayerDeath(player, now);
+      if (!player.isAlive() && !player.dead) this.handlePlayerDeath(player, now);
     }
 
     const deadEnemies = this.sim.enemies.filter(enemy => !enemy.isAlive());

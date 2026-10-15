@@ -115,6 +115,14 @@ test('player morto deixa cadáver e volta pro spawn com vida cheia', () => {
   const events = runFor(sim, TICK_MS);
   assert.ok(events.some(e => e.type === 'death'));
   assert.deepEqual([sim.player.x, sim.player.y], [3, 3]);
+  assert.equal(sim.player.dead, true, 'fica morto até aceitar a morte');
+  assert.equal(sim.player.currentHp, 0);
+  sim.enqueue('player1', { type: 'walkTo', x: 9, y: 3, z: 0 });
+  runFor(sim, 2000);
+  assert.deepEqual([sim.player.x, sim.player.y], [3, 3], 'morto não anda');
+  sim.enqueue('player1', { type: 'respawn' });
+  runFor(sim, TICK_MS);
+  assert.equal(sim.player.dead, false);
   assert.equal(sim.player.currentHp, sim.player.hp);
   const corpse = sim.deadBodies.find(c => c.type === 'player_corpse');
   assert.deepEqual([corpse.x, corpse.y], deathPlace);
@@ -412,6 +420,7 @@ test('o player só mantém um corpo: ao morrer de novo o anterior some na hora',
   sim.player.currentHp = 0;
   runFor(sim, TICK_MS);
   const first = sim.deadBodies.find(c => c.isPlayer);
+  sim.enqueue('player1', { type: 'respawn' });
   sim.enqueue('player1', { type: 'walkTo', x: 9, y: 3, z: 0 });
   runFor(sim, 2000);
   sim.player.currentHp = 0;

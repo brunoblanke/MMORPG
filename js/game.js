@@ -19,6 +19,7 @@ import { ParticleController } from './systems/particle-controller.js';
 import { InputController } from './input/input.js';
 import { Joystick } from './input/joystick.js';
 import { NameModal } from './views/name-modal.js';
+import { DeathModal } from './views/death-modal.js';
 import { LoadingScreen } from './views/loading-screen.js';
 import { InventoryUI } from './views/inventory-ui.js';
 import { describeEntity, describeGroundObject } from './views/look.js';
@@ -80,6 +81,7 @@ export class GameController {
     this.speech = new SpeechLayer();
     this.chatBox = new ChatBox(this);
     this.playerMenu = new PlayerMenu(this);
+    this.deathModal = new DeathModal(this);
     this.lastPlayerClick = null;
 
     this.boot();
@@ -582,6 +584,7 @@ export class GameController {
 
   render() {
     if (!this.player) return;
+    this.deathModal.update(this.player);
     const gameState = {
       player: this.player,
       players: this.session.players,
