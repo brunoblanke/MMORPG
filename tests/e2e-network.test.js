@@ -129,6 +129,24 @@ test('um player vê o outro chegar e ouve o que ele fala', async () => {
   }
 });
 
+test('quem volta com a conexão antiga ainda aberta (celular em segundo plano) assume o mesmo personagem', async () => {
+  const antes = await connect('Redevolta');
+  try {
+    await until(antes, c => c.state.players.some(p => p.name === 'Redevolta'), 'ele mesmo na lista');
+    const depois = await connect('Redevolta');
+    try {
+      assert.equal(depois.playerId, antes.playerId);
+      await until(depois, c => c.state.players.some(p => p.name === 'Redevolta'), 'estado inteiro de novo');
+      await new Promise(resolve => setTimeout(resolve, 300));
+      assert.equal(depois.state.players.filter(p => p.name === 'Redevolta').length, 1);
+    } finally {
+      depois.socket.close();
+    }
+  } finally {
+    antes.socket.close();
+  }
+});
+
 test('ao subir, o servidor faz o backup do dia dos personagens e guarda só os 7 mais novos', () => {
   const today = `characters-${new Date().toISOString().slice(0, 10)}.json`;
   const copies = readdirSync(path.join(tempDir, 'backups')).filter(name => name.startsWith('characters-')).sort();
