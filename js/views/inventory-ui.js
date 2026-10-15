@@ -54,7 +54,7 @@ export class InventoryUI {
     this.dropMissingWindows();
     const player = this.game.player;
     this.battle = this.findWindow('battle') ? this.battleList() : [];
-    const modes = player ? [player.followMode, player.attackMode] : null;
+    const modes = player ? [player.followMode, player.attackMode, player.pvpMode] : null;
     const key = JSON.stringify([view.equip, view.cap, view.opened, view.stats, view.social, this.layout, modes, this.battle]);
     if (key === this.lastKey || this.drag) return;
     this.lastKey = key;
