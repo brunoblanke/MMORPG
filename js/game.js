@@ -5,6 +5,7 @@ import { LocalSession } from './net/local-session.js';
 import { RemoteSession, JoinError } from './net/remote-session.js';
 import { loadMapDataFromURL } from '../shared/map-format.js';
 import { Camera } from './services/camera.js';
+import { keepScreenOn } from './services/wake-lock.js';
 import { EventManager } from './input/event-manager.js';
 import { SpriteLoader } from './services/sprite-loader.js';
 import { Renderer, MESSAGE_COLORS } from './views/renderer.js';
@@ -599,6 +600,7 @@ export class GameController {
   start() {
     const self = this;
     this.camera.resize();
+    keepScreenOn();
     requestAnimationFrame(function(ts) {
       self.gameLoop(ts);
     });
