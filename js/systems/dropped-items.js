@@ -1,31 +1,20 @@
 // js/systems/dropped-items.js
 
-import { toPlain, fromPlain } from '../../shared/items.js';
-
 export const DROPPED_LIFETIME_MS = 24 * 60 * 60 * 1000;
 const SWEEP_MS = 60 * 1000;
 
 // Itens jogados no chão pelos players (obj.droppedAt, hora de verdade): somem 24h
-// depois de jogados e ficam guardados (toSave) pra voltar quando o servidor reinicia.
-// Itens do mapa e do chão das casas com dono não entram.
+// depois de jogados. Não ficam guardados: reiniciar o servidor limpa o chão. Itens do
+// mapa e do chão das casas com dono (guardado em houses.js) não entram.
 
 export class DroppedItems {
 
   // ================================================================================================================================================================================================================================================
   // constructor
-  // saved: [{ x, y, z, item, droppedAt }].
 
-  constructor(sim, saved = []) {
+  constructor(sim) {
     this.sim = sim;
     this.nextSweep = 0;
-    const owned = this.ownedTiles();
-    for (const entry of Array.isArray(saved) ? saved : []) {
-      if (!entry || !Number.isFinite(entry.droppedAt) || this.expired(entry.droppedAt)) continue;
-      if (owned.has(`${entry.x},${entry.y},${entry.z}`)) continue;
-      const item = fromPlain(entry.item, () => sim.inventory.nextUid());
-      if (!item) continue;
-      sim.inventory.spawnGroundItem(item, entry.x, entry.y, entry.z).droppedAt = entry.droppedAt;
-    }
   }
 
   // ================================================================================================================================================================================================================================================
@@ -67,14 +56,5 @@ export class DroppedItems {
     for (const obj of this.dropped()) {
       if (this.expired(obj.droppedAt)) this.sim.inventory.removeGroundObject(obj);
     }
-  }
-
-  // ================================================================================================================================================================================================================================================
-  // toSave
-
-  toSave() {
-    const inventory = this.sim.inventory;
-    return this.dropped().filter(obj => !this.expired(obj.droppedAt))
-      .map(obj => ({ x: obj.x, y: obj.y, z: obj.z || 0, item: toPlain(inventory.groundItem(obj)), droppedAt: obj.droppedAt }));
   }
 }

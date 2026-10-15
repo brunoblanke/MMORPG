@@ -44,7 +44,6 @@ export class Simulation {
   // options.houses: dono, convidados e itens guardados das casas (houses.js).
   // options.characters: os personagens guardados ({ nome em minúsculas: dados }), onde o
   // banco e o correio acham quem está offline.
-  // options.dropped: itens jogados no chão guardados (dropped-items.js).
   // options.clock: a hora de verdade em ms (padrão Date.now; os testes trocam).
   // options.bots: bots de teste além dos do mapa [{ name, x, y, z, lvl }] (spawnBots).
 
@@ -86,7 +85,7 @@ export class Simulation {
     this.social = new SocialController(this);
     this.savedCharacters = options.characters || {};
     this.houses = new HouseController(this, options.houses || {});
-    this.dropped = new DroppedItems(this, options.dropped || []);
+    this.dropped = new DroppedItems(this);
     this.mail = new MailController(this);
     this.npcs = [];
     this.talk = new NpcController(this, options.npcs || []);

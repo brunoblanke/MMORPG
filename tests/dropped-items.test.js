@@ -19,10 +19,10 @@ setAssets([asset(ROPE, { move: true, peso: 18 })]);
 // ================================================================================================================================================================================================================================================
 // game
 
-function game(clock, dropped = []) {
+function game(clock) {
   const map = buildMapData({ objects: floorRect(0, 29, 0, 29, 0), spawn: { x: 5, y: 5, z: 0 } });
   map.houseData = [];
-  const sim = new Simulation(map, { clock: () => clock.now, dropped });
+  const sim = new Simulation(map, { clock: () => clock.now });
   sim.time = 1000;
   return sim;
 }
@@ -42,19 +42,3 @@ test('item jogado no chão some depois de 24h', () => {
   sim.tick(3000);
   assert.equal(ropesOf(sim).length, 0);
 });
-
-test('os itens jogados ficam guardados e voltam com a hora em que foram jogados', () => {
-  const clock = { now: 5000000 };
-  const sim = game(clock);
-  sim.inventory.spawnGroundItem(newItem('r1', ROPE, 1), 8, 8, 0);
-  const saved = JSON.parse(JSON.stringify(sim.dropped.toSave()));
-  assert.equal(saved.length, 1);
-  clock.now += DROPPED_LIFETIME_MS - 60000;
-  const again = game(clock, saved);
-  assert.deepEqual(ropesOf(again).map(o => [o.x, o.y]), [[8, 8]]);
-  clock.now += 120000;
-  again.tick(1000);
-  assert.equal(ropesOf(again).length, 0);
-  assert.equal(game(clock, saved).dropped.toSave().length, 0, 'o que já passou de 24h não volta');
-});
-
