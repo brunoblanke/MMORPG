@@ -109,6 +109,11 @@ export function drawEntityOverlay(ctx, entity, base, stackOffsetX, stackOffsetY,
 
   if (hasHp && !isCorpse) {
     ctx.save();
+    ctx.fillStyle = '#000000';
+    ctx.beginPath();
+    if (ctx.roundRect) ctx.roundRect(barX - 1, barY - 1, size + 2, HP_BAR_HEIGHT + 2, 3);
+    else ctx.rect(barX - 1, barY - 1, size + 2, HP_BAR_HEIGHT + 2);
+    ctx.fill();
     ctx.beginPath();
     if (ctx.roundRect) ctx.roundRect(barX, barY, size, HP_BAR_HEIGHT, 2);
     else ctx.rect(barX, barY, size, HP_BAR_HEIGHT);
