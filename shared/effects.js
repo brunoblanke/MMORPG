@@ -37,7 +37,7 @@ export const EFFECTS = {
 export const DROP_EFFECT = 'rings-yellow';
 
 // O mesmo, pro loot que cai de uma criatura morta.
-export const LOOT_EFFECT = 'rings-yellow';
+export const LOOT_EFFECT = 'firework-yellow';
 
 // Efeito desenhado pelo código (sem imagem): círculos só de contorno que
 // crescem e somem, como algo caindo na água (pesca, item jogado na água).
