@@ -158,11 +158,13 @@ test('pá num piso com minhocas: ao lado do player, pela chance do piso, dá uma
   assert.ok(sim.drainEvents().some(e => e.type === 'effect' && e.effect === 'poff' && e.x === 7 && e.y === 5), 'sobe a fumacinha');
 });
 
-test('!efeito nome mostra o efeito no sqm do player', () => {
+test('!efeito nome mostra o efeito no sqm da frente e solta um peixe ali', () => {
   const sim = game();
+  sim.player.direction = 'leste';
   sim.enqueue('player1', { type: 'say', text: '!efeito teleport' });
   sim.tick(sim.time + TICK_MS);
   const events = sim.drainEvents();
-  assert.ok(events.some(e => e.type === 'effect' && e.effect === 'teleport' && e.x === 6 && e.y === 5));
+  assert.ok(events.some(e => e.type === 'effect' && e.effect === 'teleport' && e.x === 7 && e.y === 5));
+  assert.deepEqual(onGroundOf(sim, 'itens/peixes/fish'), [[7, 5]]);
   assert.equal(events.some(e => e.type === 'say'), false, 'e não vira fala');
 });
