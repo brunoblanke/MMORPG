@@ -8,7 +8,7 @@ import { drawTibiaText, healthColor } from './tibia-text.js';
 // com o mesmo visual da janela de battle (css/inventory.css): 3px, cantos
 // arredondados, na cor da vida (healthColor: verde/amarela/vermelha).
 const HP_BAR_HEIGHT = 3;
-const HP_BAR_BACK = '#12151b';
+const HP_BAR_BACK = 'rgba(10, 12, 16, 0.4)';
 export const NAME_COLOR = '#5fe35f';
 const CORPSE_NAME_COLOR = '#a0a0a0';
 const SKULL_NAMES = { white: { color: '#ffffff', outline: '#000000' }, red: { color: '#ff3b3b', outline: '#000000' }, black: { color: '#000000', outline: '#ffffff' } };
@@ -24,20 +24,10 @@ const ICON_SHAPES = {
     { path: 'M10 2l7 2.6v5.2c0 3.9-2.8 6.6-7 8.2-4.2-1.6-7-4.3-7-8.2V4.6z', filled: true }
   ],
   swords: [
-    { path: 'M2 1.5l12.8 12.8M18 1.5L5.2 14.3M11.6 16.8l4.6-4.6M3.8 12.2l4.6 4.6M15.4 15.4l2.9 2.9M4.6 15.4l-2.9 2.9' }
+    { path: 'M4 3.2l10.2 10.2M16 3.2L5.8 13.4M11.8 15l3.4-3.4M4.8 11.6L8.2 15M14.6 14.6l1.6 1.6M5.4 14.6l-1.6 1.6' }
   ]
 };
 let iconPaths = null;
-
-// ================================================================================================================================================================================================================================================
-// roundRect
-
-function roundRect(ctx, x, y, width, height, radius) {
-  ctx.beginPath();
-  if (ctx.roundRect) ctx.roundRect(x, y, width, height, radius);
-  else ctx.rect(x, y, width, height);
-  ctx.fill();
-}
 
 // ================================================================================================================================================================================================================================================
 // getEntityName
@@ -70,7 +60,7 @@ function drawStatusIcon(ctx, name, left, top, size) {
       continue;
     }
     ctx.fillStyle = '#ffffff';
-    ctx.lineWidth = shape.filled ? 1.4 : 2.8;
+    ctx.lineWidth = shape.filled ? 1.4 : 3;
     if (shape.filled) ctx.fill(shape.path2d);
     ctx.stroke(shape.path2d);
   }
@@ -119,12 +109,14 @@ export function drawEntityOverlay(ctx, entity, base, stackOffsetX, stackOffsetY,
 
   if (hasHp && !isCorpse) {
     ctx.save();
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
-    roundRect(ctx, barX - 1, barY - 1, size + 2, HP_BAR_HEIGHT + 2, 2);
+    ctx.beginPath();
+    if (ctx.roundRect) ctx.roundRect(barX, barY, size, HP_BAR_HEIGHT, 2);
+    else ctx.rect(barX, barY, size, HP_BAR_HEIGHT);
+    ctx.clip();
     ctx.fillStyle = HP_BAR_BACK;
-    roundRect(ctx, barX, barY, size, HP_BAR_HEIGHT, 2);
+    ctx.fillRect(barX, barY, size, HP_BAR_HEIGHT);
     ctx.fillStyle = barColor;
-    if (fraction > 0) roundRect(ctx, barX, barY, Math.max(2, size * fraction), HP_BAR_HEIGHT, 2);
+    ctx.fillRect(barX, barY, size * fraction, HP_BAR_HEIGHT);
     ctx.restore();
   }
 
