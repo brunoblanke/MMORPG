@@ -51,7 +51,7 @@ function getEntityName(entity, isPlayer, isEnemy, isCorpse) {
 
 // ================================================================================================================================================================================================================================================
 // drawStatusIcon
-// Desenha um ícone de status direto no canvas, em vetor no tamanho exato (nítido, sem imagem): branco com contorno preto, como o nome.
+// Desenha um ícone de status direto no canvas, em vetor no tamanho exato (nítido, sem imagem): branco, sem contorno.
 
 function drawStatusIcon(ctx, name, left, top, size) {
   iconPaths = iconPaths || Object.fromEntries(Object.entries(ICON_SHAPES).map(([key, shapes]) => [key, shapes.map(shape => ({ ...shape, path2d: new Path2D(shape.path) }))]));
@@ -62,21 +62,17 @@ function drawStatusIcon(ctx, name, left, top, size) {
   ctx.translate(ICON_MARGIN, ICON_MARGIN);
   ctx.lineJoin = 'round';
   ctx.lineCap = 'round';
-  for (const [color, outer, inner] of [['#000000', 3.6, 5.2], ['#ffffff', 1.4, 2.8]]) {
-    ctx.fillStyle = color;
-    ctx.strokeStyle = color;
-    for (const shape of shapes) {
-      ctx.lineWidth = shape.filled ? outer : inner;
-      if (shape.hole) {
-        if (color === '#ffffff') {
-          ctx.fillStyle = '#000000';
-          ctx.fill(shape.path2d);
-        }
-        continue;
-      }
-      if (shape.filled) ctx.fill(shape.path2d);
-      ctx.stroke(shape.path2d);
+  ctx.strokeStyle = '#ffffff';
+  for (const shape of shapes) {
+    if (shape.hole) {
+      ctx.fillStyle = '#000000';
+      ctx.fill(shape.path2d);
+      continue;
     }
+    ctx.fillStyle = '#ffffff';
+    ctx.lineWidth = shape.filled ? 1.4 : 2.8;
+    if (shape.filled) ctx.fill(shape.path2d);
+    ctx.stroke(shape.path2d);
   }
   ctx.restore();
 }
