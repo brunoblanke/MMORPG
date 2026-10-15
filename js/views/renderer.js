@@ -556,7 +556,7 @@ export class Renderer {
 
   flushOverlays() {
     for (const o of this.pendingOverlays) {
-      drawEntityOverlay(this.ctx, o.entity, o.base, o.stackOffsetX, o.stackOffsetY, o.size, this.devMode, o.entity === this.localPlayer, this.partyIds.has(o.entity.id));
+      drawEntityOverlay(this.ctx, o.entity, o.base, o.stackOffsetX, o.stackOffsetY, o.size, this.devMode, o.entity === this.localPlayer, !!o.entity && this.partyIds.has(o.entity.id));
     }
     this.pendingOverlays = [];
   }
