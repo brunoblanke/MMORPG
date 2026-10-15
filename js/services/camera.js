@@ -2,6 +2,15 @@
 
 import { CONFIG } from '../config.js';
 
+// ================================================================================================================================================================================================================================================
+// viewSize
+// O tamanho da tela do jogo em pixels de CSS (o canvas tem mais pixels que isso quando o zoom ou a tela pedem, devicePixelRatio): é nele que o jogo desenha e calcula.
+
+export function viewSize(canvas) {
+  const scale = canvas.pixelScale || 1;
+  return { width: canvas.width / scale, height: canvas.height / scale };
+}
+
 export class Camera {
   constructor(canvas) {
     this.canvas = canvas;
@@ -20,10 +29,11 @@ export class Camera {
     const px = (player && player.renderX !== undefined) ? player.renderX : 0;
     const py = (player && player.renderY !== undefined) ? player.renderY : 0;
     const pos = this.gridToScreen(px, py);
+    const view = viewSize(this.canvas);
     this.target = { x: px, y: py };
     this.offset = {
-      x: Math.round(this.canvas.width / 2 - this.tileSize / 2) - Math.round(pos.x),
-      y: Math.round(this.canvas.height / 2 - this.tileSize / 2) - Math.round(pos.y)
+      x: Math.round(view.width / 2 - this.tileSize / 2) - Math.round(pos.x),
+      y: Math.round(view.height / 2 - this.tileSize / 2) - Math.round(pos.y)
     };
   }
 
@@ -76,10 +86,11 @@ export class Camera {
 
   getVisibleTiles() {
     const size = this.tileSize;
+    const view = viewSize(this.canvas);
     const startX = Math.max(0, Math.floor(-this.offset.x / size) - 1);
-    const endX = Math.min(CONFIG.mapWidth, Math.ceil((this.canvas.width - this.offset.x) / size) + 1);
+    const endX = Math.min(CONFIG.mapWidth, Math.ceil((view.width - this.offset.x) / size) + 1);
     const startY = Math.max(0, Math.floor(-this.offset.y / size) - 1);
-    const endY = Math.min(CONFIG.mapHeight, Math.ceil((this.canvas.height - this.offset.y) / size) + 1);
+    const endY = Math.min(CONFIG.mapHeight, Math.ceil((view.height - this.offset.y) / size) + 1);
     return { startX, endX, startY, endY };
   }
 
@@ -100,10 +111,13 @@ export class Camera {
   // resize
 
   // A tela do jogo ocupa a janela toda; as colunas de janelas ficam por cima
-  // dela (css/inventory.css).
+  // dela (css/inventory.css). O canvas ganha pixels de verdade (devicePixelRatio), pra não
+  // borrar com zoom ou tela de alta densidade.
 
   resize() {
-    this.canvas.width = this.canvas.clientWidth || window.innerWidth;
-    this.canvas.height = this.canvas.clientHeight || window.innerHeight;
+    const scale = window.devicePixelRatio || 1;
+    this.canvas.pixelScale = scale;
+    this.canvas.width = Math.round((this.canvas.clientWidth || window.innerWidth) * scale);
+    this.canvas.height = Math.round((this.canvas.clientHeight || window.innerHeight) * scale);
   }
 }

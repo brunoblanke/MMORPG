@@ -1,4 +1,5 @@
 import { CONFIG } from '../config.js';
+import { viewSize } from '../services/camera.js';
 import { shadeColor, isInRadius } from '../utils/helpers.js';
 import { SpriteRegistry, isSheetReady } from './sprite-registry.js';
 import { drawEntityOverlay } from './entity-overlay.js';
@@ -534,9 +535,10 @@ export class Renderer {
     if (!statusMessage) return;
     const lines = String(statusMessage.text).split('\n');
     const lineHeight = 13;
-    const bottom = this.canvas.height / 2 - CONFIG.tileSize - 16;
+    const view = viewSize(this.canvas);
+    const bottom = view.height / 2 - CONFIG.tileSize - 16;
     const color = MESSAGE_COLORS[statusMessage.kind] || MESSAGE_COLORS.info;
-    lines.forEach((line, i) => drawTibiaText(this.ctx, line, this.canvas.width / 2, bottom - (lines.length - 1 - i) * lineHeight, color));
+    lines.forEach((line, i) => drawTibiaText(this.ctx, line, view.width / 2, bottom - (lines.length - 1 - i) * lineHeight, color));
   }
 
   // ================================================================================================================================================================================
@@ -567,9 +569,10 @@ export class Renderer {
   darkenBelow(floors) {
     if (floors <= 0) return;
     this.ctx.save();
+    const view = viewSize(this.canvas);
     this.ctx.globalAlpha = 1 - Math.pow(1 - FLOOR_DARKEN, floors);
     this.ctx.fillStyle = '#000';
-    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    this.ctx.fillRect(0, 0, view.width, view.height);
     this.ctx.restore();
   }
 
@@ -581,7 +584,10 @@ export class Renderer {
     this.selectedTarget = gameState.player.target || null;
     this.localPlayer = gameState.player;
     this.partyIds = gameState.partyIds || new Set();
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    const scale = this.canvas.pixelScale || 1;
+    const view = viewSize(this.canvas);
+    this.ctx.setTransform(scale, 0, 0, scale, 0, 0);
+    this.ctx.clearRect(0, 0, view.width, view.height);
     this.ctx.imageSmoothingEnabled = false;
     this.camera.update(gameState.player);
     const offset = this.camera.getOffset();
@@ -589,7 +595,7 @@ export class Renderer {
     const visible = this.camera.getVisibleTiles();
 
     this.ctx.fillStyle = '#444';
-    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    this.ctx.fillRect(0, 0, view.width, view.height);
 
     // Só o que está na tela (com folga pros sprites altos e pilhas, que
     // desenham pra cima e pra esquerda do sqm).

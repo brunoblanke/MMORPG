@@ -2,6 +2,7 @@
 
 import { getEntityLevel } from '../core/geometry.js';
 import { displayName } from '../../shared/assets.js';
+import { viewSize } from '../services/camera.js';
 
 // Modo dev: o que está no sqm sob o mouse, numa caixa ao lado do cursor (no
 // visual das janelas do jogo): por andar, de cima pra baixo na pilha, com
@@ -98,8 +99,9 @@ export function drawTileTooltip(ctx, camera, gameState, inputController) {
     rows.push({ text: getTooltipLine(obj), isTitle: false });
   }
 
-  const tooltipX = Math.min(mouseX + 15, ctx.canvas.width - 20);
-  const tooltipY = Math.min(mouseY + 15, ctx.canvas.height - 20);
+  const view = viewSize(ctx.canvas);
+  const tooltipX = Math.min(mouseX + 15, view.width - 20);
+  const tooltipY = Math.min(mouseY + 15, view.height - 20);
 
   ctx.save();
 

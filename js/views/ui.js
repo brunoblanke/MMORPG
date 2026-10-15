@@ -1,3 +1,5 @@
+import { viewSize } from '../services/camera.js';
+
 export class UI {
   constructor() {
     this.devBtnSize = 36;
@@ -63,7 +65,7 @@ export class UI {
   drawPlayerStatus(ctx, player, inSafeZone) {
     if (!inSafeZone) return;
     const x = this.sideInset + 16;
-    const y = ctx.canvas.height - 16;
+    const y = viewSize(ctx.canvas).height - 16;
     const label = '🛡 Zona segura';
     ctx.save();
     ctx.font = 'bold 12px Arial';
