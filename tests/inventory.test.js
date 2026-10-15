@@ -226,7 +226,7 @@ test('caixa no chão: de longe, o player anda até o lado e abre; fecha quando e
   assert.equal(sim.inventory.viewFor(sim.player).opened.length, 0);
 });
 
-test('cadáver é container vazio (o loot cai solto no chão); abre com o player em cima dele', () => {
+test('cadáver é container com o loot; abre com o player em cima dele', () => {
   const mapData = buildMapData({ objects: floorRect(0, 29, 0, 29), enemies: [[12, 12, 0]], spawn: { x: 5, y: 5, z: 0 } });
   const sim = new Simulation(mapData, { lootTable: { 'criaturas/mamiferos/teste': [{ tipo: COIN, chance: 1, min: 5, max: 5 }, { tipo: SWORD, chance: 1 }] } });
   sim.time = 1000;
@@ -236,9 +236,7 @@ test('cadáver é container vazio (o loot cai solto no chão); abre com o player
   enemy.currentHp = 0;
   sim.tick(sim.time + TICK_MS);
   const corpse = sim.deadBodies.find(c => c.type === 'enemy_corpse');
-  assert.equal(corpse.itemData.items.filter(Boolean).length, 0);
-  const loose = sim.objects.filter(o => o.itemData && [COIN, SWORD].includes(o.itemData.type));
-  assert.deepEqual(loose.map(o => [o.itemData.type, o.itemData.count || 1]).sort(), [[COIN, 5], [SWORD, 1]].sort());
+  assert.deepEqual(corpse.itemData.items.slice(0, 2).map(i => i && [i.type, i.count || 1]), [[COIN, 5], [SWORD, 1]]);
 
   sim.enqueue('player1', { type: 'walkTo', x: 12, y: 12, z: 0 });
   run(sim, 5000);
@@ -248,6 +246,12 @@ test('cadáver é container vazio (o loot cai solto no chão); abre com o player
   const opened = sim.inventory.viewFor(player).opened;
   assert.equal(opened.length, 1);
   assert.equal(opened[0].corpse, true);
+
+  const bag = player.equip.mochila;
+  sim.enqueue('player1', { type: 'moveInv', from: { t: 'c', uid: corpse.itemData.uid, i: 1 }, to: { t: 'c', uid: bag.uid, i: 0 } });
+  sim.tick(sim.time + TICK_MS);
+  assert.equal(bag.items[0].type, SWORD);
+  assert.equal(corpse.itemData.items[1], null);
 });
 
 test('personagem volta com os itens e o layout', () => {
