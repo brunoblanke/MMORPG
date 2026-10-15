@@ -7,7 +7,6 @@ import { decodeDelta } from './delta.js';
 
 const CONNECT_TIMEOUT_MS = 2000;
 const STALE_EVENT_MS = 1000;
-const SILENT_MS = 3000;
 const VISUAL_EVENTS = new Set(['damage', 'heal', 'xp', 'speech', 'signText', 'missile', 'effect']);
 
 // Jogo pelo servidor: a simulação roda lá; aqui fica um espelho (mapa gerado
@@ -21,10 +20,9 @@ export class RemoteSession {
   // ================================================================================================================================================================================================================================================
   // constructor
 
-  constructor(mapData, socket, playerId, version = '') {
+  constructor(mapData, socket, playerId) {
     this.socket = socket;
     this.playerId = playerId;
-    this.version = version;
     this.isOnline = true;
     this.world = new World();
     this.objects = generateObjects(mapData);
@@ -42,25 +40,9 @@ export class RemoteSession {
     this.onDisconnect = null;
     this.onReload = null;
     this.reloading = false;
-    this.disconnected = false;
-    this.lastMessageAt = performance.now();
-    this.listen(socket);
-    if (typeof document !== 'undefined') {
-      document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'visible' && this.isOnline && performance.now() - this.lastMessageAt > SILENT_MS) this.drop();
-      });
-    }
-  }
 
-  // ================================================================================================================================================================================================================================================
-  // listen
-  // Escuta o socket: estados e 'reload' do servidor; quando ele fecha, a sessão cai (drop).
-
-  listen(socket) {
     socket.addEventListener('message', (e) => {
-      if (socket !== this.socket) return;
       const message = JSON.parse(e.data);
-      this.lastMessageAt = performance.now();
       if (message.type === 'reload') {
         this.reloading = true;
         if (this.onReload) this.onReload();
@@ -69,40 +51,9 @@ export class RemoteSession {
       this.inbox.push({ message, receivedAt: performance.now() });
     });
     socket.addEventListener('close', () => {
-      if (socket === this.socket) this.drop();
+      this.isOnline = false;
+      if (this.onDisconnect && !this.reloading) this.onDisconnect();
     });
-  }
-
-  // ================================================================================================================================================================================================================================================
-  // drop
-  // A conexão acabou (fechou ou ficou muda com o app em segundo plano): avisa uma vez só.
-
-  drop() {
-    if (this.disconnected) return;
-    this.disconnected = true;
-    this.isOnline = false;
-    try { this.socket.close(); } catch {}
-    if (this.onDisconnect && !this.reloading) this.onDisconnect();
-  }
-
-  // ================================================================================================================================================================================================================================================
-  // reattach
-  // Reentra pelo socket novo no mesmo personagem, sem recarregar a página: só vale se o servidor não reiniciou nem trocou de mapa e o corpo ainda é o mesmo; o servidor manda o estado inteiro de novo. Devolve false se não deu (aí a página recarrega).
-
-  async reattach(socket, name, gender, password) {
-    const welcome = await RemoteSession.handshake(socket, name, gender, password);
-    if (welcome.playerId !== this.playerId || welcome.version !== this.version) {
-      socket.close();
-      return false;
-    }
-    this.socket = socket;
-    this.lastState = null;
-    this.inbox = [];
-    this.lastMessageAt = performance.now();
-    this.disconnected = false;
-    this.isOnline = true;
-    this.listen(socket);
-    return true;
   }
 
   get player() {
@@ -141,10 +92,12 @@ export class RemoteSession {
   }
 
   // ================================================================================================================================================================================================================================================
-  // handshake
-  // Manda o nome, o gênero e a senha do personagem e resolve com o 'welcome' do servidor (playerId, version) ou rejeita com JoinError se ele recusar o nome ou a senha — o socket continua aberto pra tentar outro. Outro erro: a conexão caiu.
+  // join
+  // Entra no jogo com o nome, o gênero e a senha do personagem. Resolve com a sessão ('welcome')
+  // ou rejeita com JoinError se o servidor recusar o nome ou a senha — o socket continua
+  // aberto pra tentar outro. Outro erro: a conexão caiu.
 
-  static handshake(socket, name, gender, password) {
+  static join(socket, mapData, name, gender, password) {
     return new Promise((resolve, reject) => {
       const cleanup = () => {
         socket.removeEventListener('message', onMessage);
@@ -157,7 +110,7 @@ export class RemoteSession {
           reject(new JoinError(message.error));
         } else if (message.type === 'welcome') {
           cleanup();
-          resolve(message);
+          resolve(new RemoteSession(mapData, socket, message.playerId));
         }
       };
       const onClose = () => {
@@ -169,15 +122,6 @@ export class RemoteSession {
       socket.addEventListener('close', onClose);
       socket.send(JSON.stringify({ type: 'join', name, gender, password }));
     });
-  }
-
-  // ================================================================================================================================================================================================================================================
-  // join
-  // Entra no jogo: o handshake e a sessão nova.
-
-  static async join(socket, mapData, name, gender, password) {
-    const welcome = await RemoteSession.handshake(socket, name, gender, password);
-    return new RemoteSession(mapData, socket, welcome.playerId, welcome.version);
   }
 
   // ================================================================================================================================================================================================================================================

@@ -16,7 +16,7 @@ import { objectIdType, doorState } from '../../shared/assets.js';
 //     { type: 'command', command }                 comando do jogador (player-control.js; say = falar)
 //   servidor → navegador
 //     { type: 'joinError', error }                 nome ou senha recusados (pode tentar de novo)
-//     { type: 'welcome', playerId, version }       entrou: quem você é e a versão do servidor/mapa (mudou = recarregar)
+//     { type: 'welcome', playerId }                entrou: quem você é
 //     { type: 'state', time, delta, events }       a cada tick: o que mudou no estado (delta.js) + eventos
 //
 // O estado leva só o que muda: jogadores, inimigos, NPCs, cadáveres e itens
