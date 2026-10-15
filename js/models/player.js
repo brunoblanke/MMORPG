@@ -30,6 +30,7 @@ export class Player extends Entity {
     this.autoFollow = true;
     this.followMode = true;
     this.attackMode = false;
+    this.pvpMode = false;
     this.aggro = [];
     this.walk = { target: null, path: [] };
     this.walkDir = null;

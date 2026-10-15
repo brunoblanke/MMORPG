@@ -78,7 +78,7 @@ export const htmlMethods = {
       const spare = '<div class="inv-capbox"></div>';
       const last = EQUIP_LAYOUT.length - 1;
       const cell = ([key], i) => key ? this.slotHtml(equip[key], { t: 'e', key }, key) : (i === last ? capBox : (i === last - 2 ? spare : ''));
-      const top = [`<div class="inv-modes">${this.followHtml()}${this.attackModeHtml()}</div>`, '', spare];
+      const top = [`<div class="inv-modes">${this.followHtml()}${this.attackModeHtml()}</div>`, '', `<div class="inv-modes right">${this.pvpHtml()}</div>`];
       const cells = [0, 1, 2].map(col => `<div class="inv-dollcol">${top[col]}${EQUIP_LAYOUT.map((entry, i) => i % 3 === col ? cell(entry, i) : '').join('')}</div>`).join('');
       return `<section class="inv-win${win.min ? ' min' : ''}" data-win="${win.id}">
         <header class="inv-head"><span class="inv-title">Inventário</span>${buttons(false)}</header>
@@ -227,6 +227,17 @@ export const htmlMethods = {
     if (!player) return '';
     const attack = !!player.attackMode;
     return `<button class="inv-follow ${attack ? 'on' : 'off'}" data-act="attackmode" type="button">${FOLLOW_ICONS.attack}</button>`;
+  },
+
+  // ================================================================================================================================================================================================================================================
+  // pvpHtml
+  // Atacar players (caveira): vermelha ligado (um clique num player o escolhe como alvo, dentro das regras do PvP), cinza desligado (clique em player não ataca), do outro lado do capacete.
+
+  pvpHtml() {
+    const player = this.game.player;
+    if (!player) return '';
+    const on = !!player.pvpMode;
+    return `<button class="inv-follow ${on ? 'on pvp' : 'off'}" data-act="pvp" type="button">${FOLLOW_ICONS.pvp}</button>`;
   },
 
   // ================================================================================================================================================================================================================================================

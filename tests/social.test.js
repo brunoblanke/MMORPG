@@ -114,6 +114,9 @@ test('PvP: atacar quem não tem caveira dá a caveira branca; quem se defende n�
   ana.hp = ana.currentHp = 100000;
   bia.hp = bia.currentHp = 100000;
   run(sim, 'player1', { type: 'attack', targetId: bia.id });
+  assert.equal(ana.target, null, 'com a caveira desligada não ataca player');
+  run(sim, 'player1', { type: 'togglePvp' });
+  run(sim, 'player1', { type: 'attack', targetId: bia.id });
   assert.equal(ana.target, bia);
   ana.lastAttackTime = -1e9;
   sim.combat.attackTarget(ana, bia, sim.time);
@@ -134,10 +137,12 @@ test('PvP: atacar quem não tem caveira dá a caveira branca; quem se defende n�
 
 test('PvP: na zona segura ou abaixo do nível 8 não dá pra atacar player', () => {
   const safe = game({ safe: safeRect(0, 10, 0, 10, 0) });
+  safe.ana.pvpMode = true;
   run(safe.sim, 'player1', { type: 'attack', targetId: safe.bia.id });
   assert.equal(safe.ana.target, null);
   const low = game();
   low.bia.lvl = 5;
+  low.ana.pvpMode = true;
   run(low.sim, 'player1', { type: 'attack', targetId: low.bia.id });
   assert.equal(low.ana.target, null);
 });

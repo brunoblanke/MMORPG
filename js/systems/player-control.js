@@ -13,6 +13,7 @@ import { isEntranceFolder, objectIdType } from '../../shared/assets.js';
 //   { type: 'attack', targetId }         escolher inimigo como alvo (null tira)
 //   { type: 'toggleFollow' }             liga/desliga seguir o alvo
 //   { type: 'toggleAttackMode' }         alterna auto ataque / defesa
+//   { type: 'togglePvp' }                liga/desliga atacar players (caveira)
 //   { type: 'moveItem', itemId, x, y, z } arrastar item/cadáver pro sqm
 //   { type: 'moveInv', from, to, amount } mover item do inventário, de um
 //                                        container ou do chão (systems/inventory.js)
@@ -40,6 +41,7 @@ export class PlayerControl {
       case 'attack': return this.setAttackTarget(player, command.targetId);
       case 'toggleFollow': return this.toggleFollow(player);
       case 'toggleAttackMode': return this.toggleAttackMode(player);
+      case 'togglePvp': return this.togglePvp(player);
       case 'moveItem': return this.moveItem(player, command.itemId, command.x, command.y, command.z);
       case 'moveInv': return this.sim.inventory.move(player, command.from, command.to, command.amount);
       case 'openContainer': return this.sim.inventory.open(player, command.itemId);
@@ -238,6 +240,7 @@ export class PlayerControl {
       return;
     }
     const other = this.sim.players.find(p => p.id === targetId);
+    if (other && !player.pvpMode) return;
     if (other && !this.sim.social.canAttack(player, other)) {
       this.sim.emit({ type: 'message', playerId: player.id, text: 'Você não pode atacar esse player (zona segura, mesma party ou nível abaixo de 8).', kind: 'warn' });
       return;
@@ -269,6 +272,15 @@ export class PlayerControl {
   toggleAttackMode(player) {
     player.attackMode = !player.attackMode;
     console.log("⚔️ Modo: " + (player.attackMode ? 'AUTO ATAQUE' : 'DEFESA'));
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // togglePvp
+  // Atacar players (caveira do inventário): desligado, escolher um player como alvo não faz nada; ao desligar, o alvo que for player é solto.
+
+  togglePvp(player) {
+    player.pvpMode = !player.pvpMode;
+    if (!player.pvpMode && player.target && player.target.isPlayer) player.target = null;
   }
 
   // ================================================================================================================================================================================================================================================

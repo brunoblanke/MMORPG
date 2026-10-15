@@ -130,6 +130,7 @@ export function serializeState(sim, playerId, nearOnly = false) {
       autoFollow: me.autoFollow,
       followMode: me.followMode,
       attackMode: me.attackMode,
+      pvpMode: me.pvpMode,
       walk: { target: me.walk.target, path: me.walk.path.map(s => ({ x: s.x, y: s.y, z: s.z })) },
       inventory: sim.inventory.viewFor(me)
     } : null
@@ -288,6 +289,7 @@ export function applyState(mirror, message, playerId, renderNow) {
     me.autoFollow = state.you.autoFollow;
     me.followMode = state.you.followMode;
     me.attackMode = state.you.attackMode;
+    me.pvpMode = state.you.pvpMode;
     me.walk = state.you.walk;
     mirror.inventoryView = state.you.inventory;
   }

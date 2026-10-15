@@ -225,7 +225,7 @@ export class GameController {
         return;
       }
 
-      if (self.trySelectPlayerAtMouse(!!(data.event && data.event.ctrlKey), data.event)) return;
+      if (self.trySelectPlayerAtMouse(data.event)) return;
 
       const clickData = self.inputController.handleClick(data.event);
 
@@ -455,12 +455,9 @@ export class GameController {
 
   // ================================================================================================================================================================================================================================================
   // trySelectPlayerAtMouse
-  // Ctrl + clique, ou dois cliques seguidos (até PLAYER_DOUBLE_CLICK_MS), em
-  // outro player escolhem (ou tiram) o alvo, como na Battle. No celular, dois
-  // toques seguidos são o botão direito: abrem o menu do player. O 1º clique
-  // no player não anda. Retorna true se o clique era em um player.
+  // Um clique (ou toque) em outro player o escolhe como alvo se o modo atacar players (caveira) estiver ligado, senão não faz nada; dois seguidos (até PLAYER_DOUBLE_CLICK_MS) abrem o menu dele (usar). O clique no player não anda. Retorna true se o clique era em um player.
 
-  trySelectPlayerAtMouse(immediate = false, evt = null) {
+  trySelectPlayerAtMouse(evt) {
     const other = this.playerMenu.playerAtMouse();
     const last = this.lastPlayerClick;
     const now = performance.now();
@@ -468,16 +465,13 @@ export class GameController {
       this.lastPlayerClick = null;
       return false;
     }
-    if (!immediate && (!last || last.id !== other.id || now - last.at > PLAYER_DOUBLE_CLICK_MS)) {
-      this.lastPlayerClick = { id: other.id, at: now };
-      return true;
-    }
-    this.lastPlayerClick = null;
-    if (this.lastPointerType === 'touch' && !immediate && evt) {
+    if (last && last.id === other.id && now - last.at <= PLAYER_DOUBLE_CLICK_MS) {
+      this.lastPlayerClick = null;
       this.playerMenu.openAt(evt);
       return true;
     }
-    this.send({ type: 'attack', targetId: this.player.target === other ? null : other.id });
+    this.lastPlayerClick = { id: other.id, at: now };
+    if (this.player.pvpMode) this.send({ type: 'attack', targetId: other.id });
     return true;
   }
 

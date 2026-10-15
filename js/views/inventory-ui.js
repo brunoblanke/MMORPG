@@ -280,6 +280,10 @@ export class InventoryUI {
         this.game.chatBox.writeTo(btn.dataset.name);
         return;
       }
+      if (btn.dataset.act === 'pvp') {
+        this.game.send({ type: 'togglePvp' });
+        return;
+      }
       if (btn.dataset.act === 'attackmode') {
         this.game.send({ type: 'toggleAttackMode' });
         return;
