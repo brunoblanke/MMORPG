@@ -64,7 +64,7 @@ test('com a sorte, o peixe vem de um dos peixes do piso; sem a sorte, só a isca
   Math.random = () => 0;
   const events = cast(lucky, 9, 5);
   Math.random = random;
-  assert.ok(events.some(e => e.type === 'effect' && e.effect === 'heal' && e.x === 7 && e.y === 5), 'brilho onde o peixe cai');
+  assert.ok(events.some(e => e.type === 'effect' && e.effect === 'rings-yellow' && e.x === 7 && e.y === 5), 'brilho onde o peixe cai');
   assert.deepEqual(onGroundOf(lucky, FISH), [[7, 5]], 'o peixe cai no chão ao lado do player, do lado da água');
   assert.equal(lucky.player.equip.mochila.items.some(item => item && (item.type === FISH || item.type === PIKE)), false, 'e não vai pra mochila');
 

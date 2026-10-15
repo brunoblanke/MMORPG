@@ -7,7 +7,7 @@ import { takeFromBag } from './trade.js';
 import { getHoleTarget, toLowerLevel, toUpperLevel } from '../../shared/stairs.js';
 
 // Efeito que brilha no sqm onde o item pescado ou a minhoca cai no chão.
-const DROP_EFFECT = 'heal';
+const DROP_EFFECT = 'rings-yellow';
 
 // Objetos do mapa que se usam (gerador → Objetos → Uso):
 //   placa     → o texto (editor) aparece em cima dela, na cor escolhida no editor;
