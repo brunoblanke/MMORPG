@@ -73,3 +73,20 @@ test('levar golpe de criatura e dar golpe nela deixam o player em combate', () =
   game.combat.attackTarget(game.player, game.enemies[0], game.time + 5000);
   assert.equal(game.inCombat(game.player, game.time + 5000), true);
 });
+
+test('com o auto ataque ligado o corpo fica no mapa sem limite e sai quando o auto ataque desliga', () => {
+  const game = buildGame({ objects: floorRect(0, 10, 0, 10, 0), player: { x: 5, y: 5, z: 0 } });
+  game.player.attackMode = true;
+  assert.equal(game.leaveGame('player1'), false);
+  run(game, CONFIG.logoutCombatMs * 3);
+  assert.ok(game.getPlayer('player1'), 'continua online');
+  game.player.attackMode = false;
+  run(game, 4 * TICK_MS);
+  assert.equal(game.getPlayer('player1'), null);
+});
+
+test('em zona segura o auto ataque não segura o corpo', () => {
+  const game = buildGame({ objects: floorRect(0, 10, 0, 10, 0), safe: [[5, 5, 0]], player: { x: 5, y: 5, z: 0 } });
+  game.player.attackMode = true;
+  assert.equal(game.leaveGame('player1'), true);
+});

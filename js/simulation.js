@@ -221,15 +221,24 @@ export class Simulation {
   }
 
   // ================================================================================================================================================================================================================================================
+  // staysOnMap
+  // Quem caiu continua no mapa se está em combate ou com o auto ataque ligado (fora de zona segura): o corpo segue atacando até o dono voltar ou desligar o auto ataque.
+
+  staysOnMap(player, now = this.time) {
+    if (this.world.isInSafeZone(player)) return false;
+    return !!player.attackMode || this.inCombat(player, now);
+  }
+
+  // ================================================================================================================================================================================================================================================
   // leaveGame
-  // A conexão do player caiu. Fora de combate ele sai na hora; em combate o
-  // corpo fica parado no mapa (offline), atacando e apanhando, até passar
-  // logoutCombatMs sem golpe (releaseOffline). Devolve true se ele saiu.
+  // A conexão do player caiu. Fora de combate e sem auto ataque ele sai na hora; senão o
+  // corpo fica no mapa (offline), atacando e apanhando, até passar
+  // logoutCombatMs sem golpe e o auto ataque estar desligado (releaseOffline). Devolve true se ele saiu.
 
   leaveGame(id) {
     const player = this.getPlayer(id);
     if (!player) return true;
-    if (!this.inCombat(player)) {
+    if (!this.staysOnMap(player)) {
       this.removePlayer(id);
       return true;
     }
@@ -254,7 +263,7 @@ export class Simulation {
 
   releaseOffline(now) {
     for (const player of [...this.players]) {
-      if (!player.offline || this.inCombat(player, now)) continue;
+      if (!player.offline || this.staysOnMap(player, now)) continue;
       this.removePlayer(player.id);
       this.loggedOut.push(player);
     }
