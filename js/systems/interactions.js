@@ -6,6 +6,9 @@ import { itemInfo, newItem, weightOf, FISH_RANGE, USE_COOLDOWN_MS } from '../../
 import { takeFromBag } from './trade.js';
 import { getHoleTarget, toLowerLevel, toUpperLevel } from '../../shared/stairs.js';
 
+// Efeito que brilha no sqm onde o item pescado ou a minhoca cai no chão.
+const DROP_EFFECT = 'heal';
+
 // Objetos do mapa que se usam (gerador → Objetos → Uso):
 //   placa     → o texto (editor) aparece em cima dela, na cor escolhida no editor;
 //   livro     → abre o texto numa janela (no chão ou carregado);
@@ -168,7 +171,7 @@ export class InteractionController {
 
   // ================================================================================================================================================================================================================================================
   // dropBeside
-  // O item cai no chão ao lado do player: o sqm em volta dele (ou o dele, se não houver) livre e firme mais perto de towards (pra onde ele pescou).
+  // O item cai no chão ao lado do player: o sqm em volta dele (ou o dele, se não houver) livre e firme mais perto de towards (pra onde ele pescou), com o brilho DROP_EFFECT.
 
   dropBeside(player, type, towards) {
     const { world, movement, inventory } = this.sim;
@@ -184,6 +187,7 @@ export class InteractionController {
     around.sort((a, b) => Math.hypot(a.x - towards.x, a.y - towards.y) - Math.hypot(b.x - towards.x, b.y - towards.y));
     const spot = around[0] || { x: player.x, y: player.y };
     inventory.mergeGroundStack(inventory.spawnGroundItem(newItem(inventory.nextUid(), type, 1), spot.x, spot.y, z));
+    this.sim.spells.showEffect(spot.x, spot.y, DROP_EFFECT, undefined, z);
   }
 
   // ================================================================================================================================================================================================================================================
@@ -205,6 +209,7 @@ export class InteractionController {
     }
     const { inventory } = this.sim;
     inventory.mergeGroundStack(inventory.spawnGroundItem(newItem(inventory.nextUid(), WORM_TYPE, 1), target.x, target.y, z));
+    this.sim.spells.showEffect(target.x, target.y, DROP_EFFECT, undefined, z);
     return true;
   }
 
