@@ -39,7 +39,9 @@ export class RemoteSession {
     this.inbox = [];
     this.onDisconnect = null;
     this.onReload = null;
+    this.onReplaced = null;
     this.reloading = false;
+    this.replaced = false;
 
     socket.addEventListener('message', (e) => {
       const message = JSON.parse(e.data);
@@ -48,11 +50,16 @@ export class RemoteSession {
         if (this.onReload) this.onReload();
         return;
       }
+      if (message.type === 'replaced') {
+        this.replaced = true;
+        if (this.onReplaced) this.onReplaced();
+        return;
+      }
       this.inbox.push({ message, receivedAt: performance.now() });
     });
     socket.addEventListener('close', () => {
       this.isOnline = false;
-      if (this.onDisconnect && !this.reloading) this.onDisconnect();
+      if (this.onDisconnect && !this.reloading && !this.replaced) this.onDisconnect();
     });
   }
 

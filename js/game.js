@@ -167,6 +167,7 @@ export class GameController {
         const session = await RemoteSession.join(socket, mapData, name, gender, password);
         console.log(`🌐 Conectado ao servidor como ${name} (${session.playerId})`);
         session.onDisconnect = () => this.reconnectWhenBack({ name, gender, password });
+        session.onReplaced = () => this.showMessage('Você entrou em outro lugar.', performance.now(), 600000, 'warn');
         session.onReload = () => {
           saveRejoin({ name, gender, password });
           location.reload();

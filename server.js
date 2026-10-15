@@ -362,7 +362,10 @@ async function iniciarJogo(servidorHttp) {
         player.offline = false;
         player.offlineSince = null;
         conexoes.set(player.id, { socket, sent: null });
-        if (antiga && antiga.socket !== socket) antiga.socket.close();
+        if (antiga && antiga.socket !== socket) {
+          antiga.socket.send(JSON.stringify({ type: 'replaced' }));
+          antiga.socket.close();
+        }
         console.log(`🟢 ${player.name} voltou ao corpo que ficou no mapa (${conexoes.size} online)`);
         socket.send(JSON.stringify({ type: 'welcome', playerId: player.id }));
         return;

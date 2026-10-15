@@ -77,6 +77,8 @@ function connect(name, password = 'segredo') {
         client.events.push(...(message.events || []));
       } else if (message.type === 'reload') {
         client.reloaded = true;
+      } else if (message.type === 'replaced') {
+        client.replaced = true;
       } else if (message.type === 'joinError') {
         reject(new Error(message.error));
       }
@@ -136,6 +138,7 @@ test('quem volta com a conexão antiga ainda aberta (celular em segundo plano) a
     const depois = await connect('Redevolta');
     try {
       assert.equal(depois.playerId, antes.playerId);
+      await until(antes, c => c.replaced, 'a conexão antiga é avisada que foi trocada');
       await until(depois, c => c.state.players.some(p => p.name === 'Redevolta'), 'estado inteiro de novo');
       await new Promise(resolve => setTimeout(resolve, 300));
       assert.equal(depois.state.players.filter(p => p.name === 'Redevolta').length, 1);
