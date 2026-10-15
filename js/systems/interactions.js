@@ -4,6 +4,7 @@ import { GameObject } from '../models/game-object.js';
 import { objectIdType, objectUse, activeAs, togglesOnUse, displayName, getAsset, splitType, isEntranceFolder, floorBehavior, WORM_TYPE } from '../../shared/assets.js';
 import { itemInfo, newItem, weightOf, FISH_RANGE, USE_COOLDOWN_MS } from '../../shared/items.js';
 import { takeFromBag } from './trade.js';
+import { isValidFloor } from '../../shared/constants.js';
 import { getHoleTarget, toLowerLevel, toUpperLevel } from '../../shared/stairs.js';
 
 // Efeito que brilha no sqm onde o item pescado ou a minhoca cai no chão.
@@ -108,6 +109,27 @@ export class InteractionController {
 
   readBook(player, item) {
     this.sim.emit({ type: 'book', playerId: player.id, title: displayName(item.type), text: item.texto || '' });
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // checkTeleports
+  // Player que acaba de pisar num teletransporte (objeto com Uso teleporte e destino, escolhido no editor) vai pro sqm livre mais perto do destino, com o efeito teleport nos dois lugares. O sqm de chegada não dispara outro teletransporte até ele sair de lá.
+
+  checkTeleports(players) {
+    const { world } = this.sim;
+    for (const player of players) {
+      const z = player.z || 0;
+      const key = `${player.x},${player.y},${z}`;
+      if (player.teleportArrival === key) continue;
+      player.teleportArrival = null;
+      const pad = world.getObjectsAt(player.x, player.y).find(o => (o.z || 0) === z && objectUse(objectIdType(o.id)) === 'teleporte');
+      const to = pad && pad.data && pad.data.destino;
+      if (!to || !Number.isInteger(to.x) || !Number.isInteger(to.y) || !isValidFloor(to.z) || !world.hasFloorAt(to.x, to.y, to.z)) continue;
+      this.sim.spells.showEffect(player.x, player.y, 'teleport', undefined, z);
+      this.sim.teleportPlayer(player, to.x, to.y, to.z);
+      player.teleportArrival = `${player.x},${player.y},${to.z}`;
+      this.sim.spells.showEffect(player.x, player.y, 'teleport', undefined, to.z);
+    }
   }
 
   // ================================================================================================================================================================================================================================================

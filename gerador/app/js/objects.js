@@ -56,6 +56,7 @@ const USES = [
   ['pa-cai', 'Buraco que a pá abre e o player já cai (o desenho não muda)'],
   ['descer', 'Bueiro (usar leva pro andar de baixo)'],
   ['deposito', 'Depósito (cada player guarda os itens dele)'],
+  ['teleporte', 'Teletransporte (pisar leva pro destino, escolhido no editor)'],
   ['correio', 'Caixa de correio (recebe cartas e encomendas: !enviar NOME)'],
   ['ferramenta-corda', 'Ferramenta: corda'],
   ['ferramenta-pa', 'Ferramenta: pá'],

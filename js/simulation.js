@@ -412,6 +412,7 @@ export class Simulation {
     for (const player of this.players) player.inCombat = this.inCombat(player, now);
 
     this.movement.checkFloorTransitions([...this.players, ...this.enemies]);
+    this.interactions.checkTeleports(this.players);
     this.lifeCycle.processDeaths(now);
   }
 }

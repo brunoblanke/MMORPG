@@ -479,7 +479,7 @@ export function objectProps(type) {
 // 'ferramenta-corda', 'ferramenta-pa', 'ferramenta-pesca' (vara de pescar), 'correio' (caixa: recebe o que se joga nela) ou 'deposito' (abre o depósito do
 // player); null se nenhum.
 
-export const OBJECT_USES = ['placa', 'livro', 'bau-quest', 'corda', 'pa', 'pa-cai', 'descer', 'ferramenta-corda', 'ferramenta-pa', 'ferramenta-pesca', 'deposito', 'correio'];
+export const OBJECT_USES = ['placa', 'livro', 'bau-quest', 'corda', 'pa', 'pa-cai', 'descer', 'ferramenta-corda', 'ferramenta-pa', 'ferramenta-pesca', 'deposito', 'correio', 'teleporte'];
 
 export function objectUse(type) {
   const asset = getAsset(splitType(type).asset);

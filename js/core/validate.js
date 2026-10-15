@@ -7,7 +7,7 @@ import { RUNES, BLANK_RUNE } from '../../shared/spells.js';
 
 // Conferência do mundo ao subir o servidor: o que está no mapa e no gerador
 // e não vai funcionar no jogo (objeto ou criatura sem folha no gerador,
-// escada ou buraco sem piso no destino, placa sem texto, baú sem itens, NPC
+// escada ou buraco sem piso no destino, placa sem texto, baú sem itens, teletransporte sem destino, NPC
 // que não é NPC ou que leva pra lugar sem piso, item vendido ou do loot que
 // não existe, item do kit inicial ou runa que falta). Devolve os avisos, um por
 // linha; não muda nada.
@@ -69,6 +69,10 @@ export function validateWorld(sim) {
     const where = `${obj.x},${obj.y},${obj.z || 0}`;
     if ((use === 'placa' || use === 'livro') && !(obj.data && obj.data.texto) && !(obj.itemData && obj.itemData.texto)) {
       warnings.push(`${use === 'placa' ? 'Placa' : 'Livro'} sem texto: ${type} em ${where}`);
+    }
+    const dest = obj.data && obj.data.destino;
+    if (use === 'teleporte' && !(dest && Number.isInteger(dest.x) && Number.isInteger(dest.y) && Number.isInteger(dest.z) && sim.world.hasFloorAt(dest.x, dest.y, dest.z))) {
+      warnings.push(`Teletransporte sem destino (ou sem piso nele): ${type} em ${where}`);
     }
     if (use === 'bau-quest' && !(obj.data && Array.isArray(obj.data.itens) && obj.data.itens.length)) {
       warnings.push(`Baú de quest sem itens: ${type} em ${where}`);

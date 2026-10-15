@@ -80,11 +80,12 @@ function selectedCell() {
 
 // ================================================================================================================================================================================================================================================
 // editableKind
-// 'texto' (placa, livro), 'itens' (baú de quest, container) ou null.
+// 'texto' (placa, livro), 'itens' (baú de quest, container), 'destino' (teletransporte) ou null.
 
 function editableKind(type) {
   const use = objectUse(type);
   if (use === 'placa' || use === 'livro') return 'texto';
+  if (use === 'teleporte') return 'destino';
   if (use === 'bau-quest' || itemInfo(type).size > 0) return 'itens';
   return null;
 }
@@ -123,7 +124,7 @@ function renderSelectPanel() {
     row.append(thumb, name, up, down);
     if (rotates) row.appendChild(selectButton('⟳', 'Girar (R)', false, () => rotateObject(obj, 1)));
     const kind = editableKind(obj.type);
-    if (kind) row.appendChild(selectButton('✎', kind === 'texto' ? 'Escrever o texto' : 'Escolher os itens', false, (evt) => openObjectDataForm(obj, evt.clientX, evt.clientY)));
+    if (kind) row.appendChild(selectButton('✎', kind === 'texto' ? 'Escrever o texto' : kind === 'destino' ? 'Escolher o destino' : 'Escolher os itens', false, (evt) => openObjectDataForm(obj, evt.clientX, evt.clientY)));
     list.appendChild(row);
   }
 }
@@ -179,7 +180,7 @@ function moveInStack(index, delta) {
 // ================================================================================================================================================================================================================================================
 // openObjectDataForm
 // Texto (placa, livro; a placa também tem a cor da mensagem: verde, amarelo,
-// vermelho ou azul) ou itens (baú de quest: cada player pega uma vez; container:
+// vermelho ou azul), destino (teletransporte: x, y e andar) ou itens (baú de quest: cada player pega uma vez; container:
 // começa com eles dentro). Fica no objeto, no mapa.
 
 const objectDataForm = document.getElementById('objectDataForm');
@@ -194,11 +195,16 @@ export function openObjectDataForm(obj, clientX, clientY) {
   const use = objectUse(obj.type);
   const data = obj.dados || {};
   const size = itemInfo(obj.type).size;
-  const label = use === 'placa' ? 'placa' : use === 'livro' ? 'livro' : use === 'bau-quest' ? 'baú de quest' : `container (${size} espaços)`;
+  const label = use === 'placa' ? 'placa' : use === 'livro' ? 'livro' : use === 'teleporte' ? 'teletransporte' : use === 'bau-quest' ? 'baú de quest' : `container (${size} espaços)`;
   document.getElementById('objectDataTitle').textContent = `${displayName(obj.type)} · ${label}`;
   document.getElementById('objectDataItemsLabel').textContent = use === 'bau-quest' ? 'Itens do baú (cada player pega uma vez)' : 'Itens dentro';
   document.getElementById('objectDataTextField').hidden = kind !== 'texto';
   document.getElementById('objectDataItemsField').hidden = kind !== 'itens';
+  document.getElementById('objectDataDestField').hidden = kind !== 'destino';
+  const dest = data.destino || {};
+  document.getElementById('objectDataDestX').value = Number.isInteger(dest.x) ? dest.x : '';
+  document.getElementById('objectDataDestY').value = Number.isInteger(dest.y) ? dest.y : '';
+  document.getElementById('objectDataDestZ').value = Number.isInteger(dest.z) ? dest.z : (state.selected ? state.selected.z : 0);
   document.getElementById('objectDataText').value = data.texto || '';
   document.getElementById('objectDataColorField').hidden = use !== 'placa';
   document.getElementById('objectDataColor').value = MESSAGE_KINDS.includes(data.cor) ? data.cor : 'info';
@@ -249,7 +255,10 @@ document.getElementById('objectDataCancel').onclick = () => {
 
 document.getElementById('objectDataConfirm').onclick = () => {
   if (!pendingObject) return;
-  if (editableKind(pendingObject.type) === 'itens') {
+  if (editableKind(pendingObject.type) === 'destino') {
+    const [x, y, z] = ['X', 'Y', 'Z'].map(axis => document.getElementById(`objectDataDest${axis}`).value).map(Number);
+    pendingObject.dados = [x, y, z].every(Number.isInteger) && document.getElementById('objectDataDestX').value !== '' && document.getElementById('objectDataDestY').value !== '' ? { destino: { x, y, z } } : undefined;
+  } else if (editableKind(pendingObject.type) === 'itens') {
     const itens = pendingItems.filter(it => it.tipo).map(it => ({ tipo: it.tipo, count: it.count || 1 }));
     pendingObject.dados = itens.length ? { itens } : undefined;
   } else {
