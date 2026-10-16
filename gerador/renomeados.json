@@ -35,5 +35,7 @@
   "estrutura/paredes/parede-madeira-1": "estrutura/paredes/madeira-1",
   "estrutura/paredes/parede-tijolos-1": "estrutura/paredes/tijolo-1",
   "estrutura/cercas/parede-pedra-branca-1": "estrutura/cercas/mureta-branca-1",
-  "estrutura/cercas/balcao-1": "estrutura/balcoes/balcao-1"
+  "estrutura/cercas/balcao-1": "estrutura/balcoes/balcao-1",
+  "estrutura/entradas/teletransporte-1": "estrutura/teletransportes/teletransporte-1",
+  "estrutura/entradas/teletransporte-2": "estrutura/teletransportes/teletransporte-2"
 }

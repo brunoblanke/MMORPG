@@ -14,6 +14,7 @@
             { "id": "escadas", "nome": "Escadas", "ferramenta": "objetos" },
             { "id": "degraus", "nome": "Degraus e conjuntos", "ferramenta": "objetos" },
             { "id": "entradas", "nome": "Entradas", "ferramenta": "objetos" },
+            { "id": "teletransportes", "nome": "Teletransportes", "ferramenta": "objetos" },
             { "id": "natureza", "nome": "Natureza", "ferramenta": "objetos" }
           ]
         }
