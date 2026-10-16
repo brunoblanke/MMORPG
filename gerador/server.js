@@ -51,7 +51,7 @@ app.use(express.static(PASTA_APP));
 
 let tibia = null;
 
-app.listen(PORTA, () => {
+app.listen(PORTA, process.env.GERADOR_HOST || '127.0.0.1', () => {
   console.log(`\n🎨 Gerador de sprites em http://localhost:${PORTA}`);
   if (arquivosDoCliente(PASTA_TIBIA)) console.log(`🗂️  Sprites do Tibia de ${PASTA_TIBIA}`);
   else avisarPastaAtual();

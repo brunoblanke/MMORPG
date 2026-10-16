@@ -33,7 +33,7 @@ before(async () => {
   for (let day = 1; day <= 8; day++) writeFileSync(path.join(tempDir, 'backups', `characters-2020-01-0${day}.json`), '{}');
   server = spawn(process.execPath, ['server.js'], {
     cwd: ROOT,
-    env: { ...process.env, PORT: String(PORT), JOGO_PERSONAGENS: path.join(tempDir, 'characters.json'), JOGO_MAPA: path.join(tempDir, 'map.json') },
+    env: { ...process.env, PORT: String(PORT), JOGO_CONTAS_NOVAS_POR_HORA: '1000', JOGO_PERSONAGENS: path.join(tempDir, 'characters.json'), JOGO_MAPA: path.join(tempDir, 'map.json') },
     stdio: ['ignore', 'pipe', 'pipe']
   });
   await new Promise((resolve, reject) => {

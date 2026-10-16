@@ -9,6 +9,7 @@ const { pathToFileURL } = require('url');
 const { WebSocketServer } = require('ws');
 const { renomearArquivo } = require('./ferramentas/renomear-no-mapa.js');
 const { lerSprites: lerSpritesDe } = require('./gerador/sprites.js');
+const seguranca = require('./seguranca.js');
 const app = express();
 
 const PASTA_JOGO = __dirname;
@@ -24,11 +25,18 @@ const BACKUP_DIAS = 7;
 const RECARREGAR_ESPERA_MS = 500;
 const estado = { iniciadoEm: Date.now(), conexoesTotal: 0, online: 0 };
 const PORT = process.env.PORT || 8000;
+const ADMIN_SENHA = process.env.JOGO_ADMIN_SENHA || '';
+const MAX_MENSAGEM_BYTES = 16 * 1024;
+const MAX_CONEXOES_POR_IP = 10;
+const MAX_CONTAS_NOVAS_POR_IP = Number(process.env.JOGO_CONTAS_NOVAS_POR_HORA) || 5;
+const ESPERA_PARA_ENTRAR_MS = 20000;
 
-app.use(express.text({ type: 'text/plain', limit: '50mb' }));
-app.use(express.json({ limit: '50mb' }));
-app.use(liberarCors);
-app.post('/api/save-map', salvarMapa);
+const portaoAdmin = seguranca.criarPortaoAdmin(ADMIN_SENHA, seguranca.criarGuarda());
+app.disable('x-powered-by');
+app.use(seguranca.cabecalhosSeguros);
+app.use(seguranca.bloquearArquivos);
+app.post('/api/save-map', portaoAdmin, express.json({ limit: '50mb' }), salvarMapa);
+app.use(express.json({ limit: '100kb' }));
 app.get('/api/map', enviarMapa);
 app.get('/api/status', enviarStatus);
 app.get('/api/sprites', listarSprites);
@@ -229,7 +237,7 @@ async function iniciarJogo(servidorHttp) {
   const conexoes = new Map();
   let proximoJogador = 1;
 
-  app.post('/api/personagens-teste', async (req, res) => {
+  app.post('/api/personagens-teste', portaoAdmin, async (req, res) => {
     const pedida = req.body && typeof req.body.senha === 'string' && req.body.senha ? req.body.senha : TEST_PASSWORD;
     const senha = validatePassword(pedida);
     if (senha.error) return res.status(400).json({ ok: false, message: senha.error });
@@ -260,12 +268,22 @@ async function iniciarJogo(servidorHttp) {
     console.log('🔄 Mapa recarregado: os navegadores recarregam sozinhos');
   });
 
-  const wss = new WebSocketServer({ server: servidorHttp, path: '/ws' });
+  const wss = new WebSocketServer({ server: servidorHttp, path: '/ws', maxPayload: MAX_MENSAGEM_BYTES });
+  const conexoesPorIp = seguranca.contarPorChave(MAX_CONEXOES_POR_IP);
+  const contasNovas = seguranca.criarJanela({ maximo: MAX_CONTAS_NOVAS_POR_IP });
   wss.on('connection', (socket, pedido) => {
     const endereco = pedido.socket.remoteAddress;
+    if (!conexoesPorIp.entrar(endereco)) {
+      socket.close(1008, 'Conexões demais deste endereço.');
+      return;
+    }
     estado.conexoesTotal++;
     estado.online++;
-    socket.on('close', () => { estado.online--; });
+    socket.on('close', () => { estado.online--; conexoesPorIp.sair(endereco); });
+    socket.on('error', () => socket.terminate());
+    const balde = seguranca.criarBalde();
+    const prazo = setTimeout(() => { if (!player) socket.close(1008, 'Demorou pra entrar.'); }, ESPERA_PARA_ENTRAR_MS);
+    socket.on('close', () => clearTimeout(prazo));
     let player = null;
     let entrando = false;
     let minhaGeracao = geracao;
@@ -286,6 +304,8 @@ async function iniciarJogo(servidorHttp) {
           return recusar('Senha incorreta.');
         }
         guarda.clear(chave);
+      } else if (!contasNovas.tentar(endereco)) {
+        return recusar('Contas novas demais deste endereço. Tente mais tarde.');
       } else if (!await senhas.claim(erro.name, senha.password)) {
         return recusar('Senha incorreta.');
       }
@@ -319,6 +339,11 @@ async function iniciarJogo(servidorHttp) {
     };
 
     socket.on('message', (dados) => {
+      if (!balde.permitir()) {
+        console.log(`⛔ ${player ? player.name : endereco} mandou mensagens demais: conexão derrubada`);
+        socket.close(1008, 'Mensagens demais.');
+        return;
+      }
       const mensagem = lerMensagem(dados);
       if (!mensagem) return;
       if (player && minhaGeracao !== geracao) return;

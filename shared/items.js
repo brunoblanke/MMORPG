@@ -125,6 +125,7 @@ export function itemInfo(type) {
     twoHanded: !!props.duasMaos,
     ammoType: typeof props.tipoMunicao === 'string' ? props.tipoMunicao : '',
     postal: !!props.postal,
+    protectsDeath: !!props.protegePerda,
     impact: impactOf(props)
   };
 }

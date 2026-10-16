@@ -1,7 +1,7 @@
 // js/systems/inventory/corpses.js
 
 import { getAsset, splitType, creatureLoot } from '../../../shared/assets.js';
-import { EQUIP_SLOTS, DEATH_DROP_CHANCE, newItem } from '../../../shared/items.js';
+import { EQUIP_SLOTS, DEATH_DROP_CHANCE, itemInfo, newItem } from '../../../shared/items.js';
 import { PLAYER_SPRITES, DEFAULT_GENDER } from '../../../shared/catalog.js';
 
 // Métodos do InventoryController (js/systems/inventory.js) sobre os
@@ -34,12 +34,21 @@ export const corpseMethods = {
   // fillPlayerCorpse
   // Morte do player: a mochila vai sempre pro corpo; cada outro item do
   // inventário, com DEATH_DROP_CHANCE (com caveira vermelha ou preta, tudo). O que cai sai do
-  // inventário.
+  // inventário. Com o amuleto da perda (protegePerda) nada cai e só o amuleto se perde, a não ser com
+  // caveira vermelha ou preta.
 
   fillPlayerCorpse(corpse, player) {
     const box = { uid: this.nextUid(), type: PLAYER_SPRITES[player.gender] || PLAYER_SPRITES[DEFAULT_GENDER], items: new Array(EQUIP_SLOTS.length).fill(null) };
     let slot = 0;
     const skulled = this.sim.social.losesEverything(player);
+    const amulet = player.equip.amuleto;
+    if (amulet && itemInfo(amulet.type).protectsDeath && !skulled) {
+      player.equip.amuleto = null;
+      player.openGround.clear();
+      player.pendingInv = null;
+      corpse.itemData = box;
+      return box;
+    }
     for (const key of EQUIP_SLOTS) {
       const item = player.equip[key];
       if (!item) continue;

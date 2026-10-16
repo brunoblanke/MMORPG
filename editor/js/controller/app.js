@@ -1,6 +1,7 @@
 // js/controller/app.js
 
 import { state } from '../model/state.js';
+import { adminFetch } from '../model/admin-fetch.js';
 import { preloadAll } from '../view/image-cache.js';
 import { scheduleRender } from '../view/canvas-renderer.js';
 import { renderLayerSelect, renderTools, onLayerChange, updateStats, choosePaintDefaults, rotatePaint } from '../view/tools-panel.js';
@@ -59,7 +60,7 @@ async function handleTestPlayers() {
   const button = document.getElementById('testPlayersBtn');
   button.disabled = true;
   try {
-    const response = await fetch('../api/personagens-teste', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+    const response = await adminFetch('../api/personagens-teste', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
     const result = await response.json().catch(() => ({}));
     alert(result.ok ? `Criados: ${result.nomes.join(', ')}.\nSenha: 123456` : (result.message || `Erro ${response.status}`));
   } catch (error) {

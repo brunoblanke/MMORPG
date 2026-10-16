@@ -36,6 +36,9 @@ export { TICK_MS };
 // tick seguinte. O que a tela precisa mostrar e não é estado (dano, XP,
 // mensagens) sai como eventos (drainEvents). Roda igual no navegador e no Node.
 
+// Comandos de um mesmo player aceitos por tick: o resto é descartado (quem manda demais não trava o servidor).
+export const MAX_COMMANDS_PER_TICK = 60;
+
 export class Simulation {
 
   // ================================================================================================================================================================================================================================================
@@ -57,6 +60,7 @@ export class Simulation {
     this.enemies = generateEnemies(mapData);
     this.players = [];
     this.loggedOut = [];
+    this.pendingCommands = new Map();
     this.startedAt = Date.now();
     this.deadBodies = [];
 
@@ -340,6 +344,9 @@ export class Simulation {
   // enqueue
 
   enqueue(playerId, command) {
+    const pending = (this.pendingCommands.get(playerId) || 0) + 1;
+    if (pending > MAX_COMMANDS_PER_TICK) return;
+    this.pendingCommands.set(playerId, pending);
     this.commands.push({ playerId, command });
   }
 
@@ -373,6 +380,7 @@ export class Simulation {
   processCommands() {
     const commands = this.commands;
     this.commands = [];
+    this.pendingCommands.clear();
     for (const { playerId, command } of commands) {
       const player = this.getPlayer(playerId);
       if (player) this.control.handle(player, command);

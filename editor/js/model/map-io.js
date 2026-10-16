@@ -1,6 +1,7 @@
 // editor/js/model/map-io.js
 
 import { GRID } from '../config.js';
+import { adminFetch } from './admin-fetch.js';
 import { state, makeAllLayers } from './state.js';
 import { getAllFloors, isValidFloor, GROUND_FLOOR } from '../../../shared/constants.js';
 import { serializeMapFromLayers, buildLayersFromMapData, loadMapDataFromURL } from '../../../shared/map-format.js';
@@ -44,7 +45,7 @@ export async function loadMapIntoState() {
 export async function saveMap() {
   if (loadFailed) throw new Error('O mapa não carregou: salvar agora apagaria o mapa do servidor. Recarregue a página.');
   const mapData = buildMapData();
-  const response = await fetch(SAVE_URL, {
+  const response = await adminFetch(SAVE_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(mapData)
