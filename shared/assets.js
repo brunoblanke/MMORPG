@@ -481,9 +481,10 @@ export function objectProps(type) {
 // (mato e plantação que a ferramenta corta e que rebrotam sozinhos), 'alavanca' (usar liga ou
 // desliga os alvos dela, escolhidos no editor), 'ferramenta-picareta', 'ferramenta-machete',
 // 'ferramenta-foice' e 'ferramenta-chave' (a chave trava e destrava a porta com o mesmo número);
+// 'cama' (usar deita o player, que sai do jogo e acorda com vida e mana recuperadas mais rápido);
 // null se nenhum.
 
-export const OBJECT_USES = ['placa', 'livro', 'bau-quest', 'corda', 'pa', 'pa-cai', 'picareta', 'machete', 'foice', 'descer', 'alavanca', 'ferramenta-corda', 'ferramenta-pa', 'ferramenta-pesca', 'ferramenta-picareta', 'ferramenta-machete', 'ferramenta-foice', 'ferramenta-chave', 'deposito', 'correio', 'teleporte'];
+export const OBJECT_USES = ['placa', 'livro', 'bau-quest', 'corda', 'pa', 'pa-cai', 'picareta', 'machete', 'foice', 'descer', 'alavanca', 'cama', 'ferramenta-corda', 'ferramenta-pa', 'ferramenta-pesca', 'ferramenta-picareta', 'ferramenta-machete', 'ferramenta-foice', 'ferramenta-chave', 'deposito', 'correio', 'teleporte'];
 
 export const AIM_TOOLS = ['ferramenta-corda', 'ferramenta-pa', 'ferramenta-pesca', 'ferramenta-picareta', 'ferramenta-machete', 'ferramenta-foice', 'ferramenta-chave'];
 

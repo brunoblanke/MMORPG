@@ -126,7 +126,8 @@ export class Player extends Entity {
       quests: this.quests || [],
       missions: this.missions || {},
       vip: this.vip || [],
-      frags: this.frags
+      frags: this.frags,
+      sleep: this.sleep || null
     };
   }
 
@@ -153,6 +154,8 @@ export class Player extends Entity {
     if (saved.missions && typeof saved.missions === 'object') this.missions = savedMissions(saved.missions);
     if (Array.isArray(saved.vip)) this.vip = saved.vip.filter(n => typeof n === 'string' && n.trim()).map(n => n.trim().slice(0, 30)).slice(0, 50);
     if (Array.isArray(saved.frags)) this.frags = saved.frags.filter(t => Number.isFinite(t)).slice(-100);
+    const bed = saved.sleep && saved.sleep.bed;
+    if (bed && Number.isFinite(saved.sleep.at) && [bed.x, bed.y, bed.z].every(Number.isInteger)) this.sleep = { at: saved.sleep.at, bed: { x: bed.x, y: bed.y, z: bed.z } };
     if (Number.isFinite(saved.bank) && saved.bank > 0) this.bank = Math.floor(saved.bank);
     if (Number.isFinite(saved.food)) this.food = Math.min(Math.max(saved.food, 0), FOOD_MAX_SECONDS * 1000);
 

@@ -170,6 +170,7 @@ export class GameController {
         console.log(`🌐 Conectado ao servidor como ${name} (${session.playerId})`);
         session.onDisconnect = () => this.reconnectWhenBack({ name, gender, password });
         session.onReplaced = () => this.showMessage('Você entrou em outro lugar.', performance.now(), 600000, 'warn');
+        session.onSleep = () => location.reload();
         session.onReload = () => {
           saveRejoin({ name, gender, password });
           location.reload();

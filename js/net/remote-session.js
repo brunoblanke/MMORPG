@@ -40,6 +40,7 @@ export class RemoteSession {
     this.onDisconnect = null;
     this.onReload = null;
     this.onReplaced = null;
+    this.onSleep = null;
     this.reloading = false;
     this.replaced = false;
 
@@ -48,6 +49,11 @@ export class RemoteSession {
       if (message.type === 'reload') {
         this.reloading = true;
         if (this.onReload) this.onReload();
+        return;
+      }
+      if (message.type === 'sleeping') {
+        this.replaced = true;
+        if (this.onSleep) this.onSleep();
         return;
       }
       if (message.type === 'replaced') {

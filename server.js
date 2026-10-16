@@ -356,6 +356,12 @@ async function iniciarJogo(servidorHttp) {
       sim.tick(tempo);
       for (const saiu of sim.drainLoggedOut()) {
         guardarPersonagens(personagens, [saiu]);
+        const dormindo = conexoes.get(saiu.id);
+        if (saiu.sleep && dormindo) {
+          conexoes.delete(saiu.id);
+          dormindo.socket.send(JSON.stringify({ type: 'sleeping' }));
+          dormindo.socket.close();
+        }
         console.log(`🔴 ${saiu.name} saiu do mapa depois do combate (${conexoes.size} online)`);
       }
       enviarEstado(sim, conexoes, tempo, { serializeState, encodeDelta, range: [VIEW_RANGE_X, VIEW_RANGE_Y] });

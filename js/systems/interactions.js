@@ -2,7 +2,8 @@
 
 import { GameObject } from '../models/game-object.js';
 import { objectIdType, objectUse, activeAs, togglesOnUse, displayName, getAsset, splitType, isEntranceFolder, floorBehavior, WORM_TYPE } from '../../shared/assets.js';
-import { itemInfo, newItem, weightOf, FISH_RANGE, USE_COOLDOWN_MS } from '../../shared/items.js';
+import { itemInfo, newItem, weightOf, FISH_RANGE, USE_COOLDOWN_MS, SLEEP_REGEN_FACTOR, REGEN_HP, REGEN_MANA } from '../../shared/items.js';
+import { VOCATIONS, vocationOf } from '../../shared/vocations.js';
 import { takeFromBag } from './trade.js';
 import { WATER_EFFECT } from '../../shared/effects.js';
 import { isValidFloor } from '../../shared/constants.js';
@@ -22,10 +23,11 @@ const DROP_EFFECT = 'rings-yellow';
 //   deposito  → abre o depósito do player (inventory/depot.js);
 //   picareta  → monte que a picareta abre em buraco, como a pá;
 //   machete / foice → mato e plantação: a ferramenta corta e rebrota depois de REGROW_MS;
+//   cama      → o player deita e sai do jogo, e acorda com vida e mana recuperadas mais rápido (SLEEP_REGEN_FACTOR);
 //   alavanca  → usar liga ou desliga os alvos dela (portas e objetos que alternam, escolhidos no editor).
 // Longe, o player anda até o lado e usa ao chegar.
 
-const MAP_USES = ['placa', 'livro', 'bau-quest', 'corda', 'pa', 'pa-cai', 'descer', 'deposito', 'alavanca'];
+const MAP_USES = ['placa', 'livro', 'bau-quest', 'corda', 'pa', 'pa-cai', 'descer', 'deposito', 'alavanca', 'cama'];
 const TOOL_TARGETS = { 'ferramenta-corda': ['corda'], 'ferramenta-pa': ['pa', 'pa-cai'], 'ferramenta-picareta': ['picareta'], 'ferramenta-machete': ['machete'], 'ferramenta-foice': ['foice'] };
 const SHOVEL_USES = ['pa', 'pa-cai', 'picareta'];
 const REGROW_MS = 120000;
@@ -96,6 +98,40 @@ export class InteractionController {
     else if (use === 'descer') this.goDown(player, obj);
     else if (use === 'deposito') inventory.openDepotAt(player, obj);
     else if (use === 'alavanca') this.pull(obj);
+    else if (use === 'cama') this.sleep(player, obj);
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // sleep
+  // Cama: o player deita e sai do jogo na hora (o servidor avisa o navegador). A cama fica ocupada (desenho
+  // ativo) até ele voltar; fora de combate, em cama livre e, em casa com dono, só o dono e os convidados.
+
+  sleep(player, bed) {
+    const z = bed.z || 0;
+    if (bed.active) return this.message(player, 'A cama está ocupada.');
+    if (!this.sim.world.mayEnter(player, bed.x, bed.y, z)) return this.message(player, 'Essa cama não é sua.');
+    if (this.sim.inCombat(player)) return this.message(player, 'Você não pode dormir em combate.');
+    this.setActive(bed, true);
+    player.sleep = { at: this.sim.wallClock(), bed: { x: bed.x, y: bed.y, z } };
+    this.sim.removePlayer(player.id);
+    this.sim.loggedOut.push(player);
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // wake
+  // O player que dormia entra de novo: a vida e a mana sobem pelo tempo que ficou fora e a cama fica livre.
+
+  wake(player) {
+    const sleep = player.sleep;
+    player.sleep = null;
+    if (!sleep) return;
+    const regen = VOCATIONS[vocationOf(player.vocation)].regen;
+    const ms = Math.max(0, this.sim.wallClock() - sleep.at) * SLEEP_REGEN_FACTOR;
+    player.currentHp = Math.min(player.hp, player.currentHp + Math.floor(ms / regen.hp) * REGEN_HP);
+    player.mana = Math.min(player.maxMana, player.mana + Math.floor(ms / regen.mana) * REGEN_MANA);
+    const { x, y, z } = sleep.bed;
+    const bed = this.sim.world.getObjectsAt(x, y).find(o => (o.z || 0) === z && objectUse(objectIdType(o.id)) === 'cama');
+    if (bed) this.setActive(bed, false);
   }
 
   // ================================================================================================================================================================================================================================================

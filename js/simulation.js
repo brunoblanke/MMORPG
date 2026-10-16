@@ -105,6 +105,7 @@ export class Simulation {
     const player = new Player({ id, x: spawn.x, y: spawn.y, z: spawn.z, lvl: CONFIG.playerStartLevel, ...info });
     const position = player.loadSave(saved);
     this.inventory.setupPlayer(player, saved);
+    this.interactions.wake(player);
     const savedSpot = position && this.findSpotNear(position.x, position.y, position.z);
     const spot = savedSpot || this.findFreeSpot(player.spawnX, player.spawnY, player.spawnZ, { sharePlayers: true });
 

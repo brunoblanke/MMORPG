@@ -60,8 +60,8 @@
     "duracao": 0,
     "regenVida": 0,
     "regenMana": 0,
-    "uso": "",
-    "ativoComo": ""
+    "uso": "cama",
+    "ativoComo": "decoracao/moveis/cama-ocupada"
   },
   "ferramenta": "objetos",
   "grupo": "decoracao",

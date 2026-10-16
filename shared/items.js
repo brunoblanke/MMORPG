@@ -56,6 +56,10 @@ export const REGEN_MS = 6000;
 export const REGEN_HP = 1;
 export const REGEN_MANA = 1;
 
+// Dormindo numa cama o player sai do jogo e recupera vida e mana nesse tanto de vezes mais rápido que
+// com comida (shared/vocations.js → regen), pelo tempo que ficou fora.
+export const SLEEP_REGEN_FACTOR = 4;
+
 // Skill que o atk de cada tipo de arma soma (o resto: fist).
 const SKILL_BY_WEAPON_FOLDER = {
   espadas: 'sword', machados: 'axe', clavas: 'club', distancia: 'distance', municao: 'distance',
