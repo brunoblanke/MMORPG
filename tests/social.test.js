@@ -109,7 +109,7 @@ test('troca é cancelada quando uma se afasta', () => {
   assert.ok(textsFor(events, ana).some(t => /cancelada/.test(t)));
 });
 
-test('PvP: atacar quem não tem caveira dá a caveira branca; quem se defende não ganha; com caveira, morrer deixa tudo no corpo', () => {
+test('PvP: atacar quem não tem caveira dá a caveira branca; quem se defende não ganha; com caveira vermelha, morrer deixa tudo no corpo', () => {
   const { sim, ana, bia } = game();
   ana.hp = ana.currentHp = 100000;
   bia.hp = bia.currentHp = 100000;
@@ -127,6 +127,10 @@ test('PvP: atacar quem não tem caveira dá a caveira branca; quem se defende n�
   sim.tick(sim.time + TICK_MS);
   assert.equal(ana.skull, 'white');
 
+  assert.equal(sim.social.losesEverything(ana), false, 'a caveira branca não muda a perda ao morrer');
+  ana.frags = [sim.wallTime(), sim.wallTime(), sim.wallTime()];
+  assert.equal(sim.social.skullOf(ana), 'red');
+  assert.equal(sim.social.losesEverything(ana), true);
   ana.equip.arma = { uid: 's2', type: SWORD };
   ana.currentHp = 0;
   sim.tick(sim.time + TICK_MS);

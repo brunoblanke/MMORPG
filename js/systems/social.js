@@ -18,8 +18,8 @@ import { displayName } from '../../shared/assets.js';
 //   outro; atacar quem não tem caveira nem atacou ele antes dá a caveira
 //   branca por SKULL_MS. Matar assim (sem justificativa) é um frag: 3 em 24 h,
 //   5 em 7 dias ou 10 em 30 dias dão a caveira vermelha; 6, 10 ou 20, a preta
-//   (como no Tibia). A cor do nome mostra a caveira. Quem morre com caveira
-//   perde tudo o que carrega.
+//   (como no Tibia). O ícone ao lado do player mostra a caveira. Quem morre com
+//   caveira vermelha ou preta perde tudo o que carrega.
 
 export const PARTY_RANGE = 30;
 export const TRADE_RANGE = 2;
@@ -377,6 +377,15 @@ export class SocialController {
 
   hasSkull(player, now = this.sim.time || 0) {
     return !!this.skullOf(player, now);
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // losesEverything
+  // Caveira vermelha ou preta: ao morrer perde tudo o que carrega (a branca não muda a perda).
+
+  losesEverything(player, now = this.sim.time || 0) {
+    const skull = this.skullOf(player, now);
+    return skull === 'red' || skull === 'black';
   }
 
   // ================================================================================================================================================================================================================================================

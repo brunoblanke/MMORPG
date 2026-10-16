@@ -13,6 +13,7 @@ export const NAME_COLOR = '#5fe35f';
 const CORPSE_NAME_COLOR = '#a0a0a0';
 const SKULL_COLORS = { white: '#ffffff', red: '#ff3b3b', black: '#000000' };
 const STATUS_ICON_SIZE = 10;
+const RIMMED_ICONS = ['skull', 'swords'];
 const ICON_VIEW = 23;
 const ICON_MARGIN = 1.5;
 const ICON_SHAPES = {
@@ -53,18 +54,22 @@ function drawStatusIcon(ctx, name, left, top, size, color = '#ffffff') {
   ctx.lineJoin = 'round';
   ctx.lineCap = 'round';
   const dark = color === SKULL_COLORS.black;
+  const rimmed = RIMMED_ICONS.includes(name);
+  const rimExtra = 2 * ICON_VIEW / size;
+  ctx.strokeStyle = dark ? '#ffffff' : '#000000';
+  if (rimmed) {
+    for (const shape of shapes) {
+      if (shape.hole) continue;
+      ctx.lineWidth = (shape.filled ? 1.4 : 3) + rimExtra;
+      ctx.stroke(shape.path2d);
+    }
+  }
   ctx.strokeStyle = color;
   for (const shape of shapes) {
     if (shape.hole) {
       ctx.fillStyle = dark ? '#ffffff' : '#000000';
       ctx.fill(shape.path2d);
       continue;
-    }
-    if (dark && shape.filled) {
-      ctx.strokeStyle = '#ffffff';
-      ctx.lineWidth = 3.2;
-      ctx.stroke(shape.path2d);
-      ctx.strokeStyle = color;
     }
     ctx.fillStyle = color;
     ctx.lineWidth = shape.filled ? 1.4 : 3;
