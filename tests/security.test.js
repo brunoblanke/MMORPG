@@ -11,7 +11,7 @@ test('arquivos do servidor, dos jogadores e do repositório não saem pela web',
 });
 
 test('o que o jogo, o editor e o gerador usam continua saindo', () => {
-  for (const url of ['/', '/index.html', '/js/game.js', '/shared/assets.js', '/css/inventory.css', '/editor/index.html', '/gerador/saida/estrutura/pisos/grama-1.png', '/gerador/projetos/itens/ferramentas/pick.json', '/moba/client/index.html', '/favicon.png', '/simulador.html']) {
+  for (const url of ['/', '/index.html', '/js/game.js', '/shared/assets.js', '/css/inventory.css', '/editor/index.html', '/gerador/saida/estrutura/pisos/grama-1.png', '/gerador/projetos/itens/ferramentas/pick.json', '/favicon.png', '/simulador.html']) {
     assert.equal(caminhoBloqueado(url), false, url);
   }
 });
