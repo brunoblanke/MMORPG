@@ -477,9 +477,15 @@ export function objectProps(type) {
 // abre em buraco), 'pa-cai' (a pá abre e o player já cai; o desenho não
 // muda), 'descer' (bueiro: usar leva pro andar de baixo),
 // 'ferramenta-corda', 'ferramenta-pa', 'ferramenta-pesca' (vara de pescar), 'correio' (caixa: recebe o que se joga nela) ou 'deposito' (abre o depósito do
-// player); null se nenhum.
+// player); 'picareta' (monte que a picareta abre em buraco, como a pá), 'machete' e 'foice'
+// (mato e plantação que a ferramenta corta e que rebrotam sozinhos), 'alavanca' (usar liga ou
+// desliga os alvos dela, escolhidos no editor), 'ferramenta-picareta', 'ferramenta-machete',
+// 'ferramenta-foice' e 'ferramenta-chave' (a chave trava e destrava a porta com o mesmo número);
+// null se nenhum.
 
-export const OBJECT_USES = ['placa', 'livro', 'bau-quest', 'corda', 'pa', 'pa-cai', 'descer', 'ferramenta-corda', 'ferramenta-pa', 'ferramenta-pesca', 'deposito', 'correio', 'teleporte'];
+export const OBJECT_USES = ['placa', 'livro', 'bau-quest', 'corda', 'pa', 'pa-cai', 'picareta', 'machete', 'foice', 'descer', 'alavanca', 'ferramenta-corda', 'ferramenta-pa', 'ferramenta-pesca', 'ferramenta-picareta', 'ferramenta-machete', 'ferramenta-foice', 'ferramenta-chave', 'deposito', 'correio', 'teleporte'];
+
+export const AIM_TOOLS = ['ferramenta-corda', 'ferramenta-pa', 'ferramenta-pesca', 'ferramenta-picareta', 'ferramenta-machete', 'ferramenta-foice', 'ferramenta-chave'];
 
 export function objectUse(type) {
   const asset = getAsset(splitType(type).asset);

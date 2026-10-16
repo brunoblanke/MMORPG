@@ -60,7 +60,15 @@ const USES = [
   ['correio', 'Caixa de correio (recebe cartas e encomendas: !enviar NOME)'],
   ['ferramenta-corda', 'Ferramenta: corda'],
   ['ferramenta-pa', 'Ferramenta: pá'],
-  ['ferramenta-pesca', 'Ferramenta: vara de pescar (usar na água; gasta a isca)']
+  ['ferramenta-pesca', 'Ferramenta: vara de pescar (usar na água; gasta a isca)'],
+  ['picareta', 'Monte que a picareta abre em buraco (o buraco é o Ativo como)'],
+  ['machete', 'Mato que o machete corta (rebrota sozinho)'],
+  ['foice', 'Plantação que a foice corta (rebrota sozinha)'],
+  ['alavanca', 'Alavanca (usar liga ou desliga os alvos, escolhidos no editor)'],
+  ['ferramenta-picareta', 'Ferramenta: picareta'],
+  ['ferramenta-machete', 'Ferramenta: machete'],
+  ['ferramenta-foice', 'Ferramenta: foice'],
+  ['ferramenta-chave', 'Ferramenta: chave (usar na porta com o mesmo número trava e destrava)']
 ];
 // O que a munição faz ao acertar (receita: impacto). Cada tipo usa só alguns
 // dos campos: explosão (elemento, raio e animação), veneno (dano por vez e

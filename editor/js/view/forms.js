@@ -1,6 +1,6 @@
 // js/view/forms.js
 
-import { getAsset, listAssets, displayName, objectUse, objectDirections, objectDirection, rotateType } from '../../../shared/assets.js';
+import { getAsset, listAssets, displayName, objectUse, objectDirections, objectDirection, rotateType, doorState } from '../../../shared/assets.js';
 import { state } from '../model/state.js';
 import { scheduleRender } from './canvas-renderer.js';
 import { updateStats } from './tools-panel.js';
@@ -80,12 +80,18 @@ function selectedCell() {
 
 // ================================================================================================================================================================================================================================================
 // editableKind
-// 'texto' (placa, livro), 'itens' (baú de quest, container), 'destino' (teletransporte) ou null.
+// 'texto' (placa, livro), 'itens' (baú de quest, container), 'destino' (teletransporte), 'porta'
+// (chave, nível e quest), 'chave' (o número), 'alvos' (alavanca) ou null.
+
+const EDIT_TITLES = { texto: 'Escrever o texto', destino: 'Escolher o destino', itens: 'Escolher os itens', porta: 'Regras da porta', chave: 'Número da chave', alvos: 'Escolher os alvos' };
 
 function editableKind(type) {
   const use = objectUse(type);
   if (use === 'placa' || use === 'livro') return 'texto';
   if (use === 'teleporte') return 'destino';
+  if (doorState(type)) return 'porta';
+  if (use === 'ferramenta-chave') return 'chave';
+  if (use === 'alavanca') return 'alvos';
   if (use === 'bau-quest' || itemInfo(type).size > 0) return 'itens';
   return null;
 }
@@ -124,7 +130,7 @@ function renderSelectPanel() {
     row.append(thumb, name, up, down);
     if (rotates) row.appendChild(selectButton('⟳', 'Girar (R)', false, () => rotateObject(obj, 1)));
     const kind = editableKind(obj.type);
-    if (kind) row.appendChild(selectButton('✎', kind === 'texto' ? 'Escrever o texto' : kind === 'destino' ? 'Escolher o destino' : 'Escolher os itens', false, (evt) => openObjectDataForm(obj, evt.clientX, evt.clientY)));
+    if (kind) row.appendChild(selectButton('✎', EDIT_TITLES[kind], false, (evt) => openObjectDataForm(obj, evt.clientX, evt.clientY)));
     list.appendChild(row);
   }
 }
@@ -187,6 +193,7 @@ const objectDataForm = document.getElementById('objectDataForm');
 const MESSAGE_KINDS = ['info', 'warn', 'danger', 'blue'];
 let pendingObject = null;
 let pendingItems = [];
+let pendingTargets = [];
 
 export function openObjectDataForm(obj, clientX, clientY) {
   const kind = editableKind(obj.type);
@@ -195,12 +202,21 @@ export function openObjectDataForm(obj, clientX, clientY) {
   const use = objectUse(obj.type);
   const data = obj.dados || {};
   const size = itemInfo(obj.type).size;
-  const label = use === 'placa' ? 'placa' : use === 'livro' ? 'livro' : use === 'teleporte' ? 'teletransporte' : use === 'bau-quest' ? 'baú de quest' : `container (${size} espaços)`;
+  const label = { placa: 'placa', livro: 'livro', teleporte: 'teletransporte', 'bau-quest': 'baú de quest', 'ferramenta-chave': 'chave', alavanca: 'alavanca' }[use] || (kind === 'porta' ? 'porta' : `container (${size} espaços)`);
   document.getElementById('objectDataTitle').textContent = `${displayName(obj.type)} · ${label}`;
   document.getElementById('objectDataItemsLabel').textContent = use === 'bau-quest' ? 'Itens do baú (cada player pega uma vez)' : 'Itens dentro';
   document.getElementById('objectDataTextField').hidden = kind !== 'texto';
   document.getElementById('objectDataItemsField').hidden = kind !== 'itens';
   document.getElementById('objectDataDestField').hidden = kind !== 'destino';
+  document.getElementById('objectDataDoorField').hidden = kind !== 'porta';
+  document.getElementById('objectDataKeyField').hidden = kind !== 'chave';
+  document.getElementById('objectDataTargetsField').hidden = kind !== 'alvos';
+  document.getElementById('objectDataDoorKey').value = data.chave || '';
+  document.getElementById('objectDataDoorLevel').value = data.nivel || '';
+  document.getElementById('objectDataDoorQuest').value = data.quest || '';
+  document.getElementById('objectDataKeyNumber').value = data.chave || '';
+  pendingTargets = Array.isArray(data.alvos) ? data.alvos.map(t => ({ x: t.x, y: t.y, z: t.z })) : [];
+  renderObjectDataTargets();
   const dest = data.destino || {};
   document.getElementById('objectDataDestX').value = Number.isInteger(dest.x) ? dest.x : '';
   document.getElementById('objectDataDestY').value = Number.isInteger(dest.y) ? dest.y : '';
@@ -208,12 +224,42 @@ export function openObjectDataForm(obj, clientX, clientY) {
   document.getElementById('objectDataText').value = data.texto || '';
   document.getElementById('objectDataColorField').hidden = use !== 'placa';
   document.getElementById('objectDataColor').value = MESSAGE_KINDS.includes(data.cor) ? data.cor : 'info';
-  pendingItems = Array.isArray(data.itens) ? data.itens.map(it => ({ tipo: it.tipo, count: it.count || 1 })) : [];
+  pendingItems = Array.isArray(data.itens) ? data.itens.map(it => ({ tipo: it.tipo, count: it.count || 1, chave: it.chave })) : [];
   renderObjectDataItems();
   positionFloatPanel(objectDataForm, clientX, clientY);
   objectDataForm.classList.add('show');
   return true;
 }
+
+// ================================================================================================================================================================================================================================================
+// renderObjectDataTargets
+
+function renderObjectDataTargets() {
+  const box = document.getElementById('objectDataTargets');
+  box.innerHTML = '';
+  pendingTargets.forEach((target, index) => {
+    const row = document.createElement('div');
+    row.className = 'row';
+    for (const [axis, label] of [['x', 'x'], ['y', 'y'], ['z', 'andar']]) {
+      const input = document.createElement('input');
+      Object.assign(input, { type: 'number', placeholder: label, title: label, value: Number.isInteger(target[axis]) ? target[axis] : '' });
+      input.oninput = () => { target[axis] = input.value === '' ? undefined : Math.floor(Number(input.value)); };
+      row.appendChild(input);
+    }
+    const remove = document.createElement('button');
+    remove.type = 'button';
+    remove.textContent = '×';
+    remove.onclick = () => { pendingTargets.splice(index, 1); renderObjectDataTargets(); };
+    row.appendChild(remove);
+    box.appendChild(row);
+  });
+}
+
+document.getElementById('objectDataAddTarget').onclick = () => {
+  const here = state.selected || { z: 0 };
+  pendingTargets.push({ x: undefined, y: undefined, z: here.z });
+  renderObjectDataTargets();
+};
 
 // ================================================================================================================================================================================================================================================
 // renderObjectDataItems
@@ -229,6 +275,9 @@ function renderObjectDataItems() {
     select.innerHTML = '<option value="">— item —</option>' + items.map(id => `<option value="${id}">${id.replace(/^itens\//, '')}</option>`).join('');
     select.value = entry.tipo || '';
     select.onchange = () => { entry.tipo = select.value; };
+    const key = document.createElement('input');
+    Object.assign(key, { type: 'number', min: 1, placeholder: 'chave', value: entry.chave || '', title: 'Número da chave (só pra chave)' });
+    key.oninput = () => { entry.chave = Math.max(0, Math.floor(Number(key.value)) || 0) || undefined; };
     const count = document.createElement('input');
     Object.assign(count, { type: 'number', min: 1, max: 100, value: entry.count, title: 'Quantidade' });
     count.oninput = () => { entry.count = Math.max(1, Math.min(100, Math.floor(Number(count.value)) || 1)); };
@@ -236,7 +285,7 @@ function renderObjectDataItems() {
     remove.type = 'button';
     remove.textContent = '×';
     remove.onclick = () => { pendingItems.splice(index, 1); renderObjectDataItems(); };
-    row.append(select, count, remove);
+    row.append(select, count, key, remove);
     box.appendChild(row);
   });
 }
@@ -258,8 +307,20 @@ document.getElementById('objectDataConfirm').onclick = () => {
   if (editableKind(pendingObject.type) === 'destino') {
     const [x, y, z] = ['X', 'Y', 'Z'].map(axis => document.getElementById(`objectDataDest${axis}`).value).map(Number);
     pendingObject.dados = [x, y, z].every(Number.isInteger) && document.getElementById('objectDataDestX').value !== '' && document.getElementById('objectDataDestY').value !== '' ? { destino: { x, y, z } } : undefined;
+  } else if (editableKind(pendingObject.type) === 'porta') {
+    const number = (id) => Math.max(0, Math.floor(Number(document.getElementById(id).value)) || 0);
+    const quest = document.getElementById('objectDataDoorQuest').value.trim();
+    const rules = { chave: number('objectDataDoorKey'), nivel: number('objectDataDoorLevel'), quest };
+    const kept = Object.fromEntries(Object.entries(rules).filter(([, value]) => value));
+    pendingObject.dados = Object.keys(kept).length ? kept : undefined;
+  } else if (editableKind(pendingObject.type) === 'chave') {
+    const chave = Math.max(0, Math.floor(Number(document.getElementById('objectDataKeyNumber').value)) || 0);
+    pendingObject.dados = chave ? { chave } : undefined;
+  } else if (editableKind(pendingObject.type) === 'alvos') {
+    const alvos = pendingTargets.filter(t => [t.x, t.y, t.z].every(Number.isInteger)).map(t => ({ x: t.x, y: t.y, z: t.z }));
+    pendingObject.dados = alvos.length ? { alvos } : undefined;
   } else if (editableKind(pendingObject.type) === 'itens') {
-    const itens = pendingItems.filter(it => it.tipo).map(it => ({ tipo: it.tipo, count: it.count || 1 }));
+    const itens = pendingItems.filter(it => it.tipo).map(it => (it.chave ? { tipo: it.tipo, count: it.count || 1, chave: it.chave } : { tipo: it.tipo, count: it.count || 1 }));
     pendingObject.dados = itens.length ? { itens } : undefined;
   } else {
     const texto = document.getElementById('objectDataText').value.trim();

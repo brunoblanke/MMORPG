@@ -28,6 +28,7 @@ export const groundMethods = {
     if (!obj.itemData) {
       obj.itemData = newItem(this.nextUid(), objectIdType(obj.id), obj.count || 1);
       if (obj.data && obj.data.texto) obj.itemData.texto = obj.data.texto;
+      if (obj.data && obj.data.chave) obj.itemData.chave = obj.data.chave;
       const inside = obj.itemData.items && obj.data && objectUse(objectIdType(obj.id)) !== 'bau-quest' ? obj.data.itens : null;
       if (Array.isArray(inside)) {
         inside.filter(e => e && getAsset(splitType(e.tipo).asset)).slice(0, obj.itemData.items.length)

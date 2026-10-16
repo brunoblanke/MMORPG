@@ -32,7 +32,7 @@
     "duracao": 0,
     "regenVida": 0,
     "regenMana": 0,
-    "uso": "",
+    "uso": "ferramenta-machete",
     "ativoComo": "",
     "comecaAtivo": false
   },

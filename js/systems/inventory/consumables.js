@@ -1,7 +1,7 @@
 // js/systems/inventory/consumables.js
 
 import { GameObject } from '../../models/game-object.js';
-import { objectUse } from '../../../shared/assets.js';
+import { objectUse, AIM_TOOLS } from '../../../shared/assets.js';
 import { CONFIG } from '../../config.js';
 import { CONDITIONS } from '../../../shared/conditions.js';
 import { VOCATIONS, vocationOf } from '../../../shared/vocations.js';
@@ -85,7 +85,7 @@ export const consumableMethods = {
       this.sim.interactions.readBook(player, src.item);
       return;
     }
-    if (use === 'ferramenta-corda' || use === 'ferramenta-pa' || use === 'ferramenta-pesca') {
+    if (AIM_TOOLS.includes(use)) {
       this.sim.interactions.useTool(player, use, target, from, src.item);
       return;
     }

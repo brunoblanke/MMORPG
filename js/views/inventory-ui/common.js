@@ -1,6 +1,6 @@
 // js/views/inventory-ui/common.js
 
-import { objectUse } from '../../../shared/assets.js';
+import { objectUse, AIM_TOOLS } from '../../../shared/assets.js';
 import { itemInfo } from '../../../shared/items.js';
 import { RUNES } from '../../../shared/spells.js';
 
@@ -26,13 +26,13 @@ export const LAYOUT_COLS = ['left', 'right', 'free'];
 export const LAYOUT_VERSION = 2;
 export const REACH_CHECK_MS = 500;
 
-export const MAP_USES = ['placa', 'livro', 'bau-quest', 'corda', 'pa', 'pa-cai', 'descer', 'deposito'];
+export const MAP_USES = ['placa', 'livro', 'bau-quest', 'corda', 'pa', 'pa-cai', 'descer', 'deposito', 'alavanca'];
 
 // ================================================================================================================================================================================================================================================
 // aimsWith
-// Item usado com a mira: potion (em player ou no chão), runa, corda, pá e vara de pescar.
+// Item usado com a mira: potion (em player ou no chão), runa e as ferramentas (corda, pá, picareta, machete, foice, chave, vara de pescar).
 
 export function aimsWith(type) {
   const use = objectUse(type);
-  return !!itemInfo(type).heal || !!RUNES[type] || use === 'ferramenta-corda' || use === 'ferramenta-pa' || use === 'ferramenta-pesca';
+  return !!itemInfo(type).heal || !!RUNES[type] || AIM_TOOLS.includes(use);
 }

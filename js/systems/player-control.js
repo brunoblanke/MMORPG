@@ -4,6 +4,8 @@ import { calculateMoveDelay, getAdjacentPositions, directionFromDelta } from '..
 import { getStairTop } from '../../shared/stairs.js';
 import { isEntranceFolder, objectIdType } from '../../shared/assets.js';
 
+const DOOR_AUTOCLOSE_MS = 3000;
+
 // Comandos que um jogador manda pra simulação (hoje pelo teclado/mouse; no
 // multiplayer, pela rede). Todos têm `type`:
 //   { type: 'walkDir', dx, dy }          andar numa direção enquanto a tecla está
@@ -472,21 +474,60 @@ export class PlayerControl {
   }
 
   // ================================================================================================================================================================================================================================================
+  // doorDenied
+  // Por que a porta fechada não abre pra esse player (regras do editor: chave, nível mínimo, quest), ou null.
+
+  doorDenied(player, door) {
+    const rules = door.data || {};
+    if (rules.chave && !door.unlocked) return 'Está trancada.';
+    if (rules.nivel && player.lvl < rules.nivel) return `Só quem tem nível ${rules.nivel} passa.`;
+    if (rules.quest && !(player.quests || []).includes(rules.quest)) return 'Você não pode passar por aqui.';
+    return null;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // setDoor
+  // Abre ou fecha a porta (sem regras). Não fecha com alguém no vão. Devolve true se mudou.
+
+  setDoor(door, open) {
+    const world = this.sim.world;
+    if (!open && world.getCreatureAt(door.x, door.y, door.z || 0) !== null) return false;
+    const oldId = world.setDoorOpen(door, open);
+    if (!oldId) return false;
+    this.sim.objectsById.delete(oldId);
+    this.sim.objectsById.set(door.id, door);
+    return true;
+  }
+
+  // ================================================================================================================================================================================================================================================
   // toggleDoor
-  // Abre a porta fechada ou fecha a aberta. Não fecha com alguém no vão.
+  // Abre a porta fechada (se as regras dela deixam) ou fecha a aberta. Não fecha com alguém no vão. A porta
+  // com nível ou quest fecha sozinha logo depois de aberta.
 
   toggleDoor(player, door) {
-    const world = this.sim.world;
     const open = !door.blocksMovement;
-    if (open && world.getCreatureAt(door.x, door.y, door.z || 0) !== null) {
+    const denied = open ? null : this.doorDenied(player, door);
+    if (denied) {
+      this.sim.emit({ type: 'message', playerId: player.id, text: denied, kind: 'warn' });
+      return;
+    }
+    if (open && this.sim.world.getCreatureAt(door.x, door.y, door.z || 0) !== null) {
       this.sim.emit({ type: 'message', playerId: player.id, text: 'Tem alguém no caminho.', kind: 'warn' });
       return;
     }
-    const oldId = world.setDoorOpen(door, !open);
-    if (!oldId) return;
-    this.sim.objectsById.delete(oldId);
-    this.sim.objectsById.set(door.id, door);
-    console.log(`🚪 Porta em (${door.x}, ${door.y}) ${open ? 'fechada' : 'aberta'}`);
+    if (!this.setDoor(door, !open)) return;
+    if (!open && door.data && (door.data.nivel || door.data.quest)) this.closeLater(door);
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // closeLater
+  // Fecha a porta depois de DOOR_AUTOCLOSE_MS; com alguém no vão, tenta de novo.
+
+  closeLater(door) {
+    this.sim.schedule((this.sim.time || 0) + DOOR_AUTOCLOSE_MS, () => {
+      if (door.blocksMovement || this.sim.world.getDoorAt(door.x, door.y, door.z || 0) !== door) return;
+      if (!this.setDoor(door, false)) this.closeLater(door);
+    });
   }
 
   // ================================================================================================================================================================================================================================================

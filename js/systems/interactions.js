@@ -19,11 +19,16 @@ const DROP_EFFECT = 'rings-yellow';
 //   pa        → monte que a pá abre em buraco (fica aberto até o servidor reiniciar);
 //   pa-cai    → a pá abre e quem cavou já cai no buraco (o desenho não muda);
 //   descer    → bueiro: usar leva pro andar de baixo (pisar não);
-//   deposito  → abre o depósito do player (inventory/depot.js).
+//   deposito  → abre o depósito do player (inventory/depot.js);
+//   picareta  → monte que a picareta abre em buraco, como a pá;
+//   machete / foice → mato e plantação: a ferramenta corta e rebrota depois de REGROW_MS;
+//   alavanca  → usar liga ou desliga os alvos dela (portas e objetos que alternam, escolhidos no editor).
 // Longe, o player anda até o lado e usa ao chegar.
 
-const MAP_USES = ['placa', 'livro', 'bau-quest', 'corda', 'pa', 'pa-cai', 'descer', 'deposito'];
-const SHOVEL_USES = ['pa', 'pa-cai'];
+const MAP_USES = ['placa', 'livro', 'bau-quest', 'corda', 'pa', 'pa-cai', 'descer', 'deposito', 'alavanca'];
+const TOOL_TARGETS = { 'ferramenta-corda': ['corda'], 'ferramenta-pa': ['pa', 'pa-cai'], 'ferramenta-picareta': ['picareta'], 'ferramenta-machete': ['machete'], 'ferramenta-foice': ['foice'] };
+const SHOVEL_USES = ['pa', 'pa-cai', 'picareta'];
+const REGROW_MS = 120000;
 const SIGN_KINDS = ['info', 'warn', 'danger', 'blue'];
 const CLIMB_OFFSETS = [[0, 1], [1, 1], [-1, 1], [1, 0], [-1, 0], [0, -1], [1, -1], [-1, -1]];
 
@@ -90,6 +95,30 @@ export class InteractionController {
     else if (use === 'bau-quest') this.openQuestChest(player, obj);
     else if (use === 'descer') this.goDown(player, obj);
     else if (use === 'deposito') inventory.openDepotAt(player, obj);
+    else if (use === 'alavanca') this.pull(obj);
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // pull
+  // Alavanca: vira o estado dela e põe todos os alvos (sqms escolhidos no editor) no mesmo: ligada, a porta
+  // abre e o objeto que alterna fica ativo; desligada, o contrário.
+
+  pull(lever) {
+    this.setActive(lever, !lever.active);
+    const targets = (lever.data && Array.isArray(lever.data.alvos)) ? lever.data.alvos : [];
+    const { world, control } = this.sim;
+    for (const { x, y, z = 0 } of targets) {
+      if (![x, y, z].every(Number.isInteger)) continue;
+      const door = world.getDoorAt(x, y, z);
+      if (door) {
+        control.setDoor(door, !!lever.active);
+        continue;
+      }
+      for (const obj of world.getObjectsAt(x, y)) {
+        if ((obj.z || 0) !== z || obj === lever || obj.movable === true || !togglesOnUse(objectIdType(obj.id))) continue;
+        this.setActive(obj, !!lever.active);
+      }
+    }
   }
 
   // ================================================================================================================================================================================================================================================
@@ -145,7 +174,8 @@ export class InteractionController {
     const z = player.z || 0;
     if (!target || !Number.isInteger(target.x) || !Number.isInteger(target.y) || (target.z ?? z) !== z) return false;
     if (tool === 'ferramenta-pesca') return this.fish(player, item, target);
-    const wanted = tool === 'ferramenta-corda' ? ['corda'] : SHOVEL_USES;
+    if (tool === 'ferramenta-chave') return this.useKey(player, item, target, from);
+    const wanted = TOOL_TARGETS[tool];
     const here = this.sim.world.getObjectsAt(target.x, target.y).filter(o => (o.z || 0) === z);
     const hole = tool === 'ferramenta-corda' ? here.find(o => this.isOpening(o)) : null;
     const obj = here.find(o => wanted.includes(objectUse(objectIdType(o.id)))) || hole;
@@ -156,7 +186,55 @@ export class InteractionController {
       return false;
     }
     if (obj === hole) return this.pullUp(hole);
-    return tool === 'ferramenta-corda' ? this.climb(player, obj) : this.dig(player, obj);
+    if (tool === 'ferramenta-corda') return this.climb(player, obj);
+    if (tool === 'ferramenta-machete' || tool === 'ferramenta-foice') return this.cut(obj);
+    return this.dig(player, obj);
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // cut
+  // Mato ou plantação cortado: some do mapa e rebrota no mesmo lugar depois de REGROW_MS (espera enquanto
+  // alguém estiver em cima).
+
+  cut(plant) {
+    const z = plant.z || 0;
+    this.sim.inventory.removeGroundObject(plant);
+    this.sim.spells.showEffect(plant.x, plant.y, 'poff', undefined, z);
+    const regrow = () => {
+      if (this.sim.world.getCreatureAt(plant.x, plant.y, z) !== null) {
+        this.sim.schedule((this.sim.time || 0) + 5000, regrow);
+        return;
+      }
+      this.sim.objects.push(plant);
+      this.sim.objectsById.set(plant.id, plant);
+      this.sim.world.addObject(plant);
+    };
+    this.sim.schedule((this.sim.time || 0) + REGROW_MS, regrow);
+    return true;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // useKey
+  // Chave usada com a mira numa porta com chave (editor): se o número bate, trava a porta fechada ou destrava
+  // a trancada. Longe, o player anda até o lado e usa ao chegar.
+
+  useKey(player, item, target, from) {
+    const door = this.sim.world.getDoorAt(target.x, target.y, player.z || 0);
+    if (!door || !door.data || !door.data.chave) return false;
+    if (!this.sim.inventory.isNear(player, door)) {
+      if (from) this.sim.inventory.walkNextTo(player, door, { type: 'useItem', from, target });
+      return false;
+    }
+    if (!item || item.chave !== door.data.chave) {
+      this.message(player, 'A chave não serve.');
+      return false;
+    }
+    if (!door.blocksMovement) {
+      this.message(player, 'Feche a porta primeiro.');
+      return false;
+    }
+    door.unlocked = !door.unlocked;
+    return true;
   }
 
   // ================================================================================================================================================================================================================================================
@@ -387,7 +465,11 @@ export class InteractionController {
       this.message(player, 'Está vazio.', 'info');
       return;
     }
-    const rewards = entries.map(e => newItem(inventory.nextUid(), e.tipo, e.count || 1));
+    const rewards = entries.map(e => {
+      const item = newItem(inventory.nextUid(), e.tipo, e.count || 1);
+      if (e.chave) item.chave = e.chave;
+      return item;
+    });
     const weight = rewards.reduce((sum, item) => sum + weightOf(item), 0);
     if (inventory.capUsed(player) + weight > inventory.capMax(player)) {
       this.message(player, 'Você não tem capacidade pra carregar isso.');

@@ -129,6 +129,23 @@
       <input type="number" id="objectDataDestZ" placeholder="andar" title="andar">
     </div>
   </div>
+  <div class="field" id="objectDataDoorField">
+    <label>Regras da porta (vazio = sem a regra)</label>
+    <div class="row">
+      <input type="number" id="objectDataDoorKey" min="1" placeholder="nº da chave" title="Número da chave: a porta começa trancada">
+      <input type="number" id="objectDataDoorLevel" min="1" placeholder="nível" title="Nível mínimo pra abrir">
+      <input type="text" id="objectDataDoorQuest" maxlength="60" placeholder="quest" title="Só abre pra quem já fez essa quest (o código do baú de quest)">
+    </div>
+  </div>
+  <div class="field" id="objectDataKeyField">
+    <label for="objectDataKeyNumber">Número da chave (abre a porta com o mesmo número)</label>
+    <input type="number" id="objectDataKeyNumber" min="1">
+  </div>
+  <div class="field" id="objectDataTargetsField">
+    <label>Alvos da alavanca (x, y e andar de portas ou objetos)</label>
+    <div id="objectDataTargets" class="object-data-items"></div>
+    <button type="button" id="objectDataAddTarget">+ Alvo</button>
+  </div>
   <div class="actions">
     <button id="objectDataCancel">Cancelar</button>
     <button class="primary" id="objectDataConfirm">Salvar</button>
