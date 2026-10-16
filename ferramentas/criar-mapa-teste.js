@@ -388,7 +388,7 @@ async function montarMapa() {
     objeto(2, 170 + 1, 154 + 1, 'decoracao/moveis/table');
     objeto(2, 170 + 2, 154 + 1, 'decoracao/moveis/wooden-chair');
     objeto(2, 170 + 6, 154 + 6, 'decoracao/iluminacao/lamp');
-    objeto(3, 169 + 6, 153 + 1, 'decoracao/baus/bau-quest', { quest: 'torre-teste', itens: [{ tipo: 'itens/valiosos/gold-coin', count: 50 }, { tipo: 'itens/valiosos/small-diamond', count: 2 }] });
+    objeto(3, 169 + 6, 153 + 1, 'decoracao/baus/bau-quest', { quest: 'torre-teste', itens: [{ tipo: 'itens/valiosos/gold-coin', count: 50 }, { tipo: 'itens/valiosos/small-diamond', count: 2 }, { tipo: 'itens/ferramentas/chave-dourada', count: 1, chave: 1 }] });
     buraco(3, 169 + 2, 153 + 2, 'estrutura/entradas/alcapao-1');
     objeto(3, 169 + 2, 153 + 5, 'decoracao/sinalizacao/placa-baixa', { texto: 'Alçapão no canto: desce direto ao andar de baixo.' });
     objeto(0, 176, 166, 'decoracao/sinalizacao/placa-baixa', { texto: 'Torre de teste: escadas até o 3º andar.' });
@@ -446,9 +446,75 @@ async function montarMapa() {
     criaturasNaSala(-2, 154, 208, 166, 216, [['stone-golem', 'constructos', 2], ['gargoyle', 'criaturas-magicas', 2], ['fire-elemental', 'elementais', 2], ['water-elemental', 'elementais', 1]]);
   }
 
+  // ==============================================================================================================================================================================================================================================
+  // limpar
+  // Tira os objetos (árvores sorteadas) do retângulo, pra construir ali.
+
+  function limpar(x0, y0, x1, y1, z = 0) {
+    retangulo(x0, y0, x1, y1, (x, y) => { celula(x, y, z).objects = []; });
+  }
+
+  // ==============================================================================================================================================================================================================================================
+  // regrasDaPorta
+  // Põe as regras (chave, nível, quest) na porta que a sala já criou no sqm.
+
+  function regrasDaPorta(x, y, dados) {
+    const porta = celula(x, y, 0).objects.find(o => o.type.includes('#porta-'));
+    if (porta) porta.dados = dados;
+  }
+
+  // ==============================================================================================================================================================================================================================================
+  // saleta
+  // Sala 7×6 de pedra com a porta no meio do lado sul, um baú de quest dentro e uma placa fora.
+
+  function saleta(x, y, placa, bau, regras, ladoPorta = 'sul') {
+    limpar(x - 1, y - 2, x + 8, y + 7);
+    sala(0, x, y, 7, 6, PEDRA, [[ladoPorta, ladoPorta === 'sul' ? 3 : 3]]);
+    piso(0, x + 1, y + 1, x + 5, y + 4, 'estrutura/pisos/marmore-3');
+    objeto(0, x + 3, y + 2, 'decoracao/baus/bau-quest', bau);
+    objeto(0, x + 1, y + 1, 'decoracao/iluminacao/lamp');
+    const porta = ladoPorta === 'sul' ? [x + 3, y + 5] : [x, y + 3];
+    regrasDaPorta(porta[0], porta[1], regras);
+    return porta;
+  }
+
+  // ==============================================================================================================================================================================================================================================
+  // recursos
+  // Os recursos novos: portas com chave, nível e quest, alavanca, ferramentas, mato, viagem por NPC.
+
+  function recursos() {
+    limpar(150, 164, 160, 168);
+    objeto(0, 152, 166, 'decoracao/baus/bau-quest', { quest: 'ferramentas-1', itens: [{ tipo: 'itens/ferramentas/shovel' }, { tipo: 'itens/ferramentas/rope' }, { tipo: 'itens/ferramentas/pick' }, { tipo: 'itens/ferramentas/fishing-rod' }].map(e => ({ ...e, count: 1 })) });
+    objeto(0, 158, 166, 'decoracao/baus/bau-quest', { quest: 'ferramentas-2', itens: [{ tipo: 'itens/espadas/machete', count: 1 }, { tipo: 'itens/ferramentas/scythe', count: 1 }, { tipo: 'itens/produtos-de-criaturas/worm', count: 20 }] });
+
+    const cofre = saleta(134, 150, 'Cofre', { quest: 'cofre-chave', itens: [{ tipo: 'itens/valiosos/platinum-coin', count: 10 }] }, { chave: 1 });
+    objeto(0, cofre[0] + 2, cofre[1] + 1, 'decoracao/sinalizacao/placa-baixa', { texto: 'Cofre trancado. A chave dourada (nº 1) está no baú do alto da torre; use a chave na porta pra trancar e destrancar.' });
+    const nivel = saleta(142, 150, 'Sala do nível', { quest: 'sala-nivel', itens: [{ tipo: 'itens/valiosos/small-ruby', count: 3 }] }, { nivel: 20 });
+    objeto(0, nivel[0] + 2, nivel[1] + 1, 'decoracao/sinalizacao/placa-baixa', { texto: 'Só passa quem tem nível 20 ou mais. A porta fecha sozinha.' });
+    const quest = saleta(163, 150, 'Sala da quest', { quest: 'sala-quest', itens: [{ tipo: 'itens/valiosos/small-emerald', count: 3 }] }, { quest: 'torre-teste' });
+    objeto(0, quest[0] + 2, quest[1] + 1, 'decoracao/sinalizacao/placa-baixa', { texto: 'Só abre pra quem já pegou o baú do alto da torre.' });
+
+    limpar(181, 155, 192, 163);
+    sala(0, 184, 156, 7, 6, PEDRA, [['oeste', 3]]);
+    piso(0, 185, 157, 189, 160, 'estrutura/pisos/marmore-3');
+    objeto(0, 187, 158, 'decoracao/baus/bau-quest', { quest: 'sala-alavanca', itens: [{ tipo: 'itens/valiosos/small-amethyst', count: 3 }] });
+    objeto(0, 182, 160, 'decoracao/alavancas/alavanca-1', { alvos: [{ x: 184, y: 159, z: 0 }] });
+    objeto(0, 182, 162, 'decoracao/sinalizacao/placa-baixa', { texto: 'Alavanca: abre e fecha a porta da sala ao lado.' });
+
+    limpar(142, 188, 150, 196);
+    pisoSorteado(0, 142, 188, 150, 196, GRAMAS);
+    retangulo(143, 189, 149, 195, (x, y) => { if ((x + y) % 2 === 0) objeto(0, x, y, (x + y) % 4 === 0 ? 'estrutura/natureza/jungle-grass' : 'estrutura/natureza/sugar-cane'); });
+    objeto(0, 146, 197, 'decoracao/sinalizacao/placa-baixa', { texto: 'Mato: corte com o machete (rebrota em 2 minutos). Trigo da fazenda: foice.' });
+
+    limpar(146, 177, 148, 179);
+    npc(0, 147, 178, 'capitao');
+    objeto(0, 147, 180, 'decoracao/sinalizacao/placa-baixa', { texto: 'Capitão: diga "viagem" pra ver os destinos.' });
+  }
+
   superficie();
   torre();
   cavernas();
+  recursos();
 
   const mapa = formato.serializeMapFromLayers(andares, layers, GRID);
   return { mapa, ausentes: [...ausentes].sort() };

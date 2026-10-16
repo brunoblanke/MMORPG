@@ -1,0 +1,113 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 133,
+    "cores": [
+      19,
+      86,
+      79,
+      95
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 4240,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4241,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 4245,
+        "variacao": 0
+      }
+    }
+  },
+  "propriedades": {
+    "comportamento": "npc",
+    "conversa": {
+      "boasVindas": "Quer viajar? É só dizer viagem!",
+      "oi": "Olá, {nome}! Posso levar você a vários lugares. Diga viagem.",
+      "tchau": "Volte sempre, {nome}.",
+      "raio": 2,
+      "topicos": [],
+      "vende": [],
+      "compra": [],
+      "missoes": [],
+      "falasVenda": {
+        "lista": "O que você deseja comprar?",
+        "confirmar": "Quer comprar {item} por {preco}?",
+        "listaCompra": "O que você deseja vender?",
+        "queVender": "O que você deseja vender?",
+        "confirmarCompra": "Quer me vender {quantidade} {item} por {preco}?"
+      },
+      "viagens": [
+        {
+          "nome": "Caverna",
+          "palavras": "caverna,cave",
+          "preco": 20,
+          "nivel": 0,
+          "destino": {
+            "x": 187,
+            "y": 204,
+            "z": -1
+          }
+        },
+        {
+          "nome": "Cemitério",
+          "palavras": "cemiterio",
+          "preco": 5,
+          "nivel": 0,
+          "destino": {
+            "x": 200,
+            "y": 160,
+            "z": 0
+          }
+        },
+        {
+          "nome": "Lago",
+          "palavras": "lago,pesca",
+          "preco": 5,
+          "nivel": 0,
+          "destino": {
+            "x": 167,
+            "y": 206,
+            "z": 0
+          }
+        },
+        {
+          "nome": "Templo",
+          "palavras": "templo",
+          "preco": 0,
+          "nivel": 0,
+          "destino": {
+            "x": 155,
+            "y": 166,
+            "z": 0
+          }
+        }
+      ]
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "personagens",
+  "pasta": "npcs",
+  "nome": "capitao"
+}
