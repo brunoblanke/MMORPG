@@ -461,14 +461,20 @@ function observarMudancas(recarregar) {
 // ================================================================================================================================================================================================================================================
 // carregarPersonagens
 // Personagens guardados, pelo nome em minúsculas. Sem arquivo (ou com ele
-// estragado), começa vazio.
+// estragado), começa vazio — e o arquivo estragado fica guardado ao lado (characters.json.estragado-*), pra o
+// próximo salvamento não apagar os personagens dele.
 
 function carregarPersonagens() {
   try {
     const personagens = JSON.parse(fs.readFileSync(CHARACTERS_PATH, 'utf8'));
     return personagens && typeof personagens === 'object' ? personagens : {};
   } catch (err) {
-    if (err.code !== 'ENOENT') console.error('❌ Erro ao ler personagens:', err.message);
+    if (err.code !== 'ENOENT') {
+      console.error('❌ Erro ao ler personagens:', err.message);
+      try {
+        fs.copyFileSync(CHARACTERS_PATH, `${CHARACTERS_PATH}.estragado-${Date.now()}`);
+      } catch {}
+    }
     return {};
   }
 }
