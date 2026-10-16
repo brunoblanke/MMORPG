@@ -1,0 +1,68 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "criatura": {
+    "id": 128,
+    "cores": [
+      78,
+      38,
+      114,
+      95
+    ],
+    "addons": []
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 4240,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4241,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 4245,
+        "variacao": 0
+      }
+    }
+  },
+  "propriedades": {
+    "comportamento": "npc",
+    "conversa": {
+      "boasVindas": "Seu dinheiro está seguro comigo!",
+      "oi": "Olá, {nome}! Posso cuidar do seu dinheiro: saldo, depositar, sacar, transferir ou trocar moedas.",
+      "tchau": "Volte sempre, {nome}.",
+      "raio": 2,
+      "topicos": [],
+      "vende": [],
+      "compra": [],
+      "missoes": [],
+      "falasVenda": {
+        "lista": "O que você deseja comprar?",
+        "confirmar": "Quer comprar {item} por {preco}?",
+        "listaCompra": "O que você deseja vender?",
+        "queVender": "O que você deseja vender?",
+        "confirmarCompra": "Quer me vender {quantidade} {item} por {preco}?"
+      },
+      "banco": true
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "personagens",
+  "pasta": "npcs",
+  "nome": "banqueiro"
+}
