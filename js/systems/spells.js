@@ -8,7 +8,7 @@ import { EQUIP_SLOTS, newItem, equipBonus } from '../../shared/items.js';
 import { addSkillTry } from '../../shared/skills.js';
 import { isEffect } from '../../shared/effects.js';
 import { FIELDS } from '../../shared/conditions.js';
-import { RUNES, AREAS, BLANK_RUNE, SPELL_COOLDOWN_MS, SPELL_RANGE, RUNE_RANGE, LIGHT_SPELL, findSpell, spellRange } from '../../shared/spells.js';
+import { RUNES, AREAS, BLANK_RUNE, SPELL_COOLDOWN_MS, SPELL_RANGE, RUNE_RANGE, LIGHT_SPELL, SPELL_FOODS, findSpell, findSummonSpell, spellRange } from '../../shared/spells.js';
 
 // Magias e runas (shared/spells.js). A magia é dita no chat: se as palavras
 // são de uma magia, ela sai (ou o motivo de não sair) e ninguém mais ouve.
@@ -54,7 +54,7 @@ export class SpellController {
   // O player disse text: se é uma magia, tenta lançar e devolve true.
 
   cast(player, text) {
-    const spell = findSpell(text);
+    const spell = findSpell(text) || findSummonSpell(text);
     if (!spell) return false;
     if (!player.isAlive()) return true;
     const now = this.sim.time || 0;
@@ -62,13 +62,14 @@ export class SpellController {
     if (!spell.vocations.includes(player.vocation)) problem = 'Sua vocação não pode usar essa magia.';
     else if (player.lvl < spell.lvl) problem = `Você precisa do nível ${spell.lvl} pra usar essa magia.`;
     else if (player.mana < spell.mana) problem = 'Você não tem mana suficiente.';
-    else if (now < (player.spellReadyAt || 0)) problem = 'Você está exausto.';
+    else if (now < (player.spellReadyAt || 0) || now < ((player.spellCooldowns || {})[spell.key || spell.words] || 0)) problem = 'Você está exausto.';
     else problem = this.effect(player, spell, now);
     if (problem) {
       this.message(player, problem);
       return true;
     }
     player.spellReadyAt = now + SPELL_COOLDOWN_MS;
+    if (spell.cooldown) (player.spellCooldowns || (player.spellCooldowns = {}))[spell.key || spell.words] = now + spell.cooldown;
     player.mana -= spell.mana;
     this.sim.emit({ type: 'speech', speakerId: player.id, name: null, text: spell.words, x: player.x, y: player.y, z: player.z || 0, orange: true });
     if (addSkillTry(player.skills, 'magic', player.vocation, spell.mana)) {
@@ -95,6 +96,26 @@ export class SpellController {
       if (player.conditions) delete player.conditions.poison;
       this.showEffect(player.x, player.y, 'heal', undefined, player.z || 0);
       return null;
+    }
+    if (spell.kind === 'food') {
+      giveItem(this.sim, player, SPELL_FOODS[Math.floor(Math.random() * SPELL_FOODS.length)], 1);
+      this.showEffect(player.x, player.y, 'heal', undefined, player.z || 0);
+      return null;
+    }
+    if (spell.kind === 'shield') {
+      player.shieldUntil = now + spell.ms;
+      this.showEffect(player.x, player.y, 'rings-blue', undefined, player.z || 0);
+      return null;
+    }
+    if (spell.kind === 'invisible') {
+      player.invisibleUntil = now + spell.ms;
+      this.showEffect(player.x, player.y, 'poff', undefined, player.z || 0);
+      return null;
+    }
+    if (spell.kind === 'summon') {
+      if (!spell.creature || !getAsset(spell.creature)) return 'Você não sabe invocar isso.';
+      if (this.sim.world.isInSafeZone(player)) return 'Você não pode invocar na zona segura.';
+      return this.sim.summons.call(player, spell.creature) ? null : 'Você não pode invocar mais criaturas.';
     }
     if (spell.kind === 'haste') {
       const [factor, base] = spell.speed;
@@ -164,6 +185,7 @@ export class SpellController {
   // Dano de magia na criatura (sem defesa nem armadura); conta pra XP.
 
   hurt(player, enemy, rawAmount, now, element = null) {
+    if (enemy.pet) return;
     const amount = this.sim.powers.resisted(enemy, element, rawAmount);
     if (amount <= 0) return;
     this.sim.combat.markCombat(player, enemy, now);

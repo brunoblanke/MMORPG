@@ -25,6 +25,7 @@ import { HouseController } from './systems/houses.js';
 import { ENTER_EFFECT } from '../shared/effects.js';
 import { DroppedItems } from './systems/dropped-items.js';
 import { MailController } from './systems/mail.js';
+import { SummonController } from './systems/summons.js';
 import { objectIdType, doorState } from '../shared/assets.js';
 
 export { TICK_MS };
@@ -83,6 +84,7 @@ export class Simulation {
     this.spells = new SpellController(this);
     this.conditions = new ConditionController(this);
     this.powers = new CreaturePowers(this);
+    this.summons = new SummonController(this);
     this.social = new SocialController(this);
     this.savedCharacters = options.characters || {};
     this.houses = new HouseController(this, options.houses || {});
@@ -311,6 +313,7 @@ export class Simulation {
     let best = null;
     let bestDist = Infinity;
     for (const player of this.players) {
+      if ((player.invisibleUntil || 0) > this.time && Math.max(Math.abs(enemy.x - player.x), Math.abs(enemy.y - player.y)) > 1) continue;
       const dist = distance(enemy.x, enemy.y, player.x, player.y) + Math.abs((enemy.z || 0) - (player.z || 0)) * 100;
       if (dist < bestDist) {
         best = player;
@@ -405,6 +408,10 @@ export class Simulation {
     }
 
     for (const enemy of [...this.enemies]) {
+      if (enemy.pet) {
+        this.summons.update(enemy, now);
+        continue;
+      }
       const player = this.closestPlayer(enemy);
       const bounds = player ? this.searchBoundsAround(player) : null;
       this.enemyAI.update(enemy, player, this.enemies, now, bounds);
@@ -423,7 +430,10 @@ export class Simulation {
     this.houses.update();
     this.dropped.update();
     this.releaseOffline(now);
-    for (const player of this.players) player.inCombat = this.inCombat(player, now);
+    for (const player of this.players) {
+      player.inCombat = this.inCombat(player, now);
+      player.invisible = (player.invisibleUntil || 0) > now;
+    }
 
     this.movement.checkFloorTransitions([...this.players, ...this.enemies]);
     this.interactions.checkTeleports(this.players);

@@ -19,6 +19,9 @@ const ALL = ['knight', 'paladin', 'sorcerer', 'druid'];
 const MAGES = ['sorcerer', 'druid'];
 
 export const SPELLS = [
+  { words: 'exevo pan', name: 'Create Food', lvl: 14, mana: 80, vocations: ALL, kind: 'food', cooldown: 3000 },
+  { words: 'utamo vita', name: 'Magic Shield', lvl: 14, mana: 50, vocations: MAGES, kind: 'shield', ms: 200000, cooldown: 3000 },
+  { words: 'utana vid', name: 'Invisible', lvl: 35, mana: 440, vocations: MAGES, kind: 'invisible', ms: 200000, cooldown: 10000 },
   { words: 'utevo lux', name: 'Light', lvl: 8, mana: 20, vocations: ALL, kind: 'light' },
   { words: 'exura', name: 'Light Healing', lvl: 9, mana: 20, vocations: ALL, kind: 'heal', formula: { min: [1.4, 8], max: [1.795, 11] } },
   { words: 'exana pox', name: 'Antidote', lvl: 10, mana: 30, vocations: ALL, kind: 'cure' },
@@ -46,6 +49,23 @@ export const SPELLS = [
   { words: 'adori gran mort', name: 'Sudden Death', lvl: 45, mana: 220, vocations: ['sorcerer'], kind: 'conjure', rune: 'itens/runas/sudden-death-rune' },
   { words: 'exevo gran mas flam', name: "Hell's Core", lvl: 60, mana: 1100, vocations: ['sorcerer'], kind: 'blast', area: 'big', element: 'fire', effect: 'fire', formula: { min: [7, 44], max: [14, 80] } }
 ];
+
+// Comida que o exevo pan cria (uma, sorteada).
+export const SPELL_FOODS = ['itens/comidas/bread', 'itens/comidas/cheese', 'itens/comidas/ham', 'itens/comidas/meet'];
+
+// Criaturas que o utevo res "nome" invoca e a mana de cada uma (quanto mais forte, mais cara).
+export const SUMMONS = {
+  rat: { creature: 'criaturas/mamiferos/rat', mana: 20 },
+  snake: { creature: 'criaturas/repteis/snake', mana: 30 },
+  wolf: { creature: 'criaturas/mamiferos/wolf', mana: 40 },
+  spider: { creature: 'criaturas/vermes/spider', mana: 50 },
+  troll: { creature: 'criaturas/humanoides/troll', mana: 50 },
+  orc: { creature: 'criaturas/humanoides/orc', mana: 80 },
+  skeleton: { creature: 'criaturas/mortos-vivos/skeleton', mana: 100 },
+  minotaur: { creature: 'criaturas/humanoides/minotaur', mana: 150 },
+  cyclops: { creature: 'criaturas/gigantes/cyclops', mana: 220 }
+};
+export const SUMMON_SPELL = { words: 'utevo res', name: 'Summon Creature', lvl: 25, vocations: MAGES, kind: 'summon', cooldown: 8000 };
 
 // Runas: o que faz ao usar com a mira, quantas cargas a conjuração dá e o
 // magic level pra usar. heal cura o player do sqm; attack fere a criatura do
@@ -121,6 +141,19 @@ export function circleArea(r) {
 export function findSpell(text) {
   const said = normalizeSpeech(text);
   return SPELLS.find(spell => spell.words === said) || null;
+}
+
+// ================================================================================================================================================================================================================================================
+// findSummonSpell
+// utevo res "nome" (aspas opcionais): a magia de invocar com a criatura e a mana dela; com um nome que não existe,
+// a mesma magia sem criatura (o jogo avisa). null se não começa com utevo res.
+
+export function findSummonSpell(text) {
+  const said = normalizeSpeech(text);
+  if (!said.startsWith(SUMMON_SPELL.words + ' ')) return null;
+  const name = said.slice(SUMMON_SPELL.words.length + 1);
+  const entry = Object.hasOwn(SUMMONS, name) ? SUMMONS[name] : null;
+  return { ...SUMMON_SPELL, words: `${SUMMON_SPELL.words} "${name}"`, key: SUMMON_SPELL.words, creature: entry ? entry.creature : null, mana: entry ? entry.mana : 0 };
 }
 
 // ================================================================================================================================================================================================================================================

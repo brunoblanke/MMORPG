@@ -514,7 +514,13 @@ export class Renderer {
         const isSelf = isPlayer && entity === this.localPlayer;
         const isTargeted = entity && (entity === this.selectedTarget || (isSelf && entity.isTarget));
         const outline = isTargeted ? TARGET_OUTLINE : null;
+        const ghost = !!entity && entity.invisible;
+        if (ghost) {
+          this.ctx.save();
+          this.ctx.globalAlpha = isSelf ? 0.5 : 0.25;
+        }
         this.drawAnchoredSprite(frame.image, frame.frameRect, base, size, stackOffsetX, stackOffsetY, tint, outline);
+        if (ghost) this.ctx.restore();
       } else {
         const color = entity && entity.color ? entity.color : "#888888";
         this.drawFallbackSquare(base, size, stackOffsetX, stackOffsetY, color, tint);
@@ -522,7 +528,7 @@ export class Renderer {
     }
 
     // Nome/vida/stats vão numa passada final (render), por cima de qualquer piso.
-    this.pendingOverlays.push({ entity, base, stackOffsetX, stackOffsetY, size });
+    if (!(entity && entity.invisible && entity !== this.localPlayer)) this.pendingOverlays.push({ entity, base, stackOffsetX, stackOffsetY, size });
   }
 
   // ================================================================================================================================================================================

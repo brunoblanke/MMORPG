@@ -468,7 +468,7 @@ export class CombatController {
       return;
     }
     const level = getLevel(player);
-    const isNear = (enemy) => enemy.isAlive() && creatureBehavior(enemy.creature) !== 'pacifico' && getLevel(enemy) === level && enemy.isInDetectionRange(player.x, player.y);
+    const isNear = (enemy) => enemy.isAlive() && !enemy.pet && creatureBehavior(enemy.creature) !== 'pacifico' && getLevel(enemy) === level && enemy.isInDetectionRange(player.x, player.y);
     player.aggro = player.aggro.filter(isNear);
     for (const enemy of this.sim.enemies) {
       if (isNear(enemy) && !player.aggro.includes(enemy)) player.aggro.push(enemy);
@@ -518,7 +518,7 @@ export class CombatController {
     let attacked = false;
 
     for (const enemy of this.sim.enemies) {
-      if (!enemy.isAlive() || creatureBehavior(enemy.creature) === 'pacifico') continue;
+      if (!enemy.isAlive() || enemy.pet || (player.invisibleUntil || 0) > now || creatureBehavior(enemy.creature) === 'pacifico') continue;
       if (!enemy.isInDetectionRange(player.x, player.y)) continue;
 
       const isAdjacent = isPositionAdjacentTo(enemy.x, enemy.y, player.x, player.y);

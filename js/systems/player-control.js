@@ -251,7 +251,7 @@ export class PlayerControl {
       return;
     }
     const enemy = other || this.sim.enemies.find(e => e.id === targetId && e.isAlive());
-    if (!enemy || this.sim.combat.isTargetLost(player, enemy)) return;
+    if (!enemy || enemy.pet || this.sim.combat.isTargetLost(player, enemy)) return;
     player.target = enemy;
     player.autoFollow = player.followMode;
     player.attackMode = false;

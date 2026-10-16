@@ -47,6 +47,19 @@ export class Player extends Entity {
   }
 
   // ================================================================================================================================================================================================================================================
+  // takeDamage
+  // Com o magic shield ligado (utamo vita), a mana absorve o dano antes da vida.
+
+  takeDamage(amount, now) {
+    if ((this.shieldUntil || 0) > now && this.mana > 0) {
+      const absorbed = Math.min(amount, this.mana);
+      this.mana -= absorbed;
+      amount -= absorbed;
+    }
+    return super.takeDamage(amount, now);
+  }
+
+// ================================================================================================================================================================================================================================================
   // gainXp
   // Soma o XP e sobe quantos níveis ele pagar; o que sobra continua contando.
   // Cada nível novo recalcula vida, ataque, defesa e velocidade e enche a
@@ -237,6 +250,8 @@ export class Player extends Entity {
     this.isTarget = false;
     this.conditions = {};
     this.speedMod = 0;
+    this.shieldUntil = 0;
+    this.invisibleUntil = 0;
   }
 }
 
