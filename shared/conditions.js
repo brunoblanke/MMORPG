@@ -5,12 +5,13 @@ import { MAGIC_WALL } from './assets.js';
 // Estados (condições) de player e criatura, como no Tibia: os de dano tiram
 // `damage` de vida a cada `interval`, `ticks` vezes (envenenado, queimando,
 // eletrificado); os de velocidade somam `speed` até acabar o tempo (lento,
-// rápido). icon e color: o ícone na janela de vida e a cor do dano.
+// rápido). icon e color: o ícone na janela de vida e a cor do dano; effect: o
+// efeito (shared/effects.js) que aparece na vítima a cada golpe do estado.
 
 export const CONDITIONS = {
-  poison: { name: 'Envenenado', icon: '☠', color: '#4ade80', interval: 4000 },
-  fire: { name: 'Queimando', icon: '♨', color: '#fb923c', interval: 4000 },
-  energy: { name: 'Eletrificado', icon: 'ϟ', color: '#c084fc', interval: 4000 },
+  poison: { name: 'Envenenado', icon: '☠', color: '#4ade80', effect: 'poison', interval: 4000 },
+  fire: { name: 'Queimando', icon: '♨', color: '#fb923c', effect: 'fire', interval: 4000 },
+  energy: { name: 'Eletrificado', icon: 'ϟ', color: '#c084fc', effect: 'energy', interval: 4000 },
   slow: { name: 'Lento', icon: '◔', color: '#94a3b8' },
   haste: { name: 'Rápido', icon: '»', color: '#facc15' }
 };

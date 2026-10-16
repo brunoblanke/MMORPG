@@ -76,6 +76,7 @@ export class ConditionController {
 
   // ================================================================================================================================================================================================================================================
   // tick
+  // A cada golpe de um estado de dano, o efeito dele aparece na vítima (veneno, fogo, energia).
 
   tick(entity, now) {
     const conditions = entity.conditions;
@@ -96,6 +97,7 @@ export class ConditionController {
       state.ticks--;
       if (state.ticks <= 0) delete conditions[kind];
       this.hurt(entity, state.damage, kind, state.source);
+      if (info.effect && entity.isAlive()) this.sim.emit({ type: 'effect', x: entity.x, y: entity.y, z: entity.z || 0, tiles: [[entity.x, entity.y]], effect: info.effect });
     }
     if (speedChanged) this.applySpeed(entity);
   }

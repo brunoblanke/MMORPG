@@ -4,7 +4,8 @@
 // no nível VOCATION_LEVEL, com o NPC. Até o nível 8 todo mundo cresce como
 // none; dali pra cima, cada nível soma a vida, a mana e o cap da vocação.
 // skills: o multiplicador (B) da progressão de cada skill — quanto menor,
-// mais rápido sobe (shared/skills.js → triesFor).
+// mais rápido sobe (shared/skills.js → triesFor). regen: de quantos em quantos
+// ms (com comida no estômago) recupera 1 de vida e 1 de mana.
 
 export const VOCATION_LEVEL = 8;
 export const BASE_STATS = { hp: 150, mana: 55, cap: 400 };
@@ -13,26 +14,31 @@ export const VOCATIONS = {
   none: {
     name: 'Sem vocação', words: [],
     gain: { hp: 5, mana: 5, cap: 10 },
+    regen: { hp: 6000, mana: 6000 },
     skills: { magic: 4.0, fist: 1.5, club: 2.0, sword: 2.0, axe: 2.0, distance: 2.0, shielding: 1.5, fishing: 1.1 }
   },
   knight: {
     name: 'Knight', words: ['knight', 'cavaleiro'],
     gain: { hp: 15, mana: 5, cap: 25 },
+    regen: { hp: 6000, mana: 6000 },
     skills: { magic: 3.0, fist: 1.1, club: 1.1, sword: 1.1, axe: 1.1, distance: 1.4, shielding: 1.1, fishing: 1.1 }
   },
   paladin: {
     name: 'Paladin', words: ['paladin', 'paladino'],
     gain: { hp: 10, mana: 15, cap: 20 },
+    regen: { hp: 8000, mana: 4000 },
     skills: { magic: 1.4, fist: 1.2, club: 1.2, sword: 1.2, axe: 1.2, distance: 1.1, shielding: 1.1, fishing: 1.1 }
   },
   sorcerer: {
     name: 'Sorcerer', words: ['sorcerer', 'feiticeiro'],
     gain: { hp: 5, mana: 30, cap: 10 },
+    regen: { hp: 12000, mana: 3000 },
     skills: { magic: 1.1, fist: 1.5, club: 2.0, sword: 2.0, axe: 2.0, distance: 2.0, shielding: 1.5, fishing: 1.1 }
   },
   druid: {
     name: 'Druid', words: ['druid', 'druida'],
     gain: { hp: 5, mana: 30, cap: 10 },
+    regen: { hp: 12000, mana: 3000 },
     skills: { magic: 1.1, fist: 1.5, club: 2.0, sword: 2.0, axe: 2.0, distance: 2.0, shielding: 1.5, fishing: 1.1 }
   }
 };

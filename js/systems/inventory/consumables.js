@@ -4,6 +4,7 @@ import { GameObject } from '../../models/game-object.js';
 import { objectUse } from '../../../shared/assets.js';
 import { CONFIG } from '../../config.js';
 import { CONDITIONS } from '../../../shared/conditions.js';
+import { VOCATIONS, vocationOf } from '../../../shared/vocations.js';
 import { RUNES } from '../../../shared/spells.js';
 import {
   EQUIP_SLOTS, USE_COOLDOWN_MS, FOOD_MAX_SECONDS, POTION_RANGE, EMPTY_VIAL, SPLASH_HP, SPLASH_MANA, SPLASH_STAGES, SPLASH_STAGE_MS, REGEN_MS, REGEN_HP, REGEN_MANA, itemInfo, newItem
@@ -232,8 +233,8 @@ export const consumableMethods = {
   // ================================================================================================================================================================================================================================================
   // digest
   // Com comida no estômago, o player recupera REGEN_HP de vida e REGEN_MANA
-  // de mana a cada REGEN_MS (como no Tibia sem vocação); a comida vai
-  // acabando com o tempo.
+  // de mana no ritmo da vocação (VOCATIONS.regen: sorcerer e druid devagar na vida
+  // e rápido na mana, paladin no meio); a comida vai acabando com o tempo.
 
   digest(player, now) {
     const last = player.digestAt ?? now;
@@ -248,10 +249,15 @@ export const consumableMethods = {
     player.starveElapsed = 0;
     const elapsed = Math.min(now - last, player.food);
     player.food = Math.max(0, player.food - elapsed);
+    const regen = VOCATIONS[vocationOf(player.vocation)].regen;
+    player.regenHpElapsed = (player.regenHpElapsed || 0) + elapsed;
     player.regenElapsed = (player.regenElapsed || 0) + elapsed;
-    while (player.regenElapsed >= REGEN_MS) {
-      player.regenElapsed -= REGEN_MS;
+    while (player.regenHpElapsed >= regen.hp) {
+      player.regenHpElapsed -= regen.hp;
       player.currentHp = Math.min(player.hp, player.currentHp + REGEN_HP);
+    }
+    while (player.regenElapsed >= regen.mana) {
+      player.regenElapsed -= regen.mana;
       player.mana = Math.min(player.maxMana, player.mana + REGEN_MANA);
     }
   },
