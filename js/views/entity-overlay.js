@@ -11,7 +11,7 @@ const HP_BAR_HEIGHT = 3;
 const HP_BAR_BACK = 'rgba(10, 12, 16, 0.4)';
 export const NAME_COLOR = '#5fe35f';
 const CORPSE_NAME_COLOR = '#a0a0a0';
-const SKULL_NAMES = { white: { color: '#ffffff', outline: '#000000' }, red: { color: '#ff3b3b', outline: '#000000' }, black: { color: '#000000', outline: '#ffffff' } };
+const SKULL_COLORS = { white: '#ffffff', red: '#ff3b3b', black: '#000000' };
 const STATUS_ICON_SIZE = 10;
 const ICON_VIEW = 23;
 const ICON_MARGIN = 1.5;
@@ -43,7 +43,7 @@ function getEntityName(entity, isPlayer, isEnemy, isCorpse) {
 // drawStatusIcon
 // Desenha um ícone de status direto no canvas, em vetor no tamanho exato (nítido, sem imagem): branco, sem contorno.
 
-function drawStatusIcon(ctx, name, left, top, size) {
+function drawStatusIcon(ctx, name, left, top, size, color = '#ffffff') {
   iconPaths = iconPaths || Object.fromEntries(Object.entries(ICON_SHAPES).map(([key, shapes]) => [key, shapes.map(shape => ({ ...shape, path2d: new Path2D(shape.path) }))]));
   const shapes = iconPaths[name];
   ctx.save();
@@ -52,14 +52,21 @@ function drawStatusIcon(ctx, name, left, top, size) {
   ctx.translate(ICON_MARGIN, ICON_MARGIN);
   ctx.lineJoin = 'round';
   ctx.lineCap = 'round';
-  ctx.strokeStyle = '#ffffff';
+  const dark = color === SKULL_COLORS.black;
+  ctx.strokeStyle = color;
   for (const shape of shapes) {
     if (shape.hole) {
-      ctx.fillStyle = '#000000';
+      ctx.fillStyle = dark ? '#ffffff' : '#000000';
       ctx.fill(shape.path2d);
       continue;
     }
-    ctx.fillStyle = '#ffffff';
+    if (dark && shape.filled) {
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 3.2;
+      ctx.stroke(shape.path2d);
+      ctx.strokeStyle = color;
+    }
+    ctx.fillStyle = color;
     ctx.lineWidth = shape.filled ? 1.4 : 3;
     if (shape.filled) ctx.fill(shape.path2d);
     ctx.stroke(shape.path2d);
@@ -69,10 +76,10 @@ function drawStatusIcon(ctx, name, left, top, size) {
 
 // ================================================================================================================================================================================================================================================
 // drawStatusIcons
-// Os ícones de status em coluna no topo do sqm, encostados na borda direita, por fora dele: caveira em cima (por enquanto sempre; depois só PK), escudo no meio (na party do jogador) e espadas embaixo (jogador em combate).
+// Os ícones de status em coluna no topo do sqm, encostados na borda direita, por fora dele: caveira em cima (só de quem está com caveira de PK, na cor dela: branca, vermelha ou preta), escudo no meio (na party do jogador) e espadas embaixo (jogador em combate).
 
-function drawStatusIcons(ctx, left, top, size, names) {
-  names.forEach((name, i) => drawStatusIcon(ctx, name, left + size, top + i * STATUS_ICON_SIZE, STATUS_ICON_SIZE));
+function drawStatusIcons(ctx, left, top, size, icons) {
+  icons.forEach(({ name, color }, i) => drawStatusIcon(ctx, name, left + size, top + i * STATUS_ICON_SIZE, STATUS_ICON_SIZE, color));
 }
 
 // ================================================================================================================================================================================================================================================
@@ -98,12 +105,12 @@ export function drawEntityOverlay(ctx, entity, base, stackOffsetX, stackOffsetY,
   const barX = base.x - stackOffsetX;
   const barY = base.y - 15 - stackOffsetY;
 
-  const skull = isPlayer ? SKULL_NAMES[entity.skull] : null;
-  drawTibiaText(ctx, name, centerX, barY - 3, skull ? skull.color : (isCorpse ? CORPSE_NAME_COLOR : NAME_COLOR), skull ? skull.outline : undefined);
+  drawTibiaText(ctx, name, centerX, barY - 3, isCorpse ? CORPSE_NAME_COLOR : NAME_COLOR);
   if (isPlayer) {
-    const icons = ['skull'];
-    if (inParty) icons.push('shield');
-    if (isSelf && entity.inCombat) icons.push('swords');
+    const icons = [];
+    if (SKULL_COLORS[entity.skull]) icons.push({ name: 'skull', color: SKULL_COLORS[entity.skull] });
+    if (inParty) icons.push({ name: 'shield', color: '#ffffff' });
+    if (isSelf && entity.inCombat) icons.push({ name: 'swords', color: '#ffffff' });
     drawStatusIcons(ctx, barX, base.y - stackOffsetY, size, icons);
   }
 

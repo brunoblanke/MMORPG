@@ -34,7 +34,7 @@ export const ICONS = {
 export const FOLLOW_ICONS = {
   follow: svgIcon('0 0 17.4 19.84', '<circle cx="14.06" cy="3.34" r="2.38"/><path d="M5.13,7.57l4.17-2.38,3.58,3.58,3.58.6"/><path d="M8.82,11.84l4.05,1.09-1.19,5.96"/><path d="M11.32,7.2l-5,6.92-5.36,1.19"/>', MODE_ICON_SCALE),
   attack: svgIcon('0 0 19.79 19.19', '<path d="M1.55.95l13.11,13.11M18.24.95L5.13,14.06"/><path d="M12.28,16.45l4.77-4.77M2.74,11.68l4.77,4.77"/><path d="M15.85,15.26l2.98,2.98M3.93,15.26l-2.98,2.98"/>', MODE_ICON_SCALE),
-  pvp: svgIcon('0 0 17 17.6', '<path d="M8.5.95C4.3.95.95 3.9.95 8.2c0 2.3 1.1 3.9 2.6 4.8v3.6h2.4v-1.9h1.6v1.9h2v-1.9h1.6v1.9h2.4V13c1.5-.9 2.6-2.5 2.6-4.8C16.05 3.9 12.7.95 8.5.95z"/><circle cx="5.9" cy="8.6" r="1.5"/><circle cx="11.1" cy="8.6" r="1.5"/>', MODE_ICON_SCALE),
+  pvp: '<svg width="11" height="11" viewBox="2 1.2 16 16" fill="currentColor" stroke="none"><path fill-rule="evenodd" d="M10 2.2C5.8 2.2 3 5 3 8.7c0 2.2 1 3.6 2.4 4.4V16h2.2v-1.7h1.2V16h2.4v-1.7h1.2V16h2.2v-2.9c1.4-.8 2.4-2.2 2.4-4.4C17 5 14.2 2.2 10 2.2zM5.2 9a1.9 1.9 0 1 0 3.8 0a1.9 1.9 0 1 0-3.8 0zM11 9a1.9 1.9 0 1 0 3.8 0a1.9 1.9 0 1 0-3.8 0zM10 11.2l-.9 1.8h1.8z"/></svg>',
   stand: svgIcon('0 0 11.44 19.84', '<circle cx="5.72" cy="3.4" r="2.44"/><path d="M5.72,8.76v4.17"/><path d="M.95,9.95l4.77-1.79,4.77,1.79"/><path d="M5.72,12.93l-4.17,5.96"/><path d="M5.72,12.93l4.17,5.96"/>', MODE_ICON_SCALE)
 };
 
