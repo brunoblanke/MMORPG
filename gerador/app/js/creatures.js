@@ -5,7 +5,7 @@ import { creatureInfo, itemCategory } from './picker.js';
 import { sourceUrl, sourceLabel, loadImage, isReady, drawAnchored, readPngFile, normalizeName, statusOf, generatePendingSheets } from './common.js';
 import { refreshProjects } from './projects.js';
 import { fillFolderSelect, folderOf, setFolder, recipePath } from './folders.js';
-import { VOCATION_LINES, SHOP_LINES, QUEST_LINES, BANK_LINES } from '/shared/npcs.js';
+import { VOCATION_LINES, SHOP_LINES, QUEST_LINES, BANK_LINES, TRAVEL_LINES } from '/shared/npcs.js';
 
 // Folha de criatura (quadros de 32 ou 64 px, o maior entre criatura e cadáver):
 //   linhas 1–4  sul, norte, leste, oeste — 1º quadro parado, depois andando
@@ -50,6 +50,7 @@ const creatures = {
   shop: [],
   buys: [],
   quests: [],
+  travel: [],
   creatureTypes: []
 };
 
@@ -135,8 +136,10 @@ const LINE_GROUPS = [
   { key: 'falasVocacao', defaults: VOCATION_LINES, box: document.getElementById('npcVocationLines'), grid: document.getElementById('npcVocationLinesGrid') },
   { key: 'falasVenda', defaults: SHOP_LINES, box: document.getElementById('npcShopLines'), grid: document.getElementById('npcShopLinesGrid') },
   { key: 'falasMissao', defaults: QUEST_LINES, box: document.getElementById('npcQuestLines'), grid: document.getElementById('npcQuestLinesGrid') },
-  { key: 'falasBanco', defaults: BANK_LINES, box: document.getElementById('npcBankLines'), grid: document.getElementById('npcBankLinesGrid') }
+  { key: 'falasBanco', defaults: BANK_LINES, box: document.getElementById('npcBankLines'), grid: document.getElementById('npcBankLinesGrid') },
+  { key: 'falasViagem', defaults: TRAVEL_LINES, box: document.getElementById('npcTravelLines'), grid: document.getElementById('npcTravelLinesGrid') }
 ];
+const npcTravelEl = document.getElementById('npcTravel');
 const npcQuestsEl = document.getElementById('npcQuests');
 const NPC_TEXT_FIELDS = [
   ['boasVindas', document.getElementById('npcWelcome')],
@@ -196,6 +199,11 @@ function initCreatures() {
     creatures.quests.push({ nome: '', palavras: '', tipo: 'item', alvo: '', quantidade: 1, pedido: '', recompensa: { tipo: '', count: 1 }, xp: 0, moedas: 0 });
     creatures.dirty = true;
     renderQuests();
+  };
+  document.getElementById('npcTravelAdd').onclick = () => {
+    creatures.travel.push({ nome: '', palavras: '', preco: 0, nivel: 0, destino: { x: '', y: '', z: 0 } });
+    creatures.dirty = true;
+    renderTravel();
   };
   document.getElementById('npcTopicAdd').onclick = () => {
     creatures.topics.push({ palavras: '', resposta: '' });
@@ -741,6 +749,7 @@ function renderShop() {
   renderTradeList(creatures.shop, npcShopEl, 'ex.: corda');
   renderTradeList(creatures.buys, npcBuyEl, 'ex.: queijo');
   renderQuests();
+  renderTravel();
 }
 
 // ================================================================================================================================================================================================================================================
@@ -800,6 +809,41 @@ function renderQuests() {
         ...number(quest.xp, 'XP', v => { quest.xp = v; }), ...number(quest.moedas, 'moedas', v => { quest.moedas = v; }))
     );
     npcQuestsEl.appendChild(box);
+  });
+  showNpcFields();
+}
+
+// ================================================================================================================================================================================================================================================
+// renderTravel
+// Uma linha por viagem: nome do destino, palavras, preço, nível mínimo e o destino (x, y e andar).
+
+function renderTravel() {
+  npcTravelEl.innerHTML = '';
+  const changed = () => { creatures.dirty = true; };
+  creatures.travel.forEach((trip, index) => {
+    const row = document.createElement('div');
+    row.className = 'npc-topic';
+    const input = (props, onInput) => {
+      const el = document.createElement('input');
+      Object.assign(el, props);
+      el.oninput = () => { onInput(el.value); changed(); };
+      return el;
+    };
+    const whole = (value, title, onInput) => input({ type: 'number', className: 'npc-num', step: 1, title, placeholder: title, value }, v => onInput(v === '' ? '' : Math.floor(Number(v))));
+    const remove = document.createElement('button');
+    Object.assign(remove, { type: 'button', className: 'ghost-btn', textContent: '×' });
+    remove.onclick = () => { creatures.travel.splice(index, 1); changed(); renderTravel(); showNpcFields(); };
+    row.append(
+      input({ type: 'text', className: 'npc-words', placeholder: 'Destino (ex.: Ilha)', value: trip.nome, maxLength: 40 }, v => { trip.nome = v; }),
+      input({ type: 'text', className: 'npc-reply', placeholder: 'Palavras (ex.: ilha, barco)', value: trip.palavras, maxLength: 120 }, v => { trip.palavras = v; }),
+      whole(trip.preco, 'preço', v => { trip.preco = Math.max(0, v || 0); }),
+      whole(trip.nivel, 'nível', v => { trip.nivel = Math.max(0, v || 0); }),
+      whole(trip.destino.x, 'x', v => { trip.destino.x = v; }),
+      whole(trip.destino.y, 'y', v => { trip.destino.y = v; }),
+      whole(trip.destino.z, 'andar', v => { trip.destino.z = v; }),
+      remove
+    );
+    npcTravelEl.appendChild(row);
   });
   showNpcFields();
 }
@@ -940,6 +984,7 @@ function showNpcFields() {
   LINE_GROUPS[1].box.hidden = !creatures.shop.length && !creatures.buys.length;
   LINE_GROUPS[2].box.hidden = !creatures.quests.length;
   LINE_GROUPS[3].box.hidden = !npcBankEl.value;
+  LINE_GROUPS[4].box.hidden = !creatures.travel.length;
   formEl.classList.toggle('is-npc', isNpc);
 }
 
@@ -981,6 +1026,9 @@ function conversationValues() {
   talk.missoes = creatures.quests.filter(q => q.nome.trim() && q.alvo).map(q => ({
     ...q, nome: q.nome.trim(), palavras: q.palavras.trim(), pedido: q.pedido.trim(),
     recompensa: q.recompensa.tipo ? { tipo: q.recompensa.tipo, count: Math.max(1, q.recompensa.count || 1) } : null
+  }));
+  talk.viagens = creatures.travel.filter(t => t.nome.trim() && [t.destino.x, t.destino.y, t.destino.z].every(Number.isInteger)).map(t => ({
+    nome: t.nome.trim(), palavras: t.palavras.trim(), preco: t.preco || 0, nivel: t.nivel || 0, destino: { x: t.destino.x, y: t.destino.y, z: t.destino.z }
   }));
   for (const group of LINE_GROUPS) {
     const values = lineValues(group);
@@ -1115,6 +1163,10 @@ function openRecipe(recipe) {
     nome: q.nome || '', palavras: q.palavras || '', tipo: q.tipo === 'matar' ? 'matar' : 'item', alvo: q.alvo || '', quantidade: Number(q.quantidade) || 1,
     pedido: q.pedido || '', recompensa: { tipo: (q.recompensa && q.recompensa.tipo) || '', count: (q.recompensa && Number(q.recompensa.count)) || 1 },
     xp: Number(q.xp) || 0, moedas: Number(q.moedas) || 0
+  })) : [];
+  creatures.travel = Array.isArray(talk.viagens) ? talk.viagens.map(t => ({
+    nome: t.nome || '', palavras: t.palavras || '', preco: Number(t.preco) || 0, nivel: Number(t.nivel) || 0,
+    destino: { x: Number.isInteger(t.destino && t.destino.x) ? t.destino.x : '', y: Number.isInteger(t.destino && t.destino.y) ? t.destino.y : '', z: Number.isInteger(t.destino && t.destino.z) ? t.destino.z : 0 }
   })) : [];
   renderTopics();
   renderLines(talk);

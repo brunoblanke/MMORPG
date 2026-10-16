@@ -2,7 +2,7 @@
 
 import { Npc } from '../models/npc.js';
 import { getMapSpawn } from '../../shared/map-format.js';
-import { DEFAULT_RADIUS, YES_WORDS, NO_WORDS, TRADE_WORDS, SELL_WORDS, MAX_SELL, VOCATION_LINES, SHOP_LINES, QUEST_LINES, BANK_LINES, BALANCE_WORDS, DEPOSIT_WORDS, WITHDRAW_WORDS, TRANSFER_WORDS, CHANGE_WORDS, ALL_WORDS, BANK_WORDS, MAX_BANK, normalizeSpeech, npcDefFromAsset, fillLine } from '../../shared/npcs.js';
+import { DEFAULT_RADIUS, YES_WORDS, NO_WORDS, TRADE_WORDS, SELL_WORDS, MAX_SELL, VOCATION_LINES, TRAVEL_WORDS, TRAVEL_LINES, SHOP_LINES, QUEST_LINES, BANK_LINES, BALANCE_WORDS, DEPOSIT_WORDS, WITHDRAW_WORDS, TRANSFER_WORDS, CHANGE_WORDS, ALL_WORDS, BANK_WORDS, MAX_BANK, normalizeSpeech, npcDefFromAsset, fillLine } from '../../shared/npcs.js';
 import { buy, sell, pay, give, moneyOf } from './trade.js';
 import { questState, startQuest, progressOf, progressText, completeQuest } from './quests.js';
 import { VOCATIONS, VOCATION_LEVEL } from '../../shared/vocations.js';
@@ -52,6 +52,7 @@ export class NpcController {
       npc.selling = new Set();
       npc.questOffer = new Map();
       npc.banking = new Map();
+      npc.traveling = new Map();
       npc.home = { x: spot.x, y: spot.y, z };
       npc.homeX = spot.x;
       npc.homeY = spot.y;
@@ -136,6 +137,7 @@ export class NpcController {
     if (def.bank && this.talkBank(npc, def, player, text, raw)) return;
     if (def.quests && def.quests.length && this.talkQuest(npc, def, player, text)) return;
     if (def.vocation && this.talkVocation(npc, def, player, text)) return;
+    if (def.travel && def.travel.length && this.talkTravel(npc, def, player, text)) return;
     if (((def.shop && def.shop.length) || (def.buys && def.buys.length)) && this.talkShop(npc, def, player, text)) return;
     const topic = def.topics.find(t => this.hasWord(text, t.words));
     if (topic) this.npcSays(npc, player, topic.reply);
@@ -177,6 +179,50 @@ export class NpcController {
       npc.choosing.set(player.id, key);
       this.npcSays(npc, player, fillLine(lines.confirmar, { vocacao: VOCATIONS[key].name }));
     }
+    return true;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // talkTravel
+  // NPC que viaja: viagem (ou destino…) lista os lugares; o nome de um pede a confirmação com o preço (e o
+  // nível mínimo); sim cobra o preço da mochila e leva o player (com o efeito teleport nos dois lugares),
+  // não desiste. Devolve true se a fala era dessa conversa.
+
+  talkTravel(npc, def, player, text) {
+    const lines = def.travelLines || Object.fromEntries(Object.entries(TRAVEL_LINES).map(([k, v]) => [k, v.text]));
+    const pending = npc.traveling.get(player.id);
+    if (pending && this.hasWord(text, YES_WORDS)) {
+      npc.traveling.delete(player.id);
+      if (moneyOf(player) < pending.price || !pay(player, pending.price, () => this.sim.inventory.nextUid())) {
+        this.npcSays(npc, player, fillLine(lines.semDinheiro, { preco: pending.price, destino: pending.name }));
+        return true;
+      }
+      this.npcSays(npc, player, fillLine(lines.partiu, { destino: pending.name }));
+      this.sim.schedule((this.sim.time || 0) + REPLY_DELAY_MS * 2, () => {
+        npc.focus.delete(player.id);
+        this.sim.spells.showEffect(player.x, player.y, 'teleport', undefined, player.z || 0);
+        this.sim.teleportPlayer(player, pending.dest.x, pending.dest.y, pending.dest.z);
+        this.sim.spells.showEffect(player.x, player.y, 'teleport', undefined, player.z || 0);
+      });
+      return true;
+    }
+    if (pending && this.hasWord(text, NO_WORDS)) {
+      npc.traveling.delete(player.id);
+      this.npcSays(npc, player, lines.desistiu);
+      return true;
+    }
+    const trip = def.travel.find(t => this.hasWord(text, t.words));
+    if (trip) {
+      if (player.lvl < trip.level) {
+        this.npcSays(npc, player, fillLine(lines.nivel, { nivel: trip.level, destino: trip.name }));
+        return true;
+      }
+      npc.traveling.set(player.id, trip);
+      this.npcSays(npc, player, fillLine(lines.confirmar, { destino: trip.name, preco: trip.price }));
+      return true;
+    }
+    if (!this.hasWord(text, TRAVEL_WORDS)) return false;
+    this.npcSays(npc, player, fillLine(lines.lista, { lista: def.travel.map(t => `${t.name} (${t.price} moedas)`).join(', ') }));
     return true;
   }
 
@@ -288,7 +334,7 @@ export class NpcController {
   // O NPC esquece a conversa com o player (e o que estava pendente).
 
   forget(npc, playerId) {
-    for (const map of [npc.focus, npc.choosing, npc.offering, npc.questOffer, npc.banking]) map.delete(playerId);
+    for (const map of [npc.focus, npc.choosing, npc.offering, npc.questOffer, npc.banking, npc.traveling]) map.delete(playerId);
     npc.selling.delete(playerId);
   }
 

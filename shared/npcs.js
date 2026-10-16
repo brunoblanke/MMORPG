@@ -52,6 +52,17 @@ export const SHOP_LINES = {
   comprado: { label: 'Comprado', text: 'Negócio fechado!' },
   semItem: { label: 'Player sem o item', text: 'Você não tem {quantidade} {item}.' }
 };
+// Viagem (gerador → NPC → Viagens): o NPC leva o player a um destino por um preço (e nível mínimo, se
+// tiver). {destino} é o nome do lugar, {preco} o preço, {nivel} o nível mínimo e {lista} os destinos.
+export const TRAVEL_WORDS = ['viagem', 'viajar', 'travel', 'destino', 'destinos', 'passagem', 'barco'];
+export const TRAVEL_LINES = {
+  lista: { label: 'Destinos', text: 'Posso levar você para: {lista}. Para onde?' },
+  confirmar: { label: 'Pergunta', text: 'Quer ir para {destino} por {preco} moedas de ouro? (sim / não)' },
+  partiu: { label: 'Ao dizer sim', text: 'Boa viagem!' },
+  semDinheiro: { label: 'Sem dinheiro', text: 'Você não tem {preco} moedas de ouro.' },
+  nivel: { label: 'Sem o nível', text: 'Só levo quem tem nível {nivel} ou mais.' },
+  desistiu: { label: 'Ao dizer não', text: 'Tudo bem.' }
+};
 // Falas das missões: {progresso} vira o quanto falta (ex.: 3/5 rat) e
 // {missao} o nome da missão.
 export const QUEST_LINES = {
@@ -128,11 +139,33 @@ export function npcDefFromAsset(type, pos) {
     shop: shopFrom(talk.vende),
     buys: shopFrom(talk.compra),
     shopLines: linesFrom(SHOP_LINES, talk.falasVenda),
+    travel: travelFrom(talk.viagens),
+    travelLines: linesFrom(TRAVEL_LINES, talk.falasViagem),
     quests: questsFrom(talk.missoes, asset.nome || type.split('/').pop()),
     questLines: linesFrom(QUEST_LINES, talk.falasMissao),
     bank: !!talk.banco,
     bankLines: linesFrom(BANK_LINES, talk.falasBanco)
   };
+}
+
+// ================================================================================================================================================================================================================================================
+// travelFrom
+// As viagens do NPC (gerador → Viagens): [{ nome, palavras, destino: { x, y, z }, preco, nivel }] viram
+// [{ name, words, dest, price, level }]; sem nome ou destino válido, a viagem é ignorada.
+
+function travelFrom(list) {
+  if (!Array.isArray(list)) return [];
+  return list.filter(e => e && typeof e.nome === 'string' && e.nome.trim() && validDestination(e.destino)).map(e => {
+    const name = e.nome.trim().slice(0, 40);
+    const words = String(e.palavras || '').split(',').map(normalizeSpeech).filter(Boolean);
+    return {
+      name,
+      words: [...new Set([...words, normalizeSpeech(name)])].filter(Boolean),
+      dest: validDestination(e.destino),
+      price: Math.min(1000000, Math.max(0, Math.floor(Number(e.preco)) || 0)),
+      level: Math.max(0, Math.floor(Number(e.nivel)) || 0)
+    };
+  });
 }
 
 // ================================================================================================================================================================================================================================================

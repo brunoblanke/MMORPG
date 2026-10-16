@@ -195,6 +195,13 @@
         <label>Missões · o player diz o nome (ou as palavras) pra pedir; trazer itens ou matar criaturas, com a recompensa</label>
         <div class="npc-topics" id="npcQuests"></div>
         <button type="button" class="ghost-btn" id="npcQuestAdd">+ Missão</button>
+        <label>Viagens · o player diz "viagem"; nome do destino, palavras pra pedir, preço, nível mínimo e o destino (x, y e andar)</label>
+        <div class="npc-topics" id="npcTravel"></div>
+        <button type="button" class="ghost-btn" id="npcTravelAdd">+ Viagem</button>
+        <div class="npc-lines" id="npcTravelLines" hidden>
+          <label>Falas da viagem · vazio = a padrão · {destino}, {preco}, {nivel}, {lista} e {nome}</label>
+          <div class="npc-lines-grid" id="npcTravelLinesGrid"></div>
+        </div>
         <div class="npc-lines" id="npcVocationLines" hidden>
           <label>Falas da vocação · vazio = a padrão · {vocacao}, {nivel} e {nome}</label>
           <div class="npc-lines-grid" id="npcVocationLinesGrid"></div>
