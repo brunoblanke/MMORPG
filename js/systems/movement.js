@@ -2,7 +2,7 @@
 
 import { calculateMoveDelay, distance, directionFromDelta, getAdjacentPositions, isPositionAdjacentTo } from '../utils/helpers.js';
 import { resolveStep, isSameLanding } from '../core/movement.js';
-import { findPath, hasHarmfulField } from '../core/pathfinding.js';
+import { findPath, isAvoidedTile } from '../core/pathfinding.js';
 import { isValidFloor } from '../../shared/constants.js';
 import { blocksThrow, objectIdType } from '../../shared/assets.js';
 
@@ -189,9 +189,9 @@ export class MovementController {
     if (entity.isPlayer || !entity.route || entity.route.x === null || entity.route.x === undefined) return false;
     const floor = entity.z || 0;
     const z = landing.z ?? floor;
-    if (!hasHarmfulField(this.world, landing.x, landing.y, z) || hasHarmfulField(this.world, entity.x, entity.y, floor)) return false;
+    if (!isAvoidedTile(this.world, landing.x, landing.y, z) || isAvoidedTile(this.world, entity.x, entity.y, floor)) return false;
     const around = this.findPath(entity, { x: entity.route.x, y: entity.route.y, z: floor }, { sameFloor: true });
-    if (around.length === 0 || around.some(step => hasHarmfulField(this.world, step.x, step.y, step.z ?? floor))) return false;
+    if (around.length === 0 || around.some(step => isAvoidedTile(this.world, step.x, step.y, step.z ?? floor))) return false;
     entity.route.path = null;
     return true;
   }

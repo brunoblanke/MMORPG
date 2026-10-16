@@ -2,7 +2,7 @@
 
 import { DIRECTIONS, resolveStep } from './movement.js';
 import { FIELDS } from '../../shared/conditions.js';
-import { objectIdType } from '../../shared/assets.js';
+import { objectIdType, objectUse } from '../../shared/assets.js';
 
 // ================================================================================================================================================================================================================================================
 // heapPush
@@ -57,6 +57,14 @@ export function hasHarmfulField(world, x, y, z) {
 }
 
 // ================================================================================================================================================================================================================================================
+// isAvoidedTile
+// O sqm que as criaturas evitam pisar (só pisam se não houver outro caminho nem lugar pra ficar): campo que fere ou teletransporte.
+
+export function isAvoidedTile(world, x, y, z) {
+  return hasHarmfulField(world, x, y, z) || world.getObjectsAt(x, y).some(obj => (obj.z || 0) === z && objectUse(objectIdType(obj.id)) === 'teleporte');
+}
+
+// ================================================================================================================================================================================================================================================
 // findPath
 // A busca de caminho (A*), feita passo a passo pela mesma regra de passo
 // (resolveStep). Caminho de start = { x, y, z, step } até o sqm end = { x, y, z }.
@@ -72,7 +80,7 @@ export function hasHarmfulField(world, x, y, z) {
 //   - maxNodes: desiste depois de expandir tantos nós;
 //   - goals: [{ x, y }] — chegar em qualquer um deles (no andar de end) serve;
 //     vai pro que der o caminho mais curto;
-//   - fieldCost: quanto custa a mais pisar num campo que fere (inimigos
+//   - fieldCost: quanto custa a mais pisar num campo que fere ou num teletransporte (inimigos
 //     contornam o campo; sem outra passagem, atravessam).
 // Devolve [] se não houver caminho.
 
@@ -128,7 +136,7 @@ export function findPath(world, start, end, options = {}) {
       const nextKey = keyOf(next, reached);
       if (closed.has(nextKey)) continue;
 
-      const g = current.g + (dx !== 0 && dy !== 0 ? 1.4 : 1) + (next.step !== current.step ? 0.5 : 0) + (fieldCost && hasHarmfulField(world, next.x, next.y, next.z) ? fieldCost : 0);
+      const g = current.g + (dx !== 0 && dy !== 0 ? 1.4 : 1) + (next.step !== current.step ? 0.5 : 0) + (fieldCost && isAvoidedTile(world, next.x, next.y, next.z) ? fieldCost : 0);
       if (bestG.has(nextKey) && bestG.get(nextKey) <= g) continue;
       bestG.set(nextKey, g);
 

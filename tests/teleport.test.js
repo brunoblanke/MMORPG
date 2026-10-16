@@ -46,3 +46,15 @@ test('destino sem piso não leva a lugar nenhum', () => {
   for (let i = 0; i < 80; i++) sim.tick(sim.time + TICK_MS);
   assert.deepEqual([sim.player.x, sim.player.y], [5, 6]);
 });
+
+test('criatura evita o teletransporte como evita um campo: só passa por ele se não houver outro caminho', () => {
+  const enemyGame = buildGame({ objects: [...floorRect(0, 14, 0, 14, 0), [PAD, 6, 5, 0, 0, 0, 0, 0, 1, 1, { destino: { x: 1, y: 1, z: 0 } }]], enemies: [[2, 5, 0]], player: { x: 12, y: 10, z: 0 } });
+  const around = enemyGame.movement.findPath(enemyGame.enemies[0], { x: 10, y: 5, z: 0 }, { sameFloor: true });
+  assert.ok(around.length > 0);
+  assert.ok(!around.some(step => step.x === 6 && step.y === 5), 'contorna o teletransporte');
+  const walls = [];
+  for (let x = 0; x <= 14; x++) walls.push(['estrutura/paredes/teste#x', x, 4, 0, 0, 0, 0, 1], ['estrutura/paredes/teste#x', x, 6, 0, 0, 0, 0, 1]);
+  const corridor = buildGame({ objects: [...floorRect(0, 14, 0, 14, 0), ...walls, [PAD, 6, 5, 0, 0, 0, 0, 0, 1, 1, { destino: { x: 1, y: 1, z: 0 } }]], enemies: [[2, 5, 0]], player: { x: 12, y: 9, z: 0 } });
+  const through = corridor.movement.findPath(corridor.enemies[0], { x: 10, y: 5, z: 0 }, { sameFloor: true });
+  assert.ok(through.some(step => step.x === 6 && step.y === 5), 'sem outro caminho, passa');
+});
