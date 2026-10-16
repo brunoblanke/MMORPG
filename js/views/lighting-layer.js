@@ -5,14 +5,16 @@ import { objectIdType, togglesOnUse } from '../../shared/assets.js';
 import { itemInfo } from '../../shared/items.js';
 import { ambientLight, lightAt, PLAYER_LIGHT, VISIBLE_LIGHT } from '../../shared/lighting.js';
 
-// Escuridão por cima do mapa como no Tibia tradicional: em blocos, um nível
-// de luz por sqm (shared/lighting.js → lightAt), a partir da luz geral e das
+// Escuridão por cima do mapa como no Tibia atual: um nível de luz por sqm,
+// esticado na tela com suavização (sem blocos) e com as fontes seguindo o
+// movimento (shared/lighting.js → lightAt), a partir da luz geral e das
 // fontes de luz do andar do player (players, NPCs, criaturas e objetos com
 // Luz no gerador), cada uma no sqm em que está. Luz de item (tocha) dá um tom
 // quente. Nome e barra de vida só aparecem onde está claro o bastante
 // (VISIBLE_LIGHT).
 
-const DARK_RGB = '4, 6, 16';
+const DARK_RGB = '6, 9, 24';
+const MAX_DARK = 0.8;
 const WARM_RGB = '255, 160, 70';
 const WARM_ALPHA = 0.14;
 
@@ -40,11 +42,11 @@ export class LightingLayer {
     for (const player of gameState.players || []) {
       if (!atLevel(player)) continue;
       const radius = player.light || PLAYER_LIGHT;
-      this.sources.push({ x: Math.round(player.renderX), y: Math.round(player.renderY), radius, warm: radius > PLAYER_LIGHT });
+      this.sources.push({ x: player.renderX, y: player.renderY, radius, warm: radius > PLAYER_LIGHT });
     }
     for (const creature of [...(gameState.npcs || []), ...(gameState.enemies || [])]) {
       const radius = creature.creature ? itemInfo(creature.creature).light : 0;
-      if (radius > 0 && atLevel(creature)) this.sources.push({ x: Math.round(creature.renderX), y: Math.round(creature.renderY), radius, warm: true });
+      if (radius > 0 && atLevel(creature)) this.sources.push({ x: creature.renderX, y: creature.renderY, radius, warm: true });
     }
     for (const obj of drawables) {
       if ((obj.level !== level && !(obj.level > level && obj.level > 0)) || obj.isCreature || !obj.entity || !obj.entity.id) continue;
@@ -61,7 +63,7 @@ export class LightingLayer {
 
   isLit(entity) {
     if (!entity) return false;
-    return lightAt(Math.round(entity.renderX ?? entity.x), Math.round(entity.renderY ?? entity.y), this.ambient, this.sources) >= VISIBLE_LIGHT;
+    return lightAt(entity.renderX ?? entity.x, entity.renderY ?? entity.y, this.ambient, this.sources) >= VISIBLE_LIGHT;
   }
 
   // ================================================================================================================================================================================================================================================
@@ -74,7 +76,10 @@ export class LightingLayer {
       if (!source.warm) continue;
       const reach = source.radius + 0.5;
       const d = Math.hypot(x - source.x, y - source.y);
-      if (d < reach) warmth = Math.max(warmth, 1 - d / reach);
+      if (d < reach) {
+        const t = 1 - d / reach;
+        warmth = Math.max(warmth, t * t * (3 - 2 * t));
+      }
     }
     return warmth;
   }
@@ -83,7 +88,7 @@ export class LightingLayer {
   // draw
   // Um bloco de escuridão por sqm visível (mais escuro onde há menos luz) e,
   // onde a tocha alcança, um tom quente: montado numa imagem pequena (1 pixel
-  // por sqm) e esticada na tela sem suavizar, de uma vez só.
+  // por sqm) e esticada na tela suavizada, de uma vez só.
 
   draw(ctx, renderer) {
     const size = CONFIG.tileSize;
@@ -93,14 +98,15 @@ export class LightingLayer {
     const cols = visible.endX - startX + 1;
     const rows = visible.endY - startY + 1;
     if (cols <= 0 || rows <= 0) return;
-    const key = `${startX},${startY},${cols},${rows},${this.ambient},${this.sources.map(s => `${s.x}:${s.y}:${s.radius}:${s.warm ? 1 : 0}`).join('|')}`;
+    const key = `${startX},${startY},${cols},${rows},${this.ambient.toFixed(3)},${this.sources.map(s => `${s.x.toFixed(2)}:${s.y.toFixed(2)}:${s.radius}:${s.warm ? 1 : 0}`).join('|')}`;
     if (key !== this.key) {
       this.key = key;
       this.paint(startX, startY, cols, rows);
     }
     const base = renderer.gridToScreenWithOffset(startX, startY);
     ctx.save();
-    ctx.imageSmoothingEnabled = false;
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
     ctx.drawImage(this.canvas, 0, 0, cols, rows, base.x, base.y, cols * size, rows * size);
     ctx.restore();
   }
@@ -125,7 +131,7 @@ export class LightingLayer {
       for (let col = 0; col < cols; col++) {
         const x = startX + col;
         const y = startY + row;
-        const a1 = Math.round((1 - Math.min(1, lightAt(x, y, this.ambient, this.sources))) * 1000) / 1000;
+        const a1 = Math.round((1 - Math.min(1, lightAt(x, y, this.ambient, this.sources))) * MAX_DARK * 1000) / 1000;
         const a2 = Math.round(this.warmthAt(x, y) * WARM_ALPHA * 1000) / 1000;
         const alpha = 1 - (1 - a1) * (1 - a2);
         const i = (row * cols + col) * 4;

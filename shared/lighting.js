@@ -1,7 +1,7 @@
 // shared/lighting.js
 
-// Luz como no Tibia: dia e noite no chão (andar 0 pra cima) e escuro total
-// no subsolo. A luz geral (ambient) vai de 0 (breu) a 1 (dia claro); fontes
+// Luz como no Tibia atual: dia e noite no chão (andar 0 pra cima) e subsolo
+// bem escuro, sempre com transição suave. A luz geral (ambient) vai de 0 (breu) a 1 (dia claro); fontes
 // de luz (player, tocha, objetos com Luz no gerador) clareiam em volta, com
 // queda suave até o raio.
 
@@ -55,7 +55,10 @@ export function lightAt(x, y, ambient, sources) {
   for (const source of sources) {
     const reach = source.radius + 0.5;
     const d = Math.hypot(x - source.x, y - source.y);
-    if (d < reach) light = Math.max(light, 1 - d / reach);
+    if (d < reach) {
+      const t = 1 - d / reach;
+      light = Math.max(light, t * t * (3 - 2 * t));
+    }
   }
   return Math.min(1, light);
 }
