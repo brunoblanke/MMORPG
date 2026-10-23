@@ -3,6 +3,7 @@
 import { spriteUrl, saveProject, fetchItemInfo, fetchProjects } from './api.js';
 import { loadImage, isReady, drawAnchored, readPngFile, normalizeName, statusOf, generatePendingSheets } from './common.js';
 import { refreshProjects } from './projects.js';
+import { montarInteracoes, montarCapacidades } from './interacoes.js';
 import { fillFolderSelect, folderOf, setFolder, recipePath } from './folders.js';
 
 // Folha de objeto: uma linha com os quadros da animação, cada um com o
@@ -366,11 +367,24 @@ function renderImpact(list) {
 }
 
 // ================================================================================================================================================================================================================================================
+// renderInteractions
+// As capacidades como ferramenta e as interações do objeto (propriedades.capacidade e propriedades.interacoes).
+
+function renderInteractions() {
+  if (!Array.isArray(objects.properties.capacidade)) objects.properties.capacidade = [];
+  if (!Array.isArray(objects.properties.interacoes)) objects.properties.interacoes = [];
+  const mark = () => { objects.dirty = true; };
+  montarCapacidades(document.getElementById('objectCaps'), objects.properties.capacidade, mark);
+  montarInteracoes(document.getElementById('objectIx'), objects.properties.interacoes, mark);
+}
+
+// ================================================================================================================================================================================================================================================
 // renderProperties
 
 function renderProperties() {
   const list = document.getElementById('objectProperties');
   list.innerHTML = '';
+  renderInteractions();
   for (const property of PROPERTIES) {
     const label = document.createElement('label');
     label.className = 'checkline';
@@ -678,7 +692,8 @@ async function save() {
   const recipe = { formato, objeto: objects.slots[rows[0].key].source };
   if (objects.rotates) recipe.direcoes = Object.fromEntries(keys.map(key => [key, objects.slots[key].source]));
   else if (objects.slots[PLAIN + SECOND]) recipe.segundo = objects.slots[PLAIN + SECOND].source;
-  recipe.propriedades = objects.properties;
+  recipe.propriedades = { ...objects.properties };
+  for (const chave of ['capacidade', 'interacoes']) if (!recipe.propriedades[chave] || !recipe.propriedades[chave].length) delete recipe.propriedades[chave];
 
   try {
     const result = await saveProject(CATEGORY, folder, name, recipe, canvas.toDataURL('image/png'));

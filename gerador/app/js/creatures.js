@@ -4,6 +4,7 @@ import { saveProject, fetchProjects } from './api.js';
 import { creatureInfo, itemCategory } from './picker.js';
 import { sourceUrl, sourceLabel, loadImage, isReady, drawAnchored, readPngFile, normalizeName, statusOf, generatePendingSheets } from './common.js';
 import { refreshProjects } from './projects.js';
+import { montarInteracoes, montarCapacidades } from './interacoes.js';
 import { fillFolderSelect, folderOf, setFolder, recipePath } from './folders.js';
 import { VOCATION_LINES, SHOP_LINES, QUEST_LINES, BANK_LINES, TRAVEL_LINES } from '/shared/npcs.js';
 
@@ -51,6 +52,8 @@ const creatures = {
   buys: [],
   quests: [],
   travel: [],
+  interacoes: [],
+  capacidade: [],
   creatureTypes: []
 };
 
@@ -1093,9 +1096,13 @@ async function save() {
     },
     ...(creatures.outfit.own ? {} : { criatura: { id: creatures.outfit.id, cores: creatures.colors, addons: creatures.addons } }),
     cadaver: creatures.corpse,
-    propriedades: behaviorEl.value === 'npc'
-      ? { comportamento: 'npc', conversa: conversationValues() }
-      : { comportamento: behaviorEl.value, ...(fliesEl.value ? { voa: true } : {}), ...statValues(), ...powerValues(), loot: lootValues(), falas: voicesEl.value.split('\n').map(line => line.trim()).filter(Boolean) }
+    propriedades: {
+      ...(behaviorEl.value === 'npc'
+        ? { comportamento: 'npc', conversa: conversationValues() }
+        : { comportamento: behaviorEl.value, ...(fliesEl.value ? { voa: true } : {}), ...statValues(), ...powerValues(), loot: lootValues(), falas: voicesEl.value.split('\n').map(line => line.trim()).filter(Boolean) }),
+      ...(creatures.interacoes.length ? { interacoes: creatures.interacoes } : {}),
+      ...(creatures.capacidade.length ? { capacidade: creatures.capacidade } : {})
+    }
   };
 
   try {
@@ -1168,6 +1175,10 @@ function openRecipe(recipe) {
     nome: t.nome || '', palavras: t.palavras || '', preco: Number(t.preco) || 0, nivel: Number(t.nivel) || 0,
     destino: { x: Number.isInteger(t.destino && t.destino.x) ? t.destino.x : '', y: Number.isInteger(t.destino && t.destino.y) ? t.destino.y : '', z: Number.isInteger(t.destino && t.destino.z) ? t.destino.z : 0 }
   })) : [];
+  creatures.interacoes = Array.isArray((recipe.propriedades || {}).interacoes) ? JSON.parse(JSON.stringify(recipe.propriedades.interacoes)) : [];
+  creatures.capacidade = Array.isArray((recipe.propriedades || {}).capacidade) ? [...recipe.propriedades.capacidade] : [];
+  montarCapacidades(document.getElementById('creatureCaps'), creatures.capacidade, () => { creatures.dirty = true; });
+  montarInteracoes(document.getElementById('creatureIx'), creatures.interacoes, () => { creatures.dirty = true; });
   renderTopics();
   renderLines(talk);
   renderShop();

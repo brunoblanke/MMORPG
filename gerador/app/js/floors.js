@@ -4,6 +4,7 @@ import { spriteUrl, saveProject, fetchBorderSuggestion, fetchFloorSuggestion, fe
 import { itemCategory, showSuggestions } from './picker.js';
 import { normalizeName, statusOf } from './common.js';
 import { refreshProjects } from './projects.js';
+import { montarInteracoes, montarCapacidades } from './interacoes.js';
 import { fillFolderSelect, folderOf, setFolder, recipePath } from './folders.js';
 import { rareVariantAt, randomIndexAt, MAX_RARE } from '/shared/floor-variants.js';
 
@@ -107,6 +108,8 @@ const floors = {
   damage: 10,
   fish: [],
   worms: 0,
+  interacoes: [],
+  capacidade: [],
   dirty: false,
   saving: false
 };
@@ -711,7 +714,9 @@ async function save() {
       ...(floors.edgeBlocks ? { bordaBloqueia: true } : {}),
       ...(floors.edgeThrow ? { bordaBarraArremesso: true } : {}),
       ...(floors.fish.length ? { pescavel: floors.fish } : {}),
-      ...(floors.worms ? { minhocas: floors.worms } : {})
+      ...(floors.worms ? { minhocas: floors.worms } : {}),
+      ...(floors.interacoes.length ? { interacoes: floors.interacoes } : {}),
+      ...(floors.capacidade.length ? { capacidade: floors.capacidade } : {})
     }
   };
 
@@ -756,6 +761,10 @@ function openRecipe(recipe) {
   floors.worms = Math.min(100, Math.max(0, Math.floor(Number(props.minhocas)) || 0));
   floors.fish = Array.isArray(props.pescavel) ? props.pescavel.filter(type => typeof type === 'string') : [];
   floors.patternRandom = !!(recipe.formato && recipe.formato.padraoSorteado);
+  floors.interacoes = Array.isArray(props.interacoes) ? JSON.parse(JSON.stringify(props.interacoes)) : [];
+  floors.capacidade = Array.isArray(props.capacidade) ? [...props.capacidade] : [];
+  montarCapacidades(document.getElementById('floorCaps'), floors.capacidade, () => { floors.dirty = true; });
+  montarInteracoes(document.getElementById('floorIx'), floors.interacoes, () => { floors.dirty = true; });
   showBehavior();
   floors.path = recipePath(recipe, CATEGORY);
   setFolder(folderEl, recipe);
