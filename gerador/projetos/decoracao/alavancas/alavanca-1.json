@@ -1,7 +1,7 @@
 {
   "formato": {
-    "quadro": 32,
-    "quadros": 1
+    "quadro": 64,
+    "quadros": 8
   },
   "objeto": {
     "tibia": {
@@ -13,7 +13,16 @@
     "bloqueia": false,
     "move": false,
     "altura": false,
+    "volume": 1,
+    "passo": 1,
+    "nivelPesca": 0,
     "empilhavel": false,
+    "duasMaos": false,
+    "tipoMunicao": "",
+    "isca": "",
+    "resistencias": {},
+    "postal": false,
+    "protegePerda": false,
     "peso": 0,
     "espacos": 0,
     "atk": 0,
@@ -25,8 +34,13 @@
     "manaMin": 0,
     "manaMax": 0,
     "alimento": 0,
+    "luz": 0,
+    "duracao": 0,
+    "regenVida": 0,
+    "regenMana": 0,
     "uso": "alavanca",
-    "ativoComo": "decoracao/alavancas/alavanca-1-ligada"
+    "ativoComo": "decoracao/alavancas/alavanca-1-ligada",
+    "comecaAtivo": false
   },
   "ferramenta": "objetos",
   "grupo": "decoracao",
