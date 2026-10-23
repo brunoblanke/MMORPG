@@ -30,6 +30,14 @@ Jogo multiplayer estilo Tibia em JavaScript puro (sem framework), com editor de 
 
 - Servidor seguro (`seguranca.js`, testado em `tests/security.test.js`): `data/`, `.git`, `tests/`, `ferramentas/`, `server.js`, `package*.json`, `CLAUDE.md`, `gerador/tibia/` e qualquer caminho com ponto dão 404 na web (`caminhoBloqueado`); salvar o mapa e criar personagens de teste pedem a senha do editor (`JOGO_ADMIN_SENHA` no servidor, cabeçalho `X-Admin-Senha`; o editor pergunta uma vez por aba, `editor/js/model/admin-fetch.js`; sem a variável só a própria máquina mexe; 5 erros travam 30 s); sem CORS aberto; WebSocket com mensagem de até 16 KB, 100 msg/s (rajada 200), 10 conexões por endereço, 20 s pra entrar, 5 contas novas por hora por endereço (`JOGO_CONTAS_NOVAS_POR_HORA`) e 60 comandos por tick por player (`MAX_COMMANDS_PER_TICK`); o gerador só escuta em 127.0.0.1 (`GERADOR_HOST` muda).
 
+## Servidor (Oracle Cloud)
+
+- Jogo no ar em `http://147.15.125.27/` (IP público da instância `mmorpg`; se o jogo sumir, confirme o IP em Compute → Instances: IP efêmero pode mudar, e um IP reservado não muda). Atrás do Caddy; o Node escuta na porta 8000.
+- Acesso: SSH como `opc`, pelo Cloud Shell da Oracle (menu → Upload da chave `ssh-key-2026-10-06.key`, que fica no PC do usuário em `D:\GIT\`; `chmod 600` nela; `ssh -i ~/ssh-key-2026-10-06.key opc@147.15.125.27`). A chave e as senhas nunca vão para o chat nem para o git.
+- Pastas: código em `/home/opc/jogo`; dados (mapa, personagens, casas, senhas, log) em `/home/opc/dados`, fora do repositório e nunca tocados pelas atualizações.
+- Serviços (systemd): `jogo` (o servidor; `sudo systemctl status|restart jogo`, log: `sudo journalctl -u jogo -n 80 --no-pager`) e `jogo-atualizar.timer` (a cada minuto confere o `main` do GitHub e, se mudou, baixa, instala dependências se o lock mudou e reinicia o `jogo`: `ferramentas/atualizar-servidor.sh`). Todo push no `main` reinicia o jogo em até 1 minuto.
+- Variáveis do serviço: `JOGO_MAPA`, `JOGO_PERSONAGENS`, `JOGO_CASAS`, `JOGO_SENHAS` (em `/home/opc/dados`) e `JOGO_ADMIN_SENHA` (senha do editor, só no arquivo do serviço).
+
 ## Estrutura
 
 - `server.js` — servidor do jogo (Express + WebSocket), roda a simulação; serve o jogo e o editor (`/editor/`). Lê as folhas do gerador ao iniciar (reiniciar após mudanças no gerador). Variáveis de teste: `PORT`, `JOGO_MAPA`, `JOGO_PERSONAGENS`, `JOGO_CASAS`, `JOGO_SENHAS` (senhas dos personagens, só hash; padrão `passwords.json` ao lado dos personagens; o 1º acesso de um nome define a senha dele). O mapa ao vivo é o do servidor (`JOGO_MAPA`, padrão `data/map.json`, que fica no `.gitignore`: o repositório não tem mapa; o navegador e o editor leem de `/api/map`, o editor salva nele e baixa com `?baixar=1`, com backup diário em `backups/`); sem o arquivo na 1ª subida o servidor cria um mapa vazio.
