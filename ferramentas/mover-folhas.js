@@ -5,8 +5,8 @@
 // da receita e troca o caminho antigo pelo novo em tudo que aponta pra ele —
 // outras receitas (vendas, loot,
 // "abre como", "aceso como") e o código (shared, js, editor). O mapa ao vivo
-// fica no servidor: acrescente o par em gerador/renomeados.json, que o servidor
-// aplica nele ao subir.
+// fica no servidor: o par entra sozinho em gerador/renomeados.json (e os nomes antigos que já
+// levavam ao caminho de antes passam a levar ao novo), que o servidor aplica nele ao subir.
 //
 // Uso: node ferramentas/mover-folhas.js de para [de para …]
 //   ex.: node ferramentas/mover-folhas.js estrutura/natureza/fogueira decoracao/iluminacao/fogueira
@@ -88,6 +88,21 @@ function trocarReferencias(arquivo, pares) {
 }
 
 // ================================================================================================================================================================================================================================================
+// atualizarTabela
+// Põe os pares na tabela de nomes antigos (gerador/renomeados.json): um nome antigo que levava ao `de` passa a levar ao
+// `para`, e o próprio `de` leva ao `para`.
+
+function atualizarTabela(pares) {
+  const arquivo = path.join(RAIZ, 'gerador', 'renomeados.json');
+  const tabela = fs.existsSync(arquivo) ? JSON.parse(fs.readFileSync(arquivo, 'utf8')) : {};
+  for (const [de, para] of pares) {
+    for (const antigo of Object.keys(tabela)) if (tabela[antigo] === de) tabela[antigo] = para;
+    tabela[de] = para;
+  }
+  fs.writeFileSync(arquivo, JSON.stringify(tabela, null, 2) + '\n');
+}
+
+// ================================================================================================================================================================================================================================================
 // main
 
 function main() {
@@ -101,7 +116,8 @@ function main() {
     const trocas = trocarReferencias(arquivo, pares);
     if (trocas) console.log(`✏️  ${path.relative(RAIZ, arquivo)}: ${trocas} referência(s)`);
   }
-  console.log(`✅ ${pares.length} folha(s) movida(s)`);
+  atualizarTabela(pares);
+  console.log(`✅ ${pares.length} folha(s) movida(s); mapa: nomes antigos na tabela gerador/renomeados.json`);
 }
 
 main();

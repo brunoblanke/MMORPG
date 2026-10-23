@@ -502,8 +502,6 @@ export function objectProps(type) {
 
 export const OBJECT_USES = ['placa', 'livro', 'bau-quest', 'corda', 'pa', 'pa-cai', 'picareta', 'machete', 'foice', 'descer', 'alavanca', 'cama', 'ferramenta-corda', 'ferramenta-pa', 'ferramenta-pesca', 'ferramenta-picareta', 'ferramenta-machete', 'ferramenta-foice', 'ferramenta-chave', 'deposito', 'correio', 'teleporte'];
 
-export const AIM_TOOLS = ['ferramenta-corda', 'ferramenta-pa', 'ferramenta-pesca', 'ferramenta-picareta', 'ferramenta-machete', 'ferramenta-foice', 'ferramenta-chave'];
-
 export function objectUse(type) {
   const asset = getAsset(splitType(type).asset);
   const use = asset && asset.propriedades && asset.propriedades.uso;
