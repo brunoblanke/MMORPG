@@ -427,6 +427,7 @@ export class Simulation {
       this.enemyAI.update(enemy, player, this.enemies, now, bounds);
       updateVoice(this, enemy, player, now);
       this.powers.update(enemy, player, now);
+      this.effects.tickCreature(enemy, now);
     }
 
     for (const player of this.players) {

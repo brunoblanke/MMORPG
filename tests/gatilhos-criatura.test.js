@@ -1,0 +1,44 @@
+// tests/gatilhos-criatura.test.js
+
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { buildGame, floorRect, CREATURE } from './helpers/fixture.js';
+import { setAssets } from '../shared/assets.js';
+import { TICK_MS } from '../js/simulation.js';
+
+const fala = (gatilho, texto) => ({ gatilho: { tipo: gatilho }, condicoes: {}, efeitos: [{ tipo: 'falar', texto }] });
+
+setAssets([{
+  id: CREATURE, ferramenta: 'criaturas', grupo: 'criaturas', pasta: 'mamiferos', nome: 'teste', url: '/teste.png', quadro: 32, quadros: 1, pecas: [],
+  propriedades: { vida: 50, comportamento: 'pacifico', interacoes: [fala('ser-atingido', 'Ai!'), fala('morrer', 'Adeus'), fala('tempo', 'Tic')] }
+}]);
+
+// ================================================================================================================================================================================================================================================
+// runFor
+
+function runFor(sim, ms) {
+  const events = [];
+  const end = sim.time + ms;
+  while (sim.time < end) {
+    sim.tick(sim.time + TICK_MS);
+    events.push(...sim.drainEvents());
+  }
+  return events;
+}
+
+test('gatilho tempo: a criatura viva roda a interação a cada segundo', () => {
+  const sim = buildGame({ objects: floorRect(0, 14, 0, 14, 0), player: { x: 5, y: 5, z: 0 }, enemies: [[9, 9, 0]] });
+  const events = runFor(sim, 3000);
+  assert.ok(events.filter(e => e.type === 'speech' && e.text === 'Tic').length >= 2);
+});
+
+test('gatilho ser-atingido e morrer: fala ao levar o golpe e ao morrer', () => {
+  const sim = buildGame({ objects: floorRect(0, 14, 0, 14, 0), player: { x: 5, y: 5, z: 0 }, enemies: [[9, 9, 0]] });
+  const enemy = sim.enemies[0];
+  sim.combat.applyDamage(sim.player, enemy, 5, sim.time, true);
+  assert.ok(sim.drainEvents().some(e => e.type === 'speech' && e.text === 'Ai!'));
+  sim.combat.applyDamage(sim.player, enemy, 500, sim.time, true);
+  const events = runFor(sim, TICK_MS * 2);
+  assert.ok(events.some(e => e.type === 'speech' && e.text === 'Adeus'));
+  assert.equal(events.some(e => e.type === 'speech' && e.text === 'Ai!'), false);
+});

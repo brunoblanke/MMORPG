@@ -117,6 +117,7 @@ export class LifeCycleController {
   handleEnemyDeath(enemy, now) {
     const sim = this.sim;
     const corpse = this.createCorpse(enemy, 'enemy_corpse', now);
+    sim.effects.trigger(enemy, 'morrer', this.topAttacker(enemy));
     if (!enemy.summonedBy) {
       sim.inventory.fillCorpse(corpse, enemy);
       this.shareXp(enemy);
@@ -133,6 +134,20 @@ export class LifeCycleController {
     }
 
     if (!enemy.summonedBy) sim.schedule(now + (creaturePowers(enemy.creature).respawn || CONFIG.enemyRespawnTime), () => this.respawnEnemy(enemy));
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // topAttacker
+  // O player que mais tirou vida da criatura e ainda está no jogo, ou null.
+
+  topAttacker(enemy) {
+    let best = null;
+    let most = 0;
+    for (const [id, amount] of enemy.damageBy || []) {
+      const player = this.sim.players.find(p => p.id === id);
+      if (player && amount > most) { best = player; most = amount; }
+    }
+    return best;
   }
 
   // ================================================================================================================================================================================================================================================

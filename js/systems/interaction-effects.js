@@ -4,6 +4,9 @@ import { getAsset, splitType, objectIdType } from '../../shared/assets.js';
 import { newItem } from '../../shared/items.js';
 import { isValidFloor } from '../../shared/constants.js';
 import { countInBag, giveItem } from './trade.js';
+import { interacoesDe } from '../../shared/ficha.js';
+
+const TEMPO_MS = 1000;
 
 // Os efeitos das interações escritas na ficha (gerador → Interações): o jogo só sabe o vocabulário (shared/ficha.js →
 // ESQUEMA_EFEITOS) e age em quem a interação manda. Contexto de cada execução:
@@ -102,6 +105,28 @@ export class InteractionEffects {
     } else if (effect.tipo === 'remover' && target && sim.objectsById.has(target.id)) {
       sim.interactions.cut(target, effect.rebroteMs);
     }
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // trigger
+  // Roda as interações da criatura com o gatilho (ser-atingido, morrer, tempo). actor = quem bateu ou matou.
+
+  trigger(creature, gatilho, actor = null) {
+    if (!creature || !creature.creature || creature.pet) return;
+    const tile = { x: creature.x, y: creature.y, z: creature.z || 0 };
+    for (const interaction of interacoesDe(creature.creature, gatilho)) {
+      if (interaction.propria) this.run(interaction, { actor, target: creature, tile, id: creature.id });
+    }
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // tickCreature
+  // O gatilho tempo: uma vez por segundo por criatura viva.
+
+  tickCreature(creature, now) {
+    if (now - (creature.lastTimeTrigger || 0) < TEMPO_MS) return;
+    creature.lastTimeTrigger = now;
+    this.trigger(creature, 'tempo');
   }
 
   // ================================================================================================================================================================================================================================================
