@@ -27,7 +27,8 @@
     "alimento": 0,
     "duracao": 450,
     "regenVida": 6,
-    "regenMana": 24
+    "regenMana": 24,
+    "slot": "anel"
   },
   "ferramenta": "objetos",
   "grupo": "itens",

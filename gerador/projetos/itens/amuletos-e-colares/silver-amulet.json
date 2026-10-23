@@ -27,7 +27,8 @@
     "alimento": 0,
     "resistencias": {
       "poison": 10
-    }
+    },
+    "slot": "amuleto"
   },
   "ferramenta": "objetos",
   "grupo": "itens",

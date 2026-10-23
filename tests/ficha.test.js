@@ -128,3 +128,33 @@ test('amuleto da perda e anel de cura entram em bonus; comida e poção em conso
   assert.ok(anel.tracos.bonus.regen.hp > 0);
   assert.ok(fichaDe('itens/comidas/bread').tracos.consome.alimento > 0);
 });
+
+test('a receita manda mais que a pasta: espaço, skill, transição e colisão de parede escolhidos na ficha', async () => {
+  const { setAssets: usar } = await import('../shared/assets.js');
+  const { itemInfo } = await import('../shared/items.js');
+  const { isStairsType, isHoleType, blocksThrow, supportsItems } = await import('../shared/assets.js');
+  const base = (id, extra, ferramenta = 'objetos') => {
+    const [grupo, pasta, nome] = id.split('/');
+    return { id, ferramenta, grupo, pasta, nome, url: '/x.png', quadro: 32, quadros: 1, pecas: [], propriedades: extra };
+  };
+  usar([
+    base('itens/espadas/capacete-esquisito', { slot: 'cabeca', skillArma: 'nenhuma', def: 2, move: true }),
+    base('itens/espadas/espada-comum', { move: true }),
+    base('estrutura/escadas/escada-que-nao-e', { transicao: 'nenhuma' }),
+    base('estrutura/entradas/virou-escada', { transicao: 'escada' }),
+    base('decoracao/moveis/buraco-na-mesa', { transicao: 'buraco' }),
+    { ...base('estrutura/paredes/parede-baixa', { colisao: { arremesso: false, apoia: true } }, 'paredes'), pecas: ['x'] },
+    { ...base('estrutura/cercas/cerca-alta', { colisao: { arremesso: true, apoia: false } }, 'paredes'), pecas: ['x'] }
+  ]);
+  assert.equal(itemInfo('itens/espadas/capacete-esquisito').slot, 'cabeca');
+  assert.equal(itemInfo('itens/espadas/capacete-esquisito').weaponSkill, null);
+  assert.equal(itemInfo('itens/espadas/espada-comum').slot, 'arma');
+  assert.equal(fichaDe('itens/espadas/capacete-esquisito').tracos.equipavel.slot, 'cabeca');
+  assert.equal(isStairsType('estrutura/escadas/escada-que-nao-e'), false);
+  assert.equal(isStairsType('estrutura/entradas/virou-escada'), true);
+  assert.equal(isHoleType('decoracao/moveis/buraco-na-mesa'), true);
+  assert.equal(blocksThrow('estrutura/paredes/parede-baixa#x'), false);
+  assert.equal(supportsItems('estrutura/paredes/parede-baixa#x'), true);
+  assert.equal(blocksThrow('estrutura/cercas/cerca-alta#x'), true);
+  setAssets(sprites);
+});

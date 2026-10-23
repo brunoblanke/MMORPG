@@ -34,7 +34,8 @@
     "regenMana": 0,
     "uso": "",
     "ativoComo": "",
-    "comecaAtivo": false
+    "comecaAtivo": false,
+    "slot": "escudo"
   },
   "ferramenta": "objetos",
   "grupo": "itens",

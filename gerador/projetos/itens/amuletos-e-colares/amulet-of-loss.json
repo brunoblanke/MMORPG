@@ -40,7 +40,8 @@
     "regenMana": 0,
     "uso": "",
     "ativoComo": "",
-    "comecaAtivo": false
+    "comecaAtivo": false,
+    "slot": "amuleto"
   },
   "ferramenta": "objetos",
   "grupo": "itens",

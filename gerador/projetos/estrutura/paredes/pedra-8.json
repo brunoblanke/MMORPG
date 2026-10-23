@@ -50,5 +50,11 @@
   "ferramenta": "paredes",
   "grupo": "estrutura",
   "pasta": "paredes",
-  "nome": "pedra-8"
+  "nome": "pedra-8",
+  "propriedades": {
+    "colisao": {
+      "arremesso": true,
+      "apoia": false
+    }
+  }
 }

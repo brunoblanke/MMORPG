@@ -368,7 +368,8 @@ export function blocksThrow(type) {
   const { asset, piece } = splitType(type);
   if (asset === MAGIC_WALL) return true;
   const sheet = getAsset(asset);
-  const isWall = sheet ? sheet.ferramenta === 'paredes' && !LOW_FOLDERS.some(folder => asset.startsWith(folder)) : asset.startsWith(WALL_FOLDER);
+  const explicit = sheet && sheet.propriedades && sheet.propriedades.colisao && typeof sheet.propriedades.colisao.arremesso === 'boolean' ? sheet.propriedades.colisao.arremesso : null;
+  const isWall = sheet ? sheet.ferramenta === 'paredes' && (explicit === null ? !LOW_FOLDERS.some(folder => asset.startsWith(folder)) : explicit) : asset.startsWith(WALL_FOLDER);
   const base = String(piece || '');
   if (!isWall || (base && !WALL_PIECES.includes(base))) return false;
   return !/^mureta-|^janela|^arco|^passagem|^porta-.*-aberta$/.test(base);
@@ -380,7 +381,9 @@ export function blocksThrow(type) {
 
 export function supportsItems(type) {
   const { asset, piece } = splitType(type);
-  return asset.startsWith(COUNTER_FOLDER) && wallProps(piece)[1];
+  const sheet = getAsset(asset);
+  const explicit = sheet && sheet.propriedades && sheet.propriedades.colisao && typeof sheet.propriedades.colisao.apoia === 'boolean' ? sheet.propriedades.colisao.apoia : null;
+  return (explicit === null ? asset.startsWith(COUNTER_FOLDER) : explicit) && wallProps(piece)[1];
 }
 
 // ================================================================================================================================================================================================================================================
@@ -411,14 +414,27 @@ export function stairKind(type) {
 // não são buraco (o monte só vira quando a pá abre; o bueiro se usa).
 
 export function isFloorType(type) {
-  return splitType(type).asset.startsWith(FLOOR_FOLDER);
+  const sheet = getAsset(splitType(type).asset);
+  return sheet ? sheet.ferramenta === 'pisos' : splitType(type).asset.startsWith(FLOOR_FOLDER);
+}
+
+// A receita pode dizer o que o objeto é (gerador → Objetos → Transição: escada, buraco ou nenhuma); sem isso vale
+// a regra antiga, pela pasta e pelo Uso.
+function explicitTransition(type) {
+  const sheet = getAsset(splitType(type).asset);
+  const value = sheet && sheet.propriedades && sheet.propriedades.transicao;
+  return ['escada', 'buraco', 'nenhuma'].includes(value) ? value : null;
 }
 
 export function isStairsType(type) {
+  const explicit = explicitTransition(type);
+  if (explicit) return explicit === 'escada';
   return splitType(type).asset.startsWith(STAIRS_FOLDER) && objectUse(type) !== 'corda';
 }
 
 export function isHoleType(type) {
+  const explicit = explicitTransition(type);
+  if (explicit) return explicit === 'buraco';
   return splitType(type).asset.startsWith(HOLE_FOLDER) && !['pa', 'pa-cai', 'descer'].includes(objectUse(type));
 }
 

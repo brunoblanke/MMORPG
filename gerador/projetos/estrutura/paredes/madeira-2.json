@@ -126,5 +126,11 @@
   "ferramenta": "paredes",
   "grupo": "estrutura",
   "pasta": "paredes",
-  "nome": "madeira-2"
+  "nome": "madeira-2",
+  "propriedades": {
+    "colisao": {
+      "arremesso": true,
+      "apoia": false
+    }
+  }
 }

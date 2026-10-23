@@ -19,7 +19,8 @@
     "atk": 0,
     "def": 8,
     "ml": 0,
-    "speed": 0
+    "speed": 0,
+    "slot": "pernas"
   },
   "ferramenta": "objetos",
   "grupo": "itens",

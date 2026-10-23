@@ -320,6 +320,10 @@
       <div class="field">
         <label for="wallVolume">Volume das peças que têm altura (1 comum; balcão ou muro mais alto vale 2…: item em cima da peça sobe esse tanto)</label>
         <input type="number" id="wallVolume" min="1" max="3" step="1" value="1" />
+        <label for="wallThrow">Peça fechada barra o arremesso e o ataque de longe</label>
+        <select id="wallThrow"><option value="">Padrão da pasta</option><option value="sim">Barra</option><option value="nao">Deixa passar</option></select>
+        <label for="wallSupport">Peça fechada apoia item (balcão: item pousa em cima)</label>
+        <select id="wallSupport"><option value="">Padrão da pasta</option><option value="sim">Apoia</option><option value="nao">Não apoia</option></select>
       </div>
       <div class="slots wall-slots" id="wallSlots"></div>
     </section>

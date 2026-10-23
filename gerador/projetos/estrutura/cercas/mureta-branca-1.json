@@ -62,5 +62,11 @@
   "ferramenta": "paredes",
   "grupo": "estrutura",
   "pasta": "cercas",
-  "nome": "mureta-branca-1"
+  "nome": "mureta-branca-1",
+  "propriedades": {
+    "colisao": {
+      "arremesso": false,
+      "apoia": false
+    }
+  }
 }

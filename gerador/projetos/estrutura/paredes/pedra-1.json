@@ -152,5 +152,11 @@
   "ferramenta": "paredes",
   "grupo": "estrutura",
   "pasta": "paredes",
-  "nome": "pedra-1"
+  "nome": "pedra-1",
+  "propriedades": {
+    "colisao": {
+      "arremesso": true,
+      "apoia": false
+    }
+  }
 }

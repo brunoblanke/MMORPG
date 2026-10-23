@@ -88,5 +88,11 @@
   "ferramenta": "paredes",
   "grupo": "estrutura",
   "pasta": "cercas",
-  "nome": "parapeito-madeira-1"
+  "nome": "parapeito-madeira-1",
+  "propriedades": {
+    "colisao": {
+      "arremesso": false,
+      "apoia": false
+    }
+  }
 }

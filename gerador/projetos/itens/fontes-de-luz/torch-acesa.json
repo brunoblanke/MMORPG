@@ -26,7 +26,8 @@
     "manaMax": 0,
     "alimento": 0,
     "luz": 6,
-    "duracao": 1200
+    "duracao": 1200,
+    "slot": "escudo"
   },
   "ferramenta": "objetos",
   "grupo": "itens",

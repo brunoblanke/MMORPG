@@ -41,7 +41,8 @@
     "regenMana": 0,
     "uso": "",
     "ativoComo": "",
-    "comecaAtivo": false
+    "comecaAtivo": false,
+    "slot": "municao"
   },
   "ferramenta": "objetos",
   "grupo": "itens",

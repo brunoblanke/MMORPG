@@ -19,7 +19,8 @@
     "atk": 0,
     "def": 13,
     "ml": 0,
-    "speed": 0
+    "speed": 0,
+    "slot": "corpo"
   },
   "ferramenta": "objetos",
   "grupo": "itens",

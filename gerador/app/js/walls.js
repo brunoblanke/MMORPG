@@ -116,6 +116,8 @@ const walls = {
 const status = statusOf('wallStatus');
 const nameEl = document.getElementById('wallName');
 const volumeEl = document.getElementById('wallVolume');
+const throwEl = document.getElementById('wallThrow');
+const supportEl = document.getElementById('wallSupport');
 const folderEl = document.getElementById('wallFolder');
 const slotsEl = document.getElementById('wallSlots');
 const roomCanvas = document.getElementById('wallPreview');
@@ -126,6 +128,8 @@ const sheetCanvas = document.getElementById('wallSheet');
 
 function initWalls() {
   volumeEl.addEventListener('input', () => { walls.dirty = true; });
+  throwEl.addEventListener('change', () => { walls.dirty = true; });
+  supportEl.addEventListener('change', () => { walls.dirty = true; });
   renderSlots();
   document.getElementById('wallSaveForm').addEventListener('submit', (evt) => {
     evt.preventDefault();
@@ -509,7 +513,8 @@ async function save() {
   composeSheet(canvas);
   const recipe = {
     formato: { quadro: SIZE, colunas: COLUMNS, pecas: PIECES.slice(0, count).map(piece => piece.key), ...(Number(volumeEl.value) > 1 ? { volume: Math.min(3, Math.floor(Number(volumeEl.value))) } : {}) },
-    pecas: walls.slots
+    pecas: walls.slots,
+    ...(throwEl.value || supportEl.value ? { propriedades: { colisao: { ...(throwEl.value ? { arremesso: throwEl.value === 'sim' } : {}), ...(supportEl.value ? { apoia: supportEl.value === 'sim' } : {}) } } } : {})
   };
 
   try {
@@ -543,6 +548,9 @@ function openRecipe(recipe) {
   }
   walls.selected = 'x';
   volumeEl.value = Math.max(1, Math.floor(Number((recipe.formato || {}).volume)) || 1);
+  const solid = (recipe.propriedades || {}).colisao || {};
+  throwEl.value = typeof solid.arremesso === 'boolean' ? (solid.arremesso ? 'sim' : 'nao') : '';
+  supportEl.value = typeof solid.apoia === 'boolean' ? (solid.apoia ? 'sim' : 'nao') : '';
   walls.name = recipe.nome || '';
   nameEl.value = walls.name;
   walls.path = recipePath(recipe, CATEGORY);

@@ -34,7 +34,9 @@
     "regenMana": 0,
     "uso": "ferramenta-machete",
     "ativoComo": "",
-    "comecaAtivo": false
+    "comecaAtivo": false,
+    "slot": "arma",
+    "skillArma": "sword"
   },
   "ferramenta": "objetos",
   "grupo": "itens",

@@ -33,7 +33,8 @@
       "ice": 5,
       "holy": 5,
       "death": 5
-    }
+    },
+    "slot": "amuleto"
   },
   "ferramenta": "objetos",
   "grupo": "itens",

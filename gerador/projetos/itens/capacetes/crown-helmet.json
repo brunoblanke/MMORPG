@@ -19,7 +19,8 @@
     "atk": 0,
     "def": 7,
     "ml": 0,
-    "speed": 0
+    "speed": 0,
+    "slot": "cabeca"
   },
   "ferramenta": "objetos",
   "grupo": "itens",

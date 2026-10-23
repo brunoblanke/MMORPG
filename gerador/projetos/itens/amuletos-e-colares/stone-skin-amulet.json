@@ -28,7 +28,8 @@
     "resistencias": {
       "physical": 80,
       "death": 80
-    }
+    },
+    "slot": "amuleto"
   },
   "ferramenta": "objetos",
   "grupo": "itens",

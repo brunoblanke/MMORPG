@@ -39,7 +39,8 @@
     "regenMana": 0,
     "uso": "",
     "ativoComo": "",
-    "comecaAtivo": false
+    "comecaAtivo": false,
+    "transicao": "buraco"
   },
   "ferramenta": "objetos",
   "grupo": "estrutura",

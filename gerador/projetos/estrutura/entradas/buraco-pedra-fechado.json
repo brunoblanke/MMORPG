@@ -23,7 +23,8 @@
     "manaMax": 0,
     "alimento": 0,
     "uso": "pa",
-    "ativoComo": "estrutura/entradas/buraco-pedra-aberto"
+    "ativoComo": "estrutura/entradas/buraco-pedra-aberto",
+    "transicao": "nenhuma"
   },
   "ferramenta": "objetos",
   "grupo": "estrutura",

@@ -72,5 +72,11 @@
   "ferramenta": "paredes",
   "grupo": "estrutura",
   "pasta": "cercas",
-  "nome": "cerca-2"
+  "nome": "cerca-2",
+  "propriedades": {
+    "colisao": {
+      "arremesso": false,
+      "apoia": false
+    }
+  }
 }

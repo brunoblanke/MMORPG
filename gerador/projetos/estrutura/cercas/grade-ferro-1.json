@@ -42,5 +42,11 @@
   "ferramenta": "paredes",
   "grupo": "estrutura",
   "pasta": "cercas",
-  "nome": "grade-ferro-1"
+  "nome": "grade-ferro-1",
+  "propriedades": {
+    "colisao": {
+      "arremesso": false,
+      "apoia": false
+    }
+  }
 }

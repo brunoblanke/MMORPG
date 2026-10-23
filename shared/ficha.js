@@ -389,3 +389,22 @@ export function abreParaOAndarDeBaixo(type) {
   const ficha = fichaDe(type);
   return !!ficha && ficha.interacoes.some(i => i.efeitos.some(e => e.tipo === 'abrir-buraco' || (e.tipo === 'trocar-andar' && e.sentido === 'baixo')));
 }
+
+// ================================================================================================================================================================================================================================================
+// tipoDeDados
+// O que o editor pergunta pra esse objeto em cada posição do mapa (✎): 'texto', 'destino', 'alvos', 'itens', 'porta'
+// (chave, nível e quest) ou 'chave'; null se não há nada a preencher. Sai das interações e dos traços, não da pasta.
+
+export function tipoDeDados(type) {
+  const ficha = fichaDe(type);
+  if (!ficha) return null;
+  if (doorState(type)) return 'porta';
+  const de = new Set(ficha.interacoes.flatMap(i => i.efeitos.map(e => e.de)).filter(Boolean));
+  if (de.has('dados.texto')) return 'texto';
+  if (de.has('dados.destino')) return 'destino';
+  if (de.has('dados.alvos')) return 'alvos';
+  if (de.has('dados.itens')) return 'itens';
+  if (ficha.tracos.capacidade && ficha.tracos.capacidade.includes('abrir')) return 'chave';
+  if (ficha.tracos.container) return 'itens';
+  return null;
+}

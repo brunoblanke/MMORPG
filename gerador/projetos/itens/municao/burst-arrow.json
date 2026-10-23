@@ -31,7 +31,9 @@
       "elemento": "physical",
       "raio": 1,
       "efeito": "explosion"
-    }
+    },
+    "slot": "municao",
+    "skillArma": "distance"
   },
   "ferramenta": "objetos",
   "grupo": "itens",

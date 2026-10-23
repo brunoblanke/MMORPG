@@ -25,7 +25,9 @@
     "manaMin": 0,
     "manaMax": 0,
     "alimento": 0,
-    "duasMaos": true
+    "duasMaos": true,
+    "slot": "arma",
+    "skillArma": "distance"
   },
   "ferramenta": "objetos",
   "grupo": "itens",

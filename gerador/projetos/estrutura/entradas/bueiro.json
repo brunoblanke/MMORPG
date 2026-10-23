@@ -26,7 +26,8 @@
     "manaMax": 0,
     "alimento": 0,
     "uso": "descer",
-    "ativoComo": ""
+    "ativoComo": "",
+    "transicao": "nenhuma"
   },
   "ferramenta": "objetos",
   "grupo": "estrutura",

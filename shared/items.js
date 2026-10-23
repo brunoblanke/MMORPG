@@ -61,6 +61,10 @@ export const REGEN_MANA = 1;
 export const SLEEP_REGEN_FACTOR = 4;
 
 // Skill que o atk de cada tipo de arma soma (o resto: fist).
+// Valores que a receita pode escolher (Espaço do inventário e Skill da arma, no gerador); sem escolha, vale o padrão da pasta.
+export const SLOTS = ['cabeca', 'corpo', 'escudo', 'pernas', 'pes', 'arma', 'municao', 'amuleto', 'anel', 'mochila'];
+export const WEAPON_SKILLS = ['sword', 'axe', 'club', 'distance', 'magic', 'fist'];
+
 const SKILL_BY_WEAPON_FOLDER = {
   espadas: 'sword', machados: 'axe', clavas: 'club', distancia: 'distance', municao: 'distance',
   rods: 'magic', wands: 'magic', 'wands-e-rods-antigas': 'magic', punhos: 'fist'
@@ -101,7 +105,7 @@ export function itemInfo(type) {
   const folder = asset ? asset.pasta : null;
   const weight = Number(props.peso);
   const size = Number(props.espacos);
-  const slot = SLOT_BY_FOLDER[folder] || null;
+  const slot = SLOTS.includes(props.slot) ? props.slot : (props.slot === 'nenhum' ? null : SLOT_BY_FOLDER[folder] || null);
   const containerSize = size > 0 ? Math.floor(size) : (folder === 'recipientes' ? DEFAULT_CONTAINER_SIZE : 0);
   return {
     name: displayName(type),
@@ -121,7 +125,7 @@ export function itemInfo(type) {
     resist: resistOf(props),
     bait: typeof props.isca === 'string' ? props.isca : '',
     fishLevel: bonusValue(props.nivelPesca),
-    weaponSkill: SKILL_BY_WEAPON_FOLDER[folder] || null,
+    weaponSkill: WEAPON_SKILLS.includes(props.skillArma) ? props.skillArma : (props.skillArma === 'nenhuma' ? null : SKILL_BY_WEAPON_FOLDER[folder] || null),
     twoHanded: !!props.duasMaos,
     ammoType: typeof props.tipoMunicao === 'string' ? props.tipoMunicao : '',
     postal: !!props.postal,

@@ -21,7 +21,8 @@
     "vidaMax": 0,
     "manaMin": 0,
     "manaMax": 0,
-    "alimento": 0
+    "alimento": 0,
+    "transicao": "buraco"
   },
   "ferramenta": "objetos",
   "grupo": "estrutura",

@@ -19,7 +19,8 @@
     "atk": 0,
     "def": 0,
     "ml": 0,
-    "escada": "reta"
+    "escada": "reta",
+    "transicao": "escada"
   },
   "ferramenta": "objetos",
   "grupo": "estrutura",

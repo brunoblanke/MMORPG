@@ -1,6 +1,7 @@
 // js/view/forms.js
 
 import { getAsset, listAssets, displayName, objectUse, objectDirections, objectDirection, rotateType, doorState } from '../../../shared/assets.js';
+import { tipoDeDados } from '../../../shared/ficha.js';
 import { state } from '../model/state.js';
 import { scheduleRender } from './canvas-renderer.js';
 import { updateStats } from './tools-panel.js';
@@ -86,14 +87,7 @@ function selectedCell() {
 const EDIT_TITLES = { texto: 'Escrever o texto', destino: 'Escolher o destino', itens: 'Escolher os itens', porta: 'Regras da porta', chave: 'Número da chave', alvos: 'Escolher os alvos' };
 
 function editableKind(type) {
-  const use = objectUse(type);
-  if (use === 'placa' || use === 'livro') return 'texto';
-  if (use === 'teleporte') return 'destino';
-  if (doorState(type)) return 'porta';
-  if (use === 'ferramenta-chave') return 'chave';
-  if (use === 'alavanca') return 'alvos';
-  if (use === 'bau-quest' || itemInfo(type).size > 0) return 'itens';
-  return null;
+  return tipoDeDados(type);
 }
 
 // ================================================================================================================================================================================================================================================

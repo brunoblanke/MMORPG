@@ -88,5 +88,11 @@
   "ferramenta": "paredes",
   "grupo": "estrutura",
   "pasta": "cercas",
-  "nome": "parapeirto-ferro-1"
+  "nome": "parapeirto-ferro-1",
+  "propriedades": {
+    "colisao": {
+      "arremesso": false,
+      "apoia": false
+    }
+  }
 }

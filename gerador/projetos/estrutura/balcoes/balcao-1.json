@@ -118,5 +118,11 @@
   "ferramenta": "paredes",
   "grupo": "estrutura",
   "pasta": "balcoes",
-  "nome": "balcao-1"
+  "nome": "balcao-1",
+  "propriedades": {
+    "colisao": {
+      "arremesso": false,
+      "apoia": true
+    }
+  }
 }

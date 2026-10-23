@@ -33,7 +33,8 @@
       "ice": 20,
       "holy": 20,
       "death": 20
-    }
+    },
+    "slot": "anel"
   },
   "ferramenta": "objetos",
   "grupo": "itens",

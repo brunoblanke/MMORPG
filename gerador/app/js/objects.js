@@ -97,6 +97,12 @@ const PROPERTIES = [
   { key: 'protegePerda', label: 'Amuleto da perda: equipado, nada cai ao morrer (some na morte; não vale com caveira vermelha ou preta)' }
 ];
 
+const CHOICES = [
+  ['slot', 'Espaço do inventário (vazio = o da pasta)', [['', 'Padrão da pasta'], ['nenhum', 'Nenhum'], ['cabeca', 'Cabeça'], ['corpo', 'Corpo'], ['escudo', 'Escudo'], ['pernas', 'Pernas'], ['pes', 'Pés'], ['arma', 'Arma'], ['municao', 'Munição'], ['amuleto', 'Amuleto'], ['anel', 'Anel'], ['mochila', 'Mochila']]],
+  ['skillArma', 'Skill da arma (vazio = o da pasta)', [['', 'Padrão da pasta'], ['nenhuma', 'Nenhuma'], ['sword', 'Sword'], ['axe', 'Axe'], ['club', 'Club'], ['distance', 'Distance'], ['magic', 'Magic'], ['fist', 'Fist']]],
+  ['transicao', 'Transição (vazio = a regra da pasta e do Uso)', [['', 'Padrão'], ['nenhuma', 'Nenhuma'], ['escada', 'Escada'], ['buraco', 'Buraco']]]
+];
+
 const DIRECTIONS = [['norte', 'Norte'], ['leste', 'Leste'], ['sul', 'Sul'], ['oeste', 'Oeste']];
 const PLAIN = 'objeto';
 const SECOND = '-2';
@@ -412,6 +418,21 @@ function renderProperties() {
     objects.properties.tipoMunicao = ammoSelect.value;
     objects.dirty = true;
   };
+  for (const [chave, rotulo, opcoes] of CHOICES) {
+    const label = document.createElement('label');
+    label.className = 'numberline';
+    const select = document.createElement('select');
+    select.id = `objectProp-${chave}`;
+    select.innerHTML = opcoes.map(([value, text]) => `<option value="${value}">${text}</option>`).join('');
+    select.value = objects.properties[chave] || '';
+    select.onchange = () => {
+      if (select.value) objects.properties[chave] = select.value;
+      else delete objects.properties[chave];
+      objects.dirty = true;
+    };
+    label.append(rotulo, select);
+    list.appendChild(label);
+  }
   const useLabel = document.createElement('label');
   useLabel.className = 'numberline';
   const useSelect = document.createElement('select');

@@ -18,7 +18,8 @@
     "espacos": 0,
     "atk": 0,
     "def": 0,
-    "ml": 0
+    "ml": 0,
+    "transicao": "buraco"
   },
   "ferramenta": "objetos",
   "grupo": "estrutura",

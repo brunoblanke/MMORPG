@@ -34,7 +34,9 @@
     "regenMana": 0,
     "uso": "",
     "ativoComo": "",
-    "comecaAtivo": false
+    "comecaAtivo": false,
+    "slot": "arma",
+    "skillArma": "sword"
   },
   "ferramenta": "objetos",
   "grupo": "itens",

@@ -30,7 +30,9 @@
       "tipo": "veneno",
       "dano": 3,
       "ticks": 6
-    }
+    },
+    "slot": "municao",
+    "skillArma": "distance"
   },
   "ferramenta": "objetos",
   "grupo": "itens",

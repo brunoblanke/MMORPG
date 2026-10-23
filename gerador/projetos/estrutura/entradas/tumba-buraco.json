@@ -30,7 +30,8 @@
     "regenVida": 0,
     "regenMana": 0,
     "uso": "pa-cai",
-    "ativoComo": ""
+    "ativoComo": "",
+    "transicao": "nenhuma"
   },
   "ferramenta": "objetos",
   "grupo": "estrutura",

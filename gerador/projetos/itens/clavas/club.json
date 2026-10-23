@@ -30,7 +30,9 @@
     "regenVida": 0,
     "regenMana": 0,
     "uso": "",
-    "ativoComo": ""
+    "ativoComo": "",
+    "slot": "arma",
+    "skillArma": "club"
   },
   "ferramenta": "objetos",
   "grupo": "itens",

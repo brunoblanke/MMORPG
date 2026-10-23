@@ -30,7 +30,8 @@
     "regenVida": 0,
     "regenMana": 0,
     "uso": "",
-    "ativoComo": ""
+    "ativoComo": "",
+    "slot": "corpo"
   },
   "ferramenta": "objetos",
   "grupo": "itens",

@@ -19,7 +19,8 @@
     "espacos": 8,
     "atk": 0,
     "def": 0,
-    "ml": 0
+    "ml": 0,
+    "slot": "mochila"
   },
   "ferramenta": "objetos",
   "grupo": "itens",

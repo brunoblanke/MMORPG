@@ -7,7 +7,7 @@ const path = require('path');
 // lerSprites
 // Lista das folhas (o que /api/sprites devolve).
 
-function lerSprites(raiz = path.join(__dirname, '..')) {
+function lerSprites(raiz = path.join(__dirname, '..'), { todas = false } = {}) {
   const PASTA_PROJETOS = path.join(raiz, 'gerador', 'projetos');
   const PASTA_SAIDA = path.join(raiz, 'gerador', 'saida');
   const TAXONOMIA_PATH = path.join(raiz, 'gerador', 'taxonomia.json');
@@ -21,7 +21,7 @@ function lerSprites(raiz = path.join(__dirname, '..')) {
         if (!fs.existsSync(dir)) continue;
         for (const arquivo of fs.readdirSync(dir).filter(nome => nome.endsWith('.json')).sort()) {
           const nome = arquivo.slice(0, -5);
-          if (!fs.existsSync(path.join(PASTA_SAIDA, relativa, `${nome}.png`))) continue;
+          if (!todas && !fs.existsSync(path.join(PASTA_SAIDA, relativa, `${nome}.png`))) continue;
           const receita = JSON.parse(fs.readFileSync(path.join(dir, arquivo), 'utf8'));
           sprites.push(descreverSprite(`${relativa}/${nome}`, grupo, pasta, nome, receita));
         }
