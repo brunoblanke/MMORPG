@@ -18,7 +18,7 @@ setAssets([
   asset(BAG, { move: true, peso: 10, espacos: 4 }),
   ...SPELL_FOODS.map(id => asset(id, { move: true, peso: 5, alimento: 100 })),
   asset(CREATURE, { vida: 500, ataque: 10 }),
-  asset(RAT, { vida: 60, ataque: 10 })
+  asset(RAT, { vida: 60, ataque: 300 })
 ]);
 
 // ================================================================================================================================================================================================================================================
@@ -109,7 +109,7 @@ test('invocada ataca o alvo do dono, não ataca o dono e some quando ele morre',
   game.player.target = foe;
   const hp = foe.currentHp;
   const mine = game.player.currentHp;
-  run(game, 6000);
+  run(game, 12000);
   assert.ok(foe.currentHp < hp, 'a invocada feriu o alvo');
   game.player.currentHp = 0;
   run(game, 200);

@@ -26,7 +26,7 @@ export const GATILHOS = ['clicar', 'capacidade', 'pisar', 'falar', 'ser-atingido
 export const CAPACIDADES = ['cavar', 'quebrar', 'cortar', 'colher', 'puxar', 'pescar', 'abrir'];
 
 export const EFEITOS = [
-  'alternar-estado', 'definir-estado', 'alimentar', 'curar', 'abrir-buraco', 'cair', 'remover', 'trocar-andar', 'teletransportar', 'dar-itens', 'gastar-item', 'soltar-item',
+  'alternar-estado', 'definir-estado', 'alimentar', 'curar', 'puxar-de-baixo', 'abrir-buraco', 'cair', 'remover', 'trocar-andar', 'teletransportar', 'dar-itens', 'gastar-item', 'soltar-item',
   'mostrar-texto', 'abrir-deposito', 'receber-carta', 'dano', 'estado-de-dano', 'deitar', 'acionar-alvos', 'trancar', 'treinar-skill', 'efeito-visual', 'conversar'
 ];
 
@@ -38,6 +38,14 @@ const CAPACIDADE_DA_FERRAMENTA = {
   'ferramenta-pa': ['cavar'], 'ferramenta-picareta': ['quebrar', 'cavar'], 'ferramenta-machete': ['cortar'], 'ferramenta-foice': ['colher'],
   'ferramenta-corda': ['puxar'], 'ferramenta-pesca': ['pescar'], 'ferramenta-chave': ['abrir']
 };
+
+// ================================================================================================================================================================================================================================================
+// capacidadesDe
+// As capacidades de uma ferramenta pelo Uso dela (ferramenta-pa → cavar…).
+
+export function capacidadesDe(uso) {
+  return (CAPACIDADE_DA_FERRAMENTA[uso] || []).slice();
+}
 
 // ================================================================================================================================================================================================================================================
 // fichaDe
@@ -210,7 +218,10 @@ function transicaoEUso(ficha, id, asset, props) {
   const clicar = (efeitos, condicoes = { alcance: 1 }) => ficha.interacoes.push({ gatilho: { tipo: 'clicar' }, condicoes, efeitos });
   const com = (capacidade, efeitos, condicoes = { alcance: 1 }) => ficha.interacoes.push({ gatilho: { tipo: 'capacidade', capacidade }, condicoes, efeitos });
   if (isStairsType(id)) tracos.transicao = { tipo: 'escada', forma: stairKind(id), quando: 'pisar' };
-  if (isHoleType(id)) tracos.transicao = { tipo: 'buraco', quando: 'pisar', destino: 'andar-de-baixo' };
+  if (isHoleType(id)) {
+    tracos.transicao = { tipo: 'buraco', quando: 'pisar', destino: 'andar-de-baixo' };
+    com('puxar', [{ tipo: 'puxar-de-baixo' }]);
+  }
   if (CAPACIDADE_DA_FERRAMENTA[uso]) tracos.capacidade = CAPACIDADE_DA_FERRAMENTA[uso].slice();
   if (uso === 'placa' || uso === 'livro') {
     tracos.texto = { cor: uso === 'placa' ? 'dados.cor' : null };
@@ -226,11 +237,13 @@ function transicaoEUso(ficha, id, asset, props) {
     const efeitos = [{ tipo: 'definir-estado', valor: 'ativo', permanente: true }, { tipo: 'abrir-buraco', sentido: 'baixo' }];
     if (uso === 'pa-cai') efeitos.push({ tipo: 'cair' });
     com('cavar', efeitos);
+    com('puxar', [{ tipo: 'puxar-de-baixo' }], { alcance: 1, estado: 'ativo' });
   } else if (uso === 'machete' || uso === 'foice') {
     com(uso === 'machete' ? 'cortar' : 'colher', [{ tipo: 'remover', rebroteMs: REBROTE_MS }, { tipo: 'efeito-visual', nome: 'poff' }]);
   } else if (uso === 'descer') {
     tracos.transicao = { tipo: 'buraco', quando: 'clicar', destino: 'andar-de-baixo' };
     clicar([{ tipo: 'trocar-andar', sentido: 'baixo' }]);
+    com('puxar', [{ tipo: 'puxar-de-baixo' }]);
   } else if (uso === 'alavanca') {
     clicar([{ tipo: 'alternar-estado' }, { tipo: 'acionar-alvos', de: 'dados.alvos' }]);
   } else if (uso === 'cama') {

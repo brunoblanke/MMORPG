@@ -1,6 +1,7 @@
 // js/systems/interactions.js
 
 import { GameObject } from '../models/game-object.js';
+import { fichaDe, reacoesA, capacidadesDe } from '../../shared/ficha.js';
 import { objectIdType, objectUse, activeAs, togglesOnUse, displayName, getAsset, splitType, isEntranceFolder, floorBehavior, WORM_TYPE } from '../../shared/assets.js';
 import { itemInfo, newItem, weightOf, FISH_RANGE, USE_COOLDOWN_MS, SLEEP_REGEN_FACTOR, REGEN_HP, REGEN_MANA } from '../../shared/items.js';
 import { VOCATIONS, vocationOf } from '../../shared/vocations.js';
@@ -31,6 +32,7 @@ const MAP_USES = ['placa', 'livro', 'bau-quest', 'corda', 'pa', 'pa-cai', 'desce
 const TOOL_TARGETS = { 'ferramenta-corda': ['corda'], 'ferramenta-pa': ['pa', 'pa-cai'], 'ferramenta-picareta': ['picareta'], 'ferramenta-machete': ['machete'], 'ferramenta-foice': ['foice'] };
 const SHOVEL_USES = ['pa', 'pa-cai', 'picareta'];
 const REGROW_MS = 120000;
+const PULL_FROM_BELOW = { gatilho: { tipo: 'capacidade', capacidade: 'puxar' }, condicoes: {}, efeitos: [{ tipo: 'puxar-de-baixo' }] };
 const SIGN_KINDS = ['info', 'warn', 'danger', 'blue'];
 const CLIMB_OFFSETS = [[0, 1], [1, 1], [-1, 1], [1, 0], [-1, 0], [0, -1], [1, -1], [-1, -1]];
 
@@ -209,25 +211,58 @@ export class InteractionController {
   useTool(player, tool, target, from = null, item = null) {
     const z = player.z || 0;
     if (!target || !Number.isInteger(target.x) || !Number.isInteger(target.y) || (target.z ?? z) !== z) return false;
-    if (tool === 'ferramenta-pesca') return this.fish(player, item, target);
-    if (tool === 'ferramenta-chave') return this.useKey(player, item, target, from);
-    const wanted = TOOL_TARGETS[tool];
-    const here = this.sim.world.getObjectsAt(target.x, target.y).filter(o => (o.z || 0) === z);
-    const hole = tool === 'ferramenta-corda' ? here.find(o => this.isOpening(o)) : null;
-    const obj = here.find(o => wanted.includes(objectUse(objectIdType(o.id)))) || hole;
-    if (!obj && tool === 'ferramenta-pa') return this.digWorm(player, target);
-    if (!obj) return false;
+    const capacities = capacidadesDe(item ? objectUse(item.type) : tool);
+    for (const capacity of capacities) {
+      const hit = this.findReaction(capacity, target, z);
+      if (hit) return this.react(player, hit, item, from, target);
+    }
+    return false;
+  }
+
+// ================================================================================================================================================================================================================================================
+  // findReaction
+  // Quem reage à capacidade no sqm: um objeto do sqm com a reação na ficha dele (a marca de corda antes da abertura
+  // por onde se puxa) ou, sem ele, o piso. Reação com estado ativo só vale para objeto ativo.
+
+  findReaction(capacity, target, z) {
+    const { world } = this.sim;
+    const rank = (hit) => (hit.reaction.efeitos.some(e => e.tipo === 'puxar-de-baixo') ? 1 : 0);
+    const hits = [];
+    for (const obj of world.getObjectsAt(target.x, target.y)) {
+      if ((obj.z || 0) !== z || obj.floorType) continue;
+      const ficha = fichaDe(objectIdType(obj.id));
+      const reaction = (ficha && reacoesA(ficha, capacity).find(r => r.condicoes.estado !== 'ativo' || obj.active)) || (capacity === 'puxar' && this.isOpening(obj) ? PULL_FROM_BELOW : null);
+      if (reaction) hits.push({ obj, reaction });
+    }
+    hits.sort((a, b) => rank(a) - rank(b));
+    if (hits.length) return hits[0];
+    const floor = world.topFloors.get(world.getTileKey(target.x, target.y, z));
+    const ficha = floor && fichaDe(floor.floorType);
+    const reaction = ficha && reacoesA(ficha, capacity)[0];
+    return reaction ? { obj: null, reaction } : null;
+  }
+
+// ================================================================================================================================================================================================================================================
+  // react
+  // Faz os efeitos da reação: do objeto (longe, o player anda até o lado e faz ao chegar; from: de onde veio a
+  // ferramenta) ou do piso do sqm (pescar, cavar minhoca).
+
+  react(player, hit, item, from, target) {
+    const { obj, reaction } = hit;
+    const kinds = reaction.efeitos.map(e => e.tipo);
+    if (kinds.includes('trancar')) return this.useKey(player, item, target, from);
+    if (!obj) return kinds.includes('gastar-item') ? this.fish(player, item, target) : this.digWorm(player, target);
     if (!this.sim.inventory.isNear(player, obj)) {
       if (from) this.sim.inventory.walkNextTo(player, obj, { type: 'useItem', from, target });
       return false;
     }
-    if (obj === hole) return this.pullUp(hole);
-    if (tool === 'ferramenta-corda') return this.climb(player, obj);
-    if (tool === 'ferramenta-machete' || tool === 'ferramenta-foice') return this.cut(obj);
+    if (kinds.includes('puxar-de-baixo')) return this.pullUp(obj);
+    if (kinds.includes('trocar-andar')) return this.climb(player, obj);
+    if (kinds.includes('remover')) return this.cut(obj);
     return this.dig(player, obj);
   }
 
-  // ================================================================================================================================================================================================================================================
+// ================================================================================================================================================================================================================================================
   // cut
   // Mato ou plantação cortado: some do mapa e rebrota no mesmo lugar depois de REGROW_MS (espera enquanto
   // alguém estiver em cima).
