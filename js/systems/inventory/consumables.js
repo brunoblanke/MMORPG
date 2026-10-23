@@ -1,7 +1,8 @@
 // js/systems/inventory/consumables.js
 
 import { GameObject } from '../../models/game-object.js';
-import { objectUse, AIM_TOOLS } from '../../../shared/assets.js';
+import { objectUse } from '../../../shared/assets.js';
+import { fichaDe } from '../../../shared/ficha.js';
 import { CONFIG } from '../../config.js';
 import { CONDITIONS } from '../../../shared/conditions.js';
 import { VOCATIONS, vocationOf } from '../../../shared/vocations.js';
@@ -67,7 +68,9 @@ export const consumableMethods = {
     const info = itemInfo(src.item.type);
     const use = objectUse(src.item.type);
     const rune = RUNES[src.item.type];
-    if (!info.food && !info.heal && !use && !info.light && !rune) return;
+    const sheet = fichaDe(src.item.type);
+    const tool = !!(sheet && sheet.tracos.capacidade && sheet.tracos.capacidade.length);
+    if (!info.food && !info.heal && !use && !info.light && !rune && !tool) return;
     if (src.obj && !this.isNear(player, src.obj)) {
       this.walkNextTo(player, src.obj, { type: 'useItem', from, target });
       return;
@@ -85,7 +88,7 @@ export const consumableMethods = {
       this.sim.interactions.readBook(player, src.item);
       return;
     }
-    if (AIM_TOOLS.includes(use)) {
+    if (tool) {
       this.sim.interactions.useTool(player, use, target, from, src.item);
       return;
     }

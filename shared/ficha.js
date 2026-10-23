@@ -26,11 +26,29 @@ export const GATILHOS = ['clicar', 'capacidade', 'pisar', 'falar', 'ser-atingido
 export const CAPACIDADES = ['cavar', 'quebrar', 'cortar', 'colher', 'puxar', 'pescar', 'abrir'];
 
 export const EFEITOS = [
-  'alternar-estado', 'definir-estado', 'alimentar', 'curar', 'puxar-de-baixo', 'abrir-buraco', 'cair', 'remover', 'trocar-andar', 'teletransportar', 'dar-itens', 'gastar-item', 'soltar-item',
+  'alternar-estado', 'definir-estado', 'alimentar', 'curar', 'puxar-de-baixo', 'falar', 'abrir-buraco', 'cair', 'remover', 'trocar-andar', 'teletransportar', 'dar-itens', 'gastar-item', 'soltar-item',
   'mostrar-texto', 'abrir-deposito', 'receber-carta', 'dano', 'estado-de-dano', 'deitar', 'acionar-alvos', 'trancar', 'treinar-skill', 'efeito-visual', 'conversar'
 ];
 
 export const REBROTE_MS = 120000;
+
+// Os efeitos que se escolhem na ficha (gerador → Interações) e os campos de cada um: texto, numero, item, escolha
+// ([valores]), destino (x, y, andar). `alvo` diz em quem o efeito age: 'alvo' (o objeto ou criatura onde a interação
+// está) ou 'ator' (quem usou, pisou ou falou).
+export const ESQUEMA_EFEITOS = {
+  falar: { rotulo: 'Falar (o objeto diz um texto)', campos: [{ chave: 'texto', rotulo: 'Texto', tipo: 'texto' }] },
+  'mostrar-texto': { rotulo: 'Mostrar mensagem a quem usou', campos: [{ chave: 'texto', rotulo: 'Texto', tipo: 'texto' }] },
+  dano: { rotulo: 'Causar dano', campos: [{ chave: 'valor', rotulo: 'Dano', tipo: 'numero' }, { chave: 'elemento', rotulo: 'Elemento', tipo: 'escolha', opcoes: ['physical', 'fire', 'energy', 'poison', 'ice', 'earth', 'death', 'holy'] }, { chave: 'alvo', rotulo: 'Em quem', tipo: 'escolha', opcoes: ['alvo', 'ator'] }] },
+  curar: { rotulo: 'Curar', campos: [{ chave: 'hp', rotulo: 'Vida', tipo: 'numero' }, { chave: 'mana', rotulo: 'Mana', tipo: 'numero' }, { chave: 'alvo', rotulo: 'Em quem', tipo: 'escolha', opcoes: ['ator', 'alvo'] }] },
+  'estado-de-dano': { rotulo: 'Aplicar veneno, fogo ou energia', campos: [{ chave: 'estado', rotulo: 'Estado', tipo: 'escolha', opcoes: ['poison', 'fire', 'energy'] }, { chave: 'dano', rotulo: 'Dano por vez', tipo: 'numero' }, { chave: 'ticks', rotulo: 'Vezes', tipo: 'numero' }, { chave: 'alvo', rotulo: 'Em quem', tipo: 'escolha', opcoes: ['alvo', 'ator'] }] },
+  'soltar-item': { rotulo: 'Soltar um item ao lado', campos: [{ chave: 'item', rotulo: 'Item', tipo: 'item' }, { chave: 'quantidade', rotulo: 'Quantos', tipo: 'numero' }] },
+  'dar-itens': { rotulo: 'Dar um item a quem usou', campos: [{ chave: 'item', rotulo: 'Item', tipo: 'item' }, { chave: 'quantidade', rotulo: 'Quantos', tipo: 'numero' }, { chave: 'umaVez', rotulo: 'Uma vez por player', tipo: 'escolha', opcoes: ['sim', 'nao'] }] },
+  'efeito-visual': { rotulo: 'Mostrar um efeito visual', campos: [{ chave: 'nome', rotulo: 'Efeito', tipo: 'efeito' }] },
+  teletransportar: { rotulo: 'Teletransportar quem usou', campos: [{ chave: 'destino', rotulo: 'Destino', tipo: 'destino' }] },
+  'alternar-estado': { rotulo: 'Alternar normal e ativo', campos: [] },
+  'definir-estado': { rotulo: 'Definir o estado', campos: [{ chave: 'valor', rotulo: 'Estado', tipo: 'escolha', opcoes: ['ativo', 'normal'] }, { chave: 'voltaEmMs', rotulo: 'Volta sozinho em (ms, 0 = não)', tipo: 'numero' }] },
+  remover: { rotulo: 'Remover o objeto (rebrota)', campos: [{ chave: 'rebroteMs', rotulo: 'Rebrota em (ms, 0 = não)', tipo: 'numero' }] }
+};
 export const PORTA_FECHA_MS = 3000;
 
 const CAMADAS = { pisos: 'chao', paredes: 'parede', objetos: 'objeto', criaturas: 'criatura' };
@@ -38,6 +56,54 @@ const CAPACIDADE_DA_FERRAMENTA = {
   'ferramenta-pa': ['cavar'], 'ferramenta-picareta': ['quebrar', 'cavar'], 'ferramenta-machete': ['cortar'], 'ferramenta-foice': ['colher'],
   'ferramenta-corda': ['puxar'], 'ferramenta-pesca': ['pescar'], 'ferramenta-chave': ['abrir']
 };
+
+// ================================================================================================================================================================================================================================================
+// normalizarInteracoes
+// As interações escritas na receita (propriedades.interacoes): só gatilhos, condições e efeitos do vocabulário, com
+// os campos limpos. Cada uma sai marcada como `propria` (feita na ficha, não derivada do Uso).
+
+export function normalizarInteracoes(lista) {
+  if (!Array.isArray(lista)) return [];
+  const int = (valor, max) => Math.min(max, Math.max(0, Math.floor(Number(valor)) || 0));
+  const texto = (valor, max = 200) => String(valor ?? '').trim().slice(0, max);
+  const resultado = [];
+  for (const bruta of lista.slice(0, 20)) {
+    if (!bruta || typeof bruta !== 'object') continue;
+    const tipo = GATILHOS.includes(bruta.gatilho && bruta.gatilho.tipo) ? bruta.gatilho.tipo : null;
+    if (!tipo) continue;
+    const gatilho = { tipo };
+    if (tipo === 'capacidade') {
+      if (!CAPACIDADES.includes(bruta.gatilho.capacidade)) continue;
+      gatilho.capacidade = bruta.gatilho.capacidade;
+    }
+    const c = bruta.condicoes || {};
+    const condicoes = {};
+    if (c.alcance !== undefined) condicoes.alcance = int(c.alcance, 12);
+    if (c.nivel) condicoes.nivel = int(c.nivel, 1000);
+    if (c.quest) condicoes.quest = texto(c.quest, 60);
+    if (c.chance) condicoes.chance = Math.min(100, Math.max(1, int(c.chance, 100)));
+    if (c['tem-item']) condicoes['tem-item'] = texto(c['tem-item'], 120);
+    const efeitos = [];
+    for (const e of (Array.isArray(bruta.efeitos) ? bruta.efeitos : []).slice(0, 12)) {
+      const esquema = e && ESQUEMA_EFEITOS[e.tipo];
+      if (!esquema) continue;
+      const efeito = { tipo: e.tipo };
+      for (const campo of esquema.campos) {
+        const valor = e[campo.chave];
+        if (campo.tipo === 'numero') efeito[campo.chave] = int(valor, 100000);
+        else if (campo.tipo === 'escolha') efeito[campo.chave] = campo.opcoes.includes(valor) ? valor : campo.opcoes[0];
+        else if (campo.tipo === 'destino') {
+          const d = valor || {};
+          if (![d.x, d.y, d.z].every(Number.isInteger)) { efeito.invalido = true; continue; }
+          efeito[campo.chave] = { x: d.x, y: d.y, z: d.z };
+        } else efeito[campo.chave] = texto(valor);
+      }
+      if (!efeito.invalido) efeitos.push(efeito);
+    }
+    if (efeitos.length) resultado.push({ gatilho, condicoes, efeitos, propria: true });
+  }
+  return resultado;
+}
 
 // ================================================================================================================================================================================================================================================
 // capacidadesDe
@@ -72,6 +138,9 @@ export function fichaDe(type) {
   vidaEConversa(ficha, id, asset, props);
   transicaoEUso(ficha, id, asset, props);
   pisoDe(ficha, id, props);
+  ficha.interacoes.push(...normalizarInteracoes(props.interacoes));
+  const proprias = (Array.isArray(props.capacidade) ? props.capacidade : []).filter(c => CAPACIDADES.includes(c));
+  if (proprias.length) ficha.tracos.capacidade = [...new Set([...(ficha.tracos.capacidade || []), ...proprias])];
   return ficha;
 }
 

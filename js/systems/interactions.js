@@ -97,9 +97,11 @@ export class InteractionController {
       return;
     }
     const type = objectIdType(obj.id);
-    const click = interacoesDe(type, 'clicar')[0];
-    if (!click) return;
-    for (const effect of click.efeitos) this.applyClick(player, obj, effect, type);
+    const tile = { x: obj.x, y: obj.y, z: obj.z || 0 };
+    for (const click of interacoesDe(type, 'clicar')) {
+      if (click.propria) this.sim.effects.run(click, { actor: player, target: obj, tile, id: obj.id });
+      else for (const effect of click.efeitos) this.applyClick(player, obj, effect, type);
+    }
   }
 
   // ================================================================================================================================================================================================================================================
@@ -215,6 +217,28 @@ export class InteractionController {
   }
 
   // ================================================================================================================================================================================================================================================
+  // checkStepTriggers
+  // Player que acaba de pisar num sqm: as interações de pisar escritas na ficha do objeto ou do piso dele rodam.
+
+  checkStepTriggers(players) {
+    const { world, effects } = this.sim;
+    for (const player of players) {
+      const z = player.z || 0;
+      const key = `${player.x},${player.y},${z}`;
+      if (player.stepTriggerKey === key) continue;
+      player.stepTriggerKey = key;
+      const tile = { x: player.x, y: player.y, z };
+      const floor = world.topFloors.get(world.getTileKey(player.x, player.y, z));
+      const here = world.getObjectsAt(player.x, player.y).filter(o => (o.z || 0) === z && !o.floorType);
+      for (const source of [...(floor ? [floor] : []), ...here]) {
+        for (const step of interacoesDe(source.floorType || objectIdType(source.id), 'pisar')) {
+          if (step.propria) effects.run(step, { actor: player, target: source, tile, id: source.id });
+        }
+      }
+    }
+  }
+
+  // ================================================================================================================================================================================================================================================
   // useTool
   // Corda, pá ou vara de pescar usada com a mira no sqm target (no mesmo andar): corda na
   // marca de corda sobe; corda num buraco ou bueiro puxa quem está embaixo
@@ -225,7 +249,8 @@ export class InteractionController {
   useTool(player, tool, target, from = null, item = null) {
     const z = player.z || 0;
     if (!target || !Number.isInteger(target.x) || !Number.isInteger(target.y) || (target.z ?? z) !== z) return false;
-    const capacities = capacidadesDe(item ? objectUse(item.type) : tool);
+    const itemFicha = item ? fichaDe(item.type) : null;
+    const capacities = itemFicha && itemFicha.tracos.capacidade ? itemFicha.tracos.capacidade : capacidadesDe(item ? objectUse(item.type) : tool);
     for (const capacity of capacities) {
       const hit = this.findReaction(capacity, target, z);
       if (hit) return this.react(player, hit, item, from, target);
@@ -250,6 +275,10 @@ export class InteractionController {
     }
     hits.sort((a, b) => rank(a) - rank(b));
     if (hits.length) return hits[0];
+    const creature = world.getCreatureAt(target.x, target.y, z);
+    const cficha = creature && !creature.isPlayer && creature.creature && fichaDe(creature.creature);
+    const creatureReaction = cficha && reacoesA(cficha, capacity)[0];
+    if (creatureReaction) return { obj: creature, reaction: creatureReaction, creature: true };
     const floor = world.topFloors.get(world.getTileKey(target.x, target.y, z));
     const ficha = floor && fichaDe(floor.floorType);
     const reaction = ficha && reacoesA(ficha, capacity)[0];
@@ -263,6 +292,7 @@ export class InteractionController {
 
   react(player, hit, item, from, target) {
     const { obj, reaction } = hit;
+    if (reaction.propria) return this.sim.effects.run(reaction, { actor: player, target: obj, tile: { x: target.x, y: target.y, z: player.z || 0 }, id: `${obj ? obj.id : 'piso'}:${target.x},${target.y}` });
     const kinds = reaction.efeitos.map(e => e.tipo);
     if (kinds.includes('trancar')) return this.useKey(player, item, target, from);
     if (!obj) return kinds.includes('gastar-item') ? this.fish(player, item, target) : this.digWorm(player, target);
@@ -281,7 +311,7 @@ export class InteractionController {
   // Mato ou plantação cortado: some do mapa e rebrota no mesmo lugar depois de REGROW_MS (espera enquanto
   // alguém estiver em cima).
 
-  cut(plant) {
+  cut(plant, regrowMs = REGROW_MS) {
     const z = plant.z || 0;
     this.sim.inventory.removeGroundObject(plant);
     this.sim.spells.showEffect(plant.x, plant.y, 'poff', undefined, z);
@@ -294,7 +324,7 @@ export class InteractionController {
       this.sim.objectsById.set(plant.id, plant);
       this.sim.world.addObject(plant);
     };
-    this.sim.schedule((this.sim.time || 0) + REGROW_MS, regrow);
+    if (regrowMs > 0) this.sim.schedule((this.sim.time || 0) + regrowMs, regrow);
     return true;
   }
 

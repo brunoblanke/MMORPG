@@ -26,6 +26,7 @@ import { ENTER_EFFECT } from '../shared/effects.js';
 import { DroppedItems } from './systems/dropped-items.js';
 import { MailController } from './systems/mail.js';
 import { SummonController } from './systems/summons.js';
+import { InteractionEffects } from './systems/interaction-effects.js';
 import { objectIdType, doorState } from '../shared/assets.js';
 
 export { TICK_MS };
@@ -89,6 +90,7 @@ export class Simulation {
     this.conditions = new ConditionController(this);
     this.powers = new CreaturePowers(this);
     this.summons = new SummonController(this);
+    this.effects = new InteractionEffects(this);
     this.social = new SocialController(this);
     this.savedCharacters = options.characters || {};
     this.houses = new HouseController(this, options.houses || {});
@@ -445,6 +447,7 @@ export class Simulation {
 
     this.movement.checkFloorTransitions([...this.players, ...this.enemies]);
     this.interactions.checkTeleports(this.players);
+    this.interactions.checkStepTriggers(this.players);
     this.lifeCycle.processDeaths(now);
   }
 }

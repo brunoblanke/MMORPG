@@ -1,6 +1,6 @@
 // js/views/inventory-ui/common.js
 
-import { objectUse, AIM_TOOLS } from '../../../shared/assets.js';
+import { fichaDe } from '../../../shared/ficha.js';
 import { itemInfo } from '../../../shared/items.js';
 import { RUNES } from '../../../shared/spells.js';
 
@@ -31,6 +31,6 @@ export const REACH_CHECK_MS = 500;
 // Item usado com a mira: potion (em player ou no chão), runa e as ferramentas (corda, pá, picareta, machete, foice, chave, vara de pescar).
 
 export function aimsWith(type) {
-  const use = objectUse(type);
-  return !!itemInfo(type).heal || !!RUNES[type] || AIM_TOOLS.includes(use);
+  const sheet = fichaDe(type);
+  return !!itemInfo(type).heal || !!RUNES[type] || !!(sheet && sheet.tracos.capacidade && sheet.tracos.capacidade.length);
 }
