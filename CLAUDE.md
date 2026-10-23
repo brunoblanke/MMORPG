@@ -1,5 +1,7 @@
 # CLAUDE.md
 
+Ao começar uma sessão nova, ler também o `PENDENCIAS.md` (pendências, decisões tomadas e onde parei) e mantê-lo atualizado ao fim de cada bloco de trabalho.
+
 Jogo multiplayer estilo Tibia em JavaScript puro (sem framework), com editor de mapa e gerador de sprites. Sprites vêm do cliente Tibia 15.01.
 
 ## Como trabalhar aqui

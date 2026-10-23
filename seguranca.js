@@ -9,7 +9,7 @@ const PROTEGIDOS = [
   /^\/\./,
   /^\/(data|node_modules|tests|ferramentas|transf|\.git|\.github|\.claude)(\/|$)/,
   /^\/gerador\/tibia(\/|$)/,
-  /^\/(server\.js|iniciar\.js|seguranca\.js|start-server\.bat|package(-lock)?\.json|claude\.md|sftp-config\.json|jsconfig\.json)$/,
+  /^\/(server\.js|iniciar\.js|seguranca\.js|start-server\.bat|package(-lock)?\.json|claude\.md|pendencias\.md|sftp-config\.json|jsconfig\.json)$/,
   /\.(env|pem|key|bak|tmp|log)$/,
   /\/\./
 ];

@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { criarGuarda, caminhoBloqueado, senhaConfere, criarPortaoAdmin, criarBalde, contarPorChave, criarJanela } from '../seguranca.js';
 
 test('arquivos do servidor, dos jogadores e do repositório não saem pela web', () => {
-  for (const url of ['/data/passwords.json', '/data/characters.json?x=1', '/DATA/map.json', '/.git/config', '/sftp-config.json', '/server.js', '/package.json', '/node_modules/ws/index.js', '/tests/tibia-780/Tibia.dat', '/ferramentas/ajustar-personagem.js', '/gerador/tibia/atual/Tibia.dat', '/%2e%2e/etc/passwd', '/data%2fpasswords.json', '/js/../data/passwords.json', '//data//passwords.json', '/CLAUDE.md', '/.env', '/x/.hidden']) {
+  for (const url of ['/data/passwords.json', '/data/characters.json?x=1', '/DATA/map.json', '/.git/config', '/sftp-config.json', '/server.js', '/package.json', '/node_modules/ws/index.js', '/tests/tibia-780/Tibia.dat', '/ferramentas/ajustar-personagem.js', '/gerador/tibia/atual/Tibia.dat', '/%2e%2e/etc/passwd', '/data%2fpasswords.json', '/js/../data/passwords.json', '//data//passwords.json', '/CLAUDE.md', '/PENDENCIAS.md', '/.env', '/x/.hidden']) {
     assert.equal(caminhoBloqueado(url), true, url);
   }
 });
