@@ -225,7 +225,7 @@ function transicaoEUso(ficha, id, asset, props) {
   if (CAPACIDADE_DA_FERRAMENTA[uso]) tracos.capacidade = CAPACIDADE_DA_FERRAMENTA[uso].slice();
   if (uso === 'placa' || uso === 'livro') {
     tracos.texto = { cor: uso === 'placa' ? 'dados.cor' : null };
-    clicar([{ tipo: 'mostrar-texto', de: 'dados.texto' }], uso === 'livro' ? {} : { alcance: 1 });
+    clicar([{ tipo: 'mostrar-texto', de: 'dados.texto', como: uso }], uso === 'livro' ? {} : { alcance: 1 });
   } else if (uso === 'bau-quest') {
     tracos.entrega = { itens: 'dados.itens', umaVezPorPlayer: true };
     clicar([{ tipo: 'dar-itens', de: 'dados.itens', umaVezPorPlayer: true }]);
@@ -283,4 +283,40 @@ function pisoDe(ficha, id, props) {
 
 export function reacoesA(ficha, capacidade) {
   return ficha.interacoes.filter(i => i.gatilho.tipo === 'capacidade' && i.gatilho.capacidade === capacidade);
+}
+
+// ================================================================================================================================================================================================================================================
+// interacoesDe
+// As interações do tipo que disparam com o gatilho (e, se pedido, a capacidade). Sem a folha, nenhuma.
+
+export function interacoesDe(type, gatilho, capacidade = null) {
+  const ficha = fichaDe(type);
+  if (!ficha) return [];
+  return ficha.interacoes.filter(i => i.gatilho.tipo === gatilho && (!capacidade || i.gatilho.capacidade === capacidade) && !i.gatilho.onde);
+}
+
+// ================================================================================================================================================================================================================================================
+// clicavel
+// Usar o objeto do mapa (botão direito ou duplo clique) faz algo: tem uma interação de clicar (a porta tem o
+// comando dela, useDoor).
+
+export function clicavel(type) {
+  return !doorState(type) && interacoesDe(type, 'clicar').length > 0;
+}
+
+// ================================================================================================================================================================================================================================================
+// pisavel
+// Pisar no objeto faz algo (teletransportar, dano…): a lista dos efeitos.
+
+export function efeitosAoPisar(type) {
+  return interacoesDe(type, 'pisar').flatMap(i => i.efeitos);
+}
+
+// ================================================================================================================================================================================================================================================
+// abreParaOAndarDeBaixo
+// O objeto dá passagem ao andar de baixo (buraco, bueiro, monte que a pá abre): o topo da escada que cai nele fica fechado.
+
+export function abreParaOAndarDeBaixo(type) {
+  const ficha = fichaDe(type);
+  return !!ficha && ficha.interacoes.some(i => i.efeitos.some(e => e.tipo === 'abrir-buraco' || (e.tipo === 'trocar-andar' && e.sentido === 'baixo')));
 }

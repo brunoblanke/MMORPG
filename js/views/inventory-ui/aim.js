@@ -2,7 +2,7 @@
 
 import { objectIdType, objectUse, togglesOnUse } from '../../../shared/assets.js';
 import { itemInfo } from '../../../shared/items.js';
-import { MAP_USES } from './common.js';
+import { clicavel } from '../../../shared/ficha.js';
 
 // Métodos do InventoryUI (js/views/inventory-ui.js). Mira (potion, corda, pá) e o que está sob o mouse na tela do jogo:
 // caixa pra abrir, item pra usar, item arrastado do chão.
@@ -104,7 +104,7 @@ export const aimMethods = {
     const input = this.game.inputController;
     const obj = input && !input.hoverCorpse ? input.hoverObject : null;
     if (!obj) return null;
-    if (MAP_USES.includes(objectUse(objectIdType(obj.id)))) return obj;
+    if (clicavel(objectIdType(obj.id))) return obj;
     if (obj.movable !== true) return togglesOnUse(objectIdType(obj.id)) ? obj : null;
     const info = itemInfo(objectIdType(obj.id));
     return info.food || info.heal || info.light || objectUse(objectIdType(obj.id)) ? obj : null;

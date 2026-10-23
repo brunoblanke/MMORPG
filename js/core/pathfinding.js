@@ -2,7 +2,8 @@
 
 import { DIRECTIONS, resolveStep } from './movement.js';
 import { FIELDS } from '../../shared/conditions.js';
-import { objectIdType, objectUse } from '../../shared/assets.js';
+import { objectIdType } from '../../shared/assets.js';
+import { efeitosAoPisar } from '../../shared/ficha.js';
 
 // ================================================================================================================================================================================================================================================
 // heapPush
@@ -61,7 +62,7 @@ export function hasHarmfulField(world, x, y, z) {
 // O sqm que as criaturas evitam pisar (só pisam se não houver outro caminho nem lugar pra ficar): campo que fere ou teletransporte.
 
 export function isAvoidedTile(world, x, y, z) {
-  return hasHarmfulField(world, x, y, z) || world.getObjectsAt(x, y).some(obj => (obj.z || 0) === z && objectUse(objectIdType(obj.id)) === 'teleporte');
+  return hasHarmfulField(world, x, y, z) || world.getObjectsAt(x, y).some(obj => (obj.z || 0) === z && efeitosAoPisar(objectIdType(obj.id)).some(e => e.tipo === 'teletransportar'));
 }
 
 // ================================================================================================================================================================================================================================================

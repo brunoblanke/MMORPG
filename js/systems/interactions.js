@@ -1,7 +1,7 @@
 // js/systems/interactions.js
 
 import { GameObject } from '../models/game-object.js';
-import { fichaDe, reacoesA, capacidadesDe } from '../../shared/ficha.js';
+import { fichaDe, reacoesA, capacidadesDe, interacoesDe, clicavel, efeitosAoPisar } from '../../shared/ficha.js';
 import { objectIdType, objectUse, activeAs, togglesOnUse, displayName, getAsset, splitType, isEntranceFolder, floorBehavior, WORM_TYPE } from '../../shared/assets.js';
 import { itemInfo, newItem, weightOf, FISH_RANGE, USE_COOLDOWN_MS, SLEEP_REGEN_FACTOR, REGEN_HP, REGEN_MANA } from '../../shared/items.js';
 import { VOCATIONS, vocationOf } from '../../shared/vocations.js';
@@ -54,8 +54,17 @@ export class InteractionController {
 
   isUsable(obj) {
     if (!obj || obj.isCorpse || !this.sim.world.objects.has(obj)) return false;
-    const type = objectIdType(obj.id);
-    return MAP_USES.includes(objectUse(type)) || (obj.movable !== true && togglesOnUse(type));
+    return clicavel(objectIdType(obj.id));
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // isReactive
+  // O objeto do mapa reage a alguma ferramenta (tem uma interação por capacidade).
+
+  isReactive(obj) {
+    if (!obj || !this.sim.world.objects.has(obj)) return false;
+    const ficha = fichaDe(objectIdType(obj.id));
+    return !!ficha && ficha.interacoes.some(i => i.gatilho.tipo === 'capacidade');
   }
 
   // ================================================================================================================================================================================================================================================
@@ -87,20 +96,26 @@ export class InteractionController {
       inventory.walkNextTo(player, obj, { type: 'useObject', id });
       return;
     }
-    const use = objectUse(objectIdType(obj.id));
-    if (!use) {
-      this.setActive(obj, !obj.active);
-      return;
-    }
-    if (use === 'placa') {
-      if (obj.data && obj.data.texto) this.signText(player, obj);
-    }
-    else if (use === 'livro') this.readBook(player, obj.itemData || { type: objectIdType(obj.id), texto: obj.data && obj.data.texto });
-    else if (use === 'bau-quest') this.openQuestChest(player, obj);
-    else if (use === 'descer') this.goDown(player, obj);
-    else if (use === 'deposito') inventory.openDepotAt(player, obj);
-    else if (use === 'alavanca') this.pull(obj);
-    else if (use === 'cama') this.sleep(player, obj);
+    const type = objectIdType(obj.id);
+    const click = interacoesDe(type, 'clicar')[0];
+    if (!click) return;
+    for (const effect of click.efeitos) this.applyClick(player, obj, effect, type);
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // applyClick
+  // Um efeito de uma interação de clicar no objeto do mapa.
+
+  applyClick(player, obj, effect, type) {
+    if (effect.tipo === 'mostrar-texto') {
+      if (effect.como === 'livro') this.readBook(player, obj.itemData || { type, texto: obj.data && obj.data.texto });
+      else if (obj.data && obj.data.texto) this.signText(player, obj);
+    } else if (effect.tipo === 'dar-itens') this.openQuestChest(player, obj);
+    else if (effect.tipo === 'trocar-andar') this.goDown(player, obj);
+    else if (effect.tipo === 'abrir-deposito') this.sim.inventory.openDepotAt(player, obj);
+    else if (effect.tipo === 'alternar-estado') this.setActive(obj, !obj.active);
+    else if (effect.tipo === 'acionar-alvos') this.driveTargets(obj);
+    else if (effect.tipo === 'deitar') this.sleep(player, obj);
   }
 
   // ================================================================================================================================================================================================================================================
@@ -137,12 +152,11 @@ export class InteractionController {
   }
 
   // ================================================================================================================================================================================================================================================
-  // pull
-  // Alavanca: vira o estado dela e põe todos os alvos (sqms escolhidos no editor) no mesmo: ligada, a porta
+  // driveTargets
+  // Alavanca já virada: põe todos os alvos (sqms escolhidos no editor) no mesmo: ligada, a porta
   // abre e o objeto que alterna fica ativo; desligada, o contrário.
 
-  pull(lever) {
-    this.setActive(lever, !lever.active);
+  driveTargets(lever) {
     const targets = (lever.data && Array.isArray(lever.data.alvos)) ? lever.data.alvos : [];
     const { world, control } = this.sim;
     for (const { x, y, z = 0 } of targets) {
@@ -190,7 +204,7 @@ export class InteractionController {
       const key = `${player.x},${player.y},${z}`;
       if (player.teleportArrival === key) continue;
       player.teleportArrival = null;
-      const pad = world.getObjectsAt(player.x, player.y).find(o => (o.z || 0) === z && objectUse(objectIdType(o.id)) === 'teleporte');
+      const pad = world.getObjectsAt(player.x, player.y).find(o => (o.z || 0) === z && efeitosAoPisar(objectIdType(o.id)).some(e => e.tipo === 'teletransportar'));
       const to = pad && pad.data && pad.data.destino;
       if (!to || !Number.isInteger(to.x) || !Number.isInteger(to.y) || !isValidFloor(to.z) || !world.hasFloorAt(to.x, to.y, to.z)) continue;
       this.sim.spells.showEffect(player.x, player.y, 'teleport', undefined, z);

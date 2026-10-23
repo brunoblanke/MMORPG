@@ -26,8 +26,6 @@ export const LAYOUT_COLS = ['left', 'right', 'free'];
 export const LAYOUT_VERSION = 2;
 export const REACH_CHECK_MS = 500;
 
-export const MAP_USES = ['placa', 'livro', 'bau-quest', 'corda', 'pa', 'pa-cai', 'descer', 'deposito', 'alavanca', 'cama'];
-
 // ================================================================================================================================================================================================================================================
 // aimsWith
 // Item usado com a mira: potion (em player ou no chão), runa e as ferramentas (corda, pá, picareta, machete, foice, chave, vara de pescar).
