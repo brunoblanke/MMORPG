@@ -158,3 +158,16 @@ test('a receita manda mais que a pasta: espaço, skill, transição e colisão d
   assert.equal(blocksThrow('estrutura/cercas/cerca-alta#x'), true);
   setAssets(sprites);
 });
+
+test('fichaDoPlayer: o player como ficha, com os traços controlado, vivo, progressão, inventário e social', async () => {
+  const { buildGame, floorRect } = await import('./helpers/fixture.js');
+  const { fichaDoPlayer } = await import('../shared/ficha.js');
+  const game = buildGame({ objects: floorRect(0, 5, 0, 5, 0), player: { x: 2, y: 2, z: 0 } });
+  const ficha = fichaDoPlayer(game.player);
+  assert.equal(ficha.camada, 'criatura');
+  assert.equal(ficha.tracos.controlado.por, 'jogador');
+  assert.equal(ficha.tracos.vivo.vida, game.player.currentHp);
+  assert.equal(ficha.tracos.progressao.nivel, game.player.lvl);
+  assert.ok(ficha.tracos.inventario.espacos.includes('mochila'));
+  assert.equal(ficha.tracos.social.pvp, false);
+});

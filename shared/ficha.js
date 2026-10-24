@@ -4,7 +4,7 @@ import {
   getAsset, splitType, displayName, objectProps, objectUse, activeAs, startsActive, stairKind, doorState, wallProps, blocksThrow, supportsItems,
   floorBehavior, creatureBehavior, creatureFlies, creatureStats, creaturePowers, creatureLoot, creatureVoices, isFloorType, isStairsType, isHoleType, WALL_PIECES
 } from './assets.js';
-import { itemInfo } from './items.js';
+import { itemInfo, EQUIP_SLOTS } from './items.js';
 
 // A ficha de um objeto (modelo de objetos): tudo no jogo é um objeto com uma aparência, uma camada, uma lista de
 // traços (o que ele é) e uma lista de interações (o que acontece quando algo é feito com ele). Pasta, grupo e
@@ -423,4 +423,26 @@ export function tipoDeDados(type) {
   if (ficha.tracos.capacidade && ficha.tracos.capacidade.includes('abrir')) return 'chave';
   if (ficha.tracos.container) return 'itens';
   return null;
+}
+
+// ================================================================================================================================================================================================================================================
+// fichaDoPlayer
+// O player como ficha (só leitura, montada do estado dele): traços controlado, vivo, progressão, inventário e social.
+// Não tem interações próprias; a lógica dele segue nos sistemas atuais.
+
+export function fichaDoPlayer(player) {
+  return {
+    id: player.id,
+    nome: player.name,
+    organizacao: { grupo: 'personagens', pasta: 'players' },
+    camada: 'criatura',
+    tracos: {
+      controlado: { por: 'jogador' },
+      vivo: { vida: player.currentHp, vidaMax: player.maxHp, mana: player.mana, manaMax: player.maxMana },
+      progressao: { nivel: player.lvl, vocacao: player.vocation && player.vocation.id ? player.vocation.id : player.vocation, skills: Object.keys(player.skills || {}) },
+      inventario: { espacos: EQUIP_SLOTS.slice(), ocupados: EQUIP_SLOTS.filter(key => player.equip && player.equip[key]) },
+      social: { caveira: player.skull || null, pvp: !!player.pvpMode }
+    },
+    interacoes: []
+  };
 }
