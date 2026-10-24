@@ -3,6 +3,7 @@
 import { PLAYER_LIGHT } from '../../shared/lighting.js';
 import { isPositionAdjacentTo } from '../utils/helpers.js';
 import { getAsset, splitType, objectUse, objectIdType } from '../../shared/assets.js';
+import { interacoesDe } from '../../shared/ficha.js';
 import {
   EQUIP_SLOTS, THROW_RANGE, STARTER_KIT, itemInfo, itemLight, fitsSlot, isAmmo, isQuiver, capacityFor, newItem, weightOf, contains, findInTree, fromPlain, equipBonus
 } from '../../shared/items.js';
@@ -173,6 +174,8 @@ export class InventoryController {
       if (!this.sim.world.mayEnter(player, to.x, to.y, Number.isInteger(to.z) ? to.z : (player.z || 0))) return { error: 'Essa casa não é sua.' };
       const mailbox = this.mailboxAt(to.x, to.y, Number.isInteger(to.z) ? to.z : (player.z || 0));
       if (mailbox) return itemInfo(item.type).postal ? { kind: 'mail', obj: mailbox } : { error: 'A caixa de correio só recebe cartas e encomendas.' };
+      const receiver = this.itemReceiverAt(to.x, to.y, Number.isInteger(to.z) ? to.z : (player.z || 0), item);
+      if (receiver) return { kind: 'trigger', obj: receiver };
       return { kind: 'ground', x: to.x, y: to.y, z: Number.isInteger(to.z) ? to.z : (player.z || 0) };
     }
     if (to.t === 'e') {
@@ -292,6 +295,14 @@ export class InventoryController {
   }
 
   // ================================================================================================================================================================================================================================================
+  // itemReceiverAt
+  // O objeto no sqm com uma interação de item-em-cima (escrita na ficha) que aceita esse item, ou null.
+
+  itemReceiverAt(x, y, z, item) {
+    return this.sim.world.getObjectsAt(x, y).find(obj => (obj.z || 0) === z && interacoesDe(objectIdType(obj.id), 'item-em-cima').some(i => i.propria && (!i.condicoes.item || item.type.includes(i.condicoes.item)))) || null;
+  }
+
+  // ================================================================================================================================================================================================================================================
   // moveNow
 
   moveNow(player, from, to, amount) {
@@ -304,6 +315,12 @@ export class InventoryController {
     }
     if (src.obj && !this.isNear(player, src.obj)) {
       this.walkNextTo(player, src.obj, { type: 'moveInv', from, to, amount });
+      return;
+    }
+
+    if (dest.kind === 'trigger') {
+      if (!this.isNear(player, dest.obj)) return this.walkNextTo(player, dest.obj, { type: 'moveInv', from, to, amount });
+      if (this.sim.effects.dropOn(player, dest.obj, src.item)) src.remove();
       return;
     }
 

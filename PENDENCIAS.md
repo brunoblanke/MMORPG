@@ -16,7 +16,7 @@ Estado do projeto para retomar numa conversa nova. O que é regra fixa e como o 
 Feito: `shared/ficha.js` (ficha com traços e interações), ferramentas por capacidade (cavar, quebrar, cortar, colher, puxar, pescar, abrir), clicar e pisar pela ficha, interações escritas no gerador (Objetos, Criaturas, Pisos) rodando em `js/systems/interaction-effects.js`, pasta só organiza (receitas convertidas), editor monta o ✎ pela ficha. O artefato com as decisões marcadas: https://claude.ai/artifact/MMdLArrnAuBtpvvHEDeAFN (coleção `decisoes`).
 
 Falta, por ordem:
-1. Feitos: `ser-atingido`, `morrer`, `tempo` (criaturas) e `falar` (criaturas e objetos, condição `palavra`). Falta `tempo` e `item-em-cima` em objetos do mapa (conversa de NPC segue por módulos).
+1. Gatilhos feitos: `ser-atingido`, `morrer`, `tempo`, `falar` (condição `palavra`) e `item-em-cima` (condição `item`, efeito `consumir-item`), em criaturas e objetos conforme faz sentido. Conversa de NPC segue por módulos.
 2. (feito) Painel de Objetos mostra o que o Uso faz (`descreverUso`).
 3. Player como ficha (traços controlado, progressão, inventário, social): decisão "Concordo", mas ainda não feito; a lógica dele segue nos sistemas atuais.
 4. (feito) Anel de invisibilidade (`invisivelEquipado`, `player.isInvisible`; stealth ring com Duração 1800 s) e time ring (speed 40). Falta só preencher a regeneração do life ring no gerador.

@@ -36,6 +36,7 @@ export class InteractionEffects {
     if (conditions.quest && (!actor || !(actor.quests || []).includes(conditions.quest))) return false;
     if (conditions['tem-item'] && (!actor || countInBag(actor, conditions['tem-item']) < 1)) return false;
     if (conditions.palavra && !` ${ctx.heard || ''} `.includes(` ${normalizeSpeech(conditions.palavra)} `)) return false;
+    if (conditions.item && !(ctx.item && ctx.item.type.includes(conditions.item))) return false;
     if (conditions.chance && Math.random() * 100 >= conditions.chance) return false;
     return true;
   }
@@ -104,6 +105,8 @@ export class InteractionEffects {
       const active = effect.valor === 'ativo';
       sim.interactions.setActive(target, active);
       if (effect.voltaEmMs > 0) sim.schedule((sim.time || 0) + effect.voltaEmMs, () => sim.interactions.setActive(target, !active));
+    } else if (effect.tipo === 'consumir-item') {
+      ctx.consumed = true;
     } else if (effect.tipo === 'remover' && target && sim.objectsById.has(target.id)) {
       sim.interactions.cut(target, effect.rebroteMs);
     }
@@ -119,6 +122,18 @@ export class InteractionEffects {
     for (const interaction of interacoesDe(creature.creature, gatilho)) {
       if (interaction.propria) this.run(interaction, { actor, target: creature, tile, id: creature.id });
     }
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // dropOn
+  // O gatilho item-em-cima: o player pôs o item no objeto. Devolve true se alguma interação consumiu o item.
+
+  dropOn(player, obj, item) {
+    const ctx = { actor: player, target: obj, tile: { x: obj.x, y: obj.y, z: obj.z || 0 }, id: obj.id, item, consumed: false };
+    for (const interaction of interacoesDe(this.typeOf(obj), 'item-em-cima')) {
+      if (interaction.propria) this.run(interaction, ctx);
+    }
+    return ctx.consumed;
   }
 
   // ================================================================================================================================================================================================================================================
@@ -149,6 +164,23 @@ export class InteractionEffects {
     if (now - (creature.lastTimeTrigger || 0) < TEMPO_MS) return;
     creature.lastTimeTrigger = now;
     this.trigger(creature, 'tempo');
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // tickObjects
+  // O gatilho tempo nos objetos do mapa: uma vez por segundo.
+
+  tickObjects(now) {
+    if (now - (this.lastObjectTick || 0) < TEMPO_MS) return;
+    this.lastObjectTick = now;
+    for (const obj of [...this.sim.objects]) {
+      const type = this.typeOf(obj);
+      if (!type) continue;
+      const tile = { x: obj.x, y: obj.y, z: obj.z || 0 };
+      for (const interaction of interacoesDe(type, 'tempo')) {
+        if (interaction.propria) this.run(interaction, { actor: null, target: obj, tile, id: obj.id });
+      }
+    }
   }
 
   // ================================================================================================================================================================================================================================================

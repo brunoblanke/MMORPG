@@ -27,7 +27,7 @@ export const CAPACIDADES = ['cavar', 'quebrar', 'cortar', 'colher', 'puxar', 'pe
 
 export const EFEITOS = [
   'alternar-estado', 'definir-estado', 'alimentar', 'curar', 'puxar-de-baixo', 'falar', 'abrir-buraco', 'cair', 'remover', 'trocar-andar', 'teletransportar', 'dar-itens', 'gastar-item', 'soltar-item',
-  'mostrar-texto', 'abrir-deposito', 'receber-carta', 'dano', 'estado-de-dano', 'deitar', 'acionar-alvos', 'trancar', 'treinar-skill', 'efeito-visual', 'conversar'
+  'mostrar-texto', 'abrir-deposito', 'receber-carta', 'dano', 'estado-de-dano', 'deitar', 'acionar-alvos', 'trancar', 'treinar-skill', 'efeito-visual', 'conversar', 'consumir-item'
 ];
 
 export const REBROTE_MS = 120000;
@@ -45,6 +45,7 @@ export const ESQUEMA_EFEITOS = {
   'dar-itens': { rotulo: 'Dar um item a quem usou', campos: [{ chave: 'item', rotulo: 'Item', tipo: 'item' }, { chave: 'quantidade', rotulo: 'Quantos', tipo: 'numero' }, { chave: 'umaVez', rotulo: 'Uma vez por player', tipo: 'escolha', opcoes: ['sim', 'nao'] }] },
   'efeito-visual': { rotulo: 'Mostrar um efeito visual', campos: [{ chave: 'nome', rotulo: 'Efeito', tipo: 'efeito' }] },
   teletransportar: { rotulo: 'Teletransportar quem usou', campos: [{ chave: 'destino', rotulo: 'Destino', tipo: 'destino' }] },
+  'consumir-item': { rotulo: 'Consumir o item colocado em cima', campos: [] },
   'alternar-estado': { rotulo: 'Alternar normal e ativo', campos: [] },
   'definir-estado': { rotulo: 'Definir o estado', campos: [{ chave: 'valor', rotulo: 'Estado', tipo: 'escolha', opcoes: ['ativo', 'normal'] }, { chave: 'voltaEmMs', rotulo: 'Volta sozinho em (ms, 0 = não)', tipo: 'numero' }] },
   remover: { rotulo: 'Remover o objeto (rebrota)', campos: [{ chave: 'rebroteMs', rotulo: 'Rebrota em (ms, 0 = não)', tipo: 'numero' }] }
@@ -82,6 +83,7 @@ export function normalizarInteracoes(lista) {
     if (c.nivel) condicoes.nivel = int(c.nivel, 1000);
     if (c.quest) condicoes.quest = texto(c.quest, 60);
     if (c.palavra) condicoes.palavra = texto(c.palavra, 60);
+    if (c.item) condicoes.item = texto(c.item, 120);
     if (c.chance) condicoes.chance = Math.min(100, Math.max(1, int(c.chance, 100)));
     if (c['tem-item']) condicoes['tem-item'] = texto(c['tem-item'], 120);
     const efeitos = [];

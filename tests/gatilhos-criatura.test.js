@@ -56,3 +56,26 @@ test('gatilho falar: objeto reage à palavra dita perto dele, e só a ela', () =
   sim.enqueue(sim.player.id, { type: 'say', text: 'bom dia' });
   assert.equal(runFor(sim, TICK_MS * 2).some(e => e.text === 'Abri!'), false);
 });
+
+test('gatilho item-em-cima consome o item certo; gatilho tempo roda em objeto do mapa', () => {
+  const ALTAR = 'decoracao/adornos/altar-teste';
+  const COIN = 'itens/valiosos/moeda-teste';
+  const BAG = 'itens/recipientes/mochila-teste';
+  const prop = { move: true, peso: 1 };
+  const base = { ferramenta: 'objetos', quadro: 32, quadros: 1, pecas: [], url: '/x.png' };
+  setAssets([
+    { ...base, id: ALTAR, grupo: 'decoracao', pasta: 'adornos', nome: 'altar-teste', propriedades: { move: false, interacoes: [
+      { gatilho: { tipo: 'item-em-cima' }, condicoes: { alcance: 3, item: 'moeda' }, efeitos: [{ tipo: 'consumir-item' }, { tipo: 'falar', texto: 'Obrigado' }] },
+      { gatilho: { tipo: 'tempo' }, condicoes: {}, efeitos: [{ tipo: 'falar', texto: 'Zum' }] }] } },
+    { ...base, id: COIN, grupo: 'itens', pasta: 'valiosos', nome: 'moeda-teste', propriedades: prop },
+    { ...base, id: BAG, grupo: 'itens', pasta: 'recipientes', nome: 'mochila-teste', propriedades: { ...prop, espacos: 10 } }
+  ]);
+  const sim = buildGame({ objects: [...floorRect(0, 14, 0, 14, 0), [ALTAR, 6, 5, 0, 0, 0, 0, 1]], player: { x: 5, y: 5, z: 0 } });
+  sim.player.equip.mochila = { uid: 'b1', type: BAG, items: [{ uid: 'c1', type: COIN }, ...new Array(9).fill(null)] };
+  sim.drainEvents();
+  sim.enqueue(sim.player.id, { type: 'moveInv', from: { t: 'c', uid: 'b1', i: 0 }, to: { t: 'w', x: 6, y: 5, z: 0 } });
+  const events = runFor(sim, TICK_MS * 2);
+  assert.ok(events.some(e => e.type === 'speech' && e.text === 'Obrigado'));
+  assert.equal(sim.player.equip.mochila.items[0], null);
+  assert.ok(runFor(sim, 2000).some(e => e.type === 'speech' && e.text === 'Zum'));
+});

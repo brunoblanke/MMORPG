@@ -438,6 +438,7 @@ export class Simulation {
     }
     this.conditions.update(now);
     this.social.update(now);
+    this.effects.tickObjects(now);
     this.houses.update();
     this.dropped.update();
     this.releaseOffline(now);
