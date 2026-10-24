@@ -30,7 +30,7 @@ Falta, por ordem:
 
 ## Ideias oferecidas e não pedidas
 
-Battle list, minimapa e janela de skills; som e música; respawn que espera o spawn ficar sem player por perto; eventos/invasões em horário fixo; comida/estômago e demais itens do 7.8 que ainda não existem.
+Minimapa; som e música; respawn que espera o spawn ficar sem player por perto; eventos/invasões em horário fixo; comida/estômago e demais itens do 7.8 que ainda não existem.
 
 ## Servidor
 
