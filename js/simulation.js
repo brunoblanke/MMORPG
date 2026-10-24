@@ -435,6 +435,7 @@ export class Simulation {
       this.combat.processPlayer(player, now);
       this.combat.processEnemies(player, now);
       this.combat.processFloorDamage(player, now);
+      this.effects.tickCreature(player, now);
     }
     this.conditions.update(now);
     this.social.update(now);

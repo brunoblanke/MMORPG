@@ -178,7 +178,7 @@ export class CombatController {
     const hpLeft = defender.takeDamage(damage, now);
     this.sim.emit({ type: 'damage', targetId: defender.id, x: defender.x, y: defender.y, z: defender.z || 0, amount: damage });
     this.sim.powers.reflect(attacker, defender, damage);
-    if (!defender.isPlayer && hpLeft > 0) this.sim.effects.trigger(defender, 'ser-atingido', attacker.isPlayer ? attacker : null);
+    if (hpLeft > 0) this.sim.effects.trigger(defender, 'ser-atingido', attacker.isPlayer ? attacker : null);
     const poison = attacker.isPlayer ? 0 : creaturePowers(attacker.creature).poison;
     if (poison && melee) this.sim.conditions.add(defender, 'poison', { damage: poison, ticks: POISON_HIT_TICKS });
     return hpLeft;

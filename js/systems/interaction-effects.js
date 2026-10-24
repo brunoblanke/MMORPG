@@ -6,6 +6,7 @@ import { isValidFloor } from '../../shared/constants.js';
 import { countInBag, giveItem } from './trade.js';
 import { interacoesDe } from '../../shared/ficha.js';
 import { normalizeSpeech } from '../../shared/npcs.js';
+import { PLAYER_SPRITES } from '../../shared/catalog.js';
 
 const TEMPO_MS = 1000;
 
@@ -114,12 +115,14 @@ export class InteractionEffects {
 
   // ================================================================================================================================================================================================================================================
   // trigger
-  // Roda as interações da criatura com o gatilho (ser-atingido, morrer, tempo). actor = quem bateu ou matou.
+  // Roda as interações da criatura (ou do player, pela receita do sprite dele) com o gatilho (ser-atingido, morrer, tempo). actor = quem bateu ou matou.
 
   trigger(creature, gatilho, actor = null) {
-    if (!creature || !creature.creature || creature.pet) return;
+    if (!creature || creature.pet) return;
+    const type = this.typeOf(creature);
+    if (!type) return;
     const tile = { x: creature.x, y: creature.y, z: creature.z || 0 };
-    for (const interaction of interacoesDe(creature.creature, gatilho)) {
+    for (const interaction of interacoesDe(type, gatilho)) {
       if (interaction.propria) this.run(interaction, { actor, target: creature, tile, id: creature.id });
     }
   }
@@ -188,6 +191,7 @@ export class InteractionEffects {
   // O tipo da folha de um objeto do mapa ou criatura.
 
   typeOf(target) {
+    if (target.isPlayer) return PLAYER_SPRITES[target.gender] || null;
     return target.creature || objectIdType(target.id);
   }
 }

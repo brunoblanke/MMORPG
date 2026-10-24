@@ -18,7 +18,7 @@ Feito: `shared/ficha.js` (ficha com traços e interações), ferramentas por cap
 Falta, por ordem:
 1. Gatilhos feitos: `ser-atingido`, `morrer`, `tempo`, `falar` (condição `palavra`) e `item-em-cima` (condição `item`, efeito `consumir-item`), em criaturas e objetos conforme faz sentido. Conversa de NPC segue por módulos.
 2. (feito) Painel de Objetos mostra o que o Uso faz (`descreverUso`).
-3. Player como ficha: feito o primeiro passo, `fichaDoPlayer(player)` em `shared/ficha.js` (só leitura: traços controlado, vivo, progressão, inventário e social, sem interações). Falta o jogo consultar essa ficha em vez de ler o player direto, e dar ao player interações (ex.: reagir a ser atingido) pelo mesmo caminho dos NPCs.
+3. Player como ficha: `fichaDoPlayer(player)` (só leitura) e os gatilhos `ser-atingido`, `morrer` e `tempo` do player rodam pelas interações escritas na receita do sprite dele (`personagens/players/player-masculino` / `-feminino`, `PLAYER_SPRITES`), valem pra todos os players daquele gênero. Falta o jogo consultar a ficha em vez de ler o player direto.
 4. (feito) Anel de invisibilidade (`invisivelEquipado`, `player.isInvisible`; stealth ring com Duração 1800 s) e time ring (speed 40). Falta só preencher a regeneração do life ring no gerador.
 5. Id: mantido como `grupo/pasta/nome` (decisão posterior ao artefato: mover pasta usa `ferramentas/mover-folhas.js`, que atualiza tudo e a tabela `gerador/renomeados.json`).
 

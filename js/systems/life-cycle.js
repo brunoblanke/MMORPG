@@ -73,6 +73,7 @@ export class LifeCycleController {
 
   handlePlayerDeath(player, now) {
     const { world, control } = this.sim;
+    this.sim.effects.trigger(player, 'morrer', null);
     this.sim.social.onPlayerDeath(player, now);
     if (player.isBot) return this.reviveBot(player);
     if (player.offline) player.offlineSince = -Infinity;

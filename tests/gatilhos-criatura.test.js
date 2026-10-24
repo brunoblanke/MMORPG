@@ -79,3 +79,17 @@ test('gatilho item-em-cima consome o item certo; gatilho tempo roda em objeto do
   assert.equal(sim.player.equip.mochila.items[0], null);
   assert.ok(runFor(sim, 2000).some(e => e.type === 'speech' && e.text === 'Zum'));
 });
+
+test('player reage pela receita do sprite dele: ser-atingido e morrer', async () => {
+  const { PLAYER_SPRITES } = await import('../shared/catalog.js');
+  const id = PLAYER_SPRITES.male;
+  const [grupo, pasta, nome] = id.split('/');
+  setAssets([{ id, ferramenta: 'criaturas', grupo, pasta, nome, url: '/p.png', quadro: 32, quadros: 1, pecas: [], propriedades: { interacoes: [fala('ser-atingido', 'Ui!'), fala('morrer', 'Tchau')] } }]);
+  const sim = buildGame({ objects: floorRect(0, 14, 0, 14, 0), player: { x: 5, y: 5, z: 0 } });
+  sim.player.gender = 'male';
+  sim.drainEvents();
+  sim.combat.applyDamage({ isPlayer: false, creature: CREATURE }, sim.player, 1, sim.time, true);
+  assert.ok(sim.drainEvents().some(e => e.type === 'speech' && e.text === 'Ui!'));
+  sim.player.currentHp = 0;
+  assert.ok(runFor(sim, TICK_MS * 2).some(e => e.type === 'speech' && e.text === 'Tchau'));
+});
