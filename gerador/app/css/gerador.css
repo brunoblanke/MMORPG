@@ -288,7 +288,17 @@ button:focus-visible, input:focus-visible, .slot:focus-visible{ outline:2px soli
 .ix-text{ min-width:200px; }
 .ix-dest{ display:flex; gap:4px; }
 .ix-effect{ border-top:1px dashed var(--line, #444); padding-top:6px; }
-.prop-section{ border:1px solid var(--line); border-radius:8px; padding:0 10px; }
+.prop-section{ border:1px solid var(--line); border-radius:8px; padding:0 12px; }
 .prop-section > summary{ cursor:pointer; padding:7px 0; font-weight:600; font-size:12px; color:var(--muted); list-style-position:inside; }
-.prop-section[open] > summary{ margin-bottom:6px; border-bottom:1px solid var(--line); }
-.prop-section[open]{ padding-bottom:8px; display:flex; flex-direction:column; gap:6px; }
+.prop-section[open]{ padding-bottom:10px; }
+.prop-section[open] > summary{ margin-bottom:8px; border-bottom:1px solid var(--line); }
+.prop-body{ display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:6px 28px; align-items:center; }
+.prop-body > .hint{ grid-column:1 / -1; }
+.prop-section.ix-panel[open]{ display:flex; flex-direction:column; gap:6px; }
+.property-list .prop-section .numberline{ display:grid; grid-template-columns:minmax(0, 1fr) auto; justify-content:normal; }
+.property-list .prop-section .numberline select{ width:140px; background:var(--panel-2); border:1px solid var(--line); border-radius:6px; color:var(--text); padding:4px 6px; font-size:12px; }
+.property-list .prop-section [title]{ cursor:help; }
+.property-list .prop-section .numberline input{ width:80px; }
+#objectCaps{ flex-direction:row; flex-wrap:wrap; gap:6px 18px; }
+.property-list{ max-width:960px; }
+.prop-section.ix-panel{ max-width:960px; }

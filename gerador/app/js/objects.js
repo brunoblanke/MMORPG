@@ -42,8 +42,8 @@ const NUMBERS = [
   { key: 'alimento', label: 'Comida (segundos de regeneração)', min: 0, step: 1 },
   { key: 'luz', label: 'Luz (raio em sqm; 0 = não ilumina)', min: 0, step: 1 },
   { key: 'duracao', label: 'Duração em uso (segundos acesa, ou equipada se regenera; 0 = não gasta)', min: 0, step: 1 },
-  { key: 'regenVida', label: 'Equipado: recupera vida a cada 6 s', min: 0, step: 1 },
-  { key: 'regenMana', label: 'Equipado: recupera mana a cada 6 s', min: 0, step: 1 }
+  { key: 'regenVida', label: 'Regenera vida equipado (a cada 6 s)', min: 0, step: 1 },
+  { key: 'regenMana', label: 'Regenera mana equipado (a cada 6 s)', min: 0, step: 1 }
 ];
 const DEFAULT_PROPERTIES = { bloqueia: false, move: true, altura: false, volume: 1, passo: 1, nivelPesca: 0, empilhavel: false, duasMaos: false, tipoMunicao: '', isca: '', resistencias: {}, postal: false, protegePerda: false, invisivelEquipado: false, peso: 10, espacos: 0, atk: 0, def: 0, ml: 0, speed: 0, vidaMin: 0, vidaMax: 0, manaMin: 0, manaMax: 0, alimento: 0, luz: 0, duracao: 0, regenVida: 0, regenMana: 0, uso: '', ativoComo: '', comecaAtivo: false };
 const PROPERTY_GROUPS = [
@@ -400,7 +400,7 @@ function renderInteractions() {
 // ================================================================================================================================================================================================================================================
 // createSections
 // Agrupa as propriedades em seções que abrem e fecham (Corpo, Estado, Uso, Equipar…). Devolve put(chave, elemento), que
-// põe o campo na seção da propriedade. Fica aberta a seção que sempre importa ou que tem algum valor diferente do padrão.
+// põe o campo na seção da propriedade (a explicação longa entre parênteses vira dica ao passar o mouse). Fica aberta a seção que sempre importa ou que tem algum valor diferente do padrão.
 
 function createSections(list) {
   const sections = new Map();
@@ -411,9 +411,11 @@ function createSections(list) {
     details.hidden = true;
     const summary = document.createElement('summary');
     summary.textContent = title;
-    details.appendChild(summary);
+    const body = document.createElement('div');
+    body.className = 'prop-body';
+    details.append(summary, body);
     list.appendChild(details);
-    sections.set(id, { details, keys, always });
+    sections.set(id, { details, body, keys, always });
     for (const key of keys) place.set(key, id);
   }
   const touched = (key) => {
@@ -424,7 +426,23 @@ function createSections(list) {
   };
   return (key, element) => {
     const section = sections.get(place.get(key));
-    section.details.appendChild(element);
+    for (const node of element.childNodes) {
+      if (node.nodeType !== 3) continue;
+      const tips = [];
+      let text = node.textContent;
+      for (const pattern of [/^([^:(]{12,}(?:\([^)]*\))?): (.{13,})$/, /^([^(]+?) \((.{13,})\)$/]) {
+        const match = pattern.exec(text);
+        if (match) {
+          text = match[1];
+          tips.unshift(match[2]);
+        }
+      }
+      if (tips.length) {
+        node.textContent = text;
+        element.title = tips.join(' · ');
+      }
+    }
+    section.body.appendChild(element);
     section.details.hidden = false;
     if (section.always || touched(key)) section.details.open = true;
   };
