@@ -103,3 +103,10 @@ test('as interações da receita são limpas: só vocabulário conhecido e campo
   assert.deepEqual(limpas[0].condicoes, { alcance: 12, chance: 100 });
   assert.deepEqual(limpas[0].efeitos, [{ tipo: 'falar', texto: 'Oi' }]);
 });
+
+test('descreverUso diz o que o Uso faz, em frases', async () => {
+  const { descreverUso } = await import('../shared/ficha.js');
+  assert.deepEqual(descreverUso(null), []);
+  assert.ok(descreverUso('pa').some(l => l.startsWith('Ao usar uma ferramenta de cavar')));
+  assert.ok(descreverUso('alavanca')[0].startsWith('Ao clicar'));
+});

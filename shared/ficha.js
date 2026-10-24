@@ -281,8 +281,7 @@ function vidaEConversa(ficha, id, asset, props) {
 // transicaoEUso
 // Traços transicao, texto, entrega e capacidade, e as interações de cada Uso do gerador.
 
-function transicaoEUso(ficha, id, asset, props) {
-  const uso = objectUse(id);
+function transicaoEUso(ficha, id, asset, props, uso = objectUse(id)) {
   const tracos = ficha.tracos;
   const clicar = (efeitos, condicoes = { alcance: 1 }) => ficha.interacoes.push({ gatilho: { tipo: 'clicar' }, condicoes, efeitos });
   const com = (capacidade, efeitos, condicoes = { alcance: 1 }) => ficha.interacoes.push({ gatilho: { tipo: 'capacidade', capacidade }, condicoes, efeitos });
@@ -328,6 +327,19 @@ function transicaoEUso(ficha, id, asset, props) {
     clicar([{ tipo: 'alternar-estado' }]);
   }
   if (uso === 'ferramenta-pesca') ficha.tracos.capacidade = ['pescar'];
+}
+
+// ================================================================================================================================================================================================================================================
+// descreverUso
+// O que o Uso faz, em frases (uma por interação), pro painel do gerador. Vazio se o Uso não tem interação.
+
+export function descreverUso(uso) {
+  if (!uso) return [];
+  const ficha = { camada: 'objeto', tracos: {}, interacoes: [] };
+  transicaoEUso(ficha, '', null, {}, uso);
+  const quando = (g) => g.tipo === 'capacidade' ? `Ao usar uma ferramenta de ${g.capacidade}` : g.tipo === 'clicar' ? 'Ao clicar' : g.tipo === 'pisar' ? 'Ao pisar' : g.tipo === 'item-em-cima' ? 'Ao jogar um item em cima' : `Ao ${g.tipo}`;
+  const efeito = (e) => (ESQUEMA_EFEITOS[e.tipo] ? ESQUEMA_EFEITOS[e.tipo].rotulo : e.tipo.replace(/-/g, ' '));
+  return ficha.interacoes.map(i => `${quando(i.gatilho)}: ${i.efeitos.map(efeito).join(', ')}`);
 }
 
 // ================================================================================================================================================================================================================================================

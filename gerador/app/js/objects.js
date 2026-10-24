@@ -4,6 +4,7 @@ import { spriteUrl, saveProject, fetchItemInfo, fetchProjects } from './api.js';
 import { loadImage, isReady, drawAnchored, readPngFile, normalizeName, statusOf, generatePendingSheets } from './common.js';
 import { refreshProjects } from './projects.js';
 import { montarInteracoes, montarCapacidades } from './interacoes.js';
+import { descreverUso } from '/shared/ficha.js';
 import { fillFolderSelect, folderOf, setFolder, recipePath } from './folders.js';
 
 // Folha de objeto: uma linha com os quadros da animação, cada um com o
@@ -441,9 +442,15 @@ function renderProperties() {
   useSelect.value = objects.properties.uso || '';
   useLabel.append('Uso', useSelect);
   list.appendChild(useLabel);
+  const useInfo = document.createElement('div');
+  useInfo.className = 'hint';
+  const showUse = () => { useInfo.innerHTML = descreverUso(useSelect.value).map(linha => `<div>${linha}</div>`).join(''); };
+  showUse();
+  list.appendChild(useInfo);
   useSelect.onchange = () => {
     objects.properties.uso = useSelect.value;
     objects.dirty = true;
+    showUse();
   };
   const baitLabel = document.createElement('label');
   baitLabel.className = 'numberline';
