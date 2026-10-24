@@ -130,6 +130,7 @@ export function itemInfo(type) {
     ammoType: typeof props.tipoMunicao === 'string' ? props.tipoMunicao : '',
     postal: !!props.postal,
     protectsDeath: !!props.protegePerda,
+    invisibleWorn: !!props.invisivelEquipado,
     impact: impactOf(props)
   };
 }

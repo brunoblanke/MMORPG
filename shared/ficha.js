@@ -234,6 +234,7 @@ function equiparEUsar(ficha, id, props) {
   if (Object.keys(info.resist || {}).length) bonus.resistencias = info.resist;
   if (info.regen.hp || info.regen.mana) bonus.regen = { hp: info.regen.hp, mana: info.regen.mana, duracao: info.burn };
   if (info.protectsDeath) bonus.protegePerda = true;
+  if (info.invisibleWorn) bonus.invisivel = true;
   if (info.def && !ficha.tracos.equipavel) bonus.def = info.def;
   if (Object.keys(bonus).length) ficha.tracos.bonus = bonus;
   if (info.food) {

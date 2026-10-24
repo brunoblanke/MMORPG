@@ -45,7 +45,7 @@ const NUMBERS = [
   { key: 'regenVida', label: 'Equipado: recupera vida a cada 6 s', min: 0, step: 1 },
   { key: 'regenMana', label: 'Equipado: recupera mana a cada 6 s', min: 0, step: 1 }
 ];
-const DEFAULT_PROPERTIES = { bloqueia: false, move: true, altura: false, volume: 1, passo: 1, nivelPesca: 0, empilhavel: false, duasMaos: false, tipoMunicao: '', isca: '', resistencias: {}, postal: false, protegePerda: false, peso: 10, espacos: 0, atk: 0, def: 0, ml: 0, speed: 0, vidaMin: 0, vidaMax: 0, manaMin: 0, manaMax: 0, alimento: 0, luz: 0, duracao: 0, regenVida: 0, regenMana: 0, uso: '', ativoComo: '', comecaAtivo: false };
+const DEFAULT_PROPERTIES = { bloqueia: false, move: true, altura: false, volume: 1, passo: 1, nivelPesca: 0, empilhavel: false, duasMaos: false, tipoMunicao: '', isca: '', resistencias: {}, postal: false, protegePerda: false, invisivelEquipado: false, peso: 10, espacos: 0, atk: 0, def: 0, ml: 0, speed: 0, vidaMin: 0, vidaMax: 0, manaMin: 0, manaMax: 0, alimento: 0, luz: 0, duracao: 0, regenVida: 0, regenMana: 0, uso: '', ativoComo: '', comecaAtivo: false };
 const RESISTANCES = [['physical', 'Físico'], ['fire', 'Fogo'], ['energy', 'Energia'], ['ice', 'Gelo'], ['earth', 'Terra'], ['poison', 'Veneno'], ['death', 'Morte'], ['holy', 'Sagrado']];
 const AMMO_TYPES = [['', 'Qualquer / não é munição'], ['arrow', 'Flecha (arco)'], ['bolt', 'Virote (besta)']];
 const USES = [
@@ -95,7 +95,8 @@ const PROPERTIES = [
   { key: 'empilhavel', label: 'Empilhável (pilha até 100)' },
   { key: 'duasMaos', label: 'Arma de duas mãos (arco, besta…): não usa com escudo' },
   { key: 'postal', label: 'Carta ou encomenda (dá pra mandar pela caixa de correio)' },
-  { key: 'protegePerda', label: 'Amuleto da perda: equipado, nada cai ao morrer (some na morte; não vale com caveira vermelha ou preta)' }
+  { key: 'protegePerda', label: 'Amuleto da perda: equipado, nada cai ao morrer (some na morte; não vale com caveira vermelha ou preta)' },
+  { key: 'invisivelEquipado', label: 'Anel de invisibilidade: equipado, deixa o player invisível (a Duração gasta como no anel de cura)' }
 ];
 
 const CHOICES = [

@@ -319,7 +319,7 @@ export class Simulation {
     let best = null;
     let bestDist = Infinity;
     for (const player of this.players) {
-      if ((player.invisibleUntil || 0) > this.time && Math.max(Math.abs(enemy.x - player.x), Math.abs(enemy.y - player.y)) > 1) continue;
+      if (player.isInvisible(this.time) && Math.max(Math.abs(enemy.x - player.x), Math.abs(enemy.y - player.y)) > 1) continue;
       const dist = distance(enemy.x, enemy.y, player.x, player.y) + Math.abs((enemy.z || 0) - (player.z || 0)) * 100;
       if (dist < bestDist) {
         best = player;
@@ -443,7 +443,7 @@ export class Simulation {
     this.releaseOffline(now);
     for (const player of this.players) {
       player.inCombat = this.inCombat(player, now);
-      player.invisible = (player.invisibleUntil || 0) > now;
+      player.invisible = player.isInvisible(now);
     }
 
     this.movement.checkFloorTransitions([...this.players, ...this.enemies]);

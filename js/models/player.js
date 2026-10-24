@@ -4,7 +4,7 @@ import { Entity } from './entity.js';
 import { playerStats } from '../utils/helpers.js';
 import { PLAYER_GENDERS, DEFAULT_GENDER } from '../../shared/catalog.js';
 import { isValidFloor } from '../../shared/constants.js';
-import { EQUIP_SLOTS, FOOD_MAX_SECONDS, toPlain, equipBonus } from '../../shared/items.js';
+import { EQUIP_SLOTS, FOOD_MAX_SECONDS, toPlain, equipBonus, itemInfo } from '../../shared/items.js';
 import { newSkills, loadSkills, loseSkills } from '../../shared/skills.js';
 import { vocationOf } from '../../shared/vocations.js';
 
@@ -80,6 +80,15 @@ export class Player extends Entity {
       this.mana = Math.min(this.maxMana, mana + Math.max(0, this.maxMana - oldMana));
     }
     return levels;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // isInvisible
+  // Invisível pela magia (invisibleUntil) ou por um item equipado com invisivelEquipado (anel de invisibilidade).
+
+  isInvisible(now) {
+    if ((this.invisibleUntil || 0) > now) return true;
+    return !!this.equip && Object.values(this.equip).some(item => item && itemInfo(item.type).invisibleWorn);
   }
 
   // ================================================================================================================================================================================================================================================

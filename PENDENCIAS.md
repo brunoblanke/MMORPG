@@ -19,7 +19,7 @@ Falta, por ordem:
 1. Gatilho `falar` na ficha (conversa de NPC segue por módulos). Feitos: `ser-atingido`, `morrer` e `tempo` (1 por segundo) em criaturas, via `sim.effects.trigger`/`tickCreature`; falta o mesmo em objetos do mapa (`item-em-cima` também).
 2. (feito) Painel de Objetos mostra o que o Uso faz (`descreverUso`).
 3. Player como ficha (traços controlado, progressão, inventário, social): decisão "Concordo", mas ainda não feito; a lógica dele segue nos sistemas atuais.
-4. Anéis sem mecânica: stealth ring (invisível) e time ring (haste) como bônus ao equipar; life ring só falta preencher a regeneração no gerador.
+4. (feito) Anel de invisibilidade (`invisivelEquipado`, `player.isInvisible`; stealth ring com Duração 1800 s) e time ring (speed 40). Falta só preencher a regeneração do life ring no gerador.
 5. Id: mantido como `grupo/pasta/nome` (decisão posterior ao artefato: mover pasta usa `ferramentas/mover-folhas.js`, que atualiza tudo e a tabela `gerador/renomeados.json`).
 
 ## Decisões já tomadas (não repetir a discussão)

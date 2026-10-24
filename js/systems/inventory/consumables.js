@@ -32,7 +32,7 @@ export const consumableMethods = {
       if (!item) return false;
       if (item.items) item.items.forEach((child, i) => { if (burn(child)) item.items[i] = null; });
       const info = itemInfo(item.type);
-      const total = item.lit || (worn && (info.regen.hp || info.regen.mana)) ? info.burn * 1000 : 0;
+      const total = item.lit || (worn && (info.regen.hp || info.regen.mana || info.invisibleWorn)) ? info.burn * 1000 : 0;
       if (!total) return false;
       item.fuel = Math.max(0, (item.fuel ?? total) - ms);
       return item.fuel === 0;
