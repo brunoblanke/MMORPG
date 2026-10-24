@@ -15,6 +15,8 @@ Estado do projeto para retomar numa conversa nova. O que é regra fixa e como o 
 
 Feito: `shared/ficha.js` (ficha com traços e interações), ferramentas por capacidade (cavar, quebrar, cortar, colher, puxar, pescar, abrir), clicar e pisar pela ficha, interações escritas no gerador (Objetos, Criaturas, Pisos) rodando em `js/systems/interaction-effects.js`, pasta só organiza (receitas convertidas), editor monta o ✎ pela ficha. O artefato com as decisões marcadas: https://claude.ai/artifact/MMdLArrnAuBtpvvHEDeAFN (coleção `decisoes`).
 
+Gerador: aba Objetos reorganizada em seções que abrem e fecham (`createSections` e `PROPERTY_GROUPS` em `gerador/app/js/objects.js`); falta o mesmo jeito em Pisos, Criaturas e Paredes (o usuário achou as abas muito diferentes entre si).
+
 Falta, por ordem:
 1. Gatilhos feitos: `ser-atingido`, `morrer`, `tempo`, `falar` (condição `palavra`) e `item-em-cima` (condição `item`, efeito `consumir-item`), em criaturas e objetos conforme faz sentido. Conversa de NPC segue por módulos.
 2. (feito) Painel de Objetos mostra o que o Uso faz (`descreverUso`).

@@ -46,6 +46,17 @@ const NUMBERS = [
   { key: 'regenMana', label: 'Equipado: recupera mana a cada 6 s', min: 0, step: 1 }
 ];
 const DEFAULT_PROPERTIES = { bloqueia: false, move: true, altura: false, volume: 1, passo: 1, nivelPesca: 0, empilhavel: false, duasMaos: false, tipoMunicao: '', isca: '', resistencias: {}, postal: false, protegePerda: false, invisivelEquipado: false, peso: 10, espacos: 0, atk: 0, def: 0, ml: 0, speed: 0, vidaMin: 0, vidaMax: 0, manaMin: 0, manaMax: 0, alimento: 0, luz: 0, duracao: 0, regenVida: 0, regenMana: 0, uso: '', ativoComo: '', comecaAtivo: false };
+const PROPERTY_GROUPS = [
+  ['corpo', 'Corpo e colisão', ['bloqueia', 'move', 'altura', 'volume', 'passo', 'empilhavel', 'peso', 'transicao'], true],
+  ['estado', 'Estado normal e ativo', ['ativoComo', 'comecaAtivo'], false],
+  ['uso', 'Uso e correio', ['uso', 'isca', 'nivelPesca', 'postal'], true],
+  ['equip', 'Equipar e armas', ['slot', 'skillArma', 'duasMaos', 'tipoMunicao', 'atk', 'def', 'ml', 'speed', 'protegePerda', 'invisivelEquipado', 'regenVida', 'regenMana'], false],
+  ['consome', 'Comida e poção', ['vidaMin', 'vidaMax', 'manaMin', 'manaMax', 'alimento'], false],
+  ['luz', 'Luz e duração', ['luz', 'duracao'], false],
+  ['container', 'Container', ['espacos'], false],
+  ['municao', 'Munição: efeito ao acertar', ['impacto'], false],
+  ['resist', 'Resistências (equipado)', ['resistencias'], false]
+];
 const RESISTANCES = [['physical', 'Físico'], ['fire', 'Fogo'], ['energy', 'Energia'], ['ice', 'Gelo'], ['earth', 'Terra'], ['poison', 'Veneno'], ['death', 'Morte'], ['holy', 'Sagrado']];
 const AMMO_TYPES = [['', 'Qualquer / não é munição'], ['arrow', 'Flecha (arco)'], ['bolt', 'Virote (besta)']];
 const USES = [
@@ -387,11 +398,45 @@ function renderInteractions() {
 }
 
 // ================================================================================================================================================================================================================================================
+// createSections
+// Agrupa as propriedades em seções que abrem e fecham (Corpo, Estado, Uso, Equipar…). Devolve put(chave, elemento), que
+// põe o campo na seção da propriedade. Fica aberta a seção que sempre importa ou que tem algum valor diferente do padrão.
+
+function createSections(list) {
+  const sections = new Map();
+  const place = new Map();
+  for (const [id, title, keys, always] of PROPERTY_GROUPS) {
+    const details = document.createElement('details');
+    details.className = 'prop-section';
+    details.hidden = true;
+    const summary = document.createElement('summary');
+    summary.textContent = title;
+    details.appendChild(summary);
+    list.appendChild(details);
+    sections.set(id, { details, keys, always });
+    for (const key of keys) place.set(key, id);
+  }
+  const touched = (key) => {
+    const value = objects.properties[key];
+    if (key === 'impacto') return !!(value && value.tipo);
+    if (key === 'resistencias') return Object.values(value || {}).some(Boolean);
+    return value !== undefined && value !== '' && value !== DEFAULT_PROPERTIES[key] && value !== false && value !== 0;
+  };
+  return (key, element) => {
+    const section = sections.get(place.get(key));
+    section.details.appendChild(element);
+    section.details.hidden = false;
+    if (section.always || touched(key)) section.details.open = true;
+  };
+}
+
+// ================================================================================================================================================================================================================================================
 // renderProperties
 
 function renderProperties() {
   const list = document.getElementById('objectProperties');
   list.innerHTML = '';
+  const put = createSections(list);
   renderInteractions();
   for (const property of PROPERTIES) {
     const label = document.createElement('label');
@@ -405,9 +450,9 @@ function renderProperties() {
       drawPreview();
     };
     label.append(input, property.label);
-    list.appendChild(label);
+    put(property.key, label);
   }
-  renderImpact(list);
+  renderImpact({ appendChild: el => put('impacto', el) });
   const ammoLabel = document.createElement('label');
   ammoLabel.className = 'numberline';
   const ammoSelect = document.createElement('select');
@@ -415,7 +460,7 @@ function renderProperties() {
   ammoSelect.innerHTML = AMMO_TYPES.map(([value, text]) => `<option value="${value}">${text}</option>`).join('');
   ammoSelect.value = objects.properties.tipoMunicao || '';
   ammoLabel.append('Tipo de munição (arco/besta e a munição dela)', ammoSelect);
-  list.appendChild(ammoLabel);
+  put('tipoMunicao', ammoLabel);
   ammoSelect.onchange = () => {
     objects.properties.tipoMunicao = ammoSelect.value;
     objects.dirty = true;
@@ -433,7 +478,7 @@ function renderProperties() {
       objects.dirty = true;
     };
     label.append(rotulo, select);
-    list.appendChild(label);
+    put(chave, label);
   }
   const useLabel = document.createElement('label');
   useLabel.className = 'numberline';
@@ -442,12 +487,12 @@ function renderProperties() {
   useSelect.innerHTML = USES.map(([value, text]) => `<option value="${value}">${text}</option>`).join('');
   useSelect.value = objects.properties.uso || '';
   useLabel.append('Uso', useSelect);
-  list.appendChild(useLabel);
+  put('uso', useLabel);
   const useInfo = document.createElement('div');
   useInfo.className = 'hint';
   const showUse = () => { useInfo.innerHTML = descreverUso(useSelect.value).map(linha => `<div>${linha}</div>`).join(''); };
   showUse();
-  list.appendChild(useInfo);
+  put('uso', useInfo);
   useSelect.onchange = () => {
     objects.properties.uso = useSelect.value;
     objects.dirty = true;
@@ -466,7 +511,7 @@ function renderProperties() {
   fillBait([]);
   fetchProjects().then(projects => fillBait(projects.filter(p => p.ferramenta === 'objetos' && p.grupo === 'itens').map(p => p.caminho).sort())).catch(() => {});
   baitLabel.append('Isca (vara de pescar: o item que ela gasta a cada pesca, ex.: a minhoca)', baitSelect);
-  list.appendChild(baitLabel);
+  put('isca', baitLabel);
   baitSelect.onchange = () => {
     objects.properties.isca = baitSelect.value;
     objects.dirty = true;
@@ -485,7 +530,7 @@ function renderProperties() {
       objects.dirty = true;
     };
     label.append(number.label, input);
-    list.appendChild(label);
+    put(number.key, label);
   }
   for (const [element, name] of RESISTANCES) {
     const label = document.createElement('label');
@@ -506,7 +551,7 @@ function renderProperties() {
       objects.dirty = true;
     };
     label.append(`Resistência a ${name.toLowerCase()} (%, equipado; negativo = fraqueza)`, input);
-    list.appendChild(label);
+    put('resistencias', label);
   }
   const activeLabel = document.createElement('label');
   activeLabel.className = 'numberline';
@@ -521,7 +566,7 @@ function renderProperties() {
   fillActive([]);
   fetchProjects().then(projects => fillActive(projects.filter(p => p.ferramenta === 'objetos').map(p => p.caminho).sort())).catch(() => {});
   activeLabel.append('Ativo como (desenho do estado ativo: aceso, aberto pela pá…)', activeSelect);
-  list.appendChild(activeLabel);
+  put('ativoComo', activeLabel);
   activeSelect.onchange = () => {
     objects.properties.ativoComo = activeSelect.value;
     objects.dirty = true;
@@ -536,7 +581,7 @@ function renderProperties() {
     objects.dirty = true;
   };
   startLabel.append(startInput, 'Começa ativo no mapa (objeto fixo sem Uso: usar alterna normal/ativo)');
-  list.appendChild(startLabel);
+  put('comecaAtivo', startLabel);
 }
 
 // ================================================================================================================================================================================================================================================
