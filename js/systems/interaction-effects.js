@@ -5,6 +5,7 @@ import { newItem } from '../../shared/items.js';
 import { isValidFloor } from '../../shared/constants.js';
 import { countInBag, giveItem } from './trade.js';
 import { interacoesDe } from '../../shared/ficha.js';
+import { normalizeSpeech } from '../../shared/npcs.js';
 
 const TEMPO_MS = 1000;
 
@@ -34,6 +35,7 @@ export class InteractionEffects {
     if (conditions.nivel && (!actor || actor.lvl < conditions.nivel)) return false;
     if (conditions.quest && (!actor || !(actor.quests || []).includes(conditions.quest))) return false;
     if (conditions['tem-item'] && (!actor || countInBag(actor, conditions['tem-item']) < 1)) return false;
+    if (conditions.palavra && !` ${ctx.heard || ''} `.includes(` ${normalizeSpeech(conditions.palavra)} `)) return false;
     if (conditions.chance && Math.random() * 100 >= conditions.chance) return false;
     return true;
   }
@@ -116,6 +118,26 @@ export class InteractionEffects {
     const tile = { x: creature.x, y: creature.y, z: creature.z || 0 };
     for (const interaction of interacoesDe(creature.creature, gatilho)) {
       if (interaction.propria) this.run(interaction, { actor, target: creature, tile, id: creature.id });
+    }
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // hear
+  // O gatilho falar: o player disse `heard` (já normalizado) perto de criaturas e objetos que têm interação de falar.
+  // A condição palavra pede que a fala contenha aquelas palavras; alcance vale como em qualquer interação.
+
+  hear(player, heard, range) {
+    const sim = this.sim;
+    const z = player.z || 0;
+    const near = (e) => (e.z || 0) === z && Math.max(Math.abs(e.x - player.x), Math.abs(e.y - player.y)) <= range;
+    const listeners = [...sim.npcs, ...sim.enemies.filter(e => !e.pet), ...sim.objects].filter(near);
+    for (const target of listeners) {
+      const type = this.typeOf(target);
+      if (!type) continue;
+      const tile = { x: target.x, y: target.y, z };
+      for (const interaction of interacoesDe(type, 'falar')) {
+        if (interaction.propria) this.run(interaction, { actor: player, target, tile, id: target.id, heard });
+      }
     }
   }
 

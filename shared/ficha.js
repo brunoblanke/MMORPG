@@ -81,6 +81,7 @@ export function normalizarInteracoes(lista) {
     if (c.alcance !== undefined) condicoes.alcance = int(c.alcance, 12);
     if (c.nivel) condicoes.nivel = int(c.nivel, 1000);
     if (c.quest) condicoes.quest = texto(c.quest, 60);
+    if (c.palavra) condicoes.palavra = texto(c.palavra, 60);
     if (c.chance) condicoes.chance = Math.min(100, Math.max(1, int(c.chance, 100)));
     if (c['tem-item']) condicoes['tem-item'] = texto(c['tem-item'], 120);
     const efeitos = [];

@@ -42,3 +42,17 @@ test('gatilho ser-atingido e morrer: fala ao levar o golpe e ao morrer', () => {
   assert.ok(events.some(e => e.type === 'speech' && e.text === 'Adeus'));
   assert.equal(events.some(e => e.type === 'speech' && e.text === 'Ai!'), false);
 });
+
+test('gatilho falar: objeto reage à palavra dita perto dele, e só a ela', () => {
+  const BOX = 'decoracao/adornos/caixa-falante';
+  setAssets([{
+    id: BOX, ferramenta: 'objetos', grupo: 'decoracao', pasta: 'adornos', nome: 'caixa-falante', url: '/c.png', quadro: 32, quadros: 1, pecas: [],
+    propriedades: { bloqueia: true, interacoes: [{ gatilho: { tipo: 'falar' }, condicoes: { alcance: 3, palavra: 'abre te' }, efeitos: [{ tipo: 'falar', texto: 'Abri!' }] }] }
+  }]);
+  const sim = buildGame({ objects: [...floorRect(0, 14, 0, 14, 0), [BOX, 6, 5, 0, 0, 0, 0, 1]], player: { x: 5, y: 5, z: 0 } });
+  sim.drainEvents();
+  sim.enqueue(sim.player.id, { type: 'say', text: 'Abre-te, caixa' });
+  assert.ok(runFor(sim, TICK_MS * 2).some(e => e.type === 'speech' && e.text === 'Abri!'));
+  sim.enqueue(sim.player.id, { type: 'say', text: 'bom dia' });
+  assert.equal(runFor(sim, TICK_MS * 2).some(e => e.text === 'Abri!'), false);
+});

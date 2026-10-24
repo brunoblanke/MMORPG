@@ -9,7 +9,7 @@ import { EFFECTS } from '/shared/effects.js';
 // pisar), condições e uma lista de efeitos do vocabulário. Também escolhe as capacidades do objeto como
 // ferramenta (propriedades.capacidade).
 
-const GATILHOS_NA_TELA = [['clicar', 'Ao clicar / usar'], ['capacidade', 'Ao usar uma ferramenta com a capacidade'], ['pisar', 'Ao pisar'], ['ser-atingido', 'Ao ser atingido (criatura)'], ['morrer', 'Ao morrer (criatura)'], ['tempo', 'A cada segundo (criatura)']];
+const GATILHOS_NA_TELA = [['clicar', 'Ao clicar / usar'], ['capacidade', 'Ao usar uma ferramenta com a capacidade'], ['pisar', 'Ao pisar'], ['falar', 'Ao ouvir o player falar'], ['ser-atingido', 'Ao ser atingido (criatura)'], ['morrer', 'Ao morrer (criatura)'], ['tempo', 'A cada segundo (criatura)']];
 const NOMES_CAPACIDADES = { cavar: 'Cavar', quebrar: 'Quebrar', cortar: 'Cortar', colher: 'Colher', puxar: 'Puxar (corda)', pescar: 'Pescar', abrir: 'Abrir com chave' };
 
 let itensCache = null;
@@ -104,7 +104,7 @@ export async function montarInteracoes(box, lista, aoMudar) {
 
       ix.condicoes = ix.condicoes || {};
       const condicoes = criar('div', { className: 'ix-row' });
-      for (const [chave, rotulo, tipo] of [['alcance', 'Alcance (sqm)', 'numero'], ['nivel', 'Nível mínimo', 'numero'], ['chance', 'Chance %', 'numero'], ['quest', 'Quest feita', 'texto']]) {
+      for (const [chave, rotulo, tipo] of [['alcance', 'Alcance (sqm)', 'numero'], ['nivel', 'Nível mínimo', 'numero'], ['chance', 'Chance %', 'numero'], ['quest', 'Quest feita', 'texto'], ['palavra', 'Palavra dita', 'texto']]) {
         const entrada = criar('input', { type: tipo === 'numero' ? 'number' : 'text', value: ix.condicoes[chave] ?? '', className: tipo === 'numero' ? 'ix-num' : 'ix-text', placeholder: 'sem' });
         entrada.oninput = () => {
           const v = tipo === 'numero' ? (entrada.value === '' ? undefined : Math.max(0, Math.floor(Number(entrada.value)) || 0)) : entrada.value.trim();

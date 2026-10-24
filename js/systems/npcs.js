@@ -109,6 +109,7 @@ export class NpcController {
     for (const npc of this.sim.npcs) {
       if (this.distanceTo(npc, player) <= HEAR_RANGE) this.hear(npc, player, heard, text);
     }
+    this.sim.effects.hear(player, heard, HEAR_RANGE);
   }
 
   // ================================================================================================================================================================================================================================================
