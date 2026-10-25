@@ -17,6 +17,8 @@ Feito: `shared/ficha.js` (ficha com traços e interações), ferramentas por cap
 
 Gerador: aba Objetos reorganizada em seções que abrem e fecham (`createSections` e `PROPERTY_GROUPS` em `gerador/app/js/objects.js`); falta o mesmo jeito em Pisos, Criaturas e Paredes (o usuário achou as abas muito diferentes entre si).
 
+Editor: desempenho feito (canvas do tamanho da tela, só o visível, camada de cima pro pincel, foto do desfazer só depois de editar, topos de escada guardados): com o mapa cheio, desenho de ~1340 ms para ~45 ms e clique sem edição de ~330 ms para 0. Editar ainda tira a foto do mapa inteiro ao soltar o mouse (~330 ms no mapa cheio); se pesar, guardar só os sqm mudados no desfazer.
+
 Editor: preencher área feito (clique pinta, arrastar marca a área e preenche ao soltar). Parede com contorno automático (x/y nos lados, canto e pilar) ficou para depois, a pedido do usuário.
 
 Falta, por ordem:

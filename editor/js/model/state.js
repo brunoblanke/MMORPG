@@ -54,6 +54,7 @@ export const state = {
   painting: false,
   brushSize: 1,
   area: null,
+  mapDirty: false,
   hoverCell: null,
   selected: null,
   focus: null,

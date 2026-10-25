@@ -3,7 +3,7 @@
 import { getAsset, listAssets, displayName, objectUse, objectDirections, objectDirection, rotateType, doorState } from '../../../shared/assets.js';
 import { tipoDeDados } from '../../../shared/ficha.js';
 import { state } from '../model/state.js';
-import { scheduleRender } from './canvas-renderer.js';
+import { scheduleRender, scheduleOverlay } from './canvas-renderer.js';
 import { updateStats } from './tools-panel.js';
 import { setThumb } from './sprite-thumb.js';
 import { itemInfo } from '../../../shared/items.js';
@@ -53,7 +53,7 @@ export function openSelectPanel(x, y, clientX, clientY) {
   renderSelectPanel();
   positionFloatPanel(selectPanel, clientX, clientY);
   selectPanel.classList.add('show');
-  scheduleRender();
+  scheduleOverlay();
 }
 
 // ================================================================================================================================================================================================================================================
@@ -67,7 +67,7 @@ export function closeSelectPanel() {
   pendingObject = null;
   if (!state.selected) return;
   state.selected = null;
-  scheduleRender();
+  scheduleOverlay();
 }
 
 // ================================================================================================================================================================================================================================================

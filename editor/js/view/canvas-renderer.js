@@ -8,30 +8,128 @@ import { PLAYER_SPRITES, DEFAULT_GENDER } from '../../../shared/catalog.js';
 import { getAsset, spriteFrame, pieceType, floorMiddle, displayName, isItemType, objectProps, conjuntoPartes } from '../../../shared/assets.js';
 import { getStairTopKeys, getRopeTopKeys } from '../model/borders.js';
 import { state } from '../model/state.js';
-import { restackItems } from '../../../shared/map-format.js';
 import { loadImage, setImageUpdateCallback } from './image-cache.js';
 import { stackFrame } from '../../../shared/items.js';
 import { brushCells, brushSize, areaCells } from '../model/brush.js';
 
 export const canvas = document.getElementById('canvas');
-export const ctx = canvas.getContext('2d');
-canvas.width = GRID * TILE;
-canvas.height = GRID * TILE;
-
+export const overlay = document.getElementById('overlay');
+export const board = document.querySelector('.board');
 export const canvasWrap = document.querySelector('.canvas-wrap');
+const mapCtx = canvas.getContext('2d');
+const overlayCtx = overlay.getContext('2d');
+let ctx = mapCtx;
+board.style.width = `${GRID * TILE}px`;
+board.style.height = `${GRID * TILE}px`;
 
-let renderScheduled = false;
+let mapScheduled = false;
+let overlayScheduled = false;
 
 // ================================================================================================================================================================================================================================================
 // scheduleRender
+// Algo no mapa mudou: redesenha o mapa e a camada de cima no próximo quadro e avisa o desfazer (history.js só tira a
+// foto do mapa quando isso aconteceu).
 
 export function scheduleRender() {
-  if (renderScheduled) return;
-  renderScheduled = true;
-  requestAnimationFrame(() => { renderScheduled = false; draw(); });
+  state.mapDirty = true;
+  redraw();
 }
 
-setImageUpdateCallback(scheduleRender);
+// ================================================================================================================================================================================================================================================
+// redraw
+// Redesenha sem o mapa ter mudado (rolagem, zoom, imagem que acabou de carregar, animação).
+
+export function redraw() {
+  mapScheduled = true;
+  requestFrame();
+}
+
+// ================================================================================================================================================================================================================================================
+// scheduleOverlay
+// Redesenha só a camada de cima (pincel, área, seleção): o mapa fica como está.
+
+export function scheduleOverlay() {
+  overlayScheduled = true;
+  requestFrame();
+}
+
+let frameRequested = false;
+
+// ================================================================================================================================================================================================================================================
+// requestFrame
+
+function requestFrame() {
+  if (frameRequested) return;
+  frameRequested = true;
+  requestAnimationFrame(() => {
+    frameRequested = false;
+    const resized = fitCanvases();
+    if (mapScheduled || resized) drawMap();
+    drawOverlay();
+    mapScheduled = false;
+    overlayScheduled = false;
+  });
+}
+
+// ================================================================================================================================================================================================================================================
+// fitCanvases
+// Os dois canvas têm o tamanho da parte do mapa que aparece na tela (em pixels de verdade da tela), não o mapa inteiro.
+// Devolve true se o tamanho mudou (o que apaga o desenho).
+
+function fitCanvases() {
+  const dpr = window.devicePixelRatio || 1;
+  const rect = board.getBoundingClientRect();
+  const width = Math.max(1, Math.min(canvasWrap.clientWidth, Math.round(rect.width)));
+  const height = Math.max(1, Math.min(canvasWrap.clientHeight, Math.round(rect.height)));
+  let changed = false;
+  for (const target of [canvas, overlay]) {
+    if (target.width !== Math.round(width * dpr) || target.height !== Math.round(height * dpr)) {
+      target.width = Math.round(width * dpr);
+      target.height = Math.round(height * dpr);
+      changed = true;
+    }
+    target.style.width = `${width}px`;
+    target.style.height = `${height}px`;
+  }
+  return changed;
+}
+
+// ================================================================================================================================================================================================================================================
+// viewport
+// Onde o mapa está em relação ao canvas: escala (zoom), deslocamento em pixels de CSS e os sqm que aparecem (com folga
+// de 2 sqm à direita e embaixo, porque desenho maior que o sqm sobe pra esquerda e pra cima).
+
+function viewport() {
+  const rect = board.getBoundingClientRect();
+  const view = canvas.getBoundingClientRect();
+  const scale = rect.width / (GRID * TILE);
+  const offX = rect.left - view.left;
+  const offY = rect.top - view.top;
+  const tile = TILE * scale;
+  return {
+    scale, offX, offY,
+    minX: Math.max(0, Math.floor(-offX / tile)),
+    minY: Math.max(0, Math.floor(-offY / tile)),
+    maxX: Math.min(GRID - 1, Math.ceil((view.width - offX) / tile) + 2),
+    maxY: Math.min(GRID - 1, Math.ceil((view.height - offY) / tile) + 2)
+  };
+}
+
+// ================================================================================================================================================================================================================================================
+// beginLayer
+// Limpa o canvas e põe a escala e o deslocamento: o resto do desenho segue em coordenadas do mapa (sqm × TILE).
+
+function beginLayer(target, view) {
+  const dpr = window.devicePixelRatio || 1;
+  target.setTransform(1, 0, 0, 1, 0, 0);
+  target.clearRect(0, 0, target.canvas.width, target.canvas.height);
+  target.setTransform(dpr * view.scale, 0, 0, dpr * view.scale, dpr * view.offX, dpr * view.offY);
+  target.imageSmoothingEnabled = false;
+}
+
+setImageUpdateCallback(redraw);
+canvasWrap.addEventListener('scroll', redraw);
+window.addEventListener('resize', redraw);
 
 // ================================================================================================================================================================================================================================================
 // drawCharacter
@@ -130,7 +228,7 @@ function drawStairTop(px, py) {
   ctx.restore();
 }
 
-function drawLayer(layer, alpha, z) {
+function drawLayer(layer, alpha, z, view) {
   ctx.globalAlpha = alpha;
   const labels = [];
   const stairTops = getStairTopKeys(z);
@@ -138,8 +236,8 @@ function drawLayer(layer, alpha, z) {
   // Topo de escada nunca tem piso (o jogo remove).
   const isVoid = (key) => stairTops.has(key) && !(layer[key] && layer[key].hole);
 
-  for (let y = 0; y < GRID; y++) {
-    for (let x = 0; x < GRID; x++) {
+  for (let y = view.minY; y <= view.maxY; y++) {
+    for (let x = view.minX; x <= view.maxX; x++) {
       const key = `${x},${y}`;
       const cell = layer[key];
       const px = x * TILE;
@@ -162,8 +260,6 @@ function drawLayer(layer, alpha, z) {
       if (cell.safe) drawSafeTile(px, py);
       if (cell.house) drawHouseTile(px, py, cell.house.name === state.housePaint.name);
 
-      // Mantém os steps coerentes com a pilha atual (reordenar/remover no painel).
-      restackItems(cell.objects);
       cell.objects.forEach(obj => {
         const lift = isItemType(obj.type) ? (obj.step || 0) * STACK_OFFSET : 0;
         drawPiece(obj.type, px - lift, py - lift, '#8a5a3a', ctx, obj.count || 1);
@@ -231,31 +327,51 @@ function drawHouseTile(px, py, current) {
 // ================================================================================================================================================================================================================================================
 // draw
 
-export function draw() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
+export function drawMap() {
+  const view = viewport();
+  ctx = mapCtx;
+  beginLayer(ctx, view);
   if (state.ghost && state.layers[state.activeZ - 1]) {
-    drawLayer(state.layers[state.activeZ - 1], 0.28, state.activeZ - 1);
+    drawLayer(state.layers[state.activeZ - 1], 0.28, state.activeZ - 1, view);
   }
+  drawLayer(state.layers[state.activeZ], 1, state.activeZ, view);
+  drawGrid(view);
+}
 
-  drawLayer(state.layers[state.activeZ], 1, state.activeZ);
+// ================================================================================================================================================================================================================================================
+// drawGrid
+// As linhas da grade só da parte que aparece, num traço só.
 
+function drawGrid(view) {
+  const left = view.minX * TILE;
+  const top = view.minY * TILE;
+  const right = (view.maxX + 1) * TILE;
+  const bottom = (view.maxY + 1) * TILE;
   ctx.strokeStyle = 'rgba(255,255,255,0.06)';
-  ctx.lineWidth = 1;
-  for (let i = 0; i <= GRID; i++) {
-    ctx.beginPath();
-    ctx.moveTo(i * TILE + 0.5, 0);
-    ctx.lineTo(i * TILE + 0.5, canvas.height);
-    ctx.stroke();
+  ctx.lineWidth = 1 / view.scale;
+  ctx.beginPath();
+  for (let x = view.minX; x <= view.maxX + 1; x++) {
+    ctx.moveTo(x * TILE, top);
+    ctx.lineTo(x * TILE, bottom);
   }
-  for (let i = 0; i <= GRID; i++) {
-    ctx.beginPath();
-    ctx.moveTo(0, i * TILE + 0.5);
-    ctx.lineTo(canvas.width, i * TILE + 0.5);
-    ctx.stroke();
+  for (let y = view.minY; y <= view.maxY + 1; y++) {
+    ctx.moveTo(left, y * TILE);
+    ctx.lineTo(right, y * TILE);
   }
+  ctx.stroke();
+}
+
+// ================================================================================================================================================================================================================================================
+// drawOverlay
+// A camada de cima: pincel (ou o retângulo da área) e a seleção. Mover o mouse só redesenha ela.
+
+function drawOverlay() {
+  const view = viewport();
+  ctx = overlayCtx;
+  beginLayer(ctx, view);
   drawBrush();
   drawSelection();
+  ctx = mapCtx;
 }
 
 // ================================================================================================================================================================================================================================================
@@ -371,13 +487,10 @@ function drawSelection() {
 // cellFromEvent
 
 export function cellFromEvent(evt) {
-  const rect = canvas.getBoundingClientRect();
-  const scaleX = canvas.width / rect.width;
-  const scaleY = canvas.height / rect.height;
-  const px = (evt.clientX - rect.left) * scaleX;
-  const py = (evt.clientY - rect.top) * scaleY;
-  const x = Math.floor(px / TILE);
-  const y = Math.floor(py / TILE);
+  const rect = board.getBoundingClientRect();
+  const tile = rect.width / GRID;
+  const x = Math.floor((evt.clientX - rect.left) / tile);
+  const y = Math.floor((evt.clientY - rect.top) / tile);
   if (x < 0 || y < 0 || x >= GRID || y >= GRID) return null;
   return { x, y };
 }

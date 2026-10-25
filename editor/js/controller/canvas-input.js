@@ -1,6 +1,6 @@
 // js/controller/canvas-input.js
 
-import { canvas, cellFromEvent, scheduleRender } from '../view/canvas-renderer.js';
+import { canvas, cellFromEvent, scheduleRender, scheduleOverlay } from '../view/canvas-renderer.js';
 import { state } from '../model/state.js';
 import { updateStats } from '../view/tools-panel.js';
 import { openEnemyForm, openSelectPanel } from '../view/forms.js';
@@ -184,12 +184,12 @@ canvas.addEventListener('mousemove', (evt) => {
   const hover = cellFromEvent(evt);
   if (!state.hoverCell || !hover || hover.x !== state.hoverCell.x || hover.y !== state.hoverCell.y) {
     state.hoverCell = hover;
-    scheduleRender();
+    scheduleOverlay();
   }
   if (state.area && hover && (hover.x !== state.area.x1 || hover.y !== state.area.y1)) {
     state.area.x1 = hover.x;
     state.area.y1 = hover.y;
-    scheduleRender();
+    scheduleOverlay();
   }
   if (!state.painting) return;
   if (state.tool === 'stairs' || state.tool === 'enemy' || state.tool === 'npc' || state.tool === 'bot' || state.tool === 'spawn' || state.tool === 'select') return;
@@ -200,7 +200,7 @@ canvas.addEventListener('mousemove', (evt) => {
 
 canvas.addEventListener('mouseleave', () => {
   state.hoverCell = null;
-  scheduleRender();
+  scheduleOverlay();
   const coordLocal = document.getElementById('coordLocal');
   const coordWorld = document.getElementById('coordWorld');
   if (coordLocal) coordLocal.textContent = '-';
@@ -238,11 +238,11 @@ window.addEventListener('keydown', (evt) => {
   evt.preventDefault();
   const delta = evt.key === 'ArrowUp' ? 1 : -1;
   state.brushSize = Math.max(1, Math.min(MAX_BRUSH, state.brushSize + delta));
-  scheduleRender();
+  scheduleOverlay();
 });
 // Esc desiste do retângulo que está sendo marcado.
 window.addEventListener('keydown', (evt) => {
   if (evt.key !== 'Escape' || !state.area) return;
   state.area = null;
-  scheduleRender();
+  scheduleOverlay();
 });

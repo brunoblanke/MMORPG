@@ -3,7 +3,7 @@
 import { state } from '../model/state.js';
 import { adminFetch } from '../model/admin-fetch.js';
 import { preloadAll } from '../view/image-cache.js';
-import { scheduleRender } from '../view/canvas-renderer.js';
+import { scheduleRender, redraw } from '../view/canvas-renderer.js';
 import { renderLayerSelect, renderTools, onLayerChange, updateStats, choosePaintDefaults, rotatePaint } from '../view/tools-panel.js';
 import { rotateSelected } from '../view/forms.js';
 import { restoreFloor, restoreScroll } from '../view/view-memory.js';
@@ -19,8 +19,8 @@ import { initZoom } from '../view/zoom.js';
 // recolhida, pra não cobrir a barra de andares).
 
 
-document.getElementById('ghostToggle').onchange = (evt) => { state.ghost = evt.target.checked; scheduleRender(); };
-document.getElementById('detailsToggle').onchange = (evt) => { state.showDetails = evt.target.checked; scheduleRender(); };
+document.getElementById('ghostToggle').onchange = (evt) => { state.ghost = evt.target.checked; redraw(); };
+document.getElementById('detailsToggle').onchange = (evt) => { state.showDetails = evt.target.checked; redraw(); };
 document.getElementById('statsToggle').onchange = (evt) => {
   document.getElementById('statusbar').hidden = !evt.target.checked;
   document.querySelector('.main').classList.toggle('stats-hidden', !evt.target.checked);
@@ -142,4 +142,4 @@ restoreScroll();
 // redesenho é sempre calculado em tempo real (shared/sprite-sheet.js), então
 // esse valor só afeta suavidade visual, não a precisão do timing.
 const REDRAW_INTERVAL_MS = 250;
-setInterval(() => { if (state.showDetails) scheduleRender(); }, REDRAW_INTERVAL_MS);
+setInterval(() => { if (state.showDetails) redraw(); }, REDRAW_INTERVAL_MS);

@@ -2,7 +2,7 @@
 
 import { state, TOOLS } from '../model/state.js';
 import { FLOOR_MIN, FLOOR_MAX } from '../../../shared/constants.js';
-import { canvas, scheduleRender } from './canvas-renderer.js';
+import { canvas, scheduleRender, scheduleOverlay } from './canvas-renderer.js';
 import { BORDER_VARIANTS } from '../../../shared/floor-borders.js';
 import { listAssets, creatureBehavior, pieceType, splitType, displayName, isStairsFolder, isEntranceFolder, isItemType, isWallType, objectDirections, rotateType, withDirection, WALL_PIECES, WALL_PIECE_NAMES } from '../../../shared/assets.js';
 import { setThumb } from './sprite-thumb.js';
@@ -227,7 +227,7 @@ export function rotatePaint(step = 1) {
   if (typeof value !== 'string' || objectDirections(value).length < 2) return false;
   state[tool.paint] = rotateType(value, step);
   renderTools();
-  scheduleRender();
+  scheduleOverlay();
   return true;
 }
 

@@ -3,7 +3,8 @@
 // Desfazer/refazer (Ctrl+Z / Ctrl+Shift+Z), até MAX_STEPS passos. Cada passo
 // é uma foto do mapa inteiro no mesmo formato do map.json (compacto: só o que
 // existe). commitHistory() compara com a última foto e, se algo mudou, vira
-// um passo — é chamado ao fim de cada ação (traço do mouse, clique em painel).
+// um passo — é chamado ao fim de cada ação (traço do mouse, clique em painel), mas só tira a foto se alguma edição
+// marcou state.mapDirty (scheduleRender), porque a foto do mapa inteiro é cara.
 
 import { GRID } from '../config.js';
 import { state, makeAllLayers } from './state.js';
@@ -41,6 +42,7 @@ function restoreSnapshot(snapshot) {
 // resetHistory
 
 export function resetHistory() {
+  state.mapDirty = false;
   current = takeSnapshot();
   undoStack.length = 0;
   redoStack.length = 0;
@@ -50,7 +52,8 @@ export function resetHistory() {
 // commitHistory
 
 export function commitHistory() {
-  if (current === null) return;
+  if (current === null || !state.mapDirty) return;
+  state.mapDirty = false;
   const snapshot = takeSnapshot();
   if (snapshot === current) return;
   undoStack.push(current);

@@ -1,6 +1,7 @@
 // editor/js/view/zoom.js
 
-import { canvas, canvasWrap } from './canvas-renderer.js';
+import { board, canvasWrap, redraw } from './canvas-renderer.js';
+import { GRID, TILE } from '../config.js';
 
 const KEY = 'editor-zoom';
 const MIN_ZOOM = 0.25;
@@ -15,16 +16,17 @@ let zoom = 1;
 function applyZoom(next, clientX, clientY) {
   const value = Math.min(Math.max(next, MIN_ZOOM), MAX_ZOOM);
   if (value === zoom) return;
-  const before = canvas.getBoundingClientRect();
+  const before = board.getBoundingClientRect();
   const mapX = (clientX - before.left) / zoom;
   const mapY = (clientY - before.top) / zoom;
   zoom = value;
   document.getElementById('zoomReset').textContent = `${Math.round(zoom * 100)}%`;
-  canvas.style.width = `${canvas.width * zoom}px`;
-  canvas.style.height = `${canvas.height * zoom}px`;
-  const after = canvas.getBoundingClientRect();
+  board.style.width = `${GRID * TILE * zoom}px`;
+  board.style.height = `${GRID * TILE * zoom}px`;
+  const after = board.getBoundingClientRect();
   canvasWrap.scrollLeft += after.left + mapX * zoom - clientX;
   canvasWrap.scrollTop += after.top + mapY * zoom - clientY;
+  redraw();
   try {
     localStorage.setItem(KEY, String(zoom));
   } catch (error) {

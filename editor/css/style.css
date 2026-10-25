@@ -150,7 +150,9 @@ body{
 .canvas-wrap{ flex:1; display:flex; padding:0; overflow:auto; }
 .board{ position:relative; margin:auto; flex:none; }
 
-canvas{ display:block; background:var(--grid); cursor:crosshair; image-rendering:pixelated; }
+canvas{ display:block; background:var(--grid); cursor:crosshair; }
+.view{ position:sticky; left:0; top:0; width:max-content; }
+#overlay{ position:absolute; left:0; top:0; background:none; pointer-events:none; }
 canvas.select-mode{ cursor:default; }
 
 .bottom-bar{

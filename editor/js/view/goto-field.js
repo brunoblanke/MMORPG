@@ -1,9 +1,9 @@
 // editor/js/view/goto-field.js
 
 import { state } from '../model/state.js';
-import { TILE } from '../config.js';
+import { GRID, TILE } from '../config.js';
 import { isValidFloor } from '../../../shared/constants.js';
-import { canvas, canvasWrap, scheduleRender } from './canvas-renderer.js';
+import { board, canvasWrap, scheduleOverlay } from './canvas-renderer.js';
 import { onLayerChange } from './tools-panel.js';
 
 // Campo "x, y, z" da barra do topo: Enter vai pro andar, centraliza o sqm na
@@ -26,12 +26,12 @@ function goTo(text) {
     state.activeZ = z;
     onLayerChange();
   }
-  const rect = canvas.getBoundingClientRect();
+  const rect = board.getBoundingClientRect();
   const wrapRect = canvasWrap.getBoundingClientRect();
-  const scale = rect.width / canvas.width;
+  const scale = rect.width / (GRID * TILE);
   canvasWrap.scrollLeft += rect.left - wrapRect.left + (x + 0.5) * TILE * scale - canvasWrap.clientWidth / 2;
   canvasWrap.scrollTop += rect.top - wrapRect.top + (y + 0.5) * TILE * scale - canvasWrap.clientHeight / 2;
-  scheduleRender();
+  scheduleOverlay();
 }
 
 input.addEventListener('keydown', (evt) => {
