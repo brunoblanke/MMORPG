@@ -53,6 +53,8 @@ export const state = {
   showDetails: false,
   painting: false,
   brushSize: 1,
+  fillMode: false,
+  area: null,
   hoverCell: null,
   selected: null,
   focus: null,

@@ -2,13 +2,13 @@
 
 import { canvas, cellFromEvent, scheduleRender } from '../view/canvas-renderer.js';
 import { state } from '../model/state.js';
-import { updateStats } from '../view/tools-panel.js';
+import { updateStats, renderTools } from '../view/tools-panel.js';
 import { openEnemyForm, openSelectPanel } from '../view/forms.js';
 import { addFloorToCell, restackItems } from '../../../shared/map-format.js';
 import { refreshBordersAt } from '../model/borders.js';
 import { isStairsFolder, conjuntoPartes } from '../../../shared/assets.js';
 import { itemInfo } from '../../../shared/items.js';
-import { brushCells, MAX_BRUSH } from '../model/brush.js';
+import { brushCells, MAX_BRUSH, fillActive, areaCells } from '../model/brush.js';
 
 const BOT_LEVEL = 20;
 
@@ -170,6 +170,11 @@ canvas.addEventListener('mousedown', (evt) => {
   if (evt.button !== 0) return;
   const cell = cellFromEvent(evt);
   if (!cell) return;
+  if (fillActive()) {
+    state.area = { x0: cell.x, y0: cell.y, x1: cell.x, y1: cell.y };
+    scheduleRender();
+    return;
+  }
   state.painting = true;
   state.strokeTouched = new Set();
   applyTool(cell.x, cell.y, evt.clientX, evt.clientY);
@@ -180,6 +185,11 @@ canvas.addEventListener('mousemove', (evt) => {
   const hover = cellFromEvent(evt);
   if (!state.hoverCell || !hover || hover.x !== state.hoverCell.x || hover.y !== state.hoverCell.y) {
     state.hoverCell = hover;
+    scheduleRender();
+  }
+  if (state.area && hover && (hover.x !== state.area.x1 || hover.y !== state.area.y1)) {
+    state.area.x1 = hover.x;
+    state.area.y1 = hover.y;
     scheduleRender();
   }
   if (!state.painting) return;
@@ -198,7 +208,23 @@ canvas.addEventListener('mouseleave', () => {
   if (coordWorld) coordWorld.textContent = '-';
 });
 
-window.addEventListener('mouseup', () => { state.painting = false; });
+window.addEventListener('mouseup', () => {
+  state.painting = false;
+  if (state.area) fillArea();
+});
+
+// ================================================================================================================================================================================================================================================
+// fillArea
+// Solta o mouse no modo de preencher: a ferramenta roda uma vez em cada sqm do retângulo marcado.
+
+function fillArea() {
+  const cells = areaCells(state.area);
+  state.area = null;
+  state.strokeTouched = new Set();
+  for (const cell of cells) paintCell(cell.x, cell.y);
+  updateStats();
+  scheduleRender();
+}
 
 // Setas ↑/↓ aumentam e diminuem o pincel (fora de campos de texto).
 window.addEventListener('keydown', (evt) => {
@@ -209,4 +235,17 @@ window.addEventListener('keydown', (evt) => {
   const delta = evt.key === 'ArrowUp' ? 1 : -1;
   state.brushSize = Math.max(1, Math.min(MAX_BRUSH, state.brushSize + delta));
   scheduleRender();
+});
+// F liga e desliga o preencher área; Esc desiste do retângulo que está sendo marcado.
+window.addEventListener('keydown', (evt) => {
+  const tag = evt.target && evt.target.tagName;
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+  if (evt.key === 'Escape' && state.area) {
+    state.area = null;
+    scheduleRender();
+  } else if ((evt.key === 'f' || evt.key === 'F') && !evt.ctrlKey && !evt.metaKey && !evt.altKey) {
+    state.fillMode = !state.fillMode;
+    renderTools();
+    scheduleRender();
+  }
 });

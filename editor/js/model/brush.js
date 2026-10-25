@@ -7,6 +7,8 @@ import { GRID } from '../config.js';
 // sqm (setas ↑/↓, de 1 a MAX_BRUSH); as de pôr uma coisa só, 1 sqm.
 export const MAX_BRUSH = 6;
 const BRUSH_TOOLS = new Set(['floor', 'eraser', 'hole', 'border-eraser', 'safe', 'house']);
+// Preencher área (botão da barra): arrastar marca um retângulo e, ao soltar, a ferramenta roda em cada sqm dele.
+export const FILL_TOOLS = new Set([...BRUSH_TOOLS, 'border', 'item', 'deco', 'wall']);
 
 // ================================================================================================================================================================================================================================================
 // brushSize
@@ -31,6 +33,30 @@ export function brushCells(x, y) {
       const cy = y - start + dy;
       if (cx >= 0 && cy >= 0 && cx < GRID && cy < GRID) cells.push({ x: cx, y: cy });
     }
+  }
+  return cells;
+}
+
+// ================================================================================================================================================================================================================================================
+// fillActive
+// O modo de preencher área vale pra ferramenta atual.
+
+export function fillActive() {
+  return state.fillMode && FILL_TOOLS.has(state.tool);
+}
+
+// ================================================================================================================================================================================================================================================
+// areaCells
+// Os sqm do retângulo entre os dois cantos { x0, y0, x1, y1 } (em qualquer ordem), dentro do mapa.
+
+export function areaCells(area) {
+  const cells = [];
+  const minX = Math.max(0, Math.min(area.x0, area.x1));
+  const maxX = Math.min(GRID - 1, Math.max(area.x0, area.x1));
+  const minY = Math.max(0, Math.min(area.y0, area.y1));
+  const maxY = Math.min(GRID - 1, Math.max(area.y0, area.y1));
+  for (let y = minY; y <= maxY; y++) {
+    for (let x = minX; x <= maxX; x++) cells.push({ x, y });
   }
   return cells;
 }

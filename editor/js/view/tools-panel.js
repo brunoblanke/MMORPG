@@ -232,6 +232,26 @@ export function rotatePaint(step = 1) {
 }
 
 // ================================================================================================================================================================================================================================================
+// fillButton
+// Liga e desliga o preencher área (tecla F): com ele, arrastar marca um retângulo e a ferramenta atual o preenche.
+
+function fillButton() {
+  const button = document.createElement('div');
+  button.className = 'quick-btn' + (state.fillMode ? ' active' : '');
+  button.title = 'Preencher área (F): arraste um retângulo e a ferramenta escolhida preenche ele';
+  const swatch = document.createElement('div');
+  swatch.className = 'tool-swatch icon';
+  swatch.innerHTML = QUICK_ICONS.fill;
+  button.appendChild(swatch);
+  button.onclick = () => {
+    state.fillMode = !state.fillMode;
+    renderTools();
+    scheduleRender();
+  };
+  return button;
+}
+
+// ================================================================================================================================================================================================================================================
 // renderTools
 
 export function renderTools() {
@@ -269,6 +289,7 @@ export function renderTools() {
     if (body) win.appendChild(body);
     wrap.appendChild(win);
   });
+  quick.appendChild(fillButton());
   wrap.scrollTop = scroll.wrap;
   const body = wrap.querySelector('.tool-accordion');
   if (body && scroll.body && state.openAccordion === scroll.tool) body.scrollTop = scroll.body;
@@ -322,6 +343,7 @@ function buildHouseForm() {
 
 const QUICK_ICON_SCALE = 16 / 22;
 const QUICK_ICONS = {
+  fill: svgIcon('0 0 22 22', '<path d="M1 1h4M9 1h4M17 1h4v4M21 9v4M21 17v4h-4M13 21H9M5 21H1v-4M1 13V9M1 5V1"/><rect x="6" y="6" width="10" height="10" rx="1" fill="currentColor" stroke="none" opacity=".55"/>', QUICK_ICON_SCALE),
   select: svgIcon('0 0 16 22', '<path d="M.95.95v16.7l4.4-4.1 3.2 7.2 3-1.3-3.2-7h6.7L.95.95Z"/>', QUICK_ICON_SCALE),
   'border-eraser': svgIcon('0 0 22 22', '<path d="M.95 6.5V.95H6.5M15.5.95h5.55V6.5M21.05 15.5v5.55H15.5M6.5 21.05H.95V15.5"/><path d="M7.5 7.5l7 7M14.5 7.5l-7 7"/>', QUICK_ICON_SCALE),
   spawn: svgIcon('0 0 22 22', '<path d="M18.6 7.2A8.6 8.6 0 1 0 19.6 13"/><path d="M19.2 1.9v5.6h-5.6"/><circle cx="11" cy="11" r="2.4"/>', QUICK_ICON_SCALE),

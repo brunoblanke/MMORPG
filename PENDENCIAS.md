@@ -17,6 +17,8 @@ Feito: `shared/ficha.js` (ficha com traços e interações), ferramentas por cap
 
 Gerador: aba Objetos reorganizada em seções que abrem e fecham (`createSections` e `PROPERTY_GROUPS` em `gerador/app/js/objects.js`); falta o mesmo jeito em Pisos, Criaturas e Paredes (o usuário achou as abas muito diferentes entre si).
 
+Editor: preencher área feito (botão/F). Parede com contorno automático (x/y nos lados, canto e pilar) ficou para depois, a pedido do usuário.
+
 Falta, por ordem:
 1. Gatilhos feitos: `ser-atingido`, `morrer`, `tempo`, `falar` (condição `palavra`) e `item-em-cima` (condição `item`, efeito `consumir-item`), em criaturas e objetos conforme faz sentido. Conversa de NPC segue por módulos.
 2. (feito) Painel de Objetos mostra o que o Uso faz (`descreverUso`).
