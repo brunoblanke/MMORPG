@@ -13,8 +13,7 @@ test('preencher área: os sqm do retângulo entre os dois cantos, em qualquer or
   assert.ok(areaCells({ x0: GRID - 2, y0: 0, x1: GRID + 5, y1: 0 }).every(c => c.x < GRID));
 });
 
-test('preencher área vale pras ferramentas de pintar, não pras de pôr uma coisa só', () => {
-  state.fillMode = true;
+test('arrastar preenche área nas ferramentas de pintar, não pras de pôr uma coisa só', () => {
   for (const tool of ['floor', 'item', 'deco', 'wall', 'eraser', 'safe', 'house']) {
     state.tool = tool;
     assert.equal(fillActive(), true, tool);
@@ -23,5 +22,4 @@ test('preencher área vale pras ferramentas de pintar, não pras de pôr uma coi
     state.tool = tool;
     assert.equal(fillActive(), false, tool);
   }
-  state.fillMode = false;
 });

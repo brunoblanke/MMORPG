@@ -7,7 +7,8 @@ import { GRID } from '../config.js';
 // sqm (setas ↑/↓, de 1 a MAX_BRUSH); as de pôr uma coisa só, 1 sqm.
 export const MAX_BRUSH = 6;
 const BRUSH_TOOLS = new Set(['floor', 'eraser', 'hole', 'border-eraser', 'safe', 'house']);
-// Preencher área (botão da barra): arrastar marca um retângulo e, ao soltar, a ferramenta roda em cada sqm dele.
+// Preencher área: com essas ferramentas, arrastar marca um retângulo e, ao soltar, a ferramenta roda em cada sqm dele
+// (um clique sem arrastar pinta como o pincel).
 export const FILL_TOOLS = new Set([...BRUSH_TOOLS, 'border', 'item', 'deco', 'wall']);
 
 // ================================================================================================================================================================================================================================================
@@ -39,10 +40,10 @@ export function brushCells(x, y) {
 
 // ================================================================================================================================================================================================================================================
 // fillActive
-// O modo de preencher área vale pra ferramenta atual.
+// A ferramenta atual preenche área ao arrastar.
 
 export function fillActive() {
-  return state.fillMode && FILL_TOOLS.has(state.tool);
+  return FILL_TOOLS.has(state.tool);
 }
 
 // ================================================================================================================================================================================================================================================

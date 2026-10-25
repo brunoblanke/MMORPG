@@ -2,7 +2,7 @@
 
 import { canvas, cellFromEvent, scheduleRender } from '../view/canvas-renderer.js';
 import { state } from '../model/state.js';
-import { updateStats, renderTools } from '../view/tools-panel.js';
+import { updateStats } from '../view/tools-panel.js';
 import { openEnemyForm, openSelectPanel } from '../view/forms.js';
 import { addFloorToCell, restackItems } from '../../../shared/map-format.js';
 import { refreshBordersAt } from '../model/borders.js';
@@ -171,8 +171,7 @@ canvas.addEventListener('mousedown', (evt) => {
   const cell = cellFromEvent(evt);
   if (!cell) return;
   if (fillActive()) {
-    state.area = { x0: cell.x, y0: cell.y, x1: cell.x, y1: cell.y };
-    scheduleRender();
+    state.area = { x0: cell.x, y0: cell.y, x1: cell.x, y1: cell.y, clientX: evt.clientX, clientY: evt.clientY };
     return;
   }
   state.painting = true;
@@ -215,13 +214,18 @@ window.addEventListener('mouseup', () => {
 
 // ================================================================================================================================================================================================================================================
 // fillArea
-// Solta o mouse no modo de preencher: a ferramenta roda uma vez em cada sqm do retângulo marcado.
+// Solta o mouse: sem ter arrastado, pinta como o pincel naquele sqm; arrastando, a ferramenta roda uma vez em cada sqm
+// do retângulo marcado.
 
 function fillArea() {
-  const cells = areaCells(state.area);
+  const area = state.area;
   state.area = null;
   state.strokeTouched = new Set();
-  for (const cell of cells) paintCell(cell.x, cell.y);
+  if (area.x0 === area.x1 && area.y0 === area.y1) {
+    applyTool(area.x0, area.y0, area.clientX, area.clientY);
+    return;
+  }
+  for (const cell of areaCells(area)) paintCell(cell.x, cell.y);
   updateStats();
   scheduleRender();
 }
@@ -236,16 +240,9 @@ window.addEventListener('keydown', (evt) => {
   state.brushSize = Math.max(1, Math.min(MAX_BRUSH, state.brushSize + delta));
   scheduleRender();
 });
-// F liga e desliga o preencher área; Esc desiste do retângulo que está sendo marcado.
+// Esc desiste do retângulo que está sendo marcado.
 window.addEventListener('keydown', (evt) => {
-  const tag = evt.target && evt.target.tagName;
-  if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
-  if (evt.key === 'Escape' && state.area) {
-    state.area = null;
-    scheduleRender();
-  } else if ((evt.key === 'f' || evt.key === 'F') && !evt.ctrlKey && !evt.metaKey && !evt.altKey) {
-    state.fillMode = !state.fillMode;
-    renderTools();
-    scheduleRender();
-  }
+  if (evt.key !== 'Escape' || !state.area) return;
+  state.area = null;
+  scheduleRender();
 });

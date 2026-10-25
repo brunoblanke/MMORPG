@@ -11,7 +11,7 @@ import { state } from '../model/state.js';
 import { restackItems } from '../../../shared/map-format.js';
 import { loadImage, setImageUpdateCallback } from './image-cache.js';
 import { stackFrame } from '../../../shared/items.js';
-import { brushCells, brushSize, fillActive, areaCells } from '../model/brush.js';
+import { brushCells, brushSize, areaCells } from '../model/brush.js';
 
 export const canvas = document.getElementById('canvas');
 export const ctx = canvas.getContext('2d');
@@ -263,18 +263,9 @@ export function draw() {
 // Contorno do pincel sob o mouse; maior que 1 sqm, com o tamanho no canto.
 
 function drawBrush() {
-  if (state.area) return drawArea();
+  if (state.area && (state.area.x0 !== state.area.x1 || state.area.y0 !== state.area.y1)) return drawArea();
   const hover = state.hoverCell;
   if (!hover) return;
-  if (fillActive()) {
-    ctx.save();
-    ctx.strokeStyle = 'rgba(94, 234, 212, 0.9)';
-    ctx.setLineDash([5, 4]);
-    ctx.lineWidth = 2;
-    ctx.strokeRect(hover.x * TILE + 1, hover.y * TILE + 1, TILE - 2, TILE - 2);
-    ctx.restore();
-    return;
-  }
   const cells = state.tool === 'select' ? [hover] : brushCells(hover.x, hover.y);
   if (!cells.length) return;
   drawPaintPreview(cells);
@@ -300,19 +291,12 @@ function drawBrush() {
 
 // ================================================================================================================================================================================================================================================
 // drawArea
-// O retângulo do preencher área enquanto arrasta: contorno tracejado, prévia do que vai entrar (o piso também) e o tamanho no canto.
+// O retângulo do preencher área enquanto arrasta: contorno tracejado e o tamanho no canto (o que entra só aparece ao soltar).
 
 function drawArea() {
   const area = state.area;
   const cells = areaCells(area);
   if (!cells.length) return;
-  drawPaintPreview(cells);
-  if (state.tool === 'floor' && state.floorPaint) {
-    ctx.save();
-    ctx.globalAlpha = PREVIEW_ALPHA;
-    for (const { x, y } of cells) drawPiece(pieceType(state.floorPaint, floorMiddle(state.floorPaint, x, y, state.activeZ)), x * TILE, y * TILE);
-    ctx.restore();
-  }
   const minX = Math.min(area.x0, area.x1);
   const minY = Math.min(area.y0, area.y1);
   const width = Math.abs(area.x1 - area.x0) + 1;
