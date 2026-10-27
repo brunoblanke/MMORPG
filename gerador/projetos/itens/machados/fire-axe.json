@@ -21,7 +21,10 @@
     "ml": 0,
     "speed": 0,
     "slot": "arma",
-    "skillArma": "axe"
+    "skillArma": "axe",
+    "capacidade": [
+      "lenhar"
+    ]
   },
   "ferramenta": "objetos",
   "grupo": "itens",

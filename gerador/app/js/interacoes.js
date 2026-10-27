@@ -10,7 +10,7 @@ import { EFFECTS } from '/shared/effects.js';
 // ferramenta (propriedades.capacidade).
 
 const GATILHOS_NA_TELA = [['clicar', 'Ao clicar / usar'], ['capacidade', 'Ao usar uma ferramenta com a capacidade'], ['pisar', 'Ao pisar'], ['item-em-cima', 'Ao jogar um item em cima'], ['falar', 'Ao ouvir o player falar'], ['ser-atingido', 'Ao ser atingido (criatura)'], ['morrer', 'Ao morrer (criatura)'], ['tempo', 'A cada segundo (criatura)']];
-const NOMES_CAPACIDADES = { cavar: 'Cavar', quebrar: 'Quebrar', cortar: 'Cortar', colher: 'Colher', puxar: 'Puxar (corda)', pescar: 'Pescar', abrir: 'Abrir com chave' };
+const NOMES_CAPACIDADES = { cavar: 'Cavar', quebrar: 'Quebrar', cortar: 'Cortar', colher: 'Colher', puxar: 'Puxar (corda)', pescar: 'Pescar', abrir: 'Abrir com chave', lenhar: 'Lenhar (machado)' };
 
 let itensCache = null;
 

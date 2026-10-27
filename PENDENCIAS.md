@@ -4,7 +4,7 @@ Estado do projeto para retomar numa conversa nova. O que é regra fixa e como o 
 
 ## Para o usuário fazer
 
-- Gerador → "Gerar folhas pendentes" (Objetos e Criaturas): `banqueiro` e `capitao` (NPCs), `scythe`, `chave-dourada`, `alavanca-1` e `alavanca-1-ligada`, `amulet-of-loss`. Sem a folha (.png) o item não existe no jogo. Os ids do Tibia dessas receitas (chave 2970, alavanca 1945/1946, foice 3453, amuleto 3057) foram escolhidos de memória: conferir na primeira geração.
+- Gerador → "Gerar folhas pendentes" (Objetos e Criaturas): `wood` (madeira, id 5901, conferir), `banqueiro` e `capitao` (NPCs), `scythe`, `chave-dourada`, `alavanca-1` e `alavanca-1-ligada`, `amulet-of-loss`. Sem a folha (.png) o item não existe no jogo. Os ids do Tibia dessas receitas (chave 2970, alavanca 1945/1946, foice 3453, amuleto 3057) foram escolhidos de memória: conferir na primeira geração.
 - Conferir que a receita `cama` tem Uso `cama` e `cama-ocupada` como desenho ativo.
 - Criar o objeto de depósito (Uso `deposito`) e, se quiser testar a pick, um monte com Uso `picareta`.
 - Servidor: definir `JOGO_ADMIN_SENHA` no arquivo do serviço `jogo` (sem ela o editor não salva o mapa de outro computador) e, na Oracle, reservar o IP público para ele não mudar.
@@ -27,6 +27,12 @@ Falta, por ordem:
 3. Player como ficha: `fichaDoPlayer(player)` (só leitura) e os gatilhos `ser-atingido`, `morrer` e `tempo` do player rodam pelas interações escritas na receita do sprite dele (`personagens/players/player-masculino` / `-feminino`, `PLAYER_SPRITES`), valem pra todos os players daquele gênero. Falta o jogo consultar a ficha em vez de ler o player direto.
 4. (feito) Anel de invisibilidade (`invisivelEquipado`, `player.isInvisible`; stealth ring com Duração 1800 s) e time ring (speed 40). Falta só preencher a regeneração do life ring no gerador.
 5. Id: mantido como `grupo/pasta/nome` (decisão posterior ao artefato: mover pasta usa `ferramentas/mover-folhas.js`, que atualiza tudo e a tabela `gerador/renomeados.json`).
+
+## Coleta e crafting (em andamento)
+
+Ideia do usuário: tudo nas mãos dos players. O editor vai pra dentro do jogo, o mapa tem montanhas e florestas, e os players constroem as próprias cidades; um prédio registrado como banco ganha um NPC banqueiro, por exemplo. O crafting segue etapas no mundo, à moda do pão do Tibia: colher, secar, moer no moinho e assar no forno com água e forma.
+
+Feito: lenha (machado na árvore → madeira, `ferramentas/criar-lenha.js`). Próximo: pedra (picareta, capacidade `quebrar`, numa pedra de `estrutura/natureza` → item pedra), depois as etapas do pão. A árvore ainda não se esgota (ideia: depois de N cortes vira toco e rebrota).
 
 ## Decisões já tomadas (não repetir a discussão)
 

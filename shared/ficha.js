@@ -23,7 +23,7 @@ import { itemInfo, EQUIP_SLOTS } from './items.js';
 
 export const GATILHOS = ['clicar', 'capacidade', 'pisar', 'falar', 'ser-atingido', 'morrer', 'item-em-cima', 'tempo'];
 
-export const CAPACIDADES = ['cavar', 'quebrar', 'cortar', 'colher', 'puxar', 'pescar', 'abrir'];
+export const CAPACIDADES = ['cavar', 'quebrar', 'cortar', 'colher', 'puxar', 'pescar', 'abrir', 'lenhar'];
 
 export const EFEITOS = [
   'alternar-estado', 'definir-estado', 'alimentar', 'curar', 'puxar-de-baixo', 'falar', 'abrir-buraco', 'cair', 'remover', 'trocar-andar', 'teletransportar', 'dar-itens', 'gastar-item', 'soltar-item',

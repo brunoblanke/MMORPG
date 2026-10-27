@@ -104,7 +104,8 @@
             { "id": "ferramentas", "nome": "Ferramentas", "ferramenta": "objetos" },
             { "id": "ferramentas-de-cozinha", "nome": "Ferramentas de cozinha", "ferramenta": "objetos" },
             { "id": "fontes-de-luz", "nome": "Fontes de luz", "ferramenta": "objetos" },
-            { "id": "itens-de-domar", "nome": "Itens de domar", "ferramenta": "objetos" }
+            { "id": "itens-de-domar", "nome": "Itens de domar", "ferramenta": "objetos" },
+            { "id": "materiais", "nome": "Materiais", "ferramenta": "objetos" }
           ]
         },
         {

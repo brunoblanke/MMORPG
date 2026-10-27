@@ -26,7 +26,10 @@
     "manaMax": 0,
     "alimento": 0,
     "slot": "arma",
-    "skillArma": "axe"
+    "skillArma": "axe",
+    "capacidade": [
+      "lenhar"
+    ]
   },
   "ferramenta": "objetos",
   "grupo": "itens",

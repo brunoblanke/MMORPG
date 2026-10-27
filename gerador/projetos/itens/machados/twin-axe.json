@@ -36,7 +36,10 @@
     "ativoComo": "",
     "comecaAtivo": false,
     "slot": "arma",
-    "skillArma": "axe"
+    "skillArma": "axe",
+    "capacidade": [
+      "lenhar"
+    ]
   },
   "ferramenta": "objetos",
   "grupo": "itens",

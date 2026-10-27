@@ -83,10 +83,7 @@ export class InteractionEffects {
       const who = this.whoIs(effect, ctx);
       if (who && !who.isNpc && effect.dano > 0 && effect.ticks > 0) sim.conditions.add(who, effect.estado, { damage: effect.dano, ticks: effect.ticks });
     } else if (effect.tipo === 'soltar-item') {
-      if (getAsset(splitType(effect.item).asset)) {
-        const { inventory } = sim;
-        inventory.mergeGroundStack(inventory.spawnGroundItem(newItem(inventory.nextUid(), effect.item, Math.max(1, effect.quantidade || 1)), tile.x, tile.y, tile.z));
-      }
+      if (getAsset(splitType(effect.item).asset)) this.dropItem(effect, ctx);
     } else if (effect.tipo === 'dar-itens' && actor && getAsset(splitType(effect.item).asset)) {
       const key = `interacao:${ctx.id}`;
       actor.quests = actor.quests || [];
@@ -111,6 +108,18 @@ export class InteractionEffects {
     } else if (effect.tipo === 'remover' && target && sim.objectsById.has(target.id)) {
       sim.interactions.cut(target, effect.rebroteMs);
     }
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // dropItem
+  // Efeito soltar-item: cai no sqm do alvo; se o alvo bloqueia (árvore, pedra), cai ao lado de quem usou, do lado dele.
+
+  dropItem(effect, ctx) {
+    const { inventory, interactions } = this.sim;
+    const { actor, target, tile } = ctx;
+    const count = Math.max(1, effect.quantidade || 1);
+    if (actor && target && target.blocksMovement) return interactions.dropBeside(actor, effect.item, tile, count);
+    inventory.mergeGroundStack(inventory.spawnGroundItem(newItem(inventory.nextUid(), effect.item, count), tile.x, tile.y, tile.z));
   }
 
   // ================================================================================================================================================================================================================================================

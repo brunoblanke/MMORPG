@@ -24,7 +24,26 @@
     "vidaMax": 0,
     "manaMin": 0,
     "manaMax": 0,
-    "alimento": 0
+    "alimento": 0,
+    "interacoes": [
+      {
+        "gatilho": {
+          "tipo": "capacidade",
+          "capacidade": "lenhar"
+        },
+        "condicoes": {
+          "alcance": 1,
+          "chance": 40
+        },
+        "efeitos": [
+          {
+            "tipo": "soltar-item",
+            "item": "itens/materiais/wood",
+            "quantidade": 1
+          }
+        ]
+      }
+    ]
   },
   "ferramenta": "objetos",
   "grupo": "estrutura",

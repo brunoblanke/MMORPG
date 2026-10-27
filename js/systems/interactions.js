@@ -292,7 +292,7 @@ export class InteractionController {
 
   react(player, hit, item, from, target) {
     const { obj, reaction } = hit;
-    if (reaction.propria) return this.sim.effects.run(reaction, { actor: player, target: obj, tile: { x: target.x, y: target.y, z: player.z || 0 }, id: `${obj ? obj.id : 'piso'}:${target.x},${target.y}` });
+    if (reaction.propria) return this.reactOwn(player, hit, from, target);
     const kinds = reaction.efeitos.map(e => e.tipo);
     if (kinds.includes('trancar')) return this.useKey(player, item, target, from);
     if (!obj) return kinds.includes('gastar-item') ? this.fish(player, item, target) : this.digWorm(player, target);
@@ -304,6 +304,28 @@ export class InteractionController {
     if (kinds.includes('trocar-andar')) return this.climb(player, obj);
     if (kinds.includes('remover')) return this.cut(obj);
     return this.dig(player, obj);
+  }
+
+// ================================================================================================================================================================================================================================================
+  // reactOwn
+  // Reação escrita na ficha (gerador → Interações): longe do objeto, o player anda até o lado e usa ao chegar; espera
+  // USE_COOLDOWN_MS entre um uso e outro; perto, mas sem resultado (a chance falhou, faltou item…), sobe a fumacinha.
+
+  reactOwn(player, hit, from, target) {
+    const { obj, reaction, creature } = hit;
+    const z = player.z || 0;
+    const reach = reaction.condicoes.alcance;
+    const dist = Math.max(Math.abs(target.x - player.x), Math.abs(target.y - player.y));
+    if (obj && !creature && reach >= 1 && dist > reach) {
+      if (from) this.sim.inventory.walkNextTo(player, obj, { type: 'useItem', from, target });
+      return false;
+    }
+    const now = this.sim.time || 0;
+    if (now < (player.useReadyAt || 0)) return false;
+    player.useReadyAt = now + USE_COOLDOWN_MS;
+    if (this.sim.effects.run(reaction, { actor: player, target: obj, tile: { x: target.x, y: target.y, z }, id: `${obj ? obj.id : 'piso'}:${target.x},${target.y}` })) return true;
+    if (reach === undefined || dist <= reach) this.sim.spells.showEffect(target.x, target.y, 'poff', undefined, z);
+    return false;
   }
 
 // ================================================================================================================================================================================================================================================
@@ -387,9 +409,9 @@ export class InteractionController {
 
   // ================================================================================================================================================================================================================================================
   // dropBeside
-  // O item cai no chão ao lado do player: o sqm em volta dele (ou o dele, se não houver) livre e firme mais perto de towards (pra onde ele pescou), com o brilho DROP_EFFECT.
+  // O item cai no chão ao lado do player: o sqm em volta dele (ou o dele, se não houver) livre e firme mais perto de towards (pra onde ele pescou ou cortou), com o brilho DROP_EFFECT.
 
-  dropBeside(player, type, towards) {
+  dropBeside(player, type, towards, count = 1) {
     const { world, movement, inventory } = this.sim;
     const z = player.z || 0;
     const around = [];
@@ -402,7 +424,7 @@ export class InteractionController {
     }
     around.sort((a, b) => Math.hypot(a.x - towards.x, a.y - towards.y) - Math.hypot(b.x - towards.x, b.y - towards.y));
     const spot = around[0] || { x: player.x, y: player.y };
-    inventory.mergeGroundStack(inventory.spawnGroundItem(newItem(inventory.nextUid(), type, 1), spot.x, spot.y, z));
+    inventory.mergeGroundStack(inventory.spawnGroundItem(newItem(inventory.nextUid(), type, count), spot.x, spot.y, z));
     this.sim.spells.showEffect(spot.x, spot.y, DROP_EFFECT, undefined, z);
   }
 
