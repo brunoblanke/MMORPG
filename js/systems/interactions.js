@@ -2,7 +2,7 @@
 
 import { GameObject } from '../models/game-object.js';
 import { fichaDe, reacoesA, capacidadesDe, interacoesDe, clicavel, efeitosAoPisar } from '../../shared/ficha.js';
-import { objectIdType, objectUse, activeAs, togglesOnUse, displayName, getAsset, splitType, isEntranceFolder, floorBehavior, WORM_TYPE } from '../../shared/assets.js';
+import { objectIdType, objectProps, objectUse, activeAs, togglesOnUse, displayName, getAsset, splitType, isEntranceFolder, floorBehavior, WORM_TYPE } from '../../shared/assets.js';
 import { itemInfo, newItem, weightOf, FISH_RANGE, USE_COOLDOWN_MS, SLEEP_REGEN_FACTOR, REGEN_HP, REGEN_MANA } from '../../shared/items.js';
 import { VOCATIONS, vocationOf } from '../../shared/vocations.js';
 import { takeFromBag } from './trade.js';
@@ -270,19 +270,20 @@ export class InteractionController {
     for (const obj of world.getObjectsAt(target.x, target.y)) {
       if ((obj.z || 0) !== z || obj.floorType) continue;
       const ficha = fichaDe(objectIdType(obj.id));
-      const reaction = (ficha && reacoesA(ficha, capacity).find(r => r.condicoes.estado !== 'ativo' || obj.active)) || (capacity === 'puxar' && this.isOpening(obj) ? PULL_FROM_BELOW : null);
-      if (reaction) hits.push({ obj, reaction });
+      const reactions = ficha ? reacoesA(ficha, capacity).filter(r => r.condicoes.estado !== 'ativo' || obj.active) : [];
+      const reaction = reactions[0] || (capacity === 'puxar' && this.isOpening(obj) ? PULL_FROM_BELOW : null);
+      if (reaction) hits.push({ obj, reaction, reactions });
     }
     hits.sort((a, b) => rank(a) - rank(b));
     if (hits.length) return hits[0];
     const creature = world.getCreatureAt(target.x, target.y, z);
     const cficha = creature && !creature.isPlayer && creature.creature && fichaDe(creature.creature);
-    const creatureReaction = cficha && reacoesA(cficha, capacity)[0];
-    if (creatureReaction) return { obj: creature, reaction: creatureReaction, creature: true };
+    const creatureReactions = cficha ? reacoesA(cficha, capacity) : [];
+    if (creatureReactions.length) return { obj: creature, reaction: creatureReactions[0], reactions: creatureReactions, creature: true };
     const floor = world.topFloors.get(world.getTileKey(target.x, target.y, z));
     const ficha = floor && fichaDe(floor.floorType);
-    const reaction = ficha && reacoesA(ficha, capacity)[0];
-    return reaction ? { obj: null, reaction } : null;
+    const reactions = ficha ? reacoesA(ficha, capacity) : [];
+    return reactions.length ? { obj: null, reaction: reactions[0], reactions } : null;
   }
 
 // ================================================================================================================================================================================================================================================
@@ -308,8 +309,9 @@ export class InteractionController {
 
 // ================================================================================================================================================================================================================================================
   // reactOwn
-  // Reação escrita na ficha (gerador → Interações): longe do objeto, o player anda até o lado e usa ao chegar; espera
-  // USE_COOLDOWN_MS entre um uso e outro; perto, mas sem resultado (a chance falhou, faltou item…), sobe a fumacinha.
+  // Reações escritas na ficha (gerador → Interações), todas as do alvo pra essa capacidade, em ordem: longe do objeto,
+  // o player anda até o lado e usa ao chegar; espera USE_COOLDOWN_MS entre um uso e outro; perto, mas sem resultado
+  // (a chance falhou, faltou item…), sobe a fumacinha.
 
   reactOwn(player, hit, from, target) {
     const { obj, reaction, creature } = hit;
@@ -323,9 +325,31 @@ export class InteractionController {
     const now = this.sim.time || 0;
     if (now < (player.useReadyAt || 0)) return false;
     player.useReadyAt = now + USE_COOLDOWN_MS;
-    if (this.sim.effects.run(reaction, { actor: player, target: obj, tile: { x: target.x, y: target.y, z }, id: `${obj ? obj.id : 'piso'}:${target.x},${target.y}` })) return true;
-    if (reach === undefined || dist <= reach) this.sim.spells.showEffect(target.x, target.y, 'poff', undefined, z);
-    return false;
+    const ctx = { actor: player, target: obj, tile: { x: target.x, y: target.y, z }, id: `${obj ? obj.id : 'piso'}:${target.x},${target.y}` };
+    let done = false;
+    for (const own of (hit.reactions || [reaction]).filter(r => r.propria)) done = this.sim.effects.run(own, ctx) || done;
+    if (!done && (reach === undefined || dist <= reach)) this.sim.spells.showEffect(target.x, target.y, 'poff', undefined, z);
+    return done;
+  }
+
+// ================================================================================================================================================================================================================================================
+  // replaceObject
+  // O objeto do mapa vira outro tipo no mesmo lugar (árvore → toco, semente → árvore). Um objeto que bloqueia não
+  // nasce onde há criatura ou outro bloqueio (devolve null; a interação tenta de novo depois).
+
+  replaceObject(obj, type) {
+    const { world, inventory, objects, objectsById } = this.sim;
+    const z = obj.z || 0;
+    const props = objectProps(type);
+    if (props.blocksMovement && !obj.blocksMovement && (world.hasBlockerAt(obj.x, obj.y, z) || world.getCreatureAt(obj.x, obj.y, z) !== null)) return null;
+    inventory.removeGroundObject(obj);
+    inventory.objectCounter++;
+    const next = new GameObject({ id: `${type}_${inventory.objectCounter}`, x: obj.x, y: obj.y, z, step: obj.step || 0, movable: props.movable, hasVolume: props.hasVolume, blocksMovement: props.blocksMovement });
+    next.bornAt = this.sim.time || 0;
+    objects.push(next);
+    objectsById.set(next.id, next);
+    world.addObject(next);
+    return next;
   }
 
 // ================================================================================================================================================================================================================================================

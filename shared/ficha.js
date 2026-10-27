@@ -18,7 +18,8 @@ import { itemInfo, EQUIP_SLOTS } from './items.js';
 //
 // Interação = { gatilho, condicoes, efeitos }:
 //   gatilho   { tipo: 'clicar' | 'capacidade' | 'pisar' | 'falar' | 'ser-atingido' | 'morrer' | 'item-em-cima' | 'tempo', capacidade? }
-//   condicoes { alcance?, nivel?, quest?, chave?, estado?, chance?, tem-item? }  (todas valem, "e")
+//   condicoes { alcance?, nivel?, quest?, chave?, estado?, chance?, tem-item?, vezes?, idade? }  (todas valem, "e"; vezes = só a
+//             cada N vezes no mesmo objeto; idade = o objeto está no lugar há pelo menos N segundos)
 //   efeitos   [{ tipo, ... }]  (ver EFEITOS)
 
 export const GATILHOS = ['clicar', 'capacidade', 'pisar', 'falar', 'ser-atingido', 'morrer', 'item-em-cima', 'tempo'];
@@ -27,7 +28,7 @@ export const CAPACIDADES = ['cavar', 'quebrar', 'cortar', 'colher', 'puxar', 'pe
 
 export const EFEITOS = [
   'alternar-estado', 'definir-estado', 'alimentar', 'curar', 'puxar-de-baixo', 'falar', 'abrir-buraco', 'cair', 'remover', 'trocar-andar', 'teletransportar', 'dar-itens', 'gastar-item', 'soltar-item',
-  'mostrar-texto', 'abrir-deposito', 'receber-carta', 'dano', 'estado-de-dano', 'deitar', 'acionar-alvos', 'trancar', 'treinar-skill', 'efeito-visual', 'conversar', 'consumir-item'
+  'mostrar-texto', 'abrir-deposito', 'receber-carta', 'dano', 'estado-de-dano', 'deitar', 'acionar-alvos', 'trancar', 'treinar-skill', 'efeito-visual', 'conversar', 'consumir-item', 'trocar-por'
 ];
 
 export const REBROTE_MS = 120000;
@@ -48,6 +49,7 @@ export const ESQUEMA_EFEITOS = {
   'consumir-item': { rotulo: 'Consumir o item colocado em cima', campos: [] },
   'alternar-estado': { rotulo: 'Alternar normal e ativo', campos: [] },
   'definir-estado': { rotulo: 'Definir o estado', campos: [{ chave: 'valor', rotulo: 'Estado', tipo: 'escolha', opcoes: ['ativo', 'normal'] }, { chave: 'voltaEmMs', rotulo: 'Volta sozinho em (ms, 0 = não)', tipo: 'numero' }] },
+  'trocar-por': { rotulo: 'Virar outro objeto (vários separados por vírgula: sorteia)', campos: [{ chave: 'item', rotulo: 'Objeto', tipo: 'texto', max: 2000 }] },
   remover: { rotulo: 'Remover o objeto (rebrota)', campos: [{ chave: 'rebroteMs', rotulo: 'Rebrota em (ms, 0 = não)', tipo: 'numero' }] }
 };
 export const PORTA_FECHA_MS = 3000;
@@ -84,6 +86,8 @@ export function normalizarInteracoes(lista) {
     if (c.quest) condicoes.quest = texto(c.quest, 60);
     if (c.palavra) condicoes.palavra = texto(c.palavra, 60);
     if (c.item) condicoes.item = texto(c.item, 120);
+    if (c.vezes) condicoes.vezes = Math.max(1, int(c.vezes, 1000));
+    if (c.idade) condicoes.idade = int(c.idade, 604800);
     if (c.chance) condicoes.chance = Math.min(100, Math.max(1, int(c.chance, 100)));
     if (c['tem-item']) condicoes['tem-item'] = texto(c['tem-item'], 120);
     const efeitos = [];
@@ -99,7 +103,7 @@ export function normalizarInteracoes(lista) {
           const d = valor || {};
           if (![d.x, d.y, d.z].every(Number.isInteger)) { efeito.invalido = true; continue; }
           efeito[campo.chave] = { x: d.x, y: d.y, z: d.z };
-        } else efeito[campo.chave] = texto(valor);
+        } else efeito[campo.chave] = texto(valor, campo.max);
       }
       if (!efeito.invalido) efeitos.push(efeito);
     }

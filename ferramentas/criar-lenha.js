@@ -1,10 +1,13 @@
 // ferramentas/criar-lenha.js
 
-// Cortar lenha: cria no gerador a receita da madeira (itens/materiais/wood, empilhável), dá a capacidade "lenhar"
-// aos machados (itens/machados: os que têm "axe" no nome e o hatchet) e escreve nas árvores (estrutura/natureza) a
-// reação: machado usado com a mira na árvore, ao lado dela, com CHANCE % solta 1 madeira ao lado do player.
-// Pode rodar de novo: o que já está feito fica como está. A folha da madeira sai do gerador: aba Objetos →
-// "Gerar folhas pendentes"; a chance e o que cai se mudam no gerador (Interações da árvore).
+// Cortar lenha: cria no gerador as receitas da madeira (itens/materiais/wood, empilhável), do toco
+// (estrutura/natureza/tree-stump) e da semente (itens/plantas-e-ervas/seeds), dá a capacidade "lenhar" aos machados
+// (itens/machados: os que têm "axe" no nome e o hatchet) e escreve as reações:
+//   árvore + machado → com CHANCE % solta 1 madeira; a cada CORTES cortes vira toco e solta 1 semente;
+//   toco + machado   → solta 1 madeira e some;
+//   semente no chão  → depois de CRESCE_S segundos no lugar vira uma das ARVORES (sorteada).
+// Pode rodar de novo: o que já está feito fica como está. As folhas saem do gerador: aba Objetos → "Gerar folhas
+// pendentes"; chance, cortes, tempo e o que cai se mudam no gerador (Interações de cada receita).
 //
 // Uso: node ferramentas/criar-lenha.js
 
@@ -14,10 +17,21 @@ const path = require('path');
 const RAIZ = path.join(__dirname, '..');
 const PROJETOS = path.join(RAIZ, 'gerador', 'projetos');
 const MADEIRA = 'itens/materiais/wood';
+const TOCO = 'estrutura/natureza/tree-stump';
+const SEMENTE = 'itens/plantas-e-ervas/seeds';
 const CHANCE = 40;
+const CORTES = 8;
+const CRESCE_S = 600;
 const ARVORES = [
   'arvore-1', 'arvore-3', 'beech', 'coconut-palm', 'dead-tree', 'dwarf-tree', 'fir-tree', 'old-tree', 'palm', 'pear-tree',
   'pine', 'pinheiro-1', 'plum-tree', 'poplar', 'red-maple', 'snowy-dead-tree', 'willow', 'yellow-maple'
+];
+const NASCEM = ['arvore-1', 'arvore-3', 'beech', 'dwarf-tree', 'fir-tree', 'old-tree', 'pear-tree', 'pine', 'pinheiro-1', 'plum-tree', 'poplar', 'red-maple', 'willow', 'yellow-maple'];
+
+const RECEITAS = [
+  { id: MADEIRA, tibia: 5901, propriedades: { move: true, empilhavel: true, peso: 5 } },
+  { id: SEMENTE, tibia: 647, propriedades: { move: true, empilhavel: false, peso: 0.5 } },
+  { id: TOCO, tibia: 7960, propriedades: { move: false, empilhavel: false, peso: 0 } }
 ];
 
 // ================================================================================================================================================================================================================================================
@@ -35,24 +49,56 @@ function gravarReceita(arquivo, receita) {
 }
 
 // ================================================================================================================================================================================================================================================
-// criarMadeira
-// A receita da madeira (Tibia: wood, id 5901), se ainda não existe.
+// criarReceitas
+// As receitas de RECEITAS que ainda não existem.
 
-function criarMadeira() {
-  const arquivo = path.join(PROJETOS, `${MADEIRA}.json`);
-  if (fs.existsSync(arquivo)) return console.log(`já existe: ${MADEIRA}`);
-  const [grupo, pasta, nome] = MADEIRA.split('/');
-  fs.mkdirSync(path.dirname(arquivo), { recursive: true });
-  gravarReceita(arquivo, {
-    formato: { quadro: 32, quadros: 1 },
-    objeto: { tibia: { id: 5901, variacao: 0 } },
-    propriedades: {
-      bloqueia: false, move: true, altura: false, empilhavel: true, peso: 10,
-      espacos: 0, atk: 0, def: 0, ml: 0, speed: 0, vidaMin: 0, vidaMax: 0, manaMin: 0, manaMax: 0, alimento: 0
-    },
-    ferramenta: 'objetos', grupo, pasta, nome
-  });
-  console.log(`✅ ${MADEIRA}`);
+function criarReceitas() {
+  for (const { id, tibia, propriedades } of RECEITAS) {
+    const arquivo = path.join(PROJETOS, `${id}.json`);
+    if (fs.existsSync(arquivo)) {
+      console.log(`já existe: ${id}`);
+      continue;
+    }
+    const [grupo, pasta, nome] = id.split('/');
+    fs.mkdirSync(path.dirname(arquivo), { recursive: true });
+    gravarReceita(arquivo, {
+      formato: { quadro: 32, quadros: 1 },
+      objeto: { tibia: { id: tibia, variacao: 0 } },
+      propriedades: {
+        bloqueia: false, altura: false, espacos: 0, atk: 0, def: 0, ml: 0, speed: 0, vidaMin: 0, vidaMax: 0, manaMin: 0, manaMax: 0, alimento: 0,
+        ...propriedades
+      },
+      ferramenta: 'objetos', grupo, pasta, nome
+    });
+    console.log(`✅ ${id}`);
+  }
+}
+
+// ================================================================================================================================================================================================================================================
+// garantirInteracao
+// Põe a interação na receita se ainda não há uma com o mesmo gatilho que faça o efeito marca. Devolve true se mudou.
+
+function garantirInteracao(receita, marca, interacao) {
+  const props = receita.propriedades = receita.propriedades || {};
+  const lista = Array.isArray(props.interacoes) ? props.interacoes : [];
+  const mesma = (i) => i && i.gatilho && i.gatilho.tipo === interacao.gatilho.tipo && i.gatilho.capacidade === interacao.gatilho.capacidade
+    && Array.isArray(i.efeitos) && i.efeitos.some(e => e && e.tipo === marca);
+  if (lista.some(mesma)) return false;
+  props.interacoes = [...lista, interacao];
+  return true;
+}
+
+// ================================================================================================================================================================================================================================================
+// marcar
+// Abre a receita, aplica mudar(receita) e grava se mudou.
+
+function marcar(id, mudar) {
+  const arquivo = path.join(PROJETOS, `${id}.json`);
+  if (!fs.existsSync(arquivo)) return console.log(`não achei: ${id}`);
+  const receita = lerReceita(arquivo);
+  if (!mudar(receita)) return;
+  gravarReceita(arquivo, receita);
+  console.log(`✏️  ${id}`);
 }
 
 // ================================================================================================================================================================================================================================================
@@ -64,42 +110,33 @@ function marcarMachados() {
   for (const nome of fs.readdirSync(pasta).filter(n => n.endsWith('.json')).sort()) {
     const base = nome.replace(/\.json$/, '');
     if (!base.includes('axe') && base !== 'hatchet') continue;
-    const arquivo = path.join(pasta, nome);
-    const receita = lerReceita(arquivo);
-    const props = receita.propriedades = receita.propriedades || {};
-    const lista = Array.isArray(props.capacidade) ? props.capacidade : [];
-    if (lista.includes('lenhar')) continue;
-    props.capacidade = [...lista, 'lenhar'];
-    gravarReceita(arquivo, receita);
-    console.log(`🪓 ${base}`);
+    marcar(`itens/machados/${base}`, (receita) => {
+      const props = receita.propriedades = receita.propriedades || {};
+      const lista = Array.isArray(props.capacidade) ? props.capacidade : [];
+      if (lista.includes('lenhar')) return false;
+      props.capacidade = [...lista, 'lenhar'];
+      return true;
+    });
   }
 }
 
 // ================================================================================================================================================================================================================================================
 // marcarArvores
-// As árvores ganham a reação ao machado: com CHANCE % solta 1 madeira.
+// Árvore: madeira com CHANCE %, toco e semente a cada CORTES. Toco: madeira e some. Semente: vira árvore.
 
 function marcarArvores() {
+  const lenhar = { tipo: 'capacidade', capacidade: 'lenhar' };
   for (const nome of ARVORES) {
-    const arquivo = path.join(PROJETOS, 'estrutura', 'natureza', `${nome}.json`);
-    if (!fs.existsSync(arquivo)) {
-      console.log(`não achei: estrutura/natureza/${nome}`);
-      continue;
-    }
-    const receita = lerReceita(arquivo);
-    const props = receita.propriedades = receita.propriedades || {};
-    const lista = Array.isArray(props.interacoes) ? props.interacoes : [];
-    if (lista.some(i => i && i.gatilho && i.gatilho.capacidade === 'lenhar')) continue;
-    props.interacoes = [...lista, {
-      gatilho: { tipo: 'capacidade', capacidade: 'lenhar' },
-      condicoes: { alcance: 1, chance: CHANCE },
-      efeitos: [{ tipo: 'soltar-item', item: MADEIRA, quantidade: 1 }]
-    }];
-    gravarReceita(arquivo, receita);
-    console.log(`🌳 ${nome}`);
+    marcar(`estrutura/natureza/${nome}`, (receita) => {
+      const madeira = garantirInteracao(receita, 'soltar-item', { gatilho: lenhar, condicoes: { alcance: 1, chance: CHANCE }, efeitos: [{ tipo: 'soltar-item', item: MADEIRA, quantidade: 1 }] });
+      const toco = garantirInteracao(receita, 'trocar-por', { gatilho: lenhar, condicoes: { alcance: 1, vezes: CORTES }, efeitos: [{ tipo: 'trocar-por', item: TOCO }, { tipo: 'soltar-item', item: SEMENTE, quantidade: 1 }] });
+      return madeira || toco;
+    });
   }
+  marcar(TOCO, (receita) => garantirInteracao(receita, 'remover', { gatilho: lenhar, condicoes: { alcance: 1 }, efeitos: [{ tipo: 'soltar-item', item: MADEIRA, quantidade: 1 }, { tipo: 'remover', rebroteMs: 0 }] }));
+  marcar(SEMENTE, (receita) => garantirInteracao(receita, 'trocar-por', { gatilho: { tipo: 'tempo' }, condicoes: { idade: CRESCE_S }, efeitos: [{ tipo: 'trocar-por', item: NASCEM.map(n => `estrutura/natureza/${n}`).join(', ') }] }));
 }
 
-criarMadeira();
+criarReceitas();
 marcarMachados();
 marcarArvores();

@@ -24,21 +24,39 @@ export class InteractionEffects {
 
   constructor(sim) {
     this.sim = sim;
+    this.counts = new Map();
   }
 
   // ================================================================================================================================================================================================================================================
   // meets
-  // As condições da interação valem pra esse ator (todas: "e").
+  // As condições da interação valem pra esse ator (todas: "e"). key separa a contagem de "a cada N vezes" por objeto
+  // e interação.
 
-  meets(conditions, ctx) {
-    const { actor, tile } = ctx;
+  meets(conditions, ctx, key = ctx.id) {
+    const { actor, tile, target } = ctx;
     if (conditions.alcance !== undefined && actor && Math.max(Math.abs(actor.x - tile.x), Math.abs(actor.y - tile.y)) > conditions.alcance) return false;
     if (conditions.nivel && (!actor || actor.lvl < conditions.nivel)) return false;
     if (conditions.quest && (!actor || !(actor.quests || []).includes(conditions.quest))) return false;
     if (conditions['tem-item'] && (!actor || countInBag(actor, conditions['tem-item']) < 1)) return false;
     if (conditions.palavra && !` ${ctx.heard || ''} `.includes(` ${normalizeSpeech(conditions.palavra)} `)) return false;
     if (conditions.item && !(ctx.item && ctx.item.type.includes(conditions.item))) return false;
+    if (conditions.idade && target && target.bornAt !== undefined && (this.sim.time || 0) - target.bornAt < conditions.idade * 1000) return false;
+    if (conditions.vezes > 1 && !this.countUp(key, conditions.vezes)) return false;
     if (conditions.chance && Math.random() * 100 >= conditions.chance) return false;
+    return true;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // countUp
+  // Conta mais uma vez; true na N-ésima (e recomeça).
+
+  countUp(key, times) {
+    const count = (this.counts.get(key) || 0) + 1;
+    if (count < times) {
+      this.counts.set(key, count);
+      return false;
+    }
+    this.counts.delete(key);
     return true;
   }
 
@@ -47,7 +65,7 @@ export class InteractionEffects {
   // Faz os efeitos da interação se as condições valem. Devolve true se rodou.
 
   run(interaction, ctx) {
-    if (!this.meets(interaction.condicoes || {}, ctx)) return false;
+    if (!this.meets(interaction.condicoes || {}, ctx, `${ctx.id}|${JSON.stringify(interaction.efeitos)}`)) return false;
     for (const effect of interaction.efeitos) this.apply(effect, ctx);
     return true;
   }
@@ -105,6 +123,9 @@ export class InteractionEffects {
       if (effect.voltaEmMs > 0) sim.schedule((sim.time || 0) + effect.voltaEmMs, () => sim.interactions.setActive(target, !active));
     } else if (effect.tipo === 'consumir-item') {
       ctx.consumed = true;
+    } else if (effect.tipo === 'trocar-por' && target && !target.isNpc && sim.objectsById.has(target.id)) {
+      const options = String(effect.item || '').split(',').map(type => type.trim()).filter(type => getAsset(splitType(type).asset));
+      if (options.length) sim.interactions.replaceObject(target, options[Math.floor(Math.random() * options.length)]);
     } else if (effect.tipo === 'remover' && target && sim.objectsById.has(target.id)) {
       sim.interactions.cut(target, effect.rebroteMs);
     }

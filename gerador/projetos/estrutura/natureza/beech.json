@@ -52,6 +52,27 @@
             "quantidade": 1
           }
         ]
+      },
+      {
+        "gatilho": {
+          "tipo": "capacidade",
+          "capacidade": "lenhar"
+        },
+        "condicoes": {
+          "alcance": 1,
+          "vezes": 8
+        },
+        "efeitos": [
+          {
+            "tipo": "trocar-por",
+            "item": "estrutura/natureza/tree-stump"
+          },
+          {
+            "tipo": "soltar-item",
+            "item": "itens/plantas-e-ervas/seeds",
+            "quantidade": 1
+          }
+        ]
       }
     ]
   },

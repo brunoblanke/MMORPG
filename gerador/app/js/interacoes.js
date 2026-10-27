@@ -104,7 +104,7 @@ export async function montarInteracoes(box, lista, aoMudar) {
 
       ix.condicoes = ix.condicoes || {};
       const condicoes = criar('div', { className: 'ix-row' });
-      for (const [chave, rotulo, tipo] of [['alcance', 'Alcance (sqm)', 'numero'], ['nivel', 'Nível mínimo', 'numero'], ['chance', 'Chance %', 'numero'], ['quest', 'Quest feita', 'texto'], ['palavra', 'Palavra dita', 'texto'], ['item', 'Item colocado (parte do nome)', 'texto']]) {
+      for (const [chave, rotulo, tipo] of [['alcance', 'Alcance (sqm)', 'numero'], ['nivel', 'Nível mínimo', 'numero'], ['chance', 'Chance %', 'numero'], ['vezes', 'A cada N vezes', 'numero'], ['idade', 'Depois de (s no lugar)', 'numero'], ['quest', 'Quest feita', 'texto'], ['palavra', 'Palavra dita', 'texto'], ['item', 'Item colocado (parte do nome)', 'texto']]) {
         const entrada = criar('input', { type: tipo === 'numero' ? 'number' : 'text', value: ix.condicoes[chave] ?? '', className: tipo === 'numero' ? 'ix-num' : 'ix-text', placeholder: 'sem' });
         entrada.oninput = () => {
           const v = tipo === 'numero' ? (entrada.value === '' ? undefined : Math.max(0, Math.floor(Number(entrada.value)) || 0)) : entrada.value.trim();

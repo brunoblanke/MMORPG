@@ -4,7 +4,7 @@ Estado do projeto para retomar numa conversa nova. O que é regra fixa e como o 
 
 ## Para o usuário fazer
 
-- Gerador → "Gerar folhas pendentes" (Objetos e Criaturas): `wood` (madeira, id 5901, conferir), `banqueiro` e `capitao` (NPCs), `scythe`, `chave-dourada`, `alavanca-1` e `alavanca-1-ligada`, `amulet-of-loss`. Sem a folha (.png) o item não existe no jogo. Os ids do Tibia dessas receitas (chave 2970, alavanca 1945/1946, foice 3453, amuleto 3057) foram escolhidos de memória: conferir na primeira geração.
+- Gerador → "Gerar folhas pendentes" (Objetos e Criaturas): `wood` (madeira, 5901), `seeds` (semente, 647), `tree-stump` (toco, 7960; conferir o desenho), `banqueiro` e `capitao` (NPCs), `scythe`, `chave-dourada`, `alavanca-1` e `alavanca-1-ligada`, `amulet-of-loss`. Sem a folha (.png) o item não existe no jogo. Os ids do Tibia dessas receitas (chave 2970, alavanca 1945/1946, foice 3453, amuleto 3057) foram escolhidos de memória: conferir na primeira geração.
 - Conferir que a receita `cama` tem Uso `cama` e `cama-ocupada` como desenho ativo.
 - Criar o objeto de depósito (Uso `deposito`) e, se quiser testar a pick, um monte com Uso `picareta`.
 - Servidor: definir `JOGO_ADMIN_SENHA` no arquivo do serviço `jogo` (sem ela o editor não salva o mapa de outro computador) e, na Oracle, reservar o IP público para ele não mudar.
@@ -32,7 +32,7 @@ Falta, por ordem:
 
 Ideia do usuário: tudo nas mãos dos players. O editor vai pra dentro do jogo, o mapa tem montanhas e florestas, e os players constroem as próprias cidades; um prédio registrado como banco ganha um NPC banqueiro, por exemplo. O crafting segue etapas no mundo, à moda do pão do Tibia: colher, secar, moer no moinho e assar no forno com água e forma.
 
-Feito: lenha (machado na árvore → madeira, `ferramentas/criar-lenha.js`). Próximo: pedra (picareta, capacidade `quebrar`, numa pedra de `estrutura/natureza` → item pedra), depois as etapas do pão. A árvore ainda não se esgota (ideia: depois de N cortes vira toco e rebrota).
+Feito: lenha (machado na árvore → madeira; a cada 8 cortes a árvore vira toco e solta semente; semente no chão vira árvore em 10 min; `ferramentas/criar-lenha.js`). A semente é uma só e sorteia a espécie (dá pra ter semente por espécie depois). Falta: guardar o mundo vivo (árvores cortadas/nascidas, tocos e sementes somem ao reiniciar o servidor, que recarrega o mapa) — necessário pra paisagem feita pelos players. Próximo: pedra (picareta, capacidade `quebrar`, numa pedra de `estrutura/natureza` → item pedra), depois as etapas do pão.
 
 ## Decisões já tomadas (não repetir a discussão)
 

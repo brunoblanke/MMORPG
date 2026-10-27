@@ -96,6 +96,7 @@ export const groundMethods = {
     });
     obj.itemData = item;
     obj.droppedAt = this.sim.wallClock();
+    obj.bornAt = this.sim.time || 0;
     objects.push(obj);
     objectsById.set(obj.id, obj);
     world.addObject(obj);
