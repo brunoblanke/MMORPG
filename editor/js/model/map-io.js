@@ -41,14 +41,16 @@ export async function loadMapIntoState() {
 
 // ================================================================================================================================================================================================================================================
 // saveMap
+// Manda o mapa e o que foi aberto (baseObjetos): o servidor aplica só o que mudou no editor por cima do mapa vivo.
 
 export async function saveMap() {
   if (loadFailed) throw new Error('O mapa não carregou: salvar agora apagaria o mapa do servidor. Recarregue a página.');
   const mapData = buildMapData();
+  const baseObjetos = lastSavedJson ? JSON.parse(lastSavedJson).objetosData : undefined;
   const response = await adminFetch(SAVE_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(mapData)
+    body: JSON.stringify({ ...mapData, baseObjetos })
   });
   const result = await response.json().catch(() => ({}));
   if (!response.ok || !result.success) {

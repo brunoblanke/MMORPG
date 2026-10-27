@@ -32,7 +32,7 @@ Falta, por ordem:
 
 Ideia do usuário: tudo nas mãos dos players. O editor vai pra dentro do jogo, o mapa tem montanhas e florestas, e os players constroem as próprias cidades; um prédio registrado como banco ganha um NPC banqueiro, por exemplo. O crafting segue etapas no mundo, à moda do pão do Tibia: colher, secar, moer no moinho e assar no forno com água e forma.
 
-Feito: lenha (machado na árvore → madeira; a cada 8 cortes a árvore vira toco e solta semente; semente no chão vira árvore em 10 min; `ferramentas/criar-lenha.js`). A semente é uma só e sorteia a espécie (dá pra ter semente por espécie depois). Falta: guardar o mundo vivo (árvores cortadas/nascidas, tocos e sementes somem ao reiniciar o servidor, que recarrega o mapa) — necessário pra paisagem feita pelos players. Próximo: pedra (picareta, capacidade `quebrar`, numa pedra de `estrutura/natureza` → item pedra), depois as etapas do pão.
+Feito: lenha (machado na árvore → madeira; a cada 8 cortes a árvore vira toco e solta semente; semente no chão vira árvore em 10 min; `ferramentas/criar-lenha.js`). A semente é uma só e sorteia a espécie (dá pra ter semente por espécie depois). Mundo vivo feito: o que o jogo muda nos objetos fixos fica gravado no mapa; o editor junta as mudanças dele com as do jogo. Decisão: itens soltos no chão continuam sumindo (24 h e ao reiniciar); portas, luzes e buracos cavados também não são guardados. Futuro: editor dentro do jogo pros players e um editor do adm pra corrigir bugs. Próximo: pedra (picareta, capacidade `quebrar`, numa pedra de `estrutura/natureza` → item pedra), depois as etapas do pão.
 
 ## Decisões já tomadas (não repetir a discussão)
 

@@ -346,6 +346,7 @@ export class InteractionController {
     inventory.objectCounter++;
     const next = new GameObject({ id: `${type}_${inventory.objectCounter}`, x: obj.x, y: obj.y, z, step: obj.step || 0, movable: props.movable, hasVolume: props.hasVolume, blocksMovement: props.blocksMovement });
     next.bornAt = this.sim.time || 0;
+    if (!props.movable) this.sim.liveMap.add(next);
     objects.push(next);
     objectsById.set(next.id, next);
     world.addObject(next);
@@ -366,10 +367,12 @@ export class InteractionController {
         this.sim.schedule((this.sim.time || 0) + 5000, regrow);
         return;
       }
+      plant.regrowing = false;
       this.sim.objects.push(plant);
       this.sim.objectsById.set(plant.id, plant);
       this.sim.world.addObject(plant);
     };
+    plant.regrowing = regrowMs > 0;
     if (regrowMs > 0) this.sim.schedule((this.sim.time || 0) + regrowMs, regrow);
     return true;
   }

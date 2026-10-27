@@ -67,8 +67,10 @@ export function collectObjectDescriptors(mapData) {
     return `${tipo}_${counters[tipo]}`;
   };
 
-  (mapData.objetosData || []).forEach(([tipo, x, y, z, step, movable, hasVolume, blocksMovement, seq, count, dados], index) => {
+  (mapData.objetosData || []).forEach((entry, index) => {
+    const [tipo, x, y, z, step, movable, hasVolume, blocksMovement, seq, count, dados] = entry;
     descriptors.push({
+      entry,
       id: nextId(tipo),
       type: tipo,
       x, y, z,

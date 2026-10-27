@@ -11,4 +11,5 @@ gerador/tibia/atual
 data/passwords.json
 data/passwords.json.tmp
 data/map.json
+data/map.json.tmp
 data/map.json.antes-de-renomear

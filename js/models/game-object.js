@@ -71,6 +71,7 @@ export function generateObjects(mapData) {
     obj.seq = descriptor.seq;
     if (descriptor.count) obj.count = descriptor.count;
     if (descriptor.data) obj.data = descriptor.data;
+    if (descriptor.entry && !descriptor.movable && !descriptor.hidden) obj.mapEntry = descriptor.entry;
     if (!obj.hidden && descriptor.type && startsActive(descriptor.type)) obj.active = true;
     objs.push(obj);
   });

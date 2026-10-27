@@ -30,6 +30,7 @@ const MAX_MENSAGEM_BYTES = 16 * 1024;
 const MAX_CONEXOES_POR_IP = 10;
 const MAX_CONTAS_NOVAS_POR_IP = Number(process.env.JOGO_CONTAS_NOVAS_POR_HORA) || 5;
 const ESPERA_PARA_ENTRAR_MS = 20000;
+const mundoVivo = { gravar: () => {}, juntar: (mapa) => mapa };
 
 const portaoAdmin = seguranca.criarPortaoAdmin(ADMIN_SENHA, seguranca.criarGuarda());
 app.disable('x-powered-by');
@@ -142,6 +143,8 @@ function enviarStatus(req, res) {
 
 // ================================================================================================================================================================================================================================================
 // salvarMapa
+// Grava o mapa do editor. Com baseObjetos (o que o editor abriu), só as mudanças feitas no editor entram por cima do
+// mapa atual, que pode ter mudado no jogo enquanto o editor estava aberto (mundoVivo.juntar).
 
 function salvarMapa(req, res) {
   const mapData = req.body;
@@ -161,10 +164,14 @@ function salvarMapa(req, res) {
   }
 
   try {
+    const base = Array.isArray(mapData.baseObjetos) ? mapData.baseObjetos : null;
+    delete mapData.baseObjetos;
+    mundoVivo.gravar();
     copiarBackupDiario(MAP_DATA_PATH, 'map');
-  copiarBackupDiario(PASSWORDS_PATH, 'passwords');
-    fs.writeFileSync(MAP_DATA_PATH, JSON.stringify(mapData, null, 2), 'utf8');
-    console.log(`✅ Mapa salvo em ${MAP_DATA_PATH} (${mapData.objetosData.length} objetos)`);
+    copiarBackupDiario(PASSWORDS_PATH, 'passwords');
+    const final = base ? mundoVivo.juntar(mapData, base) : mapData;
+    fs.writeFileSync(MAP_DATA_PATH, JSON.stringify(final, null, 2), 'utf8');
+    console.log(`✅ Mapa salvo em ${MAP_DATA_PATH} (${final.objetosData.length} objetos)`);
     res.json({ success: true, message: 'Mapa salvo com sucesso!' });
   } catch (err) {
     console.error('❌ Erro ao salvar:', err.message);
@@ -227,9 +234,31 @@ async function iniciarJogo(servidorHttp) {
     if (avisos.length) console.log(`\n⚠️  Conferência do mapa e do gerador (${avisos.length}):\n${avisos.map(a => `   • ${a}`).join('\n')}`);
     return mundo;
   };
+  const { mergeObjects } = await import(pathToFileURL(path.join(PASTA_JOGO, 'js', 'systems', 'live-map.js')).href);
+  const { buildLayersFromMapData, serializeMapFromLayers } = await import(pathToFileURL(path.join(PASTA_JOGO, 'shared', 'map-format.js')).href);
+  const { GRID_WIDTH } = await import(pathToFileURL(path.join(PASTA_JOGO, 'shared', 'constants.js')).href);
   fazerBackup();
   const personagens = carregarPersonagens();
   let sim = criarMundo();
+  let ultimoGravado = null;
+  mundoVivo.gravar = () => {
+    if (!sim.liveMap.collect()) return;
+    const texto = JSON.stringify(sim.mapData, null, 2);
+    const temporario = `${MAP_DATA_PATH}.tmp`;
+    try {
+      fs.writeFileSync(temporario, texto, 'utf8');
+      fs.renameSync(temporario, MAP_DATA_PATH);
+      ultimoGravado = texto;
+    } catch (err) {
+      console.error('❌ Não deu pra gravar o mundo no mapa:', err.message);
+    }
+  };
+  mundoVivo.juntar = (editado, base) => {
+    const atual = JSON.parse(fs.readFileSync(MAP_DATA_PATH, 'utf8'));
+    const { layers, layerOrder } = buildLayersFromMapData(atual, GRID_WIDTH);
+    const normal = serializeMapFromLayers(layerOrder, layers, GRID_WIDTH);
+    return { ...editado, objetosData: mergeObjects(base, editado.objetosData, normal.objetosData) };
+  };
   let geracao = 0;
   const senhas = new PasswordStore(PASSWORDS_PATH);
   const guarda = new LoginGuard();
@@ -249,6 +278,9 @@ async function iniciarJogo(servidorHttp) {
   });
 
   observarMudancas(() => {
+    try {
+      if (ultimoGravado !== null && fs.readFileSync(MAP_DATA_PATH, 'utf8') === ultimoGravado) return;
+    } catch {}
     let novo;
     try {
       novo = criarMundo(sim.houses.toSave());
@@ -395,12 +427,14 @@ async function iniciarJogo(servidorHttp) {
   setInterval(() => {
     guardarPersonagens(personagens, sim.players);
     guardarCasas(sim);
+    mundoVivo.gravar();
   }, SAVE_INTERVAL_MS);
   for (const sinal of ['SIGINT', 'SIGTERM', 'SIGHUP']) {
     process.on(sinal, () => {
       guardarPersonagens(personagens, sim.players);
       guardarCasas(sim);
-        console.log('💾 Personagens salvos');
+      mundoVivo.gravar();
+      console.log('💾 Personagens e mundo salvos');
       process.exit(0);
     });
   }

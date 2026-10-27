@@ -82,6 +82,23 @@ test('salvar um mapa vazio por cima de um mapa com conteúdo é recusado', async
   assert.ok(again.objetosData.length > 0);
 });
 
+test('salvar do editor com o que ele abriu junta as mudanças dele com as feitas no jogo nesse meio tempo', async () => {
+  const post = (body) => fetch(`http://localhost:${PORT}/api/save-map`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  const entry = (nome, x) => [`teste/vivo/${nome}`, x, 5, 0, 0, false, false, false];
+  const map = testMapData();
+  const base = [...map.objetosData, entry('a', 1), entry('b', 2)];
+  assert.equal((await post({ ...map, objetosData: base })).status, 200);
+  const live = JSON.parse(readFileSync(mapFile, 'utf8'));
+  live.objetosData.push(entry('jogo', 3));
+  writeFileSync(mapFile, JSON.stringify(live, null, 2));
+  const edited = [...map.objetosData, entry('a', 1), entry('editor', 4)];
+  assert.equal((await post({ ...map, objetosData: edited, baseObjetos: base })).status, 200);
+  const saved = JSON.parse(readFileSync(mapFile, 'utf8'));
+  const names = saved.objetosData.filter(e => String(e[0]).startsWith('teste/vivo/')).map(e => e[0].split('/')[2]).sort();
+  assert.deepEqual(names, ['a', 'editor', 'jogo']);
+  assert.equal(saved.baseObjetos, undefined);
+});
+
 test('com o JOGO_MAPA num caminho que não dá pra usar, o servidor avisa e não sobe', async () => {
   writeFileSync(path.join(tempDir, 'arquivo-comum'), 'não é uma pasta');
   const other = spawn(process.execPath, ['server.js'], {
