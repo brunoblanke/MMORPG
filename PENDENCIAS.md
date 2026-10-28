@@ -4,6 +4,8 @@ Estado do projeto para retomar numa conversa nova. O que é regra fixa e como o 
 
 ## Para o usuário fazer
 
+- Rodar `node ferramentas/efeitos.js` (com o Tibia 15.01 em `gerador/tibia/atual`) e fazer commit de `gerador/saida/efeitos/`, `gerador/saida/projeteis/` e `shared/effects.js`: troca os efeitos de golpe (1, 4, 10, 17), hoje tirados do 7.80, pelos do 15.01, com os quadros certos.
+
 - Gerador → "Gerar folhas pendentes" (Objetos e Criaturas): `respingo-gosma` (gosma verde do golpe em criatura de veneno), `banqueiro` e `capitao` (NPCs), `scythe`, `chave-dourada`, `alavanca-1` e `alavanca-1-ligada`, `amulet-of-loss`. Sem a folha (.png) o item não existe no jogo. Os ids do Tibia dessas receitas (chave 2970, alavanca 1945/1946, foice 3453, amuleto 3057) foram escolhidos de memória: conferir na primeira geração.
 - Conferir que a receita `cama` tem Uso `cama` e `cama-ocupada` como desenho ativo.
 - Criar o objeto de depósito (Uso `deposito`) e, se quiser testar a pick, um monte com Uso `picareta`.

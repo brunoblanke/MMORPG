@@ -6,8 +6,10 @@
 //   gerador/saida/projeteis/projetil-<id>.png as 9 direções (3×3: noroeste,
 //                                              norte, nordeste… sudeste)
 // Cada quadro é um quadrado de `size` px (32 ou 64) com o desenho encostado
-// embaixo à direita, como no Tibia. No fim mostra frames, size e ms de cada
-// efeito pra conferir com shared/effects.js.
+// embaixo à direita, como no Tibia. No fim grava em shared/effects.js os
+// quadros (frames), o tamanho (size) e o tempo por quadro (ms) de cada efeito e
+// o tamanho de cada projétil, como saíram do cliente (comMedidas), e mostra o
+// que mudou. Depois é só fazer commit das imagens e do shared/effects.js.
 //
 // Uso: node ferramentas/efeitos.js
 
@@ -80,7 +82,39 @@ async function gerarTudo() {
   }
   const projeteis = {};
   for (const [nome, { id }] of Object.entries(MISSILES)) projeteis[nome] = { id, ...gerarProjetil(tibia, id) };
-  console.log(JSON.stringify({ efeitos, projeteis }, null, 1));
+  const arquivo = path.join(RAIZ, 'shared', 'effects.js');
+  const antes = fs.readFileSync(arquivo, 'utf8');
+  const { texto, mudancas } = comMedidas(antes, efeitos, projeteis);
+  if (texto !== antes) fs.writeFileSync(arquivo, texto);
+  console.log(mudancas.length ? `shared/effects.js atualizado:\n${mudancas.map(m => `  ${m}`).join('\n')}` : 'shared/effects.js já estava com as medidas do cliente.');
 }
 
-gerarTudo();
+// ================================================================================================================================================================================================================================================
+// comMedidas
+// O texto do shared/effects.js com frames, size e ms de cada efeito e o size de cada projétil trocados pelos medidos
+// no cliente; mudancas diz o que mudou ("nome: frames 4 → 7, ms 100 → 50").
+
+function comMedidas(texto, efeitos, projeteis) {
+  const mudancas = [];
+  const chave = (nome) => `(?:'${nome}'|${nome})`;
+  for (const [nome, medida] of Object.entries(efeitos)) {
+    const linha = new RegExp(`^(\\s*${chave(nome)}: \\{ id: ${medida.id}, )frames: (\\d+), size: (\\d+), ms: (\\d+)( \\})`, 'm');
+    texto = texto.replace(linha, (tudo, inicio, frames, size, ms, fim) => {
+      const diff = [['frames', frames, medida.frames], ['size', size, medida.size], ['ms', ms, medida.ms]].filter(([, a, b]) => Number(a) !== b);
+      if (diff.length) mudancas.push(`${nome}: ${diff.map(([campo, a, b]) => `${campo} ${a} → ${b}`).join(', ')}`);
+      return `${inicio}frames: ${medida.frames}, size: ${medida.size}, ms: ${medida.ms}${fim}`;
+    });
+  }
+  for (const [nome, medida] of Object.entries(projeteis)) {
+    const linha = new RegExp(`^(\\s*${chave(nome)}: \\{ id: ${medida.id}, )size: (\\d+)( \\})`, 'm');
+    texto = texto.replace(linha, (tudo, inicio, size, fim) => {
+      if (Number(size) !== medida.size) mudancas.push(`projétil ${nome}: size ${size} → ${medida.size}`);
+      return `${inicio}size: ${medida.size}${fim}`;
+    });
+  }
+  return { texto, mudancas };
+}
+
+if (require.main === module) gerarTudo();
+
+module.exports = { comMedidas };
