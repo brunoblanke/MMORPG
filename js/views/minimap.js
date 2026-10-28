@@ -3,29 +3,32 @@
 import { getAsset, splitType, objectIdType } from '../../shared/assets.js';
 import { getImage } from '../../shared/image-loader.js';
 
-// Mini mapa (o item com Uso "mapa" abre): o andar do player em volta dele, MINIMAP_RADIUS sqm pra cada lado, um
-// ponto por sqm na cor do que está lá (o que bloqueia, senão o piso; a cor média do desenho da folha) e o player em
-// branco no meio. Só informativo.
+// Mini mapa (o item com Uso "mapa" abre): o andar do player, MINIMAP_COLS × MINIMAP_ROWS sqm (16:9) em volta do centro
+// (o player, deslocado pelo arrasto), um ponto por sqm na cor do que está lá (o que bloqueia, senão o piso; a cor média
+// do desenho da folha) e o player em branco. Só informativo.
 
-export const MINIMAP_RADIUS = 50;
+export const MINIMAP_COLS = 161;
+export const MINIMAP_ROWS = 91;
 export const MINIMAP_CELL = 2;
-export const MINIMAP_SIZE = (MINIMAP_RADIUS * 2 + 1) * MINIMAP_CELL;
+export const MINIMAP_WIDTH = MINIMAP_COLS * MINIMAP_CELL;
+export const MINIMAP_HEIGHT = MINIMAP_ROWS * MINIMAP_CELL;
 const EMPTY = '#000000';
 const PLAYER = '#ffffff';
 const colors = new Map();
 
 // ================================================================================================================================================================================================================================================
 // minimapCells
-// As cores da grade (2 × radius + 1 de lado, linha por linha), com colorOf(tipo) dando a cor de cada folha.
+// As cores da grade (cols × rows, linha por linha) centrada em center ({x, y}), no andar do player, com colorOf(tipo)
+// dando a cor de cada folha.
 
-export function minimapCells(world, player, colorOf, radius = MINIMAP_RADIUS) {
+export function minimapCells(world, player, colorOf, center = player, cols = MINIMAP_COLS, rows = MINIMAP_ROWS) {
   const z = player.z || 0;
+  const left = center.x - Math.floor(cols / 2);
+  const top = center.y - Math.floor(rows / 2);
   const cells = [];
-  for (let dy = -radius; dy <= radius; dy++) {
-    for (let dx = -radius; dx <= radius; dx++) {
-      const x = player.x + dx;
-      const y = player.y + dy;
-      if (!dx && !dy) {
+  for (let y = top; y < top + rows; y++) {
+    for (let x = left; x < left + cols; x++) {
+      if (x === player.x && y === player.y) {
         cells.push(PLAYER);
         continue;
       }
@@ -69,14 +72,13 @@ export function sheetColor(type) {
 
 // ================================================================================================================================================================================================================================================
 // drawMinimap
-// Desenha o mini mapa no canvas.
+// Desenha o mini mapa no canvas, com o centro deslocado offset ({x, y} em sqm) do player.
 
-export function drawMinimap(canvas, world, player) {
+export function drawMinimap(canvas, world, player, offset = { x: 0, y: 0 }) {
   const ctx = canvas.getContext('2d');
-  const side = MINIMAP_RADIUS * 2 + 1;
-  const cells = minimapCells(world, player, sheetColor);
+  const cells = minimapCells(world, player, sheetColor, { x: player.x + offset.x, y: player.y + offset.y });
   for (let i = 0; i < cells.length; i++) {
     ctx.fillStyle = cells[i];
-    ctx.fillRect((i % side) * MINIMAP_CELL, Math.floor(i / side) * MINIMAP_CELL, MINIMAP_CELL, MINIMAP_CELL);
+    ctx.fillRect((i % MINIMAP_COLS) * MINIMAP_CELL, Math.floor(i / MINIMAP_COLS) * MINIMAP_CELL, MINIMAP_CELL, MINIMAP_CELL);
   }
 }

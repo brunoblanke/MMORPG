@@ -10,7 +10,7 @@ import { htmlMethods } from './inventory-ui/html.js';
 import { windowMethods } from './inventory-ui/windows.js';
 import { aimMethods } from './inventory-ui/aim.js';
 import { dragMethods } from './inventory-ui/drag.js';
-import { drawMinimap } from './minimap.js';
+import { drawMinimap, MINIMAP_CELL } from './minimap.js';
 
 const MINIMAP_REDRAW_MS = 300;
 
@@ -68,14 +68,14 @@ export class InventoryUI {
 
   // ================================================================================================================================================================================================================================================
   // updateMinimap
-  // Com a janela do mini mapa aberta, redesenha o mapa a cada MINIMAP_REDRAW_MS.
+  // Com a janela do mini mapa aberta, redesenha o mapa a cada MINIMAP_REDRAW_MS (deslocado pelo arrasto, minimapOffset).
 
   updateMinimap() {
     const canvas = document.querySelector('.inv-minimap-canvas');
     const now = performance.now();
     if (!canvas || !this.game.player || now - (this.minimapAt || 0) < MINIMAP_REDRAW_MS) return;
     this.minimapAt = now;
-    drawMinimap(canvas, this.game.session.world, this.game.player);
+    drawMinimap(canvas, this.game.session.world, this.game.player, this.minimapOffset);
   }
 
   // ================================================================================================================================================================================================================================================
@@ -192,6 +192,12 @@ export class InventoryUI {
     });
 
     document.addEventListener('pointerdown', (evt) => {
+      if (evt.target.closest && evt.target.closest('.inv-minimap-canvas')) {
+        const offset = this.minimapOffset || { x: 0, y: 0 };
+        this.minimapPan = { x: evt.clientX, y: evt.clientY, ox: offset.x, oy: offset.y };
+        evt.preventDefault();
+        return;
+      }
       if (this.qty && !evt.target.closest('.inv-qty')) this.closeQty();
       if (evt.button !== 0 || !inPanels(evt.target) || evt.target.closest('.inv-btn')) return;
       if (evt.pointerType === 'touch') this.startLongPress(evt);
@@ -230,6 +236,13 @@ export class InventoryUI {
     document.addEventListener('pointermove', (evt) => {
       this.mouse.x = evt.clientX;
       this.mouse.y = evt.clientY;
+      if (this.minimapPan) {
+        const pan = this.minimapPan;
+        this.minimapOffset = { x: pan.ox - Math.round((evt.clientX - pan.x) / MINIMAP_CELL), y: pan.oy - Math.round((evt.clientY - pan.y) / MINIMAP_CELL) };
+        this.minimapAt = 0;
+        this.updateMinimap();
+        return;
+      }
       if (this.press && Math.hypot(evt.clientX - this.press.x, evt.clientY - this.press.y) > 5) this.stopLongPress();
       if (this.pending && !this.drag) {
         if (Math.hypot(evt.clientX - this.pending.x, evt.clientY - this.pending.y) < 5) return;
@@ -251,6 +264,10 @@ export class InventoryUI {
     });
 
     document.addEventListener('pointerup', (evt) => {
+      if (this.minimapPan) {
+        this.minimapPan = null;
+        return;
+      }
       if (this.press && this.press.row) this.toggleTarget(this.press.row);
       this.stopLongPress();
       const clicked = this.pending && this.pending.kind === 'item' && !this.drag ? this.pending : null;

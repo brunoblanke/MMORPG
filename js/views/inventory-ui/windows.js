@@ -1,7 +1,7 @@
 // js/views/inventory-ui/windows.js
 
 import { PITCH, SAVE_DELAY_MS, LAYOUT_COLS, LAYOUT_VERSION } from './common.js';
-import { MINIMAP_SIZE } from '../minimap.js';
+import { MINIMAP_WIDTH } from '../minimap.js';
 
 // Métodos do InventoryUI (js/views/inventory-ui.js). As janelas: layout guardado, abrir, fechar, trocar o container
 // mostrado, mudar de lugar e de tamanho. Ficam nas colunas da esquerda e da
@@ -94,12 +94,14 @@ export const windowMethods = {
 
   // ================================================================================================================================================================================================================================================
   // openMinimap
-  // Janela do mini mapa (item com Uso "mapa"), solta no meio da tela; uma por vez.
+  // Janela do mini mapa (item com Uso "mapa"), solta no meio da tela; uma por vez; abre centrada no player.
 
   openMinimap() {
     if (!this.layout) return;
     this.removeWindows(w => w.kind === 'minimap');
-    const width = MINIMAP_SIZE + 16;
+    const width = MINIMAP_WIDTH + 16;
+    this.minimapOffset = { x: 0, y: 0 };
+    this.minimapAt = 0;
     this.layout.free.push({ id: 'minimap', kind: 'minimap', x: Math.max(8, (window.innerWidth - width) / 2), y: Math.max(8, window.innerHeight * 0.15) });
     this.lastKey = '';
     this.render();

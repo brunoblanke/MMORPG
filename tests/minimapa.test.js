@@ -42,12 +42,15 @@ test('o mapa no chão ao lado também abre', () => {
 
 test('mini mapa: cor do piso, do que bloqueia por cima dele, preto sem chão e o player no meio', () => {
   const game = buildGame({ objects: [...floorRect(0, 6, 0, 6, 0), ...wall(4, 3)], player: { x: 3, y: 3, z: 0 } });
-  const cells = minimapCells(game.world, game.player, (type) => type.startsWith(FLOOR) ? 'piso' : 'parede', 2);
+  const cells = minimapCells(game.world, game.player, (type) => type.startsWith(FLOOR) ? 'piso' : 'parede', game.player, 5, 5);
   assert.equal(cells.length, 25);
   const at = (dx, dy) => cells[(dy + 2) * 5 + (dx + 2)];
   assert.equal(at(0, 0), '#ffffff');
   assert.equal(at(1, 0), 'parede');
   assert.equal(at(-1, 0), 'piso');
-  const corner = minimapCells(game.world, { x: 0, y: 0, z: 0 }, () => 'piso', 1);
+  const corner = minimapCells(game.world, { x: 0, y: 0, z: 0 }, () => 'piso', { x: 0, y: 0 }, 3, 3);
   assert.equal(corner[0], '#000000', 'fora do mapa');
+  const moved = minimapCells(game.world, game.player, () => 'piso', { x: 5, y: 3 }, 5, 3);
+  assert.equal(moved.length, 15, '16:9 cabe: largura e altura separadas');
+  assert.equal(moved[5], '#ffffff', 'arrastado: o player fica 2 sqm à esquerda do centro');
 });

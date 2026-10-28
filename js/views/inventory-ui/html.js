@@ -9,7 +9,7 @@ import { CORPSE_ROW } from '../sprite-registry.js';
 import { ANIMATION_CYCLE_MS } from '../../../shared/constants.js';
 import { EQUIP_LAYOUT, SKILL_NAMES, SKILL_ORDER, PITCH, REACH_CHECK_MS } from './common.js';
 import { ICONS, FOLLOW_ICONS, BUTTON_ICONS } from './icons.js';
-import { MINIMAP_SIZE } from '../minimap.js';
+import { MINIMAP_WIDTH, MINIMAP_HEIGHT } from '../minimap.js';
 
 // Métodos do InventoryUI (js/views/inventory-ui.js). O HTML de cada parte das janelas: espaços, containers, skills, vida e
 // mana, seguir, auto ataque e battle.
@@ -185,12 +185,12 @@ export const htmlMethods = {
 
   // ================================================================================================================================================================================================================================================
   // minimapHtml
-  // Janela do mini mapa: só o canvas, que o update redesenha (js/views/minimap.js).
+  // Janela do mini mapa: só o canvas, que o update redesenha (js/views/minimap.js); arrastar nele explora o mapa.
 
   minimapHtml(win, buttons) {
     return `<section class="inv-win inv-minimap${win.min ? ' min' : ''}" data-win="${win.id}">
       <header class="inv-head"><span class="inv-title">Mapa</span>${buttons}</header>
-      <div class="inv-body"><canvas class="inv-minimap-canvas" width="${MINIMAP_SIZE}" height="${MINIMAP_SIZE}"></canvas></div>
+      <div class="inv-body"><canvas class="inv-minimap-canvas" width="${MINIMAP_WIDTH}" height="${MINIMAP_HEIGHT}"></canvas></div>
     </section>`;
   },
 
