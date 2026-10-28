@@ -68,12 +68,14 @@ export class InventoryUI {
 
   // ================================================================================================================================================================================================================================================
   // updateMinimap
-  // Com a janela do mini mapa aberta, redesenha o mapa a cada MINIMAP_REDRAW_MS (deslocado pelo arrasto, minimapOffset).
+  // Com a janela do mini mapa aberta, redesenha o mapa a cada MINIMAP_REDRAW_MS (deslocado pelo arrasto, minimapOffset)
+  // e na hora quando a janela foi refeita (canvas novo).
 
   updateMinimap() {
     const canvas = document.querySelector('.inv-minimap-canvas');
     const now = performance.now();
-    if (!canvas || !this.game.player || now - (this.minimapAt || 0) < MINIMAP_REDRAW_MS) return;
+    if (!canvas || !this.game.player || (canvas === this.minimapCanvas && now - (this.minimapAt || 0) < MINIMAP_REDRAW_MS)) return;
+    this.minimapCanvas = canvas;
     this.minimapAt = now;
     drawMinimap(canvas, this.game.session.world, this.game.player, this.minimapOffset);
   }
@@ -194,7 +196,8 @@ export class InventoryUI {
     document.addEventListener('pointerdown', (evt) => {
       if (evt.target.closest && evt.target.closest('.inv-minimap-canvas')) {
         const offset = this.minimapOffset || { x: 0, y: 0 };
-        this.minimapPan = { x: evt.clientX, y: evt.clientY, ox: offset.x, oy: offset.y };
+        const canvas = evt.target.closest('.inv-minimap-canvas');
+        this.minimapPan = { x: evt.clientX, y: evt.clientY, ox: offset.x, oy: offset.y, cell: MINIMAP_CELL * (canvas.clientWidth / canvas.width || 1) };
         evt.preventDefault();
         return;
       }
@@ -238,7 +241,7 @@ export class InventoryUI {
       this.mouse.y = evt.clientY;
       if (this.minimapPan) {
         const pan = this.minimapPan;
-        this.minimapOffset = { x: pan.ox - Math.round((evt.clientX - pan.x) / MINIMAP_CELL), y: pan.oy - Math.round((evt.clientY - pan.y) / MINIMAP_CELL) };
+        this.minimapOffset = { x: pan.ox - Math.round((evt.clientX - pan.x) / pan.cell), y: pan.oy - Math.round((evt.clientY - pan.y) / pan.cell) };
         this.minimapAt = 0;
         this.updateMinimap();
         return;
