@@ -328,7 +328,7 @@ export class InventoryUI {
         this.startAim(place);
         return true;
       }
-      if (item && !item.items && (itemInfo(item.type).food || itemInfo(item.type).light || objectUse(item.type) === 'livro')) {
+      if (item && !item.items && (itemInfo(item.type).food || itemInfo(item.type).light || ['livro', 'mapa'].includes(objectUse(item.type)))) {
         this.game.send({ type: 'useItem', from: place });
         return true;
       }
@@ -357,7 +357,7 @@ export class InventoryUI {
       if (!usable) return false;
       this.game.cancelPendingWalk();
       const type = objectIdType(usable.id);
-      if (clicavel(type)) this.game.send({ type: 'useObject', id: usable.id });
+      if (usable.movable !== true && clicavel(type)) this.game.send({ type: 'useObject', id: usable.id });
       else if (aimsWith(type)) this.startAim({ t: 'g', id: usable.id });
       else this.game.send({ type: 'useItem', from: { t: 'g', id: usable.id } });
       return true;

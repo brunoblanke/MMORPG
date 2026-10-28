@@ -32,6 +32,14 @@ test('usar o mapa abre o mini mapa no navegador de quem usou', () => {
   assert.deepEqual(descreverUso('mapa'), ['Ao clicar: abrir mapa']);
 });
 
+test('o mapa no chão ao lado também abre', () => {
+  const game = buildGame({ objects: floorRect(0, 10, 0, 10, 0), player: { x: 5, y: 5, z: 0 } });
+  const map = game.inventory.spawnGroundItem({ uid: 'm1', type: MAP }, 6, 5, 0);
+  game.enqueue('player1', { type: 'useItem', from: { t: 'g', id: map.id } });
+  game.tick(game.time + TICK_MS);
+  assert.ok(game.drainEvents().some(e => e.type === 'minimap' && e.playerId === game.player.id));
+});
+
 test('mini mapa: cor do piso, do que bloqueia por cima dele, preto sem chão e o player no meio', () => {
   const game = buildGame({ objects: [...floorRect(0, 6, 0, 6, 0), ...wall(4, 3)], player: { x: 3, y: 3, z: 0 } });
   const cells = minimapCells(game.world, game.player, (type) => type.startsWith(FLOOR) ? 'piso' : 'parede', 2);
