@@ -249,11 +249,11 @@ test('receitas: a árvore cai e dá semente; a semente planta a muda; a muda vir
   const arvore = ler('estrutura/natureza/arvore-1').propriedades.interacoes;
   assert.equal(arvore.some(i => i.efeitos.some(e => e.tipo === 'trocar-por')), false, 'não vira mais toco');
   const cai = arvore.find(i => i.efeitos.some(e => e.tipo === 'remover'));
-  assert.deepEqual(cai.efeitos.map(e => e.tipo), ['efeito-visual', 'dar-itens', 'remover']);
-  assert.equal(cai.efeitos[1].umaVez, 'nao');
+  assert.deepEqual(cai.efeitos.map(e => e.tipo), ['dar-itens', 'remover'], 'só a fumacinha do remover');
+  assert.equal(cai.efeitos[0].umaVez, 'nao');
   assert.equal(arvore.find(i => i.condicoes.chance).efeitos[0].tipo, 'dar-itens', 'a madeira vai pra mochila');
-  assert.equal(cai.efeitos[1].item, 'itens/plantas-e-ervas/seeds');
-  assert.equal(cai.efeitos[2].rebroteMs, 0);
+  assert.equal(cai.efeitos[0].item, 'itens/plantas-e-ervas/seeds');
+  assert.equal(cai.efeitos[1].rebroteMs, 0);
   const semente = ler('itens/plantas-e-ervas/seeds').propriedades;
   assert.equal(semente.plantaComo, 'estrutura/natureza/sapling');
   assert.equal(semente.interacoes, undefined);

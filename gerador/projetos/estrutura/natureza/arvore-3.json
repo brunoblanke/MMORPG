@@ -55,10 +55,6 @@
         },
         "efeitos": [
           {
-            "tipo": "efeito-visual",
-            "nome": "earth"
-          },
-          {
             "tipo": "dar-itens",
             "item": "itens/plantas-e-ervas/seeds",
             "quantidade": 1,
