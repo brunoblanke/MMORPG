@@ -3,6 +3,7 @@
 import { objectIdType, objectUse, togglesOnUse } from '../../../shared/assets.js';
 import { itemInfo } from '../../../shared/items.js';
 import { clicavel } from '../../../shared/ficha.js';
+import { aimsWith } from './common.js';
 
 // Métodos do InventoryUI (js/views/inventory-ui.js). Mira (potion, corda, pá) e o que está sob o mouse na tela do jogo:
 // caixa pra abrir, item pra usar, item arrastado do chão.
@@ -96,18 +97,19 @@ export const aimMethods = {
 
   // ================================================================================================================================================================================================================================================
   // usableUnderMouse
-  // Comida ou potion no chão, objeto com uso de mapa ou que usar alterna (poste) sob
-  // o mouse (duplo clique ou botão direito usa; o player anda até o lado se
-  // estiver longe).
+  // Item que se usa no chão (comida, potion, fonte de luz, ferramenta como o machado, runa, semente), objeto com uso
+  // de mapa ou que usar alterna (poste) sob o mouse (duplo clique ou botão direito usa; o que se usa com a mira abre
+  // a mira; o player anda até o lado se estiver longe).
 
   usableUnderMouse() {
     const input = this.game.inputController;
     const obj = input && !input.hoverCorpse ? input.hoverObject : null;
     if (!obj) return null;
-    if (clicavel(objectIdType(obj.id))) return obj;
-    if (obj.movable !== true) return togglesOnUse(objectIdType(obj.id)) ? obj : null;
-    const info = itemInfo(objectIdType(obj.id));
-    return info.food || info.heal || info.light || objectUse(objectIdType(obj.id)) ? obj : null;
+    const type = objectIdType(obj.id);
+    if (clicavel(type)) return obj;
+    if (obj.movable !== true) return togglesOnUse(type) ? obj : null;
+    const info = itemInfo(type);
+    return info.food || info.heal || info.light || objectUse(type) || aimsWith(type) ? obj : null;
   },
 
   // ================================================================================================================================================================================================================================================

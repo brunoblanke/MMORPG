@@ -8,6 +8,7 @@ import { Simulation, TICK_MS } from '../js/simulation.js';
 import { setAssets } from '../shared/assets.js';
 import { fichaDe, CAPACIDADES, normalizarInteracoes } from '../shared/ficha.js';
 import { newItem } from '../shared/items.js';
+import { aimMethods } from '../js/views/inventory-ui/aim.js';
 
 const BAG = 'itens/recipientes/backpack-azul';
 const AXE = 'itens/machados/axe';
@@ -273,4 +274,22 @@ test('madeira com dar-itens vai direto pra mochila de quem cortou, a cada corte'
   const wood = ana.equip.mochila.items.find(it => it && it.type === WOOD);
   assert.ok(wood, 'na mochila');
   assert.equal(wood.count || 1, 2, 'empilha');
+});
+
+test('machado no chão ao lado da árvore: usado de lá, corta e dá a madeira', () => {
+  const { sim, ana } = game([[TREE_BAG, 11, 10, 0, 0, 0, 0, 1]]);
+  ana.equip.arma = null;
+  const { inventory } = sim;
+  const axe = inventory.spawnGroundItem(newItem(inventory.nextUid(), AXE, 1), 10, 11, 0);
+  sim.enqueue('p1', { type: 'useItem', from: { t: 'g', id: axe.id }, target: { x: 11, y: 10, z: 0 } });
+  tick(sim);
+  assert.ok(ana.equip.mochila.items.some(it => it && it.type === WOOD), 'cortou com o machado do chão');
+  assert.ok(sim.objects.includes(axe), 'o machado continua no chão');
+});
+
+test('no navegador, o machado, a semente e a potion no chão se usam (abrem a mira) com duplo clique ou botão direito', () => {
+  const under = (id) => aimMethods.usableUnderMouse.call({ game: { inputController: { hoverObject: { id: `${id}_5`, movable: true } } } });
+  assert.ok(under(AXE), 'machado');
+  assert.ok(under(SEED), 'semente');
+  assert.equal(under(WOOD), null, 'madeira não se usa');
 });
