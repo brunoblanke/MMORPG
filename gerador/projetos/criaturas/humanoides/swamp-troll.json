@@ -50,7 +50,7 @@
     "defesa": 15,
     "ataque": 13,
     "criticoChance": 50,
-    "criticoDano": 0,
+    "criticoDano": 30,
     "magia": null,
     "resistencias": {
       "earth": 85,
