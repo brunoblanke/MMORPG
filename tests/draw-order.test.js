@@ -26,6 +26,16 @@ test('item jogado no sqm do player ou do inimigo fica embaixo dele, mesmo com vo
   assert.ok(index(d => d.id === 'c1') < index(d => d.entity && d.entity.id === 'e1'));
 });
 
+test('o respingo (sangue) fica embaixo do corpo e dos itens do sqm, mesmo chegando depois', () => {
+  const corpse = { id: 'c2', isCorpse: true, x: 7, y: 7, z: 0, step: 0, order: 10 };
+  const bag = { id: 'Bag_3', x: 7, y: 7, z: 0, step: 0, order: 20 };
+  const blood = { id: 'itens/liquidos/respingo-vida_9', x: 7, y: 7, z: 0, step: 0, order: 30, isSplash: true };
+  const list = prepareDrawables(stateWith([bag, blood], [corpse]));
+  const index = (id) => list.findIndex(d => d.id === id);
+  assert.ok(index(blood.id) < index('c2'), 'embaixo do corpo');
+  assert.ok(index(blood.id) < index('Bag_3'), 'embaixo do item');
+});
+
 test('o que está num andar acima continua por cima do player', () => {
   const roofItem = { id: 'Bag_2', x: 5, y: 5, z: 1, step: 0, order: 0 };
   const state = stateWith([roofItem]);
