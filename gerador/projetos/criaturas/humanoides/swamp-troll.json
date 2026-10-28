@@ -42,12 +42,15 @@
   },
   "propriedades": {
     "comportamento": "foge",
+    "raca": "veneno",
     "vida": 55,
     "xp": 25,
     "velocidade": 128,
     "armadura": 6,
     "defesa": 15,
     "ataque": 13,
+    "criticoChance": 50,
+    "criticoDano": 0,
     "magia": null,
     "resistencias": {
       "earth": 85,
@@ -72,8 +75,7 @@
         "chance": 0.095
       }
     ],
-    "falas": [],
-    "raca": "veneno"
+    "falas": []
   },
   "ferramenta": "criaturas",
   "grupo": "criaturas",
