@@ -8,6 +8,7 @@ import { CONDITIONS } from '../../../shared/conditions.js';
 import { VOCATIONS, vocationOf } from '../../../shared/vocations.js';
 import { RUNES } from '../../../shared/spells.js';
 import { POTION_EFFECT } from '../../../shared/effects.js';
+import { bagSlots } from '../trade.js';
 import {
   EQUIP_SLOTS, USE_COOLDOWN_MS, FOOD_MAX_SECONDS, POTION_RANGE, EMPTY_VIAL, SPLASH_HP, SPLASH_MANA, SPLASH_STAGES, SPLASH_STAGE_MS, REGEN_MS, REGEN_HP, REGEN_MANA, itemInfo, newItem
 } from '../../../shared/items.js';
@@ -255,15 +256,29 @@ export const consumableMethods = {
   },
 
   // ================================================================================================================================================================================================================================================
+  // autoEat
+  // Come o 1º alimento da mochila (e dos containers dentro dela), como se o player usasse. Devolve true se comeu.
+
+  autoEat(player) {
+    const slot = bagSlots(player).find(({ list, key }) => list[key] && itemInfo(list[key].type).food > 0);
+    if (!slot) return false;
+    const item = slot.list[slot.key];
+    this.eat(player, { item, remove: () => { slot.list[slot.key] = null; } }, itemInfo(item.type).food);
+    return true;
+  },
+
+  // ================================================================================================================================================================================================================================================
   // digest
   // Com comida no estômago, o player recupera REGEN_HP de vida e REGEN_MANA
   // de mana no ritmo da vocação (VOCATIONS.regen: sorcerer e druid devagar na vida
-  // e rápido na mana, paladin no meio); a comida vai acabando com o tempo.
+  // e rápido na mana, paladin no meio); a comida vai acabando com o tempo. Com o auto ataque ligado, assim que a
+  // comida acaba o player come sozinho o 1º alimento da mochila (autoEat).
 
   digest(player, now) {
     const last = player.digestAt ?? now;
     player.digestAt = now;
     this.wornRegen(player, now - last);
+    if (!player.food && player.attackMode && player.isAlive()) this.autoEat(player);
     if (!player.food || !player.isAlive()) {
       player.regenElapsed = 0;
       this.starve(player, now, now - last);

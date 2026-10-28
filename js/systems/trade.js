@@ -102,7 +102,7 @@ export function itemName(type) {
 // bagSlots
 // Os espaços de dentro da mochila (e dos containers dentro dela): [{ list, key }].
 
-function bagSlots(player) {
+export function bagSlots(player) {
   const slots = [];
   const visit = (container) => {
     container.items.forEach((item, i) => {

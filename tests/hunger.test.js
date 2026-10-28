@@ -7,6 +7,15 @@ import { TICK_MS } from '../js/simulation.js';
 import { CONFIG } from '../js/config.js';
 import { CONDITIONS } from '../shared/conditions.js';
 import { FOOD_MAX_SECONDS } from '../shared/items.js';
+import { setAssets } from '../shared/assets.js';
+
+const BAG = 'itens/recipientes/bolsa-de-teste';
+const MEAT = 'itens/comidas/carne-de-teste';
+
+setAssets([
+  { id: BAG, ferramenta: 'objetos', grupo: 'itens', pasta: 'recipientes', nome: 'bolsa-de-teste', url: '/b.png', quadro: 32, quadros: 1, pecas: [], propriedades: { move: true, espacos: 4 } },
+  { id: MEAT, ferramenta: 'objetos', grupo: 'itens', pasta: 'comidas', nome: 'carne-de-teste', url: '/m.png', quadro: 32, quadros: 1, pecas: [], propriedades: { move: true, empilhavel: true, peso: 1, alimento: 180 } }
+]);
 
 // ================================================================================================================================================================================================================================================
 // run
@@ -105,5 +114,25 @@ test('sem comida avisa "Você está com fome." de 10 em 10 segundos até o playe
     game.events = [];
     run(game, 20000);
     assert.equal(hungerMessages(game).length, 0);
+  });
+});
+
+test('com o auto ataque ligado, o player come sozinho o 1º alimento da mochila assim que a comida acaba', () => {
+  withStarvation(() => {
+    const game = buildGame({ objects: floorRect(0, 10, 0, 10, 0), player: { x: 5, y: 5, z: 0 } });
+    const { player } = game;
+    player.equip.mochila = { uid: 'b1', type: BAG, items: [null, { uid: 'm1', type: MEAT, count: 2 }, null, null] };
+    player.food = 0;
+    player.attackMode = false;
+    run(game, TICK_MS * 2);
+    assert.equal(player.equip.mochila.items[1].count, 2, 'sem auto ataque não come');
+    player.attackMode = true;
+    const hp = player.currentHp;
+    run(game, TICK_MS * 2);
+    assert.equal(player.equip.mochila.items[1].count, 1, 'comeu um');
+    assert.ok(player.food > 170000);
+    assert.equal(player.currentHp, hp, 'não passou fome');
+    run(game, TICK_MS * 4);
+    assert.equal(player.equip.mochila.items[1].count, 1, 'só come de novo quando a comida acabar');
   });
 });
