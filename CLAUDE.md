@@ -34,7 +34,7 @@ Jogo multiplayer estilo Tibia em JavaScript puro (sem framework), com editor de 
 
 ## Servidor (Oracle Cloud)
 
-- Jogo no ar em `http://147.15.125.27/` (IP público da instância `mmorpg`; se o jogo sumir, confirme o IP em Compute → Instances: IP efêmero pode mudar, e um IP reservado não muda). Atrás do Caddy; o Node escuta na porta 8000.
+- Jogo no ar em `http://147.15.125.27/` (IP público da instância `mmorpg`; se o jogo sumir, confirme o IP em Compute → Instances: IP efêmero pode mudar, e um IP reservado não muda). Sem Caddy: o Node escuta na porta 3000 e o firewall da máquina (firewalld, zona public) repassa a 80 pra 3000 (`forward-ports: port=80:proto=tcp:toport=3000`; por isso `curl localhost:80` dentro da máquina não responde, só de fora).
 - Acesso: SSH como `opc`, pelo Cloud Shell da Oracle (menu → Upload da chave `ssh-key-2026-10-06.key`, que fica no PC do usuário em `D:\GIT\`; `chmod 600` nela; `ssh -i ~/ssh-key-2026-10-06.key opc@147.15.125.27`). A chave e as senhas nunca vão para o chat nem para o git.
 - Pastas: código em `/home/opc/jogo`; dados (mapa, personagens, casas, senhas, log) em `/home/opc/dados`, fora do repositório e nunca tocados pelas atualizações.
 - Serviços (systemd): `jogo` (o servidor; `sudo systemctl status|restart jogo`, log: `sudo journalctl -u jogo -n 80 --no-pager`) e `jogo-atualizar.timer` (a cada minuto confere o `main` do GitHub e, se mudou, baixa, instala dependências se o lock mudou e reinicia o `jogo`: `ferramentas/atualizar-servidor.sh`). Todo push no `main` reinicia o jogo em até 1 minuto.
