@@ -1,7 +1,7 @@
 // shared/ficha.js
 
 import {
-  getAsset, splitType, displayName, objectProps, objectUse, activeAs, startsActive, stairKind, doorState, wallProps, blocksThrow, supportsItems,
+  getAsset, getAssetsVersion, splitType, displayName, objectProps, objectUse, activeAs, startsActive, stairKind, doorState, wallProps, blocksThrow, supportsItems,
   floorBehavior, creatureBehavior, creatureFlies, creatureStats, creaturePowers, creatureLoot, creatureVoices, isFloorType, isStairsType, isHoleType, WALL_PIECES
 } from './assets.js';
 import { itemInfo, EQUIP_SLOTS } from './items.js';
@@ -53,6 +53,7 @@ export const ESQUEMA_EFEITOS = {
   remover: { rotulo: 'Remover o objeto (rebrota)', campos: [{ chave: 'rebroteMs', rotulo: 'Rebrota em (ms, 0 = não)', tipo: 'numero' }] }
 };
 export const PORTA_FECHA_MS = 3000;
+const interacoesGuardadas = { versao: -1, porChave: new Map() };
 
 const CAMADAS = { pisos: 'chao', paredes: 'parede', objetos: 'objeto', criaturas: 'criatura' };
 const CAPACIDADE_DA_FERRAMENTA = {
@@ -376,12 +377,22 @@ export function reacoesA(ficha, capacidade) {
 
 // ================================================================================================================================================================================================================================================
 // interacoesDe
-// As interações do tipo que disparam com o gatilho (e, se pedido, a capacidade). Sem a folha, nenhuma.
+// As interações do tipo que disparam com o gatilho (e, se pedido, a capacidade). Sem a folha, nenhuma. Ficam guardadas
+// por tipo até as folhas mudarem (o tempo dos objetos pergunta isso de todo o mapa a cada segundo).
 
 export function interacoesDe(type, gatilho, capacidade = null) {
-  const ficha = fichaDe(type);
-  if (!ficha) return [];
-  return ficha.interacoes.filter(i => i.gatilho.tipo === gatilho && (!capacidade || i.gatilho.capacidade === capacidade) && !i.gatilho.onde);
+  if (interacoesGuardadas.versao !== getAssetsVersion()) {
+    interacoesGuardadas.versao = getAssetsVersion();
+    interacoesGuardadas.porChave.clear();
+  }
+  const chave = `${type}|${gatilho}|${capacidade || ''}`;
+  let lista = interacoesGuardadas.porChave.get(chave);
+  if (!lista) {
+    const ficha = fichaDe(type);
+    lista = ficha ? ficha.interacoes.filter(i => i.gatilho.tipo === gatilho && (!capacidade || i.gatilho.capacidade === capacidade) && !i.gatilho.onde) : [];
+    interacoesGuardadas.porChave.set(chave, lista);
+  }
+  return lista;
 }
 
 // ================================================================================================================================================================================================================================================
