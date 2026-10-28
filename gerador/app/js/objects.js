@@ -35,6 +35,8 @@ const NUMBERS = [
   { key: 'def', label: 'Defesa (def)', min: 0, step: 1 },
   { key: 'ml', label: 'Magic level (ml)', min: 0, step: 1 },
   { key: 'speed', label: 'Velocidade (speed)', min: 0, step: 1 },
+  { key: 'criticoChance', label: 'Chance de crítico equipado (%; soma com os outros itens)', min: 0, step: 1 },
+  { key: 'criticoDano', label: 'Dano extra do crítico equipado (%; 50 = +50%)', min: 0, step: 1 },
   { key: 'vidaMin', label: 'Recupera vida (mín.)', min: 0, step: 1 },
   { key: 'vidaMax', label: 'Recupera vida (máx.)', min: 0, step: 1 },
   { key: 'manaMin', label: 'Recupera mana (mín.)', min: 0, step: 1 },
@@ -45,12 +47,12 @@ const NUMBERS = [
   { key: 'regenVida', label: 'Regenera vida equipado (a cada 6 s)', min: 0, step: 1 },
   { key: 'regenMana', label: 'Regenera mana equipado (a cada 6 s)', min: 0, step: 1 }
 ];
-const DEFAULT_PROPERTIES = { bloqueia: false, move: true, altura: false, volume: 1, passo: 1, nivelPesca: 0, empilhavel: false, duasMaos: false, tipoMunicao: '', isca: '', plantaComo: '', resistencias: {}, postal: false, protegePerda: false, invisivelEquipado: false, peso: 10, espacos: 0, atk: 0, def: 0, ml: 0, speed: 0, vidaMin: 0, vidaMax: 0, manaMin: 0, manaMax: 0, alimento: 0, luz: 0, duracao: 0, regenVida: 0, regenMana: 0, uso: '', ativoComo: '', comecaAtivo: false };
+const DEFAULT_PROPERTIES = { bloqueia: false, move: true, altura: false, volume: 1, passo: 1, nivelPesca: 0, empilhavel: false, duasMaos: false, tipoMunicao: '', isca: '', plantaComo: '', resistencias: {}, postal: false, protegePerda: false, invisivelEquipado: false, peso: 10, espacos: 0, atk: 0, def: 0, ml: 0, speed: 0, criticoChance: 0, criticoDano: 0, vidaMin: 0, vidaMax: 0, manaMin: 0, manaMax: 0, alimento: 0, luz: 0, duracao: 0, regenVida: 0, regenMana: 0, uso: '', ativoComo: '', comecaAtivo: false };
 const PROPERTY_GROUPS = [
   ['corpo', 'Corpo e colisão', ['bloqueia', 'move', 'altura', 'volume', 'passo', 'empilhavel', 'peso', 'transicao'], true],
   ['estado', 'Estado normal e ativo', ['ativoComo', 'comecaAtivo'], false],
   ['uso', 'Uso e correio', ['uso', 'isca', 'plantaComo', 'nivelPesca', 'postal'], true],
-  ['equip', 'Equipar e armas', ['slot', 'skillArma', 'duasMaos', 'tipoMunicao', 'atk', 'def', 'ml', 'speed', 'protegePerda', 'invisivelEquipado', 'regenVida', 'regenMana'], false],
+  ['equip', 'Equipar e armas', ['slot', 'skillArma', 'duasMaos', 'tipoMunicao', 'atk', 'def', 'ml', 'speed', 'criticoChance', 'criticoDano', 'protegePerda', 'invisivelEquipado', 'regenVida', 'regenMana'], false],
   ['consome', 'Comida e poção', ['vidaMin', 'vidaMax', 'manaMin', 'manaMax', 'alimento'], false],
   ['luz', 'Luz e duração', ['luz', 'duracao'], false],
   ['container', 'Container', ['espacos'], false],

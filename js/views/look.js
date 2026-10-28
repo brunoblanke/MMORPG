@@ -25,6 +25,7 @@ export function describeItem(item) {
   const lines = [`${name}${attrs.length ? ` (${attrs.join(', ')})` : ''}`];
   const resist = Object.entries(info.resist).map(([element, percent]) => `${ELEMENT_NAMES[element]} ${percent > 0 ? '+' : ''}${percent}%`);
   if (resist.length) lines.push(`Proteção: ${resist.join(', ')}.`);
+  if (info.critChance) lines.push(`Crítico: ${info.critChance}% de chance${info.critDamage ? `, +${info.critDamage}% de dano` : ''}.`);
   if (info.burn) {
     const left = Math.ceil((item.fuel ?? info.burn * 1000) / 60000);
     lines.push(info.light ? `${item.lit ? 'Acesa' : 'Apagada'}, queima por mais ${left} min.` : `Dura mais ${left} min em uso.`);

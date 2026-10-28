@@ -4,6 +4,8 @@ Estado do projeto para retomar numa conversa nova. O que é regra fixa e como o 
 
 ## Para o usuário fazer
 
+- Rodar `node ferramentas/efeitos.js` de novo e fazer commit (gera o efeito `critical`, Tibia 173, e acerta os quadros dele no `shared/effects.js`). Depois, no gerador, pôr Crítico nos itens e criaturas que devem ter.
+
 
 - Gerador → "Gerar folhas pendentes" (Objetos e Criaturas): `respingo-gosma` (gosma verde do golpe em criatura de veneno), `banqueiro` e `capitao` (NPCs), `scythe`, `chave-dourada`, `alavanca-1` e `alavanca-1-ligada`, `amulet-of-loss`. Sem a folha (.png) o item não existe no jogo. Os ids do Tibia dessas receitas (chave 2970, alavanca 1945/1946, foice 3453, amuleto 3057) foram escolhidos de memória: conferir na primeira geração.
 - Conferir que a receita `cama` tem Uso `cama` e `cama-ocupada` como desenho ativo.
@@ -40,6 +42,10 @@ Feito: lenha e plantio. Machado usado com a mira na árvore (um golpe por uso; o
 - Sem soul points; magias fortes limitadas por mana alta e cooldown.
 - Fora de escopo: modos de ataque, chat/canais, outfit/addons, exhaust por grupo, comandos de admin, MOBA (removido do repositório).
 - Segurança do servidor já feita (ver `CLAUDE.md`): arquivos protegidos, senha do editor, limites do WebSocket. Falta (não pedido): HTTPS dedicado/ proxy com limite por IP em volta, proteção contra tentativa de senha vinda de muitos IPs.
+
+## Ideias para depois
+
+- Dodge (esquiva) como no Canary: chance (%) que anula o golpe inteiro (efeito dodge, Tibia 231, e a mensagem "Você desviou do ataque."); no nosso jogo viria de um campo "Esquiva %" nos itens (e talvez nas criaturas). O usuário deixou pra depois.
 
 ## Ideias oferecidas e não pedidas
 

@@ -110,6 +110,16 @@ export function creatureRace(type) {
 }
 
 // ================================================================================================================================================================================================================================================
+// creatureCritical
+// Crítico da criatura (gerador → Criaturas → Crítico % e Dano crítico %): chance (%) e dano extra (%).
+
+export function creatureCritical(type) {
+  const asset = getAsset(type);
+  const props = (asset && asset.propriedades) || {};
+  return { chance: Math.max(0, Number(props.criticoChance) || 0), damage: Math.max(0, Number(props.criticoDano) || 0) };
+}
+
+// ================================================================================================================================================================================================================================================
 // creatureStats
 // Números da criatura no gerador (Criaturas): vida, XP dado ao morrer,
 // velocidade (escala do Tibia: rat 134, player nível 1 = 220), armadura,

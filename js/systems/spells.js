@@ -182,12 +182,15 @@ export class SpellController {
 
   // ================================================================================================================================================================================================================================================
   // hurt
-  // Dano de magia na criatura (sem defesa nem armadura); conta pra XP.
+  // Dano de magia na criatura (sem defesa nem armadura); conta pra XP. Pode sair crítico (combat.rollCritical), com o
+  // efeito critical.
 
   hurt(player, enemy, rawAmount, now, element = null) {
     if (enemy.pet) return;
-    const amount = this.sim.powers.resisted(enemy, element, rawAmount);
+    const multiplier = rawAmount > 0 ? this.sim.combat.rollCritical(player) : 1;
+    const amount = this.sim.powers.resisted(enemy, element, Math.round(rawAmount * multiplier));
     if (amount <= 0) return;
+    if (multiplier > 1) this.showEffect(enemy.x, enemy.y, 'critical', undefined, enemy.z || 0);
     this.sim.combat.markCombat(player, enemy, now);
     if (enemy.isPlayer) this.sim.social.onPlayerAttack(player, enemy, now);
     else this.sim.combat.recordDamage(enemy, player, Math.min(amount, enemy.currentHp));

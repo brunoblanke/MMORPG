@@ -3,7 +3,7 @@
 import { isPositionAdjacentTo, distance } from '../utils/helpers.js';
 import { getLevel } from '../core/geometry.js';
 import { AI_STATE } from '../models/enemy.js';
-import { creatureBehavior, creaturePowers, creatureRace } from '../../shared/assets.js';
+import { creatureBehavior, creaturePowers, creatureRace, creatureCritical } from '../../shared/assets.js';
 import { CONFIG } from '../config.js';
 import { equipBonus, itemInfo, newItem, isAmmo, isQuiver, impactEffectName, RACES } from '../../shared/items.js';
 import { addSkillTry } from '../../shared/skills.js';
@@ -150,15 +150,30 @@ export class CombatController {
 
   rollDamage(attacker, defender, now = this.sim.time || 0, { melee = true, attack = null } = {}) {
     let damage = normalRandom(0, this.maxDamage(attacker, attack));
+    const multiplier = damage > 0 ? this.rollCritical(attacker) : 1;
+    const critical = multiplier > 1;
+    damage = Math.round(damage * multiplier);
     if (melee) {
       const defense = this.defenseOf(defender, now);
       damage -= uniformRandom(Math.floor(defense / 2), defense);
-      if (damage <= 0) return { damage: 0, blocked: 'defense' };
+      if (damage <= 0) return { damage: 0, blocked: 'defense', critical };
     }
     const armor = this.armorOf(defender);
     if (armor > 3) damage -= uniformRandom(Math.floor(armor / 2), armor - (armor % 2 + 1));
     else if (armor > 0) damage--;
-    return damage > 0 ? { damage, blocked: null } : { damage: 0, blocked: 'armor' };
+    return damage > 0 ? { damage, blocked: null, critical } : { damage: 0, blocked: 'armor', critical };
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // rollCritical
+  // O multiplicador do crítico, como no Canary (Combat::applyExtensions): sorteia a chance de quem ataca (player: a
+  // soma dos itens equipados, Crítico % no gerador; criatura: a da receita) e, se saiu, o golpe vale 1 + dano extra %;
+  // senão 1. O crítico entra antes da defesa e da armadura.
+
+  rollCritical(attacker) {
+    const { chance, damage } = attacker.isPlayer ? { chance: equipBonus(attacker.equip).critChance, damage: equipBonus(attacker.equip).critDamage } : creatureCritical(attacker.creature);
+    if (chance <= 0 || Math.random() * 100 >= chance) return 1;
+    return 1 + damage / 100;
   }
 
   // ================================================================================================================================================================================================================================================
@@ -169,22 +184,23 @@ export class CombatController {
     if (!defender.isAlive()) return false;
 
     this.markCombat(attacker, defender, now);
-    const { damage, blocked } = this.rollDamage(attacker, defender, now, { melee, attack });
+    const { damage, blocked, critical } = this.rollDamage(attacker, defender, now, { melee, attack });
     attacker.lastAttackTime = now;
     if (attacker.isPlayer) this.trainSkill(attacker, equipBonus(attacker.equip).atkSkill);
     if (defender.isPlayer && defender.equip && defender.equip.escudo && itemInfo(defender.equip.escudo.type).slot === 'escudo') {
       this.trainSkill(defender, 'shielding');
     }
-    return this.applyDamage(attacker, defender, damage, now, melee, blocked);
+    return this.applyDamage(attacker, defender, damage, now, melee, blocked, critical);
   }
 
   // ================================================================================================================================================================================================================================================
   // applyDamage
   // Tira a vida do golpe já calculado: conta pro PvP, pra XP da criatura, mostra
   // o número (na cor da raça), sangra (bleed) e deixa o veneno do golpe da criatura. Golpe que não tira vida, como no
-  // Canary: poff se a defesa segurou (ou sem dano), block se a armadura segurou ou a resistência zerou.
+  // Canary: poff se a defesa segurou (ou sem dano), block se a armadura segurou ou a resistência zerou. O crítico
+  // que tirou vida mostra o efeito critical.
 
-  applyDamage(attacker, defender, rawDamage, now, melee, blocked = null) {
+  applyDamage(attacker, defender, rawDamage, now, melee, blocked = null, critical = false) {
     const damage = this.sim.powers.resisted(defender, 'physical', rawDamage);
     if (attacker.isPlayer && defender.isPlayer) this.sim.social.onPlayerAttack(attacker, defender, now);
     if (damage <= 0) {
@@ -193,6 +209,7 @@ export class CombatController {
       return defender.currentHp;
     }
     this.bleed(defender);
+    if (critical) this.sim.spells.showEffect(defender.x, defender.y, 'critical', undefined, defender.z || 0);
     if (attacker.isPlayer && !defender.isPlayer) this.recordDamage(defender, attacker, Math.min(damage, defender.currentHp));
     const hpLeft = defender.takeDamage(damage, now);
     this.sim.emit({ type: 'damage', targetId: defender.id, x: defender.x, y: defender.y, z: defender.z || 0, amount: damage, color: RACES[raceOf(defender)].color || undefined });
@@ -376,8 +393,8 @@ export class CombatController {
     for (const victim of victims) {
       if (victim.isPlayer && victim !== target && !this.sim.social.canAttack(player, victim)) continue;
       this.markCombat(player, victim, now);
-      const { damage, blocked } = this.rollDamage(player, victim, now, { melee: false, attack: ranged.attack });
-      this.applyDamage(player, victim, damage, now, false, blocked);
+      const { damage, blocked, critical } = this.rollDamage(player, victim, now, { melee: false, attack: ranged.attack });
+      this.applyDamage(player, victim, damage, now, false, blocked, critical);
     }
     player.lastAttackTime = now;
     this.trainSkill(player, 'distance');

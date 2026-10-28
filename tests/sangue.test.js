@@ -122,9 +122,9 @@ test('rollDamage diz quem segurou: defesa no corpo a corpo, armadura no de longe
   const { sim, enemy } = game(RAT);
   sim.player.atk = 0;
   const melee = sim.combat.rollDamage(sim.player, { ...enemy, def: 0, defense: 1000 }, sim.time, { melee: true, attack: 1 });
-  assert.deepEqual(melee, { damage: 0, blocked: 'defense' });
+  assert.deepEqual([melee.damage, melee.blocked], [0, 'defense']);
   const ranged = sim.combat.rollDamage(sim.player, { ...enemy, def: 1000 }, sim.time, { melee: false, attack: 1 });
-  assert.deepEqual(ranged, { damage: 0, blocked: 'armor' });
+  assert.deepEqual([ranged.damage, ranged.blocked], [0, 'armor']);
 });
 
 test('criatura de fogo espirra sangue sem respingo e o dano sai laranja; veneno sai verde', () => {

@@ -70,7 +70,9 @@ const STAT_FIELDS = [
   ['velocidade', document.getElementById('creatureSpeed')],
   ['armadura', document.getElementById('creatureArmor')],
   ['defesa', document.getElementById('creatureDefense')],
-  ['ataque', document.getElementById('creatureAttack')]
+  ['ataque', document.getElementById('creatureAttack')],
+  ['criticoChance', document.getElementById('creatureCritChance')],
+  ['criticoDano', document.getElementById('creatureCritDamage')]
 ];
 const POWER_FIELDS = {
   spell: document.getElementById('creatureSpell'),

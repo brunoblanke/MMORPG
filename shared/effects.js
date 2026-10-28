@@ -9,6 +9,7 @@ export const EFFECTS = {
   'draw-blood': { id: 1, frames: 6, size: 32, ms: 100 },
   block: { id: 4, frames: 9, size: 32, ms: 68 },
   'hit-area': { id: 10, frames: 8, size: 32, ms: 100 },
+  critical: { id: 173, frames: 10, size: 32, ms: 100 },
   'hit-poison': { id: 17, frames: 6, size: 32, ms: 100 },
   explosion: { id: 7, frames: 14, size: 64, ms: 59 },
   fire: { id: 16, frames: 9, size: 64, ms: 100 },

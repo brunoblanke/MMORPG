@@ -129,6 +129,8 @@ export function itemInfo(type) {
     def: bonusValue(props.def),
     ml: bonusValue(props.ml),
     speed: bonusValue(props.speed),
+    critChance: bonusValue(props.criticoChance),
+    critDamage: bonusValue(props.criticoDano),
     heal: healOf(props),
     food: bonusValue(props.alimento),
     light: bonusValue(props.luz),
@@ -281,7 +283,7 @@ function bonusValue(value) {
 // (espada → sword…) ou fist, sem arma.
 
 export function equipBonus(equip) {
-  const bonus = { atk: 0, def: 0, ml: 0, speed: 0, atkSkill: 'fist' };
+  const bonus = { atk: 0, def: 0, ml: 0, speed: 0, critChance: 0, critDamage: 0, atkSkill: 'fist' };
   if (!equip) return bonus;
   for (const key of EQUIP_SLOTS) {
     const item = equip[key];
@@ -291,6 +293,8 @@ export function equipBonus(equip) {
     bonus.def += info.def;
     bonus.ml += info.ml;
     bonus.speed += info.speed;
+    bonus.critChance += info.critChance;
+    bonus.critDamage += info.critDamage;
     if (key === 'arma' && info.weaponSkill) bonus.atkSkill = info.weaponSkill;
   }
   return bonus;

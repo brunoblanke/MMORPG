@@ -220,14 +220,16 @@ export class CreaturePowers {
   // ================================================================================================================================================================================================================================================
   // strike
   // Fere todo player vivo nos sqms (ou na lista victims), fora da zona
-  // segura, e mostra o efeito do tipo.
+  // segura, e mostra o efeito do tipo; cada golpe pode sair crítico (combat.rollCritical).
 
   strike(enemy, tiles, attack, victims = null) {
     const z = enemy.z || 0;
     const keys = new Set(tiles.map(([x, y]) => `${x},${y}`));
     for (const target of victims || this.sim.players) {
       if (!target.isAlive() || (target.z || 0) !== z || (!victims && !keys.has(`${target.x},${target.y}`)) || this.sim.world.isInSafeZone(target)) continue;
-      this.sim.conditions.hurt(target, this.roll(attack), attack.element);
+      const multiplier = this.sim.combat.rollCritical(enemy);
+      this.sim.conditions.hurt(target, Math.round(this.roll(attack) * multiplier), attack.element);
+      if (multiplier > 1) this.sim.spells.showEffect(target.x, target.y, 'critical', undefined, z);
       if (attack.element === 'poison') this.sim.conditions.add(target, 'poison', { damage: Math.max(1, Math.floor(attack.max / 4)), ticks: SPELL_POISON_TICKS });
     }
     if (EFFECTS[attack.element]) this.sim.emit({ type: 'effect', x: enemy.x, y: enemy.y, z, tiles, effect: attack.element });
