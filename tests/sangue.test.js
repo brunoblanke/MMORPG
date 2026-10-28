@@ -11,6 +11,7 @@ import { EFFECTS } from '../shared/effects.js';
 const RAT = 'criaturas/teste/rato';
 const SPIDER = 'criaturas/teste/aranha';
 const SKELETON = 'criaturas/teste/esqueleto';
+const FIRE = 'criaturas/teste/fogo';
 const WATER = 'estrutura/pisos/agua-de-teste';
 
 const asset = (id, propriedades, ferramenta = 'criaturas') => {
@@ -24,6 +25,7 @@ setAssets([
   asset(RAT, { comportamento: 'agressivo' }),
   asset(SPIDER, { comportamento: 'agressivo', raca: 'veneno' }),
   asset(SKELETON, { comportamento: 'agressivo', raca: 'morto-vivo' }),
+  asset(FIRE, { comportamento: 'agressivo', raca: 'fogo' }),
   asset(SPLASH_HP, { move: false }, 'objetos'),
   asset(SPLASH_SLIME, { move: false }, 'objetos')
 ]);
@@ -45,7 +47,7 @@ function game(creature, objects = []) {
 // hit
 // Um golpe que tira dano do player na criatura; devolve os eventos.
 
-function hit(sim, enemy, damage, blocked = false) {
+function hit(sim, enemy, damage, blocked = null) {
   sim.combat.applyDamage(sim.player, enemy, damage, sim.time, true, blocked);
   return sim.drainEvents();
 }
@@ -108,11 +110,38 @@ test('o sangue vai secando e some', () => {
   assert.equal(splashes(sim, SPLASH_HP).length, 0);
 });
 
-test('golpe que não tira vida: poff se errou, block se a defesa ou a armadura seguraram', () => {
+test('golpe que não tira vida, como no Canary: poff se a defesa segurou, block se a armadura segurou', () => {
   const { sim, enemy } = game(RAT);
   assert.ok(hit(sim, enemy, 0).some(e => e.effect === 'poff'));
-  assert.ok(hit(sim, enemy, 0, true).some(e => e.effect === 'block'));
+  assert.ok(hit(sim, enemy, 0, 'defense').some(e => e.effect === 'poff'));
+  assert.ok(hit(sim, enemy, 0, 'armor').some(e => e.effect === 'block'));
   assert.equal(sim.objects.some(o => o.isSplash), false, 'sem sangue');
+});
+
+test('rollDamage diz quem segurou: defesa no corpo a corpo, armadura no de longe', () => {
+  const { sim, enemy } = game(RAT);
+  sim.player.atk = 0;
+  const melee = sim.combat.rollDamage(sim.player, { ...enemy, def: 0, defense: 1000 }, sim.time, { melee: true, attack: 1 });
+  assert.deepEqual(melee, { damage: 0, blocked: 'defense' });
+  const ranged = sim.combat.rollDamage(sim.player, { ...enemy, def: 1000 }, sim.time, { melee: false, attack: 1 });
+  assert.deepEqual(ranged, { damage: 0, blocked: 'armor' });
+});
+
+test('criatura de fogo espirra sangue sem respingo e o dano sai laranja; veneno sai verde', () => {
+  const fire = game(FIRE);
+  const events = hit(fire.sim, fire.enemy, 5);
+  assert.ok(events.some(e => e.effect === 'draw-blood'));
+  assert.equal(events.find(e => e.type === 'damage').color, RACES.fogo.color);
+  assert.equal(fire.sim.objects.some(o => o.isSplash), false);
+  const spider = game(SPIDER);
+  assert.equal(hit(spider.sim, spider.enemy, 5).find(e => e.type === 'damage').color, RACES.veneno.color);
+});
+
+test('na zona segura não fica sangue no chão', () => {
+  const { sim, enemy } = game(RAT);
+  sim.world.safeTiles.add(sim.world.getTileKey(6, 5, 0));
+  assert.ok(hit(sim, enemy, 5).some(e => e.effect === 'draw-blood'));
+  assert.equal(sim.objects.some(o => o.isSplash), false);
 });
 
 test('não fica sangue na água', () => {

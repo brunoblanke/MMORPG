@@ -144,22 +144,21 @@ export class CombatController {
 
   // ================================================================================================================================================================================================================================================
   // rollDamage
-  // O golpe e por que não tirou vida: blocked quando o sorteio passou de 0 e a defesa ou a armadura seguraram tudo
-  // (efeito block); sorteio 0 é golpe que errou (poff).
+  // O golpe e quem segurou tudo, como no Canary (Creature::blockHit): blocked = 'defense' quando a defesa (escudo,
+  // arma) zerou o golpe corpo a corpo, inclusive o que sorteou 0 (efeito poff); 'armor' quando a armadura zerou (efeito
+  // block); null quando passou.
 
   rollDamage(attacker, defender, now = this.sim.time || 0, { melee = true, attack = null } = {}) {
-    const roll = normalRandom(0, this.maxDamage(attacker, attack));
-    let damage = roll;
-    if (melee && damage > 0) {
+    let damage = normalRandom(0, this.maxDamage(attacker, attack));
+    if (melee) {
       const defense = this.defenseOf(defender, now);
       damage -= uniformRandom(Math.floor(defense / 2), defense);
+      if (damage <= 0) return { damage: 0, blocked: 'defense' };
     }
-    if (damage > 0) {
-      const armor = this.armorOf(defender);
-      if (armor > 3) damage -= uniformRandom(Math.floor(armor / 2), armor - (armor % 2 + 1));
-      else if (armor > 0) damage--;
-    }
-    return { damage: Math.max(0, damage), blocked: roll > 0 && damage <= 0 };
+    const armor = this.armorOf(defender);
+    if (armor > 3) damage -= uniformRandom(Math.floor(armor / 2), armor - (armor % 2 + 1));
+    else if (armor > 0) damage--;
+    return damage > 0 ? { damage, blocked: null } : { damage: 0, blocked: 'armor' };
   }
 
   // ================================================================================================================================================================================================================================================
@@ -182,20 +181,21 @@ export class CombatController {
   // ================================================================================================================================================================================================================================================
   // applyDamage
   // Tira a vida do golpe já calculado: conta pro PvP, pra XP da criatura, mostra
-  // o número, sangra (bleed) e deixa o veneno do golpe da criatura. Golpe que não tira vida levanta a fumacinha do
-  // Tibia (poff) se errou ou o block se a defesa, a armadura ou a resistência seguraram.
+  // o número (na cor da raça), sangra (bleed) e deixa o veneno do golpe da criatura. Golpe que não tira vida, como no
+  // Canary: poff se a defesa segurou (ou sem dano), block se a armadura segurou ou a resistência zerou.
 
-  applyDamage(attacker, defender, rawDamage, now, melee, blocked = false) {
+  applyDamage(attacker, defender, rawDamage, now, melee, blocked = null) {
     const damage = this.sim.powers.resisted(defender, 'physical', rawDamage);
     if (attacker.isPlayer && defender.isPlayer) this.sim.social.onPlayerAttack(attacker, defender, now);
     if (damage <= 0) {
-      this.sim.spells.showEffect(defender.x, defender.y, blocked || rawDamage > 0 ? 'block' : 'poff', undefined, defender.z || 0);
+      const effect = blocked === 'armor' || (blocked !== 'defense' && rawDamage > 0) ? 'block' : 'poff';
+      this.sim.spells.showEffect(defender.x, defender.y, effect, undefined, defender.z || 0);
       return defender.currentHp;
     }
     this.bleed(defender);
     if (attacker.isPlayer && !defender.isPlayer) this.recordDamage(defender, attacker, Math.min(damage, defender.currentHp));
     const hpLeft = defender.takeDamage(damage, now);
-    this.sim.emit({ type: 'damage', targetId: defender.id, x: defender.x, y: defender.y, z: defender.z || 0, amount: damage });
+    this.sim.emit({ type: 'damage', targetId: defender.id, x: defender.x, y: defender.y, z: defender.z || 0, amount: damage, color: RACES[raceOf(defender)].color || undefined });
     this.sim.powers.reflect(attacker, defender, damage);
     if (hpLeft > 0) this.sim.effects.trigger(defender, 'ser-atingido', attacker.isPlayer ? attacker : null);
     const poison = attacker.isPlayer ? 0 : creaturePowers(attacker.creature).poison;
@@ -215,13 +215,13 @@ export class CombatController {
 
   // ================================================================================================================================================================================================================================================
   // splashUnder
-  // O respingo da raça no chão embaixo dela (golpe ou morte); nada em água, lava ou sem chão.
+  // O respingo da raça no chão embaixo dela (golpe ou morte); nada em água, lava, sem chão ou na zona segura.
 
   splashUnder(entity) {
     const race = RACES[raceOf(entity)];
     const { world } = this.sim;
     const z = entity.z || 0;
-    if (!race.splash || !world.hasFloorAt(entity.x, entity.y, z) || world.isFloorBlocked(entity.x, entity.y, z)) return;
+    if (!race.splash || !world.hasFloorAt(entity.x, entity.y, z) || world.isFloorBlocked(entity.x, entity.y, z) || world.isSafe(entity.x, entity.y, z)) return;
     this.sim.inventory.spill(entity.x, entity.y, z, race.splash);
   }
 

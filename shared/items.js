@@ -49,14 +49,15 @@ export const SPLASH_STAGES = 3;
 export const SPLASH_STAGE_MS = 20000;
 export const SPLASH_SLIME = 'itens/liquidos/respingo-gosma';
 
-// O que o golpe físico que tira vida mostra em cada raça (gerador → Criaturas → Raça; player é sangue): o efeito no
-// alvo e o respingo que fica no chão, embaixo dele, e no corpo quando morre (seca como o da potion).
+// O que o golpe físico que tira vida mostra em cada raça, como no Canary (Game::combatGetTypeInfo; gerador → Criaturas
+// → Raça; player é sangue): o efeito no alvo, a cor do número do dano (null = a de sempre) e o respingo que fica no
+// chão, embaixo dele, e no corpo quando morre (fora da zona segura; seca como o da potion).
 export const RACES = {
-  sangue: { hit: 'draw-blood', splash: SPLASH_HP },
-  veneno: { hit: 'hit-poison', splash: SPLASH_SLIME },
-  'morto-vivo': { hit: 'hit-area', splash: null },
-  fogo: { hit: 'fire', splash: null },
-  energia: { hit: 'energy', splash: null }
+  sangue: { hit: 'draw-blood', color: null, splash: SPLASH_HP },
+  veneno: { hit: 'hit-poison', color: '#5df35d', splash: SPLASH_SLIME },
+  'morto-vivo': { hit: 'hit-area', color: '#c0c0c0', splash: null },
+  fogo: { hit: 'draw-blood', color: '#ff9a1f', splash: null },
+  energia: { hit: 'energy', color: '#b45cff', splash: null }
 };
 
 // Comida como no Tibia (sem vocação): cada item soma segundos de

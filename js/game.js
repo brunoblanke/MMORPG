@@ -525,7 +525,7 @@ export class GameController {
       } else if (event.type === 'effect') {
         this.particleController.spawnEffect(event, this.renderer);
       } else if (event.type === 'damage') {
-        this.particleController.spawnDamage(event.x, event.y, event.amount, this.renderer, damageColor(event.element));
+        this.particleController.spawnDamage(event.x, event.y, event.amount, this.renderer, event.color || damageColor(event.element));
       } else if (event.type === 'heal') {
         this.particleController.spawnHeal(event, this.renderer);
       } else if (event.type === 'xp' && event.playerId === playerId) {
