@@ -1,6 +1,5 @@
 // js/views/ui.js
 
-
 export class UI {
   constructor() {
     this.devBtnSize = 36;
