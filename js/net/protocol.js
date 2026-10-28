@@ -131,7 +131,6 @@ export function serializeState(sim, playerId, nearOnly = false) {
     })),
     you: me ? {
       target: me.target ? me.target.id : null,
-      work: me.workObject ? { type: objectIdType(me.workObject.id), x: me.workObject.x, y: me.workObject.y, z: me.workObject.z || 0 } : null,
       autoFollow: me.autoFollow,
       followMode: me.followMode,
       attackMode: me.attackMode,
@@ -292,7 +291,6 @@ export function applyState(mirror, message, playerId, renderNow) {
   const me = mirror.players.find(p => p.id === playerId);
   if (me && state.you) {
     me.target = state.you.target ? [...mirror.enemies, ...mirror.players].find(e => e.id === state.you.target) || null : null;
-    me.workObject = state.you.work ? fixedAt(mirror, state.you.work.type, state.you.work.x, state.you.work.y, state.you.work.z) : null;
     me.autoFollow = state.you.autoFollow;
     me.followMode = state.you.followMode;
     me.attackMode = state.you.attackMode;

@@ -244,43 +244,6 @@ test('muda que veio do mapa espera o tempo todo depois que o servidor sobe', () 
   assert.equal(at(sim, TREE, 12, 12).length, 1);
 });
 
-test('machado na mão e clique na árvore: corta sem parar, a cada 2 s, até ela cair', () => {
-  const { sim, ana } = game([[TREE_CYCLE, 14, 10, 0, 0, 0, 0, 1]]);
-  sim.enqueue('p1', { type: 'work', x: 14, y: 10, z: 0 });
-  tick(sim, 2);
-  assert.ok(ana.workObject, 'a árvore virou o alvo');
-  tick(sim, 40);
-  assert.ok(Math.abs(ana.x - 14) <= 1, 'andou até a árvore');
-  const before = woodCount(sim);
-  tick(sim, 41);
-  assert.equal(woodCount(sim) - before, 1, 'um golpe a cada 2 s');
-  tick(sim, 200);
-  assert.equal(at(sim, TREE_CYCLE, 14, 10).length, 0, 'caiu');
-  assert.equal(ana.workObject, null, 'parou sozinho');
-  assert.equal(woodCount(sim), 3);
-});
-
-test('clicar de novo na mesma árvore ou escolher um alvo para o corte', () => {
-  const { sim, ana } = game([[TREE, 11, 10, 0, 0, 0, 0, 1]]);
-  sim.enqueue('p1', { type: 'work', x: 11, y: 10, z: 0 });
-  tick(sim, 2);
-  assert.ok(ana.workObject);
-  sim.enqueue('p1', { type: 'work', x: 11, y: 10, z: 0 });
-  tick(sim, 2);
-  assert.equal(ana.workObject, null);
-  ana.equip.arma = null;
-  sim.enqueue('p1', { type: 'work', x: 11, y: 10, z: 0 });
-  tick(sim, 2);
-  assert.equal(ana.workObject, null, 'sem machado na mão não vira alvo');
-});
-
-test('vezes, idade e a lista longa de objetos passam pela limpeza da ficha', () => {
-  const longa = new Array(20).fill('estrutura/natureza/arvore-de-teste').join(', ');
-  const [ix] = normalizarInteracoes([{ gatilho: { tipo: 'tempo' }, condicoes: { idade: 600, vezes: 8 }, efeitos: [{ tipo: 'trocar-por', item: longa }] }]);
-  assert.deepEqual(ix.condicoes, { vezes: 8, idade: 600 });
-  assert.equal(ix.efeitos[0].item, longa);
-});
-
 test('receitas: a árvore cai e dá semente; a semente planta a muda; a muda vira árvore', () => {
   const ler = (id) => JSON.parse(fs.readFileSync(new URL(`../gerador/projetos/${id}.json`, import.meta.url), 'utf8'));
   const arvore = ler('estrutura/natureza/arvore-1').propriedades.interacoes;

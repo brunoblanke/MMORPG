@@ -13,7 +13,6 @@ const DOOR_AUTOCLOSE_MS = 3000;
 //   { type: 'walkTo', x, y, z }          andar até o sqm (clique no chão); no
 //                                        próprio sqm, desce da pilha
 //   { type: 'attack', targetId }         escolher inimigo como alvo (null tira)
-//   { type: 'work', x, y, z }            usar a ferramenta da mão no objeto sem parar (clicar de novo tira)
 //   { type: 'toggleFollow' }             liga/desliga seguir o alvo
 //   { type: 'toggleAttackMode' }         alterna auto ataque / defesa
 //   { type: 'respawn' }                 aceita a morte e volta ao jogo (janela de morte)
@@ -52,7 +51,6 @@ export class PlayerControl {
       case 'moveInv': return this.sim.inventory.move(player, command.from, command.to, command.amount);
       case 'openContainer': return this.sim.inventory.open(player, command.itemId);
       case 'useObject': return this.sim.interactions.useObject(player, command.id);
-      case 'work': return this.sim.interactions.setWork(player, command.x, command.y, command.z);
       case 'useItem': return this.sim.inventory.use(player, command.from, command.target || null);
       case 'closeContainer': return this.sim.inventory.close(player, command.itemId);
       case 'saveLayout': return this.sim.inventory.saveLayout(player, command.layout);
@@ -255,7 +253,6 @@ export class PlayerControl {
     const enemy = other || this.sim.enemies.find(e => e.id === targetId && e.isAlive());
     if (!enemy || enemy.pet || this.sim.combat.isTargetLost(player, enemy)) return;
     player.target = enemy;
-    player.workObject = null;
     player.autoFollow = player.followMode;
     player.attackMode = false;
     console.log(`🎯 Alvo selecionado: ${enemy.id}`);

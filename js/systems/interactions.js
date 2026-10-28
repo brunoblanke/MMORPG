@@ -7,7 +7,6 @@ import { itemInfo, newItem, weightOf, FISH_RANGE, USE_COOLDOWN_MS, SLEEP_REGEN_F
 import { VOCATIONS, vocationOf } from '../../shared/vocations.js';
 import { takeFromBag } from './trade.js';
 import { WATER_EFFECT } from '../../shared/effects.js';
-import { CONFIG } from '../config.js';
 import { isValidFloor } from '../../shared/constants.js';
 import { getHoleTarget, toLowerLevel, toUpperLevel } from '../../shared/stairs.js';
 import { isSyncedItem } from '../net/protocol.js';
@@ -261,65 +260,6 @@ export class InteractionController {
       if (hit) return this.react(player, hit, item, from, target);
     }
     return false;
-  }
-
-// ================================================================================================================================================================================================================================================
-  // setWork
-  // Comando work (clique num objeto com a ferramenta na mão, ex.: árvore com o machado): o objeto vira o alvo do
-  // trabalho e o player segue usando a ferramenta nele, como um ataque (updateWork). Clicar de novo no mesmo, escolher
-  // um alvo de ataque ou um sqm sem reação tira.
-
-  setWork(player, x, y, z) {
-    const tile = { x, y, z: player.z || 0 };
-    const same = player.workObject && player.workObject.x === x && player.workObject.y === y && (player.workObject.z || 0) === tile.z;
-    player.workObject = null;
-    if (same || !Number.isInteger(x) || !Number.isInteger(y) || (z ?? tile.z) !== tile.z) return;
-    const hit = this.workReaction(player, tile);
-    if (!hit) return;
-    player.workObject = hit.obj;
-    player.target = null;
-    player.workReadyAt = 0;
-  }
-
-  // ================================================================================================================================================================================================================================================
-  // workReaction
-  // O objeto do sqm que reage à ferramenta da mão (espaço da arma), ou null.
-
-  workReaction(player, tile) {
-    const item = player.equip && player.equip.arma;
-    const ficha = item ? fichaDe(item.type) : null;
-    for (const capacity of (ficha && ficha.tracos.capacidade) || []) {
-      const hit = this.findReaction(capacity, tile, tile.z);
-      if (hit && hit.obj && !hit.creature && hit.reactions && hit.reactions.some(r => r.propria)) return hit;
-    }
-    return null;
-  }
-
-  // ================================================================================================================================================================================================================================================
-  // updateWork
-  // A cada tick: longe do alvo do trabalho, anda até o lado; colado, usa a ferramenta da mão nele a cada
-  // CONFIG.attackCooldown. Para quando o objeto some (a árvore caiu) ou a ferramenta sai da mão.
-
-  updateWork(player, now) {
-    const obj = player.workObject;
-    if (!obj) return;
-    const tile = { x: obj.x, y: obj.y, z: obj.z || 0 };
-    if (!this.sim.world.objects.has(obj) || tile.z !== (player.z || 0) || !this.workReaction(player, tile)) {
-      player.workObject = null;
-      return;
-    }
-    if (Math.max(Math.abs(obj.x - player.x), Math.abs(obj.y - player.y)) > 1) {
-      if (!player.walk.target) {
-        this.sim.inventory.walkNextTo(player, obj, null);
-        player.pendingInv = null;
-      }
-      return;
-    }
-    if (now < (player.workReadyAt || 0)) return;
-    player.workReadyAt = now + CONFIG.attackCooldown;
-    player.useReadyAt = 0;
-    this.useTool(player, null, tile, null, player.equip.arma);
-    if (!this.sim.world.objects.has(obj)) player.workObject = null;
   }
 
 // ================================================================================================================================================================================================================================================
