@@ -1,4 +1,5 @@
-import { viewSize } from '../services/camera.js';
+// js/views/ui.js
+
 
 export class UI {
   constructor() {
@@ -51,31 +52,9 @@ export class UI {
   // ================================================================================================================================================================================================================================================
   // draw
 
-  draw(ctx, player, devMode, inSafeZone) {
+  draw(ctx, devMode) {
     this.drawDevModeButton(ctx, devMode);
     this.drawFullscreenButton(ctx);
-    this.drawPlayerStatus(ctx, player, inSafeZone);
-  }
-
-  // ================================================================================================================================================================================================================================================
-  // drawPlayerStatus
-  // Canto inferior esquerdo: só o aviso de zona segura (nível e XP ficam na
-  // janela de skills).
-
-  drawPlayerStatus(ctx, player, inSafeZone) {
-    if (!inSafeZone) return;
-    const x = this.sideInset + 16;
-    const y = viewSize(ctx.canvas).height - 16;
-    const label = '🛡 Zona segura';
-    ctx.save();
-    ctx.font = 'bold 12px Arial';
-    const labelWidth = ctx.measureText(label).width + 16;
-    ctx.fillStyle = 'rgba(46, 204, 113, 0.85)';
-    ctx.fillRect(x, y - 20, labelWidth, 20);
-    ctx.fillStyle = '#0b2e17';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(label, x + 8, y - 10);
-    ctx.restore();
   }
 
   // ================================================================================================================================================================================================================================================

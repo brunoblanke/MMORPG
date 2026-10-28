@@ -708,7 +708,7 @@ export class Renderer {
       this.flushOverlays();
     }
 
-    ui.draw(this.ctx, gameState.player, this.devMode, gameState.world.isInSafeZone(gameState.player));
+    ui.draw(this.ctx, this.devMode);
     if (this.showTooltip) drawTileTooltip(this.ctx, this.camera, gameState, gameState.inputController);
 
     if (gameState.speech) gameState.speech.draw(this.ctx, this, getEntityLevel(gameState.player), this.frameTimestamp);
