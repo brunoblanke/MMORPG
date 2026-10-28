@@ -56,6 +56,7 @@ export class LocalSession {
   get npcs() { return this.sim.npcs; }
   get deadBodies() { return this.sim.deadBodies; }
   get player() { return this.sim.getPlayer(this.playerId); }
+  get explored() { return this.player ? this.player.explored : null; }
   get inventoryView() { return this.player ? this.sim.inventory.viewFor(this.player) : null; }
 
   // ================================================================================================================================================================================================================================================

@@ -7,11 +7,13 @@ import { isValidFloor } from '../../shared/constants.js';
 import { EQUIP_SLOTS, FOOD_MAX_SECONDS, toPlain, equipBonus, itemInfo } from '../../shared/items.js';
 import { newSkills, loadSkills, loseSkills } from '../../shared/skills.js';
 import { vocationOf } from '../../shared/vocations.js';
+import { Explored } from '../../shared/explored.js';
 
 export class Player extends Entity {
   constructor(data) {
     super(data);
     this.isPlayer = true;
+    this.explored = new Explored();
     this.name = data.name || 'Player';
     this.gender = PLAYER_GENDERS.includes(data.gender) ? data.gender : DEFAULT_GENDER;
     this.spawnX = data.x;
@@ -149,7 +151,8 @@ export class Player extends Entity {
       missions: this.missions || {},
       vip: this.vip || [],
       frags: this.frags,
-      sleep: this.sleep || null
+      sleep: this.sleep || null,
+      explored: this.explored.toSave()
     };
   }
 
@@ -179,6 +182,7 @@ export class Player extends Entity {
     const bed = saved.sleep && saved.sleep.bed;
     if (bed && Number.isFinite(saved.sleep.at) && [bed.x, bed.y, bed.z].every(Number.isInteger)) this.sleep = { at: saved.sleep.at, bed: { x: bed.x, y: bed.y, z: bed.z } };
     if (Number.isFinite(saved.bank) && saved.bank > 0) this.bank = Math.floor(saved.bank);
+    this.explored = new Explored(saved.explored);
     if (Number.isFinite(saved.food)) this.food = Math.min(Math.max(saved.food, 0), FOOD_MAX_SECONDS * 1000);
 
     const hasPosition = Number.isInteger(saved.x) && Number.isInteger(saved.y) && isValidFloor(saved.z);

@@ -357,7 +357,7 @@ async function iniciarJogo(servidorHttp) {
           antiga.socket.close();
         }
         console.log(`🟢 ${player.name} voltou ao corpo que ficou no mapa (${conexoes.size} online)`);
-        socket.send(JSON.stringify({ type: 'welcome', playerId: player.id }));
+        socket.send(JSON.stringify({ type: 'welcome', playerId: player.id, explored: player.explored.toSave() }));
         sim.announceEntry(player);
         return;
       }
@@ -367,7 +367,7 @@ async function iniciarJogo(servidorHttp) {
       player = sim.addPlayer(playerId, { name: erro.name, gender: normalizeGender(mensagem.gender), saved });
       conexoes.set(playerId, { socket, sent: null });
       console.log(`🟢 ${player.name} entrou ${saved ? `(nível ${player.lvl}) ` : '(novo) '}(${conexoes.size} online)`);
-      socket.send(JSON.stringify({ type: 'welcome', playerId }));
+      socket.send(JSON.stringify({ type: 'welcome', playerId, explored: player.explored.toSave() }));
       sim.announceEntry(player);
     };
 

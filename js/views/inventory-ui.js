@@ -68,16 +68,18 @@ export class InventoryUI {
 
   // ================================================================================================================================================================================================================================================
   // updateMinimap
-  // Com a janela do mini mapa aberta, redesenha o mapa a cada MINIMAP_REDRAW_MS (deslocado pelo arrasto, minimapOffset)
+  // Marca o explorado em volta do player (o "pincel", shared/explored.js) e, com a janela do mini mapa aberta, redesenha o mapa a cada MINIMAP_REDRAW_MS (deslocado pelo arrasto, minimapOffset)
   // e na hora quando a janela foi refeita (canvas novo).
 
   updateMinimap() {
+    const explored = this.game.session && this.game.session.explored;
+    if (explored && this.game.player) explored.visit(this.game.player);
     const canvas = document.querySelector('.inv-minimap-canvas');
     const now = performance.now();
     if (!canvas || !this.game.player || (canvas === this.minimapCanvas && now - (this.minimapAt || 0) < MINIMAP_REDRAW_MS)) return;
     this.minimapCanvas = canvas;
     this.minimapAt = now;
-    drawMinimap(canvas, this.game.session.world, this.game.player, this.minimapOffset);
+    drawMinimap(canvas, this.game.session.world, this.game.player, this.minimapOffset, explored);
   }
 
   // ================================================================================================================================================================================================================================================

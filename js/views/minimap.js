@@ -19,9 +19,9 @@ const colors = new Map();
 // ================================================================================================================================================================================================================================================
 // minimapCells
 // As cores da grade (cols × rows, linha por linha) centrada em center ({x, y}), no andar do player, com colorOf(tipo)
-// dando a cor de cada folha.
+// dando a cor de cada folha; com explored, o que o player ainda não viu fica preto.
 
-export function minimapCells(world, player, colorOf, center = player, cols = MINIMAP_COLS, rows = MINIMAP_ROWS) {
+export function minimapCells(world, player, colorOf, center = player, cols = MINIMAP_COLS, rows = MINIMAP_ROWS, explored = null) {
   const z = player.z || 0;
   const left = center.x - Math.floor(cols / 2);
   const top = center.y - Math.floor(rows / 2);
@@ -30,6 +30,10 @@ export function minimapCells(world, player, colorOf, center = player, cols = MIN
     for (let x = left; x < left + cols; x++) {
       if (x === player.x && y === player.y) {
         cells.push(PLAYER);
+        continue;
+      }
+      if (explored && !explored.has(x, y, z)) {
+        cells.push(EMPTY);
         continue;
       }
       const blocker = world.hasBlockerAt(x, y, z) ? world.getObjectsAt(x, y).find(obj => (obj.z || 0) === z && obj.blocksMovement && !obj.floorType) : null;
@@ -72,11 +76,11 @@ export function sheetColor(type) {
 
 // ================================================================================================================================================================================================================================================
 // drawMinimap
-// Desenha o mini mapa no canvas, com o centro deslocado offset ({x, y} em sqm) do player.
+// Desenha o mini mapa no canvas, com o centro deslocado offset ({x, y} em sqm) do player; só o explorado.
 
-export function drawMinimap(canvas, world, player, offset = { x: 0, y: 0 }) {
+export function drawMinimap(canvas, world, player, offset = { x: 0, y: 0 }, explored = null) {
   const ctx = canvas.getContext('2d');
-  const cells = minimapCells(world, player, sheetColor, { x: player.x + offset.x, y: player.y + offset.y });
+  const cells = minimapCells(world, player, sheetColor, { x: player.x + offset.x, y: player.y + offset.y }, MINIMAP_COLS, MINIMAP_ROWS, explored);
   for (let i = 0; i < cells.length; i++) {
     ctx.fillStyle = cells[i];
     ctx.fillRect((i % MINIMAP_COLS) * MINIMAP_CELL, Math.floor(i / MINIMAP_COLS) * MINIMAP_CELL, MINIMAP_CELL, MINIMAP_CELL);

@@ -448,6 +448,7 @@ export class Simulation {
     for (const player of this.players) {
       player.inCombat = this.inCombat(player, now);
       player.invisible = player.isInvisible(now);
+      if (!player.isBot) player.explored.visit(player);
     }
 
     this.movement.checkFloorTransitions([...this.players, ...this.enemies]);

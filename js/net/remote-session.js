@@ -4,6 +4,7 @@ import { World } from '../core/world.js';
 import { generateObjects } from '../models/game-object.js';
 import { applyState } from './protocol.js';
 import { decodeDelta } from './delta.js';
+import { Explored } from '../../shared/explored.js';
 
 const CONNECT_TIMEOUT_MS = 2000;
 const STALE_EVENT_MS = 1000;
@@ -20,9 +21,10 @@ export class RemoteSession {
   // ================================================================================================================================================================================================================================================
   // constructor
 
-  constructor(mapData, socket, playerId) {
+  constructor(mapData, socket, playerId, explored = null) {
     this.socket = socket;
     this.playerId = playerId;
+    this.explored = new Explored(explored);
     this.isOnline = true;
     this.world = new World();
     this.objects = generateObjects(mapData);
@@ -123,7 +125,7 @@ export class RemoteSession {
           reject(new JoinError(message.error));
         } else if (message.type === 'welcome') {
           cleanup();
-          resolve(new RemoteSession(mapData, socket, message.playerId));
+          resolve(new RemoteSession(mapData, socket, message.playerId, message.explored));
         }
       };
       const onClose = () => {
