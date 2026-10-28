@@ -47,9 +47,10 @@
         },
         "efeitos": [
           {
-            "tipo": "soltar-item",
+            "tipo": "dar-itens",
             "item": "itens/materiais/wood",
-            "quantidade": 1
+            "quantidade": 1,
+            "umaVez": "nao"
           }
         ]
       },
@@ -68,9 +69,10 @@
             "nome": "earth"
           },
           {
-            "tipo": "soltar-item",
+            "tipo": "dar-itens",
             "item": "itens/plantas-e-ervas/seeds",
-            "quantidade": 1
+            "quantidade": 1,
+            "umaVez": "nao"
           },
           {
             "tipo": "remover",

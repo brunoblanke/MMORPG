@@ -19,6 +19,7 @@ const STUMP = 'estrutura/natureza/toco-de-teste';
 const SEED = 'itens/plantas-e-ervas/semente-de-teste';
 const SAPLING = 'estrutura/natureza/muda-de-teste';
 const ROCK = 'estrutura/natureza/pedra-de-teste';
+const TREE_BAG = 'estrutura/natureza/arvore-da-mochila';
 
 const asset = (id, propriedades) => {
   const [grupo, pasta, nome] = id.split('/');
@@ -36,7 +37,8 @@ setAssets([
   asset(STUMP, { interacoes: [{ gatilho: { tipo: 'capacidade', capacidade: 'lenhar' }, condicoes: { alcance: 1 }, efeitos: [{ tipo: 'soltar-item', item: WOOD, quantidade: 1 }, { tipo: 'remover', rebroteMs: 0 }] }] }),
   asset(SEED, { move: true, plantaComo: SAPLING }),
   asset(SAPLING, { interacoes: [{ gatilho: { tipo: 'tempo' }, condicoes: { idade: 600 }, efeitos: [{ tipo: 'trocar-por', item: `${TREE}, ${TREE}` }] }] }),
-  asset(ROCK, { bloqueia: true })
+  asset(ROCK, { bloqueia: true }),
+  asset(TREE_BAG, { bloqueia: true, interacoes: [{ gatilho: { tipo: 'capacidade', capacidade: 'lenhar' }, condicoes: { alcance: 1 }, efeitos: [{ tipo: 'dar-itens', item: WOOD, quantidade: 1, umaVez: 'nao' }] }] })
 ]);
 
 // ================================================================================================================================================================================================================================================
@@ -279,7 +281,9 @@ test('receitas: a árvore cai e dá semente; a semente planta a muda; a muda vir
   const arvore = ler('estrutura/natureza/arvore-1').propriedades.interacoes;
   assert.equal(arvore.some(i => i.efeitos.some(e => e.tipo === 'trocar-por')), false, 'não vira mais toco');
   const cai = arvore.find(i => i.efeitos.some(e => e.tipo === 'remover'));
-  assert.deepEqual(cai.efeitos.map(e => e.tipo), ['efeito-visual', 'soltar-item', 'remover']);
+  assert.deepEqual(cai.efeitos.map(e => e.tipo), ['efeito-visual', 'dar-itens', 'remover']);
+  assert.equal(cai.efeitos[1].umaVez, 'nao');
+  assert.equal(arvore.find(i => i.condicoes.chance).efeitos[0].tipo, 'dar-itens', 'a madeira vai pra mochila');
   assert.equal(cai.efeitos[1].item, 'itens/plantas-e-ervas/seeds');
   assert.equal(cai.efeitos[2].rebroteMs, 0);
   const semente = ler('itens/plantas-e-ervas/seeds').propriedades;
@@ -288,4 +292,14 @@ test('receitas: a árvore cai e dá semente; a semente planta a muda; a muda vir
   const muda = ler('estrutura/natureza/sapling').propriedades.interacoes[0];
   assert.equal(muda.gatilho.tipo, 'tempo');
   assert.ok(muda.efeitos[0].item.includes('estrutura/natureza/pine'));
+});
+
+test('madeira com dar-itens vai direto pra mochila de quem cortou, a cada corte', () => {
+  const { sim, ana } = game([[TREE_BAG, 11, 10, 0, 0, 0, 0, 1]]);
+  chopAt(sim, 11, 10);
+  chopAt(sim, 11, 10);
+  assert.equal(woodOnGround(sim).length, 0, 'nada no chão');
+  const wood = ana.equip.mochila.items.find(it => it && it.type === WOOD);
+  assert.ok(wood, 'na mochila');
+  assert.equal(wood.count || 1, 2, 'empilha');
 });

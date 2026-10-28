@@ -53,9 +53,10 @@
         },
         "efeitos": [
           {
-            "tipo": "soltar-item",
+            "tipo": "dar-itens",
             "item": "itens/materiais/wood",
-            "quantidade": 1
+            "quantidade": 1,
+            "umaVez": "nao"
           },
           {
             "tipo": "remover",

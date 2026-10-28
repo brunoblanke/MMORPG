@@ -3,11 +3,11 @@
 // Cortar lenha e plantar: cria no gerador as receitas da madeira (itens/materiais/wood, empilhável), da semente
 // (itens/plantas-e-ervas/seeds) e da muda (estrutura/natureza/sapling), dá a capacidade "lenhar" aos machados
 // (itens/machados: os que têm "axe" no nome e o hatchet) e escreve as reações:
-//   árvore + machado → com CHANCE % solta 1 madeira; a cada CORTES cortes cai (efeito QUEDA), solta 1 semente e some
-//                      de vez (sai do mapa);
+//   árvore + machado → com CHANCE % dá 1 madeira; a cada CORTES cortes cai (efeito QUEDA), dá 1 semente e some de vez
+//                      (sai do mapa); madeira e semente vão pra mochila de quem cortou (sem espaço, aos pés dele);
 //   semente          → usada com a mira no chão ao lado vira a muda (Planta como);
 //   muda             → depois de CRESCE_S segundos no lugar vira uma das NASCEM (sorteada);
-//   toco (antigo)    → solta 1 madeira e some.
+//   toco (antigo)    → dá 1 madeira e some.
 // Pode rodar de novo: o que já está feito fica como está (a reação antiga da árvore que virava toco é trocada pela
 // nova). As folhas saem do gerador: aba Objetos → "Gerar folhas pendentes"; chance, cortes, tempo e o que cai se
 // mudam no gerador (Interações de cada receita).
@@ -94,6 +94,24 @@ function garantirInteracao(receita, marca, interacao) {
 }
 
 // ================================================================================================================================================================================================================================================
+// paraMochila
+// Madeira e semente vão direto pra mochila de quem cortou (dar-itens; sem espaço, aos pés dele): troca o soltar-item
+// antigo delas. Devolve true se mudou.
+
+function paraMochila(receita) {
+  let mudou = false;
+  for (const interacao of (receita.propriedades && receita.propriedades.interacoes) || []) {
+    for (const efeito of (interacao && interacao.efeitos) || []) {
+      if (!efeito || efeito.tipo !== 'soltar-item' || ![MADEIRA, SEMENTE].includes(efeito.item)) continue;
+      efeito.tipo = 'dar-itens';
+      efeito.umaVez = 'nao';
+      mudou = true;
+    }
+  }
+  return mudou;
+}
+
+// ================================================================================================================================================================================================================================================
 // marcar
 // Abre a receita, aplica mudar(receita) e grava se mudou.
 
@@ -138,12 +156,17 @@ function marcarArvores() {
       const antes = Array.isArray(props.interacoes) ? props.interacoes.length : 0;
       props.interacoes = (props.interacoes || []).filter(i => !(i && Array.isArray(i.efeitos) && i.efeitos.some(e => e && e.tipo === 'trocar-por' && e.item === TOCO)));
       const tirou = props.interacoes.length !== antes;
-      const madeira = garantirInteracao(receita, 'soltar-item', { gatilho: lenhar, condicoes: { alcance: 1, chance: CHANCE }, efeitos: [{ tipo: 'soltar-item', item: MADEIRA, quantidade: 1 }] });
-      const cai = garantirInteracao(receita, 'remover', { gatilho: lenhar, condicoes: { alcance: 1, vezes: CORTES }, efeitos: [{ tipo: 'efeito-visual', nome: QUEDA }, { tipo: 'soltar-item', item: SEMENTE, quantidade: 1 }, { tipo: 'remover', rebroteMs: 0 }] });
-      return tirou || madeira || cai;
+      const mochila = paraMochila(receita);
+      const madeira = garantirInteracao(receita, 'dar-itens', { gatilho: lenhar, condicoes: { alcance: 1, chance: CHANCE }, efeitos: [{ tipo: 'dar-itens', item: MADEIRA, quantidade: 1, umaVez: 'nao' }] });
+      const cai = garantirInteracao(receita, 'remover', { gatilho: lenhar, condicoes: { alcance: 1, vezes: CORTES }, efeitos: [{ tipo: 'efeito-visual', nome: QUEDA }, { tipo: 'dar-itens', item: SEMENTE, quantidade: 1, umaVez: 'nao' }, { tipo: 'remover', rebroteMs: 0 }] });
+      return tirou || mochila || madeira || cai;
     });
   }
-  marcar(TOCO, (receita) => garantirInteracao(receita, 'remover', { gatilho: lenhar, condicoes: { alcance: 1 }, efeitos: [{ tipo: 'soltar-item', item: MADEIRA, quantidade: 1 }, { tipo: 'remover', rebroteMs: 0 }] }));
+  marcar(TOCO, (receita) => {
+    const mochila = paraMochila(receita);
+    const some = garantirInteracao(receita, 'remover', { gatilho: lenhar, condicoes: { alcance: 1 }, efeitos: [{ tipo: 'dar-itens', item: MADEIRA, quantidade: 1, umaVez: 'nao' }, { tipo: 'remover', rebroteMs: 0 }] });
+    return mochila || some;
+  });
   marcar(SEMENTE, (receita) => {
     const props = receita.propriedades = receita.propriedades || {};
     const antes = JSON.stringify(props);
