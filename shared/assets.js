@@ -533,7 +533,7 @@ export function objectProps(type) {
 // 'cama' (usar deita o player, que sai do jogo e acorda com vida e mana recuperadas mais rápido);
 // null se nenhum.
 
-export const OBJECT_USES = ['placa', 'livro', 'bau-quest', 'corda', 'pa', 'pa-cai', 'picareta', 'machete', 'foice', 'descer', 'alavanca', 'cama', 'ferramenta-corda', 'ferramenta-pa', 'ferramenta-pesca', 'ferramenta-picareta', 'ferramenta-machete', 'ferramenta-foice', 'ferramenta-chave', 'deposito', 'correio', 'teleporte'];
+export const OBJECT_USES = ['placa', 'livro', 'bau-quest', 'corda', 'pa', 'pa-cai', 'picareta', 'machete', 'foice', 'descer', 'alavanca', 'cama', 'ferramenta-corda', 'ferramenta-pa', 'ferramenta-pesca', 'ferramenta-picareta', 'ferramenta-machete', 'ferramenta-foice', 'ferramenta-chave', 'deposito', 'correio', 'teleporte', 'mapa'];
 
 export function objectUse(type) {
   const asset = getAsset(splitType(type).asset);

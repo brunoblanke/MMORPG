@@ -4,6 +4,8 @@ Estado do projeto para retomar numa conversa nova. O que é regra fixa e como o 
 
 ## Para o usuário fazer
 
+- Gerador → "Gerar folhas pendentes": `map-colour` (o mapa que abre o mini mapa; Tibia 2823, conferir o desenho). Pôr o mapa à venda num NPC ou num baú, se quiser.
+
 - Rodar `node ferramentas/efeitos.js` de novo e fazer commit (gera o efeito `critical`, Tibia 173, e acerta os quadros dele no `shared/effects.js`). Depois, no gerador, pôr Crítico nos itens e criaturas que devem ter.
 
 

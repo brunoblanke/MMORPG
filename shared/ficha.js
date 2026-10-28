@@ -28,7 +28,7 @@ export const CAPACIDADES = ['cavar', 'quebrar', 'cortar', 'colher', 'puxar', 'pe
 
 export const EFEITOS = [
   'alternar-estado', 'definir-estado', 'alimentar', 'curar', 'puxar-de-baixo', 'falar', 'abrir-buraco', 'cair', 'remover', 'trocar-andar', 'teletransportar', 'dar-itens', 'gastar-item', 'soltar-item',
-  'mostrar-texto', 'abrir-deposito', 'receber-carta', 'dano', 'estado-de-dano', 'deitar', 'acionar-alvos', 'trancar', 'treinar-skill', 'efeito-visual', 'conversar', 'consumir-item', 'trocar-por', 'plantar'
+  'mostrar-texto', 'abrir-deposito', 'receber-carta', 'dano', 'estado-de-dano', 'deitar', 'acionar-alvos', 'trancar', 'treinar-skill', 'efeito-visual', 'conversar', 'consumir-item', 'trocar-por', 'plantar', 'abrir-mapa'
 ];
 
 export const REBROTE_MS = 120000;
@@ -329,6 +329,8 @@ function transicaoEUso(ficha, id, asset, props, uso = objectUse(id)) {
     clicar([{ tipo: 'alternar-estado' }, { tipo: 'acionar-alvos', de: 'dados.alvos' }]);
   } else if (uso === 'cama') {
     clicar([{ tipo: 'deitar' }], { alcance: 1, semCombate: true, livre: true });
+  } else if (uso === 'mapa') {
+    ficha.interacoes.push({ gatilho: { tipo: 'clicar', onde: 'inventario' }, condicoes: {}, efeitos: [{ tipo: 'abrir-mapa' }] });
   } else if (uso === 'deposito') {
     clicar([{ tipo: 'abrir-deposito' }]);
   } else if (uso === 'correio') {

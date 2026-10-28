@@ -1,6 +1,7 @@
 // js/views/inventory-ui/windows.js
 
 import { PITCH, SAVE_DELAY_MS, LAYOUT_COLS, LAYOUT_VERSION } from './common.js';
+import { MINIMAP_SIZE } from '../minimap.js';
 
 // Métodos do InventoryUI (js/views/inventory-ui.js). As janelas: layout guardado, abrir, fechar, trocar o container
 // mostrado, mudar de lugar e de tamanho. Ficam nas colunas da esquerda e da
@@ -87,6 +88,19 @@ export const windowMethods = {
     this.removeWindows(w => w.kind === 'book');
     const width = 300;
     this.layout.free.push({ id: 'book', kind: 'book', title, text: text || 'O livro está em branco.', x: Math.max(8, (window.innerWidth - width) / 2), y: Math.max(8, window.innerHeight * 0.18) });
+    this.lastKey = '';
+    this.render();
+  },
+
+  // ================================================================================================================================================================================================================================================
+  // openMinimap
+  // Janela do mini mapa (item com Uso "mapa"), solta no meio da tela; uma por vez.
+
+  openMinimap() {
+    if (!this.layout) return;
+    this.removeWindows(w => w.kind === 'minimap');
+    const width = MINIMAP_SIZE + 16;
+    this.layout.free.push({ id: 'minimap', kind: 'minimap', x: Math.max(8, (window.innerWidth - width) / 2), y: Math.max(8, window.innerHeight * 0.15) });
     this.lastKey = '';
     this.render();
   },
@@ -316,7 +330,7 @@ export const windowMethods = {
       if (!this.view || !this.layout) return;
       const place = (w) => (w.x !== null ? { x: Math.round(w.x), y: Math.round(w.y) } : {});
       const entry = (w) => {
-        if (w.kind === 'book' || w.kind === 'trade') return null;
+        if (w.kind === 'book' || w.kind === 'trade' || w.kind === 'minimap') return null;
         if (w.kind !== 'container') return { ref: w.kind, rows: w.rows, min: w.min, bars: w.bars, ...place(w) };
         if (w.ground) return null;
         const path = this.pathOf(this.view, w.uid);

@@ -76,6 +76,7 @@ const USES = [
   ['ferramenta-corda', 'Ferramenta: corda'],
   ['ferramenta-pa', 'Ferramenta: pá'],
   ['ferramenta-pesca', 'Ferramenta: vara de pescar (usar na água; gasta a isca)'],
+  ['mapa', 'Mapa (usar abre o mini mapa em volta do player)'],
   ['cama', 'Cama (usar deita o player, que sai do jogo e recupera vida e mana mais rápido)'],
   ['picareta', 'Monte que a picareta abre em buraco (o buraco é o Ativo como)'],
   ['machete', 'Mato que o machete corta (rebrota sozinho)'],

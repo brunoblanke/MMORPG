@@ -90,6 +90,10 @@ export const consumableMethods = {
       this.sim.interactions.readBook(player, src.item);
       return;
     }
+    if (use === 'mapa') {
+      this.sim.emit({ type: 'minimap', playerId: player.id });
+      return;
+    }
     if (tool) {
       this.sim.interactions.useTool(player, use, target, from, src.item);
       return;

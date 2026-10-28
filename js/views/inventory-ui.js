@@ -10,6 +10,9 @@ import { htmlMethods } from './inventory-ui/html.js';
 import { windowMethods } from './inventory-ui/windows.js';
 import { aimMethods } from './inventory-ui/aim.js';
 import { dragMethods } from './inventory-ui/drag.js';
+import { drawMinimap } from './minimap.js';
+
+const MINIMAP_REDRAW_MS = 300;
 
 // Janelas do inventário, dos containers, skills, battle e livro: nas duas
 // colunas ao lado da tela do jogo ou soltas por cima dela. Só desenha e manda comandos (moveInv, openContainer, closeContainer,
@@ -48,6 +51,7 @@ export class InventoryUI {
     this.updateGroundGhost();
     const view = this.game.session && this.game.session.inventoryView;
     if (!view) return;
+    this.updateMinimap();
     this.view = view;
     if (!this.layout) this.layout = this.initialLayout(view);
     this.syncGroundWindows(view);
@@ -60,6 +64,18 @@ export class InventoryUI {
     if (key === this.lastKey || this.drag) return;
     this.lastKey = key;
     this.render();
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // updateMinimap
+  // Com a janela do mini mapa aberta, redesenha o mapa a cada MINIMAP_REDRAW_MS.
+
+  updateMinimap() {
+    const canvas = document.querySelector('.inv-minimap-canvas');
+    const now = performance.now();
+    if (!canvas || !this.game.player || now - (this.minimapAt || 0) < MINIMAP_REDRAW_MS) return;
+    this.minimapAt = now;
+    drawMinimap(canvas, this.game.session.world, this.game.player);
   }
 
   // ================================================================================================================================================================================================================================================
@@ -170,8 +186,8 @@ export class InventoryUI {
     this.bindAim();
 
     document.addEventListener('keydown', (evt) => {
-      if (evt.key !== 'Escape' || !this.layout || !this.findWindow('book')) return;
-      this.removeWindows(w => w.kind === 'book');
+      if (evt.key !== 'Escape' || !this.layout || !(this.findWindow('book') || this.findWindow('minimap'))) return;
+      this.removeWindows(w => w.kind === 'book' || w.kind === 'minimap');
       this.lastKey = '';
     });
 

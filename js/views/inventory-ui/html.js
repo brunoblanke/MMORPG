@@ -9,6 +9,7 @@ import { CORPSE_ROW } from '../sprite-registry.js';
 import { ANIMATION_CYCLE_MS } from '../../../shared/constants.js';
 import { EQUIP_LAYOUT, SKILL_NAMES, SKILL_ORDER, PITCH, REACH_CHECK_MS } from './common.js';
 import { ICONS, FOLLOW_ICONS, BUTTON_ICONS } from './icons.js';
+import { MINIMAP_SIZE } from '../minimap.js';
 
 // Métodos do InventoryUI (js/views/inventory-ui.js). O HTML de cada parte das janelas: espaços, containers, skills, vida e
 // mana, seguir, auto ataque e battle.
@@ -88,6 +89,7 @@ export const htmlMethods = {
     if (win.kind === 'battle') return this.battleHtml(win, buttons(false));
     if (win.kind === 'vitals') return this.vitalsHtml(win);
     if (win.kind === 'book') return this.bookHtml(win, buttons(true));
+    if (win.kind === 'minimap') return this.minimapHtml(win, buttons(true));
     if (win.kind === 'party') return this.partyHtml(win, buttons(false));
     if (win.kind === 'vip') return this.vipHtml(win, buttons(false));
     if (win.kind === 'trade') return this.tradeHtml(win);
@@ -178,6 +180,17 @@ export const htmlMethods = {
     return `<section class="inv-win inv-book${win.min ? ' min' : ''}" data-win="${win.id}">
       <header class="inv-head"><span class="inv-title">${esc(win.title)}</span>${buttons}</header>
       <div class="inv-body"><div class="inv-book-text">${esc(win.text)}</div></div>
+    </section>`;
+  },
+
+  // ================================================================================================================================================================================================================================================
+  // minimapHtml
+  // Janela do mini mapa: só o canvas, que o update redesenha (js/views/minimap.js).
+
+  minimapHtml(win, buttons) {
+    return `<section class="inv-win inv-minimap${win.min ? ' min' : ''}" data-win="${win.id}">
+      <header class="inv-head"><span class="inv-title">Mapa</span>${buttons}</header>
+      <div class="inv-body"><canvas class="inv-minimap-canvas" width="${MINIMAP_SIZE}" height="${MINIMAP_SIZE}"></canvas></div>
     </section>`;
   },
 
