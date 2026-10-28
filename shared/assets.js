@@ -73,6 +73,7 @@ export function wallProps(piece) {
 }
 
 const assets = new Map();
+const RACE_NAMES = ['sangue', 'veneno', 'morto-vivo', 'fogo', 'energia'];
 let assetsVersion = 0;
 
 // ================================================================================================================================================================================================================================================
@@ -95,6 +96,17 @@ export function creatureBehavior(type) {
 export function creatureFlies(type) {
   const asset = getAsset(type);
   return !!(asset && asset.propriedades && asset.propriedades.voa);
+}
+
+// ================================================================================================================================================================================================================================================
+// creatureRace
+// A raça da criatura (gerador → Criaturas → Raça; do Canary): diz o que o golpe físico mostra nela e o que fica no chão
+// (shared/items.js → RACES). Sem raça, sangue.
+
+export function creatureRace(type) {
+  const asset = getAsset(type);
+  const race = asset && asset.propriedades ? asset.propriedades.raca : null;
+  return RACE_NAMES.includes(race) ? race : 'sangue';
 }
 
 // ================================================================================================================================================================================================================================================

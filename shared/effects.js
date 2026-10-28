@@ -6,6 +6,10 @@
 // cada `ms`. Os de 64 px saem do sqm pra cima e pra esquerda.
 export const EFFECTS = {
   poff: { id: 3, frames: 8, size: 32, ms: 50 },
+  'draw-blood': { id: 1, frames: 4, size: 32, ms: 100 },
+  block: { id: 4, frames: 3, size: 32, ms: 100 },
+  'hit-area': { id: 10, frames: 8, size: 32, ms: 100 },
+  'hit-poison': { id: 17, frames: 4, size: 32, ms: 100 },
   explosion: { id: 7, frames: 14, size: 64, ms: 59 },
   fire: { id: 16, frames: 9, size: 64, ms: 100 },
   energy: { id: 12, frames: 17, size: 32, ms: 40 },

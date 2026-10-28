@@ -106,7 +106,8 @@
         "chance": 0.014
       }
     ],
-    "falas": []
+    "falas": [],
+    "raca": "morto-vivo"
   },
   "ferramenta": "criaturas",
   "grupo": "criaturas",

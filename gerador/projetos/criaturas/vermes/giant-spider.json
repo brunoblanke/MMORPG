@@ -137,7 +137,8 @@
         "chance": 0.0028
       }
     ],
-    "falas": []
+    "falas": [],
+    "raca": "veneno"
   },
   "ferramenta": "criaturas",
   "grupo": "criaturas",

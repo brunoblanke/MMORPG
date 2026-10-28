@@ -62,6 +62,7 @@ const nameEl = document.getElementById('creatureName');
 const folderEl = document.getElementById('creatureFolder');
 const behaviorEl = document.getElementById('creatureBehavior');
 const fliesEl = document.getElementById('creatureFlies');
+const raceEl = document.getElementById('creatureRace');
 const voicesEl = document.getElementById('creatureVoices');
 const STAT_FIELDS = [
   ['vida', document.getElementById('creatureHp')],
@@ -172,6 +173,7 @@ function initCreatures() {
     if (file) setCorpse(creatures.selectedStage, { png: await readPngFile(file) });
   });
   nameEl.addEventListener('input', () => { creatures.dirty = true; });
+  raceEl.addEventListener('change', () => { creatures.dirty = true; });
   behaviorEl.addEventListener('change', () => {
     creatures.dirty = true;
     suggestFolder();
@@ -1099,7 +1101,7 @@ async function save() {
     propriedades: {
       ...(behaviorEl.value === 'npc'
         ? { comportamento: 'npc', conversa: conversationValues() }
-        : { comportamento: behaviorEl.value, ...(fliesEl.value ? { voa: true } : {}), ...statValues(), ...powerValues(), loot: lootValues(), falas: voicesEl.value.split('\n').map(line => line.trim()).filter(Boolean) }),
+        : { comportamento: behaviorEl.value, ...(fliesEl.value ? { voa: true } : {}), ...(raceEl.value !== 'sangue' ? { raca: raceEl.value } : {}), ...statValues(), ...powerValues(), loot: lootValues(), falas: voicesEl.value.split('\n').map(line => line.trim()).filter(Boolean) }),
       ...(creatures.interacoes.length ? { interacoes: creatures.interacoes } : {}),
       ...(creatures.capacidade.length ? { capacidade: creatures.capacidade } : {})
     }
@@ -1156,6 +1158,7 @@ function openRecipe(recipe) {
   creatures.addons = Array.isArray(saved.addons) ? [...saved.addons] : [];
   behaviorEl.value = behaviorOf(recipe.propriedades || {});
   fliesEl.value = (recipe.propriedades || {}).voa ? 'sim' : '';
+  raceEl.value = [...raceEl.options].some(o => o.value === (recipe.propriedades || {}).raca) ? recipe.propriedades.raca : 'sangue';
   const talk = (recipe.propriedades || {}).conversa || {};
   for (const [key, el] of NPC_TEXT_FIELDS) el.value = talk[key] || '';
   npcRadiusEl.value = String(Number.isFinite(Number(talk.raio)) && talk.raio !== undefined ? talk.raio : 2);

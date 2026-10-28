@@ -42,6 +42,7 @@ export class LifeCycleController {
       corpseCreature: entity.creature,
       corpseIsPlayer: type === 'player_corpse'
     };
+    this.sim.combat.splashUnder(entity);
     this.sim.world.addToTile(corpse, corpse.x, corpse.y, corpse.z);
     this.sim.deadBodies.push(corpse);
     return corpse;

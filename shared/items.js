@@ -47,6 +47,17 @@ export const SPLASH_HP = 'itens/liquidos/respingo-vida';
 export const SPLASH_MANA = 'itens/liquidos/respingo-mana';
 export const SPLASH_STAGES = 3;
 export const SPLASH_STAGE_MS = 20000;
+export const SPLASH_SLIME = 'itens/liquidos/respingo-gosma';
+
+// O que o golpe físico que tira vida mostra em cada raça (gerador → Criaturas → Raça; player é sangue): o efeito no
+// alvo e o respingo que fica no chão, embaixo dele, e no corpo quando morre (seca como o da potion).
+export const RACES = {
+  sangue: { hit: 'draw-blood', splash: SPLASH_HP },
+  veneno: { hit: 'hit-poison', splash: SPLASH_SLIME },
+  'morto-vivo': { hit: 'hit-area', splash: null },
+  fogo: { hit: 'fire', splash: null },
+  energia: { hit: 'energy', splash: null }
+};
 
 // Comida como no Tibia (sem vocação): cada item soma segundos de
 // regeneração, até FOOD_MAX_SECONDS; enquanto dura, recupera REGEN_HP de

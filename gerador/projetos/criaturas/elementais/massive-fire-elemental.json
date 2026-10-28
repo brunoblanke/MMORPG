@@ -126,7 +126,8 @@
         "chance": 0.0053
       }
     ],
-    "falas": []
+    "falas": [],
+    "raca": "fogo"
   },
   "ferramenta": "criaturas",
   "grupo": "criaturas",

@@ -76,7 +76,8 @@
         "max": 16
       }
     ],
-    "falas": []
+    "falas": [],
+    "raca": "veneno"
   },
   "ferramenta": "criaturas",
   "grupo": "criaturas",

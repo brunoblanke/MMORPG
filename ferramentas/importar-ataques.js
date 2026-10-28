@@ -168,4 +168,4 @@ function principal() {
 
 if (require.main === module) principal();
 
-module.exports = { importar, linhasDe };
+module.exports = { importar, linhasDe, receitas, acharMonstro };

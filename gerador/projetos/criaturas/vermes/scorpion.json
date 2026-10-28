@@ -59,7 +59,8 @@
     "invoca": null,
     "respawn": 0,
     "loot": [],
-    "falas": []
+    "falas": [],
+    "raca": "veneno"
   },
   "ferramenta": "criaturas",
   "grupo": "criaturas",

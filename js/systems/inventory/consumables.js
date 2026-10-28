@@ -1,7 +1,7 @@
 // js/systems/inventory/consumables.js
 
 import { GameObject } from '../../models/game-object.js';
-import { objectUse } from '../../../shared/assets.js';
+import { objectUse, objectIdType } from '../../../shared/assets.js';
 import { fichaDe } from '../../../shared/ficha.js';
 import { CONFIG } from '../../config.js';
 import { CONDITIONS } from '../../../shared/conditions.js';
@@ -195,24 +195,38 @@ export const consumableMethods = {
 
   // ================================================================================================================================================================================================================================================
   // spill
-  // Respingo do líquido no sqm: some aos poucos (um quadro a cada
-  // SPLASH_STAGE_MS) e depois desaparece.
+  // Respingo do líquido no sqm (potion, sangue, gosma): seca aos poucos (um estágio a cada SPLASH_STAGE_MS, mais
+  // claro a cada um) e depois some. Outro do mesmo líquido no mesmo sqm só deixa o que já está lá fresco de novo.
 
   spill(x, y, z, type) {
     const { world, objects, objectsById } = this.sim;
+    const now = this.sim.time || 0;
+    const same = world.getObjectsAt(x, y).find(obj => obj.isSplash && (obj.z || 0) === z && objectIdType(obj.id) === type);
+    if (same) {
+      same.stage = 0;
+      same.fadeAt = now + SPLASH_STAGE_MS;
+      return same;
+    }
     this.objectCounter++;
     const obj = new GameObject({ id: `${type}_${this.objectCounter}`, x, y, z, step: this.sim.movement.getStepHeight(x, y, z), movable: false, hasVolume: false, blocksMovement: false });
     obj.isSplash = true;
     obj.stage = 0;
     obj.order = -1;
+    obj.fadeAt = now + SPLASH_STAGE_MS;
     objects.push(obj);
     objectsById.set(obj.id, obj);
     world.addObject(obj);
     const fade = () => {
       if (!world.objects.has(obj)) return;
+      const time = this.sim.time || 0;
+      if (time < obj.fadeAt) {
+        this.sim.schedule(obj.fadeAt, fade);
+        return;
+      }
       if (obj.stage < SPLASH_STAGES - 1) {
         obj.stage++;
-        this.sim.schedule((this.sim.time || 0) + SPLASH_STAGE_MS, fade);
+        obj.fadeAt = time + SPLASH_STAGE_MS;
+        this.sim.schedule(obj.fadeAt, fade);
         return;
       }
       world.removeObject(obj);
@@ -220,7 +234,8 @@ export const consumableMethods = {
       const index = objects.indexOf(obj);
       if (index > -1) objects.splice(index, 1);
     };
-    this.sim.schedule((this.sim.time || 0) + SPLASH_STAGE_MS, fade);
+    this.sim.schedule(obj.fadeAt, fade);
+    return obj;
   },
 
   // ================================================================================================================================================================================================================================================

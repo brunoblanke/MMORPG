@@ -7,7 +7,7 @@ import { drawTileTooltip } from './tile-tooltip.js';
 import { prepareDrawables } from './draw-order.js';
 import { getEntityLevel } from '../core/geometry.js';
 import { getAsset, objectIdType, activeAs, splitType, creatureFlies } from '../../shared/assets.js';
-import { stackFrame } from '../../shared/items.js';
+import { stackFrame, SPLASH_STAGES } from '../../shared/items.js';
 import { drawTibiaText } from './tibia-text.js';
 import { LightingLayer } from './lighting-layer.js';
 import { FloorCache } from './floor-cache.js';
@@ -515,12 +515,13 @@ export class Renderer {
         const isTargeted = entity && (entity === this.selectedTarget || (isSelf && entity.isTarget));
         const outline = isTargeted ? TARGET_OUTLINE : null;
         const ghost = !!entity && entity.invisible;
-        if (ghost) {
+        const drying = entity && entity.isSplash && entity.stage ? 1 - entity.stage / SPLASH_STAGES : 1;
+        if (ghost || drying < 1) {
           this.ctx.save();
-          this.ctx.globalAlpha = isSelf ? 0.5 : 0.25;
+          this.ctx.globalAlpha = ghost ? (isSelf ? 0.5 : 0.25) : drying;
         }
         this.drawAnchoredSprite(frame.image, frame.frameRect, base, size, stackOffsetX, stackOffsetY, tint, outline);
-        if (ghost) this.ctx.restore();
+        if (ghost || drying < 1) this.ctx.restore();
       } else {
         const color = entity && entity.color ? entity.color : "#888888";
         this.drawFallbackSquare(base, size, stackOffsetX, stackOffsetY, color, tint);
