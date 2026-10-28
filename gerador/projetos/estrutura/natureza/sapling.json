@@ -1,7 +1,7 @@
 {
   "formato": {
     "quadro": 32,
-    "quadros": 16
+    "quadros": 1
   },
   "objeto": {
     "tibia": {
@@ -20,6 +20,7 @@
     "duasMaos": false,
     "tipoMunicao": "",
     "isca": "",
+    "plantaComo": "",
     "resistencias": {},
     "postal": false,
     "protegePerda": false,
