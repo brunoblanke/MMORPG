@@ -93,11 +93,11 @@ export class GameController {
   boot() {
     const modal = new NameModal();
     const loading = new LoadingScreen();
-    const spritesReady = this.loadSprites(loading, modal.loadGender());
     const mapReady = loadMapDataFromURL(CONFIG.mapDataUrl).catch((error) => {
       console.error('❌ Erro ao carregar mapa:', error);
       return {};
     });
+    const spritesReady = this.loadSprites(loading, modal.loadGender(), mapReady);
     const socketReady = RemoteSession.openSocket().catch((error) => {
       console.log(`🕹️ Sem servidor de jogo (${error.message}): jogando sozinho`);
       return null;
@@ -120,15 +120,15 @@ export class GameController {
 
   // ================================================================================================================================================================================================================================================
   // loadSprites
-  // Primeiro a lista das folhas do gerador (/api/sprites), depois as imagens
-  // (a tela de carregamento mostra o andamento).
+  // Primeiro a lista das folhas do gerador (/api/sprites) e o mapa, depois as imagens que o mapa usa
+  // (getSpritePaths; a tela de carregamento mostra o andamento).
 
-  loadSprites(loading, gender) {
-    return loadAssets()
-      .catch((error) => console.error('❌ Erro ao listar os sprites:', error))
-      .then(() => {
+  loadSprites(loading, gender, mapReady) {
+    const listed = loadAssets().catch((error) => console.error('❌ Erro ao listar os sprites:', error));
+    return Promise.all([listed, mapReady])
+      .then(([, mapData]) => {
         loading.setPlayer(gender);
-        return this.spriteLoader.loadAll(getSpritePaths(), (done, total) => loading.setProgress(done / total));
+        return this.spriteLoader.loadAll(getSpritePaths(mapData), (done, total) => loading.setProgress(done / total));
       })
       .catch((error) => console.error('❌ Erro ao carregar sprites:', error));
   }

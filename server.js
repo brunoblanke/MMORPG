@@ -1,6 +1,7 @@
 // server.js
 
 const express = require('express');
+const compression = require('compression');
 const fs = require('fs');
 const http = require('http');
 const os = require('os');
@@ -34,6 +35,7 @@ const mundoVivo = { gravar: () => {}, juntar: (mapa) => mapa };
 
 const portaoAdmin = seguranca.criarPortaoAdmin(ADMIN_SENHA, seguranca.criarGuarda());
 app.disable('x-powered-by');
+app.use(compression());
 app.use(seguranca.cabecalhosSeguros);
 app.use(seguranca.bloquearArquivos);
 app.post('/api/save-map', portaoAdmin, express.json({ limit: '50mb' }), salvarMapa);

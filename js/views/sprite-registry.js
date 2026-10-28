@@ -4,7 +4,9 @@ import { CONFIG } from '../config.js';
 import { SpriteSheet } from '../../shared/sprite-sheet.js';
 import { PLAYER_SPRITES, DEFAULT_GENDER } from '../../shared/catalog.js';
 import { ANIMATION_CYCLE_MS } from '../../shared/constants.js';
-import { getAsset, objectIdType, spriteFrame, listAssets } from '../../shared/assets.js';
+import { getAsset, objectIdType, spriteFrame, listAssets, splitType, activeAs } from '../../shared/assets.js';
+import { currentCreatureType } from '../../shared/map-format.js';
+import { BORDER_PREFIX } from '../../shared/floor-borders.js';
 
 // Sprites do jogo: as folhas do gerador (shared/assets.js), recortadas peça a
 // peça conforme aparecem. O player usa a folha de criatura do gênero dele
@@ -14,10 +16,28 @@ export const CORPSE_ROW = 4;
 
 // ================================================================================================================================================================================================================================================
 // getSpritePaths
-// Tudo que precisa estar carregado antes do jogo começar (chamar depois de loadAssets).
+// O que precisa estar carregado antes do jogo começar (chamar depois de loadAssets): só as folhas que o mapa usa
+// (pisos, bordas, paredes, objetos e o desenho ativo deles, escadas, criaturas, NPCs e bots) e as dos players; o resto
+// (itens da mochila, loot, criatura que não está no mapa) carrega sozinho quando aparece (SpriteSheet). Sem mapa,
+// todas.
 
-export function getSpritePaths() {
-  return ['pisos', 'paredes', 'objetos', 'criaturas'].flatMap(tool => listAssets(tool).map(asset => asset.url));
+export function getSpritePaths(mapData = null) {
+  const types = mapData ? [
+    ...(mapData.objetosData || []).map(entry => entry[0]),
+    ...(mapData.transicoesData || []).map(entry => entry[0]),
+    ...(mapData.enemyData || []).map(entry => currentCreatureType(entry[5])),
+    ...(mapData.npcData || []).map(entry => entry[0]),
+    ...(mapData.botData || []).map(entry => entry[3])
+  ].filter(type => typeof type === 'string') : [];
+  if (!types.length) return ['pisos', 'paredes', 'objetos', 'criaturas'].flatMap(tool => listAssets(tool).map(asset => asset.url));
+  const ids = new Set(Object.values(PLAYER_SPRITES));
+  for (const type of new Set(types)) {
+    const id = splitType(type.startsWith(BORDER_PREFIX) ? type.slice(BORDER_PREFIX.length).split(':')[0] : type).asset;
+    ids.add(id);
+    const active = activeAs(id);
+    if (active) ids.add(splitType(active).asset);
+  }
+  return [...ids].map(id => getAsset(id)).filter(Boolean).map(asset => asset.url);
 }
 
 // ================================================================================================================================================================================================================================================
