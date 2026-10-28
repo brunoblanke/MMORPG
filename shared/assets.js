@@ -340,14 +340,15 @@ export function objectIdType(id) {
 // O que o piso faz com quem pisa (gerador → Pisos → Comportamento): blocks,
 // ninguém pisa e item jogado afunda; damage, vida que tira a cada segundo;
 // fish, os peixes que dá pra pescar nele (gerador → Pisos → Pescável);
-// worms, a chance (%) de achar uma minhoca ao cavar nele com a pá.
+// worms, a chance (%) de achar uma minhoca ao cavar nele com a pá; plantable, dá pra plantar nele (gerador → Pisos →
+// Dá pra plantar).
 
 export function floorBehavior(type) {
   const asset = getAsset(splitType(type).asset);
   const props = (asset && asset.propriedades) || {};
   const damage = props.comportamento === 'dano' ? Math.max(0, Math.floor(Number(props.dano)) || 0) : 0;
   const fish = Array.isArray(props.pescavel) ? props.pescavel.filter(type => typeof type === 'string') : [];
-  return { blocks: props.comportamento === 'bloqueia', damage, edgeBlocks: props.bordaBloqueia === true, edgeBlocksThrow: props.bordaBarraArremesso === true, fish, worms: Math.min(100, Math.max(0, Math.floor(Number(props.minhocas)) || 0)) };
+  return { blocks: props.comportamento === 'bloqueia', damage, edgeBlocks: props.bordaBloqueia === true, edgeBlocksThrow: props.bordaBarraArremesso === true, fish, worms: Math.min(100, Math.max(0, Math.floor(Number(props.minhocas)) || 0)), plantable: props.plantavel === true };
 }
 
 // ================================================================================================================================================================================================================================================

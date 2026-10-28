@@ -5,7 +5,8 @@
 // (itens/machados: os que têm "axe" no nome e o hatchet) e escreve as reações:
 //   árvore + machado → com CHANCE % dá 1 madeira; a cada CORTES cortes cai (efeito QUEDA), dá 1 semente e some de vez
 //                      (sai do mapa); madeira e semente vão pra mochila de quem cortou (sem espaço, aos pés dele);
-//   semente          → usada com a mira no chão ao lado vira a muda (Planta como);
+//   semente          → usada com a mira no chão ao lado vira a muda (Planta como), só em piso de plantar (as gramas
+//                      e terras de estrutura/pisos ganham "Dá pra plantar");
 //   muda             → depois de CRESCE_S segundos no lugar vira uma das NASCEM (sorteada);
 //   toco (antigo)    → dá 1 madeira e some.
 // Pode rodar de novo: o que já está feito fica como está (a reação antiga da árvore que virava toco é trocada pela
@@ -27,6 +28,7 @@ const SEMENTE = 'itens/plantas-e-ervas/seeds';
 const CHANCE = 40;
 const CORTES = 8;
 const CRESCE_S = 600;
+const PISOS_DE_PLANTAR = ['grama-', 'terra-'];
 const ARVORES = [
   'arvore-1', 'arvore-3', 'beech', 'coconut-palm', 'dead-tree', 'dwarf-tree', 'fir-tree', 'old-tree', 'palm', 'pear-tree',
   'pine', 'pinheiro-1', 'plum-tree', 'poplar', 'red-maple', 'snowy-dead-tree', 'willow', 'yellow-maple'
@@ -178,6 +180,25 @@ function marcarArvores() {
   marcar(MUDA, (receita) => garantirInteracao(receita, 'trocar-por', { gatilho: { tipo: 'tempo' }, condicoes: { idade: CRESCE_S }, efeitos: [{ tipo: 'trocar-por', item: NASCEM.map(n => `estrutura/natureza/${n}`).join(', ') }] }));
 }
 
+// ================================================================================================================================================================================================================================================
+// marcarPisos
+// As gramas e terras (estrutura/pisos, nome começando com PISOS_DE_PLANTAR) ganham "Dá pra plantar".
+
+function marcarPisos() {
+  const pasta = path.join(PROJETOS, 'estrutura', 'pisos');
+  for (const nome of fs.readdirSync(pasta).filter(n => n.endsWith('.json')).sort()) {
+    const base = nome.replace(/\.json$/, '');
+    if (!PISOS_DE_PLANTAR.some(prefixo => base.startsWith(prefixo))) continue;
+    marcar(`estrutura/pisos/${base}`, (receita) => {
+      const props = receita.propriedades = receita.propriedades || {};
+      if (props.plantavel === true) return false;
+      props.plantavel = true;
+      return true;
+    });
+  }
+}
+
 criarReceitas();
 marcarMachados();
 marcarArvores();
+marcarPisos();

@@ -367,6 +367,7 @@ function pisoDe(ficha, id, props) {
   if (piso.worms) ficha.interacoes.push({ gatilho: { tipo: 'capacidade', capacidade: 'cavar' }, condicoes: { alcance: 1, chance: piso.worms }, efeitos: [{ tipo: 'soltar-item', item: 'minhoca' }] });
   if (piso.blocks) ficha.tracos.colisao = { conjunto: { passagem: true, arremesso: false } };
   if (piso.fish.length) ficha.tracos.agua = { peixes: piso.fish };
+  if (piso.plantable) ficha.tracos.plantavel = true;
   if (piso.edgeBlocks) ficha.tracos.bordas = { bloqueia: true, arremesso: piso.edgeBlocksThrow };
 }
 

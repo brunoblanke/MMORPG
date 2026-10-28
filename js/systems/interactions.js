@@ -438,12 +438,14 @@ export class InteractionController {
 
   // ================================================================================================================================================================================================================================================
   // canPlantAt
-  // Dá pra plantar no sqm: tem chão firme (água não), nada que bloqueie, nenhum objeto fixo (outra muda, móvel…) e
-  // não é casa de outro.
+  // Dá pra plantar no sqm: o piso de cima é de plantar (gerador → Pisos → Dá pra plantar: grama, terra), nada
+  // bloqueia, não há outro objeto fixo (outra muda, móvel…) e não é casa de outro.
 
   canPlantAt(player, x, y, z) {
     const { world } = this.sim;
-    if (!world.hasFloorAt(x, y, z) || world.isFloorBlocked(x, y, z) || world.hasBlockerAt(x, y, z) || !world.mayEnter(player, x, y, z)) return false;
+    const floor = world.topFloors.get(world.getTileKey(x, y, z));
+    if (!floor || !floorBehavior(floor.floorType).plantable) return false;
+    if (world.isFloorBlocked(x, y, z) || world.hasBlockerAt(x, y, z) || !world.mayEnter(player, x, y, z)) return false;
     return !world.getObjectsAt(x, y).some(obj => (obj.z || 0) === z && !obj.floorType && !obj.isBorder && !obj.hidden && !isSyncedItem(obj));
   }
 

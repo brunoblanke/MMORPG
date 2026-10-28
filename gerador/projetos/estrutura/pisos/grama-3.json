@@ -152,7 +152,8 @@
   },
   "propriedades": {
     "comportamento": "normal",
-    "minhocas": 50
+    "minhocas": 50,
+    "plantavel": true
   },
   "ferramenta": "pisos",
   "grupo": "estrutura",

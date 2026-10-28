@@ -3,7 +3,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { buildMapData, floorRect, placeAt } from './helpers/fixture.js';
+import { buildMapData, floorRect, placeAt, FLOOR } from './helpers/fixture.js';
 import { Simulation, TICK_MS } from '../js/simulation.js';
 import { setAssets } from '../shared/assets.js';
 import { fichaDe, CAPACIDADES, normalizarInteracoes } from '../shared/ficha.js';
@@ -20,14 +20,17 @@ const SEED = 'itens/plantas-e-ervas/semente-de-teste';
 const SAPLING = 'estrutura/natureza/muda-de-teste';
 const ROCK = 'estrutura/natureza/pedra-de-teste';
 const TREE_BAG = 'estrutura/natureza/arvore-da-mochila';
+const STONE_FLOOR = 'estrutura/pisos/pedra-de-teste';
 
-const asset = (id, propriedades) => {
+const asset = (id, propriedades, ferramenta = 'objetos') => {
   const [grupo, pasta, nome] = id.split('/');
-  return { id, ferramenta: 'objetos', grupo, pasta, nome, url: `/${nome}.png`, quadro: 32, quadros: 1, pecas: [], propriedades };
+  return { id, ferramenta, grupo, pasta, nome, url: `/${nome}.png`, quadro: 32, quadros: 1, pecas: [], propriedades };
 };
 const chop = (chance) => [{ gatilho: { tipo: 'capacidade', capacidade: 'lenhar' }, condicoes: { alcance: 1, chance }, efeitos: [{ tipo: 'soltar-item', item: WOOD, quantidade: 1 }] }];
 
 setAssets([
+  asset(FLOOR, { plantavel: true }, 'pisos'),
+  asset(STONE_FLOOR, {}, 'pisos'),
   asset(BAG, { move: true, peso: 18, espacos: 10 }),
   asset(AXE, { move: true, peso: 40, slot: 'arma', atk: 12, skillArma: 'axe', capacidade: ['lenhar'] }),
   asset(WOOD, { move: true, empilhavel: true, peso: 10 }),
@@ -188,8 +191,8 @@ function plantAt(sim, x, y) {
   return tick(sim);
 }
 
-test('semente usada no chão ao lado vira muda na hora e gasta uma; longe, em pedra ou em outra muda não planta', () => {
-  const { sim, ana } = game([[ROCK, 9, 10, 0, 0, 0, 0, 1]]);
+test('semente usada no chão ao lado vira muda na hora e gasta uma; longe, em pedra, em piso que não é de plantar ou em outra muda não planta', () => {
+  const { sim, ana } = game([[ROCK, 9, 10, 0, 0, 0, 0, 1], [STONE_FLOOR, 10, 9, 0, 0, 0, 0, 0, 999999]]);
   ana.equip.mochila.items[0] = { uid: 's1', type: SEED, count: 3 };
   plantAt(sim, 11, 11);
   assert.equal(at(sim, SAPLING, 11, 11).length, 1, 'plantou');
@@ -203,6 +206,8 @@ test('semente usada no chão ao lado vira muda na hora e gasta uma; longe, em pe
   assert.ok(events.some(e => e.type === 'effect' && e.effect === 'poff'));
   plantAt(sim, 15, 15);
   assert.equal(at(sim, SAPLING, 15, 15).length, 0, 'nem longe');
+  plantAt(sim, 10, 9);
+  assert.equal(at(sim, SAPLING, 10, 9).length, 0, 'nem no piso de pedra');
   assert.equal(ana.equip.mochila.items[0].count, 2);
 });
 
@@ -289,6 +294,9 @@ test('receitas: a árvore cai e dá semente; a semente planta a muda; a muda vir
   const semente = ler('itens/plantas-e-ervas/seeds').propriedades;
   assert.equal(semente.plantaComo, 'estrutura/natureza/sapling');
   assert.equal(semente.interacoes, undefined);
+  assert.equal(ler('estrutura/pisos/grama-1').propriedades.plantavel, true, 'grama é de plantar');
+  assert.equal(ler('estrutura/pisos/terra-1').propriedades.plantavel, true, 'terra é de plantar');
+  assert.equal(ler('estrutura/pisos/pedra-1').propriedades.plantavel, undefined, 'pedra não');
   const muda = ler('estrutura/natureza/sapling').propriedades.interacoes[0];
   assert.equal(muda.gatilho.tipo, 'tempo');
   assert.ok(muda.efeitos[0].item.includes('estrutura/natureza/pine'));

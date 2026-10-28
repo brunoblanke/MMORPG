@@ -119,7 +119,8 @@
   },
   "propriedades": {
     "comportamento": "normal",
-    "bordaBloqueia": true
+    "bordaBloqueia": true,
+    "plantavel": true
   },
   "ferramenta": "pisos",
   "grupo": "estrutura",

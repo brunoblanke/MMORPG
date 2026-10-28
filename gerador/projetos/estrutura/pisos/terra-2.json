@@ -225,7 +225,8 @@
   "propriedades": {
     "comportamento": "normal",
     "bordaBloqueia": true,
-    "bordaBarraArremesso": true
+    "bordaBarraArremesso": true,
+    "plantavel": true
   },
   "ferramenta": "pisos",
   "grupo": "estrutura",

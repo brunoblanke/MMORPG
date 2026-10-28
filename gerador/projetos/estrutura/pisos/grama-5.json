@@ -118,7 +118,8 @@
     }
   },
   "propriedades": {
-    "comportamento": "normal"
+    "comportamento": "normal",
+    "plantavel": true
   },
   "ferramenta": "pisos",
   "grupo": "estrutura",
