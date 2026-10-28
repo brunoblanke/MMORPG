@@ -1,0 +1,49 @@
+{
+  "formato": {
+    "quadro": 32,
+    "quadros": 1
+  },
+  "objeto": {
+    "tibia": {
+      "id": 38477,
+      "variacao": 0
+    }
+  },
+  "propriedades": {
+    "bloqueia": false,
+    "altura": false,
+    "espacos": 0,
+    "atk": 0,
+    "def": 0,
+    "ml": 0,
+    "speed": 0,
+    "vidaMin": 0,
+    "vidaMax": 0,
+    "manaMin": 0,
+    "manaMax": 0,
+    "alimento": 0,
+    "move": false,
+    "empilhavel": false,
+    "peso": 0,
+    "interacoes": [
+      {
+        "gatilho": {
+          "tipo": "tempo"
+        },
+        "condicoes": {
+          "idade": 600
+        },
+        "efeitos": [
+          {
+            "tipo": "trocar-por",
+            "item": "estrutura/natureza/arvore-1, estrutura/natureza/arvore-3, estrutura/natureza/beech, estrutura/natureza/dwarf-tree, estrutura/natureza/fir-tree, estrutura/natureza/old-tree, estrutura/natureza/pear-tree, estrutura/natureza/pine, estrutura/natureza/pinheiro-1, estrutura/natureza/plum-tree, estrutura/natureza/poplar, estrutura/natureza/red-maple, estrutura/natureza/willow, estrutura/natureza/yellow-maple"
+          }
+        ]
+      }
+    ]
+  },
+  "ferramenta": "objetos",
+  "grupo": "estrutura",
+  "pasta": "natureza",
+  "nome": "sapling"
+}

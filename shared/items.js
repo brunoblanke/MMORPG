@@ -124,6 +124,7 @@ export function itemInfo(type) {
     regen: { hp: bonusValue(props.regenVida), mana: bonusValue(props.regenMana) },
     resist: resistOf(props),
     bait: typeof props.isca === 'string' ? props.isca : '',
+    plantsAs: typeof props.plantaComo === 'string' ? props.plantaComo : '',
     fishLevel: bonusValue(props.nivelPesca),
     weaponSkill: WEAPON_SKILLS.includes(props.skillArma) ? props.skillArma : (props.skillArma === 'nenhuma' ? null : SKILL_BY_WEAPON_FOLDER[folder] || null),
     twoHanded: !!props.duasMaos,

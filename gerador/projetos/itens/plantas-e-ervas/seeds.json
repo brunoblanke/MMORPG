@@ -42,22 +42,7 @@
     "uso": "",
     "ativoComo": "",
     "comecaAtivo": false,
-    "interacoes": [
-      {
-        "gatilho": {
-          "tipo": "tempo"
-        },
-        "condicoes": {
-          "idade": 600
-        },
-        "efeitos": [
-          {
-            "tipo": "trocar-por",
-            "item": "estrutura/natureza/arvore-1, estrutura/natureza/arvore-3, estrutura/natureza/beech, estrutura/natureza/dwarf-tree, estrutura/natureza/fir-tree, estrutura/natureza/old-tree, estrutura/natureza/pear-tree, estrutura/natureza/pine, estrutura/natureza/pinheiro-1, estrutura/natureza/plum-tree, estrutura/natureza/poplar, estrutura/natureza/red-maple, estrutura/natureza/willow, estrutura/natureza/yellow-maple"
-          }
-        ]
-      }
-    ]
+    "plantaComo": "estrutura/natureza/sapling"
   },
   "ferramenta": "objetos",
   "grupo": "itens",

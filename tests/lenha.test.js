@@ -17,6 +17,8 @@ const TREE_LUCK = 'estrutura/natureza/arvore-sem-sorte';
 const TREE_CYCLE = 'estrutura/natureza/arvore-que-acaba';
 const STUMP = 'estrutura/natureza/toco-de-teste';
 const SEED = 'itens/plantas-e-ervas/semente-de-teste';
+const SAPLING = 'estrutura/natureza/muda-de-teste';
+const ROCK = 'estrutura/natureza/pedra-de-teste';
 
 const asset = (id, propriedades) => {
   const [grupo, pasta, nome] = id.split('/');
@@ -30,9 +32,11 @@ setAssets([
   asset(WOOD, { move: true, empilhavel: true, peso: 10 }),
   asset(TREE, { bloqueia: true, interacoes: chop(100) }),
   asset(TREE_LUCK, { bloqueia: true, interacoes: chop(1) }),
-  asset(TREE_CYCLE, { bloqueia: true, interacoes: [...chop(100), { gatilho: { tipo: 'capacidade', capacidade: 'lenhar' }, condicoes: { alcance: 1, vezes: 3 }, efeitos: [{ tipo: 'trocar-por', item: STUMP }, { tipo: 'soltar-item', item: SEED, quantidade: 1 }] }] }),
+  asset(TREE_CYCLE, { bloqueia: true, interacoes: [...chop(100), { gatilho: { tipo: 'capacidade', capacidade: 'lenhar' }, condicoes: { alcance: 1, vezes: 3 }, efeitos: [{ tipo: 'efeito-visual', nome: 'earth' }, { tipo: 'soltar-item', item: SEED, quantidade: 1 }, { tipo: 'remover', rebroteMs: 0 }] }] }),
   asset(STUMP, { interacoes: [{ gatilho: { tipo: 'capacidade', capacidade: 'lenhar' }, condicoes: { alcance: 1 }, efeitos: [{ tipo: 'soltar-item', item: WOOD, quantidade: 1 }, { tipo: 'remover', rebroteMs: 0 }] }] }),
-  asset(SEED, { move: true, interacoes: [{ gatilho: { tipo: 'tempo' }, condicoes: { idade: 600 }, efeitos: [{ tipo: 'trocar-por', item: `${TREE}, ${TREE}` }] }] })
+  asset(SEED, { move: true, plantaComo: SAPLING }),
+  asset(SAPLING, { interacoes: [{ gatilho: { tipo: 'tempo' }, condicoes: { idade: 600 }, efeitos: [{ tipo: 'trocar-por', item: `${TREE}, ${TREE}` }] }] }),
+  asset(ROCK, { bloqueia: true })
 ]);
 
 // ================================================================================================================================================================================================================================================
@@ -147,45 +151,120 @@ test('receitas: machados lenham e as árvores soltam a madeira', () => {
   assert.equal(ler(WOOD).propriedades.empilhavel, true);
 });
 
-test('a cada N cortes a árvore vira toco e solta uma semente ao lado do player', () => {
+test('a cada N cortes a árvore cai (efeito), solta uma semente ao lado do player e some de vez', () => {
   const { sim, ana } = game([[TREE_CYCLE, 11, 10, 0, 0, 0, 0, 1]]);
   chopAt(sim, 11, 10);
   chopAt(sim, 11, 10);
-  assert.equal(at(sim, TREE_CYCLE, 11, 10).length, 1, 'ainda é árvore');
-  chopAt(sim, 11, 10);
+  assert.equal(at(sim, TREE_CYCLE, 11, 10).length, 1, 'ainda em pé');
+  const events = chopAt(sim, 11, 10);
+  assert.ok(events.some(e => e.type === 'effect' && e.effect === 'earth' && e.x === 11));
   assert.equal(at(sim, TREE_CYCLE, 11, 10).length, 0);
-  assert.equal(at(sim, STUMP, 11, 10).length, 1, 'virou toco');
+  assert.equal(sim.objects.some(o => o.x === 11 && o.y === 10 && !o.floorType && !o.isBorder), false, 'nada no lugar, nem toco');
   assert.equal(woodCount(sim), 3);
   const seeds = sim.objects.filter(o => o.id.startsWith(SEED));
   assert.equal(seeds.length, 1);
   assert.ok(Math.max(Math.abs(seeds[0].x - ana.x), Math.abs(seeds[0].y - ana.y)) <= 1);
-  assert.equal(sim.world.isBlocked(11, 10, 0), false, 'o toco não bloqueia');
+  assert.equal(sim.world.isBlocked(11, 10, 0), false);
+  assert.equal(sim.liveMap.collect(), true, 'sai do mapa');
+  assert.equal(sim.mapData.objetosData.some(e => e[0] === TREE_CYCLE), false);
 });
 
-test('o toco cortado solta madeira e some, liberando o sqm', () => {
+test('o toco antigo cortado solta madeira e some, liberando o sqm', () => {
   const { sim } = game([[STUMP, 11, 10, 0, 0, 0, 0, 0]]);
   chopAt(sim, 11, 10);
   assert.equal(at(sim, STUMP, 11, 10).length, 0);
   assert.equal(woodCount(sim), 1);
 });
 
-test('semente solta no chão vira árvore depois do tempo dela, e não nasce em cima de alguém', () => {
+// ================================================================================================================================================================================================================================================
+// plantAt
+// Usa a semente da mochila com a mira no sqm.
+
+function plantAt(sim, x, y) {
+  sim.time += 2000;
+  sim.enqueue('p1', { type: 'useItem', from: { t: 'c', uid: 'b1', i: 0 }, target: { x, y, z: 0 } });
+  return tick(sim);
+}
+
+test('semente usada no chão ao lado vira muda na hora e gasta uma; longe, em pedra ou em outra muda não planta', () => {
+  const { sim, ana } = game([[ROCK, 9, 10, 0, 0, 0, 0, 1]]);
+  ana.equip.mochila.items[0] = { uid: 's1', type: SEED, count: 3 };
+  plantAt(sim, 11, 11);
+  assert.equal(at(sim, SAPLING, 11, 11).length, 1, 'plantou');
+  assert.equal(ana.equip.mochila.items[0].count, 2);
+  assert.equal(sim.liveMap.collect(), true, 'a muda vai pro mapa');
+  assert.ok(sim.mapData.objetosData.some(e => e[0] === SAPLING && e[1] === 11 && e[2] === 11));
+  plantAt(sim, 11, 11);
+  assert.equal(at(sim, SAPLING, 11, 11).length, 1, 'não planta em cima de outra muda');
+  const events = plantAt(sim, 9, 10);
+  assert.equal(at(sim, SAPLING, 9, 10).length, 0, 'nem na pedra');
+  assert.ok(events.some(e => e.type === 'effect' && e.effect === 'poff'));
+  plantAt(sim, 15, 15);
+  assert.equal(at(sim, SAPLING, 15, 15).length, 0, 'nem longe');
+  assert.equal(ana.equip.mochila.items[0].count, 2);
+});
+
+test('semente solta no chão não vira nada; a muda vira árvore depois do tempo dela, e não em cima de alguém', () => {
   const { sim, ana } = game();
   const { inventory } = sim;
-  const seed = inventory.spawnGroundItem(newItem(inventory.nextUid(), SEED, 1), 13, 13, 0);
-  sim.time += 1000;
-  seed.bornAt = sim.time - 590000;
+  const seed = inventory.spawnGroundItem(newItem(inventory.nextUid(), SEED, 1), 12, 12, 0);
+  seed.bornAt = sim.time - 10000000;
+  ana.equip.mochila.items[0] = { uid: 's1', type: SEED, count: 1 };
+  plantAt(sim, 11, 11);
+  assert.equal(ana.equip.mochila.items[0], null, 'gastou a última');
+  const sapling = at(sim, SAPLING, 11, 11)[0];
+  sapling.bornAt = sim.time - 590000;
   tick(sim, 25);
-  assert.equal(at(sim, TREE, 13, 13).length, 0, 'ainda não');
-  placeAt(sim, ana, 13, 13, 0);
-  seed.bornAt = sim.time - 700000;
+  assert.equal(at(sim, TREE, 11, 11).length, 0, 'ainda não');
+  assert.equal(at(sim, TREE, 12, 12).length, 0, 'semente no chão não cresce');
+  placeAt(sim, ana, 11, 11, 0);
+  sapling.bornAt = sim.time - 700000;
   tick(sim, 25);
-  assert.equal(at(sim, TREE, 13, 13).length, 0, 'com o player em cima, espera');
+  assert.equal(at(sim, TREE, 11, 11).length, 0, 'com o player em cima, espera');
   placeAt(sim, ana, 10, 10, 0);
   tick(sim, 25);
-  assert.equal(at(sim, TREE, 13, 13).length, 1, 'virou árvore');
-  assert.equal(sim.objects.some(o => o.id.startsWith(SEED)), false);
-  assert.equal(sim.world.isBlocked(13, 13, 0), true);
+  assert.equal(at(sim, TREE, 11, 11).length, 1, 'virou árvore');
+  assert.equal(at(sim, SAPLING, 11, 11).length, 0);
+  assert.equal(sim.world.isBlocked(11, 11, 0), true);
+});
+
+test('muda que veio do mapa espera o tempo todo depois que o servidor sobe', () => {
+  const { sim } = game([[SAPLING, 12, 12, 0, 0, 0, 0, 0]]);
+  tick(sim, 25);
+  assert.equal(at(sim, TREE, 12, 12).length, 0);
+  at(sim, SAPLING, 12, 12)[0].bornAt = sim.time - 700000;
+  tick(sim, 25);
+  assert.equal(at(sim, TREE, 12, 12).length, 1);
+});
+
+test('machado na mão e clique na árvore: corta sem parar, a cada 2 s, até ela cair', () => {
+  const { sim, ana } = game([[TREE_CYCLE, 14, 10, 0, 0, 0, 0, 1]]);
+  sim.enqueue('p1', { type: 'work', x: 14, y: 10, z: 0 });
+  tick(sim, 2);
+  assert.ok(ana.workObject, 'a árvore virou o alvo');
+  tick(sim, 40);
+  assert.ok(Math.abs(ana.x - 14) <= 1, 'andou até a árvore');
+  const before = woodCount(sim);
+  tick(sim, 41);
+  assert.equal(woodCount(sim) - before, 1, 'um golpe a cada 2 s');
+  tick(sim, 200);
+  assert.equal(at(sim, TREE_CYCLE, 14, 10).length, 0, 'caiu');
+  assert.equal(ana.workObject, null, 'parou sozinho');
+  assert.equal(woodCount(sim), 3);
+});
+
+test('clicar de novo na mesma árvore ou escolher um alvo para o corte', () => {
+  const { sim, ana } = game([[TREE, 11, 10, 0, 0, 0, 0, 1]]);
+  sim.enqueue('p1', { type: 'work', x: 11, y: 10, z: 0 });
+  tick(sim, 2);
+  assert.ok(ana.workObject);
+  sim.enqueue('p1', { type: 'work', x: 11, y: 10, z: 0 });
+  tick(sim, 2);
+  assert.equal(ana.workObject, null);
+  ana.equip.arma = null;
+  sim.enqueue('p1', { type: 'work', x: 11, y: 10, z: 0 });
+  tick(sim, 2);
+  assert.equal(ana.workObject, null, 'sem machado na mão não vira alvo');
 });
 
 test('vezes, idade e a lista longa de objetos passam pela limpeza da ficha', () => {
@@ -195,12 +274,18 @@ test('vezes, idade e a lista longa de objetos passam pela limpeza da ficha', () 
   assert.equal(ix.efeitos[0].item, longa);
 });
 
-test('receitas: a árvore vira toco e dá semente; a semente vira árvore', () => {
+test('receitas: a árvore cai e dá semente; a semente planta a muda; a muda vira árvore', () => {
   const ler = (id) => JSON.parse(fs.readFileSync(new URL(`../gerador/projetos/${id}.json`, import.meta.url), 'utf8'));
-  const arvore = ler('estrutura/natureza/arvore-1').propriedades.interacoes.find(i => i.efeitos.some(e => e.tipo === 'trocar-por'));
-  assert.equal(arvore.efeitos[0].item, 'estrutura/natureza/tree-stump');
-  assert.equal(arvore.efeitos[1].item, 'itens/plantas-e-ervas/seeds');
-  const semente = ler('itens/plantas-e-ervas/seeds').propriedades.interacoes[0];
-  assert.equal(semente.gatilho.tipo, 'tempo');
-  assert.ok(semente.efeitos[0].item.includes('estrutura/natureza/pine'));
+  const arvore = ler('estrutura/natureza/arvore-1').propriedades.interacoes;
+  assert.equal(arvore.some(i => i.efeitos.some(e => e.tipo === 'trocar-por')), false, 'não vira mais toco');
+  const cai = arvore.find(i => i.efeitos.some(e => e.tipo === 'remover'));
+  assert.deepEqual(cai.efeitos.map(e => e.tipo), ['efeito-visual', 'soltar-item', 'remover']);
+  assert.equal(cai.efeitos[1].item, 'itens/plantas-e-ervas/seeds');
+  assert.equal(cai.efeitos[2].rebroteMs, 0);
+  const semente = ler('itens/plantas-e-ervas/seeds').propriedades;
+  assert.equal(semente.plantaComo, 'estrutura/natureza/sapling');
+  assert.equal(semente.interacoes, undefined);
+  const muda = ler('estrutura/natureza/sapling').propriedades.interacoes[0];
+  assert.equal(muda.gatilho.tipo, 'tempo');
+  assert.ok(muda.efeitos[0].item.includes('estrutura/natureza/pine'));
 });

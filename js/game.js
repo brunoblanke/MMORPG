@@ -10,7 +10,8 @@ import { EventManager } from './input/event-manager.js';
 import { SpriteLoader } from './services/sprite-loader.js';
 import { Renderer, MESSAGE_COLORS } from './views/renderer.js';
 import { getSpritePaths } from './views/sprite-registry.js';
-import { loadAssets } from '../shared/assets.js';
+import { loadAssets, objectIdType } from '../shared/assets.js';
+import { fichaDe, reacoesA } from '../shared/ficha.js';
 import { damageColor } from '../shared/conditions.js';
 import { UI } from './views/ui.js';
 import { getRoofLevel } from './views/draw-order.js';
@@ -366,6 +367,7 @@ export class GameController {
   handleGameClick(gridPos) {
     if (!this.player) return;
     if (this.trySelectEnemyAtMouse()) return;
+    if (this.trySelectWorkAt(gridPos)) return;
 
     const z = this.player.z || 0;
     if (this.session.world.getDoorAt(gridPos.x, gridPos.y, z)) {
@@ -476,6 +478,29 @@ export class GameController {
     }
     this.lastPlayerClick = { id: other.id, at: now };
     if (this.player.pvpMode) this.send({ type: 'attack', targetId: other.id });
+    return true;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // trySelectWorkAt
+  // Com uma ferramenta na mão (machado…), clicar num objeto que reage a ela (árvore) faz dele o alvo do trabalho: o
+  // player usa a ferramenta nele sem parar até ele acabar; clicar de novo nele para. Retorna true se o clique era nele.
+
+  trySelectWorkAt(gridPos) {
+    const view = this.session.inventoryView;
+    const tool = view && view.equip && view.equip.arma;
+    const capacities = tool ? ((fichaDe(tool.type) || { tracos: {} }).tracos.capacidade || []) : [];
+    if (!capacities.length) return false;
+    const z = this.player.z || 0;
+    const reacts = (obj) => {
+      const ficha = (obj.z || 0) === z && !obj.floorType && fichaDe(objectIdType(obj.id));
+      return !!ficha && capacities.some(capacity => reacoesA(ficha, capacity).some(r => r.propria));
+    };
+    const hovered = this.inputController.hoverObject;
+    const obj = hovered && reacts(hovered) ? hovered : this.session.world.getObjectsAt(gridPos.x, gridPos.y).find(reacts);
+    if (!obj) return false;
+    this.cancelPendingWalk();
+    this.send({ type: 'work', x: obj.x, y: obj.y, z });
     return true;
   }
 

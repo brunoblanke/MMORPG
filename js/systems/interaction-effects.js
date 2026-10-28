@@ -40,10 +40,21 @@ export class InteractionEffects {
     if (conditions['tem-item'] && (!actor || countInBag(actor, conditions['tem-item']) < 1)) return false;
     if (conditions.palavra && !` ${ctx.heard || ''} `.includes(` ${normalizeSpeech(conditions.palavra)} `)) return false;
     if (conditions.item && !(ctx.item && ctx.item.type.includes(conditions.item))) return false;
-    if (conditions.idade && target && target.bornAt !== undefined && (this.sim.time || 0) - target.bornAt < conditions.idade * 1000) return false;
+    if (conditions.idade && target && !this.oldEnough(target, conditions.idade)) return false;
     if (conditions.vezes > 1 && !this.countUp(key, conditions.vezes)) return false;
     if (conditions.chance && Math.random() * 100 >= conditions.chance) return false;
     return true;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // oldEnough
+  // O objeto está no lugar há pelo menos seconds. O que veio do mapa (sem bornAt) conta a partir da 1ª vez que é
+  // visto: uma muda guardada no mapa espera o tempo todo de novo depois que o servidor reinicia.
+
+  oldEnough(target, seconds) {
+    const now = this.sim.time || 0;
+    if (target.bornAt === undefined) target.bornAt = now;
+    return now - target.bornAt >= seconds * 1000;
   }
 
   // ================================================================================================================================================================================================================================================

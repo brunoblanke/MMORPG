@@ -28,7 +28,7 @@ export const CAPACIDADES = ['cavar', 'quebrar', 'cortar', 'colher', 'puxar', 'pe
 
 export const EFEITOS = [
   'alternar-estado', 'definir-estado', 'alimentar', 'curar', 'puxar-de-baixo', 'falar', 'abrir-buraco', 'cair', 'remover', 'trocar-andar', 'teletransportar', 'dar-itens', 'gastar-item', 'soltar-item',
-  'mostrar-texto', 'abrir-deposito', 'receber-carta', 'dano', 'estado-de-dano', 'deitar', 'acionar-alvos', 'trancar', 'treinar-skill', 'efeito-visual', 'conversar', 'consumir-item', 'trocar-por'
+  'mostrar-texto', 'abrir-deposito', 'receber-carta', 'dano', 'estado-de-dano', 'deitar', 'acionar-alvos', 'trancar', 'treinar-skill', 'efeito-visual', 'conversar', 'consumir-item', 'trocar-por', 'plantar'
 ];
 
 export const REBROTE_MS = 120000;
@@ -228,7 +228,7 @@ function estadoDe(ficha, id, props, piece) {
 
 // ================================================================================================================================================================================================================================================
 // equiparEUsar
-// Traços equipavel, bonus, consome, container e luz.
+// Traços equipavel, bonus, consome, planta (usar no chão vira o objeto), container e luz.
 
 function equiparEUsar(ficha, id, props) {
   if (ficha.camada !== 'objeto') return;
@@ -252,6 +252,10 @@ function equiparEUsar(ficha, id, props) {
   if (info.heal) {
     ficha.tracos.consome = { ...(ficha.tracos.consome || {}), cura: info.heal };
     ficha.interacoes.push({ gatilho: { tipo: 'clicar', onde: 'inventario', mira: true }, condicoes: { alcance: 7 }, efeitos: [{ tipo: 'curar', ...info.heal }, { tipo: 'soltar-item', item: 'itens/liquidos/vial' }] });
+  }
+  if (info.plantsAs) {
+    ficha.tracos.planta = { objeto: info.plantsAs };
+    ficha.interacoes.push({ gatilho: { tipo: 'clicar', onde: 'inventario', mira: true }, condicoes: { alcance: 1, 'chao-livre': true }, efeitos: [{ tipo: 'plantar', objeto: info.plantsAs }, { tipo: 'gastar-item' }] });
   }
   if (info.size) ficha.tracos.container = { espacos: info.size, aceita: info.slot === 'municao' ? 'municao' : null };
   if (info.light) ficha.tracos.luz = { raio: info.light, duracao: info.burn || 0 };

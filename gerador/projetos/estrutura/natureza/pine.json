@@ -64,13 +64,17 @@
         },
         "efeitos": [
           {
-            "tipo": "trocar-por",
-            "item": "estrutura/natureza/tree-stump"
+            "tipo": "efeito-visual",
+            "nome": "earth"
           },
           {
             "tipo": "soltar-item",
             "item": "itens/plantas-e-ervas/seeds",
             "quantidade": 1
+          },
+          {
+            "tipo": "remover",
+            "rebroteMs": 0
           }
         ]
       }

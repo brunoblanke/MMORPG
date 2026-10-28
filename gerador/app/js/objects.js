@@ -45,11 +45,11 @@ const NUMBERS = [
   { key: 'regenVida', label: 'Regenera vida equipado (a cada 6 s)', min: 0, step: 1 },
   { key: 'regenMana', label: 'Regenera mana equipado (a cada 6 s)', min: 0, step: 1 }
 ];
-const DEFAULT_PROPERTIES = { bloqueia: false, move: true, altura: false, volume: 1, passo: 1, nivelPesca: 0, empilhavel: false, duasMaos: false, tipoMunicao: '', isca: '', resistencias: {}, postal: false, protegePerda: false, invisivelEquipado: false, peso: 10, espacos: 0, atk: 0, def: 0, ml: 0, speed: 0, vidaMin: 0, vidaMax: 0, manaMin: 0, manaMax: 0, alimento: 0, luz: 0, duracao: 0, regenVida: 0, regenMana: 0, uso: '', ativoComo: '', comecaAtivo: false };
+const DEFAULT_PROPERTIES = { bloqueia: false, move: true, altura: false, volume: 1, passo: 1, nivelPesca: 0, empilhavel: false, duasMaos: false, tipoMunicao: '', isca: '', plantaComo: '', resistencias: {}, postal: false, protegePerda: false, invisivelEquipado: false, peso: 10, espacos: 0, atk: 0, def: 0, ml: 0, speed: 0, vidaMin: 0, vidaMax: 0, manaMin: 0, manaMax: 0, alimento: 0, luz: 0, duracao: 0, regenVida: 0, regenMana: 0, uso: '', ativoComo: '', comecaAtivo: false };
 const PROPERTY_GROUPS = [
   ['corpo', 'Corpo e colisão', ['bloqueia', 'move', 'altura', 'volume', 'passo', 'empilhavel', 'peso', 'transicao'], true],
   ['estado', 'Estado normal e ativo', ['ativoComo', 'comecaAtivo'], false],
-  ['uso', 'Uso e correio', ['uso', 'isca', 'nivelPesca', 'postal'], true],
+  ['uso', 'Uso e correio', ['uso', 'isca', 'plantaComo', 'nivelPesca', 'postal'], true],
   ['equip', 'Equipar e armas', ['slot', 'skillArma', 'duasMaos', 'tipoMunicao', 'atk', 'def', 'ml', 'speed', 'protegePerda', 'invisivelEquipado', 'regenVida', 'regenMana'], false],
   ['consome', 'Comida e poção', ['vidaMin', 'vidaMax', 'manaMin', 'manaMax', 'alimento'], false],
   ['luz', 'Luz e duração', ['luz', 'duracao'], false],
@@ -532,6 +532,24 @@ function renderProperties() {
   put('isca', baitLabel);
   baitSelect.onchange = () => {
     objects.properties.isca = baitSelect.value;
+    objects.dirty = true;
+  };
+  const plantLabel = document.createElement('label');
+  plantLabel.className = 'numberline';
+  const plantSelect = document.createElement('select');
+  plantSelect.id = 'objectProp-plantaComo';
+  const fillPlant = (paths) => {
+    const current = objects.properties.plantaComo || '';
+    const options = current && !paths.includes(current) ? [current, ...paths] : paths;
+    plantSelect.innerHTML = '<option value="">— nada —</option>' + options.map(p => `<option value="${p}">${p}</option>`).join('');
+    plantSelect.value = current;
+  };
+  fillPlant([]);
+  fetchProjects().then(projects => fillPlant(projects.filter(p => p.ferramenta === 'objetos' && p.grupo !== 'itens').map(p => p.caminho).sort())).catch(() => {});
+  plantLabel.append('Planta como (usar no chão ao lado vira esse objeto e gasta o item, ex.: semente → muda)', plantSelect);
+  put('plantaComo', plantLabel);
+  plantSelect.onchange = () => {
+    objects.properties.plantaComo = plantSelect.value;
     objects.dirty = true;
   };
   for (const number of NUMBERS) {

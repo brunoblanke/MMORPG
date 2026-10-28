@@ -512,7 +512,7 @@ export class Renderer {
       const frame = this.getEntityFrame(entity, isPlayer, isEnemy);
       if (frame) {
         const isSelf = isPlayer && entity === this.localPlayer;
-        const isTargeted = entity && (entity === this.selectedTarget || (isSelf && entity.isTarget));
+        const isTargeted = entity && (entity === this.selectedTarget || entity === this.selectedWork || (isSelf && entity.isTarget));
         const outline = isTargeted ? TARGET_OUTLINE : null;
         const ghost = !!entity && entity.invisible;
         if (ghost) {
@@ -588,6 +588,7 @@ export class Renderer {
   render(gameState, ui) {
     this.frameTimestamp = performance.now();
     this.selectedTarget = gameState.player.target || null;
+    this.selectedWork = gameState.player.workObject || null;
     this.localPlayer = gameState.player;
     this.partyIds = gameState.partyIds || new Set();
     const scale = this.canvas.pixelScale || 1;

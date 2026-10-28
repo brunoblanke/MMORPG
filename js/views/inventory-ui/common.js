@@ -28,9 +28,9 @@ export const REACH_CHECK_MS = 500;
 
 // ================================================================================================================================================================================================================================================
 // aimsWith
-// Item usado com a mira: potion (em player ou no chão), runa e as ferramentas (corda, pá, picareta, machete, foice, chave, vara de pescar).
+// Item usado com a mira: potion (em player ou no chão), runa, as ferramentas (corda, pá, picareta, machete, foice, chave, vara de pescar) e o que se planta (semente).
 
 export function aimsWith(type) {
   const sheet = fichaDe(type);
-  return !!itemInfo(type).heal || !!RUNES[type] || !!(sheet && sheet.tracos.capacidade && sheet.tracos.capacidade.length);
+  return !!itemInfo(type).heal || !!RUNES[type] || !!(sheet && ((sheet.tracos.capacidade && sheet.tracos.capacidade.length) || sheet.tracos.planta));
 }

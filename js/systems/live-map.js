@@ -2,10 +2,12 @@
 
 import { objectIdType, objectProps } from '../../shared/assets.js';
 
-// O mundo vivo: o que o jogo muda no mapa (árvore cortada que vira toco, semente que vira árvore, toco que some) vale
+// O mundo vivo: o que o jogo muda no mapa (árvore cortada que vira toco, muda que vira árvore, toco que some) vale
 // pra sempre. Cada objeto fixo do mapa lembra a linha dele em mapData.objetosData (mapEntry); collect() tira as
 // linhas dos que sumiram de vez (o que rebrota não conta) e acrescenta as dos que nasceram, e o servidor grava o
 // mapData no arquivo do mapa. Itens soltos no chão ficam de fora.
+// Os navegadores carregam o mapa do arquivo e recebem em view() as mudanças nos objetos fixos desde que o servidor
+// subiu ([tipo da mudança, tipo, x, y, z, bloqueia, tem altura]); aplicar de novo o que o arquivo já tem não muda nada.
 
 export class LiveMap {
 
@@ -16,14 +18,44 @@ export class LiveMap {
     this.sim = sim;
     this.tracked = sim.objects.filter(obj => obj.mapEntry);
     this.born = new Set();
+    this.changes = new Map();
   }
 
   // ================================================================================================================================================================================================================================================
   // add
-  // Um objeto fixo que nasceu no jogo (interactions.replaceObject).
+  // Um objeto fixo que nasceu no jogo (interactions.placeObject): vai pro mapa e pros navegadores.
 
   add(obj) {
     this.born.add(obj);
+    this.shown(obj);
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // shown
+  // Um objeto fixo apareceu no mundo (nasceu ou rebrotou).
+
+  shown(obj) {
+    const key = changeKey(obj);
+    if (this.changes.has(key) && this.changes.get(key)[0] === 'gone') this.changes.delete(key);
+    else this.changes.set(key, ['born', ...changeData(obj)]);
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // hidden
+  // Um objeto fixo saiu do mundo (cortado, virou outro).
+
+  hidden(obj) {
+    const key = changeKey(obj);
+    if (this.changes.has(key) && this.changes.get(key)[0] === 'born') this.changes.delete(key);
+    else this.changes.set(key, ['gone', ...changeData(obj)]);
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // view
+  // As mudanças nos objetos fixos perto de quem vê (near), pro navegador.
+
+  view(near = () => true) {
+    return [...this.changes.values()].filter(([, , x, y]) => near({ x, y }));
   }
 
   // ================================================================================================================================================================================================================================================
@@ -49,6 +81,20 @@ export class LiveMap {
     this.tracked = [...this.tracked.filter(obj => !goneSet.has(obj)), ...born];
     return true;
   }
+}
+
+// ================================================================================================================================================================================================================================================
+// changeKey
+
+function changeKey(obj) {
+  return `${objectIdType(obj.id)}@${obj.x},${obj.y},${obj.z || 0}`;
+}
+
+// ================================================================================================================================================================================================================================================
+// changeData
+
+function changeData(obj) {
+  return [objectIdType(obj.id), obj.x, obj.y, obj.z || 0, !!obj.blocksMovement, !!obj.hasVolume];
 }
 
 // ================================================================================================================================================================================================================================================

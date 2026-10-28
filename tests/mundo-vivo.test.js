@@ -6,6 +6,7 @@ import { buildMapData, floorRect } from './helpers/fixture.js';
 import { Simulation, TICK_MS } from '../js/simulation.js';
 import { setAssets } from '../shared/assets.js';
 import { mergeObjects } from '../js/systems/live-map.js';
+import { serializeState, applyState } from '../js/net/protocol.js';
 
 const BAG = 'itens/recipientes/backpack-azul';
 const AXE = 'itens/machados/axe';
@@ -92,4 +93,27 @@ test('mergeObjects: as mudanças do editor entram por cima das do jogo', () => {
   assert.deepEqual(mergeObjects([a, b], [a, c], [a, b, d]), [a, d, c], 'o editor tirou b e pôs c; o jogo pôs d');
   assert.deepEqual(mergeObjects([a, b], [a, b], [a, d]), [a, d], 'o editor não mexeu: o jogo tirou b e pôs d');
   assert.deepEqual(mergeObjects([a, a], [a], [a, a, a]), [a, a], 'conta repetidos');
+});
+
+test('o navegador recebe as mudanças nos objetos fixos: some o que o jogo tirou, aparece o que nasceu, volta o que rebrotou', () => {
+  const objects = [...floorRect(0, 20, 0, 20, 0), [TREE, 11, 10, 0, 0, 0, 0, 1], [BUSH, 9, 10, 0, 0, 0, 0, 0]];
+  const mapData = buildMapData({ objects, spawn: { x: 10, y: 10, z: 0 } });
+  const { sim } = game(mapData);
+  const mirror = new Simulation(buildMapData({ objects, spawn: { x: 10, y: 10, z: 0 } }));
+  mirror.addPlayer('p1', { name: 'Ana' });
+  const sync = () => applyState(mirror, { state: serializeState(sim, 'p1', true), time: sim.time }, 'p1', 0);
+  const has = (type, x) => mirror.world.getObjectsAt(x, 10).some(o => o.id.startsWith(`${type}_`));
+  chopAt(sim, 11, 10);
+  chopAt(sim, 9, 10);
+  sync();
+  assert.equal(has(TREE, 11), false, 'a árvore saiu');
+  assert.equal(has(STUMP, 11), true, 'o toco apareceu');
+  assert.equal(mirror.world.isBlocked(11, 10, 0), false);
+  assert.equal(has(BUSH, 9), false, 'o mato cortado saiu');
+  sync();
+  assert.equal(mirror.objects.filter(o => o.id.startsWith(`${STUMP}_`)).length, 1, 'aplicar de novo não duplica');
+  sim.time += 61000;
+  sim.tick(sim.time);
+  sync();
+  assert.equal(has(BUSH, 9), true, 'o mato rebrotou');
 });

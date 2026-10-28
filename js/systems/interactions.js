@@ -7,11 +7,16 @@ import { itemInfo, newItem, weightOf, FISH_RANGE, USE_COOLDOWN_MS, SLEEP_REGEN_F
 import { VOCATIONS, vocationOf } from '../../shared/vocations.js';
 import { takeFromBag } from './trade.js';
 import { WATER_EFFECT } from '../../shared/effects.js';
+import { CONFIG } from '../config.js';
 import { isValidFloor } from '../../shared/constants.js';
 import { getHoleTarget, toLowerLevel, toUpperLevel } from '../../shared/stairs.js';
+import { isSyncedItem } from '../net/protocol.js';
 
 // Efeito que brilha no sqm onde o item pescado ou a minhoca cai no chão.
 const DROP_EFFECT = 'rings-yellow';
+
+// Efeito no sqm onde algo é plantado.
+const PLANT_EFFECT = 'rings-green';
 
 // Objetos do mapa que se usam (gerador → Objetos → Uso):
 //   placa     → o texto (editor) aparece em cima dela, na cor escolhida no editor;
@@ -259,6 +264,65 @@ export class InteractionController {
   }
 
 // ================================================================================================================================================================================================================================================
+  // setWork
+  // Comando work (clique num objeto com a ferramenta na mão, ex.: árvore com o machado): o objeto vira o alvo do
+  // trabalho e o player segue usando a ferramenta nele, como um ataque (updateWork). Clicar de novo no mesmo, escolher
+  // um alvo de ataque ou um sqm sem reação tira.
+
+  setWork(player, x, y, z) {
+    const tile = { x, y, z: player.z || 0 };
+    const same = player.workObject && player.workObject.x === x && player.workObject.y === y && (player.workObject.z || 0) === tile.z;
+    player.workObject = null;
+    if (same || !Number.isInteger(x) || !Number.isInteger(y) || (z ?? tile.z) !== tile.z) return;
+    const hit = this.workReaction(player, tile);
+    if (!hit) return;
+    player.workObject = hit.obj;
+    player.target = null;
+    player.workReadyAt = 0;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // workReaction
+  // O objeto do sqm que reage à ferramenta da mão (espaço da arma), ou null.
+
+  workReaction(player, tile) {
+    const item = player.equip && player.equip.arma;
+    const ficha = item ? fichaDe(item.type) : null;
+    for (const capacity of (ficha && ficha.tracos.capacidade) || []) {
+      const hit = this.findReaction(capacity, tile, tile.z);
+      if (hit && hit.obj && !hit.creature && hit.reactions && hit.reactions.some(r => r.propria)) return hit;
+    }
+    return null;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // updateWork
+  // A cada tick: longe do alvo do trabalho, anda até o lado; colado, usa a ferramenta da mão nele a cada
+  // CONFIG.attackCooldown. Para quando o objeto some (a árvore caiu) ou a ferramenta sai da mão.
+
+  updateWork(player, now) {
+    const obj = player.workObject;
+    if (!obj) return;
+    const tile = { x: obj.x, y: obj.y, z: obj.z || 0 };
+    if (!this.sim.world.objects.has(obj) || tile.z !== (player.z || 0) || !this.workReaction(player, tile)) {
+      player.workObject = null;
+      return;
+    }
+    if (Math.max(Math.abs(obj.x - player.x), Math.abs(obj.y - player.y)) > 1) {
+      if (!player.walk.target) {
+        this.sim.inventory.walkNextTo(player, obj, null);
+        player.pendingInv = null;
+      }
+      return;
+    }
+    if (now < (player.workReadyAt || 0)) return;
+    player.workReadyAt = now + CONFIG.attackCooldown;
+    player.useReadyAt = 0;
+    this.useTool(player, null, tile, null, player.equip.arma);
+    if (!this.sim.world.objects.has(obj)) player.workObject = null;
+  }
+
+// ================================================================================================================================================================================================================================================
   // findReaction
   // Quem reage à capacidade no sqm: um objeto do sqm com a reação na ficha dele (a marca de corda antes da abertura
   // por onde se puxa) ou, sem ele, o piso. Reação com estado ativo só vale para objeto ativo.
@@ -334,23 +398,70 @@ export class InteractionController {
 
 // ================================================================================================================================================================================================================================================
   // replaceObject
-  // O objeto do mapa vira outro tipo no mesmo lugar (árvore → toco, semente → árvore). Um objeto que bloqueia não
-  // nasce onde há criatura ou outro bloqueio (devolve null; a interação tenta de novo depois).
+  // O objeto do mapa vira outro tipo no mesmo lugar. Um objeto que bloqueia não nasce onde há criatura ou outro
+  // bloqueio (devolve null; a interação tenta de novo depois).
 
   replaceObject(obj, type) {
-    const { world, inventory, objects, objectsById } = this.sim;
+    const { world, inventory } = this.sim;
     const z = obj.z || 0;
-    const props = objectProps(type);
-    if (props.blocksMovement && !obj.blocksMovement && (world.hasBlockerAt(obj.x, obj.y, z) || world.getCreatureAt(obj.x, obj.y, z) !== null)) return null;
+    if (objectProps(type).blocksMovement && !obj.blocksMovement && (world.hasBlockerAt(obj.x, obj.y, z) || world.getCreatureAt(obj.x, obj.y, z) !== null)) return null;
     inventory.removeGroundObject(obj);
+    if (!isSyncedItem(obj)) this.sim.liveMap.hidden(obj);
+    return this.placeObject(type, obj.x, obj.y, z, obj.step || 0);
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // plant
+  // Item que se planta (semente, gerador → Objetos → Planta como) usado com a mira no chão colado ao player (ou no
+  // dele): vira o objeto na hora (a muda) e gasta 1; onde não dá, sobe a fumacinha.
+
+  plant(player, src, type, target) {
+    const z = player.z || 0;
+    if (!target || !Number.isInteger(target.x) || !Number.isInteger(target.y) || (target.z ?? z) !== z || !getAsset(splitType(type).asset)) return false;
+    if (Math.max(Math.abs(target.x - player.x), Math.abs(target.y - player.y)) > 1) {
+      this.message(player, 'Longe demais.');
+      return false;
+    }
+    const now = this.sim.time || 0;
+    if (now < (player.useReadyAt || 0)) return false;
+    player.useReadyAt = now + USE_COOLDOWN_MS;
+    if (!this.canPlantAt(player, target.x, target.y, z)) {
+      this.sim.spells.showEffect(target.x, target.y, 'poff', undefined, z);
+      return false;
+    }
+    if ((src.item.count || 1) > 1) src.item.count--;
+    else src.remove();
+    this.placeObject(type, target.x, target.y, z);
+    this.sim.spells.showEffect(target.x, target.y, PLANT_EFFECT, undefined, z);
+    return true;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // canPlantAt
+  // Dá pra plantar no sqm: tem chão firme (água não), nada que bloqueie, nenhum objeto fixo (outra muda, móvel…) e
+  // não é casa de outro.
+
+  canPlantAt(player, x, y, z) {
+    const { world } = this.sim;
+    if (!world.hasFloorAt(x, y, z) || world.isFloorBlocked(x, y, z) || world.hasBlockerAt(x, y, z) || !world.mayEnter(player, x, y, z)) return false;
+    return !world.getObjectsAt(x, y).some(obj => (obj.z || 0) === z && !obj.floorType && !obj.isBorder && !obj.hidden && !isSyncedItem(obj));
+  }
+
+// ================================================================================================================================================================================================================================================
+  // placeObject
+  // Um objeto novo no mapa (muda plantada, árvore que nasce); o fixo vai pro mundo vivo (mapa e navegadores).
+
+  placeObject(type, x, y, z, step = 0) {
+    const { world, inventory, objects, objectsById } = this.sim;
+    const props = objectProps(type);
     inventory.objectCounter++;
-    const next = new GameObject({ id: `${type}_${inventory.objectCounter}`, x: obj.x, y: obj.y, z, step: obj.step || 0, movable: props.movable, hasVolume: props.hasVolume, blocksMovement: props.blocksMovement });
-    next.bornAt = this.sim.time || 0;
-    if (!props.movable) this.sim.liveMap.add(next);
-    objects.push(next);
-    objectsById.set(next.id, next);
-    world.addObject(next);
-    return next;
+    const obj = new GameObject({ id: `${type}_${inventory.objectCounter}`, x, y, z, step, movable: props.movable, hasVolume: props.hasVolume, blocksMovement: props.blocksMovement });
+    obj.bornAt = this.sim.time || 0;
+    if (!props.movable) this.sim.liveMap.add(obj);
+    objects.push(obj);
+    objectsById.set(obj.id, obj);
+    world.addObject(obj);
+    return obj;
   }
 
 // ================================================================================================================================================================================================================================================
@@ -361,6 +472,7 @@ export class InteractionController {
   cut(plant, regrowMs = REGROW_MS) {
     const z = plant.z || 0;
     this.sim.inventory.removeGroundObject(plant);
+    if (!isSyncedItem(plant)) this.sim.liveMap.hidden(plant);
     this.sim.spells.showEffect(plant.x, plant.y, 'poff', undefined, z);
     const regrow = () => {
       if (this.sim.world.getCreatureAt(plant.x, plant.y, z) !== null) {
@@ -368,6 +480,7 @@ export class InteractionController {
         return;
       }
       plant.regrowing = false;
+      if (!isSyncedItem(plant)) this.sim.liveMap.shown(plant);
       this.sim.objects.push(plant);
       this.sim.objectsById.set(plant.id, plant);
       this.sim.world.addObject(plant);

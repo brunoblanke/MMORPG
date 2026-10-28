@@ -415,6 +415,7 @@ export class Simulation {
     this.inventory.burnLights(TICK_MS);
     for (const player of this.players) {
       this.control.update(player, now);
+      this.interactions.updateWork(player, now);
       this.inventory.update(player);
       this.inventory.digest(player, now);
     }

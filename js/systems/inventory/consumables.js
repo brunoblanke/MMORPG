@@ -71,7 +71,7 @@ export const consumableMethods = {
     const rune = RUNES[src.item.type];
     const sheet = fichaDe(src.item.type);
     const tool = !!(sheet && sheet.tracos.capacidade && sheet.tracos.capacidade.length);
-    if (!info.food && !info.heal && !use && !info.light && !rune && !tool) return;
+    if (!info.food && !info.heal && !use && !info.light && !rune && !tool && !info.plantsAs) return;
     if (src.obj && !this.isNear(player, src.obj)) {
       this.walkNextTo(player, src.obj, { type: 'useItem', from, target });
       return;
@@ -91,6 +91,10 @@ export const consumableMethods = {
     }
     if (tool) {
       this.sim.interactions.useTool(player, use, target, from, src.item);
+      return;
+    }
+    if (info.plantsAs) {
+      this.sim.interactions.plant(player, src, info.plantsAs, target);
       return;
     }
     if (!info.food && !info.heal) return;

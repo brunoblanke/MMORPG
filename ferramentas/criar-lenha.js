@@ -1,13 +1,16 @@
 // ferramentas/criar-lenha.js
 
-// Cortar lenha: cria no gerador as receitas da madeira (itens/materiais/wood, empilhável), do toco
-// (estrutura/natureza/tree-stump) e da semente (itens/plantas-e-ervas/seeds), dá a capacidade "lenhar" aos machados
+// Cortar lenha e plantar: cria no gerador as receitas da madeira (itens/materiais/wood, empilhável), da semente
+// (itens/plantas-e-ervas/seeds) e da muda (estrutura/natureza/sapling), dá a capacidade "lenhar" aos machados
 // (itens/machados: os que têm "axe" no nome e o hatchet) e escreve as reações:
-//   árvore + machado → com CHANCE % solta 1 madeira; a cada CORTES cortes vira toco e solta 1 semente;
-//   toco + machado   → solta 1 madeira e some;
-//   semente no chão  → depois de CRESCE_S segundos no lugar vira uma das ARVORES (sorteada).
-// Pode rodar de novo: o que já está feito fica como está. As folhas saem do gerador: aba Objetos → "Gerar folhas
-// pendentes"; chance, cortes, tempo e o que cai se mudam no gerador (Interações de cada receita).
+//   árvore + machado → com CHANCE % solta 1 madeira; a cada CORTES cortes cai (efeito QUEDA), solta 1 semente e some
+//                      de vez (sai do mapa);
+//   semente          → usada com a mira no chão ao lado vira a muda (Planta como);
+//   muda             → depois de CRESCE_S segundos no lugar vira uma das NASCEM (sorteada);
+//   toco (antigo)    → solta 1 madeira e some.
+// Pode rodar de novo: o que já está feito fica como está (a reação antiga da árvore que virava toco é trocada pela
+// nova). As folhas saem do gerador: aba Objetos → "Gerar folhas pendentes"; chance, cortes, tempo e o que cai se
+// mudam no gerador (Interações de cada receita).
 //
 // Uso: node ferramentas/criar-lenha.js
 
@@ -18,6 +21,8 @@ const RAIZ = path.join(__dirname, '..');
 const PROJETOS = path.join(RAIZ, 'gerador', 'projetos');
 const MADEIRA = 'itens/materiais/wood';
 const TOCO = 'estrutura/natureza/tree-stump';
+const MUDA = 'estrutura/natureza/sapling';
+const QUEDA = 'earth';
 const SEMENTE = 'itens/plantas-e-ervas/seeds';
 const CHANCE = 40;
 const CORTES = 8;
@@ -31,7 +36,7 @@ const NASCEM = ['arvore-1', 'arvore-3', 'beech', 'dwarf-tree', 'fir-tree', 'old-
 const RECEITAS = [
   { id: MADEIRA, tibia: 5901, propriedades: { move: true, empilhavel: true, peso: 5 } },
   { id: SEMENTE, tibia: 647, propriedades: { move: true, empilhavel: false, peso: 0.5 } },
-  { id: TOCO, tibia: 7960, propriedades: { move: false, empilhavel: false, peso: 0 } }
+  { id: MUDA, tibia: 38477, propriedades: { move: false, empilhavel: false, peso: 0 } }
 ];
 
 // ================================================================================================================================================================================================================================================
@@ -122,19 +127,32 @@ function marcarMachados() {
 
 // ================================================================================================================================================================================================================================================
 // marcarArvores
-// Árvore: madeira com CHANCE %, toco e semente a cada CORTES. Toco: madeira e some. Semente: vira árvore.
+// Árvore: madeira com CHANCE %; a cada CORTES cai, solta a semente e some. Semente: planta a muda. Muda: vira árvore.
+// Toco: madeira e some.
 
 function marcarArvores() {
   const lenhar = { tipo: 'capacidade', capacidade: 'lenhar' };
   for (const nome of ARVORES) {
     marcar(`estrutura/natureza/${nome}`, (receita) => {
+      const props = receita.propriedades = receita.propriedades || {};
+      const antes = Array.isArray(props.interacoes) ? props.interacoes.length : 0;
+      props.interacoes = (props.interacoes || []).filter(i => !(i && Array.isArray(i.efeitos) && i.efeitos.some(e => e && e.tipo === 'trocar-por' && e.item === TOCO)));
+      const tirou = props.interacoes.length !== antes;
       const madeira = garantirInteracao(receita, 'soltar-item', { gatilho: lenhar, condicoes: { alcance: 1, chance: CHANCE }, efeitos: [{ tipo: 'soltar-item', item: MADEIRA, quantidade: 1 }] });
-      const toco = garantirInteracao(receita, 'trocar-por', { gatilho: lenhar, condicoes: { alcance: 1, vezes: CORTES }, efeitos: [{ tipo: 'trocar-por', item: TOCO }, { tipo: 'soltar-item', item: SEMENTE, quantidade: 1 }] });
-      return madeira || toco;
+      const cai = garantirInteracao(receita, 'remover', { gatilho: lenhar, condicoes: { alcance: 1, vezes: CORTES }, efeitos: [{ tipo: 'efeito-visual', nome: QUEDA }, { tipo: 'soltar-item', item: SEMENTE, quantidade: 1 }, { tipo: 'remover', rebroteMs: 0 }] });
+      return tirou || madeira || cai;
     });
   }
   marcar(TOCO, (receita) => garantirInteracao(receita, 'remover', { gatilho: lenhar, condicoes: { alcance: 1 }, efeitos: [{ tipo: 'soltar-item', item: MADEIRA, quantidade: 1 }, { tipo: 'remover', rebroteMs: 0 }] }));
-  marcar(SEMENTE, (receita) => garantirInteracao(receita, 'trocar-por', { gatilho: { tipo: 'tempo' }, condicoes: { idade: CRESCE_S }, efeitos: [{ tipo: 'trocar-por', item: NASCEM.map(n => `estrutura/natureza/${n}`).join(', ') }] }));
+  marcar(SEMENTE, (receita) => {
+    const props = receita.propriedades = receita.propriedades || {};
+    const antes = JSON.stringify(props);
+    props.interacoes = (props.interacoes || []).filter(i => !(i && i.gatilho && i.gatilho.tipo === 'tempo'));
+    if (!props.interacoes.length) delete props.interacoes;
+    props.plantaComo = props.plantaComo || MUDA;
+    return JSON.stringify(props) !== antes;
+  });
+  marcar(MUDA, (receita) => garantirInteracao(receita, 'trocar-por', { gatilho: { tipo: 'tempo' }, condicoes: { idade: CRESCE_S }, efeitos: [{ tipo: 'trocar-por', item: NASCEM.map(n => `estrutura/natureza/${n}`).join(', ') }] }));
 }
 
 criarReceitas();

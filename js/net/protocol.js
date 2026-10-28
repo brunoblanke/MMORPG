@@ -99,6 +99,9 @@ export function isSyncedItem(obj) {
 export const VIEW_RANGE_X = 40;
 export const VIEW_RANGE_Y = 30;
 
+// Ids dos objetos fixos que o navegador cria pelo syncFixed (longe dos do mapa e dos do servidor).
+const FIXED_ID_START = 900000000;
+
 // ================================================================================================================================================================================================================================================
 // serializeState
 // Estado da simulação pra um jogador: o que todos veem mais o que é só dele
@@ -117,6 +120,7 @@ export function serializeState(sim, playerId, nearOnly = false) {
     doors: sim.doors.map(d => ({ x: d.x, y: d.y, z: d.z || 0, id: d.id })),
     active: sim.interactions ? [...sim.interactions.activeIds] : [],
     houses: sim.houses ? sim.houses.viewOf() : [],
+    fixed: sim.liveMap ? sim.liveMap.view(near) : [],
     items: sim.objects.filter(o => isSyncedItem(o) && near(o)).map(o => ({
       id: o.id, x: o.x, y: o.y, z: o.z, step: o.step, hasVolume: o.hasVolume, blocksMovement: o.blocksMovement,
       temporary: o.temporary ? true : undefined,
@@ -127,6 +131,7 @@ export function serializeState(sim, playerId, nearOnly = false) {
     })),
     you: me ? {
       target: me.target ? me.target.id : null,
+      work: me.workObject ? { type: objectIdType(me.workObject.id), x: me.workObject.x, y: me.workObject.y, z: me.workObject.z || 0 } : null,
       autoFollow: me.autoFollow,
       followMode: me.followMode,
       attackMode: me.attackMode,
@@ -279,6 +284,7 @@ export function applyState(mirror, message, playerId, renderNow) {
   mirror.deadBodies = syncCorpses(world, mirror.deadBodies, state.corpses, time, renderNow);
 
   syncItems(mirror, state.items);
+  syncFixed(mirror, state.fixed || []);
   syncDoors(world, state.doors || []);
   syncActive(mirror, state.active || []);
   syncHouses(world, state.houses || []);
@@ -286,6 +292,7 @@ export function applyState(mirror, message, playerId, renderNow) {
   const me = mirror.players.find(p => p.id === playerId);
   if (me && state.you) {
     me.target = state.you.target ? [...mirror.enemies, ...mirror.players].find(e => e.id === state.you.target) || null : null;
+    me.workObject = state.you.work ? fixedAt(mirror, state.you.work.type, state.you.work.x, state.you.work.y, state.you.work.z) : null;
     me.autoFollow = state.you.autoFollow;
     me.followMode = state.you.followMode;
     me.attackMode = state.you.attackMode;
@@ -326,6 +333,65 @@ function syncDoors(world, doors) {
     const state = doorState(objectIdType(data.id));
     if (state) world.setDoorOpen(door, state.open);
   }
+}
+
+// ================================================================================================================================================================================================================================================
+// syncFixed
+// Objetos fixos que o jogo mudou depois que o servidor subiu (árvore cortada, muda plantada, mato que rebrota):
+// [mudança, tipo, x, y, z, bloqueia, tem altura]. O que já está no mapa carregado fica como está; o que sai da lista
+// volta ao que era.
+
+function syncFixed(mirror, changes) {
+  const applied = mirror.fixedApplied || (mirror.fixedApplied = new Map());
+  const seen = new Set();
+  for (const [kind, type, x, y, z, blocksMovement, hasVolume] of changes) {
+    const key = `${kind}|${type}@${x},${y},${z}`;
+    seen.add(key);
+    if (applied.has(key)) continue;
+    const existing = fixedAt(mirror, type, x, y, z);
+    if (kind === 'gone') {
+      if (existing) removeFixed(mirror, existing);
+      applied.set(key, { kind, obj: existing });
+    } else {
+      mirror.fixedCounter = (mirror.fixedCounter || FIXED_ID_START) + 1;
+      const obj = existing ? null : addFixed(mirror, new GameObject({ id: `${type}_${mirror.fixedCounter}`, x, y, z, step: 0, movable: false, hasVolume, blocksMovement }));
+      applied.set(key, { kind, obj });
+    }
+  }
+  for (const [key, { kind, obj }] of applied) {
+    if (seen.has(key)) continue;
+    applied.delete(key);
+    if (!obj) continue;
+    if (kind === 'gone') addFixed(mirror, obj);
+    else removeFixed(mirror, obj);
+  }
+}
+
+// ================================================================================================================================================================================================================================================
+// fixedAt
+
+function fixedAt(mirror, type, x, y, z) {
+  return mirror.world.getObjectsAt(x, y).find(obj => (obj.z || 0) === z && !isSyncedItem(obj) && objectIdType(obj.id) === type) || null;
+}
+
+// ================================================================================================================================================================================================================================================
+// addFixed
+
+function addFixed(mirror, obj) {
+  mirror.objects.push(obj);
+  mirror.objectsById.set(obj.id, obj);
+  mirror.world.addObject(obj);
+  return obj;
+}
+
+// ================================================================================================================================================================================================================================================
+// removeFixed
+
+function removeFixed(mirror, obj) {
+  mirror.world.removeObject(obj);
+  mirror.objectsById.delete(obj.id);
+  const index = mirror.objects.indexOf(obj);
+  if (index > -1) mirror.objects.splice(index, 1);
 }
 
 // ================================================================================================================================================================================================================================================
