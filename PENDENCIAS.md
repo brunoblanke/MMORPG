@@ -43,7 +43,7 @@ Feito: lenha e plantio. Machado usado com a mira na árvore (um golpe por uso; o
 
 - Sem soul points; magias fortes limitadas por mana alta e cooldown.
 - Fora de escopo: modos de ataque, chat/canais, outfit/addons, exhaust por grupo, comandos de admin, MOBA (removido do repositório).
-- Segurança do servidor já feita (ver `CLAUDE.md`): arquivos protegidos, senha do editor, limites do WebSocket. Falta (não pedido): HTTPS dedicado/ proxy com limite por IP em volta, proteção contra tentativa de senha vinda de muitos IPs.
+- Segurança do servidor já feita (ver `CLAUDE.md`): arquivos protegidos, senha do editor, limites do WebSocket. HTTPS feito (Caddy + DuckDNS, `https://birorpg.duckdns.org`). Falta (não pedido): limite por IP no proxy, proteção contra tentativa de senha vinda de muitos IPs.
 
 ## Ideias para depois
 
