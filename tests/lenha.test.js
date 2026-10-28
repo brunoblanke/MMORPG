@@ -293,3 +293,22 @@ test('no navegador, o machado, a semente e a potion no chão se usam (abrem a mi
   assert.ok(under(SEED), 'semente');
   assert.equal(under(WOOD), null, 'madeira não se usa');
 });
+
+test('sem capacidade (cap), o que o machado dá cai no chão aos pés do player', () => {
+  const { sim, ana } = game([[TREE_BAG, 11, 10, 0, 0, 0, 0, 1]]);
+  sim.inventory.capMax = (player) => sim.inventory.capUsed(player) + 5;
+  chopAt(sim, 11, 10);
+  assert.equal(ana.equip.mochila.items.some(it => it && it.type === WOOD), false, 'madeira (10 oz) não cabe');
+  const wood = woodOnGround(sim);
+  assert.equal(wood.length, 1);
+  assert.deepEqual([wood[0].x, wood[0].y], [ana.x, ana.y]);
+});
+
+test('giveItem: o que cabe no cap vai pra mochila, o resto cai aos pés', async () => {
+  const { giveItem } = await import('../js/systems/trade.js');
+  const { sim, ana } = game();
+  sim.inventory.capMax = (player) => sim.inventory.capUsed(player) + 25;
+  giveItem(sim, ana, WOOD, 5);
+  assert.equal(ana.equip.mochila.items.find(it => it && it.type === WOOD).count, 2, '2 × 10 oz cabem em 25');
+  assert.equal(woodCount(sim), 3);
+});

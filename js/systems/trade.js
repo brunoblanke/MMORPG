@@ -204,12 +204,14 @@ export function sell(sim, player, type, price, amount) {
 // ================================================================================================================================================================================================================================================
 // giveItem
 // Põe count do item na mochila: junta nas pilhas iguais, depois nos espaços
-// vazios; sem espaço, aos pés do player.
+// vazios; o que não cabe na capacidade (cap) do player ou nos espaços cai aos pés dele.
 
 export function giveItem(sim, player, type, count = 1) {
   const inventory = sim.inventory;
-  const stack = itemInfo(type).stack;
-  let left = count;
+  const { stack, weight } = itemInfo(type);
+  const free = inventory.capMax(player) - inventory.capUsed(player);
+  const fits = weight > 0 ? Math.max(0, Math.min(count, Math.floor(free / weight + 1e-9))) : count;
+  let left = fits;
   for (const { list, key } of stack ? bagSlots(player) : []) {
     const item = list[key];
     if (left <= 0) break;
@@ -218,11 +220,17 @@ export function giveItem(sim, player, type, count = 1) {
     item.count = (item.count || 1) + add;
     left -= add;
   }
+  let ground = count - fits;
   while (left > 0) {
     const item = newItem(inventory.nextUid(), type, left);
     left -= item.count || 1;
-    const free = bagSlots(player).find(({ list, key }) => !list[key]);
-    if (free) free.list[free.key] = item;
-    else inventory.mergeGroundStack(inventory.spawnGroundItem(item, player.x, player.y, player.z || 0));
+    const slot = bagSlots(player).find(({ list, key }) => !list[key]);
+    if (slot) slot.list[slot.key] = item;
+    else ground += item.count || 1;
+  }
+  while (ground > 0) {
+    const item = newItem(inventory.nextUid(), type, ground);
+    ground -= item.count || 1;
+    inventory.mergeGroundStack(inventory.spawnGroundItem(item, player.x, player.y, player.z || 0));
   }
 }
