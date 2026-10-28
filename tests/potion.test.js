@@ -64,7 +64,9 @@ test('potion: usar no inventário recupera dentro da faixa do Tibia, gasta uma e
   sim.player.currentHp = 1;
   sim.player.mana = 0;
 
-  send(sim, { type: 'useItem', from: { t: 'c', uid: bag.uid, i: 0 } });
+  sim.enqueue('player1', { type: 'useItem', from: { t: 'c', uid: bag.uid, i: 0 } });
+  sim.tick(sim.time + TICK_MS);
+  assert.ok(sim.drainEvents().some(e => e.type === 'effect' && e.effect === 'heal' && e.x === 5 && e.y === 5), 'brilho no player');
   const healed = sim.player.currentHp - 1;
   assert.ok(healed >= 125 && healed <= 175, `curou ${healed}`);
   assert.equal(bag.items[0].count, 2);

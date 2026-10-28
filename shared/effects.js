@@ -38,6 +38,9 @@ export const EFFECTS = {
 // Efeito em cima do player quando ele entra no jogo.
 export const ENTER_EFFECT = 'holy';
 
+// Brilho em quem toma uma potion (o mesmo das magias de cura, como no Tibia).
+export const POTION_EFFECT = 'heal';
+
 // Efeito que abre na água quando algo cai nela (pesca, item jogado na água).
 export const WATER_EFFECT = 'rings-blue';
 

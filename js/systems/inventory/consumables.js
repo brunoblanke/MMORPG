@@ -7,6 +7,7 @@ import { CONFIG } from '../../config.js';
 import { CONDITIONS } from '../../../shared/conditions.js';
 import { VOCATIONS, vocationOf } from '../../../shared/vocations.js';
 import { RUNES } from '../../../shared/spells.js';
+import { POTION_EFFECT } from '../../../shared/effects.js';
 import {
   EQUIP_SLOTS, USE_COOLDOWN_MS, FOOD_MAX_SECONDS, POTION_RANGE, EMPTY_VIAL, SPLASH_HP, SPLASH_MANA, SPLASH_STAGES, SPLASH_STAGE_MS, REGEN_MS, REGEN_HP, REGEN_MANA, itemInfo, newItem
 } from '../../../shared/items.js';
@@ -140,6 +141,7 @@ export const consumableMethods = {
       patient.currentHp += hp;
       patient.mana += mana;
       this.sim.emit({ type: 'heal', playerId: patient.id, x: patient.x, y: patient.y, z: patient.z || 0, hp, mana });
+      this.sim.spells.showEffect(patient.x, patient.y, POTION_EFFECT, undefined, patient.z || 0);
     } else {
       this.spill(target.x, target.y, z, heal.hp[1] > 0 ? SPLASH_HP : SPLASH_MANA);
     }
