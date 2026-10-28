@@ -36,7 +36,7 @@ const NASCEM = ['arvore-1', 'arvore-3', 'beech', 'dwarf-tree', 'fir-tree', 'old-
 const RECEITAS = [
   { id: MADEIRA, tibia: 5901, propriedades: { move: true, empilhavel: true, peso: 5 } },
   { id: SEMENTE, tibia: 647, propriedades: { move: true, empilhavel: false, peso: 0.5 } },
-  { id: MUDA, tibia: 38477, propriedades: { move: false, empilhavel: false, peso: 0 } }
+  { id: MUDA, tibia: 3748, propriedades: { move: false, empilhavel: false, peso: 0 } }
 ];
 
 // ================================================================================================================================================================================================================================================
