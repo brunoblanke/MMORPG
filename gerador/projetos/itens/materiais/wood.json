@@ -43,7 +43,7 @@
     "uso": "fogueira",
     "ativoComo": "decoracao/iluminacao/fogo-de-acampamento",
     "comecaAtivo": false,
-    "descansaComo": "decoracao/moveis/cama-palha"
+    "descansaComo": "decoracao/moveis/esteira-palha"
   },
   "ferramenta": "objetos",
   "grupo": "itens",
