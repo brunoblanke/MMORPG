@@ -31,6 +31,18 @@
     </div>
   </div>
 
+  <div id="writeModal" class="modal" hidden>
+    <form id="writeForm" class="modal-box write-box" autocomplete="off">
+      <h1 id="writeTitle">Carta</h1>
+      <input id="writeTo" type="text" maxlength="30" placeholder="Para (nome do personagem)" spellcheck="false">
+      <textarea id="writeText" maxlength="1000" placeholder="Mensagem" spellcheck="false"></textarea>
+      <div class="death-actions">
+        <button type="submit">Escrever</button>
+        <button id="writeCancel" type="button" class="secondary">Cancelar</button>
+      </div>
+    </form>
+  </div>
+
   <div id="loadingScreen" class="loading-screen"><canvas id="loadingCanvas"></canvas></div>
 
   <div id="nameModal" class="modal" hidden>

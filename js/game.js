@@ -20,6 +20,7 @@ import { InputController } from './input/input.js';
 import { Joystick } from './input/joystick.js';
 import { NameModal } from './views/name-modal.js';
 import { DeathModal } from './views/death-modal.js';
+import { WriteModal } from './views/write-modal.js';
 import { LoadingScreen } from './views/loading-screen.js';
 import { InventoryUI } from './views/inventory-ui.js';
 import { describeEntity, describeGroundObject } from './views/look.js';
@@ -82,6 +83,7 @@ export class GameController {
     this.chatBox = new ChatBox(this);
     this.playerMenu = new PlayerMenu(this);
     this.deathModal = new DeathModal(this);
+    this.writeModal = new WriteModal(this);
     this.lastPlayerClick = null;
 
     this.boot();

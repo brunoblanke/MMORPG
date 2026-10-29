@@ -47,11 +47,11 @@ const NUMBERS = [
   { key: 'regenVida', label: 'Regenera vida equipado (a cada 6 s)', min: 0, step: 1 },
   { key: 'regenMana', label: 'Regenera mana equipado (a cada 6 s)', min: 0, step: 1 }
 ];
-const DEFAULT_PROPERTIES = { bloqueia: false, move: true, altura: false, volume: 1, passo: 1, nivelPesca: 0, empilhavel: false, duasMaos: false, tipoMunicao: '', isca: '', plantaComo: '', resistencias: {}, postal: false, protegePerda: false, invisivelEquipado: false, peso: 10, espacos: 0, atk: 0, def: 0, ml: 0, speed: 0, criticoChance: 0, criticoDano: 0, vidaMin: 0, vidaMax: 0, manaMin: 0, manaMax: 0, alimento: 0, luz: 0, duracao: 0, regenVida: 0, regenMana: 0, uso: '', ativoComo: '', comecaAtivo: false };
+const DEFAULT_PROPERTIES = { bloqueia: false, move: true, altura: false, volume: 1, passo: 1, nivelPesca: 0, empilhavel: false, duasMaos: false, tipoMunicao: '', isca: '', plantaComo: '', resistencias: {}, postal: false, enviadoComo: '', protegePerda: false, invisivelEquipado: false, peso: 10, espacos: 0, atk: 0, def: 0, ml: 0, speed: 0, criticoChance: 0, criticoDano: 0, vidaMin: 0, vidaMax: 0, manaMin: 0, manaMax: 0, alimento: 0, luz: 0, duracao: 0, regenVida: 0, regenMana: 0, uso: '', ativoComo: '', comecaAtivo: false };
 const PROPERTY_GROUPS = [
   ['corpo', 'Corpo e colisão', ['bloqueia', 'move', 'altura', 'volume', 'passo', 'empilhavel', 'peso', 'transicao'], true],
   ['estado', 'Estado normal e ativo', ['ativoComo', 'comecaAtivo'], false],
-  ['uso', 'Uso e correio', ['uso', 'isca', 'plantaComo', 'nivelPesca', 'postal'], true],
+  ['uso', 'Uso e correio', ['uso', 'isca', 'plantaComo', 'nivelPesca', 'postal', 'escrita', 'enviadoComo'], true],
   ['equip', 'Equipar e armas', ['slot', 'skillArma', 'duasMaos', 'tipoMunicao', 'atk', 'def', 'ml', 'speed', 'criticoChance', 'criticoDano', 'protegePerda', 'invisivelEquipado', 'regenVida', 'regenMana'], false],
   ['consome', 'Comida e poção', ['vidaMin', 'vidaMax', 'manaMin', 'manaMax', 'alimento'], false],
   ['luz', 'Luz e duração', ['luz', 'duracao'], false],
@@ -72,7 +72,7 @@ const USES = [
   ['descer', 'Bueiro (usar leva pro andar de baixo)'],
   ['deposito', 'Depósito (cada player guarda os itens dele)'],
   ['teleporte', 'Teletransporte (pisar leva pro destino, escolhido no editor)'],
-  ['correio', 'Caixa de correio (recebe cartas e encomendas: !enviar NOME)'],
+  ['correio', 'Caixa de correio (recebe a carta ou encomenda com o destinatário escrito)'],
   ['ferramenta-corda', 'Ferramenta: corda'],
   ['ferramenta-pa', 'Ferramenta: pá'],
   ['ferramenta-pesca', 'Ferramenta: vara de pescar (usar na água; gasta a isca)'],
@@ -108,7 +108,7 @@ const PROPERTIES = [
   { key: 'altura', label: 'Tem altura (empilha e dá pra subir; escada: sobe ao pisar)' },
   { key: 'empilhavel', label: 'Empilhável (pilha até 100)' },
   { key: 'duasMaos', label: 'Arma de duas mãos (arco, besta…): não usa com escudo' },
-  { key: 'postal', label: 'Carta ou encomenda (dá pra mandar pela caixa de correio)' },
+  { key: 'postal', label: 'Carta ou encomenda em branco (dá pra mandar pela caixa de correio: a carta com o destinatário escrito nela, a encomenda com uma etiqueta escrita dentro)' },
   { key: 'protegePerda', label: 'Amuleto da perda: equipado, nada cai ao morrer (some na morte; não vale com caveira vermelha ou preta)' },
   { key: 'invisivelEquipado', label: 'Anel de invisibilidade: equipado, deixa o player invisível (a Duração gasta como no anel de cura)' }
 ];
@@ -116,7 +116,8 @@ const PROPERTIES = [
 const CHOICES = [
   ['slot', 'Espaço do inventário (vazio = o da pasta)', [['', 'Padrão da pasta'], ['nenhum', 'Nenhum'], ['cabeca', 'Cabeça'], ['corpo', 'Corpo'], ['escudo', 'Escudo'], ['pernas', 'Pernas'], ['pes', 'Pés'], ['arma', 'Arma'], ['municao', 'Munição'], ['amuleto', 'Amuleto'], ['anel', 'Anel'], ['mochila', 'Mochila']]],
   ['skillArma', 'Skill da arma (vazio = o da pasta)', [['', 'Padrão da pasta'], ['nenhuma', 'Nenhuma'], ['sword', 'Sword'], ['axe', 'Axe'], ['club', 'Club'], ['distance', 'Distance'], ['magic', 'Magic'], ['fist', 'Fist']]],
-  ['transicao', 'Transição (vazio = a regra da pasta e do Uso)', [['', 'Padrão'], ['nenhuma', 'Nenhuma'], ['escada', 'Escada'], ['buraco', 'Buraco']]]
+  ['transicao', 'Transição (vazio = a regra da pasta e do Uso)', [['', 'Padrão'], ['nenhuma', 'Nenhuma'], ['escada', 'Escada'], ['buraco', 'Buraco']]],
+  ['escrita', 'Escrita (usar abre a janela de escrever)', [['', 'Nenhuma'], ['carta', 'Carta: destinatário e mensagem'], ['etiqueta', 'Etiqueta: só o destinatário (vai dentro da encomenda)']]]
 ];
 
 const DIRECTIONS = [['norte', 'Norte'], ['leste', 'Leste'], ['sul', 'Sul'], ['oeste', 'Oeste']];
@@ -553,6 +554,24 @@ function renderProperties() {
   put('plantaComo', plantLabel);
   plantSelect.onchange = () => {
     objects.properties.plantaComo = plantSelect.value;
+    objects.dirty = true;
+  };
+  const sentLabel = document.createElement('label');
+  sentLabel.className = 'numberline';
+  const sentSelect = document.createElement('select');
+  sentSelect.id = 'objectProp-enviadoComo';
+  const fillSent = (paths) => {
+    const current = objects.properties.enviadoComo || '';
+    const options = current && !paths.includes(current) ? [current, ...paths] : paths;
+    sentSelect.innerHTML = '<option value="">— continua igual —</option>' + options.map(p => `<option value="${p}">${p}</option>`).join('');
+    sentSelect.value = current;
+  };
+  fillSent([]);
+  fetchProjects().then(projects => fillSent(projects.filter(p => p.ferramenta === 'objetos' && p.grupo === 'itens').map(p => p.caminho).sort())).catch(() => {});
+  sentLabel.append('Enviada vira (a carta ou encomenda carimbada, que não pode ser enviada de novo)', sentSelect);
+  put('enviadoComo', sentLabel);
+  sentSelect.onchange = () => {
+    objects.properties.enviadoComo = sentSelect.value;
     objects.dirty = true;
   };
   for (const number of NUMBERS) {

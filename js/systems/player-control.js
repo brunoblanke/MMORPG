@@ -24,6 +24,7 @@ const DOOR_AUTOCLOSE_MS = 3000;
 //   { type: 'closeContainer', itemId }   fechar caixa do chão
 //   { type: 'saveLayout', layout }       guardar o layout das janelas
 //   { type: 'useDoor', x, y, z }         abrir/fechar porta (anda até ela)
+//   { type: 'writeItem', from, para, texto } escrever na carta ou etiqueta (systems/mail.js)
 
 export class PlayerControl {
 
@@ -52,11 +53,12 @@ export class PlayerControl {
       case 'openContainer': return this.sim.inventory.open(player, command.itemId);
       case 'useObject': return this.sim.interactions.useObject(player, command.id);
       case 'useItem': return this.sim.inventory.use(player, command.from, command.target || null);
+      case 'writeItem': return this.sim.inventory.writeItem(player, command.from, command.para, command.texto);
       case 'closeContainer': return this.sim.inventory.close(player, command.itemId);
       case 'saveLayout': return this.sim.inventory.saveLayout(player, command.layout);
       case 'useStairs': return this.useStairs(player, command.x, command.y, command.z);
       case 'useDoor': return this.useDoor(player, command.x, command.y, command.z);
-      case 'say': return this.sim.spells.cast(player, command.text) || this.sim.houses.command(player, command.text) || this.sim.mail.command(player, command.text) || this.sim.talk.playerSays(player, command.text);
+      case 'say': return this.sim.spells.cast(player, command.text) || this.sim.houses.command(player, command.text) || this.sim.talk.playerSays(player, command.text);
       case 'turn': return this.turn(player, command.dx, command.dy);
       case 'partyInvite': return this.sim.social.invite(player, command.targetId);
       case 'partyJoin': return this.sim.social.join(player, command.leaderId);

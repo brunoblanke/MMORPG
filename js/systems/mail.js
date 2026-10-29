@@ -1,14 +1,17 @@
 // js/systems/mail.js
 
-import { toPlain, fromPlain } from '../../shared/items.js';
+import { toPlain, fromPlain, itemInfo } from '../../shared/items.js';
+import { getAsset, splitType } from '../../shared/assets.js';
 import { DEPOT_SIZE } from './inventory/depot.js';
 
-// Correio: o player diz "!enviar NOME" e arrasta uma carta ou encomenda
-// (item postal, gerador → Objetos) pra uma caixa de correio (Uso Correio). O
-// item vai pro depósito do destinatário — no jogo ou guardado — que não
-// precisa estar por perto.
+// Correio, como no Tibia: a carta em branco leva o destinatário escrito nela (usar abre a janela de escrever: Para e
+// mensagem); a encomenda leva uma etiqueta escrita dentro (item com Escrita "etiqueta"). Arrastada pra caixa de correio
+// (Uso Correio), vai pro depósito do destinatário — no jogo ou guardado —, que não precisa estar por perto, já
+// carimbada (a receita "Enviada vira": a carta e a encomenda enviadas, que não são postais e não podem ser mandadas de
+// novo); a carta carimbada guarda quem mandou e a mensagem.
 
-export const MAIL_COMMAND = '!enviar';
+export const MAX_RECIPIENT = 30;
+export const MAX_LETTER = 1000;
 
 export class MailController {
 
@@ -27,21 +30,30 @@ export class MailController {
   }
 
   // ================================================================================================================================================================================================================================================
-  // command
-  // O player disse "!enviar NOME": guarda pra quem vai o que ele postar.
+  // write
+  // Escreve no item (carta ou etiqueta) o destinatário e, na carta, a mensagem.
 
-  command(player, text) {
-    const [word, ...rest] = String(text || '').trim().split(/\s+/);
-    if ((word || '').toLowerCase() !== MAIL_COMMAND) return false;
-    const name = rest.join(' ').trim();
-    const target = name ? this.recipient(name) : null;
-    if (!target || target.name.toLowerCase() === player.name.toLowerCase()) {
-      this.message(player, name ? `Não existe o personagem ${name}.` : 'Diga !enviar e o nome de quem recebe.');
-      return true;
-    }
-    player.mailTo = target.name;
-    this.message(player, `Agora jogue a carta ou encomenda na caixa de correio: vai pra ${target.name}.`, 'info');
+  write(item, para, texto) {
+    const info = itemInfo(item.type);
+    if (!info.writes) return false;
+    const name = String(para || '').replace(/\s+/g, ' ').trim().slice(0, MAX_RECIPIENT);
+    if (name) item.para = name;
+    else delete item.para;
+    if (info.writes !== 'carta') return true;
+    const text = String(texto || '').slice(0, MAX_LETTER);
+    if (text.trim()) item.texto = text;
+    else delete item.texto;
     return true;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // addressOf
+  // O destinatário escrito: o da carta ou o da etiqueta dentro da encomenda.
+
+  addressOf(item) {
+    if (item.para && itemInfo(item.type).writes === 'carta') return item.para;
+    const label = (item.items || []).find(child => child && child.para && itemInfo(child.type).writes === 'etiqueta');
+    return label ? label.para : null;
   }
 
   // ================================================================================================================================================================================================================================================
@@ -58,30 +70,35 @@ export class MailController {
 
   // ================================================================================================================================================================================================================================================
   // send
-  // Entrega o item no depósito de quem o player escolheu com !enviar.
-  // Devolve true se foi (aí o item sai das mãos dele).
+  // Entrega o item, já carimbado, no depósito de quem está escrito nele. Devolve true se foi (aí o item sai das mãos
+  // dele).
 
   send(player, item) {
-    if (!player.mailTo) {
-      this.message(player, 'Diga !enviar e o nome de quem recebe antes de postar.');
+    const info = itemInfo(item.type);
+    const address = this.addressOf(item);
+    if (!address) {
+      this.message(player, item.items ? 'Ponha dentro uma etiqueta com o nome de quem recebe.' : 'Escreva na carta o nome de quem recebe.');
       return false;
     }
-    const target = this.recipient(player.mailTo);
+    const target = this.recipient(address);
     if (!target) {
-      this.message(player, `Não existe o personagem ${player.mailTo}.`);
+      this.message(player, `Não existe o personagem ${address}.`);
       return false;
     }
+    const plain = toPlain(item);
+    if (info.sentAs && getAsset(splitType(info.sentAs).asset)) plain.type = info.sentAs;
+    if (info.writes === 'carta') plain.texto = `De: ${player.name}\nPara: ${target.name}\n\n${item.texto || ''}`;
     if (target.online) {
       const free = target.online.depot.items.indexOf(null);
       if (free < 0) return this.full(player, target.name);
-      target.online.depot.items[free] = fromPlain(toPlain(item), () => this.sim.inventory.nextUid());
+      target.online.depot.items[free] = fromPlain(plain, () => this.sim.inventory.nextUid());
       this.message(target.online, `${player.name} mandou uma encomenda pro seu depósito.`, 'info');
     } else {
       const depot = Array.isArray(target.saved.depot) ? target.saved.depot : (target.saved.depot = []);
       let free = depot.findIndex(slot => !slot);
       if (free < 0 && depot.length < DEPOT_SIZE) free = depot.length;
       if (free < 0) return this.full(player, target.name);
-      depot[free] = toPlain(item);
+      depot[free] = plain;
     }
     this.message(player, `Enviado pra ${target.name}.`, 'info');
     return true;

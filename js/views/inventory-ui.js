@@ -350,6 +350,10 @@ export class InventoryUI {
         this.startAim(place);
         return true;
       }
+      if (item && !item.items && itemInfo(item.type).writes) {
+        this.game.writeModal.open(place, item);
+        return true;
+      }
       if (item && !item.items && (itemInfo(item.type).food || itemInfo(item.type).light || ['livro', 'mapa'].includes(objectUse(item.type)))) {
         this.game.send({ type: 'useItem', from: place });
         return true;
@@ -380,6 +384,7 @@ export class InventoryUI {
       this.game.cancelPendingWalk();
       const type = objectIdType(usable.id);
       if (usable.movable !== true && clicavel(type)) this.game.send({ type: 'useObject', id: usable.id });
+      else if (itemInfo(type).writes) this.game.writeModal.open({ t: 'g', id: usable.id }, usable.itemData || { type });
       else if (aimsWith(type)) this.startAim({ t: 'g', id: usable.id });
       else this.game.send({ type: 'useItem', from: { t: 'g', id: usable.id } });
       return true;

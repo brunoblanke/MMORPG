@@ -144,6 +144,8 @@ export function itemInfo(type) {
     twoHanded: !!props.duasMaos,
     ammoType: typeof props.tipoMunicao === 'string' ? props.tipoMunicao : '',
     postal: !!props.postal,
+    writes: ['carta', 'etiqueta'].includes(props.escrita) ? props.escrita : '',
+    sentAs: typeof props.enviadoComo === 'string' ? props.enviadoComo : '',
     protectsDeath: !!props.protegePerda,
     invisibleWorn: !!props.invisivelEquipado,
     impact: impactOf(props)
@@ -394,6 +396,7 @@ export function toPlain(item) {
   if (item.count) plain.count = item.count;
   if (item.items) plain.items = item.items.map(toPlain);
   if (item.texto) plain.texto = item.texto;
+  if (item.para) plain.para = item.para;
   if (item.lit) plain.lit = true;
   if (item.fuel !== undefined) plain.fuel = item.fuel;
   return plain;
@@ -411,6 +414,7 @@ export function fromPlain(plain, nextUid) {
     plain.items.slice(0, item.items.length).forEach((child, i) => { item.items[i] = fromPlain(child, nextUid); });
   }
   if (typeof plain.texto === 'string' && plain.texto) item.texto = plain.texto.slice(0, 2000);
+  if (typeof plain.para === 'string' && plain.para) item.para = plain.para.slice(0, 30);
   if (plain.lit === true && itemInfo(item.type).light) item.lit = true;
   if (Number.isFinite(plain.fuel) && plain.fuel > 0) item.fuel = plain.fuel;
   return item;
