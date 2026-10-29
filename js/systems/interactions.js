@@ -17,10 +17,11 @@ const DROP_EFFECT = 'rings-yellow';
 // Efeito no sqm onde algo é plantado.
 const PLANT_EFFECT = 'rings-green';
 
-// Fogueira: quantas madeiras (item com Uso fogueira) no chão acendem, quanto tempo até o player sair e quanto o fogo
-// fica aceso no chão.
+// Fogueira: quantas madeiras (item com Uso fogueira) no chão acendem, quanto tempo até o player deitar, até ele sair
+// e quanto o fogo fica aceso no chão.
 export const CAMPFIRE_WOOD = 3;
-export const CAMPFIRE_MS = 3000;
+export const CAMPFIRE_LIE_MS = 1000;
+export const CAMPFIRE_MS = 4000;
 export const CAMPFIRE_BURN_MS = 60000;
 
 // Objetos do mapa que se usam (gerador → Objetos → Uso):
@@ -172,7 +173,7 @@ export class InteractionController {
     this.sim.control.clearWalk(player);
     this.stepOffFire(player, x, y, z);
     const bedY = x === player.x && (y === player.y - 1 || y === player.y) ? player.y + 1 : player.y;
-    this.sim.emit({ type: 'campfire', playerId: player.id, x: player.x, y: bedY, z: player.z || 0, look: rest || null, ms: CAMPFIRE_MS });
+    this.sim.emit({ type: 'campfire', playerId: player.id, x: player.x, y: bedY, z: player.z || 0, look: rest || null, lie: CAMPFIRE_LIE_MS, ms: CAMPFIRE_MS });
   }
 
   // ================================================================================================================================================================================================================================================

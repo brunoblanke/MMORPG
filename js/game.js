@@ -10,7 +10,7 @@ import { EventManager } from './input/event-manager.js';
 import { SpriteLoader } from './services/sprite-loader.js';
 import { Renderer, MESSAGE_COLORS } from './views/renderer.js';
 import { getSpritePaths } from './views/sprite-registry.js';
-import { loadAssets } from '../shared/assets.js';
+import { loadAssets, activeAs } from '../shared/assets.js';
 import { damageColor } from '../shared/conditions.js';
 import { UI } from './views/ui.js';
 import { getRoofLevel } from './views/draw-order.js';
@@ -206,6 +206,24 @@ export class GameController {
   send(command) {
     if (this.renderer && this.renderer.restingUntil > performance.now()) return;
     this.session.send(command);
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // rest
+  // A fogueira acesa (evento campfire, só pra quem acendeu): a esteira (look) aparece vazia no sqm dele na hora; depois
+  // de lie ms ele deita (o Ativo como da esteira, a esteira ocupada; o desenho dele some) e a tela escurece até ele
+  // sair (ms). Esteira sem Ativo como: só aparece quando ele deita.
+
+  rest(event) {
+    const lying = activeAs(event.look) || event.look;
+    const lie = event.lie || 0;
+    const end = event.ms + REST_EXTRA_MS;
+    if (lying !== event.look) this.particleController.spawnSheet(event, this.renderer, lie);
+    setTimeout(() => {
+      this.particleController.spawnSheet({ ...event, look: lying }, this.renderer, end - lie);
+      this.renderer.restingUntil = performance.now() + end - lie;
+      this.fadeOut(event.ms - lie);
+    }, lie);
   }
 
   // ================================================================================================================================================================================================================================================
@@ -527,9 +545,7 @@ export class GameController {
       } else if (event.type === 'levelUp' && event.playerId === playerId) {
         this.showMessage(`⭐ Você subiu para o nível ${event.lvl}!`, timestamp, 3000);
       } else if (event.type === 'campfire' && event.playerId === playerId && event.look) {
-        this.particleController.spawnSheet(event, this.renderer, event.ms + REST_EXTRA_MS);
-        this.renderer.restingUntil = performance.now() + event.ms + REST_EXTRA_MS;
-        this.fadeOut(event.ms);
+        this.rest(event);
       } else if (event.type === 'minimap' && event.playerId === playerId) {
         if (this.inventoryUI) this.inventoryUI.openMinimap();
       } else if (event.type === 'book' && event.playerId === playerId) {

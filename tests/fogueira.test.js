@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { buildGame, floorRect, FLOOR } from './helpers/fixture.js';
 import { TICK_MS } from '../js/simulation.js';
 import { setAssets } from '../shared/assets.js';
-import { CAMPFIRE_WOOD, CAMPFIRE_MS, CAMPFIRE_BURN_MS } from '../js/systems/interactions.js';
+import { CAMPFIRE_WOOD, CAMPFIRE_MS, CAMPFIRE_BURN_MS, CAMPFIRE_LIE_MS } from '../js/systems/interactions.js';
 import { objectIdType } from '../shared/assets.js';
 
 const BAG = 'itens/recipientes/bolsa-de-teste';
@@ -48,7 +48,8 @@ test('fogueira: a pilha inteira queima e vira o fogo pra todos; o player deita (
   const player = sim.player;
   const rest = light(sim, wood).find(e => e.type === 'campfire');
   assert.ok(rest);
-  assert.deepEqual([rest.playerId, rest.x, rest.y, rest.look, rest.ms], [player.id, 5, 5, MAT, CAMPFIRE_MS]);
+  assert.deepEqual([rest.playerId, rest.x, rest.y, rest.look, rest.lie, rest.ms], [player.id, 5, 5, MAT, CAMPFIRE_LIE_MS, CAMPFIRE_MS]);
+  assert.ok(CAMPFIRE_LIE_MS < CAMPFIRE_MS, 'deita antes de sair');
   assert.equal(sim.objects.includes(wood), false, 'as 7 madeiras queimaram');
   const fire = sim.objects.find(o => objectIdType(o.id) === FIRE);
   assert.ok(fire && fire.temporary, 'o fogo está no chão pra todos');
