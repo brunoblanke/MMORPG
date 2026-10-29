@@ -51,6 +51,7 @@
       "vende": [],
       "compra": [],
       "missoes": [],
+      "viagens": [],
       "falasVenda": {
         "lista": "O que você deseja comprar?",
         "confirmar": "Quer comprar {item} por {preco}?",

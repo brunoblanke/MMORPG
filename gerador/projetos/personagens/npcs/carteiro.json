@@ -10,6 +10,16 @@
       "cadáver: fresco, apodrecendo, ossos"
     ]
   },
+  "criatura": {
+    "id": 128,
+    "cores": [
+      0,
+      88,
+      88,
+      95
+    ],
+    "addons": []
+  },
   "cadaver": {
     "fresco": {
       "tibia": {
@@ -29,16 +39,6 @@
         "variacao": 0
       }
     }
-  },
-  "criatura": {
-    "id": 128,
-    "cores": [
-      0,
-      88,
-      88,
-      95
-    ],
-    "addons": []
   },
   "propriedades": {
     "comportamento": "npc",
@@ -92,6 +92,7 @@
       ],
       "compra": [],
       "missoes": [],
+      "viagens": [],
       "falasVenda": {
         "lista": "O que você deseja comprar?",
         "confirmar": "Quer comprar {item} por {preco}?",

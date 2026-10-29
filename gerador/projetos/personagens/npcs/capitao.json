@@ -51,13 +51,6 @@
       "vende": [],
       "compra": [],
       "missoes": [],
-      "falasVenda": {
-        "lista": "O que você deseja comprar?",
-        "confirmar": "Quer comprar {item} por {preco}?",
-        "listaCompra": "O que você deseja vender?",
-        "queVender": "O que você deseja vender?",
-        "confirmarCompra": "Quer me vender {quantidade} {item} por {preco}?"
-      },
       "viagens": [
         {
           "nome": "Caverna",
@@ -103,7 +96,14 @@
             "z": 0
           }
         }
-      ]
+      ],
+      "falasVenda": {
+        "lista": "O que você deseja comprar?",
+        "confirmar": "Quer comprar {item} por {preco}?",
+        "listaCompra": "O que você deseja vender?",
+        "queVender": "O que você deseja vender?",
+        "confirmarCompra": "Quer me vender {quantidade} {item} por {preco}?"
+      }
     }
   },
   "ferramenta": "criaturas",
