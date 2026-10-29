@@ -164,6 +164,22 @@ export const groundMethods = {
   },
 
   // ================================================================================================================================================================================================================================================
+  // approach
+  // Comando approach (duplo clique num objeto que se usa com a mira, como a semente no chão): longe, o player anda até
+  // um sqm colado nele, sem pisar em cima; colado, para onde está.
+
+  approach(player, id) {
+    const obj = this.sim.getItem(id) || this.sim.objectsById.get(id);
+    if (!obj) return;
+    if (this.isNear(player, obj)) {
+      player.pendingInv = null;
+      this.sim.control.clearWalk(player);
+      return;
+    }
+    this.walkNextTo(player, obj, null);
+  },
+
+  // ================================================================================================================================================================================================================================================
   // open
   // Comando openContainer (duplo clique na caixa ou no cadáver): colado ou em
   // cima, abre; longe, o player anda até um sqm colado e abre ao chegar. Se

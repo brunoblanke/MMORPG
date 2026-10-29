@@ -393,7 +393,10 @@ export class InventoryUI {
       const type = objectIdType(usable.id);
       if (usable.movable !== true && clicavel(type)) this.game.send({ type: 'useObject', id: usable.id });
       else if (itemInfo(type).writes) this.game.writeModal.open({ t: 'g', id: usable.id }, usable.itemData || { type });
-      else if (aimsWith(type)) this.startAim({ t: 'g', id: usable.id });
+      else if (aimsWith(type)) {
+        this.game.send({ type: 'approach', id: usable.id });
+        this.startAim({ t: 'g', id: usable.id });
+      }
       else this.game.send({ type: 'useItem', from: { t: 'g', id: usable.id } });
       return true;
     };

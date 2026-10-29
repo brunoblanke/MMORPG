@@ -434,7 +434,7 @@ export class InventoryController {
         player.pendingInv = null;
       } else if (this.isNear(player, obj)) {
         player.pendingInv = null;
-        this.sim.control.handle(player, pending.command);
+        if (pending.command) this.sim.control.handle(player, pending.command);
       } else if (!this.sim.control.isWalking(player)) {
         player.pendingInv = null;
       }

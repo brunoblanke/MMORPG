@@ -28,8 +28,9 @@ import { SpeechLayer } from './views/speech.js';
 import { ChatBox } from './views/chat-box.js';
 import { PlayerMenu } from './views/player-menu.js';
 
-// Tempo pra saber se o clique em caixa/cadáver é o começo de um duplo clique.
-const DOUBLE_CLICK_MS = 250;
+// Tempo pra saber se o clique em algo que se usa (caixa, cadáver, item, objeto) é o começo de um duplo clique (no
+// celular, dois toques).
+const DOUBLE_CLICK_MS = 300;
 
 // O player deitado na fogueira continua na tela um pouco além da saída (até a página voltar pra entrada).
 const REST_EXTRA_MS = 2000;
@@ -377,8 +378,9 @@ export class GameController {
   // handleGameClick
   // Clique em inimigo escolhe/tira o alvo; na porta, abre ou fecha (o player
   // anda até ela se precisar); no chão, anda até o sqm no andar em que o
-  // player está. Em cima de caixa ou cadáver, espera um instante: se for
-  // duplo clique (abrir), o player não sai do lugar.
+  // player está. Em cima de algo que se usa (caixa, cadáver, item, objeto),
+  // espera um instante: se for duplo clique (usar), o player não anda até lá
+  // (quem usa leva ele pro lado do objeto).
 
   handleGameClick(gridPos) {
     if (!this.player) return;
@@ -393,7 +395,7 @@ export class GameController {
 
     const command = { type: 'walkTo', x: gridPos.x, y: gridPos.y, z };
     this.cancelPendingWalk();
-    if (!this.inventoryUI || !this.inventoryUI.openableUnderMouse()) {
+    if (!this.inventoryUI || !(this.inventoryUI.openableUnderMouse() || this.inventoryUI.usableUnderMouse())) {
       this.send(command);
       return;
     }

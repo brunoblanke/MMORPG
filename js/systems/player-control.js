@@ -25,6 +25,11 @@ const DOOR_AUTOCLOSE_MS = 3000;
 //   { type: 'saveLayout', layout }       guardar o layout das janelas
 //   { type: 'useDoor', x, y, z }         abrir/fechar porta (anda até ela)
 //   { type: 'writeItem', from, para, texto } escrever na carta ou etiqueta (systems/mail.js)
+//   { type: 'approach', id }             ir pro lado do objeto (duplo clique no que se usa com a mira)
+
+// Comandos de usar algo do chão: largam o andar que o 1º clique do duplo clique já começou (até o sqm do objeto), pra
+// o player parar ao lado dele e não em cima.
+const USES_GROUND = ['useItem', 'useObject', 'openContainer', 'writeItem', 'approach'];
 
 export class PlayerControl {
 
@@ -41,6 +46,7 @@ export class PlayerControl {
   handle(player, command) {
     if (player.dead && command.type !== 'respawn') return;
     if (player.restingUntil && command.type !== 'say') return;
+    if (USES_GROUND.includes(command.type) && !(command.from && command.from.t !== 'g')) this.clearWalk(player);
     switch (command.type) {
       case 'walkDir': return this.setWalkDir(player, command.dx || 0, command.dy || 0);
       case 'walkTo': return this.walkTo(player, command.x, command.y, command.z);
@@ -52,6 +58,7 @@ export class PlayerControl {
       case 'moveItem': return this.moveItem(player, command.itemId, command.x, command.y, command.z);
       case 'moveInv': return this.sim.inventory.move(player, command.from, command.to, command.amount);
       case 'openContainer': return this.sim.inventory.open(player, command.itemId);
+      case 'approach': return this.sim.inventory.approach(player, command.id);
       case 'useObject': return this.sim.interactions.useObject(player, command.id);
       case 'useItem': return this.sim.inventory.use(player, command.from, command.target || null);
       case 'writeItem': return this.sim.inventory.writeItem(player, command.from, command.para, command.texto);
