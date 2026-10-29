@@ -1,7 +1,7 @@
 {
   "formato": {
-    "quadro": 32,
-    "quadros": 1
+    "quadro": 64,
+    "quadros": 5
   },
   "objeto": {
     "tibia": {
@@ -13,19 +13,39 @@
     "bloqueia": false,
     "move": false,
     "altura": false,
+    "volume": 1,
+    "passo": 1,
+    "nivelPesca": 0,
     "empilhavel": false,
+    "duasMaos": false,
+    "tipoMunicao": "",
+    "isca": "",
+    "plantaComo": "",
+    "resistencias": {},
+    "postal": false,
+    "enviadoComo": "",
+    "protegePerda": false,
+    "invisivelEquipado": false,
     "peso": 10,
     "espacos": 0,
     "atk": 0,
     "def": 0,
     "ml": 0,
     "speed": 0,
+    "criticoChance": 0,
+    "criticoDano": 0,
     "vidaMin": 0,
     "vidaMax": 0,
     "manaMin": 0,
     "manaMax": 0,
     "alimento": 0,
-    "luz": 0
+    "luz": 0,
+    "duracao": 0,
+    "regenVida": 0,
+    "regenMana": 0,
+    "uso": "",
+    "ativoComo": "",
+    "comecaAtivo": false
   },
   "ferramenta": "objetos",
   "grupo": "decoracao",
