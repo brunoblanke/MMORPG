@@ -107,3 +107,16 @@ test('fogueira: deitado o player não anda; a cama fica no sqm dele, pro lado op
   const above = light(sim, north).find(e => e.type === 'campfire');
   assert.deepEqual([above.x, above.y], [5, 6], 'fogo em cima: a cama vai pra baixo');
 });
+
+test('fogueira: o player em cima das madeiras dá um passo pro lado antes de deitar, e a cama não fica no fogo', () => {
+  const { sim } = game(3);
+  const under = sim.inventory.spawnGroundItem({ uid: 'w8', type: WOOD, count: 3 }, 5, 5, 0);
+  const rest = light(sim, under).find(e => e.type === 'campfire');
+  const fire = sim.objects.find(o => objectIdType(o.id) === FIRE);
+  assert.deepEqual([fire.x, fire.y], [5, 5]);
+  assert.notDeepEqual([sim.player.x, sim.player.y], [5, 5]);
+  assert.equal(Math.max(Math.abs(sim.player.x - 5), Math.abs(sim.player.y - 5)), 1, 'ao lado do fogo');
+  assert.equal(rest.x, sim.player.x);
+  const bedTiles = [[rest.x, rest.y], [rest.x, rest.y - 1]];
+  assert.ok(!bedTiles.some(([bx, by]) => bx === 5 && by === 5), 'a cama não cobre o fogo');
+});

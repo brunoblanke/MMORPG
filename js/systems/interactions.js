@@ -170,8 +170,21 @@ export class InteractionController {
     if (fire) this.placeTemporary(fire, x, y, z, CAMPFIRE_BURN_MS);
     player.restingUntil = this.sim.time + CAMPFIRE_MS;
     this.sim.control.clearWalk(player);
+    this.stepOffFire(player, x, y, z);
     const bedY = x === player.x && (y === player.y - 1 || y === player.y) ? player.y + 1 : player.y;
     this.sim.emit({ type: 'campfire', playerId: player.id, x: player.x, y: bedY, z: player.z || 0, look: rest || null, ms: CAMPFIRE_MS });
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // stepOffFire
+  // O player em cima do fogo (no celular o 1º toque já anda até a pilha) dá um passo pro sqm livre mais perto, pra
+  // deitar ao lado dele.
+
+  stepOffFire(player, x, y, z) {
+    if (player.x !== x || player.y !== y || (player.z || 0) !== z) return;
+    const spot = this.sim.findSpotNear(x, y, z);
+    if (!spot || (spot.x === x && spot.y === y)) return;
+    this.sim.teleportPlayer(player, spot.x, spot.y, z);
   }
 
   // ================================================================================================================================================================================================================================================
