@@ -134,7 +134,7 @@ test('gerador acha as famílias de parede do Tibia (x, y, xy, yx do mesmo materi
 
 test('NPCs vendedores clássicos: só vendem e compram itens que existem no gerador', () => {
   const raiz = path.join(new URL('..', import.meta.url).pathname, 'gerador', 'projetos');
-  for (const nome of ['armeiro', 'armadureiro', 'ferreiro', 'taverneiro', 'runeiro', 'joalheira', 'gorn', 'lily']) {
+  for (const nome of ['armeiro', 'armadureiro', 'ferreiro', 'taverneiro', 'runeiro', 'joalheira', 'gorn', 'lily', 'carteiro']) {
     const receita = JSON.parse(fs.readFileSync(path.join(raiz, 'personagens', 'npcs', `${nome}.json`), 'utf8'));
     const conversa = receita.propriedades.conversa;
     assert.ok(conversa.vende.length + conversa.compra.length > 0, nome);

@@ -1,0 +1,108 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 4240,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4241,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 4245,
+        "variacao": 0
+      }
+    }
+  },
+  "criatura": {
+    "id": 128,
+    "cores": [
+      0,
+      88,
+      88,
+      95
+    ],
+    "addons": []
+  },
+  "propriedades": {
+    "comportamento": "npc",
+    "conversa": {
+      "boasVindas": "Cartas e encomendas pra qualquer lugar!",
+      "oi": "Olá, {nome}! Sou o carteiro. Vendo cartas, encomendas e etiquetas. Pergunte sobre o correio se precisar.",
+      "tchau": "Até mais, {nome}. Boas entregas!",
+      "raio": 2,
+      "topicos": [
+        {
+          "palavras": "correio, mail, post, enviar, mandar",
+          "resposta": "Escreva o nome de quem recebe na carta, ou numa etiqueta dentro da encomenda, e jogue na caixa de correio. Chega no depósito da pessoa, onde ela estiver."
+        },
+        {
+          "palavras": "carta, letter",
+          "resposta": "Use a carta pra escrever o destinatário e a mensagem. Depois de enviada ela fica carimbada e não pode ser mandada de novo."
+        },
+        {
+          "palavras": "encomenda, parcel, pacote",
+          "resposta": "Ponha os itens dentro da encomenda junto com uma etiqueta escrita com o nome de quem recebe."
+        },
+        {
+          "palavras": "etiqueta, label",
+          "resposta": "Use a etiqueta pra escrever o nome de quem recebe e ponha ela dentro da encomenda."
+        },
+        {
+          "palavras": "deposito, depósito, depot, locker",
+          "resposta": "O que chega pelo correio fica no seu depósito. Qualquer locker da cidade abre o seu."
+        },
+        {
+          "palavras": "nome, quem, trabalho, job",
+          "resposta": "Sou o carteiro. Cuido do correio desta cidade."
+        }
+      ],
+      "vende": [
+        {
+          "tipo": "itens/documentos-e-papeis/letter",
+          "preco": 8,
+          "palavras": "letter, carta"
+        },
+        {
+          "tipo": "itens/recipientes/parcel",
+          "preco": 15,
+          "palavras": "parcel, encomenda, pacote"
+        },
+        {
+          "tipo": "itens/documentos-e-papeis/label",
+          "preco": 1,
+          "palavras": "label, etiqueta"
+        }
+      ],
+      "compra": [],
+      "missoes": [],
+      "falasVenda": {
+        "lista": "O que você deseja comprar?",
+        "confirmar": "Quer comprar {item} por {preco}?",
+        "listaCompra": "O que você deseja vender?",
+        "queVender": "O que você deseja vender?",
+        "confirmarCompra": "Quer me vender {quantidade} {item} por {preco}?"
+      }
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "personagens",
+  "pasta": "npcs",
+  "nome": "carteiro"
+}
