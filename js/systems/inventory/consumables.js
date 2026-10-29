@@ -106,6 +106,10 @@ export const consumableMethods = {
       this.sim.interactions.readBook(player, src.item);
       return;
     }
+    if (use === 'fogueira') {
+      this.sim.interactions.campfire(player, src);
+      return;
+    }
     if (use === 'mapa') {
       this.sim.emit({ type: 'minimap', playerId: player.id });
       return;

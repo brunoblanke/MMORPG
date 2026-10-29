@@ -454,6 +454,7 @@ export class Simulation {
     this.movement.checkFloorTransitions([...this.players, ...this.enemies]);
     this.interactions.checkTeleports(this.players);
     this.interactions.checkStepTriggers(this.players);
+    this.interactions.checkCampfires(now);
     this.lifeCycle.processDeaths(now);
   }
 }

@@ -534,6 +534,8 @@ export class GameController {
         this.particleController.spawnXP(event.x, event.y, event.amount, this.renderer);
       } else if (event.type === 'levelUp' && event.playerId === playerId) {
         this.showMessage(`⭐ Você subiu para o nível ${event.lvl}!`, timestamp, 3000);
+      } else if (event.type === 'campfire' && event.playerId === playerId) {
+        this.particleController.spawnSheet(event, this.renderer);
       } else if (event.type === 'minimap' && event.playerId === playerId) {
         if (this.inventoryUI) this.inventoryUI.openMinimap();
       } else if (event.type === 'book' && event.playerId === playerId) {

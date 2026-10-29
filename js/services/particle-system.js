@@ -2,6 +2,8 @@
 
 import { EFFECTS, MISSILES, RIPPLE, effectUrl, missileUrl, missileDirection } from '../../shared/effects.js';
 import { getImage } from '../../shared/image-loader.js';
+import { spriteFrame } from '../../shared/assets.js';
+import { ANIMATION_CYCLE_MS } from '../../shared/constants.js';
 
 export class ParticleSystem {
   constructor() {
@@ -72,6 +74,34 @@ export class ParticleSystem {
   }
 
   // ================================================================================================================================================================================================================================================
+  // spawnSheet
+  // O desenho de uma folha do gerador (type) animado em loop no sqm por duration ms (a fogueira de sair do jogo).
+
+  spawnSheet(x, y, type, duration, renderer, z = null) {
+    const frame = spriteFrame(type);
+    if (!frame) return;
+    this.effects = this.effects || [];
+    this.effects.push({ z, tiles: [[x, y]], sheet: frame, img: getImage(frame.url), frameMs: frame.ms || ANIMATION_CYCLE_MS / frame.frames, renderer, createdAt: performance.now(), duration });
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // drawSheet
+
+  drawSheet(ctx, effect) {
+    const { sheet, renderer } = effect;
+    const index = Math.floor((performance.now() - effect.createdAt) / effect.frameMs) % sheet.frames;
+    const tile = renderer.camera.tileSize;
+    const size = sheet.size / 32 * tile;
+    ctx.save();
+    ctx.imageSmoothingEnabled = false;
+    for (const [x, y] of effect.tiles) {
+      const pos = renderer.gridToScreenWithOffset(x, y);
+      ctx.drawImage(effect.img, sheet.x + index * sheet.size, sheet.y, sheet.size, sheet.size, pos.x + tile - size, pos.y + tile - size, size, size);
+    }
+    ctx.restore();
+  }
+
+  // ================================================================================================================================================================================================================================================
   // drawRipple
   // Ondas na água: RIPPLE.rings círculos só de contorno que nascem pequenos, crescem e somem, um depois do outro.
 
@@ -128,6 +158,10 @@ export class ParticleSystem {
         continue;
       }
       if (!e.img.complete || !e.img.naturalWidth) continue;
+      if (e.sheet) {
+        this.drawSheet(ctx, e);
+        continue;
+      }
       const frame = Math.min(e.frames - 1, Math.floor((performance.now() - e.createdAt) / e.ms));
       const tile = e.renderer.camera.tileSize;
       const size = e.size / 32 * tile;

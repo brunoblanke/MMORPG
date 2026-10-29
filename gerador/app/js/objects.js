@@ -78,6 +78,7 @@ const USES = [
   ['ferramenta-pesca', 'Ferramenta: vara de pescar (usar na água; gasta a isca)'],
   ['mapa', 'Mapa (usar abre o mini mapa em volta do player)'],
   ['cama', 'Cama (usar deita o player, que sai do jogo e recupera vida e mana mais rápido)'],
+  ['fogueira', 'Fogueira (3 ou mais no chão: usar acende o fogo do Ativo como, que só o player vê, e ele sai do jogo)'],
   ['picareta', 'Monte que a picareta abre em buraco (o buraco é o Ativo como)'],
   ['machete', 'Mato que o machete corta (rebrota sozinho)'],
   ['foice', 'Plantação que a foice corta (rebrota sozinha)'],

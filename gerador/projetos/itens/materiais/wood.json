@@ -40,8 +40,8 @@
     "duracao": 0,
     "regenVida": 0,
     "regenMana": 0,
-    "uso": "",
-    "ativoComo": "",
+    "uso": "fogueira",
+    "ativoComo": "decoracao/iluminacao/fogo-de-acampamento",
     "comecaAtivo": false
   },
   "ferramenta": "objetos",

@@ -17,6 +17,10 @@ const DROP_EFFECT = 'rings-yellow';
 // Efeito no sqm onde algo é plantado.
 const PLANT_EFFECT = 'rings-green';
 
+// Fogueira: quantas madeiras (item com Uso fogueira) no chão acendem e quanto tempo o fogo fica até o player sair.
+export const CAMPFIRE_WOOD = 3;
+export const CAMPFIRE_MS = 3000;
+
 // Objetos do mapa que se usam (gerador → Objetos → Uso):
 //   placa     → o texto (editor) aparece em cima dela, na cor escolhida no editor;
 //   livro     → abre o texto numa janela (no chão ou carregado);
@@ -29,6 +33,8 @@ const PLANT_EFFECT = 'rings-green';
 //   picareta  → monte que a picareta abre em buraco, como a pá;
 //   machete / foice → mato e plantação: a ferramenta corta e rebrota depois de REGROW_MS;
 //   cama      → o player deita e sai do jogo, e acorda com vida e mana recuperadas mais rápido (SLEEP_REGEN_FACTOR);
+//   fogueira  → item (a madeira): CAMPFIRE_WOOD no chão, usar gasta elas e acende o fogo (Ativo como), que só o player
+//               vê, e ele sai do jogo CAMPFIRE_MS depois (campfire / checkCampfires);
 //   alavanca  → usar liga ou desliga os alvos dela (portas e objetos que alternam, escolhidos no editor).
 // Longe, o player anda até o lado e usa ao chegar.
 
@@ -138,6 +144,44 @@ export class InteractionController {
     player.sleep = { at: this.sim.wallClock(), bed: { x: bed.x, y: bed.y, z } };
     this.sim.removePlayer(player.id);
     this.sim.loggedOut.push(player);
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // campfire
+  // A pilha de madeira no chão (src, do useItem) acende: gasta CAMPFIRE_WOOD, o fogo (Ativo como da madeira) aparece só
+  // pra quem acendeu (evento campfire) e ele sai do jogo em CAMPFIRE_MS (checkCampfires).
+
+  campfire(player, src) {
+    const count = src.item.count || 1;
+    if (!src.obj || count < CAMPFIRE_WOOD) return this.message(player, `Junte ${CAMPFIRE_WOOD} madeiras no chão pra acender a fogueira.`);
+    if (this.sim.inCombat(player)) return this.message(player, 'Você não pode descansar em combate.');
+    if (player.restingUntil) return;
+    const { x, y } = src.obj;
+    const z = src.obj.z || 0;
+    if (count > CAMPFIRE_WOOD) src.item.count = count - CAMPFIRE_WOOD;
+    else src.remove();
+    player.restingUntil = this.sim.time + CAMPFIRE_MS;
+    this.sim.emit({ type: 'campfire', playerId: player.id, x, y, z, look: activeAs(src.item.type) || src.item.type, ms: CAMPFIRE_MS });
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // checkCampfires
+  // Quem acendeu a fogueira sai do jogo quando o fogo termina (rested: o servidor manda o navegador pra tela de entrada);
+  // entrar em combate antes apaga.
+
+  checkCampfires(now) {
+    for (const player of [...this.sim.players]) {
+      if (!player.restingUntil) continue;
+      if (this.sim.inCombat(player, now) || player.dead) {
+        player.restingUntil = null;
+        continue;
+      }
+      if (now < player.restingUntil) continue;
+      player.restingUntil = null;
+      player.rested = true;
+      this.sim.removePlayer(player.id);
+      this.sim.loggedOut.push(player);
+    }
   }
 
   // ================================================================================================================================================================================================================================================

@@ -354,7 +354,7 @@ export class InventoryUI {
         this.game.writeModal.open(place, item);
         return true;
       }
-      if (item && !item.items && (itemInfo(item.type).food || itemInfo(item.type).light || ['livro', 'mapa'].includes(objectUse(item.type)))) {
+      if (item && !item.items && (itemInfo(item.type).food || itemInfo(item.type).light || ['livro', 'mapa', 'fogueira'].includes(objectUse(item.type)))) {
         this.game.send({ type: 'useItem', from: place });
         return true;
       }

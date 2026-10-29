@@ -415,7 +415,7 @@ async function iniciarJogo(servidorHttp) {
       for (const saiu of sim.drainLoggedOut()) {
         guardarPersonagens(personagens, [saiu]);
         const dormindo = conexoes.get(saiu.id);
-        if (saiu.sleep && dormindo) {
+        if ((saiu.sleep || saiu.rested) && dormindo) {
           conexoes.delete(saiu.id);
           dormindo.socket.send(JSON.stringify({ type: 'sleeping' }));
           dormindo.socket.close();
