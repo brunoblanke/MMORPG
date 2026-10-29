@@ -47,8 +47,8 @@ export class ParticleController {
   // ================================================================================================================================================================================================================================================
   // spawnSheet
 
-  spawnSheet(event, renderer) {
-    this.particleSystem.spawnSheet(event.x, event.y, event.look, event.ms, renderer, event.z ?? null);
+  spawnSheet(event, renderer, ms = event.ms) {
+    this.particleSystem.spawnSheet(event.x, event.y, event.look, ms, renderer, event.z ?? null);
   }
 
   // ================================================================================================================================================================================================================================================

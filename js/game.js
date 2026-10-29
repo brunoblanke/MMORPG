@@ -31,6 +31,9 @@ import { PlayerMenu } from './views/player-menu.js';
 // Tempo pra saber se o clique em caixa/cadáver é o começo de um duplo clique.
 const DOUBLE_CLICK_MS = 250;
 
+// O player deitado na fogueira continua na tela um pouco além da saída (até a página voltar pra entrada).
+const REST_EXTRA_MS = 2000;
+
 // Cliente: pede o nome do personagem, carrega o mapa, entra no servidor de
 // jogo (RemoteSession) ou, sem servidor, roda a simulação aqui mesmo
 // (LocalSession). Transforma
@@ -534,8 +537,9 @@ export class GameController {
         this.particleController.spawnXP(event.x, event.y, event.amount, this.renderer);
       } else if (event.type === 'levelUp' && event.playerId === playerId) {
         this.showMessage(`⭐ Você subiu para o nível ${event.lvl}!`, timestamp, 3000);
-      } else if (event.type === 'campfire' && event.playerId === playerId) {
-        this.particleController.spawnSheet(event, this.renderer);
+      } else if (event.type === 'campfire' && event.playerId === playerId && event.look) {
+        this.particleController.spawnSheet(event, this.renderer, event.ms + REST_EXTRA_MS);
+        this.renderer.restingUntil = performance.now() + event.ms + REST_EXTRA_MS;
       } else if (event.type === 'minimap' && event.playerId === playerId) {
         if (this.inventoryUI) this.inventoryUI.openMinimap();
       } else if (event.type === 'book' && event.playerId === playerId) {

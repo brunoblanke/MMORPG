@@ -60,6 +60,7 @@ export class Renderer {
     this.frameTimestamp = 0;
     this.pendingOverlays = [];
     this.localPlayer = null;
+    this.restingUntil = 0;
     this.partyIds = new Set();
     this.lighting = new LightingLayer();
     this.floorCache = new FloorCache(this.sprites);
@@ -509,6 +510,7 @@ export class Renderer {
         this.drawFallbackSquare(base, size, stackOffsetX, stackOffsetY, "#888888", tint);
       }
     } else {
+      if (isPlayer && entity === this.localPlayer && this.restingUntil > performance.now()) return;
       const frame = this.getEntityFrame(entity, isPlayer, isEnemy);
       if (frame) {
         const isSelf = isPlayer && entity === this.localPlayer;

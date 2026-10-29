@@ -5,11 +5,13 @@ import assert from 'node:assert/strict';
 import { buildGame, floorRect, FLOOR } from './helpers/fixture.js';
 import { TICK_MS } from '../js/simulation.js';
 import { setAssets } from '../shared/assets.js';
-import { CAMPFIRE_WOOD, CAMPFIRE_MS } from '../js/systems/interactions.js';
+import { CAMPFIRE_WOOD, CAMPFIRE_MS, CAMPFIRE_BURN_MS } from '../js/systems/interactions.js';
+import { objectIdType } from '../shared/assets.js';
 
 const BAG = 'itens/recipientes/bolsa-de-teste';
 const WOOD = 'itens/materiais/madeira-de-teste';
 const FIRE = 'decoracao/iluminacao/fogo-de-teste';
+const MAT = 'decoracao/moveis/esteira-de-teste';
 
 const asset = (id, propriedades, ferramenta = 'objetos') => {
   const [grupo, pasta, nome] = id.split('/');
@@ -19,8 +21,9 @@ const asset = (id, propriedades, ferramenta = 'objetos') => {
 setAssets([
   asset(FLOOR, {}, 'pisos'),
   asset(BAG, { move: true, espacos: 4 }),
-  asset(WOOD, { move: true, empilhavel: true, peso: 5, uso: 'fogueira', ativoComo: FIRE }),
-  asset(FIRE, { move: false })
+  asset(WOOD, { move: true, empilhavel: true, peso: 5, uso: 'fogueira', ativoComo: FIRE, descansaComo: MAT }),
+  asset(FIRE, { move: false }),
+  asset(MAT, { move: false })
 ]);
 
 // ================================================================================================================================================================================================================================================
@@ -40,20 +43,24 @@ function light(sim, wood) {
   return sim.drainEvents();
 }
 
-test('fogueira: 3 madeiras no chão acendem o fogo só pra quem usou e ele sai do jogo depois de CAMPFIRE_MS', () => {
-  const { sim, wood } = game(CAMPFIRE_WOOD);
+test('fogueira: a pilha inteira queima e vira o fogo pra todos; o player deita (só ele vê) e sai depois de CAMPFIRE_MS', () => {
+  const { sim, wood } = game(7);
   const player = sim.player;
-  const fire = light(sim, wood).find(e => e.type === 'campfire');
-  assert.ok(fire);
-  assert.deepEqual([fire.playerId, fire.x, fire.y, fire.look, fire.ms], [player.id, 6, 5, FIRE, CAMPFIRE_MS]);
-  assert.equal(sim.inventory.groundItem(wood).count, CAMPFIRE_WOOD, 'a pilha fica como está');
+  const rest = light(sim, wood).find(e => e.type === 'campfire');
+  assert.ok(rest);
+  assert.deepEqual([rest.playerId, rest.x, rest.y, rest.look, rest.ms], [player.id, 5, 5, MAT, CAMPFIRE_MS]);
+  assert.equal(sim.objects.includes(wood), false, 'as 7 madeiras queimaram');
+  const fire = sim.objects.find(o => objectIdType(o.id) === FIRE);
+  assert.ok(fire && fire.temporary, 'o fogo está no chão pra todos');
+  assert.deepEqual([fire.x, fire.y], [6, 5]);
   sim.tick(sim.time + CAMPFIRE_MS - 2 * TICK_MS);
   assert.ok(sim.players.includes(player), 'ainda no jogo');
   sim.tick(sim.time + CAMPFIRE_MS);
   assert.equal(sim.players.includes(player), false);
-  const out = sim.drainLoggedOut();
-  assert.equal(out[0], player);
+  assert.equal(sim.drainLoggedOut()[0], player);
   assert.equal(player.rested, true);
+  sim.tick(sim.time + CAMPFIRE_BURN_MS);
+  assert.equal(sim.objects.includes(fire), false, 'o fogo apagou');
 });
 
 test('fogueira: com menos de 3 madeiras não acende', () => {
@@ -70,6 +77,7 @@ test('fogueira: não acende em combate; entrar em combate depois de acender apag
   assert.ok(light(sim, wood).some(e => e.type === 'message' && /combate/.test(e.text)));
   sim.player.lastCombatTime = -Infinity;
   light(sim, wood);
+  assert.equal(sim.objects.includes(wood), false);
   assert.ok(sim.player.restingUntil);
   sim.player.lastCombatTime = sim.time;
   sim.tick(sim.time + CAMPFIRE_MS + TICK_MS);

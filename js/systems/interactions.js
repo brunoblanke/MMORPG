@@ -17,9 +17,11 @@ const DROP_EFFECT = 'rings-yellow';
 // Efeito no sqm onde algo é plantado.
 const PLANT_EFFECT = 'rings-green';
 
-// Fogueira: quantas madeiras (item com Uso fogueira) no chão acendem e quanto tempo o fogo fica até o player sair.
+// Fogueira: quantas madeiras (item com Uso fogueira) no chão acendem, quanto tempo até o player sair e quanto o fogo
+// fica aceso no chão.
 export const CAMPFIRE_WOOD = 3;
 export const CAMPFIRE_MS = 3000;
+export const CAMPFIRE_BURN_MS = 60000;
 
 // Objetos do mapa que se usam (gerador → Objetos → Uso):
 //   placa     → o texto (editor) aparece em cima dela, na cor escolhida no editor;
@@ -33,8 +35,9 @@ export const CAMPFIRE_MS = 3000;
 //   picareta  → monte que a picareta abre em buraco, como a pá;
 //   machete / foice → mato e plantação: a ferramenta corta e rebrota depois de REGROW_MS;
 //   cama      → o player deita e sai do jogo, e acorda com vida e mana recuperadas mais rápido (SLEEP_REGEN_FACTOR);
-//   fogueira  → item (a madeira): CAMPFIRE_WOOD no chão, usar acende o fogo (Ativo como) em cima da pilha, que só o
-//               player vê, e ele sai do jogo CAMPFIRE_MS depois (campfire / checkCampfires); a pilha fica como está;
+//   fogueira  → item (a madeira): CAMPFIRE_WOOD ou mais no chão, usar queima a pilha inteira, que vira o fogo (Ativo
+//               como; todos veem, apaga em CAMPFIRE_BURN_MS), o player aparece deitado (Descansa como, só ele vê) e
+//               sai do jogo CAMPFIRE_MS depois (campfire / checkCampfires);
 //   alavanca  → usar liga ou desliga os alvos dela (portas e objetos que alternam, escolhidos no editor).
 // Longe, o player anda até o lado e usa ao chegar.
 
@@ -148,9 +151,9 @@ export class InteractionController {
 
   // ================================================================================================================================================================================================================================================
   // campfire
-  // A pilha de madeira no chão (src, do useItem), com CAMPFIRE_WOOD ou mais, acende: o fogo (Ativo como da madeira)
-  // aparece em cima dela só pra quem acendeu (evento campfire), a pilha fica como está, e ele sai do jogo em
-  // CAMPFIRE_MS (checkCampfires).
+  // A pilha de madeira no chão (src, do useItem), com CAMPFIRE_WOOD ou mais, queima inteira e vira o fogo (Ativo como
+  // da madeira), que todos veem e apaga em CAMPFIRE_BURN_MS; quem acendeu aparece deitado (Descansa como; evento
+  // campfire, só ele vê) e sai do jogo em CAMPFIRE_MS (checkCampfires).
 
   campfire(player, src) {
     const count = src.item.count || 1;
@@ -159,8 +162,30 @@ export class InteractionController {
     if (player.restingUntil) return;
     const { x, y } = src.obj;
     const z = src.obj.z || 0;
+    const fire = activeAs(src.item.type);
+    const rest = itemInfo(src.item.type).restsAs;
+    src.remove();
+    if (fire) this.placeTemporary(fire, x, y, z, CAMPFIRE_BURN_MS);
     player.restingUntil = this.sim.time + CAMPFIRE_MS;
-    this.sim.emit({ type: 'campfire', playerId: player.id, x, y, z, look: activeAs(src.item.type) || src.item.type, ms: CAMPFIRE_MS });
+    this.sim.emit({ type: 'campfire', playerId: player.id, x: player.x, y: player.y, z: player.z || 0, look: rest || null, ms: CAMPFIRE_MS });
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // placeTemporary
+  // Objeto que aparece no sqm pra todos e some sozinho depois de ms (o fogo da fogueira).
+
+  placeTemporary(type, x, y, z, ms) {
+    const { sim } = this;
+    const props = objectProps(type);
+    sim.inventory.objectCounter++;
+    const obj = new GameObject({ id: `${type}_${sim.inventory.objectCounter}`, x, y, z, step: sim.movement.getStepHeight(x, y, z), movable: false, hasVolume: props.hasVolume, blocksMovement: false, temporary: true });
+    sim.objects.push(obj);
+    sim.objectsById.set(obj.id, obj);
+    sim.world.addObject(obj);
+    sim.schedule((sim.time || 0) + ms, () => {
+      if (sim.objectsById.get(obj.id) === obj) sim.inventory.removeGroundObject(obj);
+    });
+    return obj;
   }
 
   // ================================================================================================================================================================================================================================================

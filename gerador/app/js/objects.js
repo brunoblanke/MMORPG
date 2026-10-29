@@ -47,11 +47,11 @@ const NUMBERS = [
   { key: 'regenVida', label: 'Regenera vida equipado (a cada 6 s)', min: 0, step: 1 },
   { key: 'regenMana', label: 'Regenera mana equipado (a cada 6 s)', min: 0, step: 1 }
 ];
-const DEFAULT_PROPERTIES = { bloqueia: false, move: true, altura: false, volume: 1, passo: 1, nivelPesca: 0, empilhavel: false, duasMaos: false, tipoMunicao: '', isca: '', plantaComo: '', resistencias: {}, postal: false, enviadoComo: '', protegePerda: false, invisivelEquipado: false, peso: 10, espacos: 0, atk: 0, def: 0, ml: 0, speed: 0, criticoChance: 0, criticoDano: 0, vidaMin: 0, vidaMax: 0, manaMin: 0, manaMax: 0, alimento: 0, luz: 0, duracao: 0, regenVida: 0, regenMana: 0, uso: '', ativoComo: '', comecaAtivo: false };
+const DEFAULT_PROPERTIES = { bloqueia: false, move: true, altura: false, volume: 1, passo: 1, nivelPesca: 0, empilhavel: false, duasMaos: false, tipoMunicao: '', isca: '', plantaComo: '', resistencias: {}, postal: false, enviadoComo: '', descansaComo: '', protegePerda: false, invisivelEquipado: false, peso: 10, espacos: 0, atk: 0, def: 0, ml: 0, speed: 0, criticoChance: 0, criticoDano: 0, vidaMin: 0, vidaMax: 0, manaMin: 0, manaMax: 0, alimento: 0, luz: 0, duracao: 0, regenVida: 0, regenMana: 0, uso: '', ativoComo: '', comecaAtivo: false };
 const PROPERTY_GROUPS = [
   ['corpo', 'Corpo e colisão', ['bloqueia', 'move', 'altura', 'volume', 'passo', 'empilhavel', 'peso', 'transicao'], true],
   ['estado', 'Estado normal e ativo', ['ativoComo', 'comecaAtivo'], false],
-  ['uso', 'Uso e correio', ['uso', 'isca', 'plantaComo', 'nivelPesca', 'postal', 'escrita', 'enviadoComo'], true],
+  ['uso', 'Uso e correio', ['uso', 'isca', 'plantaComo', 'descansaComo', 'nivelPesca', 'postal', 'escrita', 'enviadoComo'], true],
   ['equip', 'Equipar e armas', ['slot', 'skillArma', 'duasMaos', 'tipoMunicao', 'atk', 'def', 'ml', 'speed', 'criticoChance', 'criticoDano', 'protegePerda', 'invisivelEquipado', 'regenVida', 'regenMana'], false],
   ['consome', 'Comida e poção', ['vidaMin', 'vidaMax', 'manaMin', 'manaMax', 'alimento'], false],
   ['luz', 'Luz e duração', ['luz', 'duracao'], false],
@@ -78,7 +78,7 @@ const USES = [
   ['ferramenta-pesca', 'Ferramenta: vara de pescar (usar na água; gasta a isca)'],
   ['mapa', 'Mapa (usar abre o mini mapa em volta do player)'],
   ['cama', 'Cama (usar deita o player, que sai do jogo e recupera vida e mana mais rápido)'],
-  ['fogueira', 'Fogueira (3 ou mais no chão: usar acende o fogo do Ativo como, que só o player vê, e ele sai do jogo)'],
+  ['fogueira', 'Fogueira (3 ou mais no chão: usar queima a pilha, que vira o fogo do Ativo como, o player deita (Descansa como) e sai do jogo)'],
   ['picareta', 'Monte que a picareta abre em buraco (o buraco é o Ativo como)'],
   ['machete', 'Mato que o machete corta (rebrota sozinho)'],
   ['foice', 'Plantação que a foice corta (rebrota sozinha)'],
@@ -555,6 +555,24 @@ function renderProperties() {
   put('plantaComo', plantLabel);
   plantSelect.onchange = () => {
     objects.properties.plantaComo = plantSelect.value;
+    objects.dirty = true;
+  };
+  const restLabel = document.createElement('label');
+  restLabel.className = 'numberline';
+  const restSelect = document.createElement('select');
+  restSelect.id = 'objectProp-descansaComo';
+  const fillRest = (paths) => {
+    const current = objects.properties.descansaComo || '';
+    const options = current && !paths.includes(current) ? [current, ...paths] : paths;
+    restSelect.innerHTML = '<option value="">— nada —</option>' + options.map(p => `<option value="${p}">${p}</option>`).join('');
+    restSelect.value = current;
+  };
+  fillRest([]);
+  fetchProjects().then(projects => fillRest(projects.filter(p => p.ferramenta === 'objetos' && p.grupo !== 'itens').map(p => p.caminho).sort())).catch(() => {});
+  restLabel.append('Descansa como (fogueira: o desenho do player deitado, que só ele vê até sair do jogo)', restSelect);
+  put('descansaComo', restLabel);
+  restSelect.onchange = () => {
+    objects.properties.descansaComo = restSelect.value;
     objects.dirty = true;
   };
   const sentLabel = document.createElement('label');
