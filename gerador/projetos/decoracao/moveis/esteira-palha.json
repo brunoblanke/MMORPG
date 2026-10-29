@@ -42,8 +42,7 @@
     "vidaMax": 0,
     "manaMin": 0,
     "manaMax": 0,
-    "alimento": 0,
-    "ativoComo": "decoracao/moveis/cama-palha"
+    "alimento": 0
   },
   "ferramenta": "objetos",
   "grupo": "decoracao",

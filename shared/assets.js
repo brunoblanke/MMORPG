@@ -546,6 +546,17 @@ export function activeAs(type) {
 }
 
 // ================================================================================================================================================================================================================================================
+// activeAsFor
+// O desenho ativo pra quem usa: com gênero feminino e "Ativo como (feminino)" na receita, esse; senão o Ativo como (a
+// esteira ou cama ocupada pelo player do mesmo sexo).
+
+export function activeAsFor(type, gender) {
+  const asset = getAsset(splitType(type).asset);
+  const female = gender === 'female' && asset && asset.propriedades && asset.propriedades.ativoComoFeminino;
+  return female && getAsset(female) ? withDirection(female, type) : activeAs(type);
+}
+
+// ================================================================================================================================================================================================================================================
 // togglesOnUse / startsActive
 // Objeto fixo com o desenho ativo e sem outro Uso: usar alterna entre normal
 // e ativo (poste, lampião, alavanca…). startsActive: começa ativo no mapa
