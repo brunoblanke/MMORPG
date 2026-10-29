@@ -27,6 +27,21 @@ export const LAYOUT_VERSION = 2;
 export const REACH_CHECK_MS = 500;
 
 // ================================================================================================================================================================================================================================================
+// freePosition
+// Onde a janela solta aparece: a posição guardada (que vale pra todos os aparelhos), puxada pra dentro da tela de
+// viewW × viewH (a janela inteira na largura, o título na altura), sem mudar o que está guardado.
+
+export const FREE_WINDOW_W = 170;
+export const FREE_HEADER_H = 40;
+
+export function freePosition(x, y, viewW, viewH) {
+  return {
+    x: Math.round(Math.max(0, Math.min(x, viewW - FREE_WINDOW_W))),
+    y: Math.round(Math.max(0, Math.min(y, viewH - FREE_HEADER_H)))
+  };
+}
+
+// ================================================================================================================================================================================================================================================
 // aimsWith
 // Item usado com a mira: potion (em player ou no chão), runa, as ferramentas (corda, pá, picareta, machete, foice, chave, vara de pescar) e o que se planta (semente).
 

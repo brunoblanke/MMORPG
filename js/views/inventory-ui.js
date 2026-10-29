@@ -3,7 +3,7 @@
 import { objectIdType, objectUse, togglesOnUse } from '../../shared/assets.js';
 import { itemInfo } from '../../shared/items.js';
 import { describeItem, describeEntity } from './look.js';
-import { PITCH, LONG_PRESS_MS, aimsWith } from './inventory-ui/common.js';
+import { PITCH, LONG_PRESS_MS, aimsWith, freePosition } from './inventory-ui/common.js';
 import { clicavel } from '../../shared/ficha.js';
 import { patchChildren } from './inventory-ui/dom-patch.js';
 import { htmlMethods } from './inventory-ui/html.js';
@@ -113,7 +113,10 @@ export class InventoryUI {
       patchChildren(this.columns[col], next);
     }
     const free = document.createElement('div');
-    free.innerHTML = this.layout.free.map(w => this.windowHtml(w).replace('<section ', `<section style="left:${Math.round(w.x)}px;top:${Math.round(w.y)}px" `)).join('');
+    free.innerHTML = this.layout.free.map(w => {
+      const at = freePosition(w.x, w.y, window.innerWidth, window.innerHeight);
+      return this.windowHtml(w).replace('<section ', `<section style="left:${at.x}px;top:${at.y}px" `);
+    }).join('');
     patchChildren(this.freeLayer, free);
     document.querySelectorAll('.inv-scroller').forEach(sc => {
       sc.scrollTop = this.scrollMemory.get(sc.closest('.inv-win').dataset.win) || 0;
@@ -188,6 +191,11 @@ export class InventoryUI {
     const panels = [...Object.values(this.columns), this.freeLayer];
     const inPanels = (el) => panels.some(p => p.contains(el));
     this.bindAim();
+
+    window.addEventListener('resize', () => {
+      this.lastKey = '';
+      this.render();
+    });
 
     document.addEventListener('keydown', (evt) => {
       if (evt.key !== 'Escape' || !this.layout || !(this.findWindow('book') || this.findWindow('minimap'))) return;
