@@ -33,8 +33,8 @@ export const CAMPFIRE_MS = 3000;
 //   picareta  → monte que a picareta abre em buraco, como a pá;
 //   machete / foice → mato e plantação: a ferramenta corta e rebrota depois de REGROW_MS;
 //   cama      → o player deita e sai do jogo, e acorda com vida e mana recuperadas mais rápido (SLEEP_REGEN_FACTOR);
-//   fogueira  → item (a madeira): CAMPFIRE_WOOD no chão, usar gasta elas e acende o fogo (Ativo como), que só o player
-//               vê, e ele sai do jogo CAMPFIRE_MS depois (campfire / checkCampfires);
+//   fogueira  → item (a madeira): CAMPFIRE_WOOD no chão, usar acende o fogo (Ativo como) em cima da pilha, que só o
+//               player vê, e ele sai do jogo CAMPFIRE_MS depois (campfire / checkCampfires); a pilha fica como está;
 //   alavanca  → usar liga ou desliga os alvos dela (portas e objetos que alternam, escolhidos no editor).
 // Longe, o player anda até o lado e usa ao chegar.
 
@@ -148,8 +148,9 @@ export class InteractionController {
 
   // ================================================================================================================================================================================================================================================
   // campfire
-  // A pilha de madeira no chão (src, do useItem) acende: gasta CAMPFIRE_WOOD, o fogo (Ativo como da madeira) aparece só
-  // pra quem acendeu (evento campfire) e ele sai do jogo em CAMPFIRE_MS (checkCampfires).
+  // A pilha de madeira no chão (src, do useItem), com CAMPFIRE_WOOD ou mais, acende: o fogo (Ativo como da madeira)
+  // aparece em cima dela só pra quem acendeu (evento campfire), a pilha fica como está, e ele sai do jogo em
+  // CAMPFIRE_MS (checkCampfires).
 
   campfire(player, src) {
     const count = src.item.count || 1;
@@ -158,8 +159,6 @@ export class InteractionController {
     if (player.restingUntil) return;
     const { x, y } = src.obj;
     const z = src.obj.z || 0;
-    if (count > CAMPFIRE_WOOD) src.item.count = count - CAMPFIRE_WOOD;
-    else src.remove();
     player.restingUntil = this.sim.time + CAMPFIRE_MS;
     this.sim.emit({ type: 'campfire', playerId: player.id, x, y, z, look: activeAs(src.item.type) || src.item.type, ms: CAMPFIRE_MS });
   }

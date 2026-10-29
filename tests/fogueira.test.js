@@ -46,7 +46,7 @@ test('fogueira: 3 madeiras no chão acendem o fogo só pra quem usou e ele sai d
   const fire = light(sim, wood).find(e => e.type === 'campfire');
   assert.ok(fire);
   assert.deepEqual([fire.playerId, fire.x, fire.y, fire.look, fire.ms], [player.id, 6, 5, FIRE, CAMPFIRE_MS]);
-  assert.equal(sim.objects.includes(wood), false, 'as madeiras queimaram');
+  assert.equal(sim.inventory.groundItem(wood).count, CAMPFIRE_WOOD, 'a pilha fica como está');
   sim.tick(sim.time + CAMPFIRE_MS - 2 * TICK_MS);
   assert.ok(sim.players.includes(player), 'ainda no jogo');
   sim.tick(sim.time + CAMPFIRE_MS);
@@ -56,10 +56,7 @@ test('fogueira: 3 madeiras no chão acendem o fogo só pra quem usou e ele sai d
   assert.equal(player.rested, true);
 });
 
-test('fogueira: com mais madeira gasta só 3; com menos não acende', () => {
-  const big = game(5);
-  light(big.sim, big.wood);
-  assert.equal(big.sim.inventory.groundItem(big.wood).count, 2);
+test('fogueira: com menos de 3 madeiras não acende', () => {
   const small = game(2);
   const events = light(small.sim, small.wood);
   assert.ok(!events.some(e => e.type === 'campfire'));
