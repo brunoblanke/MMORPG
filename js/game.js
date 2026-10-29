@@ -28,10 +28,6 @@ import { SpeechLayer } from './views/speech.js';
 import { ChatBox } from './views/chat-box.js';
 import { PlayerMenu } from './views/player-menu.js';
 
-// Tempo pra saber se o clique em algo que se usa (caixa, cadáver, item, objeto) é o começo de um duplo clique (no
-// celular, dois toques).
-const DOUBLE_CLICK_MS = 300;
-
 // O player deitado na fogueira continua na tela um pouco além da saída (até a página voltar pra entrada).
 const REST_EXTRA_MS = 2000;
 
@@ -378,9 +374,8 @@ export class GameController {
   // handleGameClick
   // Clique em inimigo escolhe/tira o alvo; na porta, abre ou fecha (o player
   // anda até ela se precisar); no chão, anda até o sqm no andar em que o
-  // player está. Em cima de algo que se usa (caixa, cadáver, item, objeto),
-  // espera um instante: se for duplo clique (usar), o player não anda até lá
-  // (quem usa leva ele pro lado do objeto).
+  // player está, na hora; se vier o 2º clique (usar), o servidor larga esse
+  // andar e leva o player pro lado do objeto (USES_GROUND em player-control.js).
 
   handleGameClick(gridPos) {
     if (!this.player) return;
@@ -388,21 +383,11 @@ export class GameController {
 
     const z = this.player.z || 0;
     if (this.session.world.getDoorAt(gridPos.x, gridPos.y, z)) {
-      this.cancelPendingWalk();
       this.send({ type: 'useDoor', x: gridPos.x, y: gridPos.y, z });
       return;
     }
 
-    const command = { type: 'walkTo', x: gridPos.x, y: gridPos.y, z };
-    this.cancelPendingWalk();
-    if (!this.inventoryUI || !(this.inventoryUI.openableUnderMouse() || this.inventoryUI.usableUnderMouse())) {
-      this.send(command);
-      return;
-    }
-    this.pendingWalk = setTimeout(() => {
-      this.pendingWalk = null;
-      this.send(command);
-    }, DOUBLE_CLICK_MS);
+    this.send({ type: 'walkTo', x: gridPos.x, y: gridPos.y, z });
   }
 
   // ================================================================================================================================================================================================================================================
@@ -417,16 +402,6 @@ export class GameController {
     const stairs = this.session.world.getTransitionAt(tile.x, tile.y, z);
     if (!stairs || !stairs.manualStairs) return;
     this.send({ type: 'useStairs', x: tile.x, y: tile.y, z });
-  }
-
-  // ================================================================================================================================================================================================================================================
-  // cancelPendingWalk
-  // Desiste do andar que o clique em caixa/cadáver deixou esperando.
-
-  cancelPendingWalk() {
-    if (!this.pendingWalk) return;
-    clearTimeout(this.pendingWalk);
-    this.pendingWalk = null;
   }
 
   // ================================================================================================================================================================================================================================================

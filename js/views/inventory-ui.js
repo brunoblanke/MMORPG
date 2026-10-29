@@ -383,16 +383,17 @@ export class InventoryUI {
     const openGround = () => {
       const target = this.openableUnderMouse();
       if (target) {
-        this.game.cancelPendingWalk();
         this.game.send({ type: 'openContainer', itemId: target.id });
         return true;
       }
       const usable = this.usableUnderMouse();
       if (!usable) return false;
-      this.game.cancelPendingWalk();
       const type = objectIdType(usable.id);
       if (usable.movable !== true && clicavel(type)) this.game.send({ type: 'useObject', id: usable.id });
-      else if (itemInfo(type).writes) this.game.writeModal.open({ t: 'g', id: usable.id }, usable.itemData || { type });
+      else if (itemInfo(type).writes) {
+        this.game.send({ type: 'approach', id: usable.id });
+        this.game.writeModal.open({ t: 'g', id: usable.id }, usable.itemData || { type });
+      }
       else if (aimsWith(type)) {
         this.game.send({ type: 'approach', id: usable.id });
         this.startAim({ t: 'g', id: usable.id });
