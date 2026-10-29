@@ -12,6 +12,8 @@ const BAG = 'itens/recipientes/bolsa-de-teste';
 const WOOD = 'itens/materiais/madeira-de-teste';
 const FIRE = 'decoracao/iluminacao/fogo-de-teste';
 const MAT = 'decoracao/moveis/esteira-de-teste';
+const MAT_MALE = 'decoracao/moveis/esteira-homem-de-teste';
+const MAT_FEMALE = 'decoracao/moveis/esteira-mulher-de-teste';
 
 const asset = (id, propriedades, ferramenta = 'objetos') => {
   const [grupo, pasta, nome] = id.split('/');
@@ -23,7 +25,9 @@ setAssets([
   asset(BAG, { move: true, espacos: 4 }),
   asset(WOOD, { move: true, empilhavel: true, peso: 5, uso: 'fogueira', ativoComo: FIRE, descansaComo: MAT }),
   asset(FIRE, { move: false }),
-  asset(MAT, { move: false })
+  asset(MAT, { move: false, ativoComo: MAT_MALE, ativoComoFeminino: MAT_FEMALE }),
+  asset(MAT_MALE, { move: false }),
+  asset(MAT_FEMALE, { move: false })
 ]);
 
 // ================================================================================================================================================================================================================================================
@@ -120,4 +124,14 @@ test('fogueira: o player em cima das madeiras dá um passo pro lado antes de dei
   assert.equal(rest.x, sim.player.x);
   const bedTiles = [[rest.x, rest.y], [rest.x, rest.y - 1]];
   assert.ok(!bedTiles.some(([bx, by]) => bx === 5 && by === 5), 'a cama não cobre o fogo');
+});
+
+test('fogueira: a esteira aparece vazia e o player deita na versão do sexo dele', () => {
+  const male = game(3);
+  const him = light(male.sim, male.wood).find(e => e.type === 'campfire');
+  assert.deepEqual([him.look, him.lying], [MAT, MAT_MALE]);
+  const female = game(3);
+  female.sim.player.gender = 'female';
+  const her = light(female.sim, female.wood).find(e => e.type === 'campfire');
+  assert.deepEqual([her.look, her.lying], [MAT, MAT_FEMALE]);
 });

@@ -1,0 +1,53 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 1,
+    "direcoes": [
+      "norte"
+    ],
+    "sqms": 2
+  },
+  "objeto": {
+    "tibia": {
+      "id": 5502,
+      "variacao": 0
+    }
+  },
+  "direcoes": {
+    "norte": {
+      "tibia": {
+        "id": 5502,
+        "variacao": 0
+      }
+    },
+    "norte-2": {
+      "tibia": {
+        "id": 5501,
+        "variacao": 0
+      }
+    }
+  },
+  "propriedades": {
+    "bloqueia": true,
+    "move": false,
+    "altura": false,
+    "empilhavel": false,
+    "peso": 10,
+    "espacos": 0,
+    "atk": 0,
+    "def": 0,
+    "ml": 0,
+    "speed": 0,
+    "vidaMin": 0,
+    "vidaMax": 0,
+    "manaMin": 0,
+    "manaMax": 0,
+    "alimento": 0,
+    "ativoComo": "decoracao/moveis/cama-palha",
+    "ativoComoFeminino": "decoracao/moveis/esteira-palha"
+  },
+  "ferramenta": "objetos",
+  "grupo": "decoracao",
+  "pasta": "moveis",
+  "nome": "esteira-palha-vazia"
+}

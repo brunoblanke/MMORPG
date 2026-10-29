@@ -47,10 +47,10 @@ const NUMBERS = [
   { key: 'regenVida', label: 'Regenera vida equipado (a cada 6 s)', min: 0, step: 1 },
   { key: 'regenMana', label: 'Regenera mana equipado (a cada 6 s)', min: 0, step: 1 }
 ];
-const DEFAULT_PROPERTIES = { bloqueia: false, move: true, altura: false, volume: 1, passo: 1, nivelPesca: 0, empilhavel: false, duasMaos: false, tipoMunicao: '', isca: '', plantaComo: '', resistencias: {}, postal: false, enviadoComo: '', descansaComo: '', protegePerda: false, invisivelEquipado: false, peso: 10, espacos: 0, atk: 0, def: 0, ml: 0, speed: 0, criticoChance: 0, criticoDano: 0, vidaMin: 0, vidaMax: 0, manaMin: 0, manaMax: 0, alimento: 0, luz: 0, duracao: 0, regenVida: 0, regenMana: 0, uso: '', ativoComo: '', comecaAtivo: false };
+const DEFAULT_PROPERTIES = { bloqueia: false, move: true, altura: false, volume: 1, passo: 1, nivelPesca: 0, empilhavel: false, duasMaos: false, tipoMunicao: '', isca: '', plantaComo: '', resistencias: {}, postal: false, enviadoComo: '', descansaComo: '', protegePerda: false, invisivelEquipado: false, peso: 10, espacos: 0, atk: 0, def: 0, ml: 0, speed: 0, criticoChance: 0, criticoDano: 0, vidaMin: 0, vidaMax: 0, manaMin: 0, manaMax: 0, alimento: 0, luz: 0, duracao: 0, regenVida: 0, regenMana: 0, uso: '', ativoComo: '', ativoComoFeminino: '', comecaAtivo: false };
 const PROPERTY_GROUPS = [
   ['corpo', 'Corpo e colisão', ['bloqueia', 'move', 'altura', 'volume', 'passo', 'empilhavel', 'peso', 'transicao'], true],
-  ['estado', 'Estado normal e ativo', ['ativoComo', 'comecaAtivo'], false],
+  ['estado', 'Estado normal e ativo', ['ativoComo', 'ativoComoFeminino', 'comecaAtivo'], false],
   ['uso', 'Uso e correio', ['uso', 'isca', 'plantaComo', 'descansaComo', 'nivelPesca', 'postal', 'escrita', 'enviadoComo'], true],
   ['equip', 'Equipar e armas', ['slot', 'skillArma', 'duasMaos', 'tipoMunicao', 'atk', 'def', 'ml', 'speed', 'criticoChance', 'criticoDano', 'protegePerda', 'invisivelEquipado', 'regenVida', 'regenMana'], false],
   ['consome', 'Comida e poção', ['vidaMin', 'vidaMax', 'manaMin', 'manaMax', 'alimento'], false],
@@ -454,6 +454,31 @@ function createSections(list) {
 }
 
 // ================================================================================================================================================================================================================================================
+// seletorDeReceita
+// Campo que escolhe outra receita de objeto (as que passam no filtro) e guarda o caminho em propriedades[chave].
+
+function seletorDeReceita(chave, rotulo, filtro, vazio) {
+  const label = document.createElement('label');
+  label.className = 'numberline';
+  const select = document.createElement('select');
+  select.id = `objectProp-${chave}`;
+  const preencher = (caminhos) => {
+    const atual = objects.properties[chave] || '';
+    const opcoes = atual && !caminhos.includes(atual) ? [atual, ...caminhos] : caminhos;
+    select.innerHTML = `<option value="">${vazio}</option>` + opcoes.map(c => `<option value="${c}">${c}</option>`).join('');
+    select.value = atual;
+  };
+  preencher([]);
+  fetchProjects().then(projetos => preencher(projetos.filter(p => p.ferramenta === 'objetos' && filtro(p)).map(p => p.caminho).sort())).catch(() => {});
+  select.onchange = () => {
+    objects.properties[chave] = select.value;
+    objects.dirty = true;
+  };
+  label.append(rotulo, select);
+  return label;
+}
+
+// ================================================================================================================================================================================================================================================
 // renderProperties
 
 function renderProperties() {
@@ -557,42 +582,8 @@ function renderProperties() {
     objects.properties.plantaComo = plantSelect.value;
     objects.dirty = true;
   };
-  const restLabel = document.createElement('label');
-  restLabel.className = 'numberline';
-  const restSelect = document.createElement('select');
-  restSelect.id = 'objectProp-descansaComo';
-  const fillRest = (paths) => {
-    const current = objects.properties.descansaComo || '';
-    const options = current && !paths.includes(current) ? [current, ...paths] : paths;
-    restSelect.innerHTML = '<option value="">— nada —</option>' + options.map(p => `<option value="${p}">${p}</option>`).join('');
-    restSelect.value = current;
-  };
-  fillRest([]);
-  fetchProjects().then(projects => fillRest(projects.filter(p => p.ferramenta === 'objetos' && p.grupo !== 'itens').map(p => p.caminho).sort())).catch(() => {});
-  restLabel.append('Descansa como (fogueira: o desenho do player deitado, que só ele vê até sair do jogo)', restSelect);
-  put('descansaComo', restLabel);
-  restSelect.onchange = () => {
-    objects.properties.descansaComo = restSelect.value;
-    objects.dirty = true;
-  };
-  const sentLabel = document.createElement('label');
-  sentLabel.className = 'numberline';
-  const sentSelect = document.createElement('select');
-  sentSelect.id = 'objectProp-enviadoComo';
-  const fillSent = (paths) => {
-    const current = objects.properties.enviadoComo || '';
-    const options = current && !paths.includes(current) ? [current, ...paths] : paths;
-    sentSelect.innerHTML = '<option value="">— continua igual —</option>' + options.map(p => `<option value="${p}">${p}</option>`).join('');
-    sentSelect.value = current;
-  };
-  fillSent([]);
-  fetchProjects().then(projects => fillSent(projects.filter(p => p.ferramenta === 'objetos' && p.grupo === 'itens').map(p => p.caminho).sort())).catch(() => {});
-  sentLabel.append('Enviada vira (a carta ou encomenda carimbada, que não pode ser enviada de novo)', sentSelect);
-  put('enviadoComo', sentLabel);
-  sentSelect.onchange = () => {
-    objects.properties.enviadoComo = sentSelect.value;
-    objects.dirty = true;
-  };
+  put('descansaComo', seletorDeReceita('descansaComo', 'Descansa como (fogueira: a esteira onde o player deita, que só ele vê; o Ativo como dela é a ocupada)', p => p.grupo !== 'itens', '— nada —'));
+  put('enviadoComo', seletorDeReceita('enviadoComo', 'Enviada vira (a carta ou encomenda carimbada, que não pode ser enviada de novo)', p => p.grupo === 'itens', '— continua igual —'));
   for (const number of NUMBERS) {
     const label = document.createElement('label');
     label.className = 'numberline';
@@ -648,6 +639,7 @@ function renderProperties() {
     objects.properties.ativoComo = activeSelect.value;
     objects.dirty = true;
   };
+  put('ativoComoFeminino', seletorDeReceita('ativoComoFeminino', 'Ativo como (feminino): o desenho ativo quando quem usa é feminino (vazio = o Ativo como)', () => true, '— o mesmo —'));
   const startLabel = document.createElement('label');
   startLabel.className = 'checkline';
   const startInput = document.createElement('input');

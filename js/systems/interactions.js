@@ -2,7 +2,7 @@
 
 import { GameObject } from '../models/game-object.js';
 import { fichaDe, reacoesA, capacidadesDe, interacoesDe, clicavel, efeitosAoPisar } from '../../shared/ficha.js';
-import { objectIdType, objectProps, objectUse, activeAs, togglesOnUse, displayName, getAsset, splitType, isEntranceType, floorBehavior, WORM_TYPE } from '../../shared/assets.js';
+import { objectIdType, objectProps, objectUse, activeAs, activeAsFor, togglesOnUse, displayName, getAsset, splitType, isEntranceType, floorBehavior, WORM_TYPE } from '../../shared/assets.js';
 import { itemInfo, newItem, weightOf, FISH_RANGE, USE_COOLDOWN_MS, SLEEP_REGEN_FACTOR, REGEN_HP, REGEN_MANA } from '../../shared/items.js';
 import { VOCATIONS, vocationOf } from '../../shared/vocations.js';
 import { takeFromBag } from './trade.js';
@@ -173,7 +173,7 @@ export class InteractionController {
     this.sim.control.clearWalk(player);
     this.stepOffFire(player, x, y, z);
     const bedY = x === player.x && (y === player.y - 1 || y === player.y) ? player.y + 1 : player.y;
-    this.sim.emit({ type: 'campfire', playerId: player.id, x: player.x, y: bedY, z: player.z || 0, look: rest || null, lie: CAMPFIRE_LIE_MS, ms: CAMPFIRE_MS });
+    this.sim.emit({ type: 'campfire', playerId: player.id, x: player.x, y: bedY, z: player.z || 0, look: rest || null, lying: rest ? activeAsFor(rest, player.gender) || rest : null, lie: CAMPFIRE_LIE_MS, ms: CAMPFIRE_MS });
   }
 
   // ================================================================================================================================================================================================================================================
