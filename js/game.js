@@ -207,7 +207,19 @@ export class GameController {
   // Manda um comando do jogador pra sessão (servidor ou simulação local).
 
   send(command) {
+    if (this.renderer && this.renderer.restingUntil > performance.now()) return;
     this.session.send(command);
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // fadeOut
+  // A tela escurece aos poucos em ms (o player deitado na fogueira, antes de sair do jogo; #restFade).
+
+  fadeOut(ms) {
+    const fade = document.getElementById('restFade');
+    if (!fade) return;
+    fade.style.transitionDuration = `${ms}ms`;
+    requestAnimationFrame(() => fade.classList.add('on'));
   }
 
   // ================================================================================================================================================================================================================================================
@@ -540,6 +552,7 @@ export class GameController {
       } else if (event.type === 'campfire' && event.playerId === playerId && event.look) {
         this.particleController.spawnSheet(event, this.renderer, event.ms + REST_EXTRA_MS);
         this.renderer.restingUntil = performance.now() + event.ms + REST_EXTRA_MS;
+        this.fadeOut(event.ms);
       } else if (event.type === 'minimap' && event.playerId === playerId) {
         if (this.inventoryUI) this.inventoryUI.openMinimap();
       } else if (event.type === 'book' && event.playerId === playerId) {

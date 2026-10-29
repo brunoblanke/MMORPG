@@ -40,6 +40,7 @@ export class PlayerControl {
 
   handle(player, command) {
     if (player.dead && command.type !== 'respawn') return;
+    if (player.restingUntil && command.type !== 'say') return;
     switch (command.type) {
       case 'walkDir': return this.setWalkDir(player, command.dx || 0, command.dy || 0);
       case 'walkTo': return this.walkTo(player, command.x, command.y, command.z);

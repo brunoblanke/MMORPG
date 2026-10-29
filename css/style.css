@@ -224,6 +224,21 @@ canvas {
   text-align: center;
 }
 
+.rest-fade {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 3000ms linear;
+  z-index: 9;
+}
+
+.rest-fade.on {
+  opacity: 1;
+  pointer-events: auto;
+}
+
 .write-box textarea {
   display: block;
   width: 100%;

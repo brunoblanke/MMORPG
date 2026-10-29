@@ -152,8 +152,10 @@ export class InteractionController {
   // ================================================================================================================================================================================================================================================
   // campfire
   // A pilha de madeira no chão (src, do useItem), com CAMPFIRE_WOOD ou mais, queima inteira e vira o fogo (Ativo como
-  // da madeira), que todos veem e apaga em CAMPFIRE_BURN_MS; quem acendeu aparece deitado (Descansa como; evento
-  // campfire, só ele vê) e sai do jogo em CAMPFIRE_MS (checkCampfires).
+  // da madeira), que todos veem e apaga em CAMPFIRE_BURN_MS; quem acendeu aparece deitado no sqm dele (Descansa como,
+  // 2 sqm de altura: os pés nele e a cabeça no de cima, ou, com o fogo em cima dele, a cabeça nele e os pés no de
+  // baixo; evento campfire, só ele vê; y = o sqm de baixo da cama), fica parado (PlayerControl ignora os comandos) e
+  // sai do jogo em CAMPFIRE_MS (checkCampfires).
 
   campfire(player, src) {
     const count = src.item.count || 1;
@@ -167,7 +169,9 @@ export class InteractionController {
     src.remove();
     if (fire) this.placeTemporary(fire, x, y, z, CAMPFIRE_BURN_MS);
     player.restingUntil = this.sim.time + CAMPFIRE_MS;
-    this.sim.emit({ type: 'campfire', playerId: player.id, x: player.x, y: player.y, z: player.z || 0, look: rest || null, ms: CAMPFIRE_MS });
+    this.sim.control.clearWalk(player);
+    const bedY = x === player.x && (y === player.y - 1 || y === player.y) ? player.y + 1 : player.y;
+    this.sim.emit({ type: 'campfire', playerId: player.id, x: player.x, y: bedY, z: player.z || 0, look: rest || null, ms: CAMPFIRE_MS });
   }
 
   // ================================================================================================================================================================================================================================================

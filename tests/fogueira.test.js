@@ -93,3 +93,17 @@ test('fogueira: madeira na mochila não acende', () => {
   assert.ok(sim.drainEvents().some(e => e.type === 'message' && /no chão/.test(e.text)));
   assert.equal(sim.player.equip.mochila.items[0].count, 10);
 });
+
+test('fogueira: deitado o player não anda; a cama fica no sqm dele, pro lado oposto ao fogo quando o fogo está em cima', () => {
+  const side = game(3);
+  const rest = light(side.sim, side.wood).find(e => e.type === 'campfire');
+  assert.deepEqual([rest.x, rest.y], [5, 5], 'fogo ao lado: pés no sqm do player, cabeça no de cima');
+  side.sim.enqueue('player1', { type: 'walkDir', dx: 0, dy: 1 });
+  side.sim.enqueue('player1', { type: 'walkTo', x: 5, y: 9, z: 0 });
+  for (let i = 0; i < 5; i++) side.sim.tick(side.sim.time + TICK_MS);
+  assert.deepEqual([side.sim.player.x, side.sim.player.y], [5, 5]);
+  const { sim } = game(3);
+  const north = sim.inventory.spawnGroundItem({ uid: 'w9', type: WOOD, count: 3 }, 5, 4, 0);
+  const above = light(sim, north).find(e => e.type === 'campfire');
+  assert.deepEqual([above.x, above.y], [5, 6], 'fogo em cima: a cama vai pra baixo');
+});
