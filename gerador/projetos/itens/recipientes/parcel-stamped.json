@@ -1,0 +1,29 @@
+{
+  "formato": {
+    "quadro": 32,
+    "quadros": 1
+  },
+  "objeto": {
+    "tibia": {
+      "id": 3504,
+      "variacao": 0
+    }
+  },
+  "propriedades": {
+    "bloqueia": false,
+    "move": true,
+    "postal": false,
+    "altura": true,
+    "empilhavel": false,
+    "peso": 18,
+    "espacos": 8,
+    "atk": 0,
+    "def": 0,
+    "ml": 0,
+    "slot": "mochila"
+  },
+  "ferramenta": "objetos",
+  "grupo": "itens",
+  "pasta": "recipientes",
+  "nome": "parcel-stamped"
+}

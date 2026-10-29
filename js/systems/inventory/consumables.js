@@ -54,6 +54,22 @@ export const consumableMethods = {
   },
 
   // ================================================================================================================================================================================================================================================
+  // writeItem
+  // Comando writeItem: escreve na carta ou etiqueta (do inventário, de uma caixa aberta ou do chão, onde o player anda
+  // até o lado) o destinatário e, na carta, a mensagem (systems/mail.js).
+
+  writeItem(player, from, para, texto) {
+    if (!from || !['e', 'c', 'g'].includes(from.t)) return;
+    const src = this.source(player, from);
+    if (src.error || !itemInfo(src.item.type).writes) return;
+    if (src.obj && !this.isNear(player, src.obj)) {
+      this.walkNextTo(player, src.obj, { type: 'writeItem', from, para, texto });
+      return;
+    }
+    this.sim.mail.write(src.item, para, texto);
+  },
+
+  // ================================================================================================================================================================================================================================================
   // use
   // Comando useItem: usa um item do inventário, de uma caixa aberta ou do
   // chão (longe, o player anda até o lado e usa ao chegar). Comida soma tempo

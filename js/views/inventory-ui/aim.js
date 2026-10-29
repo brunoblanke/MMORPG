@@ -109,7 +109,7 @@ export const aimMethods = {
     if (clicavel(type)) return obj;
     if (obj.movable !== true) return togglesOnUse(type) ? obj : null;
     const info = itemInfo(type);
-    return info.food || info.heal || info.light || objectUse(type) || aimsWith(type) ? obj : null;
+    return info.food || info.heal || info.light || info.writes || objectUse(type) || aimsWith(type) ? obj : null;
   },
 
   // ================================================================================================================================================================================================================================================
