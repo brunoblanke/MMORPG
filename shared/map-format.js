@@ -1,6 +1,6 @@
 // shared/map-format.js
 
-import { isFloorType, isEntranceType, isStairsType, isItemType, objectProps, stairKind, objectDirection, extraSquares } from './assets.js';
+import { isFloorType, isEntranceType, isStairsType, isItemType, objectProps, stairKind, objectDirection, extraSquares, supportsItems } from './assets.js';
 import { getStairTarget } from './stairs.js';
 import { borderEntryType, parseBorderType, mergeSavedInnerCorners } from './floor-borders.js';
 
@@ -41,17 +41,26 @@ export function addFloorToCell(cell, type, seq = null) {
 // restackItems
 //
 // Recalcula o step de cada item da célula pela ordem da pilha: o item fica
-// sobre a altura dos itens COM volume que estão abaixo dele. Item sem volume
-// não aumenta a altura — outro item colocado depois fica no mesmo step.
+// sobre a altura dos itens COM volume que estão abaixo dele, começando em cima
+// da bancada (stackBase). Item sem volume não aumenta a altura — outro item
+// colocado depois fica no mesmo step.
 
 export function restackItems(objects) {
-  let height = 0;
+  let height = stackBase(objects);
   for (const obj of objects) {
     if (!isItemType(obj.type)) continue;
     obj.step = height;
     const props = objectProps(obj.type);
     if (props.hasVolume) height += props.volume || 1;
   }
+}
+
+// ================================================================================================================================================================================================================================================
+// stackBase
+// Altura onde os itens da célula começam: o volume da peça que apoia itens (bancada, `supportsItems`), ou o chão.
+
+export function stackBase(objects) {
+  return objects.reduce((height, obj) => (!isItemType(obj.type) && supportsItems(obj.type) ? Math.max(height, objectProps(obj.type).volume || 1) : height), 0);
 }
 
 // ================================================================================================================================================================================================================================================
@@ -350,6 +359,7 @@ export function buildLayersFromMapData(mapData, GRID) {
   for (const layer of Object.values(layers)) {
     for (const cell of Object.values(layer)) {
       if (cell.borders.length > 1) cell.borders = mergeSavedInnerCorners(cell.borders);
+      if (cell.objects.length > 1) restackItems(cell.objects);
     }
   }
   return { layers, layerOrder, stats };

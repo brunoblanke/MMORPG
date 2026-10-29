@@ -7,6 +7,7 @@ import { pickFrameRect } from '../../../shared/sprite-sheet.js';
 import { PLAYER_SPRITES, DEFAULT_GENDER } from '../../../shared/catalog.js';
 import { getAsset, spriteFrame, pieceType, floorMiddle, displayName, isItemType, objectProps, conjuntoPartes } from '../../../shared/assets.js';
 import { getStairTopKeys, getRopeTopKeys } from '../model/borders.js';
+import { stackBase } from '../../../shared/map-format.js';
 import { state } from '../model/state.js';
 import { loadImage, setImageUpdateCallback } from './image-cache.js';
 import { stackFrame } from '../../../shared/items.js';
@@ -451,7 +452,7 @@ function drawPaintPreview(cells) {
   const parts = conjuntoPartes(type);
   const heightAt = (x, y) => {
     const cell = layer && layer[`${x},${y}`];
-    return cell ? cell.objects.filter(o => isItemType(o.type) && objectProps(o.type).hasVolume).reduce((sum, o) => sum + (objectProps(o.type).volume || 1), 0) : 0;
+    return cell ? cell.objects.filter(o => isItemType(o.type) && objectProps(o.type).hasVolume).reduce((sum, o) => sum + (objectProps(o.type).volume || 1), stackBase(cell.objects)) : 0;
   };
   for (const { x, y } of cells) {
     if (parts.length) {
