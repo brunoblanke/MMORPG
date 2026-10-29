@@ -38,6 +38,7 @@ export const state = {
   activeZ: GROUND_FLOOR,
   tool: 'floor',
   floorPaint: null,
+  floorBorders: true,
   wallPaint: null,
   accessPaint: null,
   itemPaint: null,

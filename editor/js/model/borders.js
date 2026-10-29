@@ -5,8 +5,8 @@ import { getStairTop } from '../../../shared/stairs.js';
 import { objectUse } from '../../../shared/assets.js';
 import { refreshBordersAround, getStairTopKeys as stairTopKeysBelow } from '../../../shared/floor-borders.js';
 
-// Bordas automáticas no estado do editor (regras em shared/floor-borders.js).
-// Topo de escada fica sem piso (o jogo remove), então conta como vazio.
+// Bordas automáticas no estado do editor (regras em shared/floor-borders.js). Só o piso pintado gera borda: escada
+// (e o topo dela, sem piso no andar de cima) não mexe nas bordas.
 
 // Os topos de escada e de corda percorrem o andar de baixo inteiro: ficam guardados até a ação terminar (soltar o
 // mouse, clicar, tecla) ou uma escada mudar, e por andar (desfazer e carregar trocam o andar inteiro).
@@ -68,14 +68,14 @@ function ropeTopKeys(below, z) {
 
 // ================================================================================================================================================================================================================================================
 // refreshBordersAt
-// Piso, buraco ou escada mudou no sqm (x, y) do andar z: refaz as bordas em
-// volta. Escada também muda o topo dela, no andar de cima.
+// Piso ou buraco mudou no sqm (x, y) do andar z: refaz as bordas em volta. Escada só esquece os topos guardados
+// (desenho), sem mexer em borda nenhuma.
 
 export function refreshBordersAt(z, x, y, stairsChanged = false) {
-  if (stairsChanged) forgetTops();
+  if (stairsChanged) {
+    forgetTops();
+    return;
+  }
   const layer = state.layers[z];
-  if (layer) refreshBordersAround(layer, x, y, getStairTopKeys(z));
-  if (!stairsChanged || !state.layers[z + 1]) return;
-  const top = getStairTop(x, y, z);
-  refreshBordersAround(state.layers[z + 1], top.x, top.y, getStairTopKeys(z + 1));
+  if (layer) refreshBordersAround(layer, x, y);
 }

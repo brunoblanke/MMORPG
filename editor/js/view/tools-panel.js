@@ -363,6 +363,21 @@ function toolSwatch(t) {
 }
 
 // ================================================================================================================================================================================================================================================
+// floorBordersToggle
+// Pisos: "Bordas automáticas" (ligado, o piso pintado refaz as bordas em volta; desligado, entra sem borda nenhuma).
+
+function floorBordersToggle() {
+  const label = document.createElement('label');
+  label.className = 'accordion-toggle';
+  const box = document.createElement('input');
+  box.type = 'checkbox';
+  box.checked = state.floorBorders;
+  box.onchange = () => { state.floorBorders = box.checked; };
+  label.append(box, ' Bordas automáticas');
+  return label;
+}
+
+// ================================================================================================================================================================================================================================================
 // buildAccordion
 // A lista da ferramenta: folhas (ou peças) agrupadas por pasta/folha.
 
@@ -385,6 +400,7 @@ function buildAccordion(tool) {
     filterAccordion(acc, search.value);
   };
   acc.appendChild(search);
+  if (tool.id === 'floor') acc.appendChild(floorBordersToggle());
   for (const group of groups) {
     const title = document.createElement('div');
     title.className = 'border-accordion-title';

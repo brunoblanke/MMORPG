@@ -95,7 +95,10 @@ function paintCell(x, y) {
   const cell = layer[strokeKey];
 
   if (state.tool === 'floor') {
-    if (state.floorPaint && addFloorToCell(cell, state.floorPaint)) refreshBordersAt(state.activeZ, x, y);
+    if (state.floorPaint && addFloorToCell(cell, state.floorPaint)) {
+      if (state.floorBorders) refreshBordersAt(state.activeZ, x, y);
+      else cell.borders = [];
+    }
   } else if (state.tool === 'eraser') {
     const erased = eraseTopmost(cell);
     if (erased === 'floor' || erased === 'hole' || erased === 'stairs') refreshBordersAt(state.activeZ, x, y, erased === 'stairs');
