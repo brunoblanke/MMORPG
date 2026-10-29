@@ -42,7 +42,8 @@
     "regenMana": 0,
     "uso": "fogueira",
     "ativoComo": "decoracao/iluminacao/fogo-de-acampamento",
-    "comecaAtivo": false
+    "comecaAtivo": false,
+    "descansaComo": "decoracao/moveis/cama-palha"
   },
   "ferramenta": "objetos",
   "grupo": "itens",
