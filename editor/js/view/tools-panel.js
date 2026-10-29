@@ -4,11 +4,13 @@ import { state, TOOLS } from '../model/state.js';
 import { FLOOR_MIN, FLOOR_MAX } from '../../../shared/constants.js';
 import { canvas, scheduleRender, scheduleOverlay } from './canvas-renderer.js';
 import { BORDER_VARIANTS } from '../../../shared/floor-borders.js';
-import { listAssets, creatureBehavior, pieceType, splitType, displayName, isStairsFolder, isEntranceFolder, isItemType, isWallType, objectDirections, rotateType, withDirection, WALL_PIECES, WALL_PIECE_NAMES } from '../../../shared/assets.js';
+import { listAssets, creatureBehavior, pieceType, splitType, displayName, isStairsAccess, isEntranceType, isItemType, isWallType, objectDirections, rotateType, withDirection, WALL_PIECES, WALL_PIECE_NAMES } from '../../../shared/assets.js';
 import { setThumb } from './sprite-thumb.js';
 import { svgIcon } from '../../../js/views/inventory-ui/icons.js';
 import { closeSelectPanel } from './forms.js';
 import { rememberView } from './view-memory.js';
+
+const ACCESS_FOLDERS = ['estrutura/escadas', 'estrutura/entradas', 'estrutura/teletransportes', 'estrutura/degraus'];
 
 // ================================================================================================================================================================================================================================================
 // renderLayerSelect
@@ -92,8 +94,7 @@ export function choosePaintDefaults() {
   const first = (list) => (list[0] ? list[0].id : null);
   if (!state.floorPaint) state.floorPaint = first(floors);
   if (!state.wallPaint && walls[0]) state.wallPaint = pieceType(walls[0].id, wallPieces(walls[0])[0]);
-  if (!state.stairsPaint) state.stairsPaint = first(listAssets('objetos', a => isStairsFolder(a.id)));
-  if (!state.holePaint) state.holePaint = first(listAssets('objetos', a => isEntranceFolder(a.id)));
+  if (!state.accessPaint) state.accessPaint = first(listAssets('objetos', isAccess));
   if (!state.itemPaint) state.itemPaint = first(listAssets('objetos', isCarried));
   if (!state.decoPaint) state.decoPaint = first(listAssets('objetos', isDecoration));
   if (!state.enemyPaint) state.enemyPaint = first(listAssets('criaturas', isMonster));
@@ -159,8 +160,7 @@ function accordionGroups(tool) {
       }))
     };
   }
-  if (tool.id === 'stairs') return { empty: 'Nenhuma escada gerada (Estrutura › Escadas).', groups: byFolder(listAssets('objetos', a => isStairsFolder(a.id)), simple) };
-  if (tool.id === 'hole') return { empty: 'Nenhuma entrada gerada (Estrutura › Entradas).', groups: byFolder(listAssets('objetos', a => isEntranceFolder(a.id)), simple) };
+  if (tool.id === 'access') return { empty: 'Nenhum acesso gerado (Estrutura › Escadas, Entradas, Teletransportes ou Degraus).', groups: byFolder(listAssets('objetos', isAccess), simple) };
   if (tool.id === 'item') return { empty: 'Nenhum item gerado (Itens).', groups: byFolder(listAssets('objetos', isCarried), simple) };
   if (tool.id === 'deco') return { empty: 'Nenhuma decoração gerada (Decoração ou Estrutura › Natureza).', groups: byFolder(listAssets('objetos', isDecoration), simple) };
   if (tool.id === 'enemy') return { empty: 'Nenhuma criatura gerada (Criaturas).', groups: byFolder(listAssets('criaturas', isMonster), simple) };
@@ -170,17 +170,21 @@ function accordionGroups(tool) {
 }
 
 // ================================================================================================================================================================================================================================================
-// isCarried / isDecoration / isPlayerSheet / isMonster
-// Ferramenta Item: o que fica no grupo Itens. Decoração: os outros objetos
-// soltos no mapa (Decoração e a natureza da Estrutura). Bot: as folhas de
-// Personagens › Players. Criatura: as do grupo Criaturas que não são NPC.
+// isCarried / isDecoration / isAccess / isPlayerSheet / isMonster
+// Ferramenta Itens: o que fica no grupo Itens. Acessos: o que leva a outro lugar, organizado nas pastas ACCESS_FOLDERS
+// (e qualquer escada ou entrada pela receita, onde estiver). Decoração: os outros objetos soltos no mapa. Bot: as
+// folhas de Personagens › Players. Criaturas: as do grupo Criaturas que não são NPC.
 
 function isCarried(asset) {
   return isItemType(asset.id) && asset.grupo === 'itens';
 }
 
 function isDecoration(asset) {
-  return isItemType(asset.id) && asset.grupo !== 'itens';
+  return isItemType(asset.id) && asset.grupo !== 'itens' && !isAccess(asset);
+}
+
+function isAccess(asset) {
+  return ACCESS_FOLDERS.includes(`${asset.grupo}/${asset.pasta}`) || isStairsAccess(asset.id) || isEntranceType(asset.id);
 }
 
 function isPlayerSheet(asset) {
@@ -450,7 +454,7 @@ export function updateStats() {
     if (c.hole) h++;
     if (c.enemy) cr++;
     c.objects.forEach(o => {
-      if (isStairsFolder(o.type)) s++;
+      if (isStairsAccess(o.type)) s++;
       else if (isWallType(o.type)) w++;
       else it++;
     });

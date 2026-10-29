@@ -439,7 +439,7 @@ function drawArea() {
 // O que o pincel vai colocar, meio transparente em cada sqm dele (virado na
 // direção escolhida; item por cima da pilha que já está no sqm).
 
-const PREVIEW_PAINTS = { wall: 'wallPaint', stairs: 'stairsPaint', hole: 'holePaint', item: 'itemPaint', deco: 'decoPaint' };
+const PREVIEW_PAINTS = { wall: 'wallPaint', access: 'accessPaint', item: 'itemPaint', deco: 'decoPaint' };
 const PREVIEW_ALPHA = 0.55;
 
 function drawPaintPreview(cells) {

@@ -15,7 +15,7 @@ setAssets([
   { id: 'estrutura/cercas/mureta', ferramenta: 'paredes', rotulo: 'Estrutura › Cercas e parapeitos', nome: 'mureta', url: '/m.png', quadro: 64, quadros: 1, ordem: null, pecas: ['x', 'janela-x'] },
   { id: 'estrutura/parapeitos/cerca', ferramenta: 'paredes', rotulo: 'Estrutura › Cercas e parapeitos', nome: 'cerca', url: '/p.png', quadro: 64, quadros: 1, ordem: ['norte', 'sul'], pecas: ['norte', 'sul'] },
   { id: 'itens/recipientes/caixa', ferramenta: 'objetos', rotulo: 'Itens › Recipientes', nome: 'caixa', url: '/c.png', quadro: 32, quadros: 2, propriedades: { bloqueia: false, move: true, altura: true } },
-  { id: 'estrutura/escadas/escada', ferramenta: 'objetos', rotulo: 'Estrutura › Escadas', nome: 'escada', url: '/e.png', quadro: 64, quadros: 1, propriedades: {} }
+  { id: 'estrutura/escadas/escada', ferramenta: 'objetos', rotulo: 'Estrutura › Escadas', nome: 'escada', url: '/e.png', quadro: 64, quadros: 1, propriedades: { transicao: 'escada' } }
 ]);
 
 test('a pasta da folha diz o que ela é', () => {

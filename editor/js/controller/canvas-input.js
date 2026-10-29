@@ -6,7 +6,7 @@ import { updateStats } from '../view/tools-panel.js';
 import { openEnemyForm, openSelectPanel } from '../view/forms.js';
 import { addFloorToCell, restackItems } from '../../../shared/map-format.js';
 import { refreshBordersAt } from '../model/borders.js';
-import { isStairsFolder, conjuntoPartes } from '../../../shared/assets.js';
+import { isStairsAccess, isEntranceType, conjuntoPartes } from '../../../shared/assets.js';
 import { itemInfo } from '../../../shared/items.js';
 import { brushCells, MAX_BRUSH, fillActive, areaCells } from '../model/brush.js';
 
@@ -25,7 +25,7 @@ function eraseTopmost(cell) {
   if (cell.npc) { cell.npc = null; return 'npc'; }
   if (cell.enemy) { cell.enemy = null; return 'enemy'; }
   if (cell.spawn) { cell.spawn = false; return 'spawn'; }
-  if (cell.objects.length > 0) { return isStairsFolder(cell.objects.pop().type) ? 'stairs' : 'object'; }
+  if (cell.objects.length > 0) { return isStairsAccess(cell.objects.pop().type) ? 'stairs' : 'object'; }
   if (cell.borders.length > 0) { cell.borders.pop(); return 'border'; }
   if (cell.hole) { cell.hole = null; return 'hole'; }
   if (cell.floorTop) { cell.floorTop = null; return 'floor'; }
@@ -46,17 +46,6 @@ function addBorderPiece(cell, piece) {
 // applyTool
 
 export function applyTool(x, y, clientX, clientY) {
-  if (state.tool === 'stairs') {
-    // Destino é fixo pela posição (shared/stairs.js): só escolhe o desenho.
-    const cell = state.layers[state.activeZ][`${x},${y}`];
-    if (state.stairsPaint && !cell.objects.some(o => isStairsFolder(o.type))) {
-      cell.objects.push({ type: state.stairsPaint });
-      refreshBordersAt(state.activeZ, x, y, true);
-    }
-    updateStats();
-    scheduleRender();
-    return;
-  }
   if (state.tool === 'select') {
     openSelectPanel(x, y, clientX, clientY);
     return;
@@ -110,11 +99,8 @@ function paintCell(x, y) {
   } else if (state.tool === 'eraser') {
     const erased = eraseTopmost(cell);
     if (erased === 'floor' || erased === 'hole' || erased === 'stairs') refreshBordersAt(state.activeZ, x, y, erased === 'stairs');
-  } else if (state.tool === 'hole') {
-    if (state.holePaint && cell.hole !== state.holePaint) {
-      cell.hole = state.holePaint;
-      refreshBordersAt(state.activeZ, x, y);
-    }
+  } else if (state.tool === 'access') {
+    placeAccess(layer, cell, x, y, state.accessPaint);
   } else if (state.tool === 'border') {
     if (state.borderPaint) addBorderPiece(cell, state.borderPaint);
   } else if (state.tool === 'border-eraser') {
@@ -129,27 +115,54 @@ function paintCell(x, y) {
     if (state.strokeTouched.size === 1) state.safePaintValue = !(cell.house && cell.house.name === house.name);
     cell.house = state.safePaintValue ? { name: house.name, price: house.price } : null;
   } else if (state.tool === 'item' || state.tool === 'deco') {
-    const paint = state.tool === 'deco' ? state.decoPaint : state.itemPaint;
-    const parts = paint ? conjuntoPartes(paint) : [];
-    if (parts.length) {
-      for (const part of parts) {
-        const target = layer[`${x + part.dx},${y + part.dy}`];
-        if (!target) continue;
-        target.objects.push({ type: part.type, step: 0 });
-        restackItems(target.objects);
-      }
-    } else if (paint) {
-      const top = cell.objects[cell.objects.length - 1];
-      const stack = itemInfo(paint).stack;
-      if (stack && top && top.type === paint && (top.count || 1) < stack) {
-        top.count = (top.count || 1) + 1;
-      } else {
-        cell.objects.push({ type: paint, step: 0 });
-      }
-      restackItems(cell.objects);
-    }
+    placeObject(layer, cell, x, y, state.tool === 'deco' ? state.decoPaint : state.itemPaint);
   } else if (state.tool === 'wall') {
     if (state.wallPaint) cell.objects.push({ type: state.wallPaint });
+  }
+}
+
+// ================================================================================================================================================================================================================================================
+// placeAccess
+// Acesso posto no sqm, pela receita: escada (ou buraco de corda) entra uma só por sqm e acerta as bordas de cima;
+// entrada (buraco, monte, bueiro) vai no lugar de buraco do sqm; o resto (teletransporte, degraus) é objeto comum.
+
+function placeAccess(layer, cell, x, y, paint) {
+  if (!paint) return;
+  if (isStairsAccess(paint)) {
+    if (cell.objects.some(o => isStairsAccess(o.type))) return;
+    cell.objects.push({ type: paint });
+    refreshBordersAt(state.activeZ, x, y, true);
+  } else if (isEntranceType(paint)) {
+    if (cell.hole === paint) return;
+    cell.hole = paint;
+    refreshBordersAt(state.activeZ, x, y);
+  } else {
+    placeObject(layer, cell, x, y, paint);
+  }
+}
+
+// ================================================================================================================================================================================================================================================
+// placeObject
+// Objeto posto no sqm: conjunto de partes põe todas juntas; item empilhável soma na pilha de cima.
+
+function placeObject(layer, cell, x, y, paint) {
+  const parts = paint ? conjuntoPartes(paint) : [];
+  if (parts.length) {
+    for (const part of parts) {
+      const target = layer[`${x + part.dx},${y + part.dy}`];
+      if (!target) continue;
+      target.objects.push({ type: part.type, step: 0 });
+      restackItems(target.objects);
+    }
+  } else if (paint) {
+    const top = cell.objects[cell.objects.length - 1];
+    const stack = itemInfo(paint).stack;
+    if (stack && top && top.type === paint && (top.count || 1) < stack) {
+      top.count = (top.count || 1) + 1;
+    } else {
+      cell.objects.push({ type: paint, step: 0 });
+    }
+    restackItems(cell.objects);
   }
 }
 
@@ -192,7 +205,7 @@ canvas.addEventListener('mousemove', (evt) => {
     scheduleOverlay();
   }
   if (!state.painting) return;
-  if (state.tool === 'stairs' || state.tool === 'enemy' || state.tool === 'npc' || state.tool === 'bot' || state.tool === 'spawn' || state.tool === 'select') return;
+  if ((state.tool === 'access' && isStairsAccess(state.accessPaint || '')) || state.tool === 'enemy' || state.tool === 'npc' || state.tool === 'bot' || state.tool === 'spawn' || state.tool === 'select') return;
   const cell = cellFromEvent(evt);
   if (!cell) return;
   applyTool(cell.x, cell.y, evt.clientX, evt.clientY);

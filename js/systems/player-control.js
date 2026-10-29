@@ -2,7 +2,7 @@
 
 import { calculateMoveDelay, getAdjacentPositions, directionFromDelta } from '../utils/helpers.js';
 import { getStairTop } from '../../shared/stairs.js';
-import { isEntranceFolder, objectIdType } from '../../shared/assets.js';
+import { isEntranceType, objectIdType } from '../../shared/assets.js';
 
 const DOOR_AUTOCLOSE_MS = 3000;
 
@@ -160,7 +160,7 @@ export class PlayerControl {
     const world = this.sim.world;
     const transition = world.getTransitionAt(x, y, z);
     if (!transition || !transition.isStairTop) return false;
-    return !world.getObjectsAt(x, y).some(o => (o.z || 0) === z && isEntranceFolder(objectIdType(o.id)));
+    return !world.getObjectsAt(x, y).some(o => (o.z || 0) === z && isEntranceType(objectIdType(o.id)));
   }
 
   // ================================================================================================================================================================================================================================================

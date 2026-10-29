@@ -2,7 +2,7 @@
 
 import { randEnemyColor } from '../utils/helpers.js';
 import { Enemy } from './enemy.js';
-import { objectProps, startsActive, isFloorType, isHoleType, isEntranceFolder, objectUse, objectIdType, splitType, pieceType, floorMiddle, getAsset, creatureBehavior } from '../../shared/assets.js';
+import { objectProps, startsActive, isFloorType, isHoleType, isEntranceType, objectUse, objectIdType, splitType, pieceType, floorMiddle, getAsset, creatureBehavior } from '../../shared/assets.js';
 import { abreParaOAndarDeBaixo } from '../../shared/ficha.js';
 import { collectObjectDescriptors, collectEnemyDescriptors } from '../../shared/map-format.js';
 import { getStairTop, getStairTopTarget, getHoleTarget } from '../../shared/stairs.js';
@@ -144,7 +144,7 @@ function applyTransitions(objs) {
     stairTops.push(stairTop);
   }
 
-  const holeKeys = new Set(objs.filter(obj => isEntranceFolder(objectIdType(obj.id))).map(obj => `${obj.x},${obj.y},${obj.z}`));
+  const holeKeys = new Set(objs.filter(obj => isEntranceType(objectIdType(obj.id))).map(obj => `${obj.x},${obj.y},${obj.z}`));
   const topKeys = new Set(stairTops.map(t => `${t.x},${t.y},${t.z}`).filter(key => !holeKeys.has(key)));
   const closedKeys = new Set(objs.filter(obj => abreParaOAndarDeBaixo(objectIdType(obj.id))).map(obj => `${obj.x},${obj.y},${obj.z}`));
   const result = objs.filter(obj => !(obj.floorType && topKeys.has(`${obj.x},${obj.y},${obj.z}`)));

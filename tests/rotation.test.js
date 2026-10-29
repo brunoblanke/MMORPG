@@ -19,7 +19,7 @@ setAssets([
   { id: CREATURE, ferramenta: 'criaturas', rotulo: 'Criaturas', nome: 'teste', url: '/c.png', quadro: 32, quadros: 1, propriedades: {} },
   object(CHEST, 32, ['norte', 'leste', 'oeste']),
   object(BED, 64, ['norte', 'oeste'], { sqms: 2 }),
-  object(STAIRS, 64, ['norte', 'oeste']),
+  object(STAIRS, 64, ['norte', 'oeste'], { propriedades: { bloqueia: true, altura: true, transicao: 'escada' } }),
   object(LIT, 32, ['leste', 'oeste'])
 ]);
 

@@ -2,7 +2,8 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { areaCells, fillActive } from '../editor/js/model/brush.js';
+import { areaCells, fillActive, brushSize } from '../editor/js/model/brush.js';
+import { setAssets } from '../shared/assets.js';
 import { state } from '../editor/js/model/state.js';
 import { GRID } from '../editor/js/config.js';
 
@@ -18,8 +19,28 @@ test('arrastar preenche área nas ferramentas de pintar, não pras de pôr uma c
     state.tool = tool;
     assert.equal(fillActive(), true, tool);
   }
-  for (const tool of ['select', 'enemy', 'npc', 'stairs', 'spawn']) {
+  for (const tool of ['select', 'enemy', 'npc', 'spawn']) {
     state.tool = tool;
     assert.equal(fillActive(), false, tool);
   }
+});
+
+test('Acessos: a entrada usa pincel e área; a escada vai uma por vez; o teletransporte preenche área', () => {
+  const asset = (id, propriedades) => ({ id, ferramenta: 'objetos', grupo: 'estrutura', pasta: id.split('/')[1], nome: id.split('/')[2], url: '/a.png', quadro: 32, quadros: 1, pecas: [], propriedades });
+  setAssets([
+    asset('estrutura/escadas/escada-de-teste', { transicao: 'escada' }),
+    asset('estrutura/entradas/buraco-de-teste', { transicao: 'buraco' }),
+    asset('estrutura/teletransportes/tp-de-teste', { uso: 'teleporte' })
+  ]);
+  state.tool = 'access';
+  state.brushSize = 3;
+  state.accessPaint = 'estrutura/escadas/escada-de-teste';
+  assert.equal(fillActive(), false);
+  assert.equal(brushSize(), 1);
+  state.accessPaint = 'estrutura/entradas/buraco-de-teste';
+  assert.equal(fillActive(), true);
+  assert.equal(brushSize(), 3);
+  state.accessPaint = 'estrutura/teletransportes/tp-de-teste';
+  assert.equal(fillActive(), true);
+  assert.equal(brushSize(), 1);
 });

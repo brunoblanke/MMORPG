@@ -28,7 +28,7 @@ export function makeAllLayers(existing = {}) {
 }
 
 // O que cada ferramenta pinta é uma folha do gerador (shared/assets.js):
-// floorPaint/stairsPaint/holePaint/itemPaint são o id da folha, wallPaint é
+// floorPaint/accessPaint/itemPaint são o id da folha, wallPaint é
 // '<folha>#<peça>' e borderPaint { type: folha do piso, variant }. Ficam null
 // até a lista das folhas chegar (choosePaintDefaults).
 
@@ -39,8 +39,7 @@ export const state = {
   tool: 'floor',
   floorPaint: null,
   wallPaint: null,
-  stairsPaint: null,
-  holePaint: null,
+  accessPaint: null,
   itemPaint: null,
   decoPaint: null,
   enemyPaint: null,
@@ -65,17 +64,16 @@ export const state = {
 // paint: campo do state com o que a ferramenta pinta (as que têm lista).
 export const TOOLS = [
   { id:'select', label:'Selecionar', quick:true },
-  { id:'floor', label:'Piso', paint:'floorPaint' },
-  { id:'wall', label:'Parede', paint:'wallPaint' },
-  { id:'stairs', label:'Escada', paint:'stairsPaint' },
-  { id:'hole', label:'Buraco / entrada', paint:'holePaint' },
-  { id:'border', label:'Borda', paint:'borderPaint' },
+  { id:'floor', label:'Pisos', paint:'floorPaint' },
+  { id:'border', label:'Bordas', paint:'borderPaint' },
   { id:'border-eraser', label:'Tirar borda', quick:true },
+  { id:'wall', label:'Paredes', paint:'wallPaint' },
+  { id:'access', label:'Acessos', paint:'accessPaint' },
   { id:'deco', label:'Decoração', paint:'decoPaint' },
-  { id:'item', label:'Item', paint:'itemPaint' },
-  { id:'enemy', label:'Criatura', paint:'enemyPaint' },
+  { id:'item', label:'Itens', paint:'itemPaint' },
+  { id:'enemy', label:'Criaturas', paint:'enemyPaint' },
   { id:'npc', label:'NPC', paint:'npcPaint' },
-  { id:'bot', label:'Bot de teste (player)', paint:'botPaint' },
+  { id:'bot', label:'Bot de teste', paint:'botPaint' },
   { id:'spawn', label:'Respawn', quick:true },
   { id:'safe', label:'Zona segura (liga/desliga)', quick:true },
   { id:'house', label:'Casa (liga/desliga)', quick:true },

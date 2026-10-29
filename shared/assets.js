@@ -11,8 +11,6 @@ import { rareVariantAt, randomIndexAt } from './floor-variants.js';
 
 export const SPRITES_URL = '/api/sprites';
 export const FLOOR_FOLDER = 'estrutura/pisos/';
-export const STAIRS_FOLDER = 'estrutura/escadas/';
-export const HOLE_FOLDER = 'estrutura/entradas/';
 export const WALL_FOLDER = 'estrutura/paredes/';
 
 // Folha de piso (32 px): linha 1 com as variações do meio, depois as bordas.
@@ -442,46 +440,40 @@ export function stairKind(type) {
 
 // ================================================================================================================================================================================================================================================
 // isFloorType / isStairsType / isHoleType
-// Pela pasta da folha. Com Uso no gerador, o uso manda: marca de corda na
-// pasta de escadas não é escada; monte da pá e bueiro na pasta de entradas
-// não são buraco (o monte só vira quando a pá abre; o bueiro se usa).
+// Pela receita, não pela pasta (a pasta só organiza): escada e buraco pela Transição (gerador → Objetos → Transição);
+// só um tipo sem receita (desconhecido) cai na pasta, como o piso.
 
 export function isFloorType(type) {
   const sheet = getAsset(splitType(type).asset);
   return sheet ? sheet.ferramenta === 'pisos' : splitType(type).asset.startsWith(FLOOR_FOLDER);
 }
 
-// A receita pode dizer o que o objeto é (gerador → Objetos → Transição: escada, buraco ou nenhuma); sem isso vale
-// a regra antiga, pela pasta e pelo Uso.
 function explicitTransition(type) {
   const sheet = getAsset(splitType(type).asset);
-  const value = sheet && sheet.propriedades && sheet.propriedades.transicao;
+  if (!sheet) return splitType(type).asset.startsWith('estrutura/escadas/') ? 'escada' : splitType(type).asset.startsWith('estrutura/entradas/') ? 'buraco' : null;
+  const value = sheet.propriedades && sheet.propriedades.transicao;
   return ['escada', 'buraco', 'nenhuma'].includes(value) ? value : null;
 }
 
 export function isStairsType(type) {
-  const explicit = explicitTransition(type);
-  if (explicit) return explicit === 'escada';
-  return splitType(type).asset.startsWith(STAIRS_FOLDER) && objectUse(type) !== 'corda';
+  return explicitTransition(type) === 'escada';
 }
 
 export function isHoleType(type) {
-  const explicit = explicitTransition(type);
-  if (explicit) return explicit === 'buraco';
-  return splitType(type).asset.startsWith(HOLE_FOLDER) && !['pa', 'pa-cai', 'descer'].includes(objectUse(type));
+  return explicitTransition(type) === 'buraco';
 }
 
 // ================================================================================================================================================================================================================================================
-// isStairsFolder / isEntranceFolder
-// Só a pasta (Estrutura › Escadas / Entradas): é onde o editor lista e
-// guarda a peça, qualquer que seja o uso dela no jogo.
+// isStairsAccess / isEntranceType
+// Pela receita: o que sobe (escada ou o buraco de corda, Uso corda) e o que desce ou abre pra baixo (buraco, ou Uso pá,
+// pá-cai e descer: monte, bueiro). O editor guarda a entrada no lugar de buraco do sqm.
 
-export function isStairsFolder(type) {
-  return splitType(type).asset.startsWith(STAIRS_FOLDER);
+export function isStairsAccess(type) {
+  return isStairsType(type) || objectUse(type) === 'corda';
 }
 
-export function isEntranceFolder(type) {
-  return splitType(type).asset.startsWith(HOLE_FOLDER);
+export function isEntranceType(type) {
+  return isHoleType(type) || ['pa', 'pa-cai', 'descer'].includes(objectUse(type));
 }
 
 // ================================================================================================================================================================================================================================================
@@ -496,7 +488,7 @@ export function isWallType(type) {
 
 export function isItemType(type) {
   const asset = getAsset(splitType(type).asset);
-  return !!asset && asset.ferramenta === 'objetos' && !isStairsFolder(type) && !isEntranceFolder(type);
+  return !!asset && asset.ferramenta === 'objetos' && !isStairsAccess(type) && !isEntranceType(type);
 }
 
 // ================================================================================================================================================================================================================================================

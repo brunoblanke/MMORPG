@@ -26,7 +26,7 @@ setAssets([
   floor(CAVE, { bordaBloqueia: true, bordaBarraArremesso: true }),
   { ...floor(POND, null), padrao: [2, 3], raras: 5, chanceRaras: 12 },
   { ...floor(MIXED, null), padrao: [2, 3], padraoSorteado: true },
-  { id: STAIRS_STRAIGHT, ferramenta: 'objetos', grupo: 'estrutura', pasta: 'escadas', nome: 'reta', url: '/r.png', quadro: 64, quadros: 1, pecas: [], propriedades: { altura: false } },
+  { id: STAIRS_STRAIGHT, ferramenta: 'objetos', grupo: 'estrutura', pasta: 'escadas', nome: 'reta', url: '/r.png', quadro: 64, quadros: 1, pecas: [], propriedades: { altura: false, transicao: 'escada' } },
   { id: SWORD, ferramenta: 'objetos', grupo: 'itens', pasta: 'espadas', nome: 'espada', url: '/e.png', quadro: 32, quadros: 1, pecas: [], propriedades: { move: true, peso: 30 } }
 ]);
 

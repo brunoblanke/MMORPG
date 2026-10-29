@@ -2,7 +2,7 @@
 
 import { GameObject } from '../models/game-object.js';
 import { fichaDe, reacoesA, capacidadesDe, interacoesDe, clicavel, efeitosAoPisar } from '../../shared/ficha.js';
-import { objectIdType, objectProps, objectUse, activeAs, togglesOnUse, displayName, getAsset, splitType, isEntranceFolder, floorBehavior, WORM_TYPE } from '../../shared/assets.js';
+import { objectIdType, objectProps, objectUse, activeAs, togglesOnUse, displayName, getAsset, splitType, isEntranceType, floorBehavior, WORM_TYPE } from '../../shared/assets.js';
 import { itemInfo, newItem, weightOf, FISH_RANGE, USE_COOLDOWN_MS, SLEEP_REGEN_FACTOR, REGEN_HP, REGEN_MANA } from '../../shared/items.js';
 import { VOCATIONS, vocationOf } from '../../shared/vocations.js';
 import { takeFromBag } from './trade.js';
@@ -564,7 +564,7 @@ export class InteractionController {
   isOpening(obj) {
     const type = objectIdType(obj.id);
     if (SHOVEL_USES.includes(objectUse(type))) return !!obj.active;
-    return isEntranceFolder(type);
+    return isEntranceType(type);
   }
 
   // ================================================================================================================================================================================================================================================

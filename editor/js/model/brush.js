@@ -2,13 +2,14 @@
 
 import { state } from './state.js';
 import { GRID } from '../config.js';
+import { isStairsAccess, isEntranceType } from '../../../shared/assets.js';
 
 // Pincel: ferramentas de pintar área usam um quadrado de brushSize × brushSize
 // sqm (setas ↑/↓, de 1 a MAX_BRUSH); as de pôr uma coisa só, 1 sqm.
 export const MAX_BRUSH = 6;
-const BRUSH_TOOLS = new Set(['floor', 'eraser', 'hole', 'border-eraser', 'safe', 'house']);
+const BRUSH_TOOLS = new Set(['floor', 'eraser', 'border-eraser', 'safe', 'house']);
 // Preencher área: com essas ferramentas, arrastar marca um retângulo e, ao soltar, a ferramenta roda em cada sqm dele
-// (um clique sem arrastar pinta como o pincel).
+// (um clique sem arrastar pinta como o pincel). Acessos: a entrada (buraco) usa pincel e área; a escada vai uma por vez.
 export const FILL_TOOLS = new Set([...BRUSH_TOOLS, 'border', 'item', 'deco', 'wall']);
 
 // ================================================================================================================================================================================================================================================
@@ -16,7 +17,8 @@ export const FILL_TOOLS = new Set([...BRUSH_TOOLS, 'border', 'item', 'deco', 'wa
 // Tamanho do pincel da ferramenta atual.
 
 export function brushSize() {
-  return BRUSH_TOOLS.has(state.tool) ? state.brushSize : 1;
+  const entrance = state.tool === 'access' && !!state.accessPaint && isEntranceType(state.accessPaint);
+  return BRUSH_TOOLS.has(state.tool) || entrance ? state.brushSize : 1;
 }
 
 // ================================================================================================================================================================================================================================================
@@ -43,6 +45,7 @@ export function brushCells(x, y) {
 // A ferramenta atual preenche área ao arrastar.
 
 export function fillActive() {
+  if (state.tool === 'access') return !!state.accessPaint && !isStairsAccess(state.accessPaint);
   return FILL_TOOLS.has(state.tool);
 }
 
