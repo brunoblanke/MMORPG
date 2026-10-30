@@ -2,6 +2,7 @@
 
 import { getAsset, splitType } from '../../shared/assets.js';
 import { itemInfo, newItem, weightOf, EQUIP_SLOTS } from '../../shared/items.js';
+import { DROP_EFFECT } from '../../shared/effects.js';
 
 // Compra e venda com NPC: o dinheiro é o que o player carrega em moedas
 // (gold vale 1, platinum vale 100), em qualquer lugar do inventário. Ao
@@ -228,6 +229,7 @@ export function giveItem(sim, player, type, count = 1) {
     if (slot) slot.list[slot.key] = item;
     else ground += item.count || 1;
   }
+  if (ground > 0) sim.spells.showEffect(player.x, player.y, DROP_EFFECT, undefined, player.z || 0);
   while (ground > 0) {
     const item = newItem(inventory.nextUid(), type, ground);
     ground -= item.count || 1;

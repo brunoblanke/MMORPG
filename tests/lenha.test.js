@@ -156,7 +156,7 @@ test('receitas: machados lenham e as árvores soltam a madeira', () => {
   assert.ok(lenhar.some(i => i.efeitos[0].tipo === 'dar-itens' && i.efeitos[0].item === WOOD));
   for (const nome of ['arvore-1', 'pine', 'willow']) {
     const golpe = ler(`estrutura/natureza/${nome}`).propriedades.interacoes[0];
-    assert.deepEqual([golpe.gatilho.capacidade, golpe.condicoes.chance, golpe.efeitos[0].tipo, golpe.efeitos[0].nome], ['lenhar', undefined, 'efeito-visual', 'hit-area'], `${nome}: todo golpe mostra o efeito no tronco`);
+    assert.deepEqual([golpe.gatilho.capacidade, golpe.condicoes.chance, golpe.efeitos[0].tipo, golpe.efeitos[0].nome], ['lenhar', undefined, 'efeito-visual', 'block'], `${nome}: todo golpe mostra o efeito no tronco`);
   }
   assert.equal(ler(WOOD).propriedades.empilhavel, true);
 });
@@ -312,7 +312,12 @@ test('giveItem: o que cabe no cap vai pra mochila, o resto cai aos pés', async 
   const { giveItem } = await import('../js/systems/trade.js');
   const { sim, ana } = game();
   sim.inventory.capMax = (player) => sim.inventory.capUsed(player) + 25;
+  sim.drainEvents();
   giveItem(sim, ana, WOOD, 5);
   assert.equal(ana.equip.mochila.items.find(it => it && it.type === WOOD).count, 2, '2 × 10 oz cabem em 25');
   assert.equal(woodCount(sim), 3);
+  assert.ok(sim.drainEvents().some(e => e.type === 'effect' && e.effect === 'rings-yellow' && e.x === ana.x && e.y === ana.y), 'brilho onde cai, como o peixe');
+  sim.inventory.capMax = () => Infinity;
+  giveItem(sim, ana, WOOD, 1);
+  assert.equal(sim.drainEvents().some(e => e.effect === 'rings-yellow'), false, 'na mochila não brilha');
 });

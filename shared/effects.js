@@ -49,6 +49,9 @@ export const POTION_EFFECT = 'heal';
 // Efeito que abre na água quando algo cai nela (pesca, item jogado na água).
 export const WATER_EFFECT = 'rings-blue';
 
+// Brilho no sqm onde o que o player ganhou cai no chão (peixe, minhoca, madeira que não coube na mochila).
+export const DROP_EFFECT = 'rings-yellow';
+
 // Efeito desenhado pelo código (sem imagem): círculos só de contorno que
 // crescem e somem, como algo caindo na água (pesca, item jogado na água).
 // `rings` círculos, um a cada `delay` ms, cada um durando `ringMs`.

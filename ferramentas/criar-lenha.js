@@ -27,7 +27,7 @@ const SEMENTE = 'itens/plantas-e-ervas/seeds';
 const CHANCE = 40;
 const CORTES = 8;
 const CRESCE_S = 600;
-const GOLPE = 'hit-area';
+const GOLPE = 'block';
 const PISOS_DE_PLANTAR = ['grama-', 'terra-'];
 const ARVORES = [
   'arvore-1', 'arvore-3', 'beech', 'coconut-palm', 'dead-tree', 'dwarf-tree', 'fir-tree', 'old-tree', 'palm', 'pear-tree',
@@ -131,6 +131,22 @@ function tirarEfeitoDaQueda(receita) {
 }
 
 // ================================================================================================================================================================================================================================================
+// trocarGolpe
+// O efeito de golpe antigo (hit-area) no tronco vira o GOLPE atual. Devolve true se mudou.
+
+function trocarGolpe(receita) {
+  let mudou = false;
+  for (const interacao of (receita.propriedades && receita.propriedades.interacoes) || []) {
+    for (const efeito of (interacao && interacao.efeitos) || []) {
+      if (!efeito || efeito.tipo !== 'efeito-visual' || efeito.nome !== 'hit-area') continue;
+      efeito.nome = GOLPE;
+      mudou = true;
+    }
+  }
+  return mudou;
+}
+
+// ================================================================================================================================================================================================================================================
 // marcar
 // Abre a receita, aplica mudar(receita) e grava se mudou.
 
@@ -177,10 +193,11 @@ function marcarArvores() {
       const tirou = props.interacoes.length !== antes;
       const mochila = paraMochila(receita);
       const semEfeito = tirarEfeitoDaQueda(receita);
+      const antigo = trocarGolpe(receita);
       const golpe = garantirInteracao(receita, 'efeito-visual', { gatilho: lenhar, condicoes: { alcance: 1 }, efeitos: [{ tipo: 'efeito-visual', nome: GOLPE }] }, true);
       const madeira = garantirInteracao(receita, 'dar-itens', { gatilho: lenhar, condicoes: { alcance: 1, chance: CHANCE }, efeitos: [{ tipo: 'dar-itens', item: MADEIRA, quantidade: 1, umaVez: 'nao' }] });
       const cai = garantirInteracao(receita, 'remover', { gatilho: lenhar, condicoes: { alcance: 1, vezes: CORTES }, efeitos: [{ tipo: 'dar-itens', item: SEMENTE, quantidade: 1, umaVez: 'nao' }, { tipo: 'remover', rebroteMs: 0 }] });
-      return tirou || mochila || semEfeito || golpe || madeira || cai;
+      return tirou || mochila || semEfeito || antigo || golpe || madeira || cai;
     });
   }
   marcar(TOCO, (receita) => {

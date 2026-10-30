@@ -47,7 +47,7 @@
         "efeitos": [
           {
             "tipo": "efeito-visual",
-            "nome": "hit-area"
+            "nome": "block"
           }
         ]
       },

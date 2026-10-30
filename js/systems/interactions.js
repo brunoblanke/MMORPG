@@ -6,13 +6,11 @@ import { objectIdType, objectProps, objectUse, activeAs, activeAsFor, togglesOnU
 import { itemInfo, newItem, weightOf, FISH_RANGE, USE_COOLDOWN_MS, SLEEP_REGEN_FACTOR, REGEN_HP, REGEN_MANA } from '../../shared/items.js';
 import { VOCATIONS, vocationOf } from '../../shared/vocations.js';
 import { takeFromBag } from './trade.js';
-import { WATER_EFFECT } from '../../shared/effects.js';
+import { WATER_EFFECT, DROP_EFFECT } from '../../shared/effects.js';
 import { isValidFloor } from '../../shared/constants.js';
 import { getHoleTarget, toLowerLevel, toUpperLevel } from '../../shared/stairs.js';
 import { isSyncedItem } from '../net/protocol.js';
 
-// Efeito que brilha no sqm onde o item pescado ou a minhoca cai no chão.
-const DROP_EFFECT = 'rings-yellow';
 
 // Efeito no sqm onde algo é plantado.
 const PLANT_EFFECT = 'rings-green';
