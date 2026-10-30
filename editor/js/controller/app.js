@@ -14,6 +14,7 @@ import './canvas-input.js';
 import '../view/goto-field.js';
 import '../view/mobile-layout.js';
 import '../view/extras-menu.js';
+import '../view/fullscreen.js';
 import { initZoom } from '../view/zoom.js';
 
 // ================================================================================================================================================================================================================================================
