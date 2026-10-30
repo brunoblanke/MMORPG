@@ -318,14 +318,17 @@ export class InventoryController {
       return;
     }
 
+    if ((dest.kind === 'trigger' || dest.kind === 'mail') && !this.sim.objectDrag.isThrowPathClear(player, dest.obj, dest.obj.x, dest.obj.y, dest.obj.z || 0)) {
+      this.message(player, 'Tem algo no caminho.');
+      return;
+    }
+
     if (dest.kind === 'trigger') {
-      if (!this.isNear(player, dest.obj)) return this.walkNextTo(player, dest.obj, { type: 'moveInv', from, to, amount });
       if (this.sim.effects.dropOn(player, dest.obj, src.item)) src.remove();
       return;
     }
 
     if (dest.kind === 'mail') {
-      if (!this.isNear(player, dest.obj)) return this.walkNextTo(player, dest.obj, { type: 'moveInv', from, to, amount });
       if (this.sim.mail.send(player, src.item, { from, to, amount })) src.remove();
       return;
     }

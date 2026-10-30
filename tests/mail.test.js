@@ -157,3 +157,13 @@ test('correio: a encomenda jogada do chão na caixa também vai (com a etiqueta 
   assert.equal(bia.depot.items[0].type, SENT_PARCEL);
   assert.equal(ana.equip.mochila.items[2].type, PARCEL, 'a da mochila continua lá');
 });
+
+test('correio: dá pra jogar na caixa de longe (no alcance de arremesso), sem andar até ela', () => {
+  const { sim, ana, bia } = game();
+  sim.world.moveEntityTile(ana, ana.x, ana.y, 0, 7, 10, 0);
+  Object.assign(ana, { x: 7, y: 10 });
+  write(sim, 0, 'Bia');
+  post(sim, 0);
+  assert.deepEqual([ana.x, ana.y], [7, 10], 'não andou');
+  assert.equal(bia.depot.items[0].type, SENT_LETTER);
+});
