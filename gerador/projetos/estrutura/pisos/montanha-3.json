@@ -1,0 +1,126 @@
+{
+  "formato": {
+    "quadro": 32,
+    "padraoDoTibia": true,
+    "raras": 4,
+    "chanceRaras": 50,
+    "linhas": [
+      "meio: 1 variações",
+      "s o n l",
+      "sl so nl no",
+      "int-sl int-so int-nl int-no"
+    ]
+  },
+  "variacoesDoMeio": 1,
+  "slots": {
+    "meio-1": {
+      "tibia": {
+        "id": 8085,
+        "variacao": 0
+      }
+    },
+    "raro-1": {
+      "tibia": {
+        "id": 8086,
+        "variacao": 0
+      }
+    },
+    "raro-2": {
+      "tibia": {
+        "id": 8087,
+        "variacao": 0
+      }
+    },
+    "raro-3": {
+      "tibia": {
+        "id": 8088,
+        "variacao": 0
+      }
+    },
+    "raro-4": {
+      "tibia": {
+        "id": 8089,
+        "variacao": 0
+      }
+    },
+    "s": {
+      "tibia": {
+        "id": 7630,
+        "variacao": 0
+      }
+    },
+    "o": {
+      "tibia": {
+        "id": 7633,
+        "variacao": 0
+      }
+    },
+    "n": {
+      "tibia": {
+        "id": 7632,
+        "variacao": 0
+      }
+    },
+    "l": {
+      "tibia": {
+        "id": 7631,
+        "variacao": 0
+      }
+    },
+    "sl": {
+      "tibia": {
+        "id": 7636,
+        "variacao": 0
+      }
+    },
+    "so": {
+      "tibia": {
+        "id": 7637,
+        "variacao": 0
+      }
+    },
+    "nl": {
+      "tibia": {
+        "id": 7634,
+        "variacao": 0
+      }
+    },
+    "no": {
+      "tibia": {
+        "id": 7635,
+        "variacao": 0
+      }
+    },
+    "int-sl": {
+      "tibia": {
+        "id": 7638,
+        "variacao": 0
+      }
+    },
+    "int-so": {
+      "tibia": {
+        "id": 7639,
+        "variacao": 0
+      }
+    },
+    "int-nl": {
+      "tibia": {
+        "id": 7641,
+        "variacao": 0
+      }
+    },
+    "int-no": {
+      "tibia": {
+        "id": 7640,
+        "variacao": 0
+      }
+    }
+  },
+  "propriedades": {
+    "comportamento": "normal"
+  },
+  "ferramenta": "pisos",
+  "grupo": "estrutura",
+  "pasta": "pisos",
+  "nome": "montanha-3"
+}

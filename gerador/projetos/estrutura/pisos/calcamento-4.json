@@ -1,0 +1,120 @@
+{
+  "formato": {
+    "quadro": 32,
+    "padraoDoTibia": true,
+    "raras": 3,
+    "chanceRaras": 50,
+    "linhas": [
+      "meio: 1 variações",
+      "s o n l",
+      "sl so nl no",
+      "int-sl int-so int-nl int-no"
+    ]
+  },
+  "variacoesDoMeio": 1,
+  "slots": {
+    "meio-1": {
+      "tibia": {
+        "id": 7594,
+        "variacao": 0
+      }
+    },
+    "raro-1": {
+      "tibia": {
+        "id": 7602,
+        "variacao": 0
+      }
+    },
+    "raro-2": {
+      "tibia": {
+        "id": 7603,
+        "variacao": 0
+      }
+    },
+    "raro-3": {
+      "tibia": {
+        "id": 7604,
+        "variacao": 0
+      }
+    },
+    "s": {
+      "tibia": {
+        "id": 7617,
+        "variacao": 0
+      }
+    },
+    "o": {
+      "tibia": {
+        "id": 7619,
+        "variacao": 0
+      }
+    },
+    "n": {
+      "tibia": {
+        "id": 7620,
+        "variacao": 0
+      }
+    },
+    "l": {
+      "tibia": {
+        "id": 7618,
+        "variacao": 0
+      }
+    },
+    "sl": {
+      "tibia": {
+        "id": 7626,
+        "variacao": 0
+      }
+    },
+    "so": {
+      "tibia": {
+        "id": 7627,
+        "variacao": 0
+      }
+    },
+    "nl": {
+      "tibia": {
+        "id": 7625,
+        "variacao": 0
+      }
+    },
+    "no": {
+      "tibia": {
+        "id": 7628,
+        "variacao": 0
+      }
+    },
+    "int-sl": {
+      "tibia": {
+        "id": 7624,
+        "variacao": 0
+      }
+    },
+    "int-so": {
+      "tibia": {
+        "id": 7623,
+        "variacao": 0
+      }
+    },
+    "int-nl": {
+      "tibia": {
+        "id": 7621,
+        "variacao": 0
+      }
+    },
+    "int-no": {
+      "tibia": {
+        "id": 7622,
+        "variacao": 0
+      }
+    }
+  },
+  "propriedades": {
+    "comportamento": "normal"
+  },
+  "ferramenta": "pisos",
+  "grupo": "estrutura",
+  "pasta": "pisos",
+  "nome": "calcamento-4"
+}

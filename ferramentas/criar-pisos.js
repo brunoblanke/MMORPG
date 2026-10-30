@@ -1,17 +1,19 @@
 // ferramentas/criar-pisos.js
 
-// Cria no gerador as receitas dos pisos clássicos do Tibia 7.x que ainda faltam
-// (pasta estrutura/pisos), a partir dos pincéis de chão do Remere's Map Editor
-// 7.60 (grounds.xml, borders.xml e items.otb, que traduz o id do servidor pro
+// Cria no gerador as receitas dos pisos do Tibia que ainda faltam (pasta
+// estrutura/pisos), a partir dos pincéis de chão do Remere's Map Editor 7.60 e
+// 10.98 (grounds.xml, borders.xml e items.otb, que traduz o id do servidor pro
 // id do cliente): o chão principal no meio (com o padrão do item, até 4 × 4,
-// lido do Tibia 7.80 de tests/tibia-780), os outros chãos do pincel como
+// lido do Tibia 7.80 de tests/tibia-780; o item que o 7.80 não tem leva
+// formato.padraoDoTibia e o gerador pega o padrão dele ao abrir), os outros chãos do pincel como
 // variações raras, a borda de fora nas 12 peças e o bloqueio do Tibia.dat
 // (água, lava, piche, montanha: "Bloqueia" com a borda bloqueando também). As folhas (.png) saem do
 // gerador: aba Pisos → "Gerar folhas pendentes". Receita que já existe (ou
 // chão que já está numa receita) fica como está.
 //
-// Uso: node ferramentas/criar-pisos.js [pasta com grounds.xml, borders.xml e items.otb]
-// (sem a pasta, baixa os arquivos do data/760 do RME no GitHub)
+// Uso: node ferramentas/criar-pisos.js [pasta do 7.60] [pasta do 10.98]
+// (cada pasta com grounds.xml, borders.xml e items.otb; sem elas, baixa os
+// arquivos do data/760 e data/1098 do RME no GitHub)
 
 const fs = require('fs');
 const path = require('path');
@@ -22,11 +24,11 @@ const RAIZ = path.join(__dirname, '..');
 const PASTA_PROJETOS = path.join(RAIZ, 'gerador', 'projetos');
 const PASTA = path.join(PASTA_PROJETOS, 'estrutura', 'pisos');
 const CLIENTE_780 = path.join(RAIZ, 'tests', 'tibia-780');
-const RME = 'https://raw.githubusercontent.com/hampusborgos/rme/master/data/760/';
+const RME = 'https://raw.githubusercontent.com/hampusborgos/rme/master/data/';
 const PADRAO_MAX = 4;
 const RARAS_MAX = 8;
 
-const PISOS = {
+const PISOS_760 = {
   snow: { nome: 'neve', propriedades: {} },
   lawn: { nome: 'grama', propriedades: { minhocas: 50, plantavel: true } },
   'dry earth': { nome: 'terra', propriedades: { plantavel: true } },
@@ -60,18 +62,37 @@ const PISOS = {
   'orange tiled floor': { nome: 'ladrilho', propriedades: {} }
 };
 
+const PISOS_1098 = {
+  'dried grass': { nome: 'grama', propriedades: { plantavel: true } },
+  'walkable sea': { nome: 'agua', propriedades: {} },
+  'sand dark dune': { nome: 'areia', propriedades: {} },
+  'dark cobblestone': { nome: 'calcamento', propriedades: {} },
+  'ugly cobblestone': { nome: 'calcamento', propriedades: {} },
+  pavement: { nome: 'calcamento', propriedades: {} },
+  'dirt mountain ground': { nome: 'montanha', propriedades: {} },
+  'frozen mud': { nome: 'lama', propriedades: {} },
+  'melting ground': { nome: 'neve', propriedades: {} },
+  'walkable swamp': { nome: 'pantano', propriedades: {} },
+  'icy earth': { nome: 'gelo', propriedades: {} },
+  'ice stone floor': { nome: 'gelo', propriedades: {} },
+  'small tiled gray stone': { nome: 'ladrilho', propriedades: {} },
+  'scale roof': { nome: 'telhado', propriedades: {} }
+};
+
+const VERSOES = [{ versao: '760', pisos: PISOS_760 }, { versao: '1098', pisos: PISOS_1098 }];
+
 const BORDAS = { n: 's', e: 'o', s: 'n', w: 'l', cnw: 'sl', cne: 'so', csw: 'nl', cse: 'no', dnw: 'int-sl', dne: 'int-so', dsw: 'int-nl', dse: 'int-no' };
 const LINHAS = ['meio: 1 variações', 's o n l', 'sl so nl no', 'int-sl int-so int-nl int-no'];
 
 // ================================================================================================================================================================================================================================================
 // lerArquivos
-// grounds.xml, borders.xml (texto) e items.otb (bytes), da pasta ou do GitHub.
+// grounds.xml, borders.xml (texto) e items.otb (bytes) da versão, da pasta ou do GitHub.
 
-async function lerArquivos(pasta) {
+async function lerArquivos(pasta, versao) {
   const nomes = ['grounds.xml', 'borders.xml', 'items.otb'];
   if (pasta) return nomes.map(nome => fs.readFileSync(path.join(pasta, nome)));
   return Promise.all(nomes.map(async (nome) => {
-    const resposta = await fetch(RME + nome);
+    const resposta = await fetch(`${RME}${versao}/${nome}`);
     if (!resposta.ok) throw new Error(`${nome}: HTTP ${resposta.status}`);
     return Buffer.from(await resposta.arrayBuffer());
   }));
@@ -148,7 +169,7 @@ function lerBordas(texto, cliente) {
 
 function lerPinceis(texto, cliente) {
   const pinceis = [];
-  for (const m of semComentarios(texto).matchAll(/<brush name="([^"]+)" type="border"[^>/]*>([\s\S]*?)<\/brush>/g)) {
+  for (const m of semComentarios(texto).matchAll(/<brush name="([^"]+)" type="(?:border|ground)"[^>/]*>([\s\S]*?)<\/brush>/g)) {
     const itens = [...m[2].matchAll(/<item id="(\d+)" chance="(\d+)"/g)].map(i => [cliente.get(Number(i[1])), Number(i[2])]).filter(([id]) => id);
     const fora = [...m[2].matchAll(/<border align="outer"( to="[^"]*")? id="(\d+)"/g)].find(b => !b[1]);
     pinceis.push({ nome: m[1], itens, borda: fora ? fora[2] : null });
@@ -197,6 +218,8 @@ function montarReceita(pincel, { nome, propriedades, semBorda }, tibia, bordas) 
     for (let y = 0; y < linhas; y++) {
       for (let x = 0; x < colunas; x++) slots[`padrao-${x}-${y}`] = { tibia: { id: principal, variacao: y * px + x } };
     }
+  } else if (!info) {
+    formato.padraoDoTibia = true;
   }
   const raras = ordenados.slice(1).filter(([id, chance]) => chance > 0 && id !== principal).slice(0, RARAS_MAX);
   if (raras.length) {
@@ -226,26 +249,28 @@ function montarReceita(pincel, { nome, propriedades, semBorda }, tibia, bordas) 
 // ================================================================================================================================================================================================================================================
 // criar
 
-async function criar(pasta) {
-  const [grounds, borders, otb] = await lerArquivos(pasta);
-  const cliente = idsDoCliente(otb);
-  const bordas = lerBordas(borders.toString('utf8'), cliente);
+async function criar(pastas) {
   const tibia = new TibiaAssets(CLIENTE_780);
   const usados = idsUsados();
   const criadas = [];
-  for (const pincel of lerPinceis(grounds.toString('utf8'), cliente)) {
-    const piso = PISOS[pincel.nome];
-    if (!piso || !pincel.itens.length || pincel.itens.some(([id]) => usados.has(id))) continue;
-    const nome = proximoNome(piso.nome);
-    const receita = montarReceita(pincel, { ...piso, nome }, tibia, bordas);
-    fs.writeFileSync(path.join(PASTA, `${nome}.json`), JSON.stringify(receita, null, 2));
-    for (const [id] of pincel.itens) usados.add(id);
-    criadas.push(`${nome} (${pincel.nome})`);
+  for (const [i, { versao, pisos }] of VERSOES.entries()) {
+    const [grounds, borders, otb] = await lerArquivos(pastas[i], versao);
+    const cliente = idsDoCliente(otb);
+    const bordas = lerBordas(borders.toString('utf8'), cliente);
+    for (const pincel of lerPinceis(grounds.toString('utf8'), cliente)) {
+      const piso = pisos[pincel.nome];
+      if (!piso || !pincel.itens.length || pincel.itens.some(([id]) => usados.has(id))) continue;
+      const nome = proximoNome(piso.nome);
+      const receita = montarReceita(pincel, { ...piso, nome }, tibia, bordas);
+      fs.writeFileSync(path.join(PASTA, `${nome}.json`), JSON.stringify(receita, null, 2));
+      for (const [id] of pincel.itens) usados.add(id);
+      criadas.push(`${nome} (${pincel.nome})`);
+    }
   }
   console.log(criadas.length ? `Criadas ${criadas.length} receitas:\n  ${criadas.join('\n  ')}` : 'Nenhuma receita nova.');
 }
 
-criar(process.argv[2]).catch((erro) => {
+criar(process.argv.slice(2)).catch((erro) => {
   console.error(erro.message);
   process.exit(1);
 });

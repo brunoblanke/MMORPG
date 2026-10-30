@@ -766,6 +766,8 @@ async function generatePending() {
 
 // ================================================================================================================================================================================================================================================
 // openRecipe
+// Receita com formato.padraoDoTibia (feita por ferramentas/criar-pisos.js sem saber o padrão do item) pega o padrão
+// do chão do meio ao abrir, como ao escolhê-lo à mão.
 
 function openRecipe(recipe) {
   floors.slots = {};
@@ -803,6 +805,14 @@ function openRecipe(recipe) {
   setStatus(recipe.nome ? `Aberto: ${recipe.nome}` : '');
   render();
   refreshProjects();
+  const meio = floors.slots['meio-1'];
+  if (recipe.formato && recipe.formato.padraoDoTibia && meio && meio.tibia) {
+    floors.loading++;
+    usePattern(meio.tibia.id).finally(() => {
+      floors.loading--;
+      floors.dirty = true;
+    });
+  }
 }
 
 // ================================================================================================================================================================================================================================================
