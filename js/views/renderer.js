@@ -46,6 +46,8 @@ const TARGET_OUTLINE = '#ff2a2a';
 const PLAYER_DISPLACEMENT = 8;
 const TINT_HOVER = { color: '#3b82f6', alpha: 0.35 };
 const FLOOR_DARKEN = 0.2;
+const REST_Z_COUNT = 3;
+const REST_Z_MS = 700;
 
 export class Renderer {
   constructor(canvas, camera) {
@@ -510,7 +512,10 @@ export class Renderer {
         this.drawFallbackSquare(base, size, stackOffsetX, stackOffsetY, "#888888", tint);
       }
     } else {
-      if (isPlayer && entity === this.localPlayer && this.restingUntil > performance.now()) return;
+      if (isPlayer && entity === this.localPlayer && this.restingUntil > performance.now()) {
+        this.drawResting(entity, base, size, stackOffsetX, stackOffsetY, tint);
+        return;
+      }
       const frame = this.getEntityFrame(entity, isPlayer, isEnemy);
       if (frame) {
         const isSelf = isPlayer && entity === this.localPlayer;
@@ -532,6 +537,28 @@ export class Renderer {
 
     // Nome/vida/stats vão numa passada final (render), por cima de qualquer piso.
     if (!(entity && entity.invisible && entity !== this.localPlayer)) this.pendingOverlays.push({ entity, base, stackOffsetX, stackOffsetY, size });
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // drawResting
+  // O próprio player descansando na fogueira: o corpo fresco do sexo dele no sqm e uns z pequenos subindo da cabeça
+  // e sumindo (REST_Z_COUNT, um atrás do outro a cada REST_Z_MS).
+
+  drawResting(entity, base, size, stackOffsetX, stackOffsetY, tint) {
+    const sheet = this.sprites.getCorpseSheet({ isPlayer: true, gender: entity.gender });
+    if (isSheetReady(sheet)) this.drawAnchoredSprite(sheet.image, sheet.getFrameRect('idle', 0, Infinity), base, size, stackOffsetX, stackOffsetY, tint);
+    const tile = size;
+    const now = performance.now();
+    this.ctx.save();
+    this.ctx.fillStyle = '#ffffff';
+    this.ctx.textAlign = 'center';
+    for (let i = 0; i < REST_Z_COUNT; i++) {
+      const t = ((now + i * REST_Z_MS) % (REST_Z_COUNT * REST_Z_MS)) / (REST_Z_COUNT * REST_Z_MS);
+      this.ctx.globalAlpha = 0.7 * Math.sin(Math.PI * t);
+      this.ctx.font = `bold ${Math.round(tile * (0.22 + 0.12 * t))}px Arial`;
+      this.ctx.fillText('z', base.x + tile * (0.55 + 0.25 * t) - stackOffsetX, base.y + tile * (0.35 - 0.6 * t) - stackOffsetY);
+    }
+    this.ctx.restore();
   }
 
   // ================================================================================================================================================================================

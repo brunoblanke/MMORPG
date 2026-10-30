@@ -97,11 +97,11 @@ export class SpriteRegistry {
 
   // ================================================================================================================================================================================================================================================
   // getCorpseSheet
-  // Cadáver: a 5ª linha da folha da criatura (fresco, apodrecendo, ossos).
+  // Cadáver: a 5ª linha da folha da criatura (fresco, apodrecendo, ossos); o do player, da folha do sexo dele.
 
   getCorpseSheet(corpseData) {
     if (!corpseData) return null;
-    const creature = corpseData.isPlayer ? PLAYER_SPRITES[DEFAULT_GENDER] : corpseData.creature;
+    const creature = corpseData.isPlayer ? PLAYER_SPRITES[corpseData.gender] || PLAYER_SPRITES[DEFAULT_GENDER] : corpseData.creature;
     if (this.corpseSpritesByType.has(creature)) return this.corpseSpritesByType.get(creature);
     const asset = getAsset(creature);
     const frames = CONFIG.corpseFrameCount || 3;

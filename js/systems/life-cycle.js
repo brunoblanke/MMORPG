@@ -32,6 +32,7 @@ export class LifeCycleController {
       type: type,
       lvl: entity.lvl,
       creature: entity.creature,
+      gender: entity.gender,
       isPlayer: type === 'player_corpse',
       deathTime: now,
       decayTime: now + (type === 'player_corpse' ? CONFIG.playerCorpseFrameDuration : CONFIG.corpseFrameDuration) * CONFIG.corpseFrameCount,

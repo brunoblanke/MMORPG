@@ -20,7 +20,26 @@
     ],
     "addons": []
   },
-  "cadaver": {},
+  "cadaver": {
+    "fresco": {
+      "tibia": {
+        "id": 4247,
+        "variacao": 0
+      }
+    },
+    "apodrecendo": {
+      "tibia": {
+        "id": 4248,
+        "variacao": 0
+      }
+    },
+    "ossos": {
+      "tibia": {
+        "id": 4246,
+        "variacao": 0
+      }
+    }
+  },
   "propriedades": {
     "comportamento": "normal",
     "vida": 0,
