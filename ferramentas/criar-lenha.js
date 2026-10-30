@@ -3,7 +3,8 @@
 // Cortar lenha e plantar: cria no gerador as receitas da madeira (itens/materiais/wood, empilhável), da semente
 // (itens/plantas-e-ervas/seeds) e da muda (estrutura/natureza/sapling), dá a capacidade "lenhar" aos machados
 // (itens/machados: os que têm "axe" no nome e o hatchet) e escreve as reações:
-//   árvore + machado → com CHANCE % dá 1 madeira, com o BRILHO na árvore (o do peixe e da minhoca; sem madeira, a poff); a cada CORTES cortes some (só a fumacinha poff), dá 1 semente e sai
+//   árvore + machado → com CHANCE % dá 1 madeira, com as FAISCAS amarelas na árvore (sem madeira, a poff; a madeira que
+//                      não cabe na mochila cai aos pés com o brilho do peixe, giveItem); a cada CORTES cortes some (só a fumacinha poff), dá 1 semente e sai
 //                      do mapa; madeira e semente vão pra mochila de quem cortou (sem espaço, aos pés dele);
 //   semente          → usada com a mira no chão ao lado vira a muda (Planta como), só em piso de plantar (as gramas
 //                      e terras de estrutura/pisos ganham "Dá pra plantar");
@@ -27,7 +28,7 @@ const SEMENTE = 'itens/plantas-e-ervas/seeds';
 const CHANCE = 40;
 const CORTES = 8;
 const CRESCE_S = 600;
-const BRILHO = 'rings-yellow';
+const FAISCAS = 'block';
 const PISOS_DE_PLANTAR = ['grama-', 'terra-'];
 const ARVORES = [
   'arvore-1', 'arvore-3', 'beech', 'coconut-palm', 'dead-tree', 'dwarf-tree', 'fir-tree', 'old-tree', 'palm', 'pear-tree',
@@ -145,14 +146,17 @@ function tirarGolpe(receita) {
 
 // ================================================================================================================================================================================================================================================
 // brilhoNaMadeira
-// A interação que dá a madeira mostra o BRILHO na árvore. Devolve true se mudou.
+// A interação que dá a madeira mostra as FAISCAS na árvore (troca o efeito antigo). Devolve true se mudou.
 
 function brilhoNaMadeira(receita) {
   let mudou = false;
   for (const interacao of (receita.propriedades && receita.propriedades.interacoes) || []) {
     const efeitos = (interacao && interacao.efeitos) || [];
-    if (!efeitos.some(e => e && e.tipo === 'dar-itens' && e.item === MADEIRA) || efeitos.some(e => e && e.tipo === 'efeito-visual')) continue;
-    efeitos.push({ tipo: 'efeito-visual', nome: BRILHO });
+    if (!efeitos.some(e => e && e.tipo === 'dar-itens' && e.item === MADEIRA)) continue;
+    const visual = efeitos.find(e => e && e.tipo === 'efeito-visual');
+    if (visual && visual.nome === FAISCAS) continue;
+    if (visual) visual.nome = FAISCAS;
+    else efeitos.push({ tipo: 'efeito-visual', nome: FAISCAS });
     mudou = true;
   }
   return mudou;
@@ -206,7 +210,7 @@ function marcarArvores() {
       const mochila = paraMochila(receita);
       const semEfeito = tirarEfeitoDaQueda(receita);
       const golpe = tirarGolpe(receita);
-      const madeira = garantirInteracao(receita, 'dar-itens', { gatilho: lenhar, condicoes: { alcance: 1, chance: CHANCE }, efeitos: [{ tipo: 'dar-itens', item: MADEIRA, quantidade: 1, umaVez: 'nao' }, { tipo: 'efeito-visual', nome: BRILHO }] });
+      const madeira = garantirInteracao(receita, 'dar-itens', { gatilho: lenhar, condicoes: { alcance: 1, chance: CHANCE }, efeitos: [{ tipo: 'dar-itens', item: MADEIRA, quantidade: 1, umaVez: 'nao' }, { tipo: 'efeito-visual', nome: FAISCAS }] });
       const brilho = brilhoNaMadeira(receita);
       const cai = garantirInteracao(receita, 'remover', { gatilho: lenhar, condicoes: { alcance: 1, vezes: CORTES }, efeitos: [{ tipo: 'dar-itens', item: SEMENTE, quantidade: 1, umaVez: 'nao' }, { tipo: 'remover', rebroteMs: 0 }] });
       return tirou || mochila || semEfeito || golpe || madeira || brilho || cai;
