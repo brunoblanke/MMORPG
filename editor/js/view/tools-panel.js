@@ -7,7 +7,7 @@ import { BORDER_VARIANTS } from '../../../shared/floor-borders.js';
 import { listAssets, creatureBehavior, pieceType, splitType, displayName, isStairsAccess, isEntranceType, isItemType, isWallType, objectDirections, rotateType, withDirection, WALL_PIECES, WALL_PIECE_NAMES } from '../../../shared/assets.js';
 import { setThumb } from './sprite-thumb.js';
 import { svgIcon } from '../../../js/views/inventory-ui/icons.js';
-import { STAIR_FACINGS } from '../../../shared/stairs.js';
+import { STAIR_FACINGS, FACING_ARROWS } from '../../../shared/stairs.js';
 import { closeSelectPanel } from './forms.js';
 import { rememberView } from './view-memory.js';
 import { revealOpenTool, MOBILE_QUERY } from './mobile-layout.js';
@@ -428,8 +428,6 @@ function floorBordersToggle() {
 // ================================================================================================================================================================================================================================================
 // stairFacingPicker
 // Acessos: "Escada sobe para" (norte, leste, sul, oeste): a escada posta (a que não gira) sobe pra essa direção.
-
-const FACING_ARROWS = { norte: '↑', leste: '→', sul: '↓', oeste: '←' };
 
 function stairFacingPicker() {
   const row = document.createElement('div');

@@ -37,6 +37,7 @@ export function toLowerLevel(x, y, z) {
 
 const FACING_STEPS = { norte: [0, -1], leste: [1, 0], sul: [0, 1], oeste: [-1, 0] };
 export const STAIR_FACINGS = Object.keys(FACING_STEPS);
+export const FACING_ARROWS = { norte: '↑', leste: '→', sul: '↓', oeste: '←' };
 
 function facingStep(facing) {
   return FACING_STEPS[facing] || FACING_STEPS.norte;

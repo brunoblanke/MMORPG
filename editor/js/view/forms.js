@@ -8,7 +8,7 @@ import { updateStats } from './tools-panel.js';
 import { setThumb } from './sprite-thumb.js';
 import { itemInfo } from '../../../shared/items.js';
 import { restackItems, stairFacing } from '../../../shared/map-format.js';
-import { STAIR_FACINGS } from '../../../shared/stairs.js';
+import { STAIR_FACINGS, FACING_ARROWS } from '../../../shared/stairs.js';
 
 // ================================================================================================================================================================================================================================================
 // positionFloatPanel
@@ -118,13 +118,14 @@ function renderSelectPanel() {
     const name = document.createElement('span');
     name.className = 'select-name';
     const rotates = objectDirections(obj.type).length > 1;
-    const facing = !rotates && isStairsType(obj.type) ? stairFacing(obj.type, obj.facing) : null;
-    name.textContent = displayName(obj.type) + (rotates ? ` · ${objectDirection(obj.type)}` : '') + (facing ? ` · sobe pro ${facing}` : '') + (obj.count > 1 ? ` ×${obj.count}` : '') + (obj.dados ? ' •' : '');
+    const facing = isStairsType(obj.type) ? stairFacing(obj.type, obj.facing) : null;
+    name.textContent = displayName(obj.type) + (rotates && !facing ? ` · ${objectDirection(obj.type)}` : '') + (obj.count > 1 ? ` ×${obj.count}` : '') + (obj.dados ? ' •' : '');
     name.title = obj.type;
     const up = selectButton('▲', 'Subir na pilha', index === objects.length - 1, () => moveInStack(index, 1));
     const down = selectButton('▼', 'Descer na pilha', index === 0, () => moveInStack(index, -1));
     row.append(thumb, name, up, down);
-    if (rotates || facing) row.appendChild(selectButton('⟳', facing ? 'Mudar pra onde sobe (R)' : 'Girar (R)', false, () => rotateObject(obj, 1)));
+    if (facing) row.appendChild(selectButton(FACING_ARROWS[facing], `Sobe pro ${facing}; clique troca (R)`, false, () => rotateObject(obj, 1)));
+    else if (rotates) row.appendChild(selectButton('⟳', 'Girar (R)', false, () => rotateObject(obj, 1)));
     const kind = editableKind(obj.type);
     if (kind) row.appendChild(selectButton('✎', EDIT_TITLES[kind], false, (evt) => openObjectDataForm(obj, evt.clientX, evt.clientY)));
     list.appendChild(row);
