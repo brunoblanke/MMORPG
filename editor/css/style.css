@@ -64,7 +64,8 @@ body{
 }
 .quick-sep{ width:1px; align-self:stretch; background:var(--line); }
 /* A mesma barra, embaixo (acima da linha de status): andar fantasma, bordas e Salvar; por cima dela uma barra
-   transparente da largura da tela com o botão de tela cheia à direita. */
+   transparente da largura da tela com o botão de tela cheia à direita, igual ao do jogo (js/views/ui.js: ícone de 24 px em
+   #ccff33 numa área de 36 px, sem fundo). */
 .bottom-dock{
   position:absolute; left:10px; right:10px; bottom:46px; z-index:20; pointer-events:none;
   display:flex; flex-direction:column; align-items:center; gap:6px;
@@ -72,7 +73,10 @@ body{
 .bottom-dock > *{ pointer-events:auto; }
 .fullscreen-bar{ align-self:stretch; display:flex; justify-content:flex-end; pointer-events:none; }
 .fullscreen-bar > *{ pointer-events:auto; }
-.fullscreen-btn{ background:rgba(17, 19, 26, .82); box-shadow:0 6px 20px rgba(0,0,0,.35); font:inherit; padding:7px 9px; }
+.fullscreen-btn{
+  width:36px; height:36px; padding:0; border:0; background:none; color:#ccff33; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+}
 .fullscreen-btn[hidden]{ display:none; }
 .fullscreen-btn .fs-exit, .fullscreen-btn.on .fs-enter{ display:none; }
 .fullscreen-btn.on .fs-exit{ display:block; }
