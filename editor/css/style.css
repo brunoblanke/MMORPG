@@ -176,7 +176,7 @@ body{
 .status-list b{ color:var(--accent); }
 
 
-.canvas-wrap{ flex:1; display:flex; padding:0; overflow:auto; }
+.canvas-wrap{ flex:1; display:flex; padding:0; overflow:auto; touch-action:none; }
 .board{ position:relative; margin:auto; flex:none; }
 
 canvas{ display:block; background:var(--grid); cursor:crosshair; }

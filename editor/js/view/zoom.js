@@ -35,6 +35,14 @@ function applyZoom(next, clientX, clientY) {
 }
 
 // ================================================================================================================================================================================================================================================
+// zoomBy
+// Multiplica o zoom mantendo (clientX, clientY) no lugar (pinça no celular).
+
+export function zoomBy(factor, clientX, clientY) {
+  applyZoom(zoom * factor, clientX, clientY);
+}
+
+// ================================================================================================================================================================================================================================================
 // initZoom
 // A roda do mouse dá zoom no mapa (no ponto do cursor); segurar Espaço vira mão (grab) e arrastar move o mapa; o zoom fica guardado no navegador.
 
