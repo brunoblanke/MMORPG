@@ -134,6 +134,17 @@ body{
 .checkline{ display:flex; align-items:center; gap:8px; font-size:12px; color:var(--muted); }
 .checkline input{ accent-color:var(--accent); }
 
+/* Botão de ícone que liga e desliga (Andares, Detalhes, Stats): a caixinha fica escondida e o botão acende quando ela
+   está marcada, como as ferramentas rápidas. */
+.icon-toggle{
+  position:relative; display:flex; align-items:center; justify-content:center; padding:5px 7px; border-radius:5px;
+  border:1px solid transparent; color:var(--muted); cursor:pointer; user-select:none;
+}
+.icon-toggle input{ position:absolute; opacity:0; width:0; height:0; margin:0; }
+.icon-toggle:hover{ border-color:var(--accent-dim); }
+.icon-toggle:has(input:checked){ color:var(--accent); border-color:var(--accent); background:rgba(94,234,212,.12); }
+.icon-toggle:has(input:focus-visible){ outline:2px solid var(--accent); outline-offset:2px; }
+
 .ghost-note{
   font-size:11px; color:var(--muted); line-height:1.5; background:var(--panel-2);
   border:1px solid var(--line); border-radius:7px; padding:8px 10px;
