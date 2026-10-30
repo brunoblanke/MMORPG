@@ -312,7 +312,9 @@ export class PlayerControl {
   // ================================================================================================================================================================================================================================================
   // moveItem
   // Item ao alcance (mesmo sqm ou vizinho, mesmo andar) é movido na hora;
-  // senão o player vai até ele e move ao chegar.
+  // senão o player vai até ele e move ao chegar. Item do chão jogado na caixa
+  // de correio ou num objeto que recebe itens vai pelo moveInv (que posta ou
+  // dispara a reação), como o que vem da mochila.
 
   moveItem(player, itemId, x, y, z) {
     const item = this.sim.getItem(itemId);
@@ -321,6 +323,11 @@ export class PlayerControl {
     const world = this.sim.world;
     if (!world.mayEnter(player, item.x, item.y, item.z || 0) || !world.mayEnter(player, x, y, z)) {
       this.sim.emit({ type: 'message', playerId: player.id, text: 'Essa casa não é sua.', kind: 'warn' });
+      return;
+    }
+    const inventory = this.sim.inventory;
+    if (inventory.isPickable(item) && (inventory.mailboxAt(x, y, z) || inventory.itemReceiverAt(x, y, z, inventory.groundItem(item)))) {
+      inventory.move(player, { t: 'g', id: itemId }, { t: 'w', x, y, z }, inventory.groundItem(item).count || 1);
       return;
     }
 

@@ -147,3 +147,13 @@ test('correio: encomenda sem destinatário jogada na caixa pergunta "Para:"; esc
   assert.equal(bia.depot.items[0].type, SENT_PARCEL);
   assert.deepEqual(bia.depot.items[0].items.filter(Boolean).map(i => i.type), [ROPE]);
 });
+
+test('correio: a encomenda jogada do chão na caixa também vai (com a etiqueta escrita dentro)', () => {
+  const { sim, ana, bia } = game();
+  const parcel = sim.inventory.spawnGroundItem({ uid: 'p3', type: PARCEL, items: [{ uid: 'e3', type: LABEL, para: 'Bia' }, { uid: 'r4', type: ROPE }, null, null] }, 10, 11, 0);
+  const events = run(sim, { type: 'moveItem', itemId: parcel.id, x: sim.box.x, y: sim.box.y, z: 0 });
+  assert.ok(events.some(e => e.type === 'message' && /Enviado pra Bia/.test(e.text)));
+  assert.equal(sim.objects.includes(parcel), false, 'saiu do chão');
+  assert.equal(bia.depot.items[0].type, SENT_PARCEL);
+  assert.equal(ana.equip.mochila.items[2].type, PARCEL, 'a da mochila continua lá');
+});
