@@ -8,7 +8,7 @@ import { addFloorToCell, restackItems } from '../../../shared/map-format.js';
 import { refreshBordersAt } from '../model/borders.js';
 import { isStairsAccess, isEntranceType, conjuntoPartes } from '../../../shared/assets.js';
 import { itemInfo } from '../../../shared/items.js';
-import { brushCells, MAX_BRUSH, fillActive, areaCells } from '../model/brush.js';
+import { brushCells, MAX_BRUSH, areaDrag, areaCells } from '../model/brush.js';
 
 const BOT_LEVEL = 20;
 
@@ -186,7 +186,7 @@ canvas.addEventListener('mousedown', (evt) => {
   if (evt.button !== 0) return;
   const cell = cellFromEvent(evt);
   if (!cell) return;
-  if (fillActive()) {
+  if (areaDrag(evt.shiftKey)) {
     state.area = { x0: cell.x, y0: cell.y, x1: cell.x, y1: cell.y, clientX: evt.clientX, clientY: evt.clientY };
     return;
   }

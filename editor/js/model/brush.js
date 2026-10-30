@@ -8,8 +8,9 @@ import { isStairsAccess, isEntranceType } from '../../../shared/assets.js';
 // sqm (setas ↑/↓, de 1 a MAX_BRUSH); as de pôr uma coisa só, 1 sqm.
 export const MAX_BRUSH = 6;
 const BRUSH_TOOLS = new Set(['floor', 'eraser', 'border-eraser', 'safe', 'house']);
-// Preencher área: com essas ferramentas, arrastar marca um retângulo e, ao soltar, a ferramenta roda em cada sqm dele
-// (um clique sem arrastar pinta como o pincel). Acessos: a entrada (buraco) usa pincel e área; a escada vai uma por vez.
+// Preencher área: essas ferramentas, com o botão Área ligado (state.areaFill) ou Shift, marcam um retângulo ao arrastar e,
+// ao soltar, rodam em cada sqm dele (um clique sem arrastar pinta como o pincel); sem área, arrastar pinta por onde passa.
+// Acessos: a entrada (buraco) usa pincel e área; a escada vai uma por vez.
 export const FILL_TOOLS = new Set([...BRUSH_TOOLS, 'border', 'item', 'deco', 'wall']);
 
 // ================================================================================================================================================================================================================================================
@@ -42,7 +43,7 @@ export function brushCells(x, y) {
 
 // ================================================================================================================================================================================================================================================
 // fillActive
-// A ferramenta atual preenche área ao arrastar.
+// A ferramenta atual sabe preencher área.
 
 export function fillActive() {
   if (state.tool === 'access') return !!state.accessPaint && !isStairsAccess(state.accessPaint);
@@ -63,4 +64,12 @@ export function areaCells(area) {
     for (let x = minX; x <= maxX; x++) cells.push({ x, y });
   }
   return cells;
+}
+
+// ================================================================================================================================================================================================================================================
+// areaDrag
+// Arrastar marca área (botão Área ligado ou Shift, um inverte o outro) em vez de pintar por onde passa.
+
+export function areaDrag(shift = false) {
+  return !!state.areaFill !== !!shift && fillActive();
 }

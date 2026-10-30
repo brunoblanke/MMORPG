@@ -265,6 +265,7 @@ export function renderTools() {
     };
     if (t.quick) {
       quick.appendChild(head);
+      if (t.id === 'eraser') quick.append(historyButton('undo'), historyButton('redo'), areaButton());
       if (t.id === 'house' && state.tool === 'house') wrap.appendChild(houseWindow());
       return;
     }
@@ -326,6 +327,42 @@ function buildHouseForm() {
   return form;
 }
 
+// ================================================================================================================================================================================================================================================
+// historyButton
+// Desfazer / Refazer (à direita da borracha): o clique vira o evento editor-undo / editor-redo, que o app trata como o Ctrl+Z.
+
+function historyButton(kind) {
+  const button = document.createElement('div');
+  button.className = 'quick-btn';
+  button.id = kind === 'undo' ? 'undoBtn' : 'redoBtn';
+  button.title = kind === 'undo' ? 'Desfazer (Ctrl+Z)' : 'Refazer (Ctrl+Shift+Z)';
+  const swatch = document.createElement('div');
+  swatch.className = 'tool-swatch icon';
+  swatch.innerHTML = QUICK_ICONS[kind];
+  button.appendChild(swatch);
+  button.onclick = () => document.dispatchEvent(new CustomEvent(`editor-${kind}`));
+  return button;
+}
+
+// ================================================================================================================================================================================================================================================
+// areaButton
+// Área (liga/desliga): arrastar marca um retângulo e pinta tudo dentro; desligado, arrastar pinta por onde passa.
+
+function areaButton() {
+  const button = document.createElement('div');
+  button.className = 'quick-btn' + (state.areaFill ? ' active' : '');
+  button.title = 'Área: arrastar marca um retângulo e pinta tudo dentro (desligado, pinta por onde passa; no PC, Shift + arrastar faz o outro)';
+  const swatch = document.createElement('div');
+  swatch.className = 'tool-swatch icon';
+  swatch.innerHTML = QUICK_ICONS.area;
+  button.appendChild(swatch);
+  button.onclick = () => {
+    state.areaFill = !state.areaFill;
+    renderTools();
+  };
+  return button;
+}
+
 const QUICK_ICON_SCALE = 16 / 22;
 const QUICK_ICONS = {
   select: svgIcon('0 0 16 22', '<path d="M.95.95v16.7l4.4-4.1 3.2 7.2 3-1.3-3.2-7h6.7L.95.95Z"/>', QUICK_ICON_SCALE),
@@ -333,6 +370,9 @@ const QUICK_ICONS = {
   spawn: svgIcon('0 0 22 22', '<path d="M5 20.5V2.5"/><path d="M5 3.5h11.5l-2.8 4 2.8 4H5"/>', QUICK_ICON_SCALE),
   safe: svgIcon('0 0 22 22', '<rect x="4.5" y="10" width="13" height="10" rx="2"/><path d="M7.5 10V7a3.5 3.5 0 0 1 7 0v3"/><path d="M11 14v2.5"/>', QUICK_ICON_SCALE),
   house: svgIcon('0 0 22 22', '<path d="M2.5 10.5L11 3l8.5 7.5"/><path d="M4.5 9v10.5h13V9"/><path d="M9 19.5v-5.5h4v5.5"/>', QUICK_ICON_SCALE),
+  undo: svgIcon('0 0 22 22', '<path d="M7 4.5 2.5 9 7 13.5"/><path d="M2.5 9h11a5.5 5.5 0 0 1 0 11H9"/>', QUICK_ICON_SCALE),
+  redo: svgIcon('0 0 22 22', '<path d="M15 4.5 19.5 9 15 13.5"/><path d="M19.5 9h-11a5.5 5.5 0 0 0 0 11H13"/>', QUICK_ICON_SCALE),
+  area: svgIcon('0 0 22 22', '<path d="M3 6.5V3h3.5M9.5 3h3M15.5 3H19v3.5M19 9.5v3M19 15.5V19h-3.5M12.5 19h-3M6.5 19H3v-3.5M3 12.5v-3"/><rect x="7.5" y="7.5" width="7" height="7" rx="1"/>', QUICK_ICON_SCALE),
   eraser: svgIcon('0 0 22 22', '<path d="M8.2 20.05L1.95 13.8 13.1 2.65l7.25 7.25-10.15 10.15H8.2Z"/><path d="M6.4 9.3l7.25 7.25M8.2 20.05h12.85"/>', QUICK_ICON_SCALE)
 };
 

@@ -102,6 +102,9 @@ window.addEventListener('keydown', (evt) => {
   }
 });
 
+document.addEventListener('editor-undo', () => { if (undo()) onLayerChange(); });
+document.addEventListener('editor-redo', () => { if (redo()) onLayerChange(); });
+
 // Toda ação do editor termina num mouseup (traço no canvas) ou num clique
 // (painéis, formulários, abas): nesse momento, se o mapa mudou, vira um passo.
 window.addEventListener('mouseup', () => commitHistory());

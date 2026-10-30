@@ -59,7 +59,8 @@ export const state = {
   selected: null,
   focus: null,
   strokeTouched: new Set(),
-  ghost: false
+  ghost: false,
+  areaFill: false
 };
 
 // paint: campo do state com o que a ferramenta pinta (as que têm lista).

@@ -2,7 +2,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { areaCells, fillActive, brushSize } from '../editor/js/model/brush.js';
+import { areaCells, fillActive, brushSize, areaDrag } from '../editor/js/model/brush.js';
 import { setAssets } from '../shared/assets.js';
 import { state } from '../editor/js/model/state.js';
 import { GRID } from '../editor/js/config.js';
@@ -14,7 +14,7 @@ test('preencher área: os sqm do retângulo entre os dois cantos, em qualquer or
   assert.ok(areaCells({ x0: GRID - 2, y0: 0, x1: GRID + 5, y1: 0 }).every(c => c.x < GRID));
 });
 
-test('arrastar preenche área nas ferramentas de pintar, não pras de pôr uma coisa só', () => {
+test('as ferramentas de pintar sabem preencher área, não as de pôr uma coisa só', () => {
   for (const tool of ['floor', 'item', 'deco', 'wall', 'eraser', 'safe', 'house']) {
     state.tool = tool;
     assert.equal(fillActive(), true, tool);
@@ -43,4 +43,17 @@ test('Acessos: a entrada usa pincel e área; a escada vai uma por vez; o teletra
   state.accessPaint = 'estrutura/teletransportes/tp-de-teste';
   assert.equal(fillActive(), true);
   assert.equal(brushSize(), 1);
+});
+
+test('arrastar pinta por onde passa; com o botão Área ligado ou Shift, marca área (um inverte o outro)', () => {
+  state.tool = 'floor';
+  state.areaFill = false;
+  assert.equal(areaDrag(), false);
+  assert.equal(areaDrag(true), true);
+  state.areaFill = true;
+  assert.equal(areaDrag(), true);
+  assert.equal(areaDrag(true), false);
+  state.tool = 'enemy';
+  assert.equal(areaDrag(), false);
+  state.areaFill = false;
 });
