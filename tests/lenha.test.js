@@ -155,8 +155,10 @@ test('receitas: machados lenham e as árvores soltam a madeira', () => {
   const lenhar = ler('estrutura/natureza/arvore-1').propriedades.interacoes.filter(i => i.gatilho.capacidade === 'lenhar');
   assert.ok(lenhar.some(i => i.efeitos[0].tipo === 'dar-itens' && i.efeitos[0].item === WOOD));
   for (const nome of ['arvore-1', 'pine', 'willow']) {
-    const golpe = ler(`estrutura/natureza/${nome}`).propriedades.interacoes[0];
-    assert.deepEqual([golpe.gatilho.capacidade, golpe.condicoes.chance, golpe.efeitos[0].tipo, golpe.efeitos[0].nome], ['lenhar', undefined, 'efeito-visual', 'block'], `${nome}: todo golpe mostra o efeito no tronco`);
+    const interacoes = ler(`estrutura/natureza/${nome}`).propriedades.interacoes;
+    const madeira = interacoes.find(i => i.efeitos.some(e => e.tipo === 'dar-itens' && e.item === WOOD));
+    assert.ok(madeira.efeitos.some(e => e.tipo === 'efeito-visual' && e.nome === 'rings-yellow'), `${nome}: a madeira sai com o brilho do peixe`);
+    assert.ok(interacoes.every(i => i.efeitos.some(e => e.tipo !== 'efeito-visual')), `${nome}: sem efeito a cada golpe (sem madeira, a poff)`);
   }
   assert.equal(ler(WOOD).propriedades.empilhavel, true);
 });

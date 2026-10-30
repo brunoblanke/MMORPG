@@ -3,7 +3,7 @@
 // Cortar lenha e plantar: cria no gerador as receitas da madeira (itens/materiais/wood, empilhável), da semente
 // (itens/plantas-e-ervas/seeds) e da muda (estrutura/natureza/sapling), dá a capacidade "lenhar" aos machados
 // (itens/machados: os que têm "axe" no nome e o hatchet) e escreve as reações:
-//   árvore + machado → a cada golpe o efeito GOLPE no tronco (o mesmo do golpe que acerta a criatura); com CHANCE % dá 1 madeira; a cada CORTES cortes some (só a fumacinha poff), dá 1 semente e sai
+//   árvore + machado → com CHANCE % dá 1 madeira, com o BRILHO na árvore (o do peixe e da minhoca; sem madeira, a poff); a cada CORTES cortes some (só a fumacinha poff), dá 1 semente e sai
 //                      do mapa; madeira e semente vão pra mochila de quem cortou (sem espaço, aos pés dele);
 //   semente          → usada com a mira no chão ao lado vira a muda (Planta como), só em piso de plantar (as gramas
 //                      e terras de estrutura/pisos ganham "Dá pra plantar");
@@ -27,7 +27,7 @@ const SEMENTE = 'itens/plantas-e-ervas/seeds';
 const CHANCE = 40;
 const CORTES = 8;
 const CRESCE_S = 600;
-const GOLPE = 'block';
+const BRILHO = 'rings-yellow';
 const PISOS_DE_PLANTAR = ['grama-', 'terra-'];
 const ARVORES = [
   'arvore-1', 'arvore-3', 'beech', 'coconut-palm', 'dead-tree', 'dwarf-tree', 'fir-tree', 'old-tree', 'palm', 'pear-tree',
@@ -83,16 +83,15 @@ function criarReceitas() {
 
 // ================================================================================================================================================================================================================================================
 // garantirInteracao
-// Põe a interação na receita (no fim, ou no começo com primeiro) se ainda não há uma com o mesmo gatilho que faça o
-// efeito marca. Devolve true se mudou.
+// Põe a interação na receita se ainda não há uma com o mesmo gatilho que faça o efeito marca. Devolve true se mudou.
 
-function garantirInteracao(receita, marca, interacao, primeiro = false) {
+function garantirInteracao(receita, marca, interacao) {
   const props = receita.propriedades = receita.propriedades || {};
   const lista = Array.isArray(props.interacoes) ? props.interacoes : [];
   const mesma = (i) => i && i.gatilho && i.gatilho.tipo === interacao.gatilho.tipo && i.gatilho.capacidade === interacao.gatilho.capacidade
     && Array.isArray(i.efeitos) && i.efeitos.some(e => e && e.tipo === marca);
   if (lista.some(mesma)) return false;
-  props.interacoes = primeiro ? [interacao, ...lista] : [...lista, interacao];
+  props.interacoes = [...lista, interacao];
   return true;
 }
 
@@ -131,17 +130,30 @@ function tirarEfeitoDaQueda(receita) {
 }
 
 // ================================================================================================================================================================================================================================================
-// trocarGolpe
-// O efeito de golpe antigo (hit-area) no tronco vira o GOLPE atual. Devolve true se mudou.
+// tirarGolpe
+// Tira a interação antiga que mostrava um efeito a cada golpe (hit-area ou block): sem madeira, volta a poff. Devolve
+// true se mudou.
 
-function trocarGolpe(receita) {
+function tirarGolpe(receita) {
+  const props = receita.propriedades || {};
+  if (!Array.isArray(props.interacoes)) return false;
+  const golpe = (i) => i && Array.isArray(i.efeitos) && i.efeitos.length > 0 && i.efeitos.every(e => e && e.tipo === 'efeito-visual' && ['hit-area', 'block'].includes(e.nome));
+  const antes = props.interacoes.length;
+  props.interacoes = props.interacoes.filter(i => !golpe(i));
+  return props.interacoes.length !== antes;
+}
+
+// ================================================================================================================================================================================================================================================
+// brilhoNaMadeira
+// A interação que dá a madeira mostra o BRILHO na árvore. Devolve true se mudou.
+
+function brilhoNaMadeira(receita) {
   let mudou = false;
   for (const interacao of (receita.propriedades && receita.propriedades.interacoes) || []) {
-    for (const efeito of (interacao && interacao.efeitos) || []) {
-      if (!efeito || efeito.tipo !== 'efeito-visual' || efeito.nome !== 'hit-area') continue;
-      efeito.nome = GOLPE;
-      mudou = true;
-    }
+    const efeitos = (interacao && interacao.efeitos) || [];
+    if (!efeitos.some(e => e && e.tipo === 'dar-itens' && e.item === MADEIRA) || efeitos.some(e => e && e.tipo === 'efeito-visual')) continue;
+    efeitos.push({ tipo: 'efeito-visual', nome: BRILHO });
+    mudou = true;
   }
   return mudou;
 }
@@ -193,11 +205,11 @@ function marcarArvores() {
       const tirou = props.interacoes.length !== antes;
       const mochila = paraMochila(receita);
       const semEfeito = tirarEfeitoDaQueda(receita);
-      const antigo = trocarGolpe(receita);
-      const golpe = garantirInteracao(receita, 'efeito-visual', { gatilho: lenhar, condicoes: { alcance: 1 }, efeitos: [{ tipo: 'efeito-visual', nome: GOLPE }] }, true);
-      const madeira = garantirInteracao(receita, 'dar-itens', { gatilho: lenhar, condicoes: { alcance: 1, chance: CHANCE }, efeitos: [{ tipo: 'dar-itens', item: MADEIRA, quantidade: 1, umaVez: 'nao' }] });
+      const golpe = tirarGolpe(receita);
+      const madeira = garantirInteracao(receita, 'dar-itens', { gatilho: lenhar, condicoes: { alcance: 1, chance: CHANCE }, efeitos: [{ tipo: 'dar-itens', item: MADEIRA, quantidade: 1, umaVez: 'nao' }, { tipo: 'efeito-visual', nome: BRILHO }] });
+      const brilho = brilhoNaMadeira(receita);
       const cai = garantirInteracao(receita, 'remover', { gatilho: lenhar, condicoes: { alcance: 1, vezes: CORTES }, efeitos: [{ tipo: 'dar-itens', item: SEMENTE, quantidade: 1, umaVez: 'nao' }, { tipo: 'remover', rebroteMs: 0 }] });
-      return tirou || mochila || semEfeito || antigo || golpe || madeira || cai;
+      return tirou || mochila || semEfeito || golpe || madeira || brilho || cai;
     });
   }
   marcar(TOCO, (receita) => {

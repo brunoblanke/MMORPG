@@ -23,21 +23,6 @@
           "capacidade": "lenhar"
         },
         "condicoes": {
-          "alcance": 1
-        },
-        "efeitos": [
-          {
-            "tipo": "efeito-visual",
-            "nome": "block"
-          }
-        ]
-      },
-      {
-        "gatilho": {
-          "tipo": "capacidade",
-          "capacidade": "lenhar"
-        },
-        "condicoes": {
           "alcance": 1,
           "chance": 40
         },
@@ -47,6 +32,10 @@
             "item": "itens/materiais/wood",
             "quantidade": 1,
             "umaVez": "nao"
+          },
+          {
+            "tipo": "efeito-visual",
+            "nome": "rings-yellow"
           }
         ]
       },
