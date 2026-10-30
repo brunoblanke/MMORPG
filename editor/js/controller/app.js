@@ -40,17 +40,22 @@ async function handleSave() {
   if (saving) return;
   saving = true;
   saveBtn.disabled = true;
-  saveBtn.textContent = 'Salvando…';
+  saveBtn.style.width = `${saveBtn.offsetWidth}px`;
+  saveBtn.innerHTML = '<span class="spinner" aria-label="Salvando"></span>';
   try {
     await saveMap();
-    saveBtn.textContent = 'Salvo ✓';
+    saveBtn.textContent = '✓';
   } catch (error) {
-    saveBtn.textContent = 'Erro ao salvar';
+    saveBtn.textContent = '✕';
     alert(`Não foi possível salvar o mapa.\n\n${error.message}\n\nO servidor (start-server.bat) está rodando?`);
   }
   saving = false;
   saveBtn.disabled = false;
-  setTimeout(() => { if (!saving) saveBtn.textContent = 'Salvar'; }, 1500);
+  setTimeout(() => {
+    if (saving) return;
+    saveBtn.textContent = 'Salvar';
+    saveBtn.style.width = '';
+  }, 1500);
 }
 
 saveBtn.onclick = handleSave;

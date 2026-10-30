@@ -302,6 +302,12 @@ textarea{
   .float-panel.wide{ width:min(320px, calc(100vw - 16px)); }
 }
 
+.spinner{
+  display:inline-block; width:14px; height:14px; box-sizing:border-box; border-radius:50%;
+  border:2px solid currentColor; border-right-color:transparent; animation:spin .7s linear infinite; vertical-align:middle;
+}
+@keyframes spin{ to{ transform:rotate(360deg); } }
+
 .export-btn.secondary{ background:transparent; color:var(--text); border:1px solid var(--line); text-decoration:none; display:inline-flex; align-items:center; justify-content:center; }
 .export-btn.secondary:hover{ border-color:var(--accent-dim); }
 

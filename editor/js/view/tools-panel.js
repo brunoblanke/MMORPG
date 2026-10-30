@@ -9,7 +9,7 @@ import { setThumb } from './sprite-thumb.js';
 import { svgIcon } from '../../../js/views/inventory-ui/icons.js';
 import { closeSelectPanel } from './forms.js';
 import { rememberView } from './view-memory.js';
-import { revealOpenTool } from './mobile-layout.js';
+import { revealOpenTool, MOBILE_QUERY } from './mobile-layout.js';
 
 const ACCESS_FOLDERS = ['estrutura/escadas', 'estrutura/entradas', 'estrutura/teletransportes', 'estrutura/degraus'];
 
@@ -236,14 +236,19 @@ export function rotatePaint(step = 1) {
   return true;
 }
 
+// A rolagem da lista de cada ferramenta: fechar e abrir de novo volta no mesmo lugar.
+const listScroll = {};
+
 // ================================================================================================================================================================================================================================================
 // renderTools
+// No celular, escolher uma opção da lista fecha a janela (o mapa fica à vista); ao abrir de novo ela volta rolada onde estava.
 
 export function renderTools() {
   const wrap = document.getElementById('tools');
   const quick = document.getElementById('quickTools');
   const openBody = wrap.querySelector('.tool-accordion');
-  const scroll = { wrap: wrap.scrollTop, body: openBody ? openBody.scrollTop : 0, tool: state.openAccordion };
+  const scroll = { wrap: wrap.scrollTop };
+  if (openBody && openBody.dataset.tool) listScroll[openBody.dataset.tool] = openBody.scrollTop;
   wrap.innerHTML = '';
   quick.innerHTML = '';
   canvas.classList.toggle('select-mode', state.tool === 'select');
@@ -277,8 +282,8 @@ export function renderTools() {
     wrap.appendChild(win);
   });
   wrap.scrollTop = scroll.wrap;
-  const body = wrap.querySelector('.tool-accordion');
-  if (body && scroll.body && state.openAccordion === scroll.tool) body.scrollTop = scroll.body;
+  const body = wrap.querySelector('.tool-accordion[data-tool]');
+  if (body) body.scrollTop = listScroll[body.dataset.tool] || 0;
 }
 
 // ================================================================================================================================================================================================================================================
@@ -426,6 +431,7 @@ function floorBordersToggle() {
 function buildAccordion(tool) {
   const acc = document.createElement('div');
   acc.className = 'tool-accordion show';
+  acc.dataset.tool = tool.id;
   const { empty, groups } = accordionGroups(tool);
   if (!groups.length) {
     const note = document.createElement('div');
@@ -456,6 +462,7 @@ function buildAccordion(tool) {
       opt.onclick = () => {
         setValue(tool, option.value);
         state.tool = tool.id;
+        if (window.matchMedia(MOBILE_QUERY).matches) state.openAccordion = null;
         renderTools();
       };
       if (group.compact) {
