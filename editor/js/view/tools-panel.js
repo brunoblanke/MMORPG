@@ -9,6 +9,7 @@ import { setThumb } from './sprite-thumb.js';
 import { svgIcon } from '../../../js/views/inventory-ui/icons.js';
 import { closeSelectPanel } from './forms.js';
 import { rememberView } from './view-memory.js';
+import { revealOpenTool } from './mobile-layout.js';
 
 const ACCESS_FOLDERS = ['estrutura/escadas', 'estrutura/entradas', 'estrutura/teletransportes', 'estrutura/degraus'];
 
@@ -260,6 +261,7 @@ export function renderTools() {
       state.tool = t.id;
       if (t.id !== 'select') closeSelectPanel();
       renderTools();
+      if (state.openAccordion) setTimeout(revealOpenTool, 220);
     };
     if (t.quick) {
       quick.appendChild(head);

@@ -245,9 +245,16 @@ textarea{
 /* Celular: as barras quebram linha e cabem na tela (o Salvar fica sempre à
    vista), as ferramentas ocupam menos largura e o painel de status quebra linha. */
 @media (max-width: 700px){
-  .side-col{ width:min(240px, 62vw); }
+  .side-col{
+    top:calc(var(--quickbar-bottom, 64px) + 6px); right:0; bottom:auto; width:auto; padding:0 8px 8px;
+    overflow-x:auto; overflow-y:visible; align-items:flex-start;
+  }
+  .tools{ flex-direction:row; align-items:flex-start; gap:6px; width:max-content; }
+  .ed-win{ width:max-content; transition:width .2s; }
+  .ed-win.open{ width:min(260px, 80vw); }
+  .ed-win.open .tool-accordion{ max-height:45vh; }
   .quickbar{
-    top:48px; left:8px; right:8px; transform:none; flex-wrap:wrap; justify-content:center; white-space:normal; gap:6px;
+    top:8px; left:8px; right:8px; transform:none; flex-wrap:wrap; justify-content:center; white-space:normal; gap:6px;
   }
   .quickbar.bottombar{ top:auto; bottom:76px; }
   .main.stats-hidden .quickbar.bottombar{ bottom:16px; }

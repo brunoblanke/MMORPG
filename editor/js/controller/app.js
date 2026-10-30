@@ -12,6 +12,7 @@ import { loadMapIntoState, saveMap, hasUnsavedChanges, markLoadFailed } from '..
 import { resetHistory, commitHistory, undo, redo } from '../model/history.js';
 import './canvas-input.js';
 import '../view/goto-field.js';
+import '../view/mobile-layout.js';
 import { initZoom } from '../view/zoom.js';
 
 // ================================================================================================================================================================================================================================================
