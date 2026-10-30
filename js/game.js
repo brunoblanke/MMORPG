@@ -11,6 +11,7 @@ import { SpriteLoader } from './services/sprite-loader.js';
 import { Renderer, MESSAGE_COLORS } from './views/renderer.js';
 import { getSpritePaths } from './views/sprite-registry.js';
 import { loadAssets } from '../shared/assets.js';
+import { POTION_EFFECT } from '../shared/effects.js';
 import { damageColor } from '../shared/conditions.js';
 import { UI } from './views/ui.js';
 import { getRoofLevel } from './views/draw-order.js';
@@ -211,11 +212,13 @@ export class GameController {
   // ================================================================================================================================================================================================================================================
   // rest
   // A fogueira acesa (evento campfire, só pra quem acendeu): depois de lie ms o player aparece deitado no sqm dele (o
-  // corpo do sexo dele com os zzz, renderer.drawResting) e a tela escurece até ele sair (ms).
+  // corpo do sexo dele com os zzz, renderer.drawResting): vira o corpo no mesmo instante em que brilha (o da poção);
+  // a tela escurece até ele sair (ms).
 
   rest(event) {
     const lie = event.lie || 0;
     setTimeout(() => {
+      if (this.player) this.particleController.spawnEffect({ x: this.player.x, y: this.player.y, z: this.player.z || 0, effect: POTION_EFFECT }, this.renderer);
       this.renderer.restingUntil = performance.now() + event.ms - lie + REST_EXTRA_MS;
       this.fadeOut(event.ms - lie);
     }, lie);
