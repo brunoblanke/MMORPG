@@ -6,7 +6,8 @@ import { STACK_OFFSET, ANIMATION_CYCLE_MS } from '../../../shared/constants.js';
 import { pickFrameRect } from '../../../shared/sprite-sheet.js';
 import { PLAYER_SPRITES, DEFAULT_GENDER } from '../../../shared/catalog.js';
 import { getAsset, spriteFrame, pieceType, floorMiddle, displayName, isItemType, objectProps, conjuntoPartes } from '../../../shared/assets.js';
-import { getStairTopKeys, getRopeTopKeys } from '../model/borders.js';
+import { getStairTopKeys, getRopeTopKeys, getStairTopFacings } from '../model/borders.js';
+import { FACING_ARROWS } from '../../../shared/stairs.js';
 import { stackBase } from '../../../shared/map-format.js';
 import { state } from '../model/state.js';
 import { loadImage, setImageUpdateCallback } from './image-cache.js';
@@ -210,9 +211,9 @@ export function drawBorderPiece(piece, px, py, target = ctx) {
 
 // ================================================================================================================================================================================================================================================
 // drawStairTop
-// Topo de escada: vão sem piso que leva de volta pro pé da escada.
+// Topo de escada: vão sem piso que leva de volta pro pé da escada; a seta aponta pra onde quem sobe sai (corda: ↓).
 
-function drawStairTop(px, py) {
+function drawStairTop(px, py, arrow = '↓') {
   ctx.save();
   ctx.fillStyle = 'rgba(0, 0, 0, 0.55)';
   ctx.fillRect(px + 2, py + 2, TILE - 4, TILE - 4);
@@ -225,7 +226,7 @@ function drawStairTop(px, py) {
   ctx.font = 'bold 14px Arial';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText('↓', px + TILE / 2, py + TILE / 2 + 1);
+  ctx.fillText(arrow, px + TILE / 2, py + TILE / 2 + 1);
   ctx.restore();
 }
 
@@ -234,6 +235,7 @@ function drawLayer(layer, alpha, z, view) {
   const labels = [];
   const stairTops = getStairTopKeys(z);
   const ropeTops = getRopeTopKeys(z);
+  const topFacings = getStairTopFacings(z);
   // Topo de escada nunca tem piso (o jogo remove).
   const isVoid = (key) => stairTops.has(key) && !(layer[key] && layer[key].hole);
 
@@ -254,7 +256,7 @@ function drawLayer(layer, alpha, z, view) {
         for (const piece of cell.borders) drawBorderPiece(piece, px, py);
       }
 
-      if (stairTops.has(key) || ropeTops.has(key)) drawStairTop(px, py);
+      if (stairTops.has(key) || ropeTops.has(key)) drawStairTop(px, py, FACING_ARROWS[topFacings.get(key)] || '↓');
 
       if (cell.hole) drawPiece(cell.hole, px, py, '#000');
 

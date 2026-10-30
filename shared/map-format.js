@@ -100,7 +100,7 @@ export function collectObjectDescriptors(mapData) {
   });
 
   // Escada: o destino vem da posição e de pra onde ela sobe (a direção do
-  // tipo ou, na escada que não gira, a escolhida no editor, 8º campo;
+  // escolhida no editor, 8º campo, ou a direção do tipo;
   // shared/stairs.js); destino gravado no arquivo é ignorado.
   (mapData.transicoesData || []).forEach(([tipo, x, y, z, , , , chosen]) => {
     if (!isStairsType(tipo)) {
@@ -169,10 +169,10 @@ export function getMapSpawn(mapData, fallback) {
 
 // ================================================================================================================================================================================================================================================
 // stairFacing
-// Pra onde a escada sobe: a direção do tipo (escada que gira) ou a escolhida no editor; sem nenhuma, norte.
+// Pra onde a escada sobe: a escolhida no editor (seta) ou, sem ela, a direção do desenho (escada que gira); sem nenhuma, norte.
 
 export function stairFacing(type, chosen) {
-  return objectDirection(type) || (STAIR_FACINGS.includes(chosen) ? chosen : 'norte');
+  return STAIR_FACINGS.includes(chosen) ? chosen : objectDirection(type) || 'norte';
 }
 
 // ================================================================================================================================================================================================================================================
@@ -219,7 +219,7 @@ export function serializeMapFromLayers(layerOrder, layers, GRID) {
             const facing = stairFacing(obj.type, obj.facing);
             const target = getStairTarget(x, y, z, stairKind(obj.type), facing);
             const entry = [obj.type, x, y, z, 'up', target.x, target.y];
-            if (!objectDirection(obj.type) && facing !== 'norte') entry.push(facing);
+            if (STAIR_FACINGS.includes(obj.facing)) entry.push(facing);
             transicoesData.push(entry);
           } else {
             // Paredes e objetos: o comportamento vai gravado (o servidor não lê as folhas).

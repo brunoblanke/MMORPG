@@ -9,6 +9,7 @@ import { setThumb } from './sprite-thumb.js';
 import { itemInfo } from '../../../shared/items.js';
 import { restackItems, stairFacing } from '../../../shared/map-format.js';
 import { STAIR_FACINGS, FACING_ARROWS } from '../../../shared/stairs.js';
+import { forgetTops } from '../model/borders.js';
 
 // ================================================================================================================================================================================================================================================
 // positionFloatPanel
@@ -124,8 +125,8 @@ function renderSelectPanel() {
     const up = selectButton('▲', 'Subir na pilha', index === objects.length - 1, () => moveInStack(index, 1));
     const down = selectButton('▼', 'Descer na pilha', index === 0, () => moveInStack(index, -1));
     row.append(thumb, name, up, down);
-    if (facing) row.appendChild(selectButton(FACING_ARROWS[facing], `Sobe pro ${facing}; clique troca (R)`, false, () => rotateObject(obj, 1)));
-    else if (rotates) row.appendChild(selectButton('⟳', 'Girar (R)', false, () => rotateObject(obj, 1)));
+    if (rotates) row.appendChild(selectButton('⟳', 'Girar (R)', false, () => rotateObject(obj, 1)));
+    if (facing) row.appendChild(selectButton(FACING_ARROWS[facing], `Sai pro ${facing} no andar de cima; clique troca`, false, () => cycleFacing(obj)));
     const kind = editableKind(obj.type);
     if (kind) row.appendChild(selectButton('✎', EDIT_TITLES[kind], false, (evt) => openObjectDataForm(obj, evt.clientX, evt.clientY)));
     list.appendChild(row);
@@ -148,14 +149,10 @@ function selectButton(text, title, disabled, onClick) {
 // ================================================================================================================================================================================================================================================
 // rotateObject / rotateSelected
 // Vira o objeto pra próxima direção que ele tem. R com um sqm selecionado
-// gira o objeto que gira mais em cima dele (a escada que não gira muda pra onde sobe); false se não tem nenhum.
+// gira o objeto que gira mais em cima dele; false se não tem nenhum.
 
 function rotateObject(obj, step) {
-  if (objectDirections(obj.type).length > 1) obj.type = rotateType(obj.type, step);
-  else {
-    const index = STAIR_FACINGS.indexOf(stairFacing(obj.type, obj.facing));
-    obj.facing = STAIR_FACINGS[(index + step + STAIR_FACINGS.length) % STAIR_FACINGS.length];
-  }
+  obj.type = rotateType(obj.type, step);
   renderSelectPanel();
   updateStats();
   scheduleRender();
@@ -163,10 +160,22 @@ function rotateObject(obj, step) {
 
 export function rotateSelected(step = 1) {
   const cell = state.selected && selectedCell();
-  const obj = cell && [...cell.objects].reverse().find(o => objectDirections(o.type).length > 1 || isStairsType(o.type));
+  const obj = cell && [...cell.objects].reverse().find(o => objectDirections(o.type).length > 1);
   if (!obj) return false;
   rotateObject(obj, step);
   return true;
+}
+
+// ================================================================================================================================================================================================================================================
+// cycleFacing
+// Seta da escada: passa pra próxima direção de saída (↑ → ↓ ←), que muda o destino e a seta do topo no andar de cima.
+
+function cycleFacing(obj) {
+  const index = STAIR_FACINGS.indexOf(stairFacing(obj.type, obj.facing));
+  obj.facing = STAIR_FACINGS[(index + 1) % STAIR_FACINGS.length];
+  forgetTops();
+  renderSelectPanel();
+  scheduleRender();
 }
 
 // ================================================================================================================================================================================================================================================

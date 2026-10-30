@@ -2,7 +2,8 @@
 
 import { state } from './state.js';
 import { getStairTop } from '../../../shared/stairs.js';
-import { objectUse } from '../../../shared/assets.js';
+import { objectUse, isStairsType } from '../../../shared/assets.js';
+import { stairFacing } from '../../../shared/map-format.js';
 import { refreshBordersAround, getStairTopKeys as stairTopKeysBelow } from '../../../shared/floor-borders.js';
 
 // Bordas automáticas no estado do editor (regras em shared/floor-borders.js). Só o piso pintado gera borda: escada
@@ -40,6 +41,25 @@ function cachedTops(below, kind, compute) {
 export function getStairTopKeys(z) {
   const below = state.layers[z - 1];
   return cachedTops(below, 'stairs', () => stairTopKeysBelow(below, z - 1));
+}
+
+// ================================================================================================================================================================================================================================================
+// getStairTopFacings
+// Topo de escada do andar z → pra onde quem sobe sai (a seta desenhada no topo).
+
+export function getStairTopFacings(z) {
+  const below = state.layers[z - 1];
+  return cachedTops(below, 'facings', () => {
+    const facings = new Map();
+    for (const [key, cell] of Object.entries(below)) {
+      const stairs = cell.objects.find(o => isStairsType(o.type));
+      if (!stairs) continue;
+      const [x, y] = key.split(',').map(Number);
+      const top = getStairTop(x, y, z - 1);
+      facings.set(`${top.x},${top.y}`, stairFacing(stairs.type, stairs.facing));
+    }
+    return facings;
+  });
 }
 
 // ================================================================================================================================================================================================================================================
