@@ -1,16 +1,16 @@
 {
   "formato": {
     "quadro": 64,
-    "quadros": 8
+    "quadros": 5
   },
   "objeto": {
     "tibia": {
-      "id": 39138,
+      "id": 39172,
       "variacao": 0
     }
   },
   "propriedades": {
-    "bloqueia": true,
+    "bloqueia": false,
     "move": false,
     "altura": false,
     "volume": 1,
