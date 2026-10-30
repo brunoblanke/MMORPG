@@ -6,7 +6,7 @@ import { updateStats } from '../view/tools-panel.js';
 import { openEnemyForm, openSelectPanel } from '../view/forms.js';
 import { addFloorToCell, restackItems } from '../../../shared/map-format.js';
 import { refreshBordersAt } from '../model/borders.js';
-import { isStairsAccess, isEntranceType, conjuntoPartes } from '../../../shared/assets.js';
+import { isStairsAccess, isStairsType, isEntranceType, objectDirection, conjuntoPartes } from '../../../shared/assets.js';
 import { itemInfo } from '../../../shared/items.js';
 import { brushCells, MAX_BRUSH, areaDrag, areaCells } from '../model/brush.js';
 
@@ -126,14 +126,15 @@ function paintCell(x, y) {
 
 // ================================================================================================================================================================================================================================================
 // placeAccess
-// Acesso posto no sqm, pela receita: escada (ou buraco de corda) entra uma só por sqm; nenhum mexe nas bordas;
+// Acesso posto no sqm, pela receita: escada (ou buraco de corda) entra uma só por sqm (a escada que não gira sobe pra
+// direção escolhida na janela Acessos, state.stairFacing); nenhum mexe nas bordas;
 // entrada (buraco, monte, bueiro) vai no lugar de buraco do sqm; o resto (teletransporte, degraus) é objeto comum.
 
 function placeAccess(layer, cell, x, y, paint) {
   if (!paint) return;
   if (isStairsAccess(paint)) {
     if (cell.objects.some(o => isStairsAccess(o.type))) return;
-    cell.objects.push({ type: paint });
+    cell.objects.push(isStairsType(paint) && !objectDirection(paint) ? { type: paint, facing: state.stairFacing } : { type: paint });
     refreshBordersAt(state.activeZ, x, y, true);
   } else if (isEntranceType(paint)) {
     if (cell.hole === paint) return;

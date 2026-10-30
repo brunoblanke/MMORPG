@@ -49,3 +49,22 @@ test('texto da placa/livro e itens do baú vão pro arquivo e voltam', async () 
   assert.deepEqual(entry[10], { texto: 'Oi' });
   assert.deepEqual(collectObjectDescriptors(saved).find(d => d.type === 'estrutura/natureza/placa').data, { texto: 'Oi' });
 });
+
+test('escada que não gira: o editor guarda pra onde ela sobe e o jogo sobe pra lá', async () => {
+  const { setAssets } = await import('../shared/assets.js');
+  const { getStairTarget } = await import('../shared/stairs.js');
+  const { collectObjectDescriptors } = await import('../shared/map-format.js');
+  setAssets([{ id: 'estrutura/escadas/escada-fixa', ferramenta: 'objetos', grupo: 'estrutura', pasta: 'escadas', nome: 'escada-fixa', url: '/e.png', quadro: 32, quadros: 1, pecas: [], propriedades: { transicao: 'escada' } }]);
+  const mapData = buildMapData({ objects: floorRect(0, 5, 0, 5, 0) });
+  mapData.transicoesData = [['estrutura/escadas/escada-fixa', 2, 2, 0, 'up', 0, 0, 'leste'], ['estrutura/escadas/escada-fixa', 3, 3, 0, 'up', 0, 0]];
+  const { layers, layerOrder } = buildLayersFromMapData(mapData, 250);
+  assert.equal(layers[0]['2,2'].objects[0].facing, 'leste');
+  layers[0]['3,3'].objects[0].facing = 'oeste';
+  const saved = serializeMapFromLayers(layerOrder, layers, 250);
+  const stairs = collectObjectDescriptors(saved).filter(d => d.stairDirection === 'up');
+  const at = (x, y) => stairs.find(d => d.x === x && d.y === y);
+  assert.equal(at(2, 2).stairFacing, 'leste');
+  assert.equal(at(3, 3).stairFacing, 'oeste');
+  const target = getStairTarget(2, 2, 0, 'normal', 'leste');
+  assert.deepEqual([at(2, 2).targetX, at(2, 2).targetY, at(2, 2).targetZ], [target.x, target.y, target.z]);
+});

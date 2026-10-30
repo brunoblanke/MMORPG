@@ -1,7 +1,7 @@
 // shared/map-format.js
 
 import { isFloorType, isEntranceType, isStairsType, isItemType, objectProps, stairKind, objectDirection, extraSquares, supportsItems } from './assets.js';
-import { getStairTarget } from './stairs.js';
+import { getStairTarget, STAIR_FACINGS } from './stairs.js';
 import { borderEntryType, parseBorderType, mergeSavedInnerCorners } from './floor-borders.js';
 
 // Versão 2: as bordas dos pisos vêm gravadas (shared/floor-borders.js).
@@ -100,14 +100,15 @@ export function collectObjectDescriptors(mapData) {
   });
 
   // Escada: o destino vem da posição e de pra onde ela sobe (a direção do
-  // tipo; shared/stairs.js); destino gravado no arquivo é ignorado.
-  (mapData.transicoesData || []).forEach(([tipo, x, y, z]) => {
+  // tipo ou, na escada que não gira, a escolhida no editor, 8º campo;
+  // shared/stairs.js); destino gravado no arquivo é ignorado.
+  (mapData.transicoesData || []).forEach(([tipo, x, y, z, , , , chosen]) => {
     if (!isStairsType(tipo)) {
       descriptors.push({ id: nextId(tipo), type: tipo, x, y, z, step: 0, movable: false, hasVolume: false, blocksMovement: false, seq: 0 });
       return;
     }
     const kind = stairKind(tipo);
-    const facing = objectDirection(tipo) || 'norte';
+    const facing = stairFacing(tipo, chosen);
     const target = getStairTarget(x, y, z, kind, facing);
     descriptors.push({
       id: nextId(tipo),
@@ -167,6 +168,14 @@ export function getMapSpawn(mapData, fallback) {
 }
 
 // ================================================================================================================================================================================================================================================
+// stairFacing
+// Pra onde a escada sobe: a direção do tipo (escada que gira) ou a escolhida no editor; sem nenhuma, norte.
+
+export function stairFacing(type, chosen) {
+  return objectDirection(type) || (STAIR_FACINGS.includes(chosen) ? chosen : 'norte');
+}
+
+// ================================================================================================================================================================================================================================================
 // serializeMapFromLayers
 
 export function serializeMapFromLayers(layerOrder, layers, GRID) {
@@ -207,8 +216,11 @@ export function serializeMapFromLayers(layerOrder, layers, GRID) {
         cell.objects.forEach((obj) => {
           if (isStairsType(obj.type)) {
             // Destino gravado só pra referência: o jogo sempre recalcula (shared/stairs.js).
-            const target = getStairTarget(x, y, z, stairKind(obj.type), objectDirection(obj.type) || 'norte');
-            transicoesData.push([obj.type, x, y, z, 'up', target.x, target.y]);
+            const facing = stairFacing(obj.type, obj.facing);
+            const target = getStairTarget(x, y, z, stairKind(obj.type), facing);
+            const entry = [obj.type, x, y, z, 'up', target.x, target.y];
+            if (!objectDirection(obj.type) && facing !== 'norte') entry.push(facing);
+            transicoesData.push(entry);
           } else {
             // Paredes e objetos: o comportamento vai gravado (o servidor não lê as folhas).
             const props = objectProps(obj.type);
@@ -310,10 +322,10 @@ export function buildLayersFromMapData(mapData, GRID) {
   });
 
   (mapData.transicoesData || []).forEach((entry) => {
-    const [type, x, y, z] = entry;
+    const [type, x, y, z, , , , facing] = entry;
     if (!inRange(x, y)) { stats.outOfRange++; return; }
     ensureLayer(z);
-    layers[z][`${x},${y}`].objects.push({ type });
+    layers[z][`${x},${y}`].objects.push(STAIR_FACINGS.includes(facing) ? { type, facing } : { type });
     stats.stairs++;
   });
 

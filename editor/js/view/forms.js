@@ -1,13 +1,14 @@
 // js/view/forms.js
 
-import { getAsset, listAssets, displayName, objectUse, objectDirections, objectDirection, rotateType, doorState } from '../../../shared/assets.js';
+import { getAsset, listAssets, displayName, objectUse, objectDirections, objectDirection, rotateType, doorState, isStairsType } from '../../../shared/assets.js';
 import { tipoDeDados } from '../../../shared/ficha.js';
 import { state } from '../model/state.js';
 import { scheduleRender, scheduleOverlay } from './canvas-renderer.js';
 import { updateStats } from './tools-panel.js';
 import { setThumb } from './sprite-thumb.js';
 import { itemInfo } from '../../../shared/items.js';
-import { restackItems } from '../../../shared/map-format.js';
+import { restackItems, stairFacing } from '../../../shared/map-format.js';
+import { STAIR_FACINGS } from '../../../shared/stairs.js';
 
 // ================================================================================================================================================================================================================================================
 // positionFloatPanel
@@ -117,12 +118,13 @@ function renderSelectPanel() {
     const name = document.createElement('span');
     name.className = 'select-name';
     const rotates = objectDirections(obj.type).length > 1;
-    name.textContent = displayName(obj.type) + (rotates ? ` · ${objectDirection(obj.type)}` : '') + (obj.count > 1 ? ` ×${obj.count}` : '') + (obj.dados ? ' •' : '');
+    const facing = !rotates && isStairsType(obj.type) ? stairFacing(obj.type, obj.facing) : null;
+    name.textContent = displayName(obj.type) + (rotates ? ` · ${objectDirection(obj.type)}` : '') + (facing ? ` · sobe pro ${facing}` : '') + (obj.count > 1 ? ` ×${obj.count}` : '') + (obj.dados ? ' •' : '');
     name.title = obj.type;
     const up = selectButton('▲', 'Subir na pilha', index === objects.length - 1, () => moveInStack(index, 1));
     const down = selectButton('▼', 'Descer na pilha', index === 0, () => moveInStack(index, -1));
     row.append(thumb, name, up, down);
-    if (rotates) row.appendChild(selectButton('⟳', 'Girar (R)', false, () => rotateObject(obj, 1)));
+    if (rotates || facing) row.appendChild(selectButton('⟳', facing ? 'Mudar pra onde sobe (R)' : 'Girar (R)', false, () => rotateObject(obj, 1)));
     const kind = editableKind(obj.type);
     if (kind) row.appendChild(selectButton('✎', EDIT_TITLES[kind], false, (evt) => openObjectDataForm(obj, evt.clientX, evt.clientY)));
     list.appendChild(row);
@@ -145,10 +147,14 @@ function selectButton(text, title, disabled, onClick) {
 // ================================================================================================================================================================================================================================================
 // rotateObject / rotateSelected
 // Vira o objeto pra próxima direção que ele tem. R com um sqm selecionado
-// gira o objeto que gira mais em cima dele; false se não tem nenhum.
+// gira o objeto que gira mais em cima dele (a escada que não gira muda pra onde sobe); false se não tem nenhum.
 
 function rotateObject(obj, step) {
-  obj.type = rotateType(obj.type, step);
+  if (objectDirections(obj.type).length > 1) obj.type = rotateType(obj.type, step);
+  else {
+    const index = STAIR_FACINGS.indexOf(stairFacing(obj.type, obj.facing));
+    obj.facing = STAIR_FACINGS[(index + step + STAIR_FACINGS.length) % STAIR_FACINGS.length];
+  }
   renderSelectPanel();
   updateStats();
   scheduleRender();
@@ -156,7 +162,7 @@ function rotateObject(obj, step) {
 
 export function rotateSelected(step = 1) {
   const cell = state.selected && selectedCell();
-  const obj = cell && [...cell.objects].reverse().find(o => objectDirections(o.type).length > 1);
+  const obj = cell && [...cell.objects].reverse().find(o => objectDirections(o.type).length > 1 || isStairsType(o.type));
   if (!obj) return false;
   rotateObject(obj, step);
   return true;

@@ -7,6 +7,7 @@ import { BORDER_VARIANTS } from '../../../shared/floor-borders.js';
 import { listAssets, creatureBehavior, pieceType, splitType, displayName, isStairsAccess, isEntranceType, isItemType, isWallType, objectDirections, rotateType, withDirection, WALL_PIECES, WALL_PIECE_NAMES } from '../../../shared/assets.js';
 import { setThumb } from './sprite-thumb.js';
 import { svgIcon } from '../../../js/views/inventory-ui/icons.js';
+import { STAIR_FACINGS } from '../../../shared/stairs.js';
 import { closeSelectPanel } from './forms.js';
 import { rememberView } from './view-memory.js';
 import { revealOpenTool, MOBILE_QUERY } from './mobile-layout.js';
@@ -425,6 +426,32 @@ function floorBordersToggle() {
 }
 
 // ================================================================================================================================================================================================================================================
+// stairFacingPicker
+// Acessos: "Escada sobe para" (norte, leste, sul, oeste): a escada posta (a que não gira) sobe pra essa direção.
+
+const FACING_ARROWS = { norte: '↑', leste: '→', sul: '↓', oeste: '←' };
+
+function stairFacingPicker() {
+  const row = document.createElement('div');
+  row.className = 'accordion-toggle stair-facing';
+  row.append('Escada sobe para');
+  for (const facing of STAIR_FACINGS) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.textContent = FACING_ARROWS[facing];
+    button.title = facing;
+    button.className = facing === state.stairFacing ? 'active' : '';
+    button.onclick = (evt) => {
+      evt.stopPropagation();
+      state.stairFacing = facing;
+      row.querySelectorAll('button').forEach(b => b.classList.toggle('active', b === button));
+    };
+    row.appendChild(button);
+  }
+  return row;
+}
+
+// ================================================================================================================================================================================================================================================
 // buildAccordion
 // A lista da ferramenta: folhas (ou peças) agrupadas por pasta/folha.
 
@@ -449,6 +476,7 @@ function buildAccordion(tool) {
   };
   acc.appendChild(search);
   if (tool.id === 'floor') acc.appendChild(floorBordersToggle());
+  if (tool.id === 'access') acc.appendChild(stairFacingPicker());
   for (const group of groups) {
     const title = document.createElement('div');
     title.className = 'border-accordion-title';

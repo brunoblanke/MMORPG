@@ -125,6 +125,9 @@ body{
 }
 .accordion-search:focus{ outline:none; border-color:var(--accent); }
 .accordion-toggle{ width:100%; display:flex; align-items:center; gap:6px; margin:0 0 8px; font-size:12px; cursor:pointer; }
+.stair-facing{ cursor:default; }
+.stair-facing button{ width:26px; padding:2px 0; border-radius:5px; border:1px solid var(--line); background:transparent; color:var(--text); cursor:pointer; }
+.stair-facing button.active{ border-color:var(--accent); color:var(--accent); background:rgba(94,234,212,.12); }
 .floor-opt{
   width:56px; display:flex; flex-direction:column; align-items:center; gap:5px; cursor:pointer;
   padding:5px; border-radius:6px; opacity:.8;

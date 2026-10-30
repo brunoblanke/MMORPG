@@ -39,6 +39,7 @@ export const state = {
   tool: 'floor',
   floorPaint: null,
   floorBorders: true,
+  stairFacing: 'norte',
   wallPaint: null,
   accessPaint: null,
   itemPaint: null,
