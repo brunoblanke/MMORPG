@@ -210,15 +210,14 @@ export class GameController {
 
   // ================================================================================================================================================================================================================================================
   // rest
-  // A fogueira acesa (evento campfire, só pra quem acendeu): a esteira (look) aparece vazia no sqm dele na hora; depois
-  // de lie ms ele deita (lying: a esteira ocupada pelo player do sexo dele, escolhida pelo servidor; o desenho dele
-  // some) e a tela escurece até ele sair (ms). Esteira sem Ativo como: só aparece quando ele deita.
+  // A fogueira acesa (evento campfire, só pra quem acendeu): depois de lie ms o player aparece deitado no sqm dele
+  // (lying: a esteira ocupada pelo player do sexo dele, escolhida pelo servidor; o desenho dele some) e a tela escurece
+  // até ele sair (ms).
 
   rest(event) {
     const lying = event.lying || event.look;
     const lie = event.lie || 0;
     const end = event.ms + REST_EXTRA_MS;
-    if (lying !== event.look) this.particleController.spawnSheet(event, this.renderer, lie);
     setTimeout(() => {
       this.particleController.spawnSheet({ ...event, look: lying }, this.renderer, end - lie);
       this.renderer.restingUntil = performance.now() + end - lie;
