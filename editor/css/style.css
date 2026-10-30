@@ -257,6 +257,8 @@ textarea{
   .quickbar{
     top:8px; left:8px; right:8px; transform:none; flex-wrap:wrap; justify-content:center; white-space:normal; gap:6px;
   }
+  *{ scrollbar-width:none; }
+  *::-webkit-scrollbar{ display:none; }
   #quickbar{ justify-content:space-between; }
   #quickbar > .quick-sep{ display:none; }
   #quickbar > #layerSelect{ order:1; }
