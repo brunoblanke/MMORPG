@@ -1,6 +1,6 @@
 // js/view/forms.js
 
-import { getAsset, listAssets, displayName, objectUse, objectDirections, objectDirection, rotateType, doorState, isStairsType } from '../../../shared/assets.js';
+import { getAsset, listAssets, displayName, objectUse, objectDirections, objectDirection, rotateType, doorState, isStairsType, pieceType, splitType } from '../../../shared/assets.js';
 import { tipoDeDados } from '../../../shared/ficha.js';
 import { state } from '../model/state.js';
 import { scheduleRender, scheduleOverlay } from './canvas-renderer.js';
@@ -153,6 +153,8 @@ function selectButton(text, title, disabled, onClick) {
 
 function rotateObject(obj, step) {
   obj.type = rotateType(obj.type, step);
+  if (obj.facing && isStairsType(obj.type)) obj.facing = objectDirection(obj.type);
+  forgetTops();
   renderSelectPanel();
   updateStats();
   scheduleRender();
@@ -168,11 +170,13 @@ export function rotateSelected(step = 1) {
 
 // ================================================================================================================================================================================================================================================
 // cycleFacing
-// Seta da escada: passa pra próxima direção de saída (↑ → ↓ ←), que muda o destino e a seta do topo no andar de cima.
+// Seta da escada: passa pra próxima direção de saída (↑ → ↓ ←), que muda o destino, a seta do topo no andar de cima e,
+// na escada que gira, o desenho (o ⟳ faz o contrário: gira o desenho e a saída vai junto).
 
 function cycleFacing(obj) {
   const index = STAIR_FACINGS.indexOf(stairFacing(obj.type, obj.facing));
   obj.facing = STAIR_FACINGS[(index + 1) % STAIR_FACINGS.length];
+  if (objectDirections(obj.type).includes(obj.facing)) obj.type = pieceType(splitType(obj.type).asset, obj.facing);
   forgetTops();
   renderSelectPanel();
   scheduleRender();
