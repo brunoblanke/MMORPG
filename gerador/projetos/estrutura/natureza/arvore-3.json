@@ -32,6 +32,21 @@
           "capacidade": "lenhar"
         },
         "condicoes": {
+          "alcance": 1
+        },
+        "efeitos": [
+          {
+            "tipo": "efeito-visual",
+            "nome": "hit-area"
+          }
+        ]
+      },
+      {
+        "gatilho": {
+          "tipo": "capacidade",
+          "capacidade": "lenhar"
+        },
+        "condicoes": {
           "alcance": 1,
           "chance": 40
         },
