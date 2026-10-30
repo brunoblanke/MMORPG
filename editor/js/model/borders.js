@@ -68,7 +68,8 @@ function ropeTopKeys(below, z) {
 
 // ================================================================================================================================================================================================================================================
 // refreshBordersAt
-// Piso ou buraco mudou no sqm (x, y) do andar z: refaz as bordas em volta. Escada só esquece os topos guardados
+// Piso pintado no sqm (x, y) do andar z: refaz as bordas em volta (só o piso pintado gera borda automática; borracha,
+// objetos, paredes e acessos não mexem nelas). Escada só esquece os topos guardados
 // (desenho), sem mexer em borda nenhuma.
 
 export function refreshBordersAt(z, x, y, stairsChanged = false) {

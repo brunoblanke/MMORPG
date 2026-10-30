@@ -101,7 +101,7 @@ function paintCell(x, y) {
     }
   } else if (state.tool === 'eraser') {
     const erased = eraseTopmost(cell);
-    if (erased === 'floor' || erased === 'hole' || erased === 'stairs') refreshBordersAt(state.activeZ, x, y, erased === 'stairs');
+    if (erased === 'stairs') refreshBordersAt(state.activeZ, x, y, true);
   } else if (state.tool === 'access') {
     placeAccess(layer, cell, x, y, state.accessPaint);
   } else if (state.tool === 'border') {
@@ -126,7 +126,7 @@ function paintCell(x, y) {
 
 // ================================================================================================================================================================================================================================================
 // placeAccess
-// Acesso posto no sqm, pela receita: escada (ou buraco de corda) entra uma só por sqm e acerta as bordas de cima;
+// Acesso posto no sqm, pela receita: escada (ou buraco de corda) entra uma só por sqm; nenhum mexe nas bordas;
 // entrada (buraco, monte, bueiro) vai no lugar de buraco do sqm; o resto (teletransporte, degraus) é objeto comum.
 
 function placeAccess(layer, cell, x, y, paint) {
@@ -138,7 +138,6 @@ function placeAccess(layer, cell, x, y, paint) {
   } else if (isEntranceType(paint)) {
     if (cell.hole === paint) return;
     cell.hole = paint;
-    refreshBordersAt(state.activeZ, x, y);
   } else {
     placeObject(layer, cell, x, y, paint);
   }
