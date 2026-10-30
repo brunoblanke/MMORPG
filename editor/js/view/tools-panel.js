@@ -372,7 +372,7 @@ const QUICK_ICONS = {
   house: svgIcon('0 0 22 22', '<path d="M2.5 10.5L11 3l8.5 7.5"/><path d="M4.5 9v10.5h13V9"/><path d="M9 19.5v-5.5h4v5.5"/>', QUICK_ICON_SCALE),
   undo: svgIcon('0 0 22 22', '<path d="M7 4.5 2.5 9 7 13.5"/><path d="M2.5 9h11a5.5 5.5 0 0 1 0 11H9"/>', QUICK_ICON_SCALE),
   redo: svgIcon('0 0 22 22', '<path d="M15 4.5 19.5 9 15 13.5"/><path d="M19.5 9h-11a5.5 5.5 0 0 0 0 11H13"/>', QUICK_ICON_SCALE),
-  area: svgIcon('0 0 22 22', '<path d="M3 6.5V3h3.5M9.5 3h3M15.5 3H19v3.5M19 9.5v3M19 15.5V19h-3.5M12.5 19h-3M6.5 19H3v-3.5M3 12.5v-3"/><rect x="7.5" y="7.5" width="7" height="7" rx="1"/>', QUICK_ICON_SCALE),
+  area: svgIcon('0 0 22 22', '<rect x="3" y="3" width="16" height="16" rx="1" stroke-dasharray="3 2.4"/>', QUICK_ICON_SCALE),
   eraser: svgIcon('0 0 22 22', '<path d="M8.2 20.05L1.95 13.8 13.1 2.65l7.25 7.25-10.15 10.15H8.2Z"/><path d="M6.4 9.3l7.25 7.25M8.2 20.05h12.85"/>', QUICK_ICON_SCALE)
 };
 

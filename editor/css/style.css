@@ -288,6 +288,8 @@ textarea{
   #quickbar > #zoomReset{ order:2; }
   #quickbar > #gotoInput{ order:3; }
   #quickbar > #quickTools{ order:4; flex-basis:100%; justify-content:center; }
+  #quickTools{ gap:2px; }
+  #quickTools .quick-btn{ padding:5px; }
   .bottom-dock{ left:8px; right:8px; bottom:calc(90px + env(safe-area-inset-bottom)); }
   .main.stats-hidden .bottom-dock{ bottom:calc(30px + env(safe-area-inset-bottom)); }
   .quickbar.bottombar{ align-self:stretch; }
