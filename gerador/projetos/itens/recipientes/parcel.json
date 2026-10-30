@@ -48,7 +48,8 @@
     "ativoComo": "",
     "ativoComoFeminino": "",
     "comecaAtivo": false,
-    "slot": "mochila"
+    "slot": "mochila",
+    "escrita": "etiqueta"
   },
   "ferramenta": "objetos",
   "grupo": "itens",

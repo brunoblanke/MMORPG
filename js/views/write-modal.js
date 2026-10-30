@@ -18,9 +18,11 @@ export class WriteModal {
     this.to = document.getElementById('writeTo');
     this.text = document.getElementById('writeText');
     this.from = null;
+    this.then = null;
     document.getElementById('writeForm').addEventListener('submit', (evt) => {
       evt.preventDefault();
       if (this.from) this.game.send({ type: 'writeItem', from: this.from, para: this.to.value, texto: this.text.hidden ? '' : this.text.value });
+      if (this.from && this.then && this.to.value.trim()) this.game.send(this.then);
       this.close();
     });
     document.getElementById('writeCancel').addEventListener('click', () => this.close());
@@ -31,11 +33,13 @@ export class WriteModal {
 
   // ================================================================================================================================================================================================================================================
   // open
-  // from = onde está o item (como no useItem); item = o que a tela sabe dele (para e texto já escritos).
+  // from = onde está o item (como no useItem); item = o que a tela sabe dele (para e texto já escritos); then = o
+  // comando que vai depois de escrever (jogar na caixa de correio de novo, quando ela pediu o destinatário).
 
-  open(from, item) {
+  open(from, item, then = null) {
     const letter = itemInfo(item.type).writes === 'carta';
     this.from = from;
+    this.then = then;
     document.getElementById('writeTitle').textContent = displayName(item.type);
     this.to.value = item.para || '';
     this.text.value = letter ? item.texto || '' : '';
@@ -49,6 +53,7 @@ export class WriteModal {
 
   close() {
     this.from = null;
+    this.then = null;
     this.root.hidden = true;
   }
 }

@@ -48,10 +48,10 @@ export class MailController {
 
   // ================================================================================================================================================================================================================================================
   // addressOf
-  // O destinatário escrito: o da carta ou o da etiqueta dentro da encomenda.
+  // O destinatário escrito: o do próprio item (carta, encomenda) ou o da etiqueta dentro da encomenda.
 
   addressOf(item) {
-    if (item.para && itemInfo(item.type).writes === 'carta') return item.para;
+    if (item.para && itemInfo(item.type).writes) return item.para;
     const label = (item.items || []).find(child => child && child.para && itemInfo(child.type).writes === 'etiqueta');
     return label ? label.para : null;
   }
@@ -71,11 +71,16 @@ export class MailController {
   // ================================================================================================================================================================================================================================================
   // send
   // Entrega o item, já carimbado, no depósito de quem está escrito nele. Devolve true se foi (aí o item sai das mãos
-  // dele).
+  // dele). Sem destinatário, num item que se escreve, o navegador pergunta "Para:" (evento askRecipient) e manda de
+  // novo o moveInv (retry) depois de escrever.
 
-  send(player, item) {
+  send(player, item, retry = null) {
     const info = itemInfo(item.type);
     const address = this.addressOf(item);
+    if (!address && info.writes && retry) {
+      this.sim.emit({ type: 'askRecipient', playerId: player.id, itemType: item.type, from: retry.from, then: { type: 'moveInv', ...retry } });
+      return false;
+    }
     if (!address) {
       this.message(player, item.items ? 'Ponha dentro uma etiqueta com o nome de quem recebe.' : 'Escreva na carta o nome de quem recebe.');
       return false;

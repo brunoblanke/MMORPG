@@ -326,7 +326,7 @@ export class InventoryController {
 
     if (dest.kind === 'mail') {
       if (!this.isNear(player, dest.obj)) return this.walkNextTo(player, dest.obj, { type: 'moveInv', from, to, amount });
-      if (this.sim.mail.send(player, src.item)) src.remove();
+      if (this.sim.mail.send(player, src.item, { from, to, amount })) src.remove();
       return;
     }
 

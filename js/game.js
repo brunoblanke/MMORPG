@@ -545,6 +545,8 @@ export class GameController {
         this.showMessage(`⭐ Você subiu para o nível ${event.lvl}!`, timestamp, 3000);
       } else if (event.type === 'campfire' && event.playerId === playerId && event.look) {
         this.rest(event);
+      } else if (event.type === 'askRecipient' && event.playerId === playerId) {
+        this.writeModal.open(event.from, { type: event.itemType }, event.then);
       } else if (event.type === 'minimap' && event.playerId === playerId) {
         if (this.inventoryUI) this.inventoryUI.openMinimap();
       } else if (event.type === 'book' && event.playerId === playerId) {

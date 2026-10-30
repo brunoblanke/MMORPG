@@ -12,6 +12,7 @@ const SENT_LETTER = 'itens/documentos-e-papeis/letter-stamped';
 const PARCEL = 'itens/recipientes/parcel';
 const SENT_PARCEL = 'itens/recipientes/parcel-stamped';
 const LABEL = 'itens/documentos-e-papeis/label';
+const BOX_PARCEL = 'itens/recipientes/caixa-de-teste';
 const ROPE = 'itens/ferramentas/rope';
 const BOX = 'decoracao/moveis/mailbox';
 const asset = (id, propriedades) => {
@@ -26,6 +27,7 @@ setAssets([
   asset(PARCEL, { move: true, peso: 5, postal: true, espacos: 4, enviadoComo: SENT_PARCEL }),
   asset(SENT_PARCEL, { move: true, peso: 5, espacos: 4 }),
   asset(LABEL, { move: true, peso: 0.1, escrita: 'etiqueta' }),
+  asset(BOX_PARCEL, { move: true, peso: 5, postal: true, espacos: 4, escrita: 'etiqueta', enviadoComo: SENT_PARCEL }),
   asset(ROPE, { move: true, peso: 1 }),
   asset(BOX, { bloqueia: true, move: false, uso: 'correio' })
 ]);
@@ -107,9 +109,9 @@ test('correio: a carta ou encomenda já enviada não vai de novo', () => {
   assert.ok(events.some(e => e.type === 'message' && /só recebe/.test(e.text)));
 });
 
-test('correio: sem nome, nome inexistente, item comum e depósito cheio não enviam', () => {
+test('correio: sem nome (pergunta), nome inexistente, item comum e depósito cheio não enviam', () => {
   const { sim, ana, bia } = game();
-  assert.ok(post(sim, 0).some(e => e.type === 'message' && /Escreva/.test(e.text)));
+  assert.ok(post(sim, 0).some(e => e.type === 'askRecipient'), 'carta sem nome: a caixa pergunta o destinatário');
   assert.ok(has(ana, LETTER));
   write(sim, 0, 'Fulano');
   assert.ok(post(sim, 0).some(e => e.type === 'message' && /Não existe/.test(e.text)));
@@ -129,4 +131,19 @@ test('correio: só carta e etiqueta se escrevem; o nome e a mensagem são cortad
   write(sim, 0, 'x'.repeat(80), 'y'.repeat(5000));
   assert.equal(ana.equip.mochila.items[0].para.length, 30);
   assert.equal(ana.equip.mochila.items[0].texto.length, 1000);
+});
+
+test('correio: encomenda sem destinatário jogada na caixa pergunta "Para:"; escrito o nome nela, vai', () => {
+  const { sim, ana, bia } = game();
+  ana.equip.mochila.items[3] = { uid: 'p2', type: BOX_PARCEL, items: [{ uid: 'r3', type: ROPE }, null, null, null] };
+  const ask = post(sim, 3).find(e => e.type === 'askRecipient');
+  assert.ok(ask, 'pergunta o destinatário');
+  assert.deepEqual(ask.from, { t: 'c', uid: 'b1', i: 3 });
+  assert.equal(ask.then.type, 'moveInv');
+  assert.ok(has(ana, BOX_PARCEL), 'ainda não foi');
+  write(sim, 3, 'Bia');
+  run(sim, ask.then);
+  assert.ok(!has(ana, BOX_PARCEL));
+  assert.equal(bia.depot.items[0].type, SENT_PARCEL);
+  assert.deepEqual(bia.depot.items[0].items.filter(Boolean).map(i => i.type), [ROPE]);
 });
