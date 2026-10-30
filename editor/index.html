@@ -43,9 +43,14 @@
         Stats
       </label>
       <div class="quick-sep"></div>
-      <a class="export-btn secondary" id="simulatorBtn" href="../simulador.html" target="_blank" title="Play as a level 100 player and test every creature spell, spell, rune, ammunition and wand on training dummies">Simulator</a>
-      <button class="export-btn secondary" id="testPlayersBtn" title="Cria no servidor o Druid, Paladin, Knight e Sorcerer (nível 100, skills 100, senha 123456), com armas, munição e runas">Players de teste</button>
-      <a class="export-btn secondary" id="downloadBtn" href="../api/map?baixar=1" download="map.json" title="Baixa o mapa do servidor (pra guardar no git)">Baixar</a>
+      <div class="extras" id="extras">
+        <button class="export-btn secondary" id="extrasBtn" type="button" aria-haspopup="true" aria-expanded="false">Extras ▴</button>
+        <div class="extras-menu" id="extrasMenu" hidden>
+          <a class="export-btn secondary" id="simulatorBtn" href="../simulador.html" target="_blank" title="Play as a level 100 player and test every creature spell, spell, rune, ammunition and wand on training dummies">Simulator</a>
+          <button class="export-btn secondary" id="testPlayersBtn" title="Cria no servidor o Druid, Paladin, Knight e Sorcerer (nível 100, skills 100, senha 123456), com armas, munição e runas">Players de teste</button>
+          <a class="export-btn secondary" id="downloadBtn" href="../api/map?baixar=1" download="map.json" title="Baixa o mapa do servidor (pra guardar no git)">Baixar</a>
+        </div>
+      </div>
       <button class="export-btn" id="saveBtn" title="Salva o mapa no servidor (Ctrl+S)">Salvar</button>
     </div>
 

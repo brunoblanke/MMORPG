@@ -273,6 +273,15 @@ textarea{
 .export-btn.secondary{ background:transparent; color:var(--text); border:1px solid var(--line); text-decoration:none; display:inline-flex; align-items:center; justify-content:center; }
 .export-btn.secondary:hover{ border-color:var(--accent-dim); }
 
+/* Extras (barra de baixo): o menu abre pra cima com o Simulator, Players de teste e Baixar. */
+.extras{ position:relative; display:flex; }
+.extras-menu{
+  position:absolute; bottom:calc(100% + 8px); right:0; display:flex; flex-direction:column; gap:6px; padding:8px;
+  background:rgba(22, 25, 32, .95); border:1px solid var(--line); border-radius:8px; min-width:170px; z-index:40;
+}
+.extras-menu[hidden]{ display:none; }
+.extras-menu .export-btn{ width:100%; box-sizing:border-box; text-align:center; background:var(--bg); }
+
 .canvas-wrap.pan, .canvas-wrap.pan canvas{ cursor:grab; }
 .canvas-wrap.dragging, .canvas-wrap.dragging canvas{ cursor:grabbing; }
 
