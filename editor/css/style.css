@@ -25,6 +25,7 @@ body{
   font-family:'IBM Plex Sans', sans-serif;
   display:flex;
   height:100vh;
+  height:100dvh;
   overflow:hidden;
 }
 
@@ -256,8 +257,8 @@ textarea{
   .quickbar{
     top:8px; left:8px; right:8px; transform:none; flex-wrap:wrap; justify-content:center; white-space:normal; gap:6px;
   }
-  .quickbar.bottombar{ top:auto; bottom:76px; }
-  .main.stats-hidden .quickbar.bottombar{ bottom:16px; }
+  .quickbar.bottombar{ top:auto; bottom:calc(90px + env(safe-area-inset-bottom)); }
+  .main.stats-hidden .quickbar.bottombar{ bottom:calc(30px + env(safe-area-inset-bottom)); }
   .bottombar .export-btn{ flex:1; padding:10px 16px; font-size:14px; }
   .goto-input{ width:80px; }
   .status-list{ flex-wrap:wrap; gap:2px 10px; }
