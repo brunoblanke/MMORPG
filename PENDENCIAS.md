@@ -4,6 +4,8 @@ Estado do projeto para retomar numa conversa nova. O que é regra fixa e como o 
 
 ## Para o usuário fazer
 
+- Gerador → Pisos → "Gerar folhas pendentes": os 31 pisos clássicos criados por `ferramentas/criar-pisos.js` (neve, gelo, grama, terras, areia, calçamentos, montanha, lava, cascalho, piche, água limpa, pântano, telhado, pedra, madeiras, mármores, arenitos, ladrilhos). Conferir as bordas e os nomes. Ficaram de fora: telhados de tijolo e de madeira por direção, mar antigo (4597, já temos a água 629), alçapões, escadas, buracos e montes de pedra.
+
 - Gerador → "Gerar folhas pendentes": `map-colour` (o mapa que abre o mini mapa; Tibia 2823, conferir o desenho). Pôr o mapa à venda num NPC ou num baú, se quiser.
 
 - Rodar `node ferramentas/efeitos.js` de novo e fazer commit (gera o efeito `critical`, Tibia 173, e acerta os quadros dele no `shared/effects.js`). Depois, no gerador, pôr Crítico nos itens e criaturas que devem ter.

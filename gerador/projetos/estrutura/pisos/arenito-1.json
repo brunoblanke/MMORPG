@@ -1,0 +1,85 @@
+{
+  "formato": {
+    "quadro": 32,
+    "padrao": [
+      3,
+      3
+    ],
+    "linhas": [
+      "meio: 1 variações",
+      "s o n l",
+      "sl so nl no",
+      "int-sl int-so int-nl int-no"
+    ]
+  },
+  "variacoesDoMeio": 1,
+  "slots": {
+    "meio-1": {
+      "tibia": {
+        "id": 415,
+        "variacao": 0
+      }
+    },
+    "padrao-0-0": {
+      "tibia": {
+        "id": 415,
+        "variacao": 0
+      }
+    },
+    "padrao-1-0": {
+      "tibia": {
+        "id": 415,
+        "variacao": 1
+      }
+    },
+    "padrao-2-0": {
+      "tibia": {
+        "id": 415,
+        "variacao": 2
+      }
+    },
+    "padrao-0-1": {
+      "tibia": {
+        "id": 415,
+        "variacao": 3
+      }
+    },
+    "padrao-1-1": {
+      "tibia": {
+        "id": 415,
+        "variacao": 4
+      }
+    },
+    "padrao-2-1": {
+      "tibia": {
+        "id": 415,
+        "variacao": 5
+      }
+    },
+    "padrao-0-2": {
+      "tibia": {
+        "id": 415,
+        "variacao": 6
+      }
+    },
+    "padrao-1-2": {
+      "tibia": {
+        "id": 415,
+        "variacao": 7
+      }
+    },
+    "padrao-2-2": {
+      "tibia": {
+        "id": 415,
+        "variacao": 8
+      }
+    }
+  },
+  "propriedades": {
+    "comportamento": "normal"
+  },
+  "ferramenta": "pisos",
+  "grupo": "estrutura",
+  "pasta": "pisos",
+  "nome": "arenito-1"
+}

@@ -1,0 +1,71 @@
+{
+  "formato": {
+    "quadro": 32,
+    "padrao": [
+      3,
+      2
+    ],
+    "linhas": [
+      "meio: 1 variações",
+      "s o n l",
+      "sl so nl no",
+      "int-sl int-so int-nl int-no"
+    ]
+  },
+  "variacoesDoMeio": 1,
+  "slots": {
+    "meio-1": {
+      "tibia": {
+        "id": 622,
+        "variacao": 0
+      }
+    },
+    "padrao-0-0": {
+      "tibia": {
+        "id": 622,
+        "variacao": 0
+      }
+    },
+    "padrao-1-0": {
+      "tibia": {
+        "id": 622,
+        "variacao": 1
+      }
+    },
+    "padrao-2-0": {
+      "tibia": {
+        "id": 622,
+        "variacao": 2
+      }
+    },
+    "padrao-0-1": {
+      "tibia": {
+        "id": 622,
+        "variacao": 3
+      }
+    },
+    "padrao-1-1": {
+      "tibia": {
+        "id": 622,
+        "variacao": 4
+      }
+    },
+    "padrao-2-1": {
+      "tibia": {
+        "id": 622,
+        "variacao": 5
+      }
+    }
+  },
+  "propriedades": {
+    "comportamento": "bloqueia",
+    "bordaBloqueia": true,
+    "pescavel": [
+      "itens/peixes/fish"
+    ]
+  },
+  "ferramenta": "pisos",
+  "grupo": "estrutura",
+  "pasta": "pisos",
+  "nome": "agua-10"
+}

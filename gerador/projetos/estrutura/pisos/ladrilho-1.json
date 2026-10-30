@@ -1,0 +1,79 @@
+{
+  "formato": {
+    "quadro": 32,
+    "padrao": [
+      4,
+      2
+    ],
+    "linhas": [
+      "meio: 1 variações",
+      "s o n l",
+      "sl so nl no",
+      "int-sl int-so int-nl int-no"
+    ]
+  },
+  "variacoesDoMeio": 1,
+  "slots": {
+    "meio-1": {
+      "tibia": {
+        "id": 429,
+        "variacao": 0
+      }
+    },
+    "padrao-0-0": {
+      "tibia": {
+        "id": 429,
+        "variacao": 0
+      }
+    },
+    "padrao-1-0": {
+      "tibia": {
+        "id": 429,
+        "variacao": 1
+      }
+    },
+    "padrao-2-0": {
+      "tibia": {
+        "id": 429,
+        "variacao": 2
+      }
+    },
+    "padrao-3-0": {
+      "tibia": {
+        "id": 429,
+        "variacao": 3
+      }
+    },
+    "padrao-0-1": {
+      "tibia": {
+        "id": 429,
+        "variacao": 4
+      }
+    },
+    "padrao-1-1": {
+      "tibia": {
+        "id": 429,
+        "variacao": 5
+      }
+    },
+    "padrao-2-1": {
+      "tibia": {
+        "id": 429,
+        "variacao": 6
+      }
+    },
+    "padrao-3-1": {
+      "tibia": {
+        "id": 429,
+        "variacao": 7
+      }
+    }
+  },
+  "propriedades": {
+    "comportamento": "normal"
+  },
+  "ferramenta": "pisos",
+  "grupo": "estrutura",
+  "pasta": "pisos",
+  "nome": "ladrilho-1"
+}

@@ -2,7 +2,7 @@
 
 import { spriteUrl, saveProject, fetchBorderSuggestion, fetchFloorSuggestion, fetchItemInfo, fetchPattern, fetchProjects } from './api.js';
 import { itemCategory, showSuggestions } from './picker.js';
-import { normalizeName, statusOf } from './common.js';
+import { normalizeName, statusOf, generatePendingSheets } from './common.js';
 import { refreshProjects } from './projects.js';
 import { montarInteracoes, montarCapacidades } from './interacoes.js';
 import { fillFolderSelect, folderOf, setFolder, recipePath } from './folders.js';
@@ -112,7 +112,8 @@ const floors = {
   interacoes: [],
   capacidade: [],
   dirty: false,
-  saving: false
+  saving: false,
+  loading: 0
 };
 
 const rowsEl = document.getElementById('sheetRows');
@@ -150,6 +151,7 @@ export function initFloors() {
     suggestBorders();
   };
   document.getElementById('suggestFloor').onclick = suggestFloor;
+  document.getElementById('floorPendingBtn').addEventListener('click', generatePending);
   document.getElementById('uploadPng').addEventListener('change', uploadPng);
   nameEl.addEventListener('input', () => { floors.dirty = true; });
   fillFolderSelect(folderEl, CATEGORY);
@@ -459,6 +461,7 @@ async function loadSlotImage(key, source) {
     return;
   }
   floors.images.set(source, [load(spriteUrl(source.tibia.id, source.tibia.variacao))]);
+  floors.loading++;
   try {
     const info = await fetchItemInfo(source.tibia.id);
     if (!info || info.quadros < 2 || floors.slots[key] !== source) return;
@@ -466,6 +469,8 @@ async function loadSlotImage(key, source) {
     floors.images.set(source, Array.from({ length: info.quadros }, (_, frame) => load(spriteUrl(source.tibia.id, source.tibia.variacao, frame))));
   } catch (error) {
     setStatus(`Não deu pra ler os quadros do item ${source.tibia.id}: ${error.message}`, 'error');
+  } finally {
+    floors.loading--;
   }
 }
 
@@ -740,6 +745,23 @@ async function save() {
     floors.saving = false;
     document.getElementById('saveBtn').disabled = false;
   }
+}
+
+// ================================================================================================================================================================================================================================================
+// generatePending
+// Cria a folha (.png) de todo piso que tem receita mas ainda não tem folha, um por um (os criados por
+// ferramentas/criar-pisos.js); espera os quadros de cada espaço carregarem antes de salvar.
+
+async function generatePending() {
+  await generatePendingSheets({
+    category: CATEGORY,
+    button: document.getElementById('floorPendingBtn'),
+    status: setStatus,
+    emptyText: 'Nenhum piso sem folha.',
+    open: openRecipe,
+    ready: () => floors.loading === 0 && Object.keys(floors.slots).every(key => Array.from({ length: slotFrames(key) }, (_, f) => slotImage(key, f)).every(Boolean)),
+    save
+  });
 }
 
 // ================================================================================================================================================================================================================================================

@@ -1,0 +1,100 @@
+{
+  "formato": {
+    "quadro": 32,
+    "padrao": [
+      4,
+      2
+    ],
+    "raras": 3,
+    "chanceRaras": 21,
+    "linhas": [
+      "meio: 1 variações",
+      "s o n l",
+      "sl so nl no",
+      "int-sl int-so int-nl int-no"
+    ]
+  },
+  "variacoesDoMeio": 1,
+  "slots": {
+    "meio-1": {
+      "tibia": {
+        "id": 727,
+        "variacao": 0
+      }
+    },
+    "padrao-0-0": {
+      "tibia": {
+        "id": 727,
+        "variacao": 0
+      }
+    },
+    "padrao-1-0": {
+      "tibia": {
+        "id": 727,
+        "variacao": 1
+      }
+    },
+    "padrao-2-0": {
+      "tibia": {
+        "id": 727,
+        "variacao": 2
+      }
+    },
+    "padrao-3-0": {
+      "tibia": {
+        "id": 727,
+        "variacao": 3
+      }
+    },
+    "padrao-0-1": {
+      "tibia": {
+        "id": 727,
+        "variacao": 4
+      }
+    },
+    "padrao-1-1": {
+      "tibia": {
+        "id": 727,
+        "variacao": 5
+      }
+    },
+    "padrao-2-1": {
+      "tibia": {
+        "id": 727,
+        "variacao": 6
+      }
+    },
+    "padrao-3-1": {
+      "tibia": {
+        "id": 727,
+        "variacao": 7
+      }
+    },
+    "raro-1": {
+      "tibia": {
+        "id": 728,
+        "variacao": 0
+      }
+    },
+    "raro-2": {
+      "tibia": {
+        "id": 729,
+        "variacao": 0
+      }
+    },
+    "raro-3": {
+      "tibia": {
+        "id": 730,
+        "variacao": 0
+      }
+    }
+  },
+  "propriedades": {
+    "comportamento": "bloqueia",
+    "bordaBloqueia": true
+  },
+  "ferramenta": "pisos",
+  "grupo": "estrutura",
+  "pasta": "pisos",
+  "nome": "lava-2"
+}
