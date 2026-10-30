@@ -11,6 +11,7 @@ import { SpriteLoader } from './services/sprite-loader.js';
 import { Renderer, MESSAGE_COLORS } from './views/renderer.js';
 import { getSpritePaths } from './views/sprite-registry.js';
 import { loadAssets } from '../shared/assets.js';
+import { POTION_EFFECT } from '../shared/effects.js';
 import { damageColor } from '../shared/conditions.js';
 import { UI } from './views/ui.js';
 import { getRoofLevel } from './views/draw-order.js';
@@ -28,8 +29,10 @@ import { SpeechLayer } from './views/speech.js';
 import { ChatBox } from './views/chat-box.js';
 import { PlayerMenu } from './views/player-menu.js';
 
-// O player deitado na fogueira continua na tela um pouco além da saída (até a página voltar pra entrada).
+// O player deitado na fogueira continua na tela um pouco além da saída (até a página voltar pra entrada); vira o
+// corpo REST_SWAP_MS depois de o brilho começar (no meio dele).
 const REST_EXTRA_MS = 2000;
+const REST_SWAP_MS = 400;
 
 // Cliente: pede o nome do personagem, carrega o mapa, entra no servidor de
 // jogo (RemoteSession) ou, sem servidor, roda a simulação aqui mesmo
@@ -211,13 +214,15 @@ export class GameController {
   // ================================================================================================================================================================================================================================================
   // rest
   // A fogueira acesa (evento campfire, só pra quem acendeu): depois de lie ms o player aparece deitado no sqm dele (o
-  // corpo do sexo dele com os zzz, renderer.drawResting) e a tela escurece até ele sair (ms).
+  // corpo do sexo dele com os zzz, renderer.drawResting): brilha (o da poção) e, no meio do brilho, vira o corpo; a
+  // tela escurece até ele sair (ms).
 
   rest(event) {
     const lie = event.lie || 0;
     setTimeout(() => {
-      this.renderer.restingUntil = performance.now() + event.ms - lie + REST_EXTRA_MS;
+      if (this.player) this.particleController.spawnEffect({ x: this.player.x, y: this.player.y, z: this.player.z || 0, effect: POTION_EFFECT }, this.renderer);
       this.fadeOut(event.ms - lie);
+      setTimeout(() => { this.renderer.restingUntil = performance.now() + event.ms - lie - REST_SWAP_MS + REST_EXTRA_MS; }, REST_SWAP_MS);
     }, lie);
   }
 
