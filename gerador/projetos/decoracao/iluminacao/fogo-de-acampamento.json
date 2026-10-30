@@ -5,7 +5,7 @@
   },
   "objeto": {
     "tibia": {
-      "id": 39172,
+      "id": 39171,
       "variacao": 0
     }
   },
@@ -24,6 +24,7 @@
     "resistencias": {},
     "postal": false,
     "enviadoComo": "",
+    "descansaComo": "",
     "protegePerda": false,
     "invisivelEquipado": false,
     "peso": 10,
@@ -45,6 +46,7 @@
     "regenMana": 0,
     "uso": "",
     "ativoComo": "",
+    "ativoComoFeminino": "",
     "comecaAtivo": false
   },
   "ferramenta": "objetos",
