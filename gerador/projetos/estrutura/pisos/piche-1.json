@@ -1,6 +1,8 @@
 {
   "formato": {
     "quadro": 32,
+    "quadros": 10,
+    "msPorQuadro": 180,
     "padrao": [
       4,
       2

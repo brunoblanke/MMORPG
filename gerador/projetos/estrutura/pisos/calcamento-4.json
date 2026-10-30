@@ -1,7 +1,6 @@
 {
   "formato": {
     "quadro": 32,
-    "padraoDoTibia": true,
     "raras": 3,
     "chanceRaras": 50,
     "linhas": [

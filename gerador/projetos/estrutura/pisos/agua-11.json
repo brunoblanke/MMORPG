@@ -1,6 +1,8 @@
 {
   "formato": {
     "quadro": 32,
+    "quadros": 14,
+    "msPorQuadro": 200,
     "raras": 5,
     "chanceRaras": 50,
     "linhas": [

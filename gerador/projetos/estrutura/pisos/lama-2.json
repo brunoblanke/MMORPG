@@ -1,7 +1,10 @@
 {
   "formato": {
     "quadro": 32,
-    "padraoDoTibia": true,
+    "padrao": [
+      1,
+      4
+    ],
     "raras": 4,
     "chanceRaras": 31,
     "linhas": [
@@ -13,12 +16,6 @@
   },
   "variacoesDoMeio": 1,
   "slots": {
-    "meio-1": {
-      "tibia": {
-        "id": 7062,
-        "variacao": 0
-      }
-    },
     "raro-1": {
       "tibia": {
         "id": 7063,
@@ -112,6 +109,36 @@
     "int-no": {
       "tibia": {
         "id": 7078,
+        "variacao": 0
+      }
+    },
+    "meio-1": {
+      "tibia": {
+        "id": 7062,
+        "variacao": 0
+      }
+    },
+    "padrao-0-0": {
+      "tibia": {
+        "id": 7062,
+        "variacao": 0
+      }
+    },
+    "padrao-0-1": {
+      "tibia": {
+        "id": 7064,
+        "variacao": 0
+      }
+    },
+    "padrao-0-2": {
+      "tibia": {
+        "id": 7065,
+        "variacao": 0
+      }
+    },
+    "padrao-0-3": {
+      "tibia": {
+        "id": 7063,
         "variacao": 0
       }
     }
