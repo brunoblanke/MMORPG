@@ -18,6 +18,19 @@ function trackQuickbar() {
 }
 
 // ================================================================================================================================================================================================================================================
+// trackStatusbar
+// A altura do painel de Stats (0 escondido) na variável CSS --statusbar-h: no celular a barra de baixo fica sempre à
+// mesma distância dele ou da base da tela.
+
+function trackStatusbar() {
+  const bar = document.getElementById('statusbar');
+  if (!bar) return;
+  const update = () => document.documentElement.style.setProperty('--statusbar-h', `${bar.offsetHeight}px`);
+  new ResizeObserver(update).observe(bar);
+  update();
+}
+
+// ================================================================================================================================================================================================================================================
 // revealOpenTool
 // Celular: rola a fileira até a janela que acabou de abrir aparecer inteira.
 
@@ -28,3 +41,4 @@ export function revealOpenTool() {
 }
 
 trackQuickbar();
+trackStatusbar();

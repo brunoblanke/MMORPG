@@ -294,8 +294,7 @@ textarea{
   #quickbar > #quickTools{ order:4; flex-basis:100%; justify-content:center; }
   #quickTools{ gap:2px; }
   #quickTools .quick-btn{ padding:5px; }
-  .bottom-dock{ left:8px; right:8px; bottom:calc(90px + env(safe-area-inset-bottom)); }
-  .main.stats-hidden .bottom-dock{ bottom:calc(30px + env(safe-area-inset-bottom)); }
+  .bottom-dock, .main.stats-hidden .bottom-dock{ left:8px; right:8px; bottom:calc(var(--statusbar-h, 0px) + 10px + env(safe-area-inset-bottom)); }
   .quickbar.bottombar{ align-self:stretch; }
   .bottombar .export-btn{ flex:1; padding:10px 16px; font-size:14px; }
   .goto-input{ width:80px; }
