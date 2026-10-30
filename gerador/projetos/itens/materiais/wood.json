@@ -41,7 +41,7 @@
     "regenVida": 0,
     "regenMana": 0,
     "uso": "fogueira",
-    "ativoComo": "decoracao/iluminacao/fogo-de-acampamento",
+    "ativoComo": "decoracao/iluminacao/fogueira",
     "comecaAtivo": false,
     "descansaComo": "decoracao/moveis/esteira-palha-vazia"
   },
