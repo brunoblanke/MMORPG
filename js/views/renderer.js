@@ -24,9 +24,14 @@ function isHumanoid(entity) {
 // hideCovered
 // Tira o que fica embaixo do piso de um andar de cima (no mesmo sqm da tela):
 // esse piso é desenhado por cima e cobriria tudo. Só sobra o que dá pra ver
-// (buraco, escada, borda de prédio), e o quadro fica bem mais leve.
+// (buraco, escada, borda de prédio), e o quadro fica bem mais leve. O desenho
+// de 64 px (escada, parede, árvore) e o item empilhado sobem pro sqm de cima
+// e o da esquerda: só some se os 4 sqm que ele pode ocupar estão cobertos,
+// senão a parte dele que aparece pelo buraco do andar de cima sumiria junto.
 
-function hideCovered(drawables) {
+const SPRITE_REACH = [[0, 0], [-1, 0], [0, -1], [-1, -1]];
+
+export function hideCovered(drawables) {
   const cover = new Map();
   for (const obj of drawables) {
     if (!obj.isFloor || !obj.entity || !obj.entity.floorType || obj.entity.isBorder) continue;
@@ -34,8 +39,12 @@ function hideCovered(drawables) {
     if (!(cover.get(key) >= obj.level)) cover.set(key, obj.level);
   }
   return drawables.filter(obj => {
-    const top = cover.get(`${Math.round(obj.x)},${Math.round(obj.y)}`);
-    return top === undefined || obj.level >= top;
+    const x = Math.round(obj.x);
+    const y = Math.round(obj.y);
+    return (obj.isFloor ? SPRITE_REACH.slice(0, 1) : SPRITE_REACH).some(([dx, dy]) => {
+      const top = cover.get(`${x + dx},${y + dy}`);
+      return top === undefined || obj.level >= top;
+    });
   });
 }
 
