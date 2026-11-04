@@ -2,6 +2,7 @@
 
 const express = require('express');
 const compression = require('compression');
+const crypto = require('crypto');
 const fs = require('fs');
 const http = require('http');
 const os = require('os');
@@ -16,6 +17,7 @@ const app = express();
 const PASTA_JOGO = __dirname;
 const MAPA_VAZIO = { version: 3, objetosData: [], transicoesData: [], enemyData: [], npcData: [], botData: [], safeZoneData: [], houseData: [], spawn: null };
 let MAP_DATA_PATH = path.resolve(process.env.JOGO_MAPA || path.join(PASTA_JOGO, 'data', 'map.json'));
+const MAPA_A_APLICAR = path.join(PASTA_JOGO, 'TRANSF', 'aplicar-mapa.txt');
 const CHARACTERS_PATH = process.env.JOGO_PERSONAGENS || path.join(PASTA_JOGO, 'data', 'characters.json');
 const HOUSES_PATH = process.env.JOGO_CASAS || path.join(path.dirname(CHARACTERS_PATH), 'houses.json');
 const PASSWORDS_PATH = process.env.JOGO_SENHAS || path.join(path.dirname(CHARACTERS_PATH), 'passwords.json');
@@ -72,6 +74,7 @@ function liberarCors(req, res, next) {
 
 function prepararMapa() {
   try {
+    aplicarMapaNovo();
     if (fs.existsSync(MAP_DATA_PATH)) {
       JSON.parse(fs.readFileSync(MAP_DATA_PATH, 'utf8'));
       const mudou = renomearArquivo(MAP_DATA_PATH);
@@ -85,6 +88,34 @@ function prepararMapa() {
     console.error(`❌ Não deu pra usar o mapa em ${MAP_DATA_PATH} (${err.message}).`);
     process.exit(1);
   }
+}
+
+// ================================================================================================================================================================================================================================================
+// aplicarMapaNovo
+// TRANSF/aplicar-mapa.txt com o nome de um mapa da pasta TRANSF (ex.: mapa-vale.json) troca o mapa ao vivo por ele
+// uma vez só, ao subir: guarda antes o mapa atual em backups/map-antes-<hash>.json e anota o hash do mapa aplicado em
+// <mapa>.aplicado, então os próximos reinícios não mexem mais (o que o jogo e o editor mudarem depois fica). Com
+// JOGO_APLICAR_MAPA=0 (testes) não faz nada.
+
+function aplicarMapaNovo() {
+  if (process.env.JOGO_APLICAR_MAPA === '0' || !fs.existsSync(MAPA_A_APLICAR)) return;
+  const nome = path.basename(fs.readFileSync(MAPA_A_APLICAR, 'utf8').trim());
+  const novo = path.join(PASTA_JOGO, 'TRANSF', nome);
+  if (!nome || !fs.existsSync(novo)) return;
+  const conteudo = fs.readFileSync(novo, 'utf8');
+  JSON.parse(conteudo);
+  const hash = crypto.createHash('sha1').update(conteudo).digest('hex').slice(0, 12);
+  const marca = `${MAP_DATA_PATH}.aplicado`;
+  if (fs.existsSync(marca) && fs.readFileSync(marca, 'utf8').trim() === hash) return;
+  if (fs.existsSync(MAP_DATA_PATH)) {
+    const pasta = path.join(path.dirname(MAP_DATA_PATH), 'backups');
+    fs.mkdirSync(pasta, { recursive: true });
+    fs.copyFileSync(MAP_DATA_PATH, path.join(pasta, `map-antes-${hash}.json`));
+  }
+  fs.mkdirSync(path.dirname(MAP_DATA_PATH), { recursive: true });
+  fs.writeFileSync(MAP_DATA_PATH, conteudo);
+  fs.writeFileSync(marca, hash);
+  console.log(`🗺️  Mapa trocado por TRANSF/${nome} (o anterior ficou em backups/map-antes-${hash}.json)`);
 }
 
 // ================================================================================================================================================================================================================================================

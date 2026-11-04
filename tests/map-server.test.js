@@ -25,7 +25,7 @@ before(async () => {
   mapFile = path.join(tempDir, 'dados', 'map.json');
   server = spawn(process.execPath, ['server.js'], {
     cwd: ROOT,
-    env: { ...process.env, PORT: String(PORT), JOGO_MAPA: mapFile, JOGO_PERSONAGENS: path.join(tempDir, 'dados', 'characters.json') },
+    env: { ...process.env, JOGO_APLICAR_MAPA: '0', PORT: String(PORT), JOGO_MAPA: mapFile, JOGO_PERSONAGENS: path.join(tempDir, 'dados', 'characters.json') },
     stdio: ['ignore', 'pipe', 'pipe']
   });
   await new Promise((resolve, reject) => {
@@ -103,7 +103,7 @@ test('com o JOGO_MAPA num caminho que não dá pra usar, o servidor avisa e não
   writeFileSync(path.join(tempDir, 'arquivo-comum'), 'não é uma pasta');
   const other = spawn(process.execPath, ['server.js'], {
     cwd: ROOT,
-    env: { ...process.env, PORT: String(PORT + 1), JOGO_MAPA: path.join(tempDir, 'arquivo-comum', 'map.json'), JOGO_PERSONAGENS: path.join(tempDir, 'outros', 'characters.json') },
+    env: { ...process.env, JOGO_APLICAR_MAPA: '0', PORT: String(PORT + 1), JOGO_MAPA: path.join(tempDir, 'arquivo-comum', 'map.json'), JOGO_PERSONAGENS: path.join(tempDir, 'outros', 'characters.json') },
     stdio: ['ignore', 'pipe', 'pipe']
   });
   let errors = '';
