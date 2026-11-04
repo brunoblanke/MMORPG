@@ -4,6 +4,8 @@ Estado do projeto para retomar numa conversa nova. O que é regra fixa e como o 
 
 ## Para o usuário fazer
 
+- Mapa do vale (`TRANSF/mapa-vale.json`, feito da imagem que o usuário mandou por `ferramentas/criar-mapa-vale.js`): conferir no editor e, se gostar, fazer backup do mapa atual e copiar pro `data/map.json` do servidor (`/home/opc/dados`). Falta: NPCs, criaturas, templo, interior das casas, escadas/andares, e as portas nas muralhas onde os caminhos passam.
+
 - Gerador → Pisos → "Gerar folhas pendentes": os 45 pisos criados por `ferramentas/criar-pisos.js` (31 clássicos do 7.60 e 14 do 10.98: grama seca, mar raso, duna escura, calçamentos escuro/feio/pavimento, montanha de terra, lama congelada, chão derretendo, pântano andável, terra gelada, piso de pedra gelada, ladrilho cinza miúdo, telhado de escamas). Pisos de Venore e Carlin especificamente: o usuário pediu; o RME não separa por cidade e aqui não tem o Tibia 15.01 pra procurar; falta ele apontar os ids (ou prints) dos que quer. Conferir as bordas e os nomes. Ficaram de fora: telhados de tijolo e de madeira por direção, mar antigo (4597, já temos a água 629), alçapões, escadas, buracos e montes de pedra.
 
 - Gerador → "Gerar folhas pendentes": `map-colour` (o mapa que abre o mini mapa; Tibia 2823, conferir o desenho). Pôr o mapa à venda num NPC ou num baú, se quiser.
