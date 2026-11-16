@@ -14,16 +14,11 @@
     "modelo": "humano",
     "visual": {
       "pele": "#e8b68c",
-      "cabelo": "#c9862b",
-      "camisa": "#3f7a52",
-      "calca": "#2f5c40",
-      "sapato": "#33241a",
-      "bota": "#5a3a22",
-      "cinto": "#4a2f1c",
-      "detalhe": "#e8d27a",
-      "luva": "#5a3a22",
-      "feminino": true,
-      "cajado": "#6fd0f0"
+      "cabelo": "#7a4520",
+      "camisa": "#e6dcc6",
+      "calca": "#7c5a8c",
+      "sapato": "#4a3020",
+      "feminino": true
     }
   },
   "cadaver": {

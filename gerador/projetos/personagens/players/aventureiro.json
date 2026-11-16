@@ -15,17 +15,9 @@
     "visual": {
       "pele": "#e2aa7c",
       "cabelo": "#5a3418",
-      "camisa": "#5f7896",
-      "calca": "#3f4a5c",
-      "sapato": "#2c2620",
-      "bota": "#4a3626",
-      "cinto": "#3a2616",
-      "detalhe": "#e2b34a",
-      "luva": "#4a3626",
-      "bracadeira": "#8fa3ba",
-      "ombreira": "#9fb2c8",
-      "espetado": true,
-      "espada": true
+      "camisa": "#c9b48a",
+      "calca": "#4f5d73",
+      "sapato": "#4a3020"
     }
   },
   "cadaver": {

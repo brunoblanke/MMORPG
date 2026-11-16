@@ -14,8 +14,8 @@ const RAIZ = path.join(__dirname, '..');
 const LINHAS = ['sul', 'norte', 'leste', 'oeste', 'cadáver: fresco, apodrecendo, ossos'];
 
 const SPRITES = [
-  { tipo: 'personagens/players/aventureiro', ferramenta: 'criaturas', copiaDe: 'personagens/players/player-masculino', modelo: 'humano', visual: { pele: '#e2aa7c', cabelo: '#5a3418', camisa: '#5f7896', calca: '#3f4a5c', sapato: '#2c2620', bota: '#4a3626', cinto: '#3a2616', detalhe: '#e2b34a', luva: '#4a3626', bracadeira: '#8fa3ba', ombreira: '#9fb2c8', espetado: true, espada: true } },
-  { tipo: 'personagens/players/aventureira', ferramenta: 'criaturas', copiaDe: 'personagens/players/player-feminino', modelo: 'humano', visual: { pele: '#e8b68c', cabelo: '#c9862b', camisa: '#3f7a52', calca: '#2f5c40', sapato: '#33241a', bota: '#5a3a22', cinto: '#4a2f1c', detalhe: '#e8d27a', luva: '#5a3a22', feminino: true, cajado: '#6fd0f0' } },
+  { tipo: 'personagens/players/aventureiro', ferramenta: 'criaturas', copiaDe: 'personagens/players/player-masculino', modelo: 'humano', visual: { pele: '#e2aa7c', cabelo: '#5a3418', camisa: '#c9b48a', calca: '#4f5d73', sapato: '#4a3020' } },
+  { tipo: 'personagens/players/aventureira', ferramenta: 'criaturas', copiaDe: 'personagens/players/player-feminino', modelo: 'humano', visual: { pele: '#e8b68c', cabelo: '#7a4520', camisa: '#e6dcc6', calca: '#7c5a8c', sapato: '#4a3020', feminino: true } },
   { tipo: 'criaturas/mamiferos/lobo-cinzento', ferramenta: 'criaturas', copiaDe: 'criaturas/mamiferos/wolf', modelo: 'lobo', visual: { pelo: '#8a8782', barriga: '#b9b5ad', olho: '#f2d23c' } },
   { tipo: 'decoracao/adornos/caixote', ferramenta: 'objetos', copiaDe: 'decoracao/moveis/harp', modelo: 'caixote', quadro: 32 },
   { tipo: 'decoracao/adornos/barril', ferramenta: 'objetos', copiaDe: 'decoracao/moveis/harp', modelo: 'barril', quadro: 32 },
