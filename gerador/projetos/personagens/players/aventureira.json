@@ -13,11 +13,14 @@
   "desenho": {
     "modelo": "humano",
     "visual": {
-      "pele": "#e8b68c",
-      "cabelo": "#7a4520",
-      "camisa": "#e6dcc6",
-      "calca": "#7c5a8c",
-      "sapato": "#4a3020",
+      "pele": "#f2c6a2",
+      "cabelo": "#a4532c",
+      "camisa": "#4f8f52",
+      "calca": "#3e6e44",
+      "sapato": "#6a4228",
+      "cinto": "#5a3820",
+      "fivela": "#e8b83a",
+      "alca": "#6e4526",
       "feminino": true
     }
   },

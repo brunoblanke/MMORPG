@@ -114,12 +114,14 @@ function pintarVolume(ctx, origem, parte) {
 
 // ================================================================================================================================================================================================================================================
 // pintar
-// Pinta as partes na ordem da câmera (as mais ao norte/oeste e mais baixas primeiro). Parte: volume { secoes, cor }
+// Pinta as partes na ordem da câmera (as mais ao norte/oeste e mais baixas primeiro). Parte: grupo { camadas }
+// (pintarParte), volume { secoes, cor }
 // (pintarVolume), cápsula { a, b, largura, cor } (sem b é uma bola de diâmetro largura) ou traço fino { a, b, largura,
 // cor, contorno: false, luz: false } (olho, boca); frente desempata (mais = por cima); luz = false tira o brilho.
 
 function pintar(ctx, origem, partes) {
   const centro = (parte) => {
+    if (parte.camadas) return centro(parte.camadas[parte.camadas.length - 1]);
     if (parte.secoes) {
       const cs = parte.secoes.map(s => s.c);
       return [0, 1, 2].map(i => cs.reduce((soma, c) => soma + c[i], 0) / cs.length);
@@ -131,10 +133,23 @@ function pintar(ctx, origem, partes) {
     return m[0] + m[1] + m[2] * 0.6 + (parte.frente || 0);
   };
   ctx.lineCap = 'round';
-  for (const parte of [...partes].sort((p, q) => fundo(p) - fundo(q))) {
+  for (const parte of [...partes].sort((p, q) => fundo(p) - fundo(q))) pintarParte(ctx, origem, parte);
+}
+
+// ================================================================================================================================================================================================================================================
+// pintarParte
+// Uma parte (volume, cápsula ou traço); grupo { camadas } pinta as camadas nessa ordem, sem reordenar (cabelo: tufos
+// por baixo e a calota por cima).
+
+function pintarParte(ctx, origem, parte) {
+  if (parte.camadas) {
+    for (const camada of parte.camadas) pintarParte(ctx, origem, camada);
+    return;
+  }
+  {
     if (parte.secoes) {
       pintarVolume(ctx, origem, parte);
-      continue;
+      return;
     }
     const a = projetar(origem, parte.a);
     const b = projetar(origem, parte.b || parte.a);
@@ -149,7 +164,7 @@ function pintar(ctx, origem, partes) {
     if (parte.contorno !== false) traco(parte.largura + 1.6, CONTORNO);
     if (parte.luz === false && parte.contorno === false) {
       traco(parte.largura, parte.cor);
-      continue;
+      return;
     }
     traco(parte.largura, misturar(parte.cor, '#000000', 0.22));
     traco(parte.largura * 0.74, parte.cor, -parte.largura * 0.1, -parte.largura * 0.1);
@@ -169,10 +184,11 @@ function eixos(direcao) {
 
 // ================================================================================================================================================================================================================================================
 // humano
-// Partes do humano (um cidadão comum: camisa, calça, sapato e cabelo simples) na direção e fase, em volumes moldados:
-// cada parte é um conjunto de cortes (anéis) ou bolas presos ao esqueleto, e o desenho é o envoltório deles (o tronco
-// afina na cintura, a perna no tornozelo, a cabeça tem queixo). visual: { pele, cabelo, camisa, calca, sapato,
-// feminino }. deitar: função que leva cada ponto do corpo em pé pro corpo no chão (cadáver).
+// Partes do humano na direção e fase, em proporção de cabeça grande (quase um terço da altura), em volumes moldados:
+// cada parte é um conjunto de cortes (anéis) ou bolas presos ao esqueleto, e o desenho é o envoltório deles. Cidadão
+// comum: túnica, calça, botas, cinto com fivela, alça atravessada e cabelo em mechas. visual: { pele, cabelo, camisa,
+// calca, sapato, cinto, fivela, alca, feminino }. deitar: função que leva cada ponto do corpo em pé pro corpo no chão
+// (cadáver).
 
 function humano(direcao, fase, visual, deitar = null) {
   const base = eixos(direcao);
@@ -185,63 +201,69 @@ function humano(direcao, fase, visual, deitar = null) {
   const bola = (ponto, r) => ({ c: ponto, r });
   const t = fase ? (fase - 1) / 8 * Math.PI * 2 : 0;
   const s = fase ? Math.sin(t) : 0;
-  const sobe = fase ? Math.abs(Math.cos(t)) * 0.8 : 0;
+  const sobe = fase ? Math.abs(Math.cos(t)) * 0.7 : 0;
   const partes = [];
   const pele = visual.pele;
-  const pernaCor = visual.feminino ? pele : visual.calca;
+  const bota = visual.sapato;
   const perna = (lado, passo) => {
-    const ergue = Math.max(0, passo) * 2;
-    const quadril = P(0, lado * 1.9, 11 + sobe);
-    const joelho = P(passo * 2.4 + 0.8, lado * 2, 6.2 + ergue * 0.6 + sobe * 0.5);
-    const tornozelo = P(passo * 4.2, lado * 2, 1.5 + ergue);
-    partes.push({ secoes: [bola(quadril, 2.05), bola(joelho, 1.55)], cor: pernaCor });
-    partes.push({ secoes: [bola(joelho, 1.5), bola(tornozelo, 1.15)], cor: visual.feminino ? pele : visual.calca });
-    partes.push({ secoes: [bola(P(passo * 4.2 - 0.5, lado * 2, 0.9 + ergue), 1.15), bola(P(passo * 4.2 + 1.9, lado * 2, 0.75 + ergue), 1)], cor: visual.sapato, luz: false });
+    const ergue = Math.max(0, passo) * 1.5;
+    const quadril = P(0, lado * 1.75, 8.2 + sobe);
+    const joelho = P(passo * 1.7 + 0.5, lado * 1.85, 4.6 + ergue * 0.6 + sobe * 0.5);
+    const tornozelo = P(passo * 3, lado * 1.85, 1.4 + ergue);
+    partes.push({ secoes: [bola(quadril, 2.1), bola(joelho, 1.75)], cor: visual.feminino ? pele : visual.calca });
+    partes.push({ secoes: [bola(joelho, 1.85), bola(tornozelo, 1.55)], cor: bota });
+    partes.push({ secoes: [bola(P(passo * 3 - 0.5, lado * 1.85, 0.95 + ergue), 1.45), bola(P(passo * 3 + 1.9, lado * 1.85, 0.85 + ergue), 1.3)], cor: bota, luz: false, frente: 0.1 });
   };
   perna(-1, s);
   perna(1, -s);
-  partes.push({ secoes: [anel(0, 0, 9.8, 3.3, 2.1), anel(0, 0, 12.4, 3.4, 2.2)], cor: visual.calca, frente: -0.2 });
-  if (visual.feminino) partes.push({ secoes: [anel(0, 0, 7.4 + sobe, 4.2, 3), anel(0, 0, 12.6 + sobe, 3.4, 2.3)], cor: visual.calca, frente: 0.1 });
+  partes.push({ secoes: [anel(0, 0, 7.2, 3.1, 2.1), anel(0, 0, 9.4, 3.3, 2.2)], cor: visual.calca, frente: -0.2 });
+  const barra = visual.feminino ? [anel(0, 0, 4.2 + sobe, 4.6, 3.4), anel(0, 0, 7.4 + sobe, 4.1, 2.9)] : [anel(0, 0, 6.6 + sobe, 4, 2.7), anel(0, 0, 8.4 + sobe, 3.7, 2.5)];
   partes.push({
-    secoes: [anel(0, 0, 11.6 + sobe, 3.5, 2.3), anel(0, 0, 13.8 + sobe, 3.2, 2.1), anel(0, 0, 17.6 + sobe, 4, 2.5), anel(0, 0, 20.2 + sobe, 4.4, 2.2), anel(0, 0, 21.3 + sobe, 2, 1.5)],
+    secoes: [...barra, anel(0, 0, 10.8 + sobe, 3.4, 2.3), anel(0, 0, 13.6 + sobe, 4, 2.6), anel(0, 0, 15.4 + sobe, 4.4, 2.4), anel(0, 0, 16.4 + sobe, 2.2, 1.7)],
     cor: visual.camisa,
     frente: 0.2
   });
-  partes.push({ secoes: [bola(P(0.2, 0, 21.4 + sobe), 1.15), bola(P(0.3, 0, 23.2 + sobe), 1.15)], cor: pele, frente: 0.1 });
+  if (visual.cinto) {
+    partes.push({ secoes: [anel(0, 0, 10.2 + sobe, 3.6, 2.45), anel(0, 0, 11.2 + sobe, 3.6, 2.45)], cor: visual.cinto, luz: false, frente: 1.6 });
+    if (visual.fivela) partes.push({ secoes: [bola(P(2.5, 0, 10.7 + sobe), 0.95)], cor: visual.fivela, luz: false, frente: 2.4 });
+  }
+  if (visual.alca) {
+    for (const lado of [1, -1]) {
+      partes.push({ a: P(lado * 2.45, -2.9, 15.6 + sobe), b: P(lado * 2.6, 2.6, 10.9 + sobe), largura: 1.15, cor: visual.alca, frente: 0.6 });
+    }
+  }
+  partes.push({ secoes: [bola(P(0.2, 0, 16.4 + sobe), 1.25), bola(P(0.3, 0, 17.6 + sobe), 1.25)], cor: pele, frente: 0.1 });
   const braco = (lado, passo) => {
-    const ombro = P(0, lado * 4.3, 20 + sobe);
-    const cotovelo = P(passo * 1.5 - 0.4, lado * 4.9, 15.4 + sobe);
-    const mao = P(passo * 3.6 + 0.6, lado * 4.8, 11.4 + sobe + Math.max(0, passo) * 1.1);
-    const manga = P(passo * 0.9 - 0.3, lado * 4.7, 17 + sobe);
-    partes.push({ secoes: [bola(ombro, 1.75), bola(manga, 1.55)], cor: visual.camisa });
-    partes.push({ secoes: [bola(manga, 1.25), bola(cotovelo, 1.15), bola(mao, 1)], cor: pele });
-    partes.push({ secoes: [bola(mao, 1.2)], cor: pele, luz: false, frente: 0.05 });
+    const ombro = P(0, lado * 4.1, 15.2 + sobe);
+    const cotovelo = P(passo * 1.2 - 0.3, lado * 4.6, 11.8 + sobe);
+    const mao = P(passo * 2.6 + 0.5, lado * 4.5, 8.9 + sobe + Math.max(0, passo) * 0.8);
+    partes.push({ secoes: [bola(ombro, 1.85), bola(cotovelo, 1.6)], cor: visual.camisa });
+    partes.push({ secoes: [bola(cotovelo, 1.3), bola(mao, 1.15)], cor: pele });
+    partes.push({ secoes: [bola(mao, 1.45)], cor: pele, luz: false, frente: 0.05 });
   };
   braco(-1, -s);
   braco(1, s);
-  const z = 24.6 + sobe;
-  partes.push({
-    secoes: [anel(0.6, 0, z - 0.6, 1.6, 1.4), anel(0.4, 0, z + 1.2, 3, 3.1), anel(0.2, 0, z + 3.2, 3.3, 3.4), anel(0, 0, z + 5, 2.8, 2.9), anel(0, 0, z + 6.1, 1.4, 1.5)],
-    cor: pele,
-    frente: 0.4
-  });
-  partes.push({
-    secoes: [anel(-0.6, 0, z + 4.3, 3.45, 3), anel(-0.5, 0, z + 5.6, 3, 2.7), anel(-0.4, 0, z + 6.6, 1.7, 1.6), anel(-1.7, 0, z + 2.2, 3.25, 1.8), anel(-1.9, 0, z + 0.9, 2.6, 1.3)],
-    cor: visual.cabelo,
-    frente: 2
-  });
-  if (visual.feminino) partes.push({ secoes: [anel(-2, 0, z + 3, 3.4, 2), anel(-2.2, 0, z - 3.4, 3.1, 1.4)], cor: visual.cabelo });
+  const z = 17.4 + sobe;
+  const cabeca = P(0.2, 0, z + 3.6);
+  partes.push({ secoes: [bola(cabeca, 5), bola(P(0.9, 0, z + 1.4), 3.6)], cor: pele, frente: 0.4 });
+  for (const lado of [-1, 1]) partes.push({ secoes: [bola(P(0.2, lado * 4.9, z + 3.2), 1.05)], cor: pele, frente: 0.5 });
+  const topo = [-1.2, 0, z + 5.1];
+  const tufos = [[0.15, 0.1, 1, 5.8], [0.55, -0.55, 0.65, 5.6], [0.4, 0.7, 0.6, 5.4], [-0.7, -0.45, 0.6, 5.7], [-0.5, 0.75, 0.45, 5.4], [-0.95, 0.1, 0.3, 5.6], [0.1, -1, 0.15, 5.3]];
+  const camadas = tufos.map(([df, dl, dz, alcance]) => ({
+    secoes: [bola(P(topo[0] + df * 3.4, dl * 3.4, topo[2] + dz * 3.4), 1.9), bola(P(topo[0] + df * alcance, dl * alcance, topo[2] + dz * alcance), 0.5)],
+    cor: misturar(visual.cabelo, '#000000', 0.12),
+    luz: false
+  }));
+  camadas.push({ secoes: [bola(P(topo[0], 0, topo[2]), 4.9), bola(P(-2.2, 0, z + 2.6), 4.2)], cor: visual.cabelo });
+  partes.push({ camadas, frente: 2 });
+  if (visual.feminino) partes.push({ secoes: [bola(P(-2.5, 0, z + 3), 4.3), bola(P(-2.7, 0, z - 4.2), 3.3)], cor: visual.cabelo });
   if (deitar) return partes;
-  const olho = (lado) => P(3.05, lado * 1.25, z + 2.4);
-  const escuro = misturar(visual.cabelo, '#000000', 0.35);
   for (const lado of [-1, 1]) {
-    partes.push({ a: olho(lado), largura: 0.95, cor: '#1c1a22', contorno: false, luz: false, frente: 4 });
-    partes.push({ a: P(2.85, lado * 0.7, z + 3.5), b: P(2.85, lado * 1.9, z + 3.6), largura: 0.55, cor: escuro, contorno: false, luz: false, frente: 4 });
-    partes.push({ a: P(0.2, lado * 3.15, z + 2.2), largura: 1.3, cor: misturar(pele, '#000000', 0.12), contorno: false, luz: false, frente: 0.3 });
+    partes.push({ a: P(3.4, lado * 1.8, z + 2.4), b: P(3.4, lado * 1.8, z + 3.4), largura: 1.6, cor: '#1c1a22', contorno: false, luz: false, frente: 4 });
+    partes.push({ a: P(3.5, lado * 1.5, z + 3.4), largura: 0.6, cor: '#ffffff', contorno: false, luz: false, frente: 4.1 });
+    partes.push({ a: P(3.3, lado * 1.1, z + 4.5), b: P(3.2, lado * 2.6, z + 4.6), largura: 0.6, cor: misturar(visual.cabelo, '#000000', 0.35), contorno: false, luz: false, frente: 4 });
   }
-  partes.push({ a: P(3.2, -0.5, z + 0.6), b: P(3.2, 0.5, z + 0.6), largura: 0.5, cor: misturar(pele, '#5a1a1a', 0.5), contorno: false, luz: false, frente: 4 });
-  partes.push({ a: P(3.4, 0, z + 1.7), largura: 0.7, cor: misturar(pele, '#000000', 0.18), contorno: false, luz: false, frente: 4 });
-  partes.push({ a: P(3.3, -1.7, z - 3.2 + sobe * 0), b: P(3.3, 1.7, z - 3.2), largura: 0.55, cor: misturar(visual.camisa, '#000000', 0.35), contorno: false, luz: false, frente: 3 });
+  partes.push({ a: P(3.9, -0.5, z + 1.2), b: P(3.9, 0.5, z + 1.2), largura: 0.55, cor: misturar(pele, '#5a1a1a', 0.5), contorno: false, luz: false, frente: 4 });
   return partes;
 }
 
@@ -305,8 +327,8 @@ function caido(forma, estagio, visual) {
     return partes;
   }
   const cor = (hex) => podre(hex);
-  const visualCaido = { ...visual, pele: cor(visual.pele), camisa: cor(visual.camisa), calca: cor(visual.calca), cabelo: cor(visual.cabelo), sapato: cor(visual.sapato) };
-  partes.push(...humano('leste', 0, visualCaido, ([x, y, zz]) => [11 - zz * 0.86, y, 2.4 + x * 0.55]));
+  const visualCaido = { ...visual, pele: cor(visual.pele), camisa: cor(visual.camisa), calca: cor(visual.calca), cabelo: cor(visual.cabelo), sapato: cor(visual.sapato), cinto: visual.cinto && cor(visual.cinto), fivela: visual.fivela && cor(visual.fivela), alca: null };
+  partes.push(...humano('leste', 0, visualCaido, ([x, y, zz]) => [10 - zz * 0.8, y, 2.4 + x * 0.55]));
   return partes;
 }
 
