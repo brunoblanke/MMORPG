@@ -1,0 +1,59 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "desenho": {
+    "modelo": "humano",
+    "visual": {
+      "pele": "#e8b490",
+      "cabelo": "#6e4426",
+      "camisa": "#3a3f4c",
+      "calca": "#3a3f4c",
+      "sapato": "#5e3c24",
+      "equip": {
+        "elmo": "crown",
+        "peito": "crown",
+        "pernas": "crown",
+        "botas": "crown",
+        "escudo": "crown",
+        "arma": "crown"
+      }
+    }
+  },
+  "cadaver": {
+    "fresco": {
+      "desenho": true
+    },
+    "apodrecendo": {
+      "desenho": true
+    },
+    "ossos": {
+      "desenho": true
+    }
+  },
+  "propriedades": {
+    "comportamento": "npc",
+    "conversa": {
+      "boasVindas": "Pela coroa!",
+      "oi": "Saudações, {nome}. Sirvo à coroa e guardo esta cidade.",
+      "tchau": "Que a coroa te proteja, {nome}.",
+      "raio": 2,
+      "topicos": [],
+      "vende": [],
+      "compra": [],
+      "missoes": []
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "personagens",
+  "pasta": "npcs",
+  "nome": "cavaleiro-coroa"
+}

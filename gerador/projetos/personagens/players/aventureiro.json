@@ -13,14 +13,13 @@
   "desenho": {
     "modelo": "humano",
     "visual": {
-      "pele": "#f0c09a",
-      "cabelo": "#7a4a26",
-      "camisa": "#3f66b8",
-      "calca": "#4a3a2e",
-      "sapato": "#6a4228",
-      "cinto": "#5a3820",
-      "fivela": "#e8b83a",
-      "alca": "#6e4526"
+      "pele": "#e8b490",
+      "cabelo": "#6e4426",
+      "camisa": "#4a6fb3",
+      "calca": "#4c4034",
+      "sapato": "#5e3c24",
+      "cinto": "#4a3020",
+      "fivela": "#d9b040"
     }
   },
   "cadaver": {

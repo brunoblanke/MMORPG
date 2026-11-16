@@ -1,0 +1,63 @@
+{
+  "formato": {
+    "quadro": 64,
+    "colunas": 4,
+    "pecas": [
+      "x",
+      "y",
+      "xy",
+      "yx",
+      "porta-x",
+      "porta-x-aberta",
+      "porta-y",
+      "porta-y-aberta",
+      "janela-x",
+      "janela-y"
+    ]
+  },
+  "desenho": {
+    "modelo": "parede"
+  },
+  "pecas": {
+    "x": {
+      "desenho": true
+    },
+    "y": {
+      "desenho": true
+    },
+    "xy": {
+      "desenho": true
+    },
+    "yx": {
+      "desenho": true
+    },
+    "porta-x": {
+      "desenho": true
+    },
+    "porta-x-aberta": {
+      "desenho": true
+    },
+    "porta-y": {
+      "desenho": true
+    },
+    "porta-y-aberta": {
+      "desenho": true
+    },
+    "janela-x": {
+      "desenho": true
+    },
+    "janela-y": {
+      "desenho": true
+    }
+  },
+  "propriedades": {
+    "colisao": {
+      "arremesso": true,
+      "apoia": false
+    }
+  },
+  "ferramenta": "paredes",
+  "grupo": "estrutura",
+  "pasta": "paredes",
+  "nome": "muro-de-pedra"
+}

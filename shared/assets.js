@@ -726,7 +726,7 @@ export function spriteFrame(type) {
   }
   if (asset.ferramenta === 'paredes') {
     const index = Math.max(0, (asset.ordem || WALL_PIECES).indexOf(piece || 'x'));
-    return { url: asset.url, x: (index % 4) * size, y: Math.floor(index / 4) * size, size, frames: 1, ms: 0 };
+    return { url: asset.url, ...(asset.sharpUrl ? { sharpUrl: asset.sharpUrl } : {}), x: (index % 4) * size, y: Math.floor(index / 4) * size, size, frames: 1, ms: 0 };
   }
   const row = Math.max(0, objectDirections(assetId).indexOf(objectDirection(type)));
   return { url: asset.url, ...(asset.sharpUrl ? { sharpUrl: asset.sharpUrl } : {}), x: 0, y: row * size, size, frames: asset.quadros || 1, ms: 0 };

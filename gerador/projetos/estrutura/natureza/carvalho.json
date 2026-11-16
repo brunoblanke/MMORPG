@@ -1,0 +1,86 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 1
+  },
+  "desenho": {
+    "modelo": "arvore"
+  },
+  "propriedades": {
+    "bloqueia": true,
+    "move": false,
+    "altura": false,
+    "empilhavel": false,
+    "duasMaos": false,
+    "tipoMunicao": "",
+    "postal": false,
+    "peso": 10,
+    "espacos": 0,
+    "atk": 0,
+    "def": 0,
+    "ml": 0,
+    "speed": 0,
+    "vidaMin": 0,
+    "vidaMax": 0,
+    "manaMin": 0,
+    "manaMax": 0,
+    "alimento": 0,
+    "luz": 0,
+    "duracao": 0,
+    "regenVida": 0,
+    "regenMana": 0,
+    "uso": "",
+    "ativoComo": "",
+    "comecaAtivo": false,
+    "interacoes": [
+      {
+        "gatilho": {
+          "tipo": "capacidade",
+          "capacidade": "lenhar"
+        },
+        "condicoes": {
+          "alcance": 1,
+          "chance": 40
+        },
+        "efeitos": [
+          {
+            "tipo": "dar-itens",
+            "item": "itens/materiais/wood",
+            "quantidade": 1,
+            "umaVez": "nao"
+          },
+          {
+            "tipo": "efeito-visual",
+            "nome": "block"
+          }
+        ]
+      },
+      {
+        "gatilho": {
+          "tipo": "capacidade",
+          "capacidade": "lenhar"
+        },
+        "condicoes": {
+          "alcance": 1,
+          "vezes": 8
+        },
+        "efeitos": [
+          {
+            "tipo": "dar-itens",
+            "item": "itens/plantas-e-ervas/seeds",
+            "quantidade": 1,
+            "umaVez": "nao"
+          },
+          {
+            "tipo": "remover",
+            "rebroteMs": 0
+          }
+        ]
+      }
+    ]
+  },
+  "ferramenta": "objetos",
+  "grupo": "estrutura",
+  "pasta": "natureza",
+  "nome": "carvalho"
+}
