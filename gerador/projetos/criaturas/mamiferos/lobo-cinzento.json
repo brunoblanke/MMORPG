@@ -1,0 +1,67 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "desenho": {
+    "modelo": "lobo",
+    "visual": {
+      "pelo": "#8a8782",
+      "barriga": "#b9b5ad",
+      "olho": "#f2d23c"
+    }
+  },
+  "cadaver": {
+    "fresco": {
+      "desenho": true
+    },
+    "apodrecendo": {
+      "desenho": true
+    },
+    "ossos": {
+      "desenho": true
+    }
+  },
+  "propriedades": {
+    "comportamento": "foge",
+    "vida": 25,
+    "xp": 18,
+    "velocidade": 164,
+    "armadura": 1,
+    "defesa": 1,
+    "ataque": 17,
+    "magia": null,
+    "resistencias": {
+      "ice": 110,
+      "holy": 70,
+      "death": 105
+    },
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
+    "loot": [
+      {
+        "tipo": "itens/comidas/meet",
+        "chance": 0.7,
+        "min": 1,
+        "max": 2
+      },
+      {
+        "tipo": "itens/produtos-de-criaturas/wolf-paw",
+        "chance": 0.01
+      }
+    ],
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "criaturas",
+  "pasta": "mamiferos",
+  "nome": "lobo-cinzento"
+}

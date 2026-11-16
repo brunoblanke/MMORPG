@@ -1,0 +1,55 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "desenho": {
+    "modelo": "humano",
+    "visual": {
+      "pele": "#e2aa7c",
+      "cabelo": "#6b3b1d",
+      "camisa": "#3d5fb0",
+      "calca": "#6d4c2b",
+      "sapato": "#33241a"
+    }
+  },
+  "cadaver": {
+    "fresco": {
+      "desenho": true
+    },
+    "apodrecendo": {
+      "desenho": true
+    },
+    "ossos": {
+      "desenho": true
+    }
+  },
+  "propriedades": {
+    "comportamento": "normal",
+    "vida": 0,
+    "xp": 0,
+    "velocidade": 0,
+    "armadura": 0,
+    "defesa": 0,
+    "ataque": 0,
+    "criticoChance": 0,
+    "criticoDano": 0,
+    "magia": null,
+    "veneno": 0,
+    "invoca": null,
+    "respawn": 0,
+    "loot": [],
+    "falas": []
+  },
+  "ferramenta": "criaturas",
+  "grupo": "personagens",
+  "pasta": "players",
+  "nome": "aventureiro"
+}
