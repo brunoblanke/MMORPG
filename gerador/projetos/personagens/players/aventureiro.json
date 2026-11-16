@@ -14,10 +14,18 @@
     "modelo": "humano",
     "visual": {
       "pele": "#e2aa7c",
-      "cabelo": "#6b3b1d",
-      "camisa": "#3d5fb0",
-      "calca": "#6d4c2b",
-      "sapato": "#33241a"
+      "cabelo": "#5a3418",
+      "camisa": "#5f7896",
+      "calca": "#3f4a5c",
+      "sapato": "#2c2620",
+      "bota": "#4a3626",
+      "cinto": "#3a2616",
+      "detalhe": "#e2b34a",
+      "luva": "#4a3626",
+      "bracadeira": "#8fa3ba",
+      "ombreira": "#9fb2c8",
+      "espetado": true,
+      "espada": true
     }
   },
   "cadaver": {

@@ -15,10 +15,15 @@
     "visual": {
       "pele": "#e8b68c",
       "cabelo": "#c9862b",
-      "camisa": "#b23a48",
-      "calca": "#7a2a36",
+      "camisa": "#3f7a52",
+      "calca": "#2f5c40",
       "sapato": "#33241a",
-      "feminino": true
+      "bota": "#5a3a22",
+      "cinto": "#4a2f1c",
+      "detalhe": "#e8d27a",
+      "luva": "#5a3a22",
+      "feminino": true,
+      "cajado": "#6fd0f0"
     }
   },
   "cadaver": {

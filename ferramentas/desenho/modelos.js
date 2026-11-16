@@ -8,6 +8,7 @@
 
 const CAMERA = 0.74;
 const CONTORNO = '#1c1612';
+const NITIDEZ = 4;
 const DIRECOES = { sul: [0, 1], norte: [0, -1], leste: [1, 0], oeste: [-1, 0] };
 
 // ================================================================================================================================================================================================================================================
@@ -68,7 +69,9 @@ function eixos(direcao) {
 
 // ================================================================================================================================================================================================================================================
 // humano
-// Partes do humano na direção e fase. visual: { pele, cabelo, camisa, calca, sapato, feminino }.
+// Partes do humano na direção e fase. visual: { pele, cabelo, camisa, calca, sapato, feminino } e os detalhes opcionais
+// cinto, detalhe (fivela, friso do peito, gola), luva, bracadeira, ombreira, bota (cano alto), espetado (cabelo em
+// pontas), espada (nas costas) e cajado (na mão direita).
 
 function humano(direcao, fase, visual) {
   const p = eixos(direcao);
@@ -76,14 +79,22 @@ function humano(direcao, fase, visual) {
   const s = fase ? Math.sin(t) : 0;
   const sobe = fase ? Math.abs(Math.cos(t)) * 0.9 : 0;
   const partes = [];
+  const meio = (a, b, f) => [0, 1, 2].map(i => a[i] + (b[i] - a[i]) * f);
   const perna = (lado, fase01) => {
     const ergue = Math.max(0, fase01) * 2.2;
     const quadril = p(0, lado * 2.3, 11.5 + sobe);
     const pe = p(fase01 * 4.6, lado * 2.3, 1.2 + ergue);
     const joelho = p(fase01 * 2.6 + 1.1, lado * 2.3, 6.4 + ergue * 0.6 + sobe);
     const cor = visual.feminino ? visual.pele : visual.calca;
-    partes.push({ a: quadril, b: joelho, largura: 3.6, cor }, { a: joelho, b: pe, largura: 3.1, cor });
-    partes.push({ a: pe, b: p(fase01 * 4.6 + 1.6, lado * 2.3, 0.9 + ergue), largura: 3.3, cor: visual.sapato, luz: false });
+    partes.push({ a: quadril, b: joelho, largura: 3.6, cor });
+    if (visual.bota) {
+      const cano = meio(joelho, pe, 0.3);
+      partes.push({ a: joelho, b: cano, largura: 3.1, cor }, { a: cano, b: pe, largura: 3.4, cor: visual.bota });
+      partes.push({ a: cano, largura: 3.9, cor: misturar(visual.bota, '#ffffff', 0.18), luz: false });
+    } else {
+      partes.push({ a: joelho, b: pe, largura: 3.1, cor });
+    }
+    partes.push({ a: pe, b: p(fase01 * 4.6 + 1.6, lado * 2.3, 0.9 + ergue), largura: 3.3, cor: visual.bota || visual.sapato, luz: false });
   };
   perna(-1, s);
   perna(1, -s);
@@ -91,19 +102,49 @@ function humano(direcao, fase, visual) {
     const ombro = p(0, lado * 4.6, 20.4 + sobe);
     const cotovelo = p(fase01 * 1.6 - 0.6, lado * 5.4, 15.6 + sobe);
     const mao = p(fase01 * 4 + 0.8, lado * 5.2, 11.4 + sobe + Math.max(0, fase01) * 1.2);
-    partes.push({ a: ombro, b: cotovelo, largura: 3.1, cor: visual.camisa }, { a: cotovelo, b: mao, largura: 2.7, cor: visual.camisa });
-    partes.push({ a: mao, largura: 2.7, cor: visual.pele, luz: false });
+    partes.push({ a: ombro, b: cotovelo, largura: 3.1, cor: visual.camisa });
+    partes.push({ a: cotovelo, b: mao, largura: visual.bracadeira ? 3.1 : 2.7, cor: visual.bracadeira || visual.camisa });
+    partes.push({ a: mao, largura: visual.luva ? 3.1 : 2.7, cor: visual.luva || visual.pele, luz: false });
+    if (visual.ombreira) {
+      partes.push({ a: p(0, lado * 5, 21.2 + sobe), largura: 5.4, cor: visual.ombreira, frente: 1 });
+      partes.push({ a: p(0, lado * 6.4, 20.2 + sobe), largura: 3.2, cor: misturar(visual.ombreira, '#000000', 0.15), frente: 1 });
+    }
+    if (visual.cajado && lado > 0) {
+      partes.push({ a: [mao[0], mao[1], 1], b: [mao[0], mao[1], 29], largura: 1.6, cor: '#7a5230', luz: false });
+      partes.push({ a: [mao[0], mao[1], 30.4], largura: 4, cor: visual.cajado });
+    }
   };
   braco(-1, -s);
   braco(1, s);
   partes.push({ a: p(0, 0, 12.5 + sobe), b: p(0, 0, 20 + sobe), largura: 8.4, cor: visual.camisa });
   if (visual.feminino) partes.push({ a: p(0, 0, 8.6 + sobe), b: p(0, 0, 12.4 + sobe), largura: 9.4, cor: visual.calca });
   else partes.push({ a: p(0, -2.2, 11.6 + sobe), b: p(0, 2.2, 11.6 + sobe), largura: 4.4, cor: visual.calca });
+  if (visual.cinto) {
+    partes.push({ a: p(0, -3.3, 12.8 + sobe), b: p(0, 3.3, 12.8 + sobe), largura: 3.2, cor: visual.cinto, luz: false, frente: 1 });
+    if (visual.detalhe) partes.push({ a: p(3.6, 0, 12.8 + sobe), largura: 2, cor: visual.detalhe, contorno: false, frente: 3 });
+  }
+  if (visual.detalhe) {
+    partes.push({ a: p(3.9, 0, 15 + sobe), b: p(3.9, 0, 19 + sobe), largura: 1.3, cor: visual.detalhe, contorno: false, luz: false, frente: 3 });
+    partes.push({ a: p(3.4, -2.4, 19.6 + sobe), b: p(3.4, 2.4, 19.6 + sobe), largura: 1.3, cor: visual.detalhe, contorno: false, luz: false, frente: 3 });
+  }
+  if (visual.espada) {
+    partes.push({ a: p(-4.4, 4.4, 10 + sobe), b: p(-4.4, -3.6, 25 + sobe), largura: 2, cor: '#c9ced8', frente: -2 });
+    partes.push({ a: p(-4.4, -2.2, 24.4 + sobe), b: p(-4.4, -5.2, 26 + sobe), largura: 1.8, cor: visual.detalhe || '#b08a3a', luz: false, frente: -2 });
+    partes.push({ a: p(-4.4, -3.8, 25.4 + sobe), b: p(-4.4, -5.6, 29 + sobe), largura: 1.8, cor: '#4a2f1c', luz: false, frente: -2 });
+  }
   const cabeca = p(0.5, 0, 26.2 + sobe);
   partes.push({ a: cabeca, largura: 9.2, cor: visual.pele });
   partes.push({ a: p(-1.5, 0, 27.6 + sobe), largura: 9.4, cor: visual.cabelo });
+  if (visual.espetado) {
+    for (const [f, l, z] of [[-1, 0, 33.4], [1.6, -2.2, 32.4], [1.6, 2.2, 32.4], [-3.4, -2.6, 31.4], [-3.4, 2.6, 31.4], [-4.8, 0, 29.6]]) {
+      partes.push({ a: p(-1.2, l * 0.5, 29.4 + sobe), b: p(f, l, z + sobe), largura: 2.6, cor: visual.cabelo });
+    }
+  }
   if (visual.feminino) partes.push({ a: p(-3.2, 0, 26 + sobe), b: p(-3.6, 0, 19.5 + sobe), largura: 6.4, cor: visual.cabelo });
-  for (const lado of [-1, 1]) partes.push({ a: p(4.4, lado * 1.7, 26 + sobe), largura: 1.3, cor: '#1c1a22', contorno: false, luz: false, frente: 2 });
+  for (const lado of [-1, 1]) {
+    partes.push({ a: p(4.4, lado * 1.7, 26 + sobe), largura: 1.5, cor: '#1c1a22', contorno: false, luz: false, frente: 2 });
+    partes.push({ a: p(4.3, lado * 0.9, 27.5 + sobe), b: p(4.3, lado * 2.6, 27.7 + sobe), largura: 0.8, cor: misturar(visual.cabelo, '#000000', 0.3), contorno: false, luz: false, frente: 2 });
+  }
   return partes;
 }
 
@@ -177,17 +218,25 @@ function caido(forma, estagio, visual) {
 // ================================================================================================================================================================================================================================================
 // folhaDeCriatura
 // A folha do jogo: 9 quadros de 64 px por direção (sul, norte, leste, oeste) e a linha do cadáver (fresco,
-// apodrecendo, ossos). modelo: humano ou lobo.
+// apodrecendo, ossos). modelo: humano ou lobo. Desenha NITIDEZ vezes maior e reduz (traço mais limpo); ampliar > 1
+// devolve a folha maior que a do jogo (prévia de como fica com zoom).
 
-function folhaDeCriatura(modelo, visual) {
-  const canvas = document.createElement('canvas');
-  canvas.width = 64 * 9;
-  canvas.height = 64 * 5;
-  const ctx = canvas.getContext('2d');
+function folhaDeCriatura(modelo, visual, ampliar = 1) {
+  const grande = document.createElement('canvas');
+  grande.width = 64 * 9 * NITIDEZ;
+  grande.height = 64 * 5 * NITIDEZ;
+  const ctx = grande.getContext('2d');
+  ctx.scale(NITIDEZ, NITIDEZ);
   Object.keys(DIRECOES).forEach((direcao, linha) => {
     for (let fase = 0; fase < 9; fase++) pintar(ctx, [fase * 64 + 52, linha * 64 + 54], modelo(direcao, fase, visual));
   });
   for (let estagio = 0; estagio < 3; estagio++) pintar(ctx, [estagio * 64 + 46, 4 * 64 + 50], caido(modelo === lobo ? 'lobo' : 'humano', estagio, visual));
+  const canvas = document.createElement('canvas');
+  canvas.width = 64 * 9 * ampliar;
+  canvas.height = 64 * 5 * ampliar;
+  const saida = canvas.getContext('2d');
+  saida.imageSmoothingQuality = 'high';
+  saida.drawImage(grande, 0, 0, canvas.width, canvas.height);
   return canvas;
 }
 

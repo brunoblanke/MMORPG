@@ -7,6 +7,7 @@
 // na 1ª vez; depois ficam como estiverem (o que o usuário mudar no gerador não é desfeito).
 //
 // Uso: node ferramentas/desenhar-sprites.js [pasta de prévia]
+// (na pasta de prévia vão também as folhas das criaturas 4× maiores, pra ver os detalhes)
 
 const fs = require('fs');
 const path = require('path');
@@ -17,8 +18,8 @@ const MODELOS = path.join(__dirname, 'desenho', 'modelos.js');
 const LINHAS = ['sul', 'norte', 'leste', 'oeste', 'cadáver: fresco, apodrecendo, ossos'];
 
 const SPRITES = [
-  { tipo: 'personagens/players/aventureiro', ferramenta: 'criaturas', copiaDe: 'personagens/players/player-masculino', modelo: 'humano', visual: { pele: '#e2aa7c', cabelo: '#6b3b1d', camisa: '#3d5fb0', calca: '#6d4c2b', sapato: '#33241a' } },
-  { tipo: 'personagens/players/aventureira', ferramenta: 'criaturas', copiaDe: 'personagens/players/player-feminino', modelo: 'humano', visual: { pele: '#e8b68c', cabelo: '#c9862b', camisa: '#b23a48', calca: '#7a2a36', sapato: '#33241a', feminino: true } },
+  { tipo: 'personagens/players/aventureiro', ferramenta: 'criaturas', copiaDe: 'personagens/players/player-masculino', modelo: 'humano', visual: { pele: '#e2aa7c', cabelo: '#5a3418', camisa: '#5f7896', calca: '#3f4a5c', sapato: '#2c2620', bota: '#4a3626', cinto: '#3a2616', detalhe: '#e2b34a', luva: '#4a3626', bracadeira: '#8fa3ba', ombreira: '#9fb2c8', espetado: true, espada: true } },
+  { tipo: 'personagens/players/aventureira', ferramenta: 'criaturas', copiaDe: 'personagens/players/player-feminino', modelo: 'humano', visual: { pele: '#e8b68c', cabelo: '#c9862b', camisa: '#3f7a52', calca: '#2f5c40', sapato: '#33241a', bota: '#5a3a22', cinto: '#4a2f1c', detalhe: '#e8d27a', luva: '#5a3a22', feminino: true, cajado: '#6fd0f0' } },
   { tipo: 'criaturas/mamiferos/lobo-cinzento', ferramenta: 'criaturas', copiaDe: 'criaturas/mamiferos/wolf', modelo: 'lobo', visual: { pelo: '#8a8782', barriga: '#b9b5ad', olho: '#f2d23c' } },
   { tipo: 'decoracao/adornos/caixote', ferramenta: 'objetos', copiaDe: 'decoracao/moveis/harp', modelo: 'caixote', quadro: 32 },
   { tipo: 'decoracao/adornos/barril', ferramenta: 'objetos', copiaDe: 'decoracao/moveis/harp', modelo: 'barril', quadro: 32 },
@@ -58,10 +59,12 @@ async function principal() {
   const pagina = await navegador.newPage();
   await pagina.addScriptTag({ content: fs.readFileSync(MODELOS, 'utf8') });
   for (const sprite of SPRITES) {
-    const dados = await pagina.evaluate(({ modelo, visual, argumento }) => {
-      const canvas = visual ? folhaDeCriatura(window[modelo] || eval(modelo), visual) : eval(modelo)(argumento);
+    const desenhar = ({ modelo, visual, argumento, ampliar }) => {
+      const canvas = visual ? folhaDeCriatura(eval(modelo), visual, ampliar) : eval(modelo)(argumento);
       return canvas.toDataURL('image/png').split(',')[1];
-    }, sprite);
+    };
+    const dados = await pagina.evaluate(desenhar, { ...sprite, ampliar: 1 });
+    if (previa && sprite.visual) fs.writeFileSync(path.join(previa, `${sprite.tipo.split('/').pop()}-4x.png`), Buffer.from(await pagina.evaluate(desenhar, { ...sprite, ampliar: 4 }), 'base64'));
     const png = Buffer.from(dados, 'base64');
     const saida = path.join(RAIZ, 'gerador', 'saida', `${sprite.tipo}.png`);
     const receita = path.join(RAIZ, 'gerador', 'projetos', `${sprite.tipo}.json`);
