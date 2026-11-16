@@ -4,7 +4,7 @@ Estado do projeto para retomar numa conversa nova. O que é regra fixa e como o 
 
 ## Para o usuário fazer
 
-- Sprites por código, desenhadas pelo navegador sem .png (`shared/desenho.js`, receitas por `ferramentas/criar-sprites-codigo.js`): aventureiro, aventureira, lobo-cinzento, caixote, barril, poste. O usuário quer personagens, criaturas e objetos feitos assim, com bastante detalhe (referência: personagem estilo Hades), sempre na câmera do Tibia. Falta: usar no player (hoje `PLAYER_SPRITES` aponta pras folhas do Tibia), animação de ataque, mais detalhes/modelos, e decidir a câmera mais perto (zoom do jogo) pra os detalhes aparecerem.
+- Sprites por código, desenhadas pelo navegador sem .png (`shared/desenho.js`, receitas por `ferramentas/criar-sprites-codigo.js`): aventureiro, aventureira, lobo-cinzento, caixote, barril, poste. O usuário quer personagens, criaturas e objetos feitos assim, com bastante detalhe (referência: personagem estilo Hades), sempre na câmera do Tibia. Player já usa o aventureiro/aventureira. Falta: animação de ataque, mais detalhes/modelos, e decidir a câmera mais perto (zoom do jogo) pra os detalhes aparecerem.
 
 - Mapa do vale (`TRANSF/mapa-vale.json`, feito da imagem que o usuário mandou por `ferramentas/criar-mapa-vale.js`): aplicado no servidor oficial pelo `TRANSF/aplicar-mapa.txt` (o mapa anterior ficou em `/home/opc/dados/backups/map-antes-<hash>.json`, e o usuário tem backup próprio). Falta: NPCs, criaturas, templo, interior das casas, escadas/andares, e as portas nas muralhas onde os caminhos passam.
 

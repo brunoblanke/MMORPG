@@ -18,8 +18,8 @@ setAssets([
   asset('itens/espadas/sword', 'objetos'),
   asset('criaturas/teste/rato', 'criaturas'),
   asset('criaturas/teste/dragao', 'criaturas'),
-  asset('personagens/players/player-masculino', 'criaturas'),
-  asset('personagens/players/player-feminino', 'criaturas')
+  asset('personagens/players/aventureiro', 'criaturas'),
+  asset('personagens/players/aventureira', 'criaturas')
 ]);
 
 test('a tela de carregamento espera só as folhas que o mapa usa (e as dos players)', () => {
@@ -31,7 +31,7 @@ test('a tela de carregamento espera só as folhas que o mapa usa (e as dos playe
   assert.deepEqual(urls, [
     '/criaturas/teste/rato.png', '/decoracao/iluminacao/poste-aceso.png', '/decoracao/iluminacao/poste.png',
     '/estrutura/pisos/areia.png', '/estrutura/pisos/grama.png',
-    '/personagens/players/player-feminino.png', '/personagens/players/player-masculino.png'
+    '/personagens/players/aventureira.png', '/personagens/players/aventureiro.png'
   ]);
   assert.ok(!urls.includes('/itens/espadas/sword.png'), 'item fora do mapa carrega quando aparecer');
   assert.ok(!urls.includes('/criaturas/teste/dragao.png'));
