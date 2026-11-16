@@ -320,7 +320,7 @@ function listarProjetos(req, res) {
       const atualizado = fs.statSync(path.join(pasta, arquivo)).mtimeMs;
       const receita = JSON.parse(fs.readFileSync(path.join(pasta, arquivo), 'utf8'));
       const quadro = (receita.formato && receita.formato.quadro) || 32;
-      const temFolha = fs.existsSync(path.join(PASTA_SAIDA, `${relativa}/${info.nome}.png`));
+      const temFolha = !!receita.desenho || fs.existsSync(path.join(PASTA_SAIDA, `${relativa}/${info.nome}.png`));
       projetos.push({ caminho: `${relativa}/${info.nome}`, ...info, quadro, atualizado, temFolha, conjunto: !!receita.conjunto });
     }
   };

@@ -34,10 +34,12 @@ export function pickFrameRect(directions, frameWidth, frameHeight, totalFrames, 
   };
 }
 
-// origin: onde a grade de quadros começa na imagem (peça de uma folha maior).
+// origin: onde a grade de quadros começa na imagem (peça de uma folha maior). scale: a imagem é scale vezes maior
+// que o tamanho do jogo (folha desenhada por código, nítida): os retângulos saem em pixels da imagem (sx, sy, sw, sh)
+// com o tamanho de desenhar na tela em dw e dh.
 
 export class SpriteSheet {
-  constructor(imageSrc, frameWidth, frameHeight, totalFrames, directions, origin = { x: 0, y: 0 }) {
+  constructor(imageSrc, frameWidth, frameHeight, totalFrames, directions, origin = { x: 0, y: 0 }, scale = 1) {
     this.image = new Image();
     this.image.src = imageSrc;
     this.frameWidth = frameWidth;
@@ -45,6 +47,16 @@ export class SpriteSheet {
     this.totalFrames = totalFrames;
     this.directions = directions;
     this.origin = origin;
+    this.scale = scale;
+  }
+
+  // ================================================================================================================================================================================================================================================
+  // scaled
+  // O retângulo (em tamanho do jogo) nos pixels da imagem, com dw e dh.
+
+  scaled(rect) {
+    const k = this.scale || 1;
+    return k === 1 ? rect : { ...rect, sx: rect.sx * k, sy: rect.sy * k, sw: rect.sw * k, sh: rect.sh * k, dw: rect.sw, dh: rect.sh };
   }
 
   // ================================================================================================================================================================================================================================================
@@ -52,7 +64,7 @@ export class SpriteSheet {
 
   getFrameRect(direction, timestamp, durationPerFrame) {
     const rect = pickFrameRect(this.directions, this.frameWidth, this.frameHeight, this.totalFrames, direction, timestamp, durationPerFrame);
-    return { ...rect, sx: rect.sx + this.origin.x, sy: rect.sy + this.origin.y };
+    return this.scaled({ ...rect, sx: rect.sx + this.origin.x, sy: rect.sy + this.origin.y });
   }
 
   // ================================================================================================================================================================================================================================================
@@ -68,7 +80,7 @@ export class SpriteSheet {
     const duration = (durationPerFrame || 100) * Math.min(1, WALK_BASE_FRAMES / walkFrames);
     const frameIndex = 1 + Math.floor((timestamp % (walkFrames * duration)) / duration);
     const idle = this.getIdleRect(direction);
-    return { ...idle, sx: idle.sx + frameIndex * this.frameWidth };
+    return { ...idle, sx: idle.sx + frameIndex * this.frameWidth * (this.scale || 1) };
   }
 
   // ================================================================================================================================================================================================================================================
@@ -79,11 +91,11 @@ export class SpriteSheet {
     if (dirIndex === -1) {
       return this.getIdleRect(this.directions[0]);
     }
-    return {
+    return this.scaled({
       sx: this.origin.x,
       sy: this.origin.y + dirIndex * this.frameHeight,
       sw: this.frameWidth,
       sh: this.frameHeight
-    };
+    });
   }
 }

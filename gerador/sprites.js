@@ -5,7 +5,8 @@ const path = require('path');
 
 // ================================================================================================================================================================================================================================================
 // lerSprites
-// Lista das folhas (o que /api/sprites devolve).
+// Lista das folhas (o que /api/sprites devolve). Receita com "desenho" entra sem .png: o navegador desenha a folha
+// em código (shared/desenho.js).
 
 function lerSprites(raiz = path.join(__dirname, '..'), { todas = false } = {}) {
   const PASTA_PROJETOS = path.join(raiz, 'gerador', 'projetos');
@@ -21,8 +22,8 @@ function lerSprites(raiz = path.join(__dirname, '..'), { todas = false } = {}) {
         if (!fs.existsSync(dir)) continue;
         for (const arquivo of fs.readdirSync(dir).filter(nome => nome.endsWith('.json')).sort()) {
           const nome = arquivo.slice(0, -5);
-          if (!todas && !fs.existsSync(path.join(PASTA_SAIDA, relativa, `${nome}.png`))) continue;
           const receita = JSON.parse(fs.readFileSync(path.join(dir, arquivo), 'utf8'));
+          if (!todas && !receita.desenho && !fs.existsSync(path.join(PASTA_SAIDA, relativa, `${nome}.png`))) continue;
           sprites.push(descreverSprite(`${relativa}/${nome}`, grupo, pasta, nome, receita));
         }
       }
@@ -63,7 +64,8 @@ function descreverSprite(id, grupo, pasta, nome, receita) {
     ordem: formato.pecas || null,
     pecas: Object.keys(receita.pecas || receita.slots || {}),
     propriedades: receita.propriedades || null,
-    cadaver: !!(receita.cadaver && Object.keys(receita.cadaver).length)
+    cadaver: !!(receita.cadaver && Object.keys(receita.cadaver).length),
+    desenho: receita.desenho && typeof receita.desenho === 'object' ? receita.desenho : null
   };
 }
 

@@ -234,16 +234,21 @@ export class Renderer {
   // ================================================================================================================================================================================
   // drawAnchoredSprite
   // Desenha o frame alinhado ao canto inferior direito do tile (sprites maiores que o tile crescem pra cima/esquerda).
+  // Folha desenhada por código (frameRect.dw): a imagem é maior e entra reduzida, com suavização.
 
   drawAnchoredSprite(image, frameRect, base, size, stackOffsetX, stackOffsetY, tint = null, outline = null) {
-    const drawX = Math.round(base.x + size - frameRect.sw - stackOffsetX);
-    const drawY = Math.round(base.y + size - frameRect.sh - stackOffsetY);
+    const width = frameRect.dw || frameRect.sw;
+    const height = frameRect.dh || frameRect.sh;
+    const drawX = Math.round(base.x + size - width - stackOffsetX);
+    const drawY = Math.round(base.y + size - height - stackOffsetY);
     if (outline) this.drawOutline(image, frameRect, drawX, drawY, outline);
+    if (frameRect.dw) this.ctx.imageSmoothingEnabled = true;
     this.ctx.drawImage(
       image,
       frameRect.sx, frameRect.sy, frameRect.sw, frameRect.sh,
-      drawX, drawY, frameRect.sw, frameRect.sh
+      drawX, drawY, width, height
     );
+    if (frameRect.dw) this.ctx.imageSmoothingEnabled = false;
     if (tint) this.drawTint(image, frameRect, drawX, drawY, tint);
   }
 
@@ -275,7 +280,7 @@ export class Renderer {
     const canvas = this.silhouette(image, frameRect, tint.color);
     this.ctx.save();
     this.ctx.globalAlpha = tint.alpha;
-    this.ctx.drawImage(canvas, drawX, drawY);
+    this.ctx.drawImage(canvas, drawX, drawY, frameRect.dw || frameRect.sw, frameRect.dh || frameRect.sh);
     this.ctx.restore();
   }
 
@@ -286,7 +291,7 @@ export class Renderer {
 
   drawOutline(image, frameRect, drawX, drawY, color) {
     const canvas = this.silhouette(image, frameRect, color);
-    for (const [ox, oy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) this.ctx.drawImage(canvas, drawX + ox, drawY + oy);
+    for (const [ox, oy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) this.ctx.drawImage(canvas, drawX + ox, drawY + oy, frameRect.dw || frameRect.sw, frameRect.dh || frameRect.sh);
   }
 
   // ================================================================================================================================================================================
@@ -433,12 +438,12 @@ export class Renderer {
         const asset = getAsset(splitType(type).asset);
         if (entity.isSplash) {
           const rect = sheet.getIdleRect('idle');
-          return { image: sheet.image, frameRect: { ...rect, sx: rect.sx + Math.min(entity.stage || 0, sheet.totalFrames - 1) * sheet.frameWidth } };
+          return { image: sheet.image, frameRect: { ...rect, sx: rect.sx + Math.min(entity.stage || 0, sheet.totalFrames - 1) * sheet.frameWidth * (sheet.scale || 1) } };
         }
         if (asset && asset.pilha) {
           const rect = sheet.getIdleRect('idle');
           const frame = Math.min(stackFrame(entity.count || (entity.itemData && entity.itemData.count) || 1), sheet.totalFrames - 1);
-          return { image: sheet.image, frameRect: { ...rect, sx: rect.sx + frame * sheet.frameWidth } };
+          return { image: sheet.image, frameRect: { ...rect, sx: rect.sx + frame * sheet.frameWidth * (sheet.scale || 1) } };
         }
         const duration = sheet._frameDuration || 1000 / sheet.totalFrames || 50;
         return { image: sheet.image, frameRect: sheet.getFrameRect('idle', this.frameTimestamp, duration) };

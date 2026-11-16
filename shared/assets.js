@@ -7,6 +7,7 @@
 // folha é vem da pasta: pisos, escadas e entradas (buraco) têm regra própria.
 // A lista das folhas (setAssets) vem do servidor, em /api/sprites.
 
+import { desenharFolha } from './desenho.js';
 import { rareVariantAt, randomIndexAt } from './floor-variants.js';
 
 export const SPRITES_URL = '/api/sprites';
@@ -312,8 +313,27 @@ export async function loadAssets(url = SPRITES_URL) {
   const response = await fetch(url);
   if (!response.ok) throw new Error(`Falha ao carregar os sprites (${response.status})`);
   const data = await response.json();
+  drawCodeSheets(data.sprites || []);
   setAssets(data.sprites || []);
   return data.sprites || [];
+}
+
+// ================================================================================================================================================================================================================================================
+// drawCodeSheets
+// Sprite com "desenho" (shared/desenho.js) não tem .png: o navegador desenha a folha em código. url = a folha no
+// tamanho do jogo (editor, miniaturas); sharpUrl = a mesma SHARP_SCALE vezes maior, que o jogo desenha reduzida
+// (nítida com zoom e em tela de alta densidade).
+
+export const SHARP_SCALE = 4;
+
+function drawCodeSheets(sprites) {
+  if (typeof document === 'undefined') return;
+  for (const sprite of sprites) {
+    const sheet = sprite.desenho && desenharFolha(sprite.desenho, 1);
+    if (!sheet) continue;
+    sprite.url = sheet.toDataURL();
+    sprite.sharpUrl = desenharFolha(sprite.desenho, SHARP_SCALE).toDataURL();
+  }
 }
 
 // ================================================================================================================================================================================================================================================
@@ -709,5 +729,5 @@ export function spriteFrame(type) {
     return { url: asset.url, x: (index % 4) * size, y: Math.floor(index / 4) * size, size, frames: 1, ms: 0 };
   }
   const row = Math.max(0, objectDirections(assetId).indexOf(objectDirection(type)));
-  return { url: asset.url, x: 0, y: row * size, size, frames: asset.quadros || 1, ms: 0 };
+  return { url: asset.url, ...(asset.sharpUrl ? { sharpUrl: asset.sharpUrl } : {}), x: 0, y: row * size, size, frames: asset.quadros || 1, ms: 0 };
 }

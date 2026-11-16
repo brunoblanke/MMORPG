@@ -4,7 +4,7 @@ import { CONFIG } from '../config.js';
 import { SpriteSheet } from '../../shared/sprite-sheet.js';
 import { PLAYER_SPRITES, DEFAULT_GENDER } from '../../shared/catalog.js';
 import { ANIMATION_CYCLE_MS } from '../../shared/constants.js';
-import { getAsset, objectIdType, spriteFrame, listAssets, splitType, activeAs } from '../../shared/assets.js';
+import { getAsset, objectIdType, spriteFrame, listAssets, splitType, activeAs, SHARP_SCALE } from '../../shared/assets.js';
 import { currentCreatureType } from '../../shared/map-format.js';
 import { BORDER_PREFIX } from '../../shared/floor-borders.js';
 
@@ -67,7 +67,7 @@ export class SpriteRegistry {
     const frame = spriteFrame(type);
     let sheet = null;
     if (frame) {
-      sheet = new SpriteSheet(frame.url, frame.size, frame.size, frame.frames, ['idle'], { x: frame.x, y: frame.y });
+      sheet = new SpriteSheet(frame.sharpUrl || frame.url, frame.size, frame.size, frame.frames, ['idle'], { x: frame.x, y: frame.y }, frame.sharpUrl ? SHARP_SCALE : 1);
       if (frame.frames > 1) sheet._frameDuration = frame.ms || ANIMATION_CYCLE_MS / frame.frames;
     }
     this.objectSpriteSheets.set(type, sheet);
@@ -90,7 +90,7 @@ export class SpriteRegistry {
   getEnemySheet(creature) {
     if (this.enemySpritesByType.has(creature)) return this.enemySpritesByType.get(creature);
     const asset = getAsset(creature);
-    const sheet = asset ? new SpriteSheet(asset.url, asset.quadro, asset.quadro, asset.quadros, CONFIG.playerSpriteDirections) : null;
+    const sheet = asset ? new SpriteSheet(asset.sharpUrl || asset.url, asset.quadro, asset.quadro, asset.quadros, CONFIG.playerSpriteDirections, { x: 0, y: 0 }, asset.sharpUrl ? SHARP_SCALE : 1) : null;
     this.enemySpritesByType.set(creature, sheet);
     return sheet;
   }
@@ -106,7 +106,7 @@ export class SpriteRegistry {
     const asset = getAsset(creature);
     const frames = CONFIG.corpseFrameCount || 3;
     const sheet = asset && asset.cadaver
-      ? new SpriteSheet(asset.url, asset.quadro, asset.quadro, frames, ['idle'], { x: 0, y: CORPSE_ROW * asset.quadro })
+      ? new SpriteSheet(asset.sharpUrl || asset.url, asset.quadro, asset.quadro, frames, ['idle'], { x: 0, y: CORPSE_ROW * asset.quadro }, asset.sharpUrl ? SHARP_SCALE : 1)
       : null;
     this.corpseSpritesByType.set(creature, sheet);
     return sheet;

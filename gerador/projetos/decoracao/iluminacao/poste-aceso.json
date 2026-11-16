@@ -4,7 +4,8 @@
     "quadros": 1
   },
   "desenho": {
-    "modelo": "poste"
+    "modelo": "poste",
+    "argumento": true
   },
   "propriedades": {
     "bloqueia": true,

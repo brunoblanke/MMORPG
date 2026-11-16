@@ -1,10 +1,11 @@
-// ferramentas/desenho/modelos.js
+// shared/desenho.js
 
-// Sprites desenhadas por código, em vetor (Canvas 2D), na câmera do Tibia: o chão é visto de cima (x pra leste, y pra
+// Sprites desenhadas por código pelo próprio navegador, em vetor (Canvas 2D), sem arquivo de imagem, na câmera do Tibia: o chão é visto de cima (x pra leste, y pra
 // sul) e a altura z "deita" na diagonal, pra cima e pra esquerda (CAMERA px por unidade de altura), então a cabeça de
 // quem está em pé fica em cima à esquerda dos pés. Cada modelo é um esqueleto 3D (juntas x, y, z) com poses por fase
 // (0 parado, 1 a 8 um passo completo); as partes são cápsulas e bolas com contorno, pintadas das mais ao fundo pras
-// mais à frente. Roda no navegador (ferramentas/desenhar-sprites.js abre a página e grava os PNG).
+// mais à frente. A receita do gerador com "desenho" ({ modelo, visual, argumento }) não tem .png: o jogo e o editor
+// chamam desenharFolha ao carregar as folhas (shared/assets.js), no tamanho do jogo e num maior pra tela nítida.
 
 const CAMERA = 0.74;
 const CONTORNO = '#1c1612';
@@ -218,26 +219,40 @@ function caido(forma, estagio, visual) {
 // ================================================================================================================================================================================================================================================
 // folhaDeCriatura
 // A folha do jogo: 9 quadros de 64 px por direção (sul, norte, leste, oeste) e a linha do cadáver (fresco,
-// apodrecendo, ossos). modelo: humano ou lobo. Desenha NITIDEZ vezes maior e reduz (traço mais limpo); ampliar > 1
-// devolve a folha maior que a do jogo (prévia de como fica com zoom).
+// apodrecendo, ossos), escala vezes maior. modelo: humano ou lobo. Desenha pelo menos NITIDEZ vezes maior e reduz
+// (traço mais limpo).
 
-function folhaDeCriatura(modelo, visual, ampliar = 1) {
+function folhaDeCriatura(modelo, visual, escala = 1) {
+  const nitidez = Math.max(NITIDEZ, escala);
   const grande = document.createElement('canvas');
-  grande.width = 64 * 9 * NITIDEZ;
-  grande.height = 64 * 5 * NITIDEZ;
+  grande.width = 64 * 9 * nitidez;
+  grande.height = 64 * 5 * nitidez;
   const ctx = grande.getContext('2d');
-  ctx.scale(NITIDEZ, NITIDEZ);
+  ctx.scale(nitidez, nitidez);
   Object.keys(DIRECOES).forEach((direcao, linha) => {
     for (let fase = 0; fase < 9; fase++) pintar(ctx, [fase * 64 + 52, linha * 64 + 54], modelo(direcao, fase, visual));
   });
   for (let estagio = 0; estagio < 3; estagio++) pintar(ctx, [estagio * 64 + 46, 4 * 64 + 50], caido(modelo === lobo ? 'lobo' : 'humano', estagio, visual));
+  if (nitidez === escala) return grande;
   const canvas = document.createElement('canvas');
-  canvas.width = 64 * 9 * ampliar;
-  canvas.height = 64 * 5 * ampliar;
+  canvas.width = 64 * 9 * escala;
+  canvas.height = 64 * 5 * escala;
   const saida = canvas.getContext('2d');
   saida.imageSmoothingQuality = 'high';
   saida.drawImage(grande, 0, 0, canvas.width, canvas.height);
   return canvas;
+}
+
+// ================================================================================================================================================================================================================================================
+// telaDe
+// Canvas quadrado de lado × escala px, já na escala: [canvas, ctx].
+
+function telaDe(lado, escala) {
+  const canvas = document.createElement('canvas');
+  canvas.width = canvas.height = lado * escala;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(escala, escala);
+  return [canvas, ctx];
 }
 
 // ================================================================================================================================================================================================================================================
@@ -287,10 +302,8 @@ function risco(ctx, origem, a, b, cor, largura = 1) {
 // caixote
 // Caixa de madeira (32 px) com tábuas e travessa em X na frente.
 
-function caixote() {
-  const canvas = document.createElement('canvas');
-  canvas.width = canvas.height = 32;
-  const ctx = canvas.getContext('2d');
+function caixote(escala = 1) {
+  const [canvas, ctx] = telaDe(32, escala);
   const origem = [20, 20];
   const madeira = '#b27e46';
   const veio = misturar(madeira, '#000000', 0.4);
@@ -307,10 +320,8 @@ function caixote() {
 // barril
 // Barril (32 px): no chão visto de cima o círculo continua círculo; o corpo liga o círculo de baixo ao de cima.
 
-function barril() {
-  const canvas = document.createElement('canvas');
-  canvas.width = canvas.height = 32;
-  const ctx = canvas.getContext('2d');
+function barril(escala = 1) {
+  const [canvas, ctx] = telaDe(32, escala);
   const origem = [20, 20];
   const madeira = '#9c663a';
   const raio = (z) => 7.4 + Math.sin(z / 15 * Math.PI) * 1.5;
@@ -343,10 +354,8 @@ function barril() {
 // Poste de luz (64 px): base no sqm de baixo à direita, a haste sobe na diagonal da câmera e a lanterna fica no alto.
 // aceso = a lanterna com luz (o estado ativo).
 
-function poste(aceso) {
-  const canvas = document.createElement('canvas');
-  canvas.width = canvas.height = 64;
-  const ctx = canvas.getContext('2d');
+function poste(escala = 1, aceso = false) {
+  const [canvas, ctx] = telaDe(64, escala);
   const origem = [50, 50];
   const ferro = '#444450';
   caixa(ctx, origem, [-4.5, -4.5, 4.5, 4.5], 0, 2.5, ferro);
@@ -364,4 +373,17 @@ function poste(aceso) {
   caixa(ctx, origem, [-4.8, -4.8, 4.8, 4.8], 46, 47.6, ferro);
   caixa(ctx, origem, [-2.2, -2.2, 2.2, 2.2], 47.6, 50, ferro);
   return canvas;
+}
+
+const CRIATURAS = { humano, lobo };
+const OBJETOS = { caixote, barril, poste };
+
+// ================================================================================================================================================================================================================================================
+// desenharFolha
+// A folha (canvas) do desenho de uma receita, escala vezes maior que o tamanho do jogo; null se o modelo não existe.
+
+export function desenharFolha(desenho, escala = 1) {
+  if (!desenho) return null;
+  if (CRIATURAS[desenho.modelo]) return folhaDeCriatura(CRIATURAS[desenho.modelo], desenho.visual || {}, escala);
+  return OBJETOS[desenho.modelo] ? OBJETOS[desenho.modelo](escala, desenho.argumento) : null;
 }
