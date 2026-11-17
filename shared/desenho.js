@@ -72,7 +72,7 @@ function pontosDoVolume(origem, secoes) {
 // ================================================================================================================================================================================================================================================
 // pintarVolume
 // Volume moldado: o envoltório das seções em cores chapadas, como ilustração vetorial: a cor, a sombra embaixo à
-// direita, um reflexo discreto em cima à esquerda e contorno fino; luz = false tira o reflexo.
+// direita, um reflexo discreto em cima à esquerda; luz = false tira o reflexo e recuo muda a largura da sombra.
 
 function pintarVolume(ctx, origem, parte) {
   const casca = envoltorio(pontosDoVolume(origem, parte.secoes));
@@ -92,7 +92,7 @@ function pintarVolume(ctx, origem, parte) {
   ctx.fillStyle = sombra(parte.cor);
   ctx.fill();
   ctx.clip();
-  const recuo = Math.min(1.3, tamanho * 0.15);
+  const recuo = parte.recuo ?? Math.min(1.3, tamanho * 0.15);
   caminho(-recuo, -recuo);
   ctx.fillStyle = parte.cor;
   ctx.fill();
@@ -500,6 +500,96 @@ function humano(direcao, fase, visual, deitar = null) {
 }
 
 // ================================================================================================================================================================================================================================================
+// mago
+// Figura de manto comprido (monge encapuzado, feiticeiro de chapéu): o manto alarga até a barra, com dobras escuras
+// em ponta, e o resto vem do visual: { pele, tunica, manto (capa aberta por cima, cor), capuz + capinha (capuz pontudo
+// e capinha de barra recortada), simbolo (cruz no peito), chapeu + faixa + fivela, barba (comprida = até a cintura),
+// cajado }. deitar = o cadáver.
+
+function mago(direcao, fase, visual, deitar = null) {
+  const base = eixos(direcao);
+  const P = deitar ? (f, l, z) => deitar(base(f, l, z)) : base;
+  const menos = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+  const anel = (f, l, z, rl, rf) => {
+    const c = P(f, l, z);
+    return { c, a: menos(P(f, l + rl, z), c), b: menos(P(f + rf, l, z), c) };
+  };
+  const bola = (ponto, r) => ({ c: ponto, r });
+  const fora = menos(P(1, 0, 0), P(0, 0, 0));
+  const t = fase ? (fase - 1) / 8 * Math.PI * 2 : 0;
+  const s = fase ? Math.sin(t) : 0;
+  const sobe = fase ? Math.abs(Math.cos(t)) * 0.6 : 0;
+  const escurecer = (cor, f = 0.28) => misturar(cor, '#000000', f);
+  const deFrente = !deitar && (direcao === 'sul' || direcao === 'leste');
+  const partes = [];
+  const placa = (pontos, cor, frente) => partes.push({ placa: pontos.map(([f, l, z]) => P(f, l, z)), cor, fora, frente });
+  const zz = (z) => z + sobe;
+  partes.push({ secoes: [anel(s * 0.6, 0, 0.4, 5.4, 4.4), anel(0, 0, zz(13), 4, 2.9), anel(0, 0, zz(20.6), 4.5, 2.8), anel(0, 0, zz(22.6), 2.8, 2.1)], cor: visual.tunica, recuo: 2.4 });
+  for (const [l, alto] of [[-2.6, 9], [0.4, 12], [2.9, 7.5]]) placa([[4.5, l - 1.1, 0.6], [4.5, l + 1.1, 0.6], [3.4, l + 0.2, alto]], escurecer(visual.tunica, 0.22), 0.6);
+  if (visual.cinto) partes.push({ secoes: [anel(0, 0, zz(11.6), 4.15, 3.05), anel(0, 0, zz(12.6), 4.1, 3)], cor: visual.cinto, luz: false, frente: 0.8 });
+  if (visual.manto) {
+    for (const lado of [-1, 1]) {
+      partes.push({ secoes: [anel(-0.6 + s * 0.4, lado * 3.4, 0.2, 2.6, 4.2), anel(-0.6, lado * 2.9, zz(21), 2.2, 2.8), anel(-0.4, lado * 2.4, zz(24.4), 1.4, 2.2)], cor: lado > 0 ? visual.manto : escurecer(visual.manto, 0.12), recuo: 2, frente: 0.9 });
+    }
+  }
+  if (visual.capinha) {
+    partes.push({ secoes: [anel(0, 0, zz(14), 5.7, 4), anel(0, 0, zz(21.6), 5, 3.1), anel(0, 0, zz(24.8), 3, 2.6)], cor: visual.capinha, recuo: 1.8, frente: 1 });
+    for (let l = -4.5; l <= 4.6; l += 1.5) placa([[4.05, l - 0.85, zz(14.6)], [4.05, l + 0.85, zz(14.6)], [4, l + 0.15, zz(11.8 + (Math.abs(l * 7) % 3) * 0.4)]], visual.capinha, 1.1);
+  }
+  if (visual.simbolo && !deitar) {
+    placa([[4, -0.45, zz(21)], [4, 0.45, zz(21)], [4, 0.45, zz(16.4)], [4, -0.45, zz(16.4)]], visual.simbolo, 1.6);
+    placa([[4, -1.7, zz(19.6)], [4, 1.7, zz(19.6)], [4, 1.7, zz(18.8)], [4, -1.7, zz(18.8)]], visual.simbolo, 1.6);
+  }
+  const z = zz(26.6);
+  if (visual.capuz) {
+    partes.push({ secoes: [bola(P(0, 0, z + 0.4), 4.4), bola(P(-1, 0, z + 4.4), 3), bola(P(-2.6, 0, z + 9.6), 0.5)], cor: visual.capuz, recuo: 1.6, frente: 1.4 });
+    partes.push({ secoes: [{ c: P(2.4, 0, z + 0.2), a: menos(P(2.4, 2.9, z + 0.2), P(2.4, 0, z + 0.2)), b: [0, 0, 3.4] }], cor: escurecer(visual.capuz, 0.6), luz: false, frente: 0.5 });
+  }
+  partes.push({ secoes: [bola(P(1.4, 0, z + 0.6), 2.6), bola(P(1.7, 0, z - 1.2), 2.1)], cor: visual.pele, luz: false, frente: visual.capuz ? 3 : 1.5 });
+  if (visual.capuz && !deitar) partes.push({ secoes: [{ c: P(2.4, 0, z + 3.1), a: menos(P(2.4, 2.8, z + 3.1), P(2.4, 0, z + 3.1)), b: [0, 0, 0.8] }], cor: escurecer(visual.capuz, 0.6), luz: false, frente: 3.2 });
+  if (visual.barba) {
+    const ponta = visual.barbaComprida ? [P(3, 0.4, zz(12.5)), 0.5] : [P(2.9, 0, z - 4.6), 1.1];
+    const [alto, grossa] = visual.barbaComprida ? [1.6, 1] : [2.4, 0.7];
+    partes.push({ secoes: [bola(P(2.3, 0, z - alto), 2.4 * grossa), bola(P(2.7, 0, z - 3.6), 2 * grossa), bola(...ponta)], cor: visual.barba, recuo: 0.8, frente: 3.4 });
+    if (!deitar) partes.push({ a: P(3.6, -1.3, z - 0.4), b: P(3.6, 1.3, z - 0.4), largura: 0.9, cor: escurecer(visual.barba, 0.15), contorno: false, luz: false, frente: 3.6 });
+  }
+  if (!deitar) {
+    for (const lado of [-1, 1]) partes.push({ a: P(3.5, lado * 1.2, z + 1.2), b: P(3.5, lado * 1.2, z + 1.5), largura: visual.capuz ? 0.6 : 0.9, cor: '#1c1a22', contorno: false, luz: false, frente: 3.7 });
+    if (!visual.capuz) partes.push({ secoes: [bola(P(3.4, 0.2, z + 0.3), 0.85), bola(P(3.9, 0.3, z - 0.5), 0.6)], cor: escurecer(visual.pele, 0.08), luz: false, frente: 3.8 });
+  }
+  if (visual.chapeu) {
+    const centro = P(0.2, 0, 0);
+    const faixa = (z0, z1, r0, r1) => {
+      const volta = (zz, r, de, ate) => Array.from({ length: 13 }, (_, i) => {
+        const a = (de + (ate - de) * i / 12) * Math.PI / 180;
+        return [centro[0] + Math.cos(a) * r, centro[1] + Math.sin(a) * r, zz];
+      });
+      return [...volta(z0, r0, -45, 135), ...volta(z1, r1, 135, -45)];
+    };
+    const camadas = [
+      { secoes: [anel(0.4, 0, z + 3.8, 6.6, 4.8), anel(0.4, 0, z + 4.3, 6.3, 4.5)], cor: escurecer(visual.chapeu, 0.1), luz: false },
+      { secoes: [anel(0.2, 0, z + 4, 3.4, 3.4), bola(P(-0.6, 0, z + 8.6), 2), bola(P(-2.8, 0.8, z + 12.4), 0.9), bola(P(-5.2, 1.4, z + 13), 0.35)], cor: visual.chapeu, recuo: 1.2 },
+      { placa: faixa(z + 4.3, z + 6, 3.45, 3.05), cor: visual.faixa }
+    ];
+    if (visual.fivela && !deitar) {
+      camadas.push({ placa: [[3.45, -1.1, z + 6.1], [3.45, 1.1, z + 6.1], [3.45, 1.1, z + 4.2], [3.45, -1.1, z + 4.2]].map(([f, l, zz]) => P(f, l, zz)), cor: visual.fivela, fora });
+      camadas.push({ placa: [[3.5, -0.45, z + 5.5], [3.5, 0.45, z + 5.5], [3.5, 0.45, z + 4.8], [3.5, -0.45, z + 4.8]].map(([f, l, zz]) => P(f, l, zz)), cor: visual.faixa, fora });
+    }
+    partes.push({ camadas, frente: 4 });
+  }
+  if (visual.cajado) {
+    const [f, l] = [2.6 + s * 0.8, 5.6];
+    partes.push({ camadas: [
+      { a: P(f, l, 0.2), b: P(f, l, z + 4), largura: 1, cor: visual.cajado, contorno: false },
+      { a: P(f, l, z + 4), b: P(f, l + 2.6, z + 4.4), largura: 1, cor: visual.cajado, contorno: false },
+      { a: P(f, l + 2.6, z + 4.4), b: P(f, l + 2.8, z + 2.6), largura: 0.9, cor: visual.cajado, contorno: false },
+      { secoes: [bola(P(f - 0.2, l - 0.4, zz(18.4)), 1.3), bola(P(f - 0.2, l - 0.4, zz(16.8)), 1.2)], cor: visual.pele, luz: false }
+    ], frente: deFrente ? 30 : 0 });
+  }
+  return partes;
+}
+
+// ================================================================================================================================================================================================================================================
 // guerreiro
 // Cavaleiro de armadura de placas em sólidos facetados (estilo ilustração chapada): elmo-balde com chifres e fenda em
 // cruz, ombreiras, peitoral, saiote de placas, joelheiras, grevas e sapatos de ferro, escudo pipa e espada de pé.
@@ -631,7 +721,7 @@ function lobo(direcao, fase, visual) {
 // ================================================================================================================================================================================================================================================
 // caido
 // Corpo no chão (cadáver): estagio 0 fresco, 1 apodrecendo (cores puxadas pro verde escuro), 2 só os ossos.
-// forma: 'humano', 'guerreiro' ou 'lobo'.
+// forma: 'humano', 'guerreiro', 'mago' ou 'lobo'.
 
 function caido(forma, estagio, visual) {
   const podre = (cor) => estagio === 1 ? misturar(cor, '#3f4a2a', 0.6) : cor;
@@ -649,6 +739,11 @@ function caido(forma, estagio, visual) {
     partes.push({ a: [-9.6, -0.6, 3.4], largura: 6.6, cor: podre(visual.pelo) }, { a: [-12, -0.8, 2.6], b: [-14.4, -1, 2.4], largura: 3, cor: podre(visual.pelo) });
     partes.push({ a: [7, 0, 3], b: [12.5, -1.6, 2], largura: 2.8, cor: podre(visual.pelo) });
     for (const x of [-4.6, -1.8, 3, 5.6]) partes.push({ a: [x, 2.4, 2.4], b: [x + 1.4, 7.4, 1.4], largura: 2.5, cor: podre(misturar(visual.pelo, '#000000', 0.2)) });
+    return partes;
+  }
+  if (forma === 'mago') {
+    const visualCaido = Object.fromEntries(Object.entries(visual).map(([k, v]) => [k, typeof v === 'string' ? podre(v) : v]));
+    partes.push(...mago('leste', 0, visualCaido, ([x, y, zz]) => [12 - zz * 0.8, y, 2.4 + x * 0.55]));
     return partes;
   }
   if (forma === 'guerreiro') {
@@ -685,7 +780,7 @@ function folhaDeCriatura(modelo, visual, escala = 1) {
   Object.keys(DIRECOES).forEach((direcao, linha) => {
     for (let fase = 0; fase < 9; fase++) quadro(fase * 64, linha * 64, modelo(direcao, fase, visual), [52, 54]);
   });
-  for (let estagio = 0; estagio < 3; estagio++) quadro(estagio * 64, 4 * 64, caido(modelo === lobo ? 'lobo' : modelo === guerreiro ? 'guerreiro' : 'humano', estagio, visual), [46, 50]);
+  for (let estagio = 0; estagio < 3; estagio++) quadro(estagio * 64, 4 * 64, caido(modelo === lobo ? 'lobo' : modelo === guerreiro ? 'guerreiro' : modelo === mago ? 'mago' : 'humano', estagio, visual), [46, 50]);
   if (nitidez === escala) return grande;
   const canvas = document.createElement('canvas');
   canvas.width = 64 * 9 * escala;
@@ -1020,7 +1115,7 @@ function parede(escala = 1) {
   return canvas;
 }
 
-const CRIATURAS = { humano, lobo, guerreiro };
+const CRIATURAS = { humano, lobo, guerreiro, mago };
 const OBJETOS = { caixote, barril, poste, arvore, arbusto, capim, parede };
 
 // ================================================================================================================================================================================================================================================

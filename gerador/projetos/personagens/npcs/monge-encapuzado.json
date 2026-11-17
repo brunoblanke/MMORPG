@@ -1,0 +1,86 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "desenho": {
+    "modelo": "mago",
+    "visual": {
+      "pele": "#efb894",
+      "tunica": "#4f3e3a",
+      "capuz": "#cf3b33",
+      "capinha": "#cf3b33",
+      "simbolo": "#f5a01c",
+      "barba": "#4e3329"
+    }
+  },
+  "cadaver": {
+    "fresco": {
+      "desenho": true
+    },
+    "apodrecendo": {
+      "desenho": true
+    },
+    "ossos": {
+      "desenho": true
+    }
+  },
+  "propriedades": {
+    "comportamento": "npc",
+    "conversa": {
+      "boasVindas": "Cuidado com as aranhas por aqui.",
+      "oi": "Saudações, {nome}. Procuro gente corajosa pra caçar: aranhas e trolls.",
+      "tchau": "Boa caçada, {nome}.",
+      "raio": 2,
+      "topicos": [
+        {
+          "palavras": "missao, missoes, tarefa, ajuda, caca, cacada",
+          "resposta": "Tenho duas missões: aranhas e trolls. Diga o nome de uma."
+        }
+      ],
+      "vende": [],
+      "compra": [],
+      "missoes": [
+        {
+          "nome": "Aranhas",
+          "palavras": "aranha, aranhas",
+          "tipo": "matar",
+          "alvo": "criaturas/vermes/spider",
+          "quantidade": 10,
+          "pedido": "As aranhas estão por toda parte. Mata 10 delas? (sim / não)",
+          "recompensa": {
+            "tipo": "itens/distancia/spear",
+            "count": 5
+          },
+          "xp": 400,
+          "moedas": 0
+        },
+        {
+          "nome": "Trolls",
+          "palavras": "troll, trolls",
+          "tipo": "matar",
+          "alvo": "criaturas/humanoides/troll",
+          "quantidade": 5,
+          "pedido": "Os trolls atacam quem passa na estrada. Derrota 5? (sim / não)",
+          "recompensa": {
+            "tipo": "itens/escudos/studded-shield",
+            "count": 1
+          },
+          "xp": 600,
+          "moedas": 100
+        }
+      ]
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "personagens",
+  "pasta": "npcs",
+  "nome": "monge-encapuzado"
+}
