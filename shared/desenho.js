@@ -119,6 +119,104 @@ function luz(cor) {
 }
 
 // ================================================================================================================================================================================================================================================
+// VISTA / LUZ
+// Sólido facetado: anéis (polígonos 3D com o mesmo número de pontos) ligados em faces, mais as duas tampas. VISTA =
+// a direção da câmera (face com normal pra ela aparece), LUZ = de onde vem a luz.
+
+const VISTA = [CAMERA, CAMERA, 1];
+const LUZ = (() => {
+  const l = [-0.55, 0.3, 1];
+  const n = Math.hypot(...l);
+  return l.map(v => v / n);
+})();
+
+// ================================================================================================================================================================================================================================================
+// normalDe
+// Normal unitária de um polígono 3D (método de Newell).
+
+function normalDe(pontos) {
+  let n = [0, 0, 0];
+  for (let i = 0; i < pontos.length; i++) {
+    const p = pontos[i];
+    const q = pontos[(i + 1) % pontos.length];
+    n = [n[0] + (p[1] - q[1]) * (p[2] + q[2]), n[1] + (p[2] - q[2]) * (p[0] + q[0]), n[2] + (p[0] - q[0]) * (p[1] + q[1])];
+  }
+  const tamanho = Math.hypot(...n) || 1;
+  return n.map(v => v / tamanho);
+}
+
+// ================================================================================================================================================================================================================================================
+// facetas
+// As faces do sólido de anéis, cada uma com a normal virada pra fora.
+
+function facetas(aneis) {
+  const todos = aneis.flat();
+  const meio = [0, 1, 2].map(i => todos.reduce((soma, p) => soma + p[i], 0) / todos.length);
+  const faces = [aneis[0], aneis[aneis.length - 1]];
+  for (let k = 0; k < aneis.length - 1; k++) {
+    const n = aneis[k].length;
+    for (let i = 0; i < n; i++) faces.push([aneis[k][i], aneis[k][(i + 1) % n], aneis[k + 1][(i + 1) % n], aneis[k + 1][i]]);
+  }
+  return faces.map(face => {
+    let normal = normalDe(face);
+    const centro = [0, 1, 2].map(i => face.reduce((soma, p) => soma + p[i], 0) / face.length);
+    if (normal.reduce((soma, v, i) => soma + v * (centro[i] - meio[i]), 0) < 0) normal = normal.map(v => -v);
+    return { face, normal };
+  });
+}
+
+// ================================================================================================================================================================================================================================================
+// tomDaFace
+// A cor chapada de uma face pela direção dela: virada pra luz (em cima à esquerda) clareia, de costas escurece.
+
+function tomDaFace(cor, normal) {
+  const luz = normal.reduce((soma, v, i) => soma + v * LUZ[i], 0);
+  if (luz > 0.6) return misturar(cor, '#fff4e0', 0.2);
+  if (luz > -0.05) return cor;
+  return sombra(cor);
+}
+
+// ================================================================================================================================================================================================================================================
+// pintarSolido
+// Pinta só as faces viradas pra câmera, cada uma numa cor chapada (tomDaFace), com um traço da mesma cor pra fechar
+// as emendas.
+
+function pintarSolido(ctx, origem, parte) {
+  const visiveis = facetas(parte.solido).filter(({ normal }) => normal.reduce((soma, v, i) => soma + v * VISTA[i], 0) > 0.001);
+  visiveis.sort((a, b) => a.normal.reduce((s, v, i) => s + v * VISTA[i], 0) - b.normal.reduce((s, v, i) => s + v * VISTA[i], 0));
+  ctx.save();
+  ctx.lineJoin = 'round';
+  for (const { face, normal } of visiveis) {
+    const cor = parte.chapado ? parte.cor : tomDaFace(parte.cor, normal);
+    ctx.beginPath();
+    face.map(p => projetar(origem, p)).forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)));
+    ctx.closePath();
+    ctx.fillStyle = cor;
+    ctx.fill();
+    ctx.lineWidth = 0.35;
+    ctx.strokeStyle = cor;
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+// ================================================================================================================================================================================================================================================
+// pintarPlaca
+// Polígono 3D chapado (fenda do elmo, brasão, metade do escudo): só aparece com o lado parte.fora virado pra câmera.
+
+function pintarPlaca(ctx, origem, parte) {
+  if (parte.fora && parte.fora.reduce((soma, v, i) => soma + v * VISTA[i], 0) <= 0.001) return;
+  ctx.beginPath();
+  parte.placa.map(p => projetar(origem, p)).forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)));
+  ctx.closePath();
+  ctx.fillStyle = parte.cor;
+  ctx.fill();
+  ctx.lineWidth = 0.3;
+  ctx.strokeStyle = parte.cor;
+  ctx.stroke();
+}
+
+// ================================================================================================================================================================================================================================================
 // pintar
 // Pinta as partes na ordem da câmera (as mais ao norte/oeste e mais baixas primeiro). Parte: grupo { camadas }
 // (pintarParte), volume { secoes, cor }
@@ -128,8 +226,8 @@ function luz(cor) {
 function pintar(ctx, origem, partes) {
   const centro = (parte) => {
     if (parte.camadas) return centro(parte.camadas[parte.camadas.length - 1]);
-    if (parte.secoes) {
-      const cs = parte.secoes.map(s => s.c);
+    if (parte.secoes || parte.solido || parte.placa) {
+      const cs = parte.secoes ? parte.secoes.map(s => s.c) : parte.solido ? parte.solido.flat() : parte.placa;
       return [0, 1, 2].map(i => cs.reduce((soma, c) => soma + c[i], 0) / cs.length);
     }
     return parte.b ? [0, 1, 2].map(i => (parte.a[i] + parte.b[i]) / 2) : parte.a;
@@ -155,6 +253,14 @@ function pintarParte(ctx, origem, parte) {
   {
     if (parte.secoes) {
       pintarVolume(ctx, origem, parte);
+      return;
+    }
+    if (parte.solido) {
+      pintarSolido(ctx, origem, parte);
+      return;
+    }
+    if (parte.placa) {
+      pintarPlaca(ctx, origem, parte);
       return;
     }
     const a = projetar(origem, parte.a);
@@ -394,6 +500,92 @@ function humano(direcao, fase, visual, deitar = null) {
 }
 
 // ================================================================================================================================================================================================================================================
+// guerreiro
+// Cavaleiro de armadura de placas em sólidos facetados (estilo ilustração chapada): elmo-balde com chifres e fenda em
+// cruz, ombreiras, peitoral, saiote de placas, joelheiras, grevas e sapatos de ferro, escudo pipa e espada de pé.
+// visual: { metal, escuro, fenda, escudo, escudoBorda, brasao, lamina, guarda, cabo }. deitar = o cadáver.
+
+function guerreiro(direcao, fase, visual, deitar = null) {
+  const base = eixos(direcao);
+  const P = deitar ? (f, l, z) => deitar(base(f, l, z)) : base;
+  const dir = (f, l, z) => {
+    const a = P(0, 0, 0);
+    const b = P(f, l, z);
+    return [b[0] - a[0], b[1] - a[1], b[2] - a[2]];
+  };
+  const anel = (f, l, z, w, d, c = Math.min(w, d) * 0.45) => [[d, -w + c], [d, w - c], [d - c, w], [-d + c, w], [-d, w - c], [-d, -w + c], [-d + c, -w], [d - c, -w]].map(([df, dl]) => P(f + df, l + dl, z));
+  const t = fase ? (fase - 1) / 8 * Math.PI * 2 : 0;
+  const s = fase ? Math.sin(t) : 0;
+  const sobe = fase ? Math.abs(Math.cos(t)) * 0.8 : 0;
+  const metal = visual.metal;
+  const claro = misturar(metal, '#ffffff', 0.18);
+  const escuro = visual.escuro;
+  const partes = [];
+  const solido = (aneis, cor, frente = 0) => partes.push({ solido: aneis, cor, frente });
+  const perna = (lado, passo) => {
+    const ergue = Math.max(0, passo) * 2;
+    const l = lado * 2.1;
+    const joelho = [passo * 2.4 + 0.7, 7.4 + ergue * 0.6 + sobe * 0.5];
+    const tornozelo = [passo * 4.2, 2 + ergue];
+    solido([anel(0, l, 13.4 + sobe, 2.2, 2.4), anel(joelho[0], l, joelho[1] + 1, 1.8, 2)], metal);
+    solido([anel(joelho[0], l, joelho[1] + 0.2, 1.7, 1.9), anel(tornozelo[0], l, tornozelo[1] + 0.6, 1.5, 1.7)], metal);
+    solido([anel(joelho[0] + 0.5, l, joelho[1] - 1, 1.6, 1.4, 0.9), anel(joelho[0] + 0.7, l, joelho[1] + 0.6, 2, 2.2, 1.2), anel(joelho[0] + 0.5, l, joelho[1] + 2, 1.5, 1.4, 0.9)], claro, 0.2);
+    solido([anel(tornozelo[0] + 0.8, l, ergue * 0.9, 1.6, 2.5, 0.8), anel(tornozelo[0] + 0.3, l, tornozelo[1] + 0.4, 1.5, 1.7, 0.7)], escuro, 0.1);
+  };
+  perna(-1, s);
+  perna(1, -s);
+  solido([anel(0, 0, 9.8 + sobe, 4.3, 3.3, 1.3), anel(0, 0, 11.7 + sobe, 4, 3, 1.2)], metal, 0.3);
+  solido([anel(0, 0, 11.6 + sobe, 4, 3, 1.2), anel(0, 0, 13.7 + sobe, 3.7, 2.7, 1.1)], claro, 0.3);
+  solido([anel(0, 0, 13.6 + sobe, 3.6, 2.5, 1.1), anel(0, 0, 18.5 + sobe, 4.3, 3, 1.3), anel(0, 0, 21.5 + sobe, 4.6, 2.9, 1.3), anel(0, 0, 22.9 + sobe, 2.8, 2.1, 0.9)], metal, 0.4);
+  if (!deitar) {
+    const z = 19 + sobe;
+    partes.push({ placa: [P(3.02, -0.7, z + 0.9), P(3.02, 0.7, z + 0.9), P(3.02, 0.7, z - 0.2), P(3.02, 0, z - 1.1), P(3.02, -0.7, z - 0.2)], cor: visual.brasao, fora: dir(1, 0, 0), frente: 1 });
+  }
+  const braco = (lado, passo) => {
+    const l = lado * 4.9;
+    const cotovelo = [passo * 1.5 - 0.4, 16.8 + sobe];
+    const pulso = [passo * 3.4 + 0.5, 12.8 + sobe + Math.max(0, passo) * 1.1];
+    solido([anel(0, lado * 4.6, 21.4 + sobe, 1.5, 1.5), anel(cotovelo[0], l, cotovelo[1], 1.35, 1.35)], escuro);
+    solido([anel(cotovelo[0], l, cotovelo[1] + 0.4, 1.45, 1.45), anel(pulso[0], l, pulso[1] + 0.6, 1.3, 1.3)], metal, 0.1);
+    solido([anel(pulso[0] + 0.2, l, pulso[1] + 0.8, 1.55, 1.7, 0.6), anel(pulso[0] + 0.3, l, pulso[1] - 2.2, 1.3, 1.5, 0.6)], escuro, 0.15);
+    solido([anel(0, lado * 4.5, 23.5 + sobe, 1.6, 2.2, 0.9), anel(0, lado * 5.1, 22.2 + sobe, 2.4, 2.9, 1.1), anel(0, lado * 5.5, 19.8 + sobe, 2.2, 2.7, 1.1)], claro, 0.8);
+    return pulso;
+  };
+  const maoEsquerda = braco(-1, -s);
+  const maoDireita = braco(1, 0.6 + s * 0.2);
+  const ze = maoEsquerda[1];
+  const fe = maoEsquerda[0];
+  const kite = [[-3.2, 9.5], [0, 10.6], [3.2, 9.5], [3.4, 3.6], [0, -6.2], [-3.4, 3.6]];
+  const lado = (l) => kite.map(([df, dz]) => P(fe + df, l, ze + dz));
+  partes.push({ solido: [lado(-6.6), lado(-7.4)], cor: visual.escudoBorda, chapado: true, frente: 0.4 });
+  const meia = (pontos, cor) => partes.push({ placa: pontos.map(([df, dz]) => P(fe + df, -7.5, ze + dz)), cor, fora: dir(0, -1, 0), frente: 0.5 });
+  meia([[-2.7, 8.9], [0, 9.8], [0, -4.9], [-2.9, 3.7]], visual.escudo);
+  meia([[0, 9.8], [2.7, 8.9], [2.9, 3.7], [0, -4.9]], misturar(visual.escudo, '#c75a10', 0.35));
+  const [fd, zd] = maoDireita;
+  const ld = 3.4;
+  const lamina = (z, w, d) => [[w, 0], [0, d], [-w, 0], [0, -d]].map(([df, dl]) => P(fd + 2.2 + df, ld + dl, z));
+  partes.push({ camadas: [
+    { solido: [anel(fd + 2.2, ld, zd - 3.4, 0.5, 0.5, 0.2), anel(fd + 2.2, ld, zd + 0.6, 0.45, 0.45, 0.2)], cor: visual.cabo },
+    { solido: [anel(fd + 2.2, ld, zd - 4.6, 0.85, 0.85, 0.4), anel(fd + 2.2, ld, zd - 3.3, 0.85, 0.85, 0.4)], cor: visual.guarda },
+    { solido: [lamina(zd + 1.6, 1.25, 0.4), lamina(zd + 16, 1.25, 0.4), lamina(zd + 18.4, 0.1, 0.1)], cor: visual.lamina, chapado: true },
+    { solido: [anel(fd + 2.2, ld, zd + 0.6, 0.7, 2.8, 0.3), anel(fd + 2.2, ld, zd + 1.6, 0.7, 2.8, 0.3)], cor: visual.guarda }
+  ], frente: direcao === 'sul' || direcao === 'leste' ? 30 : 0 });
+  const z = 24 + sobe;
+  solido([anel(0.2, 0, z, 3.3, 3.4, 0.9), anel(0.2, 0, z + 6.2, 3.5, 3.6, 1.1), anel(0.2, 0, z + 7.4, 2.7, 2.8, 1.3)], metal, 1.6);
+  for (const l of [-1, 1]) {
+    const chifre = (dl, dz, r) => anel(0, l * dl, z + dz, r, r, r * 0.4);
+    solido([chifre(3.1, 4.8, 0.8), chifre(4.7, 6.2, 0.75), chifre(5, 8.6, 0.6), chifre(5, 9.4, 0.3)], visual.chifre || escuro, 1.7);
+  }
+  if (!deitar) {
+    const fora = dir(1, 0, 0);
+    const fenda = (pontos) => partes.push({ placa: pontos.map(([dl, dz]) => P(3.67, dl, z + dz)), cor: visual.fenda, fora, frente: 2 });
+    fenda([[-2.6, 4.3], [2.6, 4.3], [2.6, 3.5], [-2.6, 3.5]]);
+    fenda([[-0.42, 5.8], [0.42, 5.8], [0.42, 1.2], [-0.42, 1.2]]);
+  }
+  return partes;
+}
+
+// ================================================================================================================================================================================================================================================
 // lobo
 // Partes do lobo (quadrúpede) em volumes: corpo, peito claro, cabeça com focinho, orelhas, rabo peludo; as patas
 // alternam em diagonal. visual: { pelo, barriga, olho }.
@@ -439,7 +631,7 @@ function lobo(direcao, fase, visual) {
 // ================================================================================================================================================================================================================================================
 // caido
 // Corpo no chão (cadáver): estagio 0 fresco, 1 apodrecendo (cores puxadas pro verde escuro), 2 só os ossos.
-// forma: 'humano' ou 'lobo'.
+// forma: 'humano', 'guerreiro' ou 'lobo'.
 
 function caido(forma, estagio, visual) {
   const podre = (cor) => estagio === 1 ? misturar(cor, '#3f4a2a', 0.6) : cor;
@@ -457,6 +649,11 @@ function caido(forma, estagio, visual) {
     partes.push({ a: [-9.6, -0.6, 3.4], largura: 6.6, cor: podre(visual.pelo) }, { a: [-12, -0.8, 2.6], b: [-14.4, -1, 2.4], largura: 3, cor: podre(visual.pelo) });
     partes.push({ a: [7, 0, 3], b: [12.5, -1.6, 2], largura: 2.8, cor: podre(visual.pelo) });
     for (const x of [-4.6, -1.8, 3, 5.6]) partes.push({ a: [x, 2.4, 2.4], b: [x + 1.4, 7.4, 1.4], largura: 2.5, cor: podre(misturar(visual.pelo, '#000000', 0.2)) });
+    return partes;
+  }
+  if (forma === 'guerreiro') {
+    const visualCaido = { ...visual, metal: podre(visual.metal), escuro: podre(visual.escuro), escudo: podre(visual.escudo), escudoBorda: podre(visual.escudoBorda) };
+    partes.push(...guerreiro('leste', 0, visualCaido, ([x, y, zz]) => [12 - zz * 0.8, y, 2.4 + x * 0.55]));
     return partes;
   }
   const cor = (hex) => podre(hex);
@@ -488,7 +685,7 @@ function folhaDeCriatura(modelo, visual, escala = 1) {
   Object.keys(DIRECOES).forEach((direcao, linha) => {
     for (let fase = 0; fase < 9; fase++) quadro(fase * 64, linha * 64, modelo(direcao, fase, visual), [52, 54]);
   });
-  for (let estagio = 0; estagio < 3; estagio++) quadro(estagio * 64, 4 * 64, caido(modelo === lobo ? 'lobo' : 'humano', estagio, visual), [46, 50]);
+  for (let estagio = 0; estagio < 3; estagio++) quadro(estagio * 64, 4 * 64, caido(modelo === lobo ? 'lobo' : modelo === guerreiro ? 'guerreiro' : 'humano', estagio, visual), [46, 50]);
   if (nitidez === escala) return grande;
   const canvas = document.createElement('canvas');
   canvas.width = 64 * 9 * escala;
@@ -823,7 +1020,7 @@ function parede(escala = 1) {
   return canvas;
 }
 
-const CRIATURAS = { humano, lobo };
+const CRIATURAS = { humano, lobo, guerreiro };
 const OBJETOS = { caixote, barril, poste, arvore, arbusto, capim, parede };
 
 // ================================================================================================================================================================================================================================================
