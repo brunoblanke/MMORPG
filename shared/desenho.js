@@ -296,14 +296,135 @@ function eixos(direcao) {
 // ================================================================================================================================================================================================================================================
 // ESTILOS
 // Conjuntos de equipamento que aparecem no corpo (visual.equip: { elmo, peito, pernas, botas, escudo, arma } com o
-// nome do estilo). metal = placas, borda = frisos e detalhes, tecido = capa, tabardo e pluma.
+// nome do estilo). metal = placas, borda = frisos e detalhes, tecido = capa, tabardo e pluma (null = sem).
 
 const ALTURA_CORPO = 1;
 const GROSSURA = 1;
 
 const ESTILOS = {
-  crown: { metal: '#c3c9d3', borda: '#d8a838', tecido: '#2c55b4' }
+  crown: { metal: '#c3c9d3', borda: '#d8a838', tecido: '#2c55b4' },
+  prata: { metal: '#c8cdd4', borda: '#9198a2', tecido: null }
 };
+
+// ================================================================================================================================================================================================================================================
+// roupasDoTronco
+// O que vai por cima do tronco do humano, pelo visual: musculoso (peito nu com peitoral e barriga marcados), casaco
+// (aberto, até os joelhos), avental (de couro com rebites), medalhao (corrente e medalha) e bandoleira (tira em
+// diagonal com fivela).
+
+function roupasDoTronco({ P, anel, bola, visual, sobe, s, escurecer, partes, deitar, pele }) {
+  const fora = (() => {
+    const a = P(0, 0, 0);
+    const b = P(1, 0, 0);
+    return [b[0] - a[0], b[1] - a[1], b[2] - a[2]];
+  })();
+  const placa = (pontos, cor, frente) => partes.push({ placa: pontos.map(([f, l, z]) => P(f, l, z + sobe)), cor, fora, frente });
+  const traco = (a, b, largura, cor, frente) => partes.push({ a: P(a[0], a[1], a[2] + sobe), b: P(b[0], b[1], b[2] + sobe), largura, cor, contorno: false, luz: false, frente });
+  if (visual.musculoso && !deitar) {
+    const linha = escurecer(pele, 0.22);
+    for (const lado of [-1, 1]) traco([3.1, lado * 3, 19.8], [3.3, lado * 0.4, 19.1], 0.5, linha, 1.8);
+    traco([3.3, 0, 19], [3.25, 0, 14.4], 0.4, linha, 1.8);
+    for (const z of [17.4, 15.9]) traco([3.25, -1.3, z], [3.25, 1.3, z], 0.35, linha, 1.8);
+  }
+  if (visual.casaco) {
+    for (const lado of [-1, 1]) {
+      partes.push({ secoes: [anel(-0.4 + s * 0.3, lado * 3.5, 7, 1.9, 3.7), anel(-0.3, lado * 3.2, 14 + sobe, 1.6, 3.1), anel(-0.3, lado * 3.3, 21.8 + sobe, 1.8, 2.8)], cor: lado > 0 ? visual.casaco : escurecer(visual.casaco, 0.1), recuo: 1.6, frente: 0.7 });
+    }
+  }
+  if (visual.avental) {
+    placa([[3.35, -2.8, 13.2], [3.35, 2.8, 13.2], [3.6, 3, 7.4], [3.6, -3, 7.4]], visual.avental, 1.7);
+    if (!deitar) for (const [l, z] of [[-2.3, 12.4], [0, 12.6], [2.3, 12.4], [-2.5, 10], [2.5, 10], [-2.5, 8], [0, 7.9], [2.5, 8]]) traco([3.7, l, z], [3.7, l, z], 0.6, escurecer(visual.avental, 0.35), 1.8);
+  }
+  if (visual.medalhao && !deitar) {
+    for (const lado of [-1, 1]) traco([2.5, lado * 2, 22.6], [3.4, 0, 18.4], 0.5, visual.medalhao, 2);
+    partes.push({ secoes: [bola(P(3.5, 0, 17.6 + sobe), 1.25)], cor: visual.medalhao, luz: false, frente: 2.1 });
+    partes.push({ secoes: [bola(P(3.7, 0, 17.6 + sobe), 0.7)], cor: misturar(visual.medalhao, '#e0601c', 0.5), luz: false, frente: 2.2 });
+  }
+  if (visual.bandoleira && !deitar) {
+    placa([[3.05, -3.6, 22.4], [3.05, -2, 22.8], [3.35, 3.8, 13.6], [3.35, 2.2, 13]], visual.bandoleira, 1.9);
+    placa([[3.3, -0.7, 18.9], [3.3, 0.9, 18.6], [3.3, 0.9, 17.2], [3.3, -0.7, 17.5]], visual.fivela || '#9aa0a8', 2);
+  }
+}
+
+// ================================================================================================================================================================================================================================================
+// adornosDaCabeca
+// Barba e bigode, capuz (pontudo, com o rosto na abertura), capuz fechado (de carrasco: cobre o rosto, com os furos
+// dos olhos), capinha (sobre os ombros, barra recortada), coroa (faixa de pontas) e morion (elmo de aba).
+
+function adornosDaCabeca({ P, anel, bola, menos, visual, sobe, escurecer, partes, deitar, pele }, z) {
+  const fora = menos(P(1, 0, 0), P(0, 0, 0));
+  const elipse = (f, z0, rl, rz) => ({ c: P(f, 0, z0), a: menos(P(f, rl, z0), P(f, 0, z0)), b: [0, 0, rz] });
+  if (visual.barba) {
+    partes.push({ secoes: [bola(P(2.4, 0, z - 1.5), 2.3), bola(P(2.9, 0, z - 3.2), 1.6), bola(P(1.4, -2.3, z - 0.3), 1.2), bola(P(1.4, 2.3, z - 0.3), 1.2)], cor: visual.barba, recuo: 0.8, frente: 4.2 });
+  }
+  if ((visual.bigode || visual.barba) && !deitar && !visual.capuzFechado) {
+    const cor = visual.bigode || escurecer(visual.barba, 0.12);
+    partes.push({ a: P(3.9, -1.5, z - 0.1), b: P(3.9, 1.5, z - 0.1), largura: 0.95, cor, contorno: false, luz: false, frente: 4.4 });
+    if (visual.bigode) for (const lado of [-1, 1]) partes.push({ a: P(3.9, lado * 1.5, z - 0.1), b: P(3.6, lado * 2.6, z - 1.1), largura: 0.7, cor, contorno: false, luz: false, frente: 4.4 });
+  }
+  if (visual.capinha) {
+    const cor = visual.capinha;
+    partes.push({ secoes: [anel(0, 0, 17.6 + sobe, 5.6, 3.9), anel(0, 0, 22 + sobe, 5.1, 3.2), anel(0, 0, 24.8 + sobe, 3, 2.6)], cor, recuo: 1.6, frente: 1.2 });
+    for (let l = -4.4; l <= 4.5; l += 1.6) partes.push({ placa: [[3.85, l - 0.85, 18], [3.85, l + 0.85, 18], [3.8, l + 0.1, 16.3 + (Math.abs(l * 7) % 3) * 0.3]].map(([f, ll, zz]) => P(f, ll, zz + sobe)), cor, fora, frente: 1.3 });
+  }
+  if (visual.capuz) {
+    partes.push({ secoes: [bola(P(-0.3, 0, z + 1.8), 4.7), bola(P(-1.3, 0, z + 5.4), 3.3), bola(P(-3.8, 0, z + 8.6), 0.6)], cor: visual.capuz, recuo: 1.4, frente: 2 });
+    partes.push({ secoes: [elipse(2.6, z + 0.9, 3.1, 3.5)], cor: escurecer(visual.capuz, 0.55), luz: false, frente: 2.2 });
+    partes.push({ secoes: [elipse(3.1, z + 0.5, 2.5, 2.9)], cor: pele, luz: false, frente: 2.4 });
+  }
+  if (visual.capuzFechado) {
+    partes.push({ secoes: [bola(P(0.4, 0, z + 1.4), 4.6), bola(P(-0.6, 0, z + 5.6), 3.4), bola(P(0.9, 0, z + 9.2), 0.8)], cor: visual.capuzFechado, recuo: 1.4, frente: 2.6 });
+    if (!deitar) for (const lado of [-1, 1]) partes.push({ a: P(4.6, lado * 0.6, z + 1.3), b: P(4.5, lado * 2, z + 1.9), largura: 1, cor: '#0a080a', contorno: false, luz: false, frente: 4 });
+  }
+  if (visual.coroa) {
+    const centro = P(0.2, 0, 0);
+    const metade = (de, cor, frente) => {
+      const pontos = [];
+      for (let i = 0; i <= 12; i++) {
+        const a = (de + 180 * i / 12) * Math.PI / 180;
+        pontos.push([centro[0] + Math.cos(a) * 3, centro[1] + Math.sin(a) * 3, z + 4.2]);
+      }
+      for (let i = 12; i >= 0; i--) {
+        const a = (de + 180 * i / 12) * Math.PI / 180;
+        pontos.push([centro[0] + Math.cos(a) * 3.3, centro[1] + Math.sin(a) * 3.3, z + (i % 3 === 0 ? 7.8 : 5.8)]);
+      }
+      partes.push({ placa: pontos, cor, frente });
+    };
+    metade(135, misturar(visual.coroa, '#7a4a10', 0.4), 1);
+    metade(-45, visual.coroa, 5);
+  }
+  if (visual.morion) {
+    partes.push({ camadas: [
+      { secoes: [anel(0.3, 0, z + 3.9, 6.4, 4.6), anel(0.3, 0, z + 4.4, 6, 4.3)], cor: escurecer(visual.morion, 0.08), luz: false },
+      { secoes: [anel(0, 0, z + 4, 3.5, 3.5), bola(P(-0.3, 0, z + 6.2), 2.6), bola(P(-0.6, 0, z + 7.8), 1.2)], cor: visual.morion, recuo: 1 }
+    ], frente: 5 });
+  }
+}
+
+// ================================================================================================================================================================================================================================================
+// armaNaMao
+// A arma (visual.arma: { tipo: 'machado' | 'espada', cabo, lamina }) de pé na mão direita, apoiada no chão: machado
+// com a lâmina em cima, espada com a ponta pra baixo. Desenhada por cima do corpo quando a mão está do lado da câmera.
+
+function armaNaMao({ P, partes, direcao, visual }, [f, l, zMao]) {
+  const arma = visual.arma;
+  const frente = direcao === 'sul' || direcao === 'leste' ? 30 : 0;
+  const quina = (pontos, grossura) => [pontos.map(([df, dz]) => P(f + 0.4 + df, l + 0.6 - grossura, dz)), pontos.map(([df, dz]) => P(f + 0.4 + df, l + 0.6 + grossura, dz))];
+  if (arma.tipo === 'machado') {
+    partes.push({ camadas: [
+      { a: P(f + 0.4, l + 0.6, 0.4), b: P(f + 0.4, l + 0.6, 27), largura: 1, cor: arma.cabo, contorno: false },
+      { solido: quina([[0, 26], [3.4, 28.4], [4.6, 23.4], [3.4, 18.2], [0, 20.4]], 0.3), cor: arma.lamina, chapado: true },
+      { solido: quina([[3.4, 28.4], [4.6, 23.4], [3.4, 18.2], [4, 18.6], [5.2, 23.4], [4, 28]], 0.32), cor: misturar(arma.lamina, '#ffffff', 0.35), chapado: true }
+    ], frente });
+    return;
+  }
+  const lamina = (z, w) => [[w, 0], [0, 0.35], [-w, 0], [0, -0.35]].map(([df, dl]) => P(f + 0.4 + df, l + 0.6 + dl, z));
+  partes.push({ camadas: [
+    { solido: [lamina(0.4, 0.1), lamina(2.4, 1.15), lamina(zMao - 1.6, 1.15)], cor: arma.lamina, chapado: true },
+    { a: P(f + 0.4, l + 0.6, zMao - 1.2), b: P(f + 0.4, l + 0.6, zMao + 2.4), largura: 0.9, cor: arma.cabo, contorno: false },
+    { a: P(f + 0.4 - 2.2, l + 0.6, zMao - 1.4), b: P(f + 0.4 + 2.2, l + 0.6, zMao - 1.4), largura: 0.9, cor: arma.guarda || arma.cabo, contorno: false }
+  ], frente });
+}
 
 // ================================================================================================================================================================================================================================================
 // cabelo
@@ -356,14 +477,19 @@ function vestido(partes, P, anel, bola, visual, sobe) {
 // (cadáver).
 
 function humano(direcao, fase, visual, deitar = null) {
-  const base = eixos(direcao);
+  const eixo = eixos(direcao);
+  const corpo = visual.corpo || {};
+  const largo = corpo.largura ?? 1;
+  const grosso = corpo.grossura ?? largo;
+  const barriga = corpo.barriga ?? 0;
+  const base = (f, l, z) => eixo(f * (1 + barriga * Math.max(0, 1 - ((z - 15) / 6.5) ** 2) / 3), l * largo, z);
   const P = deitar ? (f, l, z) => deitar(base(f, l, z * ALTURA_CORPO)) : (f, l, z) => base(f, l, z * ALTURA_CORPO);
   const menos = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
   const anel = (f, l, z, rl, rf) => {
     const c = P(f, l, z);
     return { c, a: menos(P(f, l + rl, z), c), b: menos(P(f + rf, l, z), c) };
   };
-  const bola = (ponto, r) => ({ c: ponto, r: r * GROSSURA });
+  const bola = (ponto, r) => ({ c: ponto, r: r * GROSSURA * (deitar || ponto[2] < 23.5 ? grosso : 1) });
   const t = fase ? (fase - 1) / 8 * Math.PI * 2 : 0;
   const s = fase ? Math.sin(t) : 0;
   const sobe = fase ? Math.abs(Math.cos(t)) * 0.8 : 0;
@@ -406,7 +532,8 @@ function humano(direcao, fase, visual, deitar = null) {
   if (visual.vestido) vestido(partes, P, anel, bola, visual, sobe);
   if (visual.tunica) partes.push({ secoes: [anel(0, 0, 9 + sobe, 4.2, 3.1), anel(0, 0, 12.6 + sobe, 3.75, 2.6), anel(0, 0, 15.2 + sobe, 3.4, 2.3), anel(0, 0, 19.3 + sobe, 4.25, 2.85), anel(0, 0, 22 + sobe, 4.85, 2.6), anel(0, 0, 22.9 + sobe, 2.9, 2)], cor: visual.tunica, frente: 0.5 });
   const golaCor = visual.tunica || visual.vestido || visual.camisa;
-  if (visual.golaAberta) {
+  if (visual.musculoso) {
+  } else if (visual.golaAberta) {
     partes.push({ secoes: [bola(P(2, 0, 23.2 + sobe), 1), bola(P(2.6, 0, 20.4 + sobe), 0.3)], cor: pele, luz: false, frente: 1.5 });
     for (const z of [21.9, 21]) partes.push({ a: P(2.75, -0.7, z + sobe), b: P(2.75, 0.7, z - 0.3 + sobe), largura: 0.35, cor: escurecer(golaCor, 0.45), contorno: false, luz: false, frente: 1.8 });
   } else partes.push({ secoes: [anel(0.2, 0, 22.7 + sobe, 2.1, 1.7), anel(0.2, 0, 23.5 + sobe, 2.1, 1.7)], cor: escurecer(golaCor), luz: false, frente: 1.4 });
@@ -420,11 +547,16 @@ function humano(direcao, fase, visual, deitar = null) {
   if (peito) {
     partes.push({ secoes: [anel(0, 0, 12.8 + sobe, 3.9, 2.7), anel(0, 0, 15.4 + sobe, 3.6, 2.5), anel(0, 0, 19.4 + sobe, 4.5, 3.05), anel(0, 0, 22 + sobe, 4.9, 2.75), anel(0, 0, 23 + sobe, 2.8, 2.1)], cor: peito.metal, frente: 0.6 });
     partes.push({ secoes: [anel(0, 0, 14.6 + sobe, 3.75, 2.62), anel(0, 0, 15.5 + sobe, 3.7, 2.58)], cor: peito.borda, luz: false, frente: 1.7 });
-    partes.push({ a: P(3, 0, 21 + sobe), b: P(3.4, 0, 9.4 + sobe), largura: 3.4, cor: peito.tecido, frente: 1.9 });
-    partes.push({ a: P(3.55, 0, 19.6 + sobe), b: P(3.6, 0, 16.4 + sobe), largura: 0.8, cor: peito.borda, contorno: false, luz: false, frente: 2.2 });
-    partes.push({ a: P(3.55, -1.1, 18.4 + sobe), b: P(3.55, 1.1, 18.4 + sobe), largura: 0.8, cor: peito.borda, contorno: false, luz: false, frente: 2.2 });
+    if (peito.tecido) {
+      partes.push({ a: P(3, 0, 21 + sobe), b: P(3.4, 0, 9.4 + sobe), largura: 3.4, cor: peito.tecido, frente: 1.9 });
+      partes.push({ a: P(3.55, 0, 19.6 + sobe), b: P(3.6, 0, 16.4 + sobe), largura: 0.8, cor: peito.borda, contorno: false, luz: false, frente: 2.2 });
+      partes.push({ a: P(3.55, -1.1, 18.4 + sobe), b: P(3.55, 1.1, 18.4 + sobe), largura: 0.8, cor: peito.borda, contorno: false, luz: false, frente: 2.2 });
+    } else partes.push({ a: P(3.2, 0, 21.6 + sobe), b: P(3.3, 0, 13.4 + sobe), largura: 0.5, cor: peito.borda, contorno: false, luz: false, frente: 2.2 });
   }
+  const c = { P, anel, bola, menos, visual, sobe, s, escurecer, partes, deitar, pele, direcao };
+  roupasDoTronco(c);
   partes.push({ secoes: [bola(P(0.2, 0, 23 + sobe), 1.3), bola(P(0.3, 0, 24.8 + sobe), 1.3)], cor: pele, frente: 0.1 });
+  const maos = {};
   const braco = (lado, passo) => {
     const ombro = P(0, lado * 4.5, 21.7 + sobe);
     const cotovelo = P(passo * 1.5 - 0.4, lado * 5, 16.8 + sobe);
@@ -436,7 +568,10 @@ function humano(direcao, fase, visual, deitar = null) {
     partes.push({ secoes: [bola(cotovelo, 1.45), bola(pulso, 1.2)], cor: visual.mangaCurta ? pele : visual.vestido || manga });
     if (visual.mangaCurta) partes.push({ secoes: [bola(cotovelo, 1.75)], cor: manga, frente: 0.08 });
     else partes.push({ secoes: [bola(pulso, 1.3)], cor: escurecer(visual.vestido || manga), luz: false, frente: 0.04 });
-    partes.push({ secoes: [bola(mao, 1.35)], cor: pele, luz: false, frente: 0.06 });
+    maos[lado] = [passo * 3.6 + 0.7, lado * 4.9, 11.6 + sobe + Math.max(0, passo) * 1.1];
+    partes.push({ secoes: [bola(mao, 1.35)], cor: visual.luvas || pele, luz: false, frente: 0.06 });
+    if (visual.luvas) partes.push({ secoes: [bola(pulso, 1.55), bola(P(passo * 2.6, lado * 4.95, 14.8 + sobe), 1.45)], cor: visual.luvas, frente: 0.07 });
+    if (visual.bracadeiras) partes.push({ secoes: [bola(P(passo * 2.5 + 0.1, lado * 4.95, 13.6 + sobe + Math.max(0, passo) * 0.6), 1.5), bola(P(passo * 2.1 - 0.1, lado * 4.95, 15.2 + sobe), 1.55)], cor: visual.bracadeiras, frente: 0.08 });
     if (peito) {
       partes.push({ secoes: [bola(P(0, lado * 4.8, 22.4 + sobe), 2.7), bola(P(-0.3, lado * 5.6, 21 + sobe), 2.2)], cor: peito.metal, frente: 0.9 });
       partes.push({ secoes: [bola(P(0.1, lado * 5.9, 20.4 + sobe), 1.2)], cor: peito.borda, luz: false, frente: 1 });
@@ -470,9 +605,10 @@ function humano(direcao, fase, visual, deitar = null) {
   };
   braco(-1, -s);
   braco(1, s);
+  if (visual.arma) armaNaMao(c, maos[1]);
   const z = 26.4 + sobe;
   partes.push({ secoes: [bola(P(0.3, 0, z + 1.6), 3.9), bola(P(1, 0, z - 0.2), 2.85)], cor: pele, frente: 0.4 });
-  for (const lado of [-1, 1]) partes.push({ secoes: [bola(P(0.1, lado * 3.9, z + 1.4), 0.95)], cor: pele, frente: 0.5 });
+  if (!visual.capuz && !visual.capuzFechado) for (const lado of [-1, 1]) partes.push({ secoes: [bola(P(0.1, lado * 3.9, z + 1.4), 0.95)], cor: pele, frente: 0.5 });
   const elmo = estilo('elmo');
   if (elmo) {
     const pontas = [[1.6, 0], [0.4, -2.4], [0.4, 2.4], [-1.9, -1.6], [-1.9, 1.6]].map(([df, dl]) => ({ secoes: [bola(P(-0.4 + df, dl, z + 5.4), 0.7), bola(P(-0.4 + df, dl, z + 7.1), 0.22)], cor: elmo.borda, luz: false }));
@@ -488,8 +624,10 @@ function humano(direcao, fase, visual, deitar = null) {
     }
     return partes;
   }
-  partes.push(...cabelo(P, anel, bola, visual, z, escurecer));
-  if (deitar) return partes;
+  const coberto = visual.capuz || visual.capuzFechado || visual.morion;
+  if (!coberto) partes.push(...cabelo(P, anel, bola, visual, z, escurecer));
+  adornosDaCabeca(c, z);
+  if (deitar || visual.capuzFechado) return partes;
   for (const lado of [-1, 1]) {
     partes.push({ a: P(3.6, lado * 1.45, z + 1.6), b: P(3.6, lado * 1.45, z + 2.1), largura: 0.95, cor: '#1c1a22', contorno: false, luz: false, frente: 4 });
     partes.push({ a: P(3.4, lado * 0.9, z + 3.1), b: P(3.35, lado * 2.1, z + 3.2), largura: 0.5, cor: escurecer(visual.cabelo, 0.35), contorno: false, luz: false, frente: 4 });
@@ -500,6 +638,21 @@ function humano(direcao, fase, visual, deitar = null) {
 }
 
 // ================================================================================================================================================================================================================================================
+// faixaRecortada
+// Polígono da metade de um anel virada pra câmera (de centro, entre as alturas z0 e z1, raios r0 e r1) com a borda de
+// cima recortada em pontas de altura dente (barra de pele, franja).
+
+function faixaRecortada(centro, z0, z1, r0, r1, dente) {
+  const ponto = (i, r, z) => {
+    const a = (-45 + 180 * i / 12) * Math.PI / 180;
+    return [centro[0] + Math.cos(a) * r, centro[1] + Math.sin(a) * r, z];
+  };
+  const baixo = Array.from({ length: 13 }, (_, i) => ponto(i, r0, z0));
+  const cima = Array.from({ length: 13 }, (_, i) => ponto(12 - i, r1, z1 + ((12 - i) % 2 ? dente : 0)));
+  return [...baixo, ...cima];
+}
+
+// ================================================================================================================================================================================================================================================
 // mago
 // Figura de manto comprido (monge encapuzado, feiticeiro de chapéu): o manto alarga até a barra, com dobras escuras
 // em ponta, e o resto vem do visual: { pele, tunica, manto (capa aberta por cima, cor), capuz + capinha (capuz pontudo
@@ -507,7 +660,9 @@ function humano(direcao, fase, visual, deitar = null) {
 // cajado }. deitar = o cadáver.
 
 function mago(direcao, fase, visual, deitar = null) {
-  const base = eixos(direcao);
+  const eixo = eixos(direcao);
+  const largo = visual.largura ?? 1;
+  const base = (f, l, z) => eixo(f * (z < 24 ? largo : 1), l * (z < 24 ? largo : 1), z);
   const P = deitar ? (f, l, z) => deitar(base(f, l, z)) : base;
   const menos = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
   const anel = (f, l, z, rl, rf) => {
@@ -530,11 +685,16 @@ function mago(direcao, fase, visual, deitar = null) {
   if (visual.manto) {
     for (const lado of [-1, 1]) {
       partes.push({ secoes: [anel(-0.6 + s * 0.4, lado * 3.4, 0.2, 2.6, 4.2), anel(-0.6, lado * 2.9, zz(21), 2.2, 2.8), anel(-0.4, lado * 2.4, zz(24.4), 1.4, 2.2)], cor: lado > 0 ? visual.manto : escurecer(visual.manto, 0.12), recuo: 2, frente: 0.9 });
+      if (visual.rasgado) for (const [df, alto] of [[1.6, 7], [0.2, 11], [-1.4, 6]]) placa([[df + 2.4, lado * 3.6 - 0.9, 0.4], [df + 2.4, lado * 3.6 + 0.9, 0.4], [df + 1.8, lado * 3.2, alto]], escurecer(visual.manto, 0.25), 1);
     }
   }
+  if (visual.barraPelo) {
+    for (const [z0, z1, r0, r1] of [[0.4, 2.4, 5.8, 5.6], [8.2, 9.8, 4.9, 4.7]]) partes.push({ placa: faixaRecortada(P(0, 0, 0), z0, z1, r0 * largo, r1 * largo, 1.1), cor: visual.barraPelo, frente: 1.05 });
+  }
   if (visual.capinha) {
-    partes.push({ secoes: [anel(0, 0, zz(14), 5.7, 4), anel(0, 0, zz(21.6), 5, 3.1), anel(0, 0, zz(24.8), 3, 2.6)], cor: visual.capinha, recuo: 1.8, frente: 1 });
-    for (let l = -4.5; l <= 4.6; l += 1.5) placa([[4.05, l - 0.85, zz(14.6)], [4.05, l + 0.85, zz(14.6)], [4, l + 0.15, zz(11.8 + (Math.abs(l * 7) % 3) * 0.4)]], visual.capinha, 1.1);
+    const ate = visual.capinhaAte ?? 14;
+    partes.push({ secoes: [anel(0, 0, zz(ate), 5.7, 4), anel(0, 0, zz(21.6), 5, 3.1), anel(0, 0, zz(24.8), 3, 2.6)], cor: visual.capinha, recuo: 1.8, frente: 1 });
+    for (let l = -4.5; l <= 4.6; l += 1.5) placa([[3.95, l - 0.85, zz(ate + 0.6)], [3.95, l + 0.85, zz(ate + 0.6)], [3.9, l + 0.15, zz(ate - 2.2 + (Math.abs(l * 7) % 3) * 0.4)]], visual.capinha, 1.1);
   }
   if (visual.simbolo && !deitar) {
     placa([[4, -0.45, zz(21)], [4, 0.45, zz(21)], [4, 0.45, zz(16.4)], [4, -0.45, zz(16.4)]], visual.simbolo, 1.6);
@@ -545,6 +705,7 @@ function mago(direcao, fase, visual, deitar = null) {
     partes.push({ secoes: [bola(P(0, 0, z + 0.4), 4.4), bola(P(-1, 0, z + 4.4), 3), bola(P(-2.6, 0, z + 9.6), 0.5)], cor: visual.capuz, recuo: 1.6, frente: 1.4 });
     partes.push({ secoes: [{ c: P(2.4, 0, z + 0.2), a: menos(P(2.4, 2.9, z + 0.2), P(2.4, 0, z + 0.2)), b: [0, 0, 3.4] }], cor: escurecer(visual.capuz, 0.6), luz: false, frente: 0.5 });
   }
+  if (visual.cabelo && !visual.capuz) partes.push({ secoes: [bola(P(-0.6, 0, z + 1.8), 3), bola(P(-0.2, 0, z + 2.6), 2.9)], cor: visual.cabelo, frente: 1.2 });
   partes.push({ secoes: [bola(P(1.4, 0, z + 0.6), 2.6), bola(P(1.7, 0, z - 1.2), 2.1)], cor: visual.pele, luz: false, frente: visual.capuz ? 3 : 1.5 });
   if (visual.capuz && !deitar) partes.push({ secoes: [{ c: P(2.4, 0, z + 3.1), a: menos(P(2.4, 2.8, z + 3.1), P(2.4, 0, z + 3.1)), b: [0, 0, 0.8] }], cor: escurecer(visual.capuz, 0.6), luz: false, frente: 3.2 });
   if (visual.barba) {
@@ -576,6 +737,17 @@ function mago(direcao, fase, visual, deitar = null) {
       camadas.push({ placa: [[3.5, -0.45, z + 5.5], [3.5, 0.45, z + 5.5], [3.5, 0.45, z + 4.8], [3.5, -0.45, z + 4.8]].map(([f, l, zz]) => P(f, l, zz)), cor: visual.faixa, fora });
     }
     partes.push({ camadas, frente: 4 });
+  }
+  if (visual.coroa) adornosDaCabeca({ P, anel, bola, menos, visual: { coroa: visual.coroa }, sobe, escurecer, partes, deitar, pele: visual.pele }, z - 2.2);
+  if (visual.espada) {
+    const f = 5.6;
+    const lamina = (zl, w) => [[0, w], [0.35, 0], [0, -w], [-0.35, 0]].map(([df, dl]) => P(f + df, dl, zl));
+    partes.push({ camadas: [
+      { solido: [lamina(0.6, 0.1), lamina(3, 1.4), lamina(zz(15.6), 1.4)], cor: visual.espada.lamina, chapado: true },
+      { a: P(f, 0, zz(15.4)), b: P(f, 0, zz(20.4)), largura: 1, cor: visual.espada.cabo, contorno: false },
+      { a: P(f, -3, zz(15.6)), b: P(f, 3, zz(15.6)), largura: 1, cor: visual.espada.cabo, contorno: false },
+      ...[-1, 1].map(lado => ({ secoes: [bola(P(f + 0.3, lado * 1.2, zz(18.6)), 1.3)], cor: visual.luvas || visual.pele, luz: false }))
+    ], frente: deFrente ? 30 : 0 });
   }
   if (visual.cajado) {
     const [f, l] = [2.6 + s * 0.8, 5.6];
@@ -645,12 +817,14 @@ function guerreiro(direcao, fase, visual, deitar = null) {
   const maoDireita = braco(1, 0.6 + s * 0.2);
   const ze = maoEsquerda[1];
   const fe = maoEsquerda[0];
-  const kite = [[-3.2, 9.5], [0, 10.6], [3.2, 9.5], [3.4, 3.6], [0, -6.2], [-3.4, 3.6]];
-  const lado = (l) => kite.map(([df, dz]) => P(fe + df, l, ze + dz));
-  partes.push({ solido: [lado(-6.6), lado(-7.4)], cor: visual.escudoBorda, chapado: true, frente: 0.4 });
-  const meia = (pontos, cor) => partes.push({ placa: pontos.map(([df, dz]) => P(fe + df, -7.5, ze + dz)), cor, fora: dir(0, -1, 0), frente: 0.5 });
-  meia([[-2.7, 8.9], [0, 9.8], [0, -4.9], [-2.9, 3.7]], visual.escudo);
-  meia([[0, 9.8], [2.7, 8.9], [2.9, 3.7], [0, -4.9]], misturar(visual.escudo, '#c75a10', 0.35));
+  if (visual.escudo) {
+    const kite = [[-3.2, 9.5], [0, 10.6], [3.2, 9.5], [3.4, 3.6], [0, -6.2], [-3.4, 3.6]];
+    const lado = (l) => kite.map(([df, dz]) => P(fe + df, l, ze + dz));
+    partes.push({ solido: [lado(-6.6), lado(-7.4)], cor: visual.escudoBorda, chapado: true, frente: 0.4 });
+    const meia = (pontos, cor) => partes.push({ placa: pontos.map(([df, dz]) => P(fe + df, -7.5, ze + dz)), cor, fora: dir(0, -1, 0), frente: 0.5 });
+    meia([[-2.7, 8.9], [0, 9.8], [0, -4.9], [-2.9, 3.7]], visual.escudo);
+    meia([[0, 9.8], [2.7, 8.9], [2.9, 3.7], [0, -4.9]], misturar(visual.escudo, '#c75a10', 0.35));
+  }
   const [fd, zd] = maoDireita;
   const ld = 3.4;
   const lamina = (z, w, d) => [[w, 0], [0, d], [-w, 0], [0, -d]].map(([df, dl]) => P(fd + 2.2 + df, ld + dl, z));
@@ -662,15 +836,30 @@ function guerreiro(direcao, fase, visual, deitar = null) {
   ], frente: direcao === 'sul' || direcao === 'leste' ? 30 : 0 });
   const z = 24 + sobe;
   solido([anel(0.2, 0, z, 3.3, 3.4, 0.9), anel(0.2, 0, z + 6.2, 3.5, 3.6, 1.1), anel(0.2, 0, z + 7.4, 2.7, 2.8, 1.3)], metal, 1.6);
-  for (const l of [-1, 1]) {
-    const chifre = (dl, dz, r) => anel(0, l * dl, z + dz, r, r, r * 0.4);
-    solido([chifre(3.1, 4.8, 0.8), chifre(4.7, 6.2, 0.75), chifre(5, 8.6, 0.6), chifre(5, 9.4, 0.3)], visual.chifre || escuro, 1.7);
+  if (visual.chifre) {
+    for (const l of [-1, 1]) {
+      const chifre = (dl, dz, r) => anel(0, l * dl, z + dz, r, r, r * 0.4);
+      solido([chifre(3.1, 4.8, 0.8), chifre(4.7, 6.2, 0.75), chifre(5, 8.6, 0.6), chifre(5, 9.4, 0.3)], visual.chifre, 1.7);
+    }
+  }
+  if (visual.espinhos) {
+    const ponta = (f, l, zz, r, alto) => solido([anel(f, l, zz, r, r, r * 0.4), anel(f, l, zz + alto, 0.12, 0.12, 0.05)], visual.espinhos, 1.8);
+    for (const l of [-1, 1]) {
+      ponta(-0.6, l * 2.9, z + 7.2, 0.9, 2.4);
+      ponta(1.6, l * 2.9, z + 7.2, 0.9, 2.4);
+      ponta(0, l * 6.4, 22.4 + sobe, 1.1, 2.6);
+    }
   }
   if (!deitar) {
     const fora = dir(1, 0, 0);
     const fenda = (pontos) => partes.push({ placa: pontos.map(([dl, dz]) => P(3.67, dl, z + dz)), cor: visual.fenda, fora, frente: 2 });
-    fenda([[-2.6, 4.3], [2.6, 4.3], [2.6, 3.5], [-2.6, 3.5]]);
-    fenda([[-0.42, 5.8], [0.42, 5.8], [0.42, 1.2], [-0.42, 1.2]]);
+    if (visual.grade) {
+      fenda([[-1.8, 5.2], [1.8, 5.2], [1.8, 1.6], [-1.8, 1.6]]);
+      for (let dl = -1.2; dl <= 1.3; dl += 0.8) for (let dz = 2.1; dz <= 4.8; dz += 0.8) partes.push({ placa: [[dl - 0.2, dz + 0.2], [dl + 0.2, dz + 0.2], [dl + 0.2, dz - 0.2], [dl - 0.2, dz - 0.2]].map(([a, b]) => P(3.7, a, z + b)), cor: visual.grade, fora, frente: 2.1 });
+    } else {
+      fenda([[-2.6, 4.3], [2.6, 4.3], [2.6, 3.5], [-2.6, 3.5]]);
+      fenda([[-0.42, 5.8], [0.42, 5.8], [0.42, 1.2], [-0.42, 1.2]]);
+    }
   }
   return partes;
 }
@@ -747,7 +936,7 @@ function caido(forma, estagio, visual) {
     return partes;
   }
   if (forma === 'guerreiro') {
-    const visualCaido = { ...visual, metal: podre(visual.metal), escuro: podre(visual.escuro), escudo: podre(visual.escudo), escudoBorda: podre(visual.escudoBorda) };
+    const visualCaido = Object.fromEntries(Object.entries(visual).map(([k, v]) => [k, typeof v === 'string' ? podre(v) : v]));
     partes.push(...guerreiro('leste', 0, visualCaido, ([x, y, zz]) => [12 - zz * 0.8, y, 2.4 + x * 0.55]));
     return partes;
   }

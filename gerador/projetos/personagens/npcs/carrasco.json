@@ -1,0 +1,100 @@
+{
+  "formato": {
+    "quadro": 64,
+    "quadros": 9,
+    "linhas": [
+      "sul",
+      "norte",
+      "leste",
+      "oeste",
+      "cadáver: fresco, apodrecendo, ossos"
+    ]
+  },
+  "desenho": {
+    "modelo": "humano",
+    "visual": {
+      "corpo": {
+        "largura": 1.12,
+        "grossura": 1.1
+      },
+      "pele": "#eab08c",
+      "cabelo": "#2a2226",
+      "camisa": "#eab08c",
+      "musculoso": true,
+      "calca": "#3a3040",
+      "sapato": "#4a3428",
+      "cinto": "#2c2a2e",
+      "fivela": "#9aa0a8",
+      "luvas": "#5a4038",
+      "capuzFechado": "#3b3539",
+      "capinha": "#3b3539",
+      "arma": {
+        "tipo": "machado",
+        "cabo": "#8a5a3a",
+        "lamina": "#b9c0c8"
+      }
+    }
+  },
+  "cadaver": {
+    "fresco": {
+      "desenho": true
+    },
+    "apodrecendo": {
+      "desenho": true
+    },
+    "ossos": {
+      "desenho": true
+    }
+  },
+  "propriedades": {
+    "comportamento": "npc",
+    "conversa": {
+      "boasVindas": "Cuidado com as aranhas por aqui.",
+      "oi": "Saudações, {nome}. Procuro gente corajosa pra caçar: aranhas e trolls.",
+      "tchau": "Boa caçada, {nome}.",
+      "raio": 2,
+      "topicos": [
+        {
+          "palavras": "missao, missoes, tarefa, ajuda, caca, cacada",
+          "resposta": "Tenho duas missões: aranhas e trolls. Diga o nome de uma."
+        }
+      ],
+      "vende": [],
+      "compra": [],
+      "missoes": [
+        {
+          "nome": "Aranhas",
+          "palavras": "aranha, aranhas",
+          "tipo": "matar",
+          "alvo": "criaturas/vermes/spider",
+          "quantidade": 10,
+          "pedido": "As aranhas estão por toda parte. Mata 10 delas? (sim / não)",
+          "recompensa": {
+            "tipo": "itens/distancia/spear",
+            "count": 5
+          },
+          "xp": 400,
+          "moedas": 0
+        },
+        {
+          "nome": "Trolls",
+          "palavras": "troll, trolls",
+          "tipo": "matar",
+          "alvo": "criaturas/humanoides/troll",
+          "quantidade": 5,
+          "pedido": "Os trolls atacam quem passa na estrada. Derrota 5? (sim / não)",
+          "recompensa": {
+            "tipo": "itens/escudos/studded-shield",
+            "count": 1
+          },
+          "xp": 600,
+          "moedas": 100
+        }
+      ]
+    }
+  },
+  "ferramenta": "criaturas",
+  "grupo": "personagens",
+  "pasta": "npcs",
+  "nome": "carrasco"
+}
