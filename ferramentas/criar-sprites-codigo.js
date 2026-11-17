@@ -15,8 +15,8 @@ const LINHAS = ['sul', 'norte', 'leste', 'oeste', 'cadáver: fresco, apodrecendo
 const PECAS_DE_MURO = ['x', 'y', 'xy', 'yx', 'porta-x', 'porta-x-aberta', 'porta-y', 'porta-y-aberta', 'janela-x', 'janela-y'];
 
 const SPRITES = [
-  { tipo: 'personagens/players/aventureiro', ferramenta: 'criaturas', copiaDe: 'personagens/players/player-masculino', modelo: 'humano', visual: { pele: '#e8b490', cabelo: '#6e4426', camisa: '#4a6fb3', calca: '#4c4034', sapato: '#5e3c24', cinto: '#4a3020', fivela: '#d9b040' } },
-  { tipo: 'personagens/players/aventureira', ferramenta: 'criaturas', copiaDe: 'personagens/players/player-feminino', modelo: 'humano', visual: { pele: '#efc29e', cabelo: '#9c4e2a', camisa: '#e9e0cc', calca: '#46679a', sapato: '#5e3c24', cinto: '#6a4428', fivela: '#d9b040', feminino: true } },
+  { tipo: 'personagens/players/aventureiro', ferramenta: 'criaturas', copiaDe: 'personagens/players/player-masculino', modelo: 'humano', visual: { pele: '#e8b490', cabelo: '#8a4a26', camisa: '#efe4cb', calca: '#7a4e30', calcaLarga: true, sapato: '#4a3222', cinto: '#6b3f22', fivela: '#c9a04a', bolsa: '#8f5a33', mangaCurta: true, golaAberta: true } },
+  { tipo: 'personagens/players/aventureira', ferramenta: 'criaturas', copiaDe: 'personagens/players/player-feminino', modelo: 'humano', visual: { pele: '#efc29e', cabelo: '#a4502a', camisa: '#1f6f80', vestido: '#1f6f80', painel: '#f2e4c6', barra: '#e39a2c', manga: '#f2e4c6', bufante: true, calca: '#1f6f80', sapato: '#5e3c24', feminino: true } },
   { tipo: 'personagens/npcs/cavaleiro-coroa', ferramenta: 'criaturas', copiaDe: 'personagens/npcs/cacador', modelo: 'humano', visual: { pele: '#e8b490', cabelo: '#6e4426', camisa: '#3a3f4c', calca: '#3a3f4c', sapato: '#5e3c24', equip: { elmo: 'crown', peito: 'crown', pernas: 'crown', botas: 'crown', escudo: 'crown', arma: 'crown' } } },
   { tipo: 'criaturas/mamiferos/lobo-cinzento', ferramenta: 'criaturas', copiaDe: 'criaturas/mamiferos/wolf', modelo: 'lobo', visual: { pelo: '#8a8782', barriga: '#b9b5ad', olho: '#f2d23c' } },
   { tipo: 'estrutura/natureza/carvalho', ferramenta: 'objetos', copiaDe: 'estrutura/natureza/pine', modelo: 'arvore', quadro: 64 },

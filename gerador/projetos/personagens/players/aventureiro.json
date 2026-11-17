@@ -14,12 +14,16 @@
     "modelo": "humano",
     "visual": {
       "pele": "#e8b490",
-      "cabelo": "#6e4426",
-      "camisa": "#4a6fb3",
-      "calca": "#4c4034",
-      "sapato": "#5e3c24",
-      "cinto": "#4a3020",
-      "fivela": "#d9b040"
+      "cabelo": "#8a4a26",
+      "camisa": "#efe4cb",
+      "calca": "#7a4e30",
+      "calcaLarga": true,
+      "sapato": "#4a3222",
+      "cinto": "#6b3f22",
+      "fivela": "#c9a04a",
+      "bolsa": "#8f5a33",
+      "mangaCurta": true,
+      "golaAberta": true
     }
   },
   "cadaver": {

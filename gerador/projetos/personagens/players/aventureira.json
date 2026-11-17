@@ -14,12 +14,15 @@
     "modelo": "humano",
     "visual": {
       "pele": "#efc29e",
-      "cabelo": "#9c4e2a",
-      "camisa": "#e9e0cc",
-      "calca": "#46679a",
+      "cabelo": "#a4502a",
+      "camisa": "#1f6f80",
+      "vestido": "#1f6f80",
+      "painel": "#f2e4c6",
+      "barra": "#e39a2c",
+      "manga": "#f2e4c6",
+      "bufante": true,
+      "calca": "#1f6f80",
       "sapato": "#5e3c24",
-      "cinto": "#6a4428",
-      "fivela": "#d9b040",
       "feminino": true
     }
   },

@@ -8,7 +8,6 @@
 // chamam desenharFolha ao carregar as folhas (shared/assets.js), no tamanho do jogo e num maior pra tela nítida.
 
 const CAMERA = 0.74;
-const CONTORNO = '#3a2219';
 const NITIDEZ = 4;
 const DIRECOES = { sul: [0, 1], norte: [0, -1], leste: [1, 0], oeste: [-1, 0] };
 
@@ -89,12 +88,6 @@ function pintarVolume(ctx, origem, parte) {
   const tamanho = Math.max(x1 - x0, y1 - y0);
   ctx.save();
   ctx.lineJoin = 'round';
-  if (parte.contorno !== false) {
-    caminho();
-    ctx.lineWidth = 0.7;
-    ctx.strokeStyle = CONTORNO;
-    ctx.stroke();
-  }
   caminho();
   ctx.fillStyle = sombra(parte.cor);
   ctx.fill();
@@ -174,7 +167,6 @@ function pintarParte(ctx, origem, parte) {
       ctx.lineTo(b[0] + dx + 0.01, b[1] + dy);
       ctx.stroke();
     };
-    if (parte.contorno !== false) traco(parte.largura + 1.6, CONTORNO);
     if (parte.luz === false && parte.contorno === false) {
       traco(parte.largura, parte.cor);
       return;
@@ -208,6 +200,16 @@ const ESTILOS = {
 };
 
 // ================================================================================================================================================================================================================================================
+// vestido
+// Saia comprida até o chão com a barra de outra cor (visual.barra) e o painel da frente (visual.painel), como nos
+// vestidos de corte.
+
+function vestido(partes, P, anel, bola, visual, sobe) {
+  if (visual.barra) partes.push({ secoes: [anel(0, 0, 0.6 + sobe * 0.3, 6.3, 5.1), anel(0, 0, 2.8 + sobe * 0.3, 5.9, 4.7)], cor: visual.barra, luz: false, frente: -6 });
+  if (visual.painel) partes.push({ secoes: [bola(P(2.1, 0, 14 + sobe), 1), anel(2.9, 0, 2.6 + sobe * 0.3, 2.6, 1.9)], cor: visual.painel, frente: 2 });
+}
+
+// ================================================================================================================================================================================================================================================
 // humano
 // Partes do humano na direção e fase, na proporção do Tibia, em volumes moldados presos ao esqueleto: o corpo e,
 // por cima, a roupa (camisa de manga comprida com gola e punho, calça, botas com dobra, cinto) e o equipamento do
@@ -239,12 +241,16 @@ function humano(direcao, fase, visual, deitar = null) {
     const tornozelo = P(passo * 4.2, lado * 2.1, 1.7 + ergue);
     const cano = P(passo * 3.4 + 0.2, lado * 2.1, 4.6 + ergue * 0.8);
     const roupa = visual.feminino ? pele : visual.calca;
-    partes.push({ secoes: [bola(quadril, 2.3), bola(joelho, 1.75)], cor: roupa });
-    partes.push({ secoes: [bola(joelho, 1.7), bola(tornozelo, 1.3)], cor: roupa });
+    const larga = visual.calcaLarga ? 1.22 : 1;
+    if (!visual.vestido) {
+      partes.push({ secoes: [bola(quadril, 2.3 * larga), bola(joelho, 1.75 * larga)], cor: roupa });
+      partes.push({ secoes: [bola(joelho, 1.7 * larga), bola(tornozelo, 1.3 * larga)], cor: roupa });
+    }
+    if (visual.calcaLarga) partes.push({ secoes: [bola(P(passo * 3.5 + 0.3, lado * 2.1, 6.2 + ergue * 0.8 + sobe * 0.3), 2.15), bola(P(passo * 3.1, lado * 2.1, 7.6 + ergue * 0.7 + sobe * 0.4), 1.9)], cor: roupa, frente: 0.2 });
     const pe = [bola(P(passo * 4.2 - 0.4, lado * 2.1, 1 + ergue), 1.4), bola(P(passo * 4.2 + 2.2, lado * 2.1, 0.8 + ergue), 1.15)];
     const botas = estilo('botas');
     partes.push({ secoes: [bola(cano, 1.75), bola(tornozelo, 1.5), ...pe], cor: botas ? botas.metal : visual.sapato, luz: !!botas, frente: 0.1 });
-    if (!botas) partes.push({ secoes: [anel(passo * 3.4 + 0.2, lado * 2.1, 5.2 + ergue * 0.8, 1.9, 1.9), anel(passo * 3.4 + 0.2, lado * 2.1, 6 + ergue * 0.8, 1.9, 1.9)], cor: escurecer(visual.sapato, -0.1), luz: false, frente: 0.15 });
+    if (!botas && !visual.calcaLarga && !visual.vestido) partes.push({ secoes: [anel(passo * 3.4 + 0.2, lado * 2.1, 5.2 + ergue * 0.8, 1.9, 1.9), anel(passo * 3.4 + 0.2, lado * 2.1, 6 + ergue * 0.8, 1.9, 1.9)], cor: escurecer(visual.sapato, -0.1), luz: false, frente: 0.15 });
     const pernas = estilo('pernas');
     if (pernas) {
       partes.push({ secoes: [bola(quadril, 2.55), bola(joelho, 2)], cor: pernas.metal, frente: 0.05 });
@@ -254,14 +260,23 @@ function humano(direcao, fase, visual, deitar = null) {
   };
   perna(-1, s);
   perna(1, -s);
-  partes.push({ secoes: [anel(0, 0, 11.4, 3.4, 2.2), anel(0, 0, 14.4, 3.5, 2.3)], cor: visual.calca, frente: -0.2 });
-  const barra = visual.feminino ? [anel(0, 0, 5.4 + sobe, 4.6, 3.4), anel(0, 0, 9.4 + sobe, 4, 2.8)] : [anel(0, 0, 12.6 + sobe, 3.6, 2.4)];
+  if (!visual.vestido) partes.push({ secoes: [anel(0, 0, 11.4, 3.4 * (visual.calcaLarga ? 1.1 : 1), 2.2), anel(0, 0, 14.4, 3.5, 2.3)], cor: visual.calca, frente: -0.2 });
+  const barra = visual.vestido ? [anel(0, 0, 1.2 + sobe * 0.3, 5.9, 4.7), anel(0, 0, 6.5 + sobe * 0.6, 5, 3.9), anel(0, 0, 11.5 + sobe, 3.8, 2.7)]
+    : visual.feminino ? [anel(0, 0, 5.4 + sobe, 4.6, 3.4), anel(0, 0, 9.4 + sobe, 4, 2.8)] : [anel(0, 0, 12.6 + sobe, 3.6, 2.4)];
   const tronco = [...barra, anel(0, 0, 15.2 + sobe, 3.25, 2.15), anel(0, 0, 19.2 + sobe, 4.1, 2.7), anel(0, 0, 21.9 + sobe, 4.7, 2.45), anel(0, 0, 23.1 + sobe, 2.3, 1.75)];
-  partes.push({ secoes: tronco, cor: visual.camisa, frente: 0.2 });
-  partes.push({ secoes: [anel(0.2, 0, 22.7 + sobe, 2.1, 1.7), anel(0.2, 0, 23.5 + sobe, 2.1, 1.7)], cor: escurecer(visual.camisa), luz: false, frente: 1.4 });
+  partes.push({ secoes: tronco, cor: visual.vestido || visual.camisa, frente: 0.2 });
+  if (visual.vestido) vestido(partes, P, anel, bola, visual, sobe);
+  if (visual.tunica) partes.push({ secoes: [anel(0, 0, 9 + sobe, 4.2, 3.1), anel(0, 0, 12.6 + sobe, 3.75, 2.6), anel(0, 0, 15.2 + sobe, 3.4, 2.3), anel(0, 0, 19.3 + sobe, 4.25, 2.85), anel(0, 0, 22 + sobe, 4.85, 2.6), anel(0, 0, 22.9 + sobe, 2.9, 2)], cor: visual.tunica, frente: 0.5 });
+  const golaCor = visual.tunica || visual.vestido || visual.camisa;
+  if (visual.golaAberta) {
+    partes.push({ secoes: [bola(P(2, 0, 23.2 + sobe), 1), bola(P(2.6, 0, 20.4 + sobe), 0.3)], cor: pele, luz: false, frente: 1.5 });
+    for (const z of [21.9, 21]) partes.push({ a: P(2.75, -0.7, z + sobe), b: P(2.75, 0.7, z - 0.3 + sobe), largura: 0.35, cor: escurecer(golaCor, 0.45), contorno: false, luz: false, frente: 1.8 });
+  } else partes.push({ secoes: [anel(0.2, 0, 22.7 + sobe, 2.1, 1.7), anel(0.2, 0, 23.5 + sobe, 2.1, 1.7)], cor: escurecer(golaCor), luz: false, frente: 1.4 });
   if (visual.cinto && !estilo('peito')) {
-    partes.push({ secoes: [anel(0, 0, 13.9 + sobe, 3.55, 2.4), anel(0, 0, 14.9 + sobe, 3.45, 2.35)], cor: visual.cinto, luz: false, frente: 1.6 });
-    if (visual.fivela) partes.push({ secoes: [bola(P(2.4, 0, 14.4 + sobe), 0.8)], cor: visual.fivela, luz: false, frente: 2.4 });
+    const folga = visual.tunica ? 0.3 : 0;
+    partes.push({ secoes: [anel(0, 0, 13.9 + sobe, 3.55 + folga, 2.4 + folga), anel(0, 0, 14.9 + sobe, 3.45 + folga, 2.35 + folga)], cor: visual.cinto, luz: false, frente: 1.6 });
+    if (visual.fivela) partes.push({ secoes: [bola(P(2.4 + folga, 0, 14.4 + sobe), 0.8)], cor: visual.fivela, luz: false, frente: 2.4 });
+    if (visual.bolsa) partes.push({ secoes: [bola(P(1.3, 3.5, 13.4 + sobe), 1.3), bola(P(1.4, 3.6, 11.8 + sobe), 1.15)], cor: visual.bolsa, frente: 1.9 });
   }
   const peito = estilo('peito');
   if (peito) {
@@ -277,9 +292,12 @@ function humano(direcao, fase, visual, deitar = null) {
     const cotovelo = P(passo * 1.5 - 0.4, lado * 5, 16.8 + sobe);
     const pulso = P(passo * 3.4 + 0.5, lado * 4.9, 12.8 + sobe + Math.max(0, passo) * 1.1);
     const mao = P(passo * 3.6 + 0.7, lado * 4.9, 11.6 + sobe + Math.max(0, passo) * 1.1);
-    partes.push({ secoes: [bola(ombro, 1.9), bola(cotovelo, 1.5)], cor: visual.camisa });
-    partes.push({ secoes: [bola(cotovelo, 1.45), bola(pulso, 1.2)], cor: visual.camisa });
-    partes.push({ secoes: [bola(pulso, 1.3)], cor: escurecer(visual.camisa), luz: false, frente: 0.04 });
+    const manga = visual.manga || visual.camisa;
+    if (visual.bufante) partes.push({ secoes: [bola(ombro, 2.5), bola(P(passo * 0.8 - 0.2, lado * 4.9, 19.4 + sobe), 2.2)], cor: manga, frente: 0.05 });
+    else partes.push({ secoes: [bola(ombro, 1.9), bola(cotovelo, 1.5)], cor: manga });
+    partes.push({ secoes: [bola(cotovelo, 1.45), bola(pulso, 1.2)], cor: visual.mangaCurta ? pele : visual.vestido || manga });
+    if (visual.mangaCurta) partes.push({ secoes: [bola(cotovelo, 1.75)], cor: manga, frente: 0.08 });
+    else partes.push({ secoes: [bola(pulso, 1.3)], cor: escurecer(visual.vestido || manga), luz: false, frente: 0.04 });
     partes.push({ secoes: [bola(mao, 1.35)], cor: pele, luz: false, frente: 0.06 });
     if (peito) {
       partes.push({ secoes: [bola(P(0, lado * 4.8, 22.4 + sobe), 2.7), bola(P(-0.3, lado * 5.6, 21 + sobe), 2.2)], cor: peito.metal, frente: 0.9 });
@@ -434,7 +452,7 @@ function folhaDeCriatura(modelo, visual, escala = 1) {
     const tctx = tela.getContext('2d');
     tctx.scale(nitidez, nitidez);
     pintar(tctx, origem, partes);
-    contornar(ctx, tela, x * nitidez, y * nitidez, nitidez);
+    ctx.drawImage(tela, x * nitidez, y * nitidez);
   };
   Object.keys(DIRECOES).forEach((direcao, linha) => {
     for (let fase = 0; fase < 9; fase++) quadro(fase * 64, linha * 64, modelo(direcao, fase, visual), [52, 54]);
@@ -451,28 +469,6 @@ function folhaDeCriatura(modelo, visual, escala = 1) {
 }
 
 // ================================================================================================================================================================================================================================================
-// contornar
-// Cola a tela em (x, y) com um contorno escuro em volta da silhueta inteira (a silhueta pintada de CONTORNO
-// deslocada em volta, por baixo do desenho), como nas ilustrações vetoriais.
-
-function contornar(ctx, tela, x, y, nitidez) {
-  const silhueta = document.createElement('canvas');
-  silhueta.width = tela.width;
-  silhueta.height = tela.height;
-  const sctx = silhueta.getContext('2d');
-  sctx.drawImage(tela, 0, 0);
-  sctx.globalCompositeOperation = 'source-in';
-  sctx.fillStyle = CONTORNO;
-  sctx.fillRect(0, 0, silhueta.width, silhueta.height);
-  const raio = 0.45 * nitidez;
-  for (let i = 0; i < 16; i++) {
-    const a = i / 16 * Math.PI * 2;
-    ctx.drawImage(silhueta, x + Math.cos(a) * raio, y + Math.sin(a) * raio);
-  }
-  ctx.drawImage(tela, x, y);
-}
-
-// ================================================================================================================================================================================================================================================
 // telaDe
 // Canvas quadrado de lado × escala px, já na escala: [canvas, ctx].
 
@@ -486,9 +482,9 @@ function telaDe(lado, escala) {
 
 // ================================================================================================================================================================================================================================================
 // face
-// Polígono 3D cheio com contorno (cor e largura do traço opcionais).
+// Polígono 3D cheio; o traço (cor e largura opcionais) por padrão é da cor dele, só pra fechar as emendas.
 
-function face(ctx, origem, pontos, cor, contorno = CONTORNO, largura = 1) {
+function face(ctx, origem, pontos, cor, contorno = cor, largura = 0.5) {
   ctx.beginPath();
   pontos.map(ponto => projetar(origem, ponto)).forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)));
   ctx.closePath();
@@ -561,12 +557,11 @@ function barril(escala = 1) {
     ctx.fillStyle = cor;
     ctx.fill();
     if (!borda) return;
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = CONTORNO;
+    ctx.lineWidth = 0.5;
+    ctx.strokeStyle = cor;
     ctx.stroke();
   };
-  for (let z = 0; z <= 15; z += 0.5) circulo(z, CONTORNO, false, raio(z) + 0.9);
-  for (let z = 0; z <= 15; z += 0.5) circulo(z, z > 3 && z < 5 || z > 10.5 && z < 12.5 ? '#5c5c66' : misturar(madeira, '#000000', 0.12), false);
+    for (let z = 0; z <= 15; z += 0.5) circulo(z, z > 3 && z < 5 || z > 10.5 && z < 12.5 ? '#5c5c66' : misturar(madeira, '#000000', 0.12), false);
   for (let z = 0; z <= 15; z += 0.5) {
     const [cx, cy] = projetar(origem, [0, 0, z]);
     ctx.fillStyle = z > 3 && z < 5 || z > 10.5 && z < 12.5 ? '#8a8a94' : misturar(madeira, '#ffffff', 0.16);
