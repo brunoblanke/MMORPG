@@ -11,7 +11,7 @@
     ]
   },
   "desenho": {
-    "modelo": "humano",
+    "modelo": "pessoa",
     "visual": {
       "pele": "#e8b490",
       "cabelo": "#8a4a26",

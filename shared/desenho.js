@@ -947,6 +947,293 @@ function caido(forma, estagio, visual) {
 }
 
 // ================================================================================================================================================================================================================================================
+// caminhoSuave
+// Caminho fechado e suave pelos pontos [x, y] (curva que passa por todos); ponto [x, y, 1] vira quina.
+
+function caminhoSuave(ctx, pts) {
+  const n = pts.length;
+  const ponto = (i) => pts[(i + n) % n];
+  ctx.beginPath();
+  ctx.moveTo(pts[0][0], pts[0][1]);
+  for (let i = 0; i < n; i++) {
+    const [a, b, c, d] = [ponto(i - 1), ponto(i), ponto(i + 1), ponto(i + 2)];
+    const k1 = b[2] ? 0 : 1 / 6;
+    const k2 = c[2] ? 0 : 1 / 6;
+    ctx.bezierCurveTo(b[0] + (c[0] - a[0]) * k1, b[1] + (c[1] - a[1]) * k1, c[0] - (d[0] - b[0]) * k2, c[1] - (d[1] - b[1]) * k2, c[0], c[1]);
+  }
+  ctx.closePath();
+}
+
+// ================================================================================================================================================================================================================================================
+// mancha
+// Forma chapada de ilustração: a cor, a sombra do lado direito (fração sombra da largura, divisa em curva) e um brilho
+// discreto em cima à esquerda. Com ctx.espelho (desenho espelhado) a sombra vai pro outro lado, pra sair à direita.
+
+function mancha(ctx, pts, cor, sombraFracao = 0.36, brilho = 0) {
+  caminhoSuave(ctx, pts);
+  ctx.fillStyle = cor;
+  ctx.fill();
+  if (!sombraFracao && !brilho) return;
+  const xs = pts.map(p => p[0]);
+  const ys = pts.map(p => p[1]);
+  const [x0, x1, y0, y1] = [Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)];
+  const w = x1 - x0;
+  const h = y1 - y0;
+  const lado = ctx.espelho ? -1 : 1;
+  ctx.save();
+  caminhoSuave(ctx, pts);
+  ctx.clip();
+  if (sombraFracao) {
+    const borda = lado > 0 ? x1 + 1 : x0 - 1;
+    const xc = lado > 0 ? x1 - w * sombraFracao : x0 + w * sombraFracao;
+    ctx.beginPath();
+    ctx.moveTo(xc + lado * w * 0.05, y0 - 1);
+    ctx.bezierCurveTo(xc - lado * w * 0.1, y0 + h * 0.35, xc + lado * w * 0.12, y0 + h * 0.65, xc - lado * w * 0.03, y1 + 1);
+    ctx.lineTo(borda, y1 + 1);
+    ctx.lineTo(borda, y0 - 1);
+    ctx.closePath();
+    ctx.fillStyle = sombra(cor);
+    ctx.fill();
+  }
+  if (brilho) {
+    ctx.beginPath();
+    ctx.ellipse(lado > 0 ? x0 + w * 0.24 : x1 - w * 0.24, y0 + h * 0.24, w * brilho, h * brilho, -0.4 * lado, 0, Math.PI * 2);
+    ctx.fillStyle = luz(cor);
+    ctx.fill();
+  }
+  ctx.restore();
+}
+
+// ================================================================================================================================================================================================================================================
+// linha2d
+// Traço de ponta redonda pelos pontos (3 pontos = curva).
+
+function linha2d(ctx, pts, cor, largura) {
+  ctx.beginPath();
+  ctx.moveTo(pts[0][0], pts[0][1]);
+  if (pts.length === 3) ctx.quadraticCurveTo(pts[1][0], pts[1][1], pts[2][0], pts[2][1]);
+  else for (const p of pts.slice(1)) ctx.lineTo(p[0], p[1]);
+  ctx.strokeStyle = cor;
+  ctx.lineWidth = largura;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.stroke();
+}
+
+// ================================================================================================================================================================================================================================================
+// oval
+// Elipse chapada.
+
+function oval(ctx, x, y, rx, ry, cor) {
+  ctx.beginPath();
+  ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2);
+  ctx.fillStyle = cor;
+  ctx.fill();
+}
+
+// ================================================================================================================================================================================================================================================
+// pessoa
+// Gente em pé, como os personagens do Tibia (o corpo não deita na diagonal; só o chão e os objetos seguem a câmera),
+// desenhada em formas suaves de ilustração. ctx com a origem no meio dos pés, y pra cima negativo; sul de frente,
+// norte de costas, leste de perfil e oeste = leste espelhado. fase 0 parado, 1 a 8 um passo. visual: pele, cabelo,
+// camisa, mangaCurta, golaAberta, calca, calcaLarga, sapato, cinto, fivela, bolsa, barba, feminino, vestido + painel
+// + barra + manga + bufante, corpo { largura, barriga }.
+
+function pessoa(ctx, direcao, fase, visual) {
+  if (direcao === 'oeste') {
+    ctx.save();
+    ctx.scale(-1, 1);
+    ctx.espelho = true;
+    pessoa(ctx, 'leste', fase, visual);
+    ctx.espelho = false;
+    ctx.restore();
+    return;
+  }
+  const t = fase ? (fase - 1) / 8 * Math.PI * 2 : 0;
+  const s = fase ? Math.sin(t) : 0;
+  const bob = fase ? -Math.abs(Math.cos(t)) * 0.7 : 0;
+  const corpo = visual.corpo || {};
+  const L = corpo.largura ?? 1;
+  const B = corpo.barriga ?? 0;
+  const v = { ...visual, escuro: (cor, f = 0.18) => misturar(cor, '#2a1630', f) };
+  ctx.globalAlpha = 0.16;
+  oval(ctx, 0.6, 0, 7.5 * L, 2.2, '#000000');
+  ctx.globalAlpha = 1;
+  const desenho = direcao === 'leste' ? pessoaDePerfil : pessoaDeFrente;
+  desenho(ctx, direcao === 'norte', s, bob, L, B, v);
+}
+
+// ================================================================================================================================================================================================================================================
+// pessoaDeFrente
+// A pessoa de frente (sul) ou de costas (norte): pernas alternando no passo, braços balançando, tronco em pera
+// (mais largo com a barriga), cabeça, cabelo, rosto e as peças do visual.
+
+function pessoaDeFrente(ctx, costas, s, bob, L, B, v) {
+  const pele = v.pele;
+  const ys = -27.6 + bob;
+  const [sw, cw, ww, hw] = [5.2 * L, 5.4 * L, 4.4 * L + B * 1.5, 4.8 * L + B * 0.7];
+  const hy = -32.6 + bob;
+  const larga = v.calcaLarga ? 1.35 : 1;
+  if (v.feminino && !costas) mancha(ctx, [[-4.6, hy - 2], [-5.4, hy + 4], [-5, hy + 9], [5, hy + 9], [5.4, hy + 4], [4.6, hy - 2], [0, hy - 5.4]], v.escuro(v.cabelo, 0.2), 0);
+  for (const lado of [-1, 1]) {
+    const passo = lado * s;
+    const x = lado * 2.3 * L;
+    const pe = -Math.max(0, -passo) * 1.4;
+    const cor = lado > 0 ? v.escuro(v.calca, 0.14) : v.calca;
+    if (!v.vestido) {
+      linha2d(ctx, [[x, -15 + bob], [x + lado * 0.2, -8 + bob * 0.5], [x, -2.2 + pe]], v.calcaLarga ? cor : pele, v.calcaLarga ? 2.2 : 2.4);
+      if (v.calcaLarga) mancha(ctx, [[x - 1.9, -15.6 + bob], [x + 1.9, -15.6 + bob], [x + 2.4 * larga - 0.6, -9], [x + 1.6, -4.4 + pe, 1], [x - 1.6, -4.4 + pe, 1], [x - 2.4 * larga + 0.6, -9]], cor, 0.3);
+      else mancha(ctx, [[x - 1.6, -15.6 + bob], [x + 1.6, -15.6 + bob], [x + 1.4, -8], [x + 1.15, -2.2 + pe], [x - 1.15, -2.2 + pe], [x - 1.4, -8]], cor, 0.3);
+    }
+    mancha(ctx, [[x - 1.7, pe + 0.2], [x - 1.6, pe - 2.6], [x + 1.6, pe - 2.6], [x + 1.7, pe + 0.2]], lado > 0 ? v.escuro(v.sapato) : v.sapato, 0);
+  }
+  const braco = (lado, atras) => {
+    const passo = lado * s;
+    const ombro = [lado * (sw + 0.1), ys + 1.4];
+    const cotovelo = [lado * (sw + 1.1), -20.4 + bob];
+    const mao = [lado * (sw + 0.9), -14.6 + bob - Math.max(0, passo) * 1.6];
+    const manga = v.manga || v.camisa;
+    const cor = lado > 0 ? v.escuro(manga, 0.12) : manga;
+    if (atras) return;
+    linha2d(ctx, [ombro, cotovelo], cor, 2.8);
+    linha2d(ctx, [cotovelo, mao], v.mangaCurta ? pele : lado > 0 ? v.escuro(v.vestido || manga, 0.12) : v.vestido || manga, 2.4);
+    if (v.mangaCurta) oval(ctx, cotovelo[0], cotovelo[1], 1.55, 1.3, cor);
+    if (v.bufante) oval(ctx, ombro[0], ombro[1] + 0.8, 2.3, 2.2, cor);
+    oval(ctx, mao[0], mao[1] + 0.6, 1.25, 1.35, lado > 0 ? v.escuro(pele, 0.1) : pele);
+  };
+  if (v.vestido) {
+    mancha(ctx, [[-ww - 0.2, -18.6 + bob], [ww + 0.2, -18.6 + bob], [6.4 * L, -5], [7.2 * L, -0.4, 1], [0, 0.4], [-7.2 * L, -0.4, 1], [-6.4 * L, -5]], v.vestido, 0.36, 0.14);
+    if (v.barra) mancha(ctx, [[-7.2 * L, -0.4, 1], [-7 * L, -2], [0, -1.2], [7 * L, -2], [7.2 * L, -0.4, 1], [0, 0.4]], v.barra, 0);
+    if (v.painel && !costas) mancha(ctx, [[-1.6, -18.4 + bob], [1.6, -18.4 + bob], [3.4, -1.4, 1], [-3.4, -1.4, 1]], v.painel, 0.3);
+  }
+  mancha(ctx, [[-sw + 0.8, ys], [-sw - 0.6, ys + 2.4], [-cw, -23 + bob], [-ww, -18.6 + bob], [-hw, -15 + bob, 1], [hw, -15 + bob, 1], [ww, -18.6 + bob], [cw, -23 + bob], [sw + 0.6, ys + 2.4], [sw - 0.8, ys], [0, ys - 0.5]], v.vestido || v.camisa, 0.34, costas ? 0 : 0.2);
+  if (v.golaAberta && !costas) mancha(ctx, [[-1.3, ys - 0.2], [1.3, ys - 0.2], [0, ys + 4.2, 1]], pele, 0);
+  if (v.cinto) {
+    mancha(ctx, [[-ww - 0.1, -17.6 + bob, 1], [ww + 0.1, -17.6 + bob, 1], [ww, -16.2 + bob, 1], [-ww, -16.2 + bob, 1]], v.cinto, 0);
+    if (v.fivela && !costas) oval(ctx, 0, -16.9 + bob, 0.9, 0.8, v.fivela);
+    if (v.bolsa) mancha(ctx, [[ww * (costas ? -1 : 1) - 1.4, -16.4 + bob], [ww * (costas ? -1 : 1) + 1.2, -16.4 + bob], [ww * (costas ? -1 : 1) + 1, -13.4 + bob], [ww * (costas ? -1 : 1) - 1.2, -13.4 + bob]], v.bolsa, 0.3);
+  }
+  braco(-1);
+  braco(1);
+  linha2d(ctx, [[0, ys + 0.4], [0, ys - 1.4]], v.escuro(pele, 0.1), 2.6);
+  oval(ctx, -3.9, hy + 0.8, 0.9, 1.2, pele);
+  oval(ctx, 3.9, hy + 0.8, 0.9, 1.2, v.escuro(pele, 0.12));
+  mancha(ctx, [[-3.8, hy - 1.4], [-3.6, hy + 2.4], [-1.8, hy + 4.4], [0, hy + 4.8], [1.8, hy + 4.4], [3.6, hy + 2.4], [3.8, hy - 1.4], [2.6, hy - 4.2], [0, hy - 4.8], [-2.6, hy - 4.2]], pele, 0.3, 0.18);
+  if (costas) {
+    mancha(ctx, [[-4.2, hy + 1.6], [-4.4, hy - 2], [-2.8, hy - 4.8], [0, hy - 5.5], [2.8, hy - 4.8], [4.4, hy - 2], [4.2, hy + 1.6], [2.4, hy + 3.4], [0, hy + 3.8], [-2.4, hy + 3.4]], v.cabelo, 0.36, 0.2);
+    if (v.feminino) mancha(ctx, [[-4.4, hy - 1], [-5.2, hy + 5], [-4.6, hy + 10], [0, hy + 10.8], [4.6, hy + 10], [5.2, hy + 5], [4.4, hy - 1]], v.cabelo, 0.36);
+    return;
+  }
+  const olho = '#1c1a22';
+  for (const lado of [-1, 1]) {
+    oval(ctx, lado * 1.5, hy + 0.5, 0.55, 0.75, olho);
+    linha2d(ctx, [[lado * 0.7, hy - 1.1], [lado * 2.3, hy - 1.3]], v.escuro(v.cabelo, 0.3), 0.55);
+  }
+  linha2d(ctx, [[0.1, hy + 0.9], [0.5, hy + 2], [-0.2, hy + 2.2]], v.escuro(pele, 0.22), 0.5);
+  linha2d(ctx, [[-0.9, hy + 3.2], [0, hy + 3.5], [0.9, hy + 3.2]], misturar(pele, '#7a2a2a', 0.45), 0.5);
+  if (v.barba) {
+    mancha(ctx, [[-3.7, hy + 0.6], [-3.5, hy + 3.6], [-1.8, hy + 5.8], [0, hy + 6.6, 1], [1.8, hy + 5.8], [3.5, hy + 3.6], [3.7, hy + 0.6], [2, hy + 2.4], [0, hy + 2.8], [-2, hy + 2.4]], v.barba, 0.36);
+    linha2d(ctx, [[-1.9, hy + 2.8], [0, hy + 2.4], [1.9, hy + 2.8]], v.escuro(v.barba, 0.2), 0.9);
+  }
+  if (v.feminino) {
+    for (const lado of [-1, 1]) mancha(ctx, [[lado * 3.4, hy - 2], [lado * 4.6, hy - 0.6], [lado * 5.2, hy + 4], [lado * 4.8, hy + 8.8], [lado * 3.2, hy + 8], [lado * 3.5, hy + 3], [lado * 3.2, hy]], lado > 0 ? v.escuro(v.cabelo, 0.12) : v.cabelo, 0);
+    mancha(ctx, [[-4.2, hy + 0.4], [-4.4, hy - 2.4], [-2.8, hy - 4.9], [0, hy - 5.6], [2.8, hy - 4.9], [4.4, hy - 2.4], [4.2, hy + 0.4], [3.4, hy - 1.6], [1.2, hy - 2.6], [0, hy - 1.8, 1], [-1.2, hy - 2.6], [-3.4, hy - 1.6]], v.cabelo, 0.34, 0.2);
+    return;
+  }
+  mancha(ctx, [[-4.2, hy + 0.8], [-4.4, hy - 2.2], [-2.8, hy - 4.9], [0, hy - 5.6], [2.8, hy - 4.9], [4.4, hy - 2.2], [4.2, hy + 0.8], [3.6, hy - 1.2], [1.8, hy - 2.4], [0.2, hy - 1.6], [-1.6, hy - 2.6], [-3.6, hy - 1.2]], v.cabelo, 0.34, 0.2);
+}
+
+// ================================================================================================================================================================================================================================================
+// pessoaDePerfil
+// A pessoa virada pro leste: perna e braço de longe mais escuros por trás do corpo, passo pra frente e pra trás,
+// tronco de lado (barriga pra frente), rosto de perfil e o cabelo caindo pra trás.
+
+function pessoaDePerfil(ctx, _costas, s, bob, L, B, v) {
+  const pele = v.pele;
+  const hy = -32.6 + bob;
+  const ys = -27.6 + bob;
+  const larga = v.calcaLarga ? 1.3 : 1;
+  const perna = (lado) => {
+    const passo = lado * s;
+    const pe = [passo * 4.2, -Math.max(0, -passo) * 1.2];
+    const joelho = [passo * 2.2 + 0.8, -8 + bob * 0.5 - Math.max(0, passo) * 0.4];
+    const longe = lado < 0;
+    const cor = longe ? v.escuro(v.calca, 0.22) : v.calca;
+    if (!v.vestido) {
+      linha2d(ctx, [[0, -15 + bob], joelho], cor, 3 * larga);
+      linha2d(ctx, [joelho, [pe[0], pe[1] - 2.2]], v.calcaLarga ? cor : cor, v.calcaLarga ? 3.3 : 2.5);
+    }
+    mancha(ctx, [[pe[0] - 1.4, pe[1] + 0.2, 1], [pe[0] - 1.4, pe[1] - 2.4], [pe[0] + 0.8, pe[1] - 2.4], [pe[0] + 2.7, pe[1] - 0.8], [pe[0] + 2.7, pe[1] + 0.2, 1]], longe ? v.escuro(v.sapato, 0.25) : v.sapato, 0);
+  };
+  const braco = (lado) => {
+    const passo = -lado * s;
+    const longe = lado < 0;
+    const ombro = [0.2, ys + 1.2];
+    const cotovelo = [passo * 1.6 - 0.2, -20.6 + bob];
+    const mao = [passo * 3.6 + 0.4, -14.8 + bob + Math.abs(passo) * -0.6];
+    const manga = v.manga || v.camisa;
+    const cor = longe ? v.escuro(manga, 0.22) : manga;
+    linha2d(ctx, [ombro, cotovelo], cor, 2.8);
+    linha2d(ctx, [cotovelo, mao], v.mangaCurta ? (longe ? v.escuro(pele, 0.2) : pele) : longe ? v.escuro(v.vestido || manga, 0.22) : v.vestido || manga, 2.4);
+    if (v.mangaCurta) oval(ctx, cotovelo[0], cotovelo[1], 1.55, 1.3, cor);
+    if (v.bufante && !longe) oval(ctx, ombro[0], ombro[1] + 0.8, 2.3, 2.2, cor);
+    oval(ctx, mao[0], mao[1] + 0.6, 1.25, 1.35, longe ? v.escuro(pele, 0.2) : pele);
+  };
+  if (v.feminino) mancha(ctx, [[-1.4, hy - 4], [-4.4, hy - 1], [-5, hy + 5], [-4.2, hy + 9.8], [-1.8, hy + 9], [-1.2, hy + 2]], v.escuro(v.cabelo, 0.12), 0);
+  perna(-1);
+  braco(-1);
+  perna(1);
+  if (v.vestido) {
+    mancha(ctx, [[-2.8, -18.6 + bob], [2.8, -18.6 + bob], [5, -5], [5.8, -0.4, 1], [-4.8, -0.2, 1], [-4.2, -5]], v.vestido, 0.36, 0.14);
+    if (v.barra) mancha(ctx, [[5.8, -0.4, 1], [5.6, -2], [-4.6, -1.6], [-4.8, -0.2, 1]], v.barra, 0);
+    if (v.painel) mancha(ctx, [[2.2, -18.4 + bob], [3.4, -18.4 + bob], [5.4, -1.6, 1], [3.4, -1.6, 1]], v.painel, 0);
+  }
+  const fr = 2.8 + B * 0.4;
+  mancha(ctx, [[-2.3, ys], [-3, ys + 3], [-2.6, -19 + bob], [-2.9, -15 + bob, 1], [fr, -15 + bob, 1], [3 + B * 1.6, -18.6 + bob], [3.1 + B * 0.6, -23 + bob], [2.2, ys]], v.vestido || v.camisa, 0.36, 0.2);
+  if (v.golaAberta) mancha(ctx, [[1.6, ys - 0.2], [2.6, ys + 0.2], [2.4, ys + 3.4, 1]], pele, 0);
+  if (v.cinto) {
+    mancha(ctx, [[-2.9, -17.6 + bob, 1], [3 + B * 1.5, -17.6 + bob, 1], [3 + B * 1.4, -16.2 + bob, 1], [-2.9, -16.2 + bob, 1]], v.cinto, 0);
+    if (v.fivela) oval(ctx, 2.8 + B * 1.4, -16.9 + bob, 0.5, 0.8, v.fivela);
+    if (v.bolsa) mancha(ctx, [[-1.4, -16.4 + bob], [1.2, -16.4 + bob], [1, -13.2 + bob], [-1.2, -13.2 + bob]], v.bolsa, 0.3);
+  }
+  braco(1);
+  linha2d(ctx, [[0.4, ys + 0.4], [0.6, ys - 1.4]], v.escuro(pele, 0.1), 2.4);
+  mancha(ctx, [[-3.4, hy - 1.4], [-3.4, hy + 2.4], [-1.4, hy + 4.4], [1.6, hy + 4.8], [3.2, hy + 3.6], [3.8, hy + 2], [4.3, hy + 1.2, 1], [3.8, hy + 0.2], [3.8, hy - 1.8], [2.6, hy - 4.2], [0, hy - 4.8], [-2.6, hy - 4]], pele, 0.3, 0.18);
+  oval(ctx, -0.4, hy + 0.8, 0.9, 1.2, v.escuro(pele, 0.1));
+  oval(ctx, 2.3, hy + 0.4, 0.5, 0.75, '#1c1a22');
+  linha2d(ctx, [[1.5, hy - 1.1], [3, hy - 1.2]], v.escuro(v.cabelo, 0.3), 0.55);
+  linha2d(ctx, [[2.6, hy + 3.3], [3.4, hy + 3.1]], misturar(pele, '#7a2a2a', 0.45), 0.5);
+  if (v.barba) {
+    mancha(ctx, [[-0.4, hy + 1.2], [3.6, hy + 2.2], [3.4, hy + 4.8], [1.6, hy + 6.4, 1], [-0.2, hy + 5], [-1, hy + 2.4]], v.barba, 0.3);
+    linha2d(ctx, [[2.4, hy + 2.6], [3.9, hy + 2.8]], v.escuro(v.barba, 0.2), 0.9);
+  }
+  if (v.feminino) {
+    mancha(ctx, [[3.8, hy - 1.6], [3, hy - 4.6], [0, hy - 5.6], [-3.4, hy - 4.4], [-4.4, hy - 0.4], [-4.2, hy + 4], [-2.4, hy + 3.6], [-1.6, hy + 0.2], [0.8, hy - 1.6], [2.6, hy - 1.4]], v.cabelo, 0.34, 0.2);
+    return;
+  }
+  mancha(ctx, [[3.8, hy - 1.6], [3, hy - 4.6], [0, hy - 5.6], [-3.3, hy - 4.3], [-4.2, hy - 1], [-3.9, hy + 2.6], [-2.4, hy + 3.2], [-1.6, hy + 0.2], [0.8, hy - 1.6], [2.6, hy - 1.3]], v.cabelo, 0.34, 0.2);
+}
+
+// ================================================================================================================================================================================================================================================
+// pessoaCaida
+// O corpo da pessoa no chão: o desenho de frente deitado com a cabeça pra esquerda (estagio 1 com as cores puxadas
+// pro verde escuro); estagio 2 = os ossos.
+
+function pessoaCaida(ctx, estagio, visual) {
+  if (estagio === 2) {
+    pintar(ctx, [-8, -2], caido('humano', 2, visual));
+    return;
+  }
+  const podre = (cor) => estagio === 1 && typeof cor === 'string' && cor[0] === '#' ? misturar(cor, '#3f4a2a', 0.6) : cor;
+  const visualCaido = Object.fromEntries(Object.entries(visual).map(([k, v]) => [k, podre(v)]));
+  ctx.save();
+  ctx.rotate(-Math.PI / 2);
+  ctx.scale(1, 0.8);
+  pessoa(ctx, 'sul', 0, visualCaido);
+  ctx.restore();
+}
+
+// ================================================================================================================================================================================================================================================
 // folhaDeCriatura
 // A folha do jogo: 9 quadros de 64 px por direção (sul, norte, leste, oeste) e a linha do cadáver (fresco,
 // apodrecendo, ossos), escala vezes maior. modelo: humano ou lobo. Desenha pelo menos NITIDEZ vezes maior e reduz
@@ -963,13 +1250,17 @@ function folhaDeCriatura(modelo, visual, escala = 1) {
     tela.width = tela.height = 64 * nitidez;
     const tctx = tela.getContext('2d');
     tctx.scale(nitidez, nitidez);
-    pintar(tctx, origem, partes);
+    if (typeof partes === 'function') {
+      tctx.translate(...origem);
+      partes(tctx);
+    } else pintar(tctx, origem, partes);
     ctx.drawImage(tela, x * nitidez, y * nitidez);
   };
+  const emPe = modelo === pessoa;
   Object.keys(DIRECOES).forEach((direcao, linha) => {
-    for (let fase = 0; fase < 9; fase++) quadro(fase * 64, linha * 64, modelo(direcao, fase, visual), [52, 54]);
+    for (let fase = 0; fase < 9; fase++) quadro(fase * 64, linha * 64, emPe ? (c) => pessoa(c, direcao, fase, visual) : modelo(direcao, fase, visual), emPe ? [54, 60] : [52, 54]);
   });
-  for (let estagio = 0; estagio < 3; estagio++) quadro(estagio * 64, 4 * 64, caido(modelo === lobo ? 'lobo' : modelo === guerreiro ? 'guerreiro' : modelo === mago ? 'mago' : 'humano', estagio, visual), [46, 50]);
+  for (let estagio = 0; estagio < 3; estagio++) quadro(estagio * 64, 4 * 64, emPe ? (c) => pessoaCaida(c, estagio, visual) : caido(modelo === lobo ? 'lobo' : modelo === guerreiro ? 'guerreiro' : modelo === mago ? 'mago' : 'humano', estagio, visual), emPe ? [56, 52] : [46, 50]);
   if (nitidez === escala) return grande;
   const canvas = document.createElement('canvas');
   canvas.width = 64 * 9 * escala;
@@ -1304,7 +1595,7 @@ function parede(escala = 1) {
   return canvas;
 }
 
-const CRIATURAS = { humano, lobo, guerreiro, mago };
+const CRIATURAS = { humano, lobo, guerreiro, mago, pessoa };
 const OBJETOS = { caixote, barril, poste, arvore, arbusto, capim, parede };
 
 // ================================================================================================================================================================================================================================================
