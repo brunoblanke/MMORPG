@@ -200,6 +200,38 @@ const ESTILOS = {
 };
 
 // ================================================================================================================================================================================================================================================
+// cabelo
+// Cabelo de ilustração: calota cobrindo o alto e a nuca, franja de lado (ou repartida no meio no feminino) com umas
+// mechas riscadas, costeletas; o feminino desce em mechas onduladas pelos lados do rosto e pelas costas.
+
+function cabelo(P, anel, bola, visual, z, escurecer) {
+  const cor = visual.cabelo;
+  const escuro = escurecer(cor, 0.22);
+  const claro = misturar(cor, '#fff0d8', 0.18);
+  const partes = [];
+  const camadas = [{ secoes: [bola(P(-0.7, 0, z + 3.3), 3.95), bola(P(-1.9, 0, z + 1.1), 3.35), bola(P(-1.2, 0, z + 4.6), 3.1)], cor }];
+  if (visual.feminino) {
+    for (const lado of [-1, 1]) camadas.push({ secoes: [bola(P(1.5, lado * 1.5, z + 4.9), 1.7), bola(P(2.3, lado * 2.8, z + 3.3), 1.05), bola(P(0, lado * 0.4, z + 5.9), 1.3)], cor: claro });
+  } else {
+    camadas.push({ secoes: [bola(P(1.3, -1.2, z + 5), 2.05), bola(P(2.4, 1.3, z + 4.2), 1.25), bola(P(-0.2, -0.6, z + 6), 1.8)], cor: claro });
+  }
+  for (const [a, b] of [[[-1.6, -1.5, z + 6.6], [1.4, -0.3, z + 5.8]], [[-1.2, 0.9, z + 6.7], [1.6, 1.6, z + 5.2]], [[-2.4, -0.2, z + 6.2], [0.4, 0.8, z + 6.4]]]) {
+    camadas.push({ a: P(...a), b: P(...b), largura: 0.35, cor: escuro, contorno: false, luz: false });
+  }
+  partes.push({ camadas, frente: 2 });
+  for (const lado of [-1, 1]) {
+    partes.push({ secoes: [bola(P(0.9, lado * 3.6, z + 3.2), 0.85), bola(P(1.4, lado * 3.75, z + 1), 0.6)], cor, luz: false, frente: 0.6 });
+  }
+  if (!visual.feminino) return partes;
+  partes.push({ secoes: [bola(P(-2.2, 0, z + 2), 3.7), anel(-2.5, 0, z - 4, 3.9, 1.8), anel(-2.6, 0, z - 8.6, 3.3, 1.5)], cor, frente: -0.4 });
+  for (const lado of [-1, 0, 1]) partes.push({ secoes: [bola(P(-2.6, lado * 2, z - 9.2), 1.5), bola(P(-2.4, lado * 2.3, z - 10.6), 0.9)], cor: escurecer(cor, 0.08), frente: -0.3 });
+  for (const lado of [-1, 1]) {
+    partes.push({ secoes: [bola(P(0.4, lado * 3.4, z + 2.8), 1.7), bola(P(0.2, lado * 3.9, z - 1.8), 1.6), bola(P(0.6, lado * 3.6, z - 5.6), 1.25), bola(P(0.9, lado * 3.9, z - 7.4), 0.8)], cor, frente: 0.3 });
+  }
+  return partes;
+}
+
+// ================================================================================================================================================================================================================================================
 // vestido
 // Saia comprida até o chão com a barra de outra cor (visual.barra) e o painel da frente (visual.painel), como nos
 // vestidos de corte.
@@ -350,15 +382,7 @@ function humano(direcao, fase, visual, deitar = null) {
     }
     return partes;
   }
-  const tufos = [[0.6, -0.4, 0.9, 4.2], [0.7, 0.6, 0.75, 4.1], [-0.5, -0.6, 0.7, 4.2], [-0.6, 0.7, 0.6, 4], [-0.95, 0.1, 0.3, 4.1], [0, -1, 0.1, 4], [0, 1, 0.1, 4]];
-  const camadas = tufos.map(([df, dl, dz, alcance]) => ({
-    secoes: [bola(P(-1 + df * 3, dl * 3, z + 3.3 + dz * 3), 1.5), bola(P(-1 + df * alcance, dl * alcance, z + 3.3 + dz * alcance), 0.45)],
-    cor: escurecer(visual.cabelo, 0.1),
-    luz: false
-  }));
-  camadas.push({ secoes: [bola(P(-1.2, 0, z + 3.4), 3.95), bola(P(-2.1, 0, z + 1.5), 3.4), bola(P(1.2, 0.8, z + 4.4), 2.2)], cor: visual.cabelo });
-  partes.push({ camadas, frente: 2 });
-  if (visual.feminino) partes.push({ secoes: [bola(P(-2.1, 0, z + 1.5), 3.6), bola(P(-2.4, 0, z - 6), 2.8)], cor: visual.cabelo });
+  partes.push(...cabelo(P, anel, bola, visual, z, escurecer));
   if (deitar) return partes;
   for (const lado of [-1, 1]) {
     partes.push({ a: P(3.6, lado * 1.45, z + 1.6), b: P(3.6, lado * 1.45, z + 2.1), largura: 0.95, cor: '#1c1a22', contorno: false, luz: false, frente: 4 });
