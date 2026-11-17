@@ -395,36 +395,43 @@ function humano(direcao, fase, visual, deitar = null) {
 
 // ================================================================================================================================================================================================================================================
 // lobo
-// Partes do lobo (quadrúpede): as patas alternam em diagonal. visual: { pelo, barriga, olho }.
+// Partes do lobo (quadrúpede) em volumes: corpo, peito claro, cabeça com focinho, orelhas, rabo peludo; as patas
+// alternam em diagonal. visual: { pelo, barriga, olho }.
+
+const TAMANHO_LOBO = 1.2;
 
 function lobo(direcao, fase, visual) {
-  const p = eixos(direcao);
+  const base = eixos(direcao);
+  const p = (f, l, z) => base(f * TAMANHO_LOBO, l * TAMANHO_LOBO, z * TAMANHO_LOBO);
+  const bola = (ponto, r) => ({ c: ponto, r: r * TAMANHO_LOBO });
   const t = fase ? (fase - 1) / 8 * Math.PI * 2 : 0;
   const s = fase ? Math.sin(t) : 0;
   const sobe = fase ? Math.abs(Math.cos(t)) * 0.6 : 0;
-  const escuro = misturar(visual.pelo, '#000000', 0.22);
+  const escuro = misturar(visual.pelo, '#000000', 0.18);
+  const claro = visual.barriga;
   const partes = [];
-  const pata = (frente, lado, fase01) => {
-    const ergue = Math.max(0, fase01) * 1.8;
-    const cima = p(frente, lado * 2.6, 7.6 + sobe);
-    const meio = p(frente + fase01 * 1.6 - 0.8, lado * 2.6, 4 + ergue * 0.6);
-    const pe = p(frente + fase01 * 3.4, lado * 2.6, 0.9 + ergue);
-    partes.push({ a: cima, b: meio, largura: 3, cor: lado < 0 ? escuro : visual.pelo }, { a: meio, b: pe, largura: 2.4, cor: lado < 0 ? escuro : visual.pelo });
+  const pata = (frente, lado, passo) => {
+    const ergue = Math.max(0, passo) * 1.8;
+    const cima = p(frente, lado * 2.5, 8.6 + sobe);
+    const meio = p(frente + passo * 1.6 - 0.6, lado * 2.6, 4.2 + ergue * 0.6);
+    const pe = p(frente + passo * 3.2, lado * 2.6, 1 + ergue);
+    const cor = lado < 0 ? escuro : visual.pelo;
+    partes.push({ secoes: [bola(cima, 2.1), bola(meio, 1.3)], cor });
+    partes.push({ secoes: [bola(meio, 1.25), bola(pe, 0.95), bola(p(frente + passo * 3.2 + 1, lado * 2.6, 0.9 + ergue), 1.1)], cor, frente: 0.1 });
   };
-  pata(5.4, -1, s);
-  pata(5.4, 1, -s);
-  pata(-6.2, -1, -s);
-  pata(-6.2, 1, s);
-  partes.push({ a: p(-6.4, 0, 9.2 + sobe), b: p(5.6, 0, 9.8 + sobe), largura: 7.6, cor: visual.pelo });
-  partes.push({ a: p(-5, 0, 7.2 + sobe), b: p(4, 0, 7.6 + sobe), largura: 5.4, cor: visual.barriga, contorno: false });
-  partes.push({ a: p(-7.4, 0, 10.4 + sobe), b: p(-12.6, 0, 12.4 + sobe - s * 1.2), largura: 3, cor: visual.pelo });
-  partes.push({ a: p(6.4, 0, 10.6 + sobe), b: p(9.4, 0, 12.4 + sobe), largura: 5.8, cor: visual.pelo });
-  partes.push({ a: p(10.4, 0, 12.8 + sobe), largura: 6.8, cor: visual.pelo });
-  partes.push({ a: p(12, 0, 11.6 + sobe), b: p(15, 0, 11 + sobe), largura: 3.2, cor: misturar(visual.pelo, '#ffffff', 0.12) });
-  partes.push({ a: p(16.2, 0, 11.2 + sobe), largura: 1.6, cor: '#17110f', contorno: false, luz: false, frente: 2 });
+  pata(5.2, -1, s);
+  pata(5.2, 1, -s);
+  pata(-5.6, -1, -s);
+  pata(-5.6, 1, s);
+  partes.push({ secoes: [bola(p(-7.6, 0, 10.6 + sobe), 1.5), bola(p(-10.4, 0, 9.6 + sobe - s), 2.1), bola(p(-13, 0, 7.6 + sobe - s * 1.4), 1.3)], cor: visual.pelo, frente: -0.4 });
+  partes.push({ secoes: [bola(p(-5.4, 0, 10 + sobe), 3.5), bola(p(-0.5, 0, 10.2 + sobe), 3.8), bola(p(4.4, 0, 10.8 + sobe), 4.3)], cor: visual.pelo });
+  partes.push({ secoes: [bola(p(5, 0, 8.6 + sobe), 3), bola(p(7.6, 0, 11.6 + sobe), 2.4), bola(p(1, 0, 8 + sobe), 2.2)], cor: claro, frente: 0.6 });
+  partes.push({ secoes: [bola(p(8.6, 0, 14.8 + sobe), 3.2), bola(p(7, 0, 12.6 + sobe), 2.9)], cor: visual.pelo, frente: 1 });
+  partes.push({ secoes: [bola(p(10.6, 0, 13.8 + sobe), 2), bola(p(13.6, 0, 12.9 + sobe), 1.2)], cor: claro, frente: 1.2 });
+  partes.push({ secoes: [bola(p(14.3, 0, 13.2 + sobe), 0.75)], cor: '#1b1513', luz: false, frente: 2 });
   for (const lado of [-1, 1]) {
-    partes.push({ a: p(9.4, lado * 2.2, 15 + sobe), b: p(9, lado * 2.6, 17.6 + sobe), largura: 2.2, cor: escuro });
-    partes.push({ a: p(12.6, lado * 1.7, 13.2 + sobe), largura: 1.3, cor: visual.olho, contorno: false, luz: false, frente: 2 });
+    partes.push({ secoes: [bola(p(7.4, lado * 1.9, 17.2 + sobe), 1.15), bola(p(7, lado * 2.2, 20 + sobe), 0.3)], cor: escuro, frente: 1.1 });
+    partes.push({ a: p(11.1, lado * 1.5, 15.2 + sobe), b: p(11.3, lado * 1.4, 15 + sobe), largura: 1, cor: visual.olho, contorno: false, luz: false, frente: 2 });
   }
   return partes;
 }
@@ -797,7 +804,7 @@ const PECAS_DE_MURO = ['x', 'y', 'xy', 'yx', 'porta-x', 'porta-x-aberta', 'porta
 
 // ================================================================================================================================================================================================================================================
 // parede
-// A folha de parede de pedra (4 peças por linha, na ordem de PECAS_DE_MURO).
+// A folha de parede de pedra (4 peças por linha, na ordem de PECAS_DE_MURO), cada peça cortada no quadro dela.
 
 function parede(escala = 1) {
   const canvas = document.createElement('canvas');
@@ -805,7 +812,14 @@ function parede(escala = 1) {
   canvas.height = 64 * Math.ceil(PECAS_DE_MURO.length / 4) * escala;
   const ctx = canvas.getContext('2d');
   ctx.scale(escala, escala);
-  PECAS_DE_MURO.forEach((peca, i) => pecaDeMuro(ctx, [(i % 4) * 64 + 32, Math.floor(i / 4) * 64 + 32], peca, i * 37 + 5));
+  PECAS_DE_MURO.forEach((peca, i) => {
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect((i % 4) * 64, Math.floor(i / 4) * 64, 64, 64);
+    ctx.clip();
+    pecaDeMuro(ctx, [(i % 4) * 64 + 32, Math.floor(i / 4) * 64 + 32], peca, i * 37 + 5);
+    ctx.restore();
+  });
   return canvas;
 }
 
