@@ -8,7 +8,7 @@
 // chamam desenharFolha ao carregar as folhas (shared/assets.js), no tamanho do jogo e num maior pra tela nítida.
 
 const CAMERA = 0.74;
-const CONTORNO = '#1c1612';
+const CONTORNO = '#3a2219';
 const NITIDEZ = 4;
 const DIRECOES = { sul: [0, 1], norte: [0, -1], leste: [1, 0], oeste: [-1, 0] };
 
@@ -72,7 +72,8 @@ function pontosDoVolume(origem, secoes) {
 
 // ================================================================================================================================================================================================================================================
 // pintarVolume
-// Volume moldado: o envoltório das seções, com sombra embaixo à direita, brilho em cima à esquerda e contorno.
+// Volume moldado: o envoltório das seções em cores chapadas, como ilustração vetorial: a cor, a sombra embaixo à
+// direita, um reflexo discreto em cima à esquerda e contorno fino; luz = false tira o reflexo.
 
 function pintarVolume(ctx, origem, parte) {
   const casca = envoltorio(pontosDoVolume(origem, parte.secoes));
@@ -90,26 +91,38 @@ function pintarVolume(ctx, origem, parte) {
   ctx.lineJoin = 'round';
   if (parte.contorno !== false) {
     caminho();
-    ctx.lineWidth = 1.1;
+    ctx.lineWidth = 0.7;
     ctx.strokeStyle = CONTORNO;
     ctx.stroke();
   }
   caminho();
-  ctx.fillStyle = misturar(parte.cor, '#000000', 0.26);
+  ctx.fillStyle = sombra(parte.cor);
   ctx.fill();
   ctx.clip();
-  const recuo = Math.min(1.1, tamanho * 0.14);
+  const recuo = Math.min(1.3, tamanho * 0.15);
   caminho(-recuo, -recuo);
   ctx.fillStyle = parte.cor;
   ctx.fill();
   if (parte.luz !== false) {
-    const brilho = ctx.createRadialGradient(x0 + (x1 - x0) * 0.3, y0 + (y1 - y0) * 0.28, 0, x0 + (x1 - x0) * 0.3, y0 + (y1 - y0) * 0.28, tamanho * 0.6);
-    brilho.addColorStop(0, 'rgba(255, 255, 255, 0.26)');
-    brilho.addColorStop(1, 'rgba(255, 255, 255, 0)');
-    ctx.fillStyle = brilho;
-    ctx.fillRect(x0 - 1, y0 - 1, x1 - x0 + 2, y1 - y0 + 2);
+    ctx.clip();
+    const faixa = Math.min(1.6, tamanho * 0.2);
+    caminho(-recuo - faixa, -recuo - faixa);
+    ctx.fillStyle = luz(parte.cor);
+    ctx.fill();
   }
   ctx.restore();
+}
+
+// ================================================================================================================================================================================================================================================
+// sombra / luz
+// Os tons chapados de sombra e de luz de uma cor (sombra puxada pro marrom avermelhado, luz pro creme).
+
+function sombra(cor) {
+  return misturar(cor, '#3b1f1c', 0.3);
+}
+
+function luz(cor) {
+  return misturar(cor, '#fff4e0', 0.16);
 }
 
 // ================================================================================================================================================================================================================================================
@@ -187,6 +200,9 @@ function eixos(direcao) {
 // Conjuntos de equipamento que aparecem no corpo (visual.equip: { elmo, peito, pernas, botas, escudo, arma } com o
 // nome do estilo). metal = placas, borda = frisos e detalhes, tecido = capa, tabardo e pluma.
 
+const ALTURA_CORPO = 1;
+const GROSSURA = 1;
+
 const ESTILOS = {
   crown: { metal: '#c3c9d3', borda: '#d8a838', tecido: '#2c55b4' }
 };
@@ -201,13 +217,13 @@ const ESTILOS = {
 
 function humano(direcao, fase, visual, deitar = null) {
   const base = eixos(direcao);
-  const P = deitar ? (f, l, z) => deitar(base(f, l, z)) : base;
+  const P = deitar ? (f, l, z) => deitar(base(f, l, z * ALTURA_CORPO)) : (f, l, z) => base(f, l, z * ALTURA_CORPO);
   const menos = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
   const anel = (f, l, z, rl, rf) => {
     const c = P(f, l, z);
     return { c, a: menos(P(f, l + rl, z), c), b: menos(P(f + rf, l, z), c) };
   };
-  const bola = (ponto, r) => ({ c: ponto, r });
+  const bola = (ponto, r) => ({ c: ponto, r: r * GROSSURA });
   const t = fase ? (fase - 1) / 8 * Math.PI * 2 : 0;
   const s = fase ? Math.sin(t) : 0;
   const sobe = fase ? Math.abs(Math.cos(t)) * 0.8 : 0;
@@ -306,32 +322,32 @@ function humano(direcao, fase, visual, deitar = null) {
     const pontas = [[1.6, 0], [0.4, -2.4], [0.4, 2.4], [-1.9, -1.6], [-1.9, 1.6]].map(([df, dl]) => ({ secoes: [bola(P(-0.4 + df, dl, z + 5.4), 0.7), bola(P(-0.4 + df, dl, z + 7.1), 0.22)], cor: elmo.borda, luz: false }));
     partes.push({ camadas: [
       { secoes: [bola(P(-2.6, 0, z + 5.6), 1.3), bola(P(-5.6, 0, z + 3), 0.7)], cor: elmo.tecido },
-      { secoes: [bola(P(-0.2, 0, z + 2.2), 4.5), bola(P(0.6, 0, z), 3.4)], cor: elmo.metal },
+      { secoes: [bola(P(0, 0, z + 2.3), 4.75), bola(P(0.8, 0, z), 3.5)], cor: elmo.metal },
       { secoes: [anel(-0.4, 0, z + 4.9, 3.5, 3.5), anel(-0.4, 0, z + 5.5, 3.2, 3.2)], cor: elmo.borda, luz: false },
       ...pontas
-    ], frente: 2 });
+    ], frente: 6 });
     if (!deitar) {
-      partes.push({ a: P(3.9, -2, z + 1.7), b: P(3.9, 2, z + 1.7), largura: 0.85, cor: '#15141a', contorno: false, luz: false, frente: 4 });
-      partes.push({ a: P(4.1, 0, z + 1.2), b: P(4.3, 0, z - 1.6), largura: 0.6, cor: '#15141a', contorno: false, luz: false, frente: 4 });
+      partes.push({ a: P(4.7, -2.2, z + 1.9), b: P(4.7, 2.2, z + 1.9), largura: 0.95, cor: '#15141a', contorno: false, luz: false, frente: 8 });
+      partes.push({ a: P(4.9, 0, z + 1.3), b: P(5, 0, z - 1.6), largura: 0.6, cor: '#15141a', contorno: false, luz: false, frente: 8 });
     }
     return partes;
   }
-  const tufos = [[0.6, -0.4, 0.9, 5], [0.7, 0.6, 0.75, 4.9], [-0.5, -0.6, 0.7, 5], [-0.6, 0.7, 0.6, 4.8], [-0.95, 0.1, 0.3, 4.9]];
+  const tufos = [[0.6, -0.4, 0.9, 4.2], [0.7, 0.6, 0.75, 4.1], [-0.5, -0.6, 0.7, 4.2], [-0.6, 0.7, 0.6, 4], [-0.95, 0.1, 0.3, 4.1], [0, -1, 0.1, 4], [0, 1, 0.1, 4]];
   const camadas = tufos.map(([df, dl, dz, alcance]) => ({
-    secoes: [bola(P(-1 + df * 2.8, dl * 2.8, z + 3 + dz * 2.8), 1.6), bola(P(-1 + df * alcance, dl * alcance, z + 3 + dz * alcance), 0.55)],
-    cor: escurecer(visual.cabelo, 0.12),
+    secoes: [bola(P(-1 + df * 3, dl * 3, z + 3.3 + dz * 3), 1.5), bola(P(-1 + df * alcance, dl * alcance, z + 3.3 + dz * alcance), 0.45)],
+    cor: escurecer(visual.cabelo, 0.1),
     luz: false
   }));
-  camadas.push({ secoes: [bola(P(-1, 0, z + 3.1), 3.95), bola(P(-1.9, 0, z + 1.4), 3.45)], cor: visual.cabelo });
+  camadas.push({ secoes: [bola(P(-1.2, 0, z + 3.4), 3.95), bola(P(-2.1, 0, z + 1.5), 3.4), bola(P(1.2, 0.8, z + 4.4), 2.2)], cor: visual.cabelo });
   partes.push({ camadas, frente: 2 });
   if (visual.feminino) partes.push({ secoes: [bola(P(-2.1, 0, z + 1.5), 3.6), bola(P(-2.4, 0, z - 6), 2.8)], cor: visual.cabelo });
   if (deitar) return partes;
   for (const lado of [-1, 1]) {
-    partes.push({ a: P(3.5, lado * 1.45, z + 1.5), b: P(3.5, lado * 1.45, z + 2), largura: 1.05, cor: '#1c1a22', contorno: false, luz: false, frente: 4 });
-    partes.push({ a: P(3.3, lado * 0.9, z + 3), b: P(3.25, lado * 2.1, z + 3.1), largura: 0.55, cor: escurecer(visual.cabelo, 0.35), contorno: false, luz: false, frente: 4 });
+    partes.push({ a: P(3.6, lado * 1.45, z + 1.6), b: P(3.6, lado * 1.45, z + 2.1), largura: 0.95, cor: '#1c1a22', contorno: false, luz: false, frente: 4 });
+    partes.push({ a: P(3.4, lado * 0.9, z + 3.1), b: P(3.35, lado * 2.1, z + 3.2), largura: 0.5, cor: escurecer(visual.cabelo, 0.35), contorno: false, luz: false, frente: 4 });
   }
-  partes.push({ a: P(3.95, 0, z + 0.9), largura: 0.75, cor: escurecer(pele, 0.12), contorno: false, luz: false, frente: 4 });
-  partes.push({ a: P(3.7, -0.6, z - 0.4), b: P(3.7, 0.6, z - 0.4), largura: 0.5, cor: misturar(pele, '#5a1a1a', 0.5), contorno: false, luz: false, frente: 4 });
+  partes.push({ a: P(3.95, 0, z + 0.9), largura: 0.7, cor: escurecer(pele, 0.14), contorno: false, luz: false, frente: 4 });
+  partes.push({ a: P(3.8, -0.6, z - 0.4), b: P(3.8, 0.6, z - 0.4), largura: 0.45, cor: misturar(pele, '#5a1a1a', 0.5), contorno: false, luz: false, frente: 4 });
   return partes;
 }
 
@@ -412,11 +428,18 @@ function folhaDeCriatura(modelo, visual, escala = 1) {
   grande.width = 64 * 9 * nitidez;
   grande.height = 64 * 5 * nitidez;
   const ctx = grande.getContext('2d');
-  ctx.scale(nitidez, nitidez);
+  const quadro = (x, y, partes, origem) => {
+    const tela = document.createElement('canvas');
+    tela.width = tela.height = 64 * nitidez;
+    const tctx = tela.getContext('2d');
+    tctx.scale(nitidez, nitidez);
+    pintar(tctx, origem, partes);
+    contornar(ctx, tela, x * nitidez, y * nitidez, nitidez);
+  };
   Object.keys(DIRECOES).forEach((direcao, linha) => {
-    for (let fase = 0; fase < 9; fase++) pintar(ctx, [fase * 64 + 52, linha * 64 + 54], modelo(direcao, fase, visual));
+    for (let fase = 0; fase < 9; fase++) quadro(fase * 64, linha * 64, modelo(direcao, fase, visual), [52, 54]);
   });
-  for (let estagio = 0; estagio < 3; estagio++) pintar(ctx, [estagio * 64 + 46, 4 * 64 + 50], caido(modelo === lobo ? 'lobo' : 'humano', estagio, visual));
+  for (let estagio = 0; estagio < 3; estagio++) quadro(estagio * 64, 4 * 64, caido(modelo === lobo ? 'lobo' : 'humano', estagio, visual), [46, 50]);
   if (nitidez === escala) return grande;
   const canvas = document.createElement('canvas');
   canvas.width = 64 * 9 * escala;
@@ -425,6 +448,28 @@ function folhaDeCriatura(modelo, visual, escala = 1) {
   saida.imageSmoothingQuality = 'high';
   saida.drawImage(grande, 0, 0, canvas.width, canvas.height);
   return canvas;
+}
+
+// ================================================================================================================================================================================================================================================
+// contornar
+// Cola a tela em (x, y) com um contorno escuro em volta da silhueta inteira (a silhueta pintada de CONTORNO
+// deslocada em volta, por baixo do desenho), como nas ilustrações vetoriais.
+
+function contornar(ctx, tela, x, y, nitidez) {
+  const silhueta = document.createElement('canvas');
+  silhueta.width = tela.width;
+  silhueta.height = tela.height;
+  const sctx = silhueta.getContext('2d');
+  sctx.drawImage(tela, 0, 0);
+  sctx.globalCompositeOperation = 'source-in';
+  sctx.fillStyle = CONTORNO;
+  sctx.fillRect(0, 0, silhueta.width, silhueta.height);
+  const raio = 0.45 * nitidez;
+  for (let i = 0; i < 16; i++) {
+    const a = i / 16 * Math.PI * 2;
+    ctx.drawImage(silhueta, x + Math.cos(a) * raio, y + Math.sin(a) * raio);
+  }
+  ctx.drawImage(tela, x, y);
 }
 
 // ================================================================================================================================================================================================================================================
